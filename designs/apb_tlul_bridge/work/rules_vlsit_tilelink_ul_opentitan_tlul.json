@@ -1,0 +1,1032 @@
+{
+ "source": {
+  "file": "vlsit_tilelink_ul_opentitan_tlul.md",
+  "sha256": "6d98080848b9ff65ff9605436f112b253e26056588082b0aabce2d459d5013e6",
+  "index_version": 1
+ },
+ "extraction": {
+  "prompt_version": "extract-v2",
+  "model": "sonnet",
+  "budget_tokens": 3500,
+  "tag": "TL",
+  "sections": "all",
+  "skip": [
+   "Bus Primitives",
+   "Bus Integrity Scheme"
+  ],
+  "batches": 4,
+  "date": "2026-11-07T15:07:03+00:00",
+  "usage": {
+   "calls": 4,
+   "cached": 0,
+   "cost_usd": 0.1231,
+   "input_tokens": 8,
+   "output_tokens": 5642,
+   "cache_creation_input_tokens": 16147,
+   "cache_read_input_tokens": 4124
+  },
+  "errors": []
+ },
+ "coverage": {
+  "sentences": 171,
+  "normative_sentences": 28,
+  "normative_cited": 28,
+  "normative_skipped": 1,
+  "uncovered_after_first_pass": 0,
+  "uncovered": [],
+  "invalid_ids": []
+ },
+ "rules": [
+  {
+   "id": "TL-T3.1-01",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T3.1",
+   "section_title": "Features",
+   "page": 43,
+   "quote": "Support for transaction sizes up to bus width (byte, 2B, 4B); no support for bursts No burst transactions",
+   "spec_refs": [],
+   "sentences": [
+    "T3.1:s8",
+    "T3.2:s11"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "any",
+   "signals": [],
+   "condition": "",
+   "statement": "Burst transactions are not supported; transaction sizes are up to bus width only (byte, 2B, 4B).",
+   "check": "assertion"
+  },
+  {
+   "id": "TL-T3.2-01",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T3.2",
+   "section_title": "Description",
+   "page": 52,
+   "quote": "There is one minor modification to add the user extensions. This is highlighted below, but otherwise all functionality follows the official specification. The main signal names are kept the same as TL-UL and the user extension signal groups follow the same timing and naming conventions used in the TL-UL specification. With the exception of the user extensions, the bus is compliant with TileLink-UL.",
+   "spec_refs": [],
+   "sentences": [
+    "T3.2:s3",
+    "T3.2:s4",
+    "T3.2:s5",
+    "T3.3:s1"
+   ],
+   "strength": "MUST",
+   "actor": "any",
+   "signals": [],
+   "condition": "",
+   "statement": "Apart from the user extensions, all functionality follows the TL-UL specification, with user extension signals using TL-UL timing and naming conventions.",
+   "check": "both"
+  },
+  {
+   "id": "TL-T3.2-02",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T3.2",
+   "section_title": "Description",
+   "page": 52,
+   "quote": "Existing TL-UL IP blocks may be used directly in devices that do not need the additional sideband signals, or can be straightforwardly adapted to use the added features.",
+   "spec_refs": [],
+   "sentences": [
+    "T3.2:s6"
+   ],
+   "strength": "MAY",
+   "actor": "system",
+   "signals": [],
+   "condition": "For devices that do not need the additional sideband signals",
+   "statement": "Existing TL-UL IP blocks may be used directly in devices not needing the additional sideband signals, or be adapted to use the added features.",
+   "check": "none"
+  },
+  {
+   "id": "TL-T3.2-03",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T3.2",
+   "section_title": "Description",
+   "page": 70,
+   "quote": "Only one request (read or write) per cycle",
+   "spec_refs": [],
+   "sentences": [
+    "T3.2:s9"
+   ],
+   "strength": "MUST",
+   "actor": "master",
+   "signals": [],
+   "condition": "",
+   "statement": "The bus carries at most one request (read or write) per cycle.",
+   "check": "assertion"
+  },
+  {
+   "id": "TL-T3.2-04",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T3.2",
+   "section_title": "Description",
+   "page": 71,
+   "quote": "Only one response (read or write) per cycle",
+   "spec_refs": [],
+   "sentences": [
+    "T3.2:s10"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [],
+   "condition": "",
+   "statement": "The bus carries at most one response (read or write) per cycle.",
+   "check": "assertion"
+  },
+  {
+   "id": "TL-T3.2-05",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T3.2",
+   "section_title": "Description",
+   "page": 74,
+   "quote": "These primitives can be combined to form a flexible crossbar of any M hosts to any N devices.",
+   "spec_refs": [],
+   "sentences": [
+    "T3.2:s14"
+   ],
+   "strength": "MAY",
+   "actor": "interconnect",
+   "signals": [],
+   "condition": "",
+   "statement": "Bus primitives can be combined to form a crossbar of any M hosts to any N devices.",
+   "check": "none"
+  },
+  {
+   "id": "TL-T3.3-01",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T3.3",
+   "section_title": "Compatibility",
+   "page": 82,
+   "quote": "The bus primitives, hosts and peripherals developed using the extended specification can be used with blocks using the base specification.",
+   "spec_refs": [],
+   "sentences": [
+    "T3.3:s2"
+   ],
+   "strength": "MAY",
+   "actor": "any",
+   "signals": [],
+   "condition": "",
+   "statement": "Bus primitives, hosts and peripherals developed using the extended specification can be used with blocks using the base specification.",
+   "check": "scenario"
+  },
+  {
+   "id": "TL-T3.3-02",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T3.3",
+   "section_title": "Compatibility",
+   "page": 82,
+   "quote": "As a receiver baseline blocks ignore the user signals and as a source will generate a project-specific default value.",
+   "spec_refs": [],
+   "sentences": [
+    "T3.3:s3"
+   ],
+   "strength": "MUST",
+   "actor": "destination",
+   "signals": [],
+   "condition": "When a block is a receiver using the base specification",
+   "statement": "Baseline receiver blocks ignore the user signals.",
+   "check": "scenario"
+  },
+  {
+   "id": "TL-T3.3-03",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T3.3",
+   "section_title": "Compatibility",
+   "page": 82,
+   "quote": "As a receiver baseline blocks ignore the user signals and as a source will generate a project-specific default value.",
+   "spec_refs": [],
+   "sentences": [
+    "T3.3:s3"
+   ],
+   "strength": "MUST",
+   "actor": "source",
+   "signals": [],
+   "condition": "When a baseline block acts as a source",
+   "statement": "Baseline source blocks generate a project-specific default value for the user signals.",
+   "check": "scenario"
+  },
+  {
+   "id": "TL-T3.3-04",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T3.3",
+   "section_title": "Compatibility",
+   "page": 82,
+   "quote": "Alternatively, the blocks can be easily modified to make use of the user extensions.",
+   "spec_refs": [],
+   "sentences": [
+    "T3.3:s4"
+   ],
+   "strength": "MAY",
+   "actor": "any",
+   "signals": [],
+   "condition": "",
+   "statement": "Blocks can be modified to make use of the user extensions.",
+   "check": "none"
+  },
+  {
+   "id": "TL-T4.1.1-01",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.1",
+   "section_title": "Reset Timing",
+   "page": 156,
+   "quote": "Section 3.2.2 of the TileLink specification (1.7.1) has a requirement on TL-UL hosts (\"masters\" in TileLink terminology) that \"valid signals must be driven LOW for at least 100 cycles while reset is asserted.\" The TL-UL collateral within this library does not have this requirement on its TL-UL host drivers.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.1:s1"
+   ],
+   "strength": "MAY",
+   "actor": "master",
+   "signals": [
+    "a_valid",
+    "d_valid"
+   ],
+   "condition": "during reset assertion",
+   "statement": "TL-UL host drivers in this library are not required to drive valid signals LOW for at least 100 cycles while reset is asserted.",
+   "check": "scenario"
+  },
+  {
+   "id": "TL-T4.1.1-02",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.1",
+   "section_title": "Reset Timing",
+   "page": 156,
+   "quote": "TL-UL devices within the library can tolerate shorter reset windows.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.1:s2"
+   ],
+   "strength": "MAY",
+   "actor": "slave",
+   "signals": [],
+   "condition": "reset window shorter than TileLink 100 cycles",
+   "statement": "TL-UL devices within the library tolerate reset windows shorter than 100 cycles.",
+   "check": "scenario"
+  },
+  {
+   "id": "TL-T4.1.3.1-01",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.1",
+   "section_title": "Usage of Address",
+   "page": 234,
+   "quote": "All signaling for host-request routing is encapsulated in the a_addr signal. All request steering must thus be made as a function of the address.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.1:s1",
+    "T4.1.3.1:s5"
+   ],
+   "strength": "MUST",
+   "actor": "interconnect",
+   "signals": [
+    "a_address"
+   ],
+   "condition": "",
+   "statement": "All request steering must be made as a function of the address (a_address) only, not a_source or a_user.",
+   "check": "both"
+  },
+  {
+   "id": "TL-T4.1.3.2-01",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.2",
+   "section_title": "Usage of Source and Sink ID Bits",
+   "page": 242,
+   "quote": "It can also be used to ascribe request identifiers by a host when response reordering is required (since TL-UL does not guarantee in-order responses).",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.2:s3"
+   ],
+   "strength": "MAY",
+   "actor": "master",
+   "signals": [
+    "a_source",
+    "d_source"
+   ],
+   "condition": "when response reordering is required",
+   "statement": "A host may use a_source/d_source to ascribe request identifiers since TL-UL does not guarantee in-order responses.",
+   "check": "scenario"
+  },
+  {
+   "id": "TL-T4.1.3.2-02",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.2",
+   "section_title": "Usage of Source and Sink ID Bits",
+   "page": 249,
+   "quote": "The fabric architect needs to ensure that the attribute AIW is big enough to cover the number of outstanding requests hosts can make and the maximum source ID growth that could be added by bus primitives.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.2:s7"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "AIW"
+   ],
+   "condition": "",
+   "statement": "The fabric architect must ensure AIW is large enough for outstanding host requests plus maximum source ID growth added by bus primitives.",
+   "check": "none"
+  },
+  {
+   "id": "TL-T4.1.3.2-03",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.2",
+   "section_title": "Usage of Source and Sink ID Bits",
+   "page": 249,
+   "quote": "The fabric also needs to allow for how many host ID bits are needed, for instance if converting from an AXI host that uses RID or WID, enough bits must be provided to maintain those ID values.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.2:s9"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "AIW"
+   ],
+   "condition": "when converting from hosts such as AXI using RID or WID",
+   "statement": "The fabric must provide enough host ID bits to maintain required ID values, such as AXI RID or WID.",
+   "check": "none"
+  },
+  {
+   "id": "TL-T4.1.3.2.1-01",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.2.1",
+   "section_title": "Source ID growth",
+   "page": 263,
+   "quote": "It is recommended to have assertions in place to ensure no significant bits of a_source are lost in M:1 sockets.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.2.1:s5"
+   ],
+   "strength": "SHOULD",
+   "actor": "interconnect",
+   "signals": [
+    "a_source"
+   ],
+   "condition": "in M:1 sockets",
+   "statement": "Assertions should ensure no significant bits of a_source are lost in M:1 sockets.",
+   "check": "assertion"
+  },
+  {
+   "id": "TL-T4.1.3.2.2-01",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.2.2",
+   "section_title": "Source ID requirements for host elements",
+   "page": 276,
+   "quote": "The potential for source ID growth (and contraction in the response) implies that hosts may only use the low bits of the identifier and cannot assume the entire AIW bits will be returned intact.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.2.2:s1"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "master",
+   "signals": [
+    "a_source",
+    "d_source"
+   ],
+   "condition": "",
+   "statement": "Hosts may only use the low bits of the source identifier and must not assume all AIW bits are returned intact.",
+   "check": "none"
+  },
+  {
+   "id": "TL-T4.1.3.2.3-01",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.2.3",
+   "section_title": "Source ID requirements for device elements",
+   "page": 286,
+   "quote": "All bus devices must simply return the associated a_source on the response d_source bus.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.2.3:s1"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "a_source",
+    "d_source"
+   ],
+   "condition": "",
+   "statement": "A device must return the associated a_source value on d_source of the response.",
+   "check": "assertion"
+  },
+  {
+   "id": "TL-T4.1.3.3-01",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.3",
+   "section_title": "Usage of User Bits",
+   "page": 306,
+   "quote": "These are effectively modifiers to the transactions that can qualify the request and the response. Usage of user bits within a project must be assigned project-wide, but the bus fabric does not rely on them for transport, and should pass the user bits on blindly.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.3:s2",
+    "T4.1.3.3:s4"
+   ],
+   "strength": "MUST",
+   "actor": "interconnect",
+   "signals": [
+    "a_user",
+    "d_user"
+   ],
+   "condition": "",
+   "statement": "The bus fabric must not rely on user bits for transport and must pass a_user and d_user on blindly.",
+   "check": "both"
+  },
+  {
+   "id": "TL-T4.1.3.3-02",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.3",
+   "section_title": "Usage of User Bits",
+   "page": 306,
+   "quote": "The user bits follow the same timing as the source ID bits: a_user matches a_source and d_user matches d_source.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.3:s3"
+   ],
+   "strength": "MUST",
+   "actor": "any",
+   "signals": [
+    "a_user",
+    "a_source",
+    "d_user",
+    "d_source"
+   ],
+   "condition": "",
+   "statement": "User bits follow the same timing as source ID bits: a_user matches a_source and d_user matches d_source.",
+   "check": "assertion"
+  },
+  {
+   "id": "TL-T4.1.3.3-03",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.3",
+   "section_title": "Usage of User Bits",
+   "page": 306,
+   "quote": "Usage of user bits within a project must be assigned project-wide, but the bus fabric does not rely on them for transport, and should pass the user bits on blindly.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.3:s4"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "a_user",
+    "d_user"
+   ],
+   "condition": "",
+   "statement": "Usage of user bits within a project must be assigned project-wide.",
+   "check": "none"
+  },
+  {
+   "id": "TL-T4.1.3.3-04",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.3",
+   "section_title": "Usage of User Bits",
+   "page": 306,
+   "quote": "Bus hosts and devices must understand their usage and apply them appropriately.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.3:s5"
+   ],
+   "strength": "MUST",
+   "actor": "any",
+   "signals": [
+    "a_user",
+    "d_user"
+   ],
+   "condition": "",
+   "statement": "Bus hosts and devices must understand the usage of user bits and apply them appropriately.",
+   "check": "scenario"
+  },
+  {
+   "id": "TL-T4.1.3.4-01",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.4",
+   "section_title": "Usage of Opcode, Size and Mask",
+   "page": 342,
+   "quote": "The request opcode (a_opcode) can designate between a write ('Put') and a read ('Get') transaction. Writes can be designated as full ('PutFullData') or partial ('PutPartialData') within the opcode space.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.4:s1",
+    "T4.1.3.4:s2"
+   ],
+   "strength": "MAY",
+   "actor": "master",
+   "signals": [
+    "a_opcode"
+   ],
+   "condition": "",
+   "statement": "a_opcode may designate a write (Put) or read (Get), and writes may be full (PutFullData) or partial (PutPartialData).",
+   "check": "scenario"
+  },
+  {
+   "id": "TL-T4.1.3.4-02",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.4",
+   "section_title": "Usage of Opcode, Size and Mask",
+   "page": 354,
+   "quote": "It should be noted that, even though non-contiguous a_mask values like 0b1001 are permitted by the TL-UL spec, the TL-UL hosts within this project do not leverage non-contiguous masks.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.4:s9"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "master",
+   "signals": [
+    "a_mask"
+   ],
+   "condition": "",
+   "statement": "TL-UL hosts in this project must not use non-contiguous a_mask values.",
+   "check": "assertion"
+  },
+  {
+   "id": "TL-T4.1.3.4-03",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.4",
+   "section_title": "Usage of Opcode, Size and Mask",
+   "page": 361,
+   "quote": "The TL-UL devices within the project may or may not support certain subword masks (both non-contiguous or contiguous ones), and they have the right to assert d_error if they don't.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.4:s11"
+   ],
+   "strength": "MAY",
+   "actor": "slave",
+   "signals": [
+    "a_mask",
+    "d_error"
+   ],
+   "condition": "when the device does not support a subword mask",
+   "statement": "A device may assert d_error if it does not support a given contiguous or non-contiguous subword a_mask.",
+   "check": "scenario"
+  },
+  {
+   "id": "TL-T4.1.3.4-04",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.4",
+   "section_title": "Usage of Opcode, Size and Mask",
+   "page": 367,
+   "quote": "a_opcode[2:0] value: 3'b000; Name: PutFullData; Definition: Write of full bus width. a_size should be 'h2 to indicate 32b write (or 'h3 if/when 64b bus width is supported), though the bus specification allows these to be defined otherwise (see PutPartialData below)",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.4:s12"
+   ],
+   "strength": "SHOULD",
+   "actor": "master",
+   "signals": [
+    "a_opcode",
+    "a_size"
+   ],
+   "condition": "a_opcode is PutFullData (3'b000)",
+   "statement": "For PutFullData, a_size should be 'h2 for a 32b write ('h3 for 64b bus width).",
+   "check": "assertion"
+  },
+  {
+   "id": "TL-T4.1.3.4-05",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.4",
+   "section_title": "Usage of Opcode, Size and Mask",
+   "page": 368,
+   "quote": "a_opcode[2:0] value: 3'b001; Name: PutPartialData; Definition: Write of partial bus width. a_size[SZW-1:0] indicates how many bytes are transmitted. The encoding is 2^a_size so 'h0 indicates 1 byte, 'h1 indicates 2 bytes, 'h2 indicates 4 bytes, etc. The lower bits of a_address are valid to indicate sub-word addressing, and the bits of a_mask[DBW-1:0] should indicate valid byte lanes.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.4:s13"
+   ],
+   "strength": "MUST",
+   "actor": "master",
+   "signals": [
+    "a_opcode",
+    "a_size"
+   ],
+   "condition": "a_opcode is PutPartialData (3'b001)",
+   "statement": "For PutPartialData, a_size must encode the number of bytes transmitted as 2^a_size.",
+   "check": "assertion"
+  },
+  {
+   "id": "TL-T4.1.3.4-06",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.4",
+   "section_title": "Usage of Opcode, Size and Mask",
+   "page": 368,
+   "quote": "a_opcode[2:0] value: 3'b001; Name: PutPartialData; Definition: Write of partial bus width. a_size[SZW-1:0] indicates how many bytes are transmitted. The encoding is 2^a_size so 'h0 indicates 1 byte, 'h1 indicates 2 bytes, 'h2 indicates 4 bytes, etc. The lower bits of a_address are valid to indicate sub-word addressing, and the bits of a_mask[DBW-1:0] should indicate valid byte lanes.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.4:s13"
+   ],
+   "strength": "SHOULD",
+   "actor": "master",
+   "signals": [
+    "a_opcode",
+    "a_mask"
+   ],
+   "condition": "a_opcode is PutPartialData",
+   "statement": "For PutPartialData, the bits of a_mask should indicate valid byte lanes.",
+   "check": "assertion"
+  },
+  {
+   "id": "TL-T4.1.3.4-07",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.4",
+   "section_title": "Usage of Opcode, Size and Mask",
+   "page": 370,
+   "quote": "a_opcode[2:0] value: 3'b01x, 3'b101, 3'b11x; Name: undefined; Definition: All other opcodes are undefined. Bus devices should return an error.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.4:s15"
+   ],
+   "strength": "SHOULD",
+   "actor": "slave",
+   "signals": [
+    "a_opcode",
+    "d_error"
+   ],
+   "condition": "a_opcode is undefined (3'b01x, 3'b101, 3'b11x)",
+   "statement": "Bus devices should return an error for undefined a_opcode values.",
+   "check": "both"
+  },
+  {
+   "id": "TL-T4.1.3.4-08",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.4",
+   "section_title": "Usage of Opcode, Size and Mask",
+   "page": 376,
+   "quote": "d_opcode[2:0] value: 3'b01x, 3'b1xx; Name: undefined; Definition: All other opcodes are undefined and should return an error.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.4:s18"
+   ],
+   "strength": "SHOULD",
+   "actor": "master",
+   "signals": [
+    "d_opcode",
+    "d_error"
+   ],
+   "condition": "d_opcode is undefined (3'b01x, 3'b1xx)",
+   "statement": "Undefined d_opcode values should return an error.",
+   "check": "scenario"
+  },
+  {
+   "id": "TL-T4.1.3.5-01",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.5",
+   "section_title": "Explicit Error Cases",
+   "page": 380,
+   "quote": "The TL-UL devices in this project contain a set of HW protocol checkers that raise a runtime error (d_error) if the request is in violation. In particular, the following properties are checked: Wrong opcode,",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.5:s1",
+    "T4.1.3.5:s2",
+    "T4.1.3.5:s3"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "d_error",
+    "a_opcode"
+   ],
+   "condition": "request has a wrong opcode",
+   "statement": "TL-UL devices must raise d_error when a request carries a wrong opcode.",
+   "check": "both"
+  },
+  {
+   "id": "TL-T4.1.3.5-02",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.5",
+   "section_title": "Explicit Error Cases",
+   "page": 380,
+   "quote": "The TL-UL devices in this project contain a set of HW protocol checkers that raise a runtime error (d_error) if the request is in violation. In particular, the following properties are checked: Wrong combination of a_addr[1:0], a_size, a_mask, for example: a_size must not be greater than 2,",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.5:s1",
+    "T4.1.3.5:s2",
+    "T4.1.3.5:s4",
+    "T4.1.3.5:s5"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "master",
+   "signals": [
+    "a_size",
+    "d_error"
+   ],
+   "condition": "",
+   "statement": "a_size must not be greater than 2; a request violating this must cause the device to raise d_error.",
+   "check": "both"
+  },
+  {
+   "id": "TL-T4.1.3.5-03",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.5",
+   "section_title": "Explicit Error Cases",
+   "page": 380,
+   "quote": "The TL-UL devices in this project contain a set of HW protocol checkers that raise a runtime error (d_error) if the request is in violation. Wrong combination of a_addr[1:0], a_size, a_mask, for example: Inactive lanes must be marked with 'b0 in a_mask,",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.5:s1",
+    "T4.1.3.5:s4",
+    "T4.1.3.5:s6"
+   ],
+   "strength": "MUST",
+   "actor": "master",
+   "signals": [
+    "a_mask",
+    "a_addr",
+    "a_size",
+    "d_error"
+   ],
+   "condition": "",
+   "statement": "Inactive lanes must be marked with 'b0 in a_mask; violation must cause the device to raise d_error.",
+   "check": "both"
+  },
+  {
+   "id": "TL-T4.1.3.5-04",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.5",
+   "section_title": "Explicit Error Cases",
+   "page": 380,
+   "quote": "The TL-UL devices in this project contain a set of HW protocol checkers that raise a runtime error (d_error) if the request is in violation. Wrong combination of a_addr[1:0], a_size, a_mask, for example: PutFullData must mark all active lanes with a 'b1 in a_mask,",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.5:s1",
+    "T4.1.3.5:s4",
+    "T4.1.3.5:s7"
+   ],
+   "strength": "MUST",
+   "actor": "master",
+   "signals": [
+    "a_mask",
+    "a_opcode",
+    "d_error"
+   ],
+   "condition": "a_opcode is PutFullData",
+   "statement": "PutFullData must mark all active lanes with a 'b1 in a_mask; violation must cause the device to raise d_error.",
+   "check": "both"
+  },
+  {
+   "id": "TL-T4.1.3.5-05",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.5",
+   "section_title": "Explicit Error Cases",
+   "page": 380,
+   "quote": "The TL-UL devices in this project contain a set of HW protocol checkers that raise a runtime error (d_error) if the request is in violation. Accesses to non-existent addresses.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.5:s1",
+    "T4.1.3.5:s10"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "d_error",
+    "a_addr"
+   ],
+   "condition": "request accesses a non-existent address",
+   "statement": "TL-UL devices must raise d_error for accesses to non-existent addresses.",
+   "check": "both"
+  },
+  {
+   "id": "TL-T4.1.3.5-06",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.5",
+   "section_title": "Explicit Error Cases",
+   "page": 388,
+   "quote": "Non-contiguous mask may lead to an error, depending on the device support (see previous section),",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.5:s8"
+   ],
+   "strength": "MAY",
+   "actor": "slave",
+   "signals": [
+    "a_mask",
+    "d_error"
+   ],
+   "condition": "a_mask is non-contiguous",
+   "statement": "Depending on device support, a non-contiguous a_mask may lead to d_error.",
+   "check": "scenario"
+  },
+  {
+   "id": "TL-T4.1.3.5-07",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.5",
+   "section_title": "Explicit Error Cases",
+   "page": 389,
+   "quote": "Register files always assume aligned 32bit accesses, see also register tool manual,",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.5:s9"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "a_addr",
+    "a_size",
+    "d_error"
+   ],
+   "condition": "accessing register files",
+   "statement": "Register files always assume aligned 32-bit accesses.",
+   "check": "scenario"
+  },
+  {
+   "id": "TL-T4.1.3.5-08",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.5",
+   "section_title": "Explicit Error Cases",
+   "page": 392,
+   "quote": "On the host side, orphaned responses (i.e. responses that do not have a valid request counterpart) and responses with the wrong opcode will be discarded.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.5:s11"
+   ],
+   "strength": "MUST",
+   "actor": "master",
+   "signals": [
+    "d_valid",
+    "d_opcode"
+   ],
+   "condition": "response is orphaned or has the wrong opcode",
+   "statement": "The host side must discard orphaned responses and responses with the wrong opcode.",
+   "check": "scenario"
+  },
+  {
+   "id": "TL-T4.1.3.5-09",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.5",
+   "section_title": "Explicit Error Cases",
+   "page": 392,
+   "quote": "It is planned to raise a critical hardware error that can be detected and reacted upon via other subsystems in those cases, but that feature has not been implemented yet.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.5:s12"
+   ],
+   "strength": "MAY",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "A critical hardware error may in future be raised for protocol violations; this is not yet implemented.",
+   "check": "none"
+  },
+  {
+   "id": "TL-T4.1.3.5-10",
+   "doc": "vlsit_tilelink_ul_opentitan_tlul.md",
+   "section": "T4.1.3.5",
+   "section_title": "Explicit Error Cases",
+   "page": 395,
+   "quote": "Further, devices and hosts may implement additional more restrictive checks, if needed.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1.3.5:s14"
+   ],
+   "strength": "MAY",
+   "actor": "any",
+   "signals": [],
+   "condition": "",
+   "statement": "Devices and hosts may implement additional more restrictive checks if needed.",
+   "check": "none"
+  }
+ ],
+ "skipped": [
+  {
+   "sentence": "T1:s1",
+   "reason": "informative_note",
+   "text": "Key notes (written by the converter operator, not part of the source): - Project profile of TileLink-UL: adds a_user/d_user (integrity, instr_type) and d_error to the base TL-UL, no bursts, a_size up to 2 for a 32-bit bus. - Opcodes: a_opcode PutFullData=0, PutPartialData=1, Get=4; d_opcode AccessAck=0, AccessAckData=1; other values are errors. - TL-UL responses are not guaranteed in order across sources; a device returns a_source on d_source. - Reset timing: this library does not require valid to be low for 100 cycles in reset (base TileLink 1.7.1 does). - Contains example WaveJSON timing diagrams for reads and writes. - Base protocol authority is the SiFive TileLink specification 1.7.1; this file is the OpenTitan profile, not the base spec."
+  },
+  {
+   "sentence": "T1:s2",
+   "reason": "descriptive",
+   "text": "The text between the markers below is the source text, converted without rewording."
+  },
+  {
+   "sentence": "T3:s1",
+   "reason": "descriptive",
+   "text": "This document specifies the bus functionality within a Comportable top level system."
+  },
+  {
+   "sentence": "T3:s2",
+   "reason": "descriptive",
+   "text": "This includes the bus protocol and all hardware IP that supports creating the network on chip within that framework."
+  },
+  {
+   "sentence": "T3.1:s1",
+   "reason": "descriptive",
+   "text": "Support for multiple bus hosts and bus devices1"
+  },
+  {
+   "sentence": "T3.1:s2",
+   "reason": "descriptive",
+   "text": "Support for multiple clock domains"
+  },
+  {
+   "sentence": "T3.1:s3",
+   "reason": "descriptive",
+   "text": "Support for multiple outstanding requests"
+  },
+  {
+   "sentence": "T3.1:s4",
+   "reason": "descriptive",
+   "text": "Extendability for 32b or 64b data widths"
+  },
+  {
+   "sentence": "T3.1:s5",
+   "reason": "descriptive",
+   "text": "Extendability for flexible address widths"
+  },
+  {
+   "sentence": "T3.1:s6",
+   "reason": "descriptive",
+   "text": "Extendability for security features"
+  },
+  {
+   "sentence": "T3.1:s7",
+   "reason": "descriptive",
+   "text": "Low pin-count / area overhead"
+  },
+  {
+   "sentence": "T3.1:s9",
+   "reason": "descriptive",
+   "text": "Suite of bus primitives to aid in fast fabric generation"
+  },
+  {
+   "sentence": "T3.1:s10",
+   "reason": "informative_note",
+   "text": "1lowRISC is avoiding the fraught terms master/slave and defaulting to host/device where applicable."
+  },
+  {
+   "sentence": "T3.2:s1",
+   "reason": "descriptive",
+   "text": "For chip-level interconnect, Comportable devices will be using TileLink as its bus fabric protocol."
+  },
+  {
+   "sentence": "T3.2:s2",
+   "reason": "descriptive",
+   "text": "For the purposes of our performance requirement needs, the Uncached Lightweight (TL-UL) variant will suffice."
+  },
+  {
+   "sentence": "T3.2:s7",
+   "reason": "descriptive",
+   "text": "TL-UL is a lightweight bus that combines the point-to-point split-transaction features of the powerful TileLink (or AMBA AXI) 5-channel bus without the high pin-count overhead."
+  },
+  {
+   "sentence": "T3.2:s8",
+   "reason": "descriptive",
+   "text": "It is intended to be about on par of pincount with APB but with the transaction performance of AXI-4, modulo the following assumptions."
+  },
+  {
+   "sentence": "T3.2:s12",
+   "reason": "descriptive",
+   "text": "Bus primitives are provided in the lowRISC IP library."
+  },
+  {
+   "sentence": "T3.2:s13",
+   "reason": "cross_reference",
+   "text": "These are described later in this document."
+  },
+  {
+   "sentence": "T3.2:s15",
+   "reason": "descriptive",
+   "text": "As of this writing, these crossbars are generated programmatically through usage of configuration files."
+  },
+  {
+   "sentence": "T3.2:s16",
+   "reason": "cross_reference",
+   "text": "See the tlgen reference manual for more details."
+  },
+  {
+   "sentence": "T4.1.3.2:s3",
+   "reason": "duplicate",
+   "text": "It can also be used to ascribe request identifiers by a host when response reordering is required (since TL-UL does not guarantee in-order responses)."
+  },
+  {
+   "sentence": "T4.1.3.5:s13",
+   "reason": "informative_note",
+   "text": "Note that the above checks also cover cases which are in principle allowed by the TL-UL spec, but are not supported by the hosts and devices within this project."
+  },
+  {
+   "sentence": "T4.1.3.5:s15",
+   "reason": "descriptive",
+   "text": "The remaining, basic properties as specified in the TL-UL spec are enforced at design time using assertions, and hence no additional hardware checkers are implemented to check for those properties (see also TL-UL Protocol Checker Specification)."
+  },
+  {
+   "sentence": "T4.1.3.5:s16",
+   "reason": "descriptive",
+   "text": "The interconnect does not possess additional hardware mechanisms to detect and handle interconnect deadlocks due to malicious tampering attempts."
+  },
+  {
+   "sentence": "T4.1.3.5:s17",
+   "reason": "list_lead_in",
+   "text": "The reasons for this are that"
+  },
+  {
+   "sentence": "T4.1.3.5:s18",
+   "reason": "descriptive",
+   "text": "the space of potential errors and resolutions would be very large, thus unnecessarily complicating the design,"
+  },
+  {
+   "sentence": "T4.1.3.5:s19",
+   "reason": "descriptive",
+   "text": "any tampering attempt leading to an unresponsive system will eventually be detected by other subsystems within the top level system."
+  },
+  {
+   "sentence": "T4.2:s1",
+   "reason": "descriptive",
+   "text": "This section shows the timing relationship on the bus for writes with response, and reads with response."
+  },
+  {
+   "sentence": "T4.2:s2",
+   "reason": "cross_reference",
+   "text": "This shows a few transactions, see the TileLink specification for more examples."
+  }
+ ]
+}

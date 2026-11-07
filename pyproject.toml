@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nnc-pipeline"
+version = "0.1.0"
+description = "Specification-driven RTL verification flow: rules from specs, SVA + cocotb tests, Verilator runs, gated review."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+sim = ["cocotb>=1.9"]
+
+[project.scripts]
+nnc = "nnc.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["nnc*"]

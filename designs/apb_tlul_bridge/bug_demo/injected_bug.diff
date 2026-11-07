@@ -1,0 +1,12 @@
+--- designs/apb_tlul_bridge/rtl/m_tlul_if.sv	2026-11-07 22:05:11.564279200 +0700
++++ bug_copy/rtl/m_tlul_if.sv	2026-11-07 23:57:52.755924300 +0700
+@@ -97,8 +97,7 @@
+   // Response check: a Get expects AccessAckData and a write expects AccessAck; d_source must echo
+   // the constant source identifier; d_error is an error response. Any failure gives an error.
+   assign w_exp_opcode = reg_a_rd ? LPARA_D_ACK_DATA[2:0] : '0;
+-  assign w_resp_err   = i_tlul_d_error | (i_tlul_d_opcode != w_exp_opcode) |
+-                        (i_tlul_d_source != PARA_SRC_ID[PARA_SRC_W-1:0]);
++  assign w_resp_err   = i_tlul_d_error | (i_tlul_d_opcode != w_exp_opcode);
+ 
+   // Response bundle for the APB side: read data only for an error-free read, zero otherwise.
+   assign o_resp_valid = w_resp_hit;

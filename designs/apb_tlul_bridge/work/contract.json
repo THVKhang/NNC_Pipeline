@@ -1,0 +1,1317 @@
+{
+ "top": "m_apb_tlul_bridge",
+ "interface": {
+  "ports": [
+   {
+    "name": "i_clk_core",
+    "direction": "input",
+    "width": "1",
+    "type": "Clock",
+    "reset_value": "Not applicable (clock)",
+    "meaning": "Clock for both interfaces"
+   },
+   {
+    "name": "i_rst_n_core",
+    "direction": "input",
+    "width": "1",
+    "type": "Reset (asynchronous assertion, level)",
+    "reset_value": "Not applicable (reset)",
+    "meaning": "Active-low reset"
+   },
+   {
+    "name": "i_apb_psel",
+    "direction": "input",
+    "width": "1",
+    "type": "Level (high for the whole transfer)",
+    "reset_value": "Not used in reset",
+    "meaning": "APB select"
+   },
+   {
+    "name": "i_apb_penable",
+    "direction": "input",
+    "width": "1",
+    "type": "Level (high during the Access phase)",
+    "reset_value": "Not used in reset",
+    "meaning": "APB enable (Access phase)"
+   },
+   {
+    "name": "i_apb_pwrite",
+    "direction": "input",
+    "width": "1",
+    "type": "Data (valid with i_apb_psel)",
+    "reset_value": "Not used in reset",
+    "meaning": "1 = write"
+   },
+   {
+    "name": "i_apb_paddr",
+    "direction": "input",
+    "width": "PARA_ADDR_W",
+    "type": "Data (valid with i_apb_psel)",
+    "reset_value": "Not used in reset",
+    "meaning": "Byte address"
+   },
+   {
+    "name": "i_apb_pprot",
+    "direction": "input",
+    "width": "3",
+    "type": "Data (ignored)",
+    "reset_value": "Not used",
+    "meaning": "Protection type"
+   },
+   {
+    "name": "i_apb_pstrb",
+    "direction": "input",
+    "width": "4",
+    "type": "Data (valid with i_apb_psel)",
+    "reset_value": "Not used in reset",
+    "meaning": "Write strobes"
+   },
+   {
+    "name": "i_apb_pwdata",
+    "direction": "input",
+    "width": "32",
+    "type": "Data (valid with i_apb_psel)",
+    "reset_value": "Not used in reset",
+    "meaning": "Write data"
+   },
+   {
+    "name": "o_apb_pready",
+    "direction": "output",
+    "width": "1",
+    "type": "Pulse (1 cycle per transfer)",
+    "reset_value": "0",
+    "meaning": "Transfer ready"
+   },
+   {
+    "name": "o_apb_prdata",
+    "direction": "output",
+    "width": "32",
+    "type": "Data (valid with o_apb_pready)",
+    "reset_value": "0",
+    "meaning": "Read data"
+   },
+   {
+    "name": "o_apb_pslverr",
+    "direction": "output",
+    "width": "1",
+    "type": "Level (high only with o_apb_pready)",
+    "reset_value": "0",
+    "meaning": "Transfer error"
+   },
+   {
+    "name": "o_tlul_a_valid",
+    "direction": "output",
+    "width": "1",
+    "type": "Level (set at the Setup edge, held until i_tlul_a_ready)",
+    "reset_value": "0",
+    "meaning": "Request valid"
+   },
+   {
+    "name": "i_tlul_a_ready",
+    "direction": "input",
+    "width": "1",
+    "type": "Level (handshake with o_tlul_a_valid)",
+    "reset_value": "Not used in reset",
+    "meaning": "Request accepted"
+   },
+   {
+    "name": "o_tlul_a_opcode",
+    "direction": "output",
+    "width": "3",
+    "type": "Data (valid with o_tlul_a_valid)",
+    "reset_value": "0",
+    "meaning": "Request opcode: bit 2 from a flop (1 = Get); bits [1:0] constant 0 (PutFullData 3'b000, Get 3'b100)"
+   },
+   {
+    "name": "o_tlul_a_param",
+    "direction": "output",
+    "width": "3",
+    "type": "Static (constant 3'b000)",
+    "reset_value": "3'b000",
+    "meaning": "Reserved, always 3'b000"
+   },
+   {
+    "name": "o_tlul_a_size",
+    "direction": "output",
+    "width": "2",
+    "type": "Static (constant 2'b10)",
+    "reset_value": "2'b10",
+    "meaning": "Request size, always 2'b10 (4 bytes)"
+   },
+   {
+    "name": "o_tlul_a_source",
+    "direction": "output",
+    "width": "PARA_SRC_W",
+    "type": "Static (constant PARA_SRC_ID)",
+    "reset_value": "PARA_SRC_ID",
+    "meaning": "Request identifier, always PARA_SRC_ID"
+   },
+   {
+    "name": "o_tlul_a_address",
+    "direction": "output",
+    "width": "PARA_ADDR_W",
+    "type": "Data (valid with o_tlul_a_valid)",
+    "reset_value": "0",
+    "meaning": "Request address: bits [PARA_ADDR_W-1:2] from flops, bits [1:0] constant 0"
+   },
+   {
+    "name": "o_tlul_a_mask",
+    "direction": "output",
+    "width": "4",
+    "type": "Static (constant 4'b1111)",
+    "reset_value": "4'b1111",
+    "meaning": "Byte lanes, always 4'b1111"
+   },
+   {
+    "name": "o_tlul_a_data",
+    "direction": "output",
+    "width": "32",
+    "type": "Data (valid with o_tlul_a_valid)",
+    "reset_value": "0",
+    "meaning": "Write data (copy of PWDATA; unused by the device on Get)"
+   },
+   {
+    "name": "o_tlul_a_user",
+    "direction": "output",
+    "width": "PARA_A_USER_W",
+    "type": "Static (constant 0)",
+    "reset_value": "'0",
+    "meaning": "A-channel user bits, always '0 (DEC-004)"
+   },
+   {
+    "name": "i_tlul_d_valid",
+    "direction": "input",
+    "width": "1",
+    "type": "Level (handshake with o_tlul_d_ready)",
+    "reset_value": "Not used in reset",
+    "meaning": "Response valid"
+   },
+   {
+    "name": "o_tlul_d_ready",
+    "direction": "output",
+    "width": "1",
+    "type": "Level (0 in reset, then constant 1)",
+    "reset_value": "0 in reset, then 1 (DEC-010)",
+    "meaning": "Response accepted"
+   },
+   {
+    "name": "i_tlul_d_opcode",
+    "direction": "input",
+    "width": "3",
+    "type": "Data (valid with i_tlul_d_valid)",
+    "reset_value": "Not used in reset",
+    "meaning": "Response opcode (3'b000 AccessAck, 3'b001 AccessAckData)"
+   },
+   {
+    "name": "i_tlul_d_source",
+    "direction": "input",
+    "width": "PARA_SRC_W",
+    "type": "Data (valid with i_tlul_d_valid)",
+    "reset_value": "Not used in reset",
+    "meaning": "Response identifier, expected PARA_SRC_ID"
+   },
+   {
+    "name": "i_tlul_d_data",
+    "direction": "input",
+    "width": "32",
+    "type": "Data (valid with i_tlul_d_valid)",
+    "reset_value": "Not used in reset",
+    "meaning": "Read data"
+   },
+   {
+    "name": "i_tlul_d_error",
+    "direction": "input",
+    "width": "1",
+    "type": "Data (valid with i_tlul_d_valid)",
+    "reset_value": "Not used in reset",
+    "meaning": "Response error"
+   },
+   {
+    "name": "i_tlul_d_param",
+    "direction": "input",
+    "width": "3",
+    "type": "Data (ignored)",
+    "reset_value": "Not used in reset",
+    "meaning": "Response parameter (reserved)"
+   },
+   {
+    "name": "i_tlul_d_size",
+    "direction": "input",
+    "width": "2",
+    "type": "Data (ignored)",
+    "reset_value": "Not used in reset",
+    "meaning": "Response size"
+   },
+   {
+    "name": "i_tlul_d_sink",
+    "direction": "input",
+    "width": "PARA_D_SINK_W",
+    "type": "Data (ignored)",
+    "reset_value": "Not used in reset",
+    "meaning": "Response sink identifier"
+   },
+   {
+    "name": "i_tlul_d_user",
+    "direction": "input",
+    "width": "PARA_D_USER_W",
+    "type": "Data (ignored)",
+    "reset_value": "Not used in reset",
+    "meaning": "Response user bits"
+   }
+  ],
+  "parameters": [
+   {
+    "name": "PARA_ADDR_W",
+    "default": "32",
+    "legal": "16 to 32"
+   },
+   {
+    "name": "PARA_SRC_W",
+    "default": "8",
+    "legal": "1 to 8"
+   },
+   {
+    "name": "PARA_SRC_ID",
+    "default": "0",
+    "legal": "0 to 2^PARA_SRC_W - 1"
+   },
+   {
+    "name": "PARA_A_USER_W",
+    "default": "1",
+    "legal": "1 to 32"
+   },
+   {
+    "name": "PARA_D_SINK_W",
+    "default": "1",
+    "legal": "1 to 4"
+   },
+   {
+    "name": "PARA_D_USER_W",
+    "default": "1",
+    "legal": "1 to 32"
+   }
+  ],
+  "clock": "i_clk_core",
+  "reset": {
+   "name": "i_rst_n_core",
+   "active_low": true
+  },
+  "source_table": {
+   "section": "6.2",
+   "line": 223
+  }
+ },
+ "checks": [
+  {
+   "id": "CHK-001",
+   "kind": "assertion",
+   "group": "apb",
+   "title": "PREADY only in an APB Access cycle",
+   "rules": [
+    "BR-3-18",
+    "BR-15.3-01",
+    "BR-6.2-03"
+   ],
+   "behavior": "At every rising edge of i_clk_core with i_rst_n_core=1: if o_apb_pready=1, then i_apb_psel=1 and i_apb_penable=1 at that same edge.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-002",
+   "kind": "assertion",
+   "group": "apb",
+   "title": "PREADY is a one-cycle pulse",
+   "rules": [
+    "BR-3-18",
+    "BR-6.2-03",
+    "BR-5.4-04",
+    "BR-15.3-01"
+   ],
+   "behavior": "If o_apb_pready=1 at a rising edge E with i_rst_n_core=1, and i_rst_n_core=1 at the next rising edge E+1, then o_apb_pready=0 at E+1.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-003",
+   "kind": "assertion",
+   "group": "apb",
+   "title": "PSLVERR only with PREADY",
+   "rules": [
+    "BR-3-19",
+    "BR-6.2-05",
+    "BR-15.3-01"
+   ],
+   "behavior": "At every rising edge of i_clk_core, whatever the value of i_rst_n_core: if o_apb_pslverr=1, then o_apb_pready=1 at the same edge.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-004",
+   "kind": "assertion",
+   "group": "apb",
+   "title": "PRDATA holds its value outside PREADY",
+   "rules": [
+    "BR-6.2-04"
+   ],
+   "behavior": "If i_rst_n_core=1 at two consecutive rising edges E-1 and E, and o_apb_pready=0 at E, then o_apb_prdata at E equals o_apb_prdata at E-1.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-005",
+   "kind": "assertion",
+   "group": "apb",
+   "title": "PRDATA is zero on write and error completions",
+   "rules": [
+    "BR-3-10",
+    "BR-9-10",
+    "BR-5.1-03"
+   ],
+   "behavior": "At every rising edge with i_rst_n_core=1: if o_apb_pready=1 and (i_apb_pwrite=1 or o_apb_pslverr=1), then o_apb_prdata=32'h0 at that edge. i_apb_pwrite is the transfer's value because the requester holds it stable until PREADY.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-006",
+   "kind": "assertion",
+   "group": "cross",
+   "title": "Legal Setup launches the request from flops in the first Access cycle",
+   "rules": [
+    "BR-3-01",
+    "BR-3-02",
+    "BR-1.1-02",
+    "BR-5.3-01",
+    "BR-5.3-02",
+    "BR-5.3-04",
+    "BR-5.1-02",
+    "BR-10.1-01",
+    "BR-10.3-03",
+    "BR-15.3-08",
+    "BR-15.3-10",
+    "BR-3-12",
+    "BR-20-12",
+    "BR-3-03",
+    "BR-3-04",
+    "BR-3-05",
+    "BR-9-03",
+    "BR-6.2-13",
+    "BR-6.2-06"
+   ],
+   "behavior": "Let legal = (i_apb_paddr[1:0]==2'b00) and (i_apb_pwrite==0 or i_apb_pstrb==4'b1111). PSTRB is ignored for reads. Antecedent: at rising edge E0, i_rst_n_core=1, i_apb_psel=1, i_apb_penable=0 and legal=1. This is a Setup edge, including one directly after a PREADY cycle with i_apb_psel held at 1. At E0 itself, o_apb_pready=0 and o_tlul_a_valid=0. If i_rst_n_core=1 at the next rising edge E1, then at E1: o_tlul_a_valid=1; o_apb_pready=0; o_tlul_d_ready=1; o_tlul_a_opcode = 3'b000 if i_apb_pwrite(E0)=1, else 3'b100; o_tlul_a_address = i_apb_paddr(E0) (bits [PARA_ADDR_W-1:2] copied, bits [1:0]=2'b00); and for a write, o_tlul_a_data = i_apb_pwdata(E0).",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-007",
+   "kind": "assertion",
+   "group": "cross",
+   "title": "Illegal Setup completes locally in the first Access cycle with no request",
+   "rules": [
+    "BR-T1-03",
+    "BR-T1-04",
+    "BR-T1-05",
+    "BR-2.3-01",
+    "BR-2.3-02",
+    "BR-3-24",
+    "BR-3-25",
+    "BR-3-36",
+    "BR-10.1-02",
+    "BR-10.3-01",
+    "BR-12-01",
+    "BR-12-02",
+    "BR-12-04",
+    "BR-15.3-07",
+    "BR-5.4-05",
+    "BR-9-04",
+    "BR-15.3-10"
+   ],
+   "behavior": "Let illegal = (i_apb_paddr[1:0]!=2'b00) or (i_apb_pwrite==1 and i_apb_pstrb!=4'b1111). Antecedent: at rising edge E0, i_rst_n_core=1, i_apb_psel=1, i_apb_penable=0 and illegal=1. If i_rst_n_core=1 at E1 and E2, then at E1: o_apb_pready=1, o_apb_pslverr=1, o_apb_prdata=32'h0 and o_tlul_a_valid=0; and at E2: o_tlul_a_valid=0.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-008",
+   "kind": "assertion",
+   "group": "cross",
+   "title": "One request at a time, none before the APB completion",
+   "rules": [
+    "BR-3-06",
+    "BR-3-07",
+    "BR-5.4-01",
+    "BR-6.3-06",
+    "BR-15.3-03",
+    "BR-1.1-04",
+    "TL-T3.2-03"
+   ],
+   "behavior": "Checker flag req_open is built from ports only. Reset (i_rst_n_core=0) clears it. It is set after a rising edge where o_tlul_a_valid=1 and i_tlul_a_ready=1. It is cleared after a rising edge where o_apb_pready=1. Property: at every rising edge with i_rst_n_core=1, if o_tlul_a_valid=1, then req_open=0. A second request can therefore not be presented while one is accepted and its APB completion has not yet been given.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-009",
+   "kind": "assertion",
+   "group": "cross",
+   "title": "a_valid only inside an APB Access phase before PREADY",
+   "rules": [
+    "BR-5.4-02",
+    "BR-5.4-06"
+   ],
+   "behavior": "At every rising edge with i_rst_n_core=1: if o_tlul_a_valid=1, then i_apb_psel=1, i_apb_penable=1 and o_apb_pready=0 at that same edge.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-010",
+   "kind": "assertion",
+   "group": "cross",
+   "title": "Accepted TL-UL response is checked and mapped to the APB completion one cycle later",
+   "rules": [
+    "BR-1.3-04",
+    "BR-3-09",
+    "BR-3-26",
+    "BR-3-27",
+    "BR-3-28",
+    "BR-5.3-06",
+    "BR-5.3-07",
+    "BR-5.3-08",
+    "BR-10.1-03",
+    "BR-10.1-05",
+    "BR-9-09",
+    "BR-20-10",
+    "BR-6.3-14",
+    "BR-6.3-15",
+    "BR-12-05",
+    "BR-12-07",
+    "BR-8-04",
+    "BR-8-08",
+    "BR-1.1-01",
+    "BR-11-02"
+   ],
+   "behavior": "The checker state is built from ports. Reset clears pending. pending is set after an edge with o_tlul_a_valid=1, i_tlul_a_ready=1 and not (i_tlul_d_valid=1 and o_tlul_d_ready=1); exp_get is captured at that edge as o_tlul_a_opcode[2]. pending is cleared after an edge where pending=1, i_tlul_d_valid=1 and o_tlul_d_ready=1. A counted response at edge E (i_rst_n_core=1) is i_tlul_d_valid=1 and o_tlul_d_ready=1 and (pending=1, or o_tlul_a_valid=1 and i_tlul_a_ready=1; in the second case exp_get = o_tlul_a_opcode[2] at E). Let exp_op = 3'b001 if exp_get=1, else 3'b000. Let err = i_tlul_d_error or (i_tlul_d_opcode != exp_op) or (i_tlul_d_source != PARA_SRC_ID), all sampled at E. If there is a counted response at E and i_rst_n_core=1 at E+1, then at E+1: o_apb_pready=1, o_apb_pslverr=err, and o_apb_prdata = i_tlul_d_data(E) when exp_get=1 and err=0, else 32'h0.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-011",
+   "kind": "assertion",
+   "group": "cross",
+   "title": "PREADY only caused by an illegal Setup or a counted response (orphans have no APB effect)",
+   "rules": [
+    "BR-3-11",
+    "BR-6.3-08",
+    "BR-10.1-06",
+    "BR-15.3-09",
+    "BR-12-09",
+    "BR-3-32",
+    "BR-1.1-01"
+   ],
+   "behavior": "This uses the counted-response definition of CHK-014. If i_rst_n_core=1 at rising edges E and E+1 and o_apb_pready=1 at E+1, then at E one of two things held: (a) a counted response; or (b) i_apb_psel=1, i_apb_penable=0 and (i_apb_paddr[1:0]!=2'b00 or (i_apb_pwrite=1 and i_apb_pstrb!=4'b1111)). As a result, an i_tlul_d_valid that is not a counted response (an orphan) never produces o_apb_pready. Together with CHK-003 and CHK-004, it leaves o_apb_pslverr and o_apb_prdata unchanged.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-012",
+   "kind": "assertion",
+   "group": "reset",
+   "title": "Output values while reset is asserted",
+   "rules": [
+    "BR-3-31",
+    "BR-3-21",
+    "BR-6.2-03",
+    "BR-6.2-04",
+    "BR-6.2-06",
+    "BR-6.2-15",
+    "BR-7.3-03",
+    "BR-15.3-06",
+    "BR-20-11"
+   ],
+   "behavior": "At every rising edge of i_clk_core where i_rst_n_core=0, these outputs are all 0: o_tlul_a_valid, o_tlul_d_ready, o_apb_pready, o_apb_pslverr, o_apb_prdata=32'h0, o_tlul_a_opcode=3'b000, o_tlul_a_address=0 and o_tlul_a_data=32'h0. The constant fields of CHK-013 also hold.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-013",
+   "kind": "assertion",
+   "group": "reset",
+   "title": "d_ready constant 1 after the first edge following reset release",
+   "rules": [
+    "BR-3-22",
+    "BR-6.2-15",
+    "BR-15.3-06",
+    "BR-20-11",
+    "BR-5.3-04"
+   ],
+   "behavior": "If i_rst_n_core=1 at two consecutive rising edges E-1 and E, then o_tlul_d_ready=1 at E. o_tlul_d_ready therefore never returns to 0 while reset stays deasserted.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-014",
+   "kind": "assertion",
+   "group": "tlul",
+   "title": "A request starts only after a legal Setup",
+   "rules": [
+    "BR-5.4-05",
+    "BR-15.3-07",
+    "BR-20-05",
+    "BR-1.1-01"
+   ],
+   "behavior": "If i_rst_n_core=1 at rising edges E and E+1, o_tlul_a_valid=0 at E and o_tlul_a_valid=1 at E+1, then at E: i_apb_psel=1, i_apb_penable=0, i_apb_paddr[1:0]==2'b00, and (i_apb_pwrite==0 or i_apb_pstrb==4'b1111).",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-015",
+   "kind": "assertion",
+   "group": "tlul",
+   "title": "Channel A held and stable until accepted",
+   "rules": [
+    "BR-3-08",
+    "BR-5.4-03",
+    "BR-6.3-07",
+    "BR-15.3-02",
+    "BR-10.1-04",
+    "BR-6.2-06",
+    "BR-6.2-07",
+    "BR-6.2-11",
+    "BR-6.2-13"
+   ],
+   "behavior": "If o_tlul_a_valid=1 and i_tlul_a_ready=0 at rising edge E (i_rst_n_core=1), and i_rst_n_core=1 at E+1, then at E+1: o_tlul_a_valid=1, and o_tlul_a_opcode, o_tlul_a_address, o_tlul_a_data, o_tlul_a_param, o_tlul_a_size, o_tlul_a_mask, o_tlul_a_source and o_tlul_a_user equal their values at E.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-016",
+   "kind": "assertion",
+   "group": "tlul",
+   "title": "a_valid drops after the handshake (accepted once)",
+   "rules": [
+    "BR-6.2-06",
+    "BR-10.1-04"
+   ],
+   "behavior": "If o_tlul_a_valid=1 and i_tlul_a_ready=1 at rising edge E (i_rst_n_core=1), and i_rst_n_core=1 at E+1, then o_tlul_a_valid=0 at E+1.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-017",
+   "kind": "assertion",
+   "group": "tlul",
+   "title": "Constant A-channel fields and legal opcode, size, mask and address",
+   "rules": [
+    "BR-2.3-04",
+    "BR-2.3-05",
+    "BR-3-20",
+    "BR-6.2-07",
+    "BR-6.2-08",
+    "BR-6.2-09",
+    "BR-6.2-10",
+    "BR-6.2-11",
+    "BR-6.2-12",
+    "BR-6.2-14",
+    "BR-8-04",
+    "BR-8-05",
+    "BR-8-08",
+    "BR-9-05",
+    "BR-9-07",
+    "BR-9-08",
+    "BR-15.3-04",
+    "BR-15.3-05",
+    "BR-20-06",
+    "BR-20-09",
+    "BR-1.1-04",
+    "TL-T3.1-01",
+    "TL-T3.3-03",
+    "TL-T4.1.3.3-02",
+    "TL-T4.1.3.4-02",
+    "TL-T4.1.3.4-04",
+    "TL-T4.1.3.5-07"
+   ],
+   "behavior": "At every rising edge of i_clk_core, in reset and out of reset: o_tlul_a_param=3'b000, o_tlul_a_size=2'b10, o_tlul_a_mask=4'b1111, o_tlul_a_source=PARA_SRC_ID, o_tlul_a_user='0 (all PARA_A_USER_W bits zero), o_tlul_a_opcode[1:0]=2'b00 (so o_tlul_a_opcode is 3'b000 or 3'b100; PutPartialData 3'b001 never appears), and o_tlul_a_address[1:0]=2'b00.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-018",
+   "kind": "test",
+   "group": "err",
+   "title": "Local error for unsupported PSTRB and misaligned address",
+   "rules": [
+    "BR-T1-03",
+    "BR-T1-04",
+    "BR-T1-05",
+    "BR-1.3-03",
+    "BR-2.3-01",
+    "BR-2.3-02",
+    "BR-3-24",
+    "BR-3-25",
+    "BR-3-36",
+    "BR-3-37",
+    "BR-6.3-11",
+    "BR-6.3-13",
+    "BR-9-04",
+    "BR-10.3-01",
+    "BR-12-01",
+    "BR-12-02",
+    "BR-12-04",
+    "BR-13-03",
+    "BR-20-04",
+    "BR-20-05",
+    "BR-11-02"
+   ],
+   "behavior": "Illegal requests complete in 1 Access cycle with PSLVERR and no TL-UL request; the next Setup is accepted in the cycle after PREADY.",
+   "stimulus": "Aligned writes with each of the 15 values of i_apb_pstrb other than 4'b1111, including 4'b0000. Reads and full-strobe writes with i_apb_paddr[1:0] = 2'b01, 2'b10 and 2'b11. Random i_apb_pwdata. Each illegal transfer is followed immediately by a legal aligned write: Setup in the cycle after PREADY, with i_apb_psel held at 1 and i_apb_penable dropped. The device model has i_tlul_a_ready=1 and answers legal requests promptly.",
+   "expected": "For each illegal transfer with Setup edge E0: at E1, o_apb_pready=1, o_apb_pslverr=1 and o_apb_prdata=32'h0 (1 Access cycle, no wait state). o_tlul_a_valid=0 at E1 and E2, and no A-channel handshake belongs to the transfer. The following legal write has its Setup edge at E2 (Setup-to-Setup interval 2 cycles), o_tlul_a_valid=1 at E3, and completes with o_apb_pready=1, o_apb_pslverr=0 at E5."
+  },
+  {
+   "id": "CHK-019",
+   "kind": "test",
+   "group": "err",
+   "title": "Device error response (d_error) on read and write",
+   "rules": [
+    "BR-3-26",
+    "BR-6.3-14",
+    "BR-12-05",
+    "BR-15.2-06",
+    "BR-1.3-04",
+    "BR-20-10",
+    "BR-11-02",
+    "BR-3-10"
+   ],
+   "behavior": "d_error=1 maps to PSLVERR=1 and PRDATA=0.",
+   "stimulus": "Aligned reads and full-strobe writes. The prompt device answers in the cycle after acceptance with i_tlul_d_error=1, the correct i_tlul_d_opcode (3'b001 for reads, 3'b000 for writes), i_tlul_d_source=PARA_SRC_ID and non-zero random i_tlul_d_data. A legal read with an error-free response follows each error.",
+   "expected": "For each error transfer, at E3: o_apb_pready=1, o_apb_pslverr=1 and o_apb_prdata=32'h0. The following error-free read completes with o_apb_pslverr=0 and o_apb_prdata=d_data (no stored error)."
+  },
+  {
+   "id": "CHK-020",
+   "kind": "test",
+   "group": "err",
+   "title": "Wrong d_opcode and wrong d_source responses",
+   "rules": [
+    "BR-3-27",
+    "BR-3-28",
+    "BR-9-09",
+    "BR-6.3-15",
+    "BR-12-07",
+    "BR-15.2-07",
+    "BR-20-10",
+    "BR-8-04",
+    "BR-8-08",
+    "TL-T4.1.3.4-08",
+    "TL-T4.1.3.5-08"
+   ],
+   "behavior": "Responses with an unexpected opcode or source give PSLVERR=1 and PRDATA=0.",
+   "stimulus": "Aligned reads answered with i_tlul_d_opcode in {3'b000, 3'b010, 3'b011, 3'b100..3'b111}. Aligned full-strobe writes answered with i_tlul_d_opcode in {3'b001, 3'b010, 3'b011, 3'b100..3'b111}. In both cases i_tlul_d_source=PARA_SRC_ID and i_tlul_d_error=0. Separately, reads and writes answered with the correct opcode, i_tlul_d_error=0 and i_tlul_d_source != PARA_SRC_ID (e.g. PARA_SRC_ID XOR 1). Non-zero random i_tlul_d_data throughout. The response comes in the cycle after acceptance, and a legal read with a correct response follows each one.",
+   "expected": "For every wrong-opcode or wrong-source response, at E3: o_apb_pready=1, o_apb_pslverr=1 and o_apb_prdata=32'h0. Every following correct read completes with o_apb_pslverr=0 and o_apb_prdata=d_data."
+  },
+  {
+   "id": "CHK-021",
+   "kind": "test",
+   "group": "err",
+   "title": "Orphan responses are discarded",
+   "rules": [
+    "BR-3-11",
+    "BR-6.3-08",
+    "BR-10.1-06",
+    "BR-15.2-09",
+    "BR-15.3-09",
+    "TL-T4.1.3.5-08"
+   ],
+   "behavior": "d_valid pulses with no accepted request have no APB effect, and the following transfers complete correctly.",
+   "stimulus": "Drive one-cycle i_tlul_d_valid pulses with random i_tlul_d_opcode, i_tlul_d_data, i_tlul_d_error and i_tlul_d_source (including PARA_SRC_ID) at these points: (a) while the APB is idle (i_apb_psel=0); (b) at the Setup edge; (c) in A1 while o_tlul_a_valid=1 and i_tlul_a_ready=0 (before acceptance, with a_ready delayed 2 cycles); (d) in the PREADY cycle and in the 1 to 3 cycles after it. The real responses of the legal reads and writes are correct and come in the cycle after acceptance.",
+   "expected": "Orphan pulses (a) and (d) cause no o_apb_pready, and o_apb_prdata and o_apb_pslverr stay unchanged. For (b) and (c), the transfer in progress completes exactly once, with o_apb_pready=1 two edges after its real response at E2+k... i.e. at the edge after the real counted response. Its o_apb_pslverr and o_apb_prdata come from the real response and not from the orphan (read: o_apb_prdata = real d_data, o_apb_pslverr=0). Every transfer after the orphans completes with the same timing and data as without orphans."
+  },
+  {
+   "id": "CHK-022",
+   "kind": "test",
+   "group": "err",
+   "title": "Device never responds: no timeout, requester waits",
+   "rules": [
+    "BR-12-09",
+    "BR-20-07"
+   ],
+   "behavior": "Without a response the bridge never completes the transfer; reset recovers.",
+   "stimulus": "(1) An aligned read is accepted (i_tlul_a_ready=1 in A1) and i_tlul_d_valid is never asserted for 1000 cycles. (2) An aligned write with i_tlul_a_ready held at 0 for 1000 cycles. The requester holds the Access phase. Afterwards, apply a reset (bridge, requester and device), release synchronously and run one aligned write with a prompt device.",
+   "expected": "In (1): o_apb_pready=0 at every edge of the 1000 cycles, o_tlul_a_valid=0 after the handshake, and no second request. In (2): o_tlul_a_valid=1 with stable channel A at every edge and o_apb_pready=0. After the reset, the write completes with o_apb_pready=1 at the 3rd edge after its Setup edge and o_apb_pslverr=0."
+  },
+  {
+   "id": "CHK-023",
+   "kind": "test",
+   "group": "func",
+   "title": "Aligned full-strobe write to a prompt device",
+   "rules": [
+    "BR-15.2-02",
+    "BR-3-03",
+    "BR-1.3-01",
+    "BR-6.3-10",
+    "BR-3-34",
+    "BR-13-01",
+    "BR-5.3-07",
+    "BR-3-10",
+    "BR-3-02",
+    "BR-1.1-02",
+    "BR-5.3-01",
+    "BR-5.3-04",
+    "BR-3-01"
+   ],
+   "behavior": "Early launch of PutFullData, 3-cycle Access phase, PRDATA=0 on write.",
+   "stimulus": "Directed: 20 writes with i_apb_pstrb=4'b1111, i_apb_paddr random with [1:0]=2'b00 (including all-ones upper bits and 0), random i_apb_pwdata, and random i_apb_pprot. Prompt device: i_tlul_a_ready=1 whenever o_tlul_a_valid=1; i_tlul_d_valid=1 for one cycle in the cycle after the handshake, with i_tlul_d_opcode=3'b000, i_tlul_d_source=PARA_SRC_ID, i_tlul_d_error=0 and random i_tlul_d_data. Idle cycles of psel=0 between transfers.",
+   "expected": "With the Setup edge E0: at E1, o_tlul_a_valid=1, o_tlul_a_opcode=3'b000, o_tlul_a_size=2'b10, o_tlul_a_mask=4'b1111, o_tlul_a_address=PADDR, o_tlul_a_data=PWDATA and o_tlul_d_ready=1. Exactly one A-channel handshake, at E1. o_tlul_a_valid=0 at E2. o_apb_pready=0 at E1 and E2, and 1 at E3 with o_apb_pslverr=0 and o_apb_prdata=32'h0: the Access phase is 3 cycles (2 wait states)."
+  },
+  {
+   "id": "CHK-024",
+   "kind": "test",
+   "group": "func",
+   "title": "Aligned read to a prompt device, PSTRB ignored",
+   "rules": [
+    "BR-15.2-05",
+    "BR-3-04",
+    "BR-3-05",
+    "BR-6.3-04",
+    "BR-6.3-12",
+    "BR-1.3-02",
+    "BR-3-09",
+    "BR-3-34",
+    "BR-13-01"
+   ],
+   "behavior": "Reads give Get, return d_data on PRDATA, and take 3 Access cycles whatever the PSTRB value.",
+   "stimulus": "Directed and random: aligned reads (i_apb_pwrite=0, i_apb_paddr[1:0]=2'b00) with i_apb_pstrb=4'b0000 and with every non-zero value. Prompt device answering with i_tlul_d_opcode=3'b001, i_tlul_d_source=PARA_SRC_ID, i_tlul_d_error=0 and random i_tlul_d_data in the cycle after acceptance.",
+   "expected": "For every read, at E1: o_tlul_a_valid=1, o_tlul_a_opcode=3'b100, o_tlul_a_address=PADDR, o_tlul_a_size=2'b10 and o_tlul_a_mask=4'b1111; there is exactly one handshake. At E3: o_apb_pready=1, o_apb_pslverr=0 and o_apb_prdata = i_tlul_d_data of the response. o_apb_pready=0 at E1 and E2. The results do not depend on i_apb_pstrb."
+  },
+  {
+   "id": "CHK-025",
+   "kind": "test",
+   "group": "func",
+   "title": "Ignored inputs PPROT, d_param, d_size, d_sink, d_user",
+   "rules": [
+    "BR-2.3-03",
+    "BR-8-06",
+    "BR-8-07",
+    "TL-T3.3-02"
+   ],
+   "behavior": "Inputs declared ignored have no effect on any output.",
+   "stimulus": "Run a fixed sequence of 12 transfers (writes, reads, one illegal strobe, one misaligned, one d_error) with a fixed device timing. Repeat it 8 times, once per i_apb_pprot value 3'b000..3'b111. Each repeat also drives random i_tlul_d_param, i_tlul_d_size, i_tlul_d_sink (PARA_D_SINK_W bits) and i_tlul_d_user (PARA_D_USER_W bits), both with i_tlul_d_valid=1 and at other times.",
+   "expected": "All outputs (o_apb_*, o_tlul_*) are cycle-for-cycle identical across the 8 repeats and equal to the reference model results of CHK-020..CHK-023."
+  },
+  {
+   "id": "CHK-026",
+   "kind": "test",
+   "group": "perf",
+   "title": "Channel A back pressure and response delay",
+   "rules": [
+    "BR-15.2-08",
+    "BR-10.3-02",
+    "BR-3-08",
+    "BR-6.3-07",
+    "BR-5.4-03"
+   ],
+   "behavior": "Channel A held stable under a_ready delays; the Access phase grows by exactly the delays.",
+   "stimulus": "Constrained random reads and writes (aligned, full strobe). The device holds i_tlul_a_ready=0 for k cycles of o_tlul_a_valid=1, with k uniform in 0..8 (each value at least once), then asserts it for one cycle. It responds j cycles after the acceptance cycle, with j in 1..7, i.e. a d_valid delay of 0..6 cycles after the first possible cycle. The response is correct.",
+   "expected": "With the Setup edge E0: o_tlul_a_valid=1 with unchanged opcode, address and data at E1..E1+k. There is exactly one handshake per transfer, at E1+k, and o_tlul_a_valid=0 at E2+k. o_apb_pready=1 at E2+k+j and 0 at earlier edges, so the Access phase is 2+k+j cycles (3 cycles when k=0 and j=1). Write completions have o_apb_prdata=0; read completions have o_apb_prdata=d_data and o_apb_pslverr=0."
+  },
+  {
+   "id": "CHK-027",
+   "kind": "test",
+   "group": "perf",
+   "title": "Response in the acceptance cycle",
+   "rules": [
+    "BR-3-35",
+    "BR-13-02",
+    "BR-15.2-10",
+    "BR-5.3-08",
+    "BR-6.3-09",
+    "BR-10.1-05"
+   ],
+   "behavior": "A same-cycle response is accepted and gives a 2-cycle Access phase.",
+   "stimulus": "Aligned reads and full-strobe writes. The device asserts i_tlul_a_ready=1 and i_tlul_d_valid=1 together in A1 (the cycle where o_tlul_a_valid first is 1), with the correct opcode, i_tlul_d_source=PARA_SRC_ID, i_tlul_d_error=0 and random i_tlul_d_data. It also does this after a_ready delays of 1 and 3 cycles.",
+   "expected": "With no delay: the handshake and the response are both at E1, o_apb_pready=1 at E2 and 0 at E1, so the Access phase is 2 cycles (1 wait state). Reads give o_apb_prdata=d_data; writes give 0; o_apb_pslverr=0. With a delay of k: o_apb_pready=1 at E2+k. o_tlul_a_valid=0 at E2+k."
+  },
+  {
+   "id": "CHK-028",
+   "kind": "test",
+   "group": "perf",
+   "title": "Back-to-back transfers with PSEL held high and with gaps",
+   "rules": [
+    "BR-1.3-05",
+    "BR-3-12",
+    "BR-3-14",
+    "BR-3-37",
+    "BR-3-38",
+    "BR-5.3-10",
+    "BR-5.3-11",
+    "BR-5.3-12",
+    "BR-6.3-05",
+    "BR-13-04",
+    "BR-15.2-18",
+    "BR-20-02",
+    "BR-20-12",
+    "BR-15.3-10"
+   ],
+   "behavior": "Setup detection by level and the minimum Setup-to-Setup interval for every ordered pair of transfer kinds.",
+   "stimulus": "Transfer kinds: aligned full-strobe write, aligned read, illegal-strobe write (PSTRB=4'b0101), and misaligned access (PADDR[1:0]=2'b10). Device modes for legal transfers: prompt (response in the cycle after acceptance), same-cycle response, and prompt with i_tlul_d_error=1. Run every ordered pair (first, second) of kinds under each device mode. In the cycle after PREADY, drive the second transfer's Setup with i_apb_psel held at 1 and only i_apb_penable dropped to 0. Repeat every pair with i_apb_psel=0 for 1 idle cycle and for 5 idle cycles between the transfers.",
+   "expected": "Each transfer completes once, in order, with the results of CHK-020..CHK-023 and CHK-026. The second Setup edge is accepted: o_tlul_a_valid=1 (legal) or o_apb_pready=1 with o_apb_pslverr=1 (illegal) at the next edge. Setup-to-Setup interval with psel held high: 4 cycles after a prompt or d_error transfer, 3 after a same-cycle-response transfer, 2 after a local error. With g idle cycles the interval is exactly that minimum plus g. Illegal transfers never produce o_tlul_a_valid=1."
+  },
+  {
+   "id": "CHK-029",
+   "kind": "test",
+   "group": "random",
+   "title": "Constrained-random regression with scoreboard and coverage",
+   "rules": [
+    "BR-1.1-01",
+    "BR-15.1-03",
+    "BR-15.2-03",
+    "BR-15.2-12",
+    "BR-3-06",
+    "BR-5.4-01",
+    "BR-15.3-11",
+    "BR-13-04",
+    "TL-T4.1.3.2.3-01"
+   ],
+   "behavior": "Each APB transfer maps to exactly one TL-UL request (legal) or none (illegal), and to exactly one APB completion matching a reference model.",
+   "stimulus": "10000 random transfers: reads and writes with random i_apb_paddr (75% aligned), random i_apb_pstrb (all 16 values on writes, 0 and non-zero on reads), random i_apb_pwdata and i_apb_pprot, and random idle gaps of 0..5 cycles, with psel either held high or dropped. The device returns d_source=a_source and the correct opcode by default. It has random a_ready wait of 0..8 cycles, d_valid delay 0..6 cycles or same-cycle, and injects d_error, wrong opcode and wrong source at about 5% each. Orphan d_valid pulses are injected while idle, before acceptance and after a response. The seed is recorded.",
+   "expected": "Scoreboard: every legal transfer has exactly one A-channel handshake with opcode 3'b000 (write) or 3'b100 (read), address=PADDR and data=PWDATA (writes). Every transfer has exactly one o_apb_pready pulse, in order. o_apb_pslverr=1 exactly for local errors, d_error, wrong opcode and wrong source. o_apb_prdata = d_data for error-free reads, else 0. Illegal transfers have no request. No more than one request is outstanding. Assertions CHK-001..CHK-017 never fail. Coverage COV-001..COV-005 bins are all hit: all PSTRB values, every error kind on read and write, a_ready waits 0..8, d_valid delays 0..6 and same-cycle, orphan timings, and back-to-back pairs."
+  },
+  {
+   "id": "CHK-030",
+   "kind": "test",
+   "group": "reset",
+   "title": "Power-on reset, synchronous release and asynchronous assertion",
+   "rules": [
+    "BR-3-30",
+    "BR-3-31",
+    "BR-3-21",
+    "BR-3-22",
+    "BR-7.3-01",
+    "BR-7.3-02",
+    "BR-7.3-03",
+    "BR-14.1-03",
+    "BR-15.3-06"
+   ],
+   "behavior": "Reset values, d_ready release timing, asynchronous reset assertion and return to idle after reset.",
+   "stimulus": "1) Hold i_rst_n_core=0 for at least 5 rising edges while toggling i_tlul_a_ready, i_tlul_d_valid and the D-channel data randomly; i_apb_psel=0. 2) Deassert i_rst_n_core 1 time unit after a rising edge (synchronous release) and keep the APB idle for 5 cycles. 3) Run one aligned full-strobe write with a prompt device. 4) Start a second write. During its A1, at mid-cycle (between rising edges, while o_tlul_a_valid=1), drive i_rst_n_core=0 and sample the outputs 1 time unit later, before the next rising edge. 5) Repeat 4) with the reset asserted mid-cycle in a cycle where o_apb_pready=1 (a third transfer). 6) Release synchronously; the requester and the device are reset with the bridge.",
+   "expected": "While in reset: o_tlul_a_valid, o_tlul_d_ready, o_apb_pready, o_apb_pslverr, o_apb_prdata, o_tlul_a_opcode, o_tlul_a_address and o_tlul_a_data are 0. o_tlul_a_param=3'b000, o_tlul_a_size=2'b10, o_tlul_a_mask=4'b1111, o_tlul_a_source=PARA_SRC_ID and o_tlul_a_user=0. At the first rising edge with i_rst_n_core sampled 1, o_tlul_d_ready is sampled 0; it is sampled 1 at every later edge until the next reset. With the APB idle after release, o_apb_pready=0 and o_tlul_a_valid=0. Step 3 completes with o_apb_pready=1 at the 3rd edge after its Setup edge. After the mid-cycle reset assertion in steps 4 and 5, all listed outputs read 0 before the next rising edge (asynchronous). That includes o_tlul_a_valid in step 4, o_apb_pready in step 5, and o_tlul_d_ready."
+  },
+  {
+   "id": "CHK-031",
+   "kind": "test",
+   "group": "reset",
+   "title": "Reset during a transfer abandons it",
+   "rules": [
+    "BR-3-32",
+    "BR-7.3-05",
+    "BR-15.2-11",
+    "BR-7.3-02"
+   ],
+   "behavior": "A transfer in progress at reset is abandoned and produces no completion after release; the next transfer works normally.",
+   "stimulus": "Three runs, each with an aligned full-strobe write (and a second set with an aligned read). Assert i_rst_n_core=0 (bridge, requester model and device model together) during (a) A1, while o_tlul_a_valid=1 and i_tlul_a_ready=0; (b) A2, after the A-channel handshake and before i_tlul_d_valid; (c) A3, while o_apb_pready=1. Hold reset for 3 edges and release synchronously. Keep i_apb_psel=0 for 10 cycles and drive one stale i_tlul_d_valid pulse (d_opcode as for the abandoned transfer, d_source=PARA_SRC_ID) 2 cycles after release. Then run an aligned write followed by an aligned read with a prompt device.",
+   "expected": "After release, during the 10 idle cycles: o_apb_pready=0, o_apb_pslverr=0, o_apb_prdata=0 and o_tlul_a_valid=0 at every edge. The stale d_valid has no effect. The following write gives one PutFullData with the new address and data and o_apb_pready=1 at the 3rd edge after its Setup edge, with o_apb_pslverr=0. The read gives one Get and o_apb_prdata = d_data at the 3rd edge after its Setup edge."
+  }
+ ],
+ "not_verified": [
+  {
+   "rule": "BR-3-15",
+   "reason": "static_or_structural",
+   "note": "APB port list review (TEST-016)."
+  },
+  {
+   "rule": "BR-3-16",
+   "reason": "static_or_structural",
+   "note": "TL-UL port list review (TEST-016)."
+  },
+  {
+   "rule": "BR-3-17",
+   "reason": "static_or_structural",
+   "note": "Flop-driven outputs and tie-offs: structural check of RTL and netlist (TEST-017)."
+  },
+  {
+   "rule": "BR-3-23",
+   "reason": "static_or_structural",
+   "note": "Module partitioning: hierarchy review."
+  },
+  {
+   "rule": "BR-3-29",
+   "reason": "static_or_structural",
+   "note": "Single clock domain: CDC analysis."
+  },
+  {
+   "rule": "BR-3-33",
+   "reason": "static_or_structural",
+   "note": "Illegal parameter reporting is a static elaboration job per the designer decision."
+  },
+  {
+   "rule": "BR-3-39",
+   "reason": "static_or_structural",
+   "note": "RTL coding rules and hierarchy: lint and review."
+  },
+  {
+   "rule": "BR-3-40",
+   "reason": "static_or_structural",
+   "note": "Checker binding is an environment review item (TEST-015). The apb/tlul/cross/reset assertion groups of this plan are those checkers."
+  },
+  {
+   "rule": "BR-3-41",
+   "reason": "static_or_structural",
+   "note": "DFT scan rules: lint/scan check."
+  },
+  {
+   "rule": "BR-4-02",
+   "reason": "static_or_structural",
+   "note": "Parameter range: elaboration check."
+  },
+  {
+   "rule": "BR-6.2-01",
+   "reason": "not_applicable_to_dut",
+   "note": "Binds the APB requester. The DUT's reaction to a violation is checked by CHK-007 and CHK-022."
+  },
+  {
+   "rule": "BR-6.2-02",
+   "reason": "not_applicable_to_dut",
+   "note": "Binds the APB requester. The DUT's reaction to a violation is checked by CHK-007 and CHK-022."
+  },
+  {
+   "rule": "BR-6.3-01",
+   "reason": "not_applicable_to_dut",
+   "note": "Requester protocol; a stimulus constraint obeyed by every test."
+  },
+  {
+   "rule": "BR-6.3-02",
+   "reason": "not_applicable_to_dut",
+   "note": "Requester holds PADDR, PWRITE, PWDATA and PSTRB stable; a stimulus constraint relied on by CHK-005."
+  },
+  {
+   "rule": "BR-7.2-01",
+   "reason": "static_or_structural",
+   "note": "CDC tool run."
+  },
+  {
+   "rule": "BR-7.4-01",
+   "reason": "static_or_structural",
+   "note": "Power-domain property; nothing to simulate."
+  },
+  {
+   "rule": "BR-8-01",
+   "reason": "static_or_structural",
+   "note": "Port width set by a parameter; elaboration/port review."
+  },
+  {
+   "rule": "BR-8-02",
+   "reason": "static_or_structural",
+   "note": "Port width set by a parameter; elaboration/port review."
+  },
+  {
+   "rule": "BR-8-03",
+   "reason": "static_or_structural",
+   "note": "Parameter dependency: elaboration check."
+  },
+  {
+   "rule": "BR-8-09",
+   "reason": "static_or_structural",
+   "note": "Designer decision: static Verilator elaboration with $fatal per illegal value."
+  },
+  {
+   "rule": "BR-9-01",
+   "reason": "covered_by_other_check",
+   "note": "Lane mapping is shown by CHK-006/CHK-020: o_tlul_a_data equals PWDATA bit for bit, and CHK-013: a_mask=4'b1111."
+  },
+  {
+   "rule": "BR-9-02",
+   "reason": "not_applicable_to_dut",
+   "note": "Binds the requester. Misalignment handling is checked by CHK-007 and CHK-022."
+  },
+  {
+   "rule": "BR-14.1-01",
+   "reason": "static_or_structural",
+   "note": "RTL coding rules: lint/review."
+  },
+  {
+   "rule": "BR-14.1-02",
+   "reason": "static_or_structural",
+   "note": "RTL coding rules: lint/review."
+  },
+  {
+   "rule": "BR-14.1-04",
+   "reason": "static_or_structural",
+   "note": "Naming of internal FSM signals: review."
+  },
+  {
+   "rule": "BR-14.1-05",
+   "reason": "static_or_structural",
+   "note": "Coding style: lint/review."
+  },
+  {
+   "rule": "BR-14.2-01",
+   "reason": "static_or_structural",
+   "note": "Hierarchy review."
+  },
+  {
+   "rule": "BR-14.2-02",
+   "reason": "static_or_structural",
+   "note": "Hierarchy review."
+  },
+  {
+   "rule": "BR-14.2-03",
+   "reason": "static_or_structural",
+   "note": "Hierarchy review."
+  },
+  {
+   "rule": "BR-14.2-04",
+   "reason": "static_or_structural",
+   "note": "Hierarchy review."
+  },
+  {
+   "rule": "BR-14.3-01",
+   "reason": "static_or_structural",
+   "note": "Lint configuration."
+  },
+  {
+   "rule": "BR-15.1-01",
+   "reason": "design_guideline",
+   "note": "Describes the environment. The requester and device models in CHK-018..CHK-031 implement it."
+  },
+  {
+   "rule": "BR-15.1-02",
+   "reason": "static_or_structural",
+   "note": "Checker binding: environment review (TEST-015)."
+  },
+  {
+   "rule": "BR-15.1-04",
+   "reason": "design_guideline",
+   "note": "Seed recording is a flow requirement; CHK-030 records it."
+  },
+  {
+   "rule": "BR-15.1-05",
+   "reason": "design_guideline",
+   "note": "Acceptance criterion of the regression, not a DUT property."
+  },
+  {
+   "rule": "BR-15.2-13",
+   "reason": "static_or_structural",
+   "note": "Parameter sweep/elaboration test."
+  },
+  {
+   "rule": "BR-15.2-14",
+   "reason": "static_or_structural",
+   "note": "Review of checker binding."
+  },
+  {
+   "rule": "BR-15.2-15",
+   "reason": "static_or_structural",
+   "note": "Lint and CDC."
+  },
+  {
+   "rule": "BR-15.2-16",
+   "reason": "static_or_structural",
+   "note": "Structural check of flop-driven outputs and module boundaries."
+  },
+  {
+   "rule": "BR-15.2-17",
+   "reason": "static_or_structural",
+   "note": "Scan rule check."
+  },
+  {
+   "rule": "BR-16-01",
+   "reason": "static_or_structural",
+   "note": "DFT scan eligibility."
+  },
+  {
+   "rule": "BR-17.1.2-01",
+   "reason": "static_or_structural",
+   "note": "Timing/structural property of the outputs (SDC, netlist)."
+  },
+  {
+   "rule": "BR-20-01",
+   "reason": "not_applicable_to_dut",
+   "note": "ASM-001 binds the requester. Per the designer decision, no test drives a transfer that starts with PENABLE=1 or expects an answer to one."
+  },
+  {
+   "rule": "BR-20-03",
+   "reason": "not_applicable_to_dut",
+   "note": "Binds the TL-UL device. It is a stimulus constraint, except in CHK-027 and CHK-028, which deliberately violate it."
+  },
+  {
+   "rule": "BR-20-08",
+   "reason": "static_or_structural",
+   "note": "Flop-driven outputs: structural check (TEST-017)."
+  },
+  {
+   "rule": "TL-T3.2-04",
+   "reason": "covered_by_other_check",
+   "note": "Per the designer decision, satisfied by construction; the single-outstanding property CHK-009 and the response mapping CHK-014 cover it."
+  },
+  {
+   "rule": "TL-T3.3-01",
+   "reason": "design_guideline",
+   "note": "Interoperability statement; nothing to observe."
+  },
+  {
+   "rule": "TL-T4.1.1-01",
+   "reason": "design_guideline",
+   "note": "A relaxation (MAY) for hosts. CHK-016 checks o_tlul_a_valid=0 throughout reset anyway."
+  },
+  {
+   "rule": "TL-T4.1.1-02",
+   "reason": "not_applicable_to_dut",
+   "note": "Device-side reset tolerance."
+  },
+  {
+   "rule": "TL-T4.1.3.1-01",
+   "reason": "not_applicable_to_dut",
+   "note": "Binds the interconnect."
+  },
+  {
+   "rule": "TL-T4.1.3.2-01",
+   "reason": "design_guideline",
+   "note": "Optional host use of source IDs; the DUT uses the constant PARA_SRC_ID (CHK-013)."
+  },
+  {
+   "rule": "TL-T4.1.3.2.2-01",
+   "reason": "not_applicable_to_dut",
+   "note": "Concerns fabric source-ID growth or contraction. The DUT's d_source comparison over PARA_SRC_W bits is defined by REQ-ERR-005 (CHK-024)."
+  },
+  {
+   "rule": "TL-T4.1.3.3-01",
+   "reason": "not_applicable_to_dut",
+   "note": "Binds the bus fabric."
+  },
+  {
+   "rule": "TL-T4.1.3.4-03",
+   "reason": "not_applicable_to_dut",
+   "note": "Device permission; the DUT's handling of d_error is checked by CHK-023."
+  },
+  {
+   "rule": "TL-T4.1.3.4-05",
+   "reason": "not_applicable_to_dut",
+   "note": "The DUT never issues PutPartialData (CHK-013)."
+  },
+  {
+   "rule": "TL-T4.1.3.4-06",
+   "reason": "not_applicable_to_dut",
+   "note": "The DUT never issues PutPartialData (CHK-013)."
+  },
+  {
+   "rule": "TL-T4.1.3.4-07",
+   "reason": "not_applicable_to_dut",
+   "note": "Device obligation. The DUT never generates undefined a_opcode (CHK-013)."
+  },
+  {
+   "rule": "TL-T4.1.3.5-01",
+   "reason": "not_applicable_to_dut",
+   "note": "Device-side protocol checker obligation."
+  },
+  {
+   "rule": "TL-T4.1.3.5-02",
+   "reason": "not_applicable_to_dut",
+   "note": "Device-side check. The DUT always drives a_size=2'b10 (CHK-013)."
+  },
+  {
+   "rule": "TL-T4.1.3.5-03",
+   "reason": "not_applicable_to_dut",
+   "note": "Device-side check."
+  },
+  {
+   "rule": "TL-T4.1.3.5-04",
+   "reason": "not_applicable_to_dut",
+   "note": "Device-side check. The DUT always drives a_mask=4'b1111 (CHK-013)."
+  },
+  {
+   "rule": "TL-T4.1.3.5-05",
+   "reason": "not_applicable_to_dut",
+   "note": "Device-side address decoding; the bridge does no address decoding."
+  },
+  {
+   "rule": "TL-T4.1.3.5-06",
+   "reason": "not_applicable_to_dut",
+   "note": "Device permission; the DUT never uses a non-contiguous mask."
+  }
+ ],
+ "assumptions": [
+  "Black-box only (designer decision): all checks use top-level ports. Rules about internal FSM states and registers are mapped to their effects at the ports. The checker-side flags req_open, pending and exp_get are computed only from port signals.",
+  "Cycle naming: E0 is the rising edge that ends the Setup cycle (i_apb_psel=1, i_apb_penable=0 sampled). A1, A2, A3 are the cycles that end at E1, E2, E3. Values are sampled at rising edges, just before the edge. An Access phase of N cycles means o_apb_pready is sampled 1 at E_N. The Setup-to-Setup interval is the number of edges between consecutive Setup edges.",
+  "The testbench APB requester follows REF-001 (ASM-001). Every transfer starts with exactly one Setup cycle; PSEL, PENABLE, PADDR, PWRITE, PWDATA and PSTRB are held until PREADY; and psel=1 with penable=0 is never sampled in the middle of a transfer. Every sampled psel=1/penable=0 is therefore treated as a Setup edge while the bridge is idle (used in CHK-005..CHK-008, CHK-015).",
+  "Unless a test says otherwise, the TL-UL device model follows REF-005. It returns exactly one response per accepted request, no earlier than the acceptance cycle, with d_source equal to a_source and d_opcode 3'b001 for Get or 3'b000 for PutFullData. A 'prompt device' asserts i_tlul_a_ready whenever o_tlul_a_valid=1 and i_tlul_d_valid for one cycle in the cycle after acceptance.",
+  "Reset release is synchronous (1 time unit after a rising edge), and the requester and device models are reset together with the bridge (DEP-002, BR-7.3-05). During reset the requester keeps i_apb_psel=0 from the edge before release.",
+  "o_tlul_a_data is checked only for writes. For reads its value is unused by the device and the spec does not say whether PWDATA is loaded.",
+  "A wrong-opcode response is consumed and reported as PSLVERR=1, PRDATA=0 (DEC-008). This is taken as the DUT's form of the host-side 'discard' in TL-T4.1.3.5-08; orphans are discarded with no APB effect.",
+  "Tests run in the default configuration (CFG-BASE) unless rerun in another single configuration. CHK-024's wrong source uses PARA_SRC_ID XOR 1 so that it works for any PARA_SRC_W."
+ ],
+ "decisions": [
+  {
+   "rules": [
+    "BR-5.3-02",
+    "BR-5.4-02",
+    "BR-5.4-04",
+    "BR-5.3-11"
+   ],
+   "question": "Which internal signals can be observed by the testbench (FSM states, reg_a_valid)? Several rules refer to internal state.",
+   "answer": "Black-box only: tests and checkers observe the top-level ports and nothing inside the DUT (REQ-VER-001 binds the checkers to the ports). Rules about internal registers and FSM states (BR-5.3-02, BR-5.4-02, BR-5.4-04, BR-5.3-11) are verified through their port-visible effects: request on channel A in the first Access cycle, a_valid held and channel A stable until a_ready, PREADY one cycle, next Setup accepted in the cycle after PREADY. The internal state itself is not_observable_at_interface.",
+   "by": "Claude (delegated by GabrielHCMUT)",
+   "at": "2026-11-07T18:05:58+00:00"
+  },
+  {
+   "rules": [
+    "BR-8-09",
+    "BR-8-10"
+   ],
+   "question": "How should an illegal parameter be reported at elaboration of the verification source set (error, fatal, or assertion), and which tool performs the check?",
+   "answer": "Out of scope of the simulation flow: the elaboration check of illegal parameters (REQ-PARAM-001, TEST-014) is a static job, one Verilator elaboration per illegal value with an elaboration-time $fatal in the verification source set. Mark these rules static_or_structural; do not check them in simulation.",
+   "by": "Claude (delegated by GabrielHCMUT)",
+   "at": "2026-11-07T18:05:59+00:00"
+  },
+  {
+   "rules": [
+    "BR-20-01",
+    "BR-20-13"
+   ],
+   "question": "ASM-001 is still Open and says a transfer that starts with PENABLE=1 is never answered. Is that hang an accepted behavior to test, or must the bridge recover or flag an error?",
+   "answer": "Accepted limitation, not a DUT obligation: a transfer that starts with PENABLE=1 breaks REF-001 (APB4 Setup phase first), so ASM-001 stands. The testbench requester never produces it; the bridge need not answer, recover or flag it. Only the reset recovery (REQ-RESET-002) is verified. CHK-style tests must not expect a response to such a transfer.",
+   "by": "Claude (delegated by GabrielHCMUT)",
+   "at": "2026-11-07T18:05:59+00:00"
+  },
+  {
+   "rules": [
+    "TL-T3.3-03"
+   ],
+   "question": "What is the 'project-specific default value' for user signals generated by baseline sources? It must be defined before checking.",
+   "answer": "For this DUT the project-specific default of the generated user bits is all zeros: o_tlul_a_user = '0 on every request (REQ-IF-005, DEC-004); the received d_user is ignored (DEC-006). Check a_user == 0 whenever a_valid is high.",
+   "by": "Claude (delegated by GabrielHCMUT)",
+   "at": "2026-11-07T18:05:59+00:00"
+  },
+  {
+   "rules": [
+    "TL-T3.2-03",
+    "TL-T3.2-04"
+   ],
+   "question": "Is the one-request-per-cycle limit a restatement of single-beat A-channel transfers, and is it on valid or on handshake?",
+   "answer": "It is a property of the handshake: at most one A-channel request accepted (a_valid and a_ready) and at most one D-channel response accepted (d_valid and d_ready) per cycle, which a single-channel TL-UL port satisfies by construction. For this bridge the stronger REQ-FUNC-004 applies: at most one request outstanding. No separate check beyond REQ-FUNC-004.",
+   "by": "Claude (delegated by GabrielHCMUT)",
+   "at": "2026-11-07T18:05:59+00:00"
+  }
+ ],
+ "coverage": {
+  "rules": 232,
+  "in_checks": 169,
+  "not_verified": 63,
+  "uncovered_after_first_pass": 0,
+  "uncovered": [],
+  "unknown_ids": []
+ },
+ "contract": {
+  "prompt_version": "contract-v1",
+  "model": "opus",
+  "date": "2026-11-07T18:11:59+00:00",
+  "usage": {
+   "calls": 1,
+   "cached": 0,
+   "cost_usd": 1.2989,
+   "input_tokens": 2,
+   "output_tokens": 41685,
+   "cache_creation_input_tokens": 57441,
+   "cache_read_input_tokens": 0
+  },
+  "rules_sha_source": [
+   "rules_m_apb_tlul_bridge_Design_Specification.json",
+   "rules_vlsit_tilelink_ul_opentitan_tlul.json"
+  ],
+  "unreviewed_gates": []
+ }
+}

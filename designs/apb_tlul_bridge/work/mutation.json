@@ -1,0 +1,1002 @@
+{
+ "mutants": [
+  {
+   "id": "M01",
+   "file": "m_tlul_if.sv",
+   "line": 100,
+   "operator": "ne_to_eq",
+   "original": "assign w_resp_err   = i_tlul_d_error | (i_tlul_d_opcode != w_exp_opcode) |",
+   "mutated": "  assign w_resp_err   = i_tlul_d_error | (i_tlul_d_opcode == w_exp_opcode) |",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M02",
+   "file": "m_apb_if.sv",
+   "line": 62,
+   "operator": "eq_to_ne",
+   "original": "assign w_setup = (reg_fsm_apb_current_state == ENUM_ST_IDLE) & i_apb_psel & ~i_apb_penable;",
+   "mutated": "  assign w_setup = (reg_fsm_apb_current_state != ENUM_ST_IDLE) & i_apb_psel & ~i_apb_penable;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-006",
+    "CHK-007"
+   ]
+  },
+  {
+   "id": "M03",
+   "file": "m_tlul_if.sv",
+   "line": 134,
+   "operator": "negate_if",
+   "original": "if (i_tlul_a_ready) begin",
+   "mutated": "        if (!(i_tlul_a_ready)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-015",
+    "CHK-016",
+    "CHK-008",
+    "CHK-009",
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M04",
+   "file": "m_tlul_if.sv",
+   "line": 95,
+   "operator": "eq_to_ne",
+   "original": "(reg_fsm_tlul_current_state == ENUM_ST_WAIT));",
+   "mutated": "                       (reg_fsm_tlul_current_state != ENUM_ST_WAIT));",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M05",
+   "file": "m_apb_if.sv",
+   "line": 116,
+   "operator": "one_to_zero",
+   "original": "w_pready_nxt  = 1'b1;",
+   "mutated": "      w_pready_nxt  = 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-010",
+    "CHK-003",
+    "CHK-004"
+   ]
+  },
+  {
+   "id": "M06",
+   "file": "m_apb_if.sv",
+   "line": 135,
+   "operator": "zero_to_one",
+   "original": "reg_pready  <= 1'b0;",
+   "mutated": "      reg_pready  <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_025_ignored_inputs",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-012",
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M07",
+   "file": "m_tlul_if.sv",
+   "line": 181,
+   "operator": "one_to_zero",
+   "original": "reg_d_ready <= 1'b1;",
+   "mutated": "      reg_d_ready <= 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-013",
+    "CHK-006",
+    "CHK-009",
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M08",
+   "file": "m_apb_if.sv",
+   "line": 111,
+   "operator": "negate_if",
+   "original": "if (w_local_err) begin",
+   "mutated": "    if (!(w_local_err)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-011",
+    "CHK-001",
+    "CHK-002"
+   ]
+  },
+  {
+   "id": "M09",
+   "file": "m_tlul_if.sv",
+   "line": 177,
+   "operator": "zero_to_one",
+   "original": "reg_a_valid <= 1'b0;",
+   "mutated": "      reg_a_valid <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_025_ignored_inputs",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-015",
+    "CHK-012",
+    "CHK-009"
+   ]
+  },
+  {
+   "id": "M10",
+   "file": "m_tlul_if.sv",
+   "line": 101,
+   "operator": "ne_to_eq",
+   "original": "(i_tlul_d_source != PARA_SRC_ID[PARA_SRC_W-1:0]);",
+   "mutated": "                        (i_tlul_d_source == PARA_SRC_ID[PARA_SRC_W-1:0]);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M11",
+   "file": "m_apb_if.sv",
+   "line": 66,
+   "operator": "eq_to_ne",
+   "original": "assign w_legal = (i_apb_paddr[1:0] == 2'b00) & (~i_apb_pwrite | (i_apb_pstrb == 4'b1111));",
+   "mutated": "  assign w_legal = (i_apb_paddr[1:0] != 2'b00) & (~i_apb_pwrite | (i_apb_pstrb == 4'b1111));",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-006",
+    "CHK-011",
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M12",
+   "file": "m_tlul_if.sv",
+   "line": 135,
+   "operator": "negate_if",
+   "original": "if (w_resp_hit)",
+   "mutated": "          if (!(w_resp_hit))",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-006",
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M13",
+   "file": "m_tlul_if.sv",
+   "line": 89,
+   "operator": "eq_to_ne",
+   "original": "assign w_load = i_req_launch & (reg_fsm_tlul_current_state == ENUM_ST_IDLE);",
+   "mutated": "  assign w_load = i_req_launch & (reg_fsm_tlul_current_state != ENUM_ST_IDLE);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-006"
+   ]
+  },
+  {
+   "id": "M14",
+   "file": "m_apb_if.sv",
+   "line": 112,
+   "operator": "one_to_zero",
+   "original": "w_pready_nxt  = 1'b1;",
+   "mutated": "      w_pready_nxt  = 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_025_ignored_inputs",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard"
+   ],
+   "killed_by_checks": [
+    "CHK-007",
+    "CHK-003",
+    "CHK-004"
+   ]
+  },
+  {
+   "id": "M15",
+   "file": "m_apb_if.sv",
+   "line": 109,
+   "operator": "zero_to_one",
+   "original": "w_pslverr_nxt = 1'b0;",
+   "mutated": "    w_pslverr_nxt = 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-009",
+    "CHK-003"
+   ]
+  },
+  {
+   "id": "M16",
+   "file": "m_apb_if.sv",
+   "line": 92,
+   "operator": "negate_if",
+   "original": "else if (w_local_err)",
+   "mutated": "        else if (!(w_local_err))",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-006",
+    "CHK-009"
+   ]
+  },
+  {
+   "id": "M17",
+   "file": "m_tlul_if.sv",
+   "line": 189,
+   "operator": "zero_to_one",
+   "original": "reg_a_rd   <= 1'b0;",
+   "mutated": "      reg_a_rd   <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_025_ignored_inputs",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-012"
+   ]
+  },
+  {
+   "id": "M18",
+   "file": "m_apb_if.sv",
+   "line": 115,
+   "operator": "eq_to_ne",
+   "original": "end else if ((reg_fsm_apb_current_state == ENUM_ST_BUSY) & i_resp_valid) begin",
+   "mutated": "    end else if ((reg_fsm_apb_current_state != ENUM_ST_BUSY) & i_resp_valid) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M19",
+   "file": "m_tlul_if.sv",
+   "line": 157,
+   "operator": "negate_if",
+   "original": "if (w_load) begin",
+   "mutated": "    if (!(w_load)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-015",
+    "CHK-006"
+   ]
+  },
+  {
+   "id": "M20",
+   "file": "m_tlul_if.sv",
+   "line": 153,
+   "operator": "eq_to_ne",
+   "original": "w_a_valid_nxt   = (w_fsm_tlul_nxt_state == ENUM_ST_REQ);",
+   "mutated": "    w_a_valid_nxt   = (w_fsm_tlul_nxt_state != ENUM_ST_REQ);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-014",
+    "CHK-009"
+   ]
+  },
+  {
+   "id": "M21",
+   "file": "m_apb_if.sv",
+   "line": 113,
+   "operator": "one_to_zero",
+   "original": "w_pslverr_nxt = 1'b1;",
+   "mutated": "      w_pslverr_nxt = 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_025_ignored_inputs",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard"
+   ],
+   "killed_by_checks": [
+    "CHK-007",
+    "CHK-009"
+   ]
+  },
+  {
+   "id": "M22",
+   "file": "m_apb_if.sv",
+   "line": 108,
+   "operator": "zero_to_one",
+   "original": "w_pready_nxt  = 1'b0;",
+   "mutated": "    w_pready_nxt  = 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-011",
+    "CHK-001",
+    "CHK-002"
+   ]
+  },
+  {
+   "id": "M23",
+   "file": "m_apb_if.sv",
+   "line": 125,
+   "operator": "negate_if",
+   "original": "if (!i_rst_n_core)",
+   "mutated": "    if (!(!i_rst_n_core))",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M24",
+   "file": "m_tlul_if.sv",
+   "line": 178,
+   "operator": "zero_to_one",
+   "original": "reg_d_ready <= 1'b0;",
+   "mutated": "      reg_d_ready <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_025_ignored_inputs",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-012"
+   ]
+  },
+  {
+   "id": "M25",
+   "file": "m_apb_if.sv",
+   "line": 66,
+   "operator": "eq_to_ne",
+   "original": "assign w_legal = (i_apb_paddr[1:0] == 2'b00) & (~i_apb_pwrite | (i_apb_pstrb == 4'b1111));",
+   "mutated": "  assign w_legal = (i_apb_paddr[1:0] == 2'b00) & (~i_apb_pwrite | (i_apb_pstrb != 4'b1111));",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-014",
+    "CHK-006",
+    "CHK-007",
+    "CHK-011",
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M26",
+   "file": "m_tlul_if.sv",
+   "line": 142,
+   "operator": "negate_if",
+   "original": "if (w_resp_hit)",
+   "mutated": "        if (!(w_resp_hit))",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_029_random_scoreboard",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M27",
+   "file": "m_tlul_if.sv",
+   "line": 94,
+   "operator": "eq_to_ne",
+   "original": "(((reg_fsm_tlul_current_state == ENUM_ST_REQ) & i_tlul_a_ready) |",
+   "mutated": "                      (((reg_fsm_tlul_current_state != ENUM_ST_REQ) & i_tlul_a_ready) |",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_025_ignored_inputs",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M28",
+   "file": "m_apb_if.sv",
+   "line": 136,
+   "operator": "zero_to_one",
+   "original": "reg_pslverr <= 1'b0;",
+   "mutated": "      reg_pslverr <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_025_ignored_inputs",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-012",
+    "CHK-003"
+   ]
+  },
+  {
+   "id": "M29",
+   "file": "m_apb_if.sv",
+   "line": 134,
+   "operator": "negate_if",
+   "original": "if (!i_rst_n_core) begin",
+   "mutated": "    if (!(!i_rst_n_core)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-007",
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M30",
+   "file": "m_tlul_if.sv",
+   "line": 167,
+   "operator": "negate_if",
+   "original": "if (!i_rst_n_core)",
+   "mutated": "    if (!(!i_rst_n_core))",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-015",
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M31",
+   "file": "m_apb_if.sv",
+   "line": 115,
+   "operator": "negate_if",
+   "original": "end else if ((reg_fsm_apb_current_state == ENUM_ST_BUSY) & i_resp_valid) begin",
+   "mutated": "    end else if (!((reg_fsm_apb_current_state == ENUM_ST_BUSY) & i_resp_valid)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-011",
+    "CHK-001",
+    "CHK-002"
+   ]
+  },
+  {
+   "id": "M32",
+   "file": "m_tlul_if.sv",
+   "line": 130,
+   "operator": "negate_if",
+   "original": "if (w_load)",
+   "mutated": "        if (!(w_load))",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-014",
+    "CHK-009"
+   ]
+  },
+  {
+   "id": "M33",
+   "file": "m_apb_if.sv",
+   "line": 90,
+   "operator": "negate_if",
+   "original": "if (w_req_launch)",
+   "mutated": "        if (!(w_req_launch))",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-006",
+    "CHK-007"
+   ]
+  },
+  {
+   "id": "M34",
+   "file": "m_tlul_if.sv",
+   "line": 176,
+   "operator": "negate_if",
+   "original": "if (!i_rst_n_core) begin",
+   "mutated": "    if (!(!i_rst_n_core)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-012",
+    "CHK-013",
+    "CHK-006",
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M35",
+   "file": "m_apb_if.sv",
+   "line": 96,
+   "operator": "negate_if",
+   "original": "if (i_resp_valid)",
+   "mutated": "        if (!(i_resp_valid))",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-006",
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M36",
+   "file": "m_tlul_if.sv",
+   "line": 188,
+   "operator": "negate_if",
+   "original": "if (!i_rst_n_core) begin",
+   "mutated": "    if (!(!i_rst_n_core)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_write_prompt",
+    "test_chk_024_read_prompt",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset_values",
+    "test_chk_031_reset_abandons",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-006"
+   ]
+  }
+ ],
+ "candidates": 36,
+ "count": 36,
+ "killed": 36,
+ "survived": 0,
+ "not_compiled": 0,
+ "score": 100.0,
+ "seed": 1
+}

@@ -1,0 +1,272 @@
+"""DUT integration and simulation (stage 4, code only).
+
+1. Interface conformance: the ports of the DUT top module (the only thing read from the RTL) must
+   match the contract by name and direction; a mismatch stops the run (never adapt the contract).
+2. A testbench top `nnc_tb_top` exposes the contract ports, instantiates the DUT and every checker
+   on the same nets, so cocotb sees the DUT ports at the top level.
+3. A cocotb Makefile runs Verilator with assertions and line coverage on the simulation host.
+4. Evidence is parsed: results.xml (pass/fail per test, exception type), the NNC_CHECK lines printed
+   by the checkers' final blocks (hits/fails per assertion), the NNC_FAIL lines (first failure time),
+   and line coverage of the RTL files only.
+"""
+from __future__ import annotations
+
+import json
+import re
+import xml.etree.ElementTree as ET
+from datetime import datetime, timezone
+from pathlib import Path
+
+from nnc.contract import _param_default, width_decl
+from nnc.simhost import SimHost
+
+SIMLIB = Path(__file__).parent / "simlib" / "nnc_cocotb.py"
+_PORT_DECL = re.compile(r"\b(input|output|inout)\b\s*(?:wire|logic|reg|var)?\s*(?:signed\s*)?(\[[^\]]*\]\s*)*\s*([A-Za-z_]\w*)")
+
+
+# ------------------------------------------------------------------------------------- RTL ports
+def rtl_files(rtl_dir: Path) -> list[Path]:
+    """Files of rtl/filelist.f in order (lines relative to rtl/), else every .sv/.v file."""
+    fl = rtl_dir / "filelist.f"
+    if fl.is_file():
+        out = []
+        for line in fl.read_text(encoding="utf-8").splitlines():
+            line = line.split("//")[0].strip()
+            if line and not line.startswith(("+", "-")):
+                p = (rtl_dir / line).resolve() if not Path(line).is_absolute() else Path(line)
+                if not p.is_file():
+                    p = rtl_dir / Path(line).name
+                if p.is_file():
+                    out.append(p)
+        if out:
+            return out
+    return sorted(list(rtl_dir.glob("*.sv")) + list(rtl_dir.glob("*.v")))
+
+
+def _strip_comments(text: str) -> str:
+    text = re.sub(r"/\*.*?\*/", "", text, flags=re.S)
+    return re.sub(r"//[^\n]*", "", text)
+
+
+def dut_ports(files: list[Path], top: str) -> list[dict]:
+    """ANSI port list of module `top` (names and directions only)."""
+    for f in files:
+        text = _strip_comments(f.read_text(encoding="utf-8", errors="replace"))
+        m = re.search(rf"\bmodule\s+{re.escape(top)}\b", text)
+        if not m:
+            continue
+        rest = text[m.end():]
+        if rest.lstrip().startswith("#"):
+            depth, i = 0, rest.index("#")
+            j = rest.index("(", i)
+            for k in range(j, len(rest)):
+                depth += rest[k] == "("
+                depth -= rest[k] == ")"
+                if depth == 0:
+                    rest = rest[k + 1:]
+                    break
+        start = rest.index("(")
+        depth, end = 0, start
+        for k in range(start, len(rest)):
+            depth += rest[k] == "("
+            depth -= rest[k] == ")"
+            if depth == 0:
+                end = k
+                break
+        ports, direction = [], None
+        for chunk in rest[start + 1:end].split(","):
+            m2 = _PORT_DECL.search(chunk)
+            if m2:
+                direction = m2.group(1)
+                ports.append({"name": m2.group(3), "direction": direction})
+            else:
+                name = chunk.strip().split()[-1] if chunk.strip() else ""
+                if direction and re.match(r"^[A-Za-z_]\w*$", name):
+                    ports.append({"name": name, "direction": direction})
+        return ports
+    raise ValueError(f"module {top} not found in the RTL files")
+
+
+def conformance(contract: dict, ports: list[dict]) -> list[str]:
+    want = {p["name"]: p["direction"] for p in contract["interface"]["ports"]}
+    have = {p["name"]: p["direction"] for p in ports}
+    issues = [f"port {n} of the contract is missing in the DUT" for n in want if n not in have]
+    issues += [f"port {n} of the DUT is not in the contract" for n in have if n not in want]
+    issues += [f"port {n}: contract direction {want[n]}, DUT direction {have[n]}" for n in want
+               if n in have and want[n] != have[n]]
+    return issues
+
+
+# -------------------------------------------------------------------------------------- testbench
+def tb_top(contract: dict, checker_modules: list[str]) -> str:
+    iface = contract["interface"]
+    params = iface["parameters"]
+    plist = ",\n".join(f"  parameter int {p['name']} = {_param_default(p)}" for p in params)
+    ports = ",\n".join(f"  {p['direction']:<6} logic {width_decl(p['width']):<22} {p['name']}" for p in iface["ports"])
+    pmap = ", ".join(f".{p['name']}({p['name']})" for p in params)
+    conns = ",\n    ".join(f".{p['name']}({p['name']})" for p in iface["ports"])
+    lines = ["// Generated by NNC: contract ports at the top, DUT and checkers on the same nets.",
+             "`timescale 1ns/1ps",
+             f"module nnc_tb_top" + (f" #(\n{plist}\n)" if params else "") + f" (\n{ports}\n);",
+             f"  {contract['top']}" + (f" #({pmap})" if params else "") + f" u_dut (\n    {conns}\n  );"]
+    for m in checker_modules:
+        lines.append(f"  {m}" + (f" #({pmap})" if params else "") + f" u_{m} (\n    {conns}\n  );")
+    lines.append("endmodule")
+    return "\n".join(lines) + "\n"
+
+
+def makefile(sources: list[str], test_module: str, params: dict[str, int], coverage: bool) -> str:
+    gen = " ".join(f"-G{k}={v}" for k, v in params.items())
+    return f"""# Generated by NNC. Run: make   (SEED=<n> to change the random seed)
+SIM ?= verilator
+TOPLEVEL_LANG = verilog
+VERILOG_SOURCES = {' '.join('$(CURDIR)/' + s for s in sources)}
+COCOTB_TOPLEVEL = nnc_tb_top
+COCOTB_TEST_MODULES = {test_module}
+EXTRA_ARGS += --assert --timing -Wno-fatal -Wno-WIDTH -Wno-UNOPTFLAT {gen} {'--coverage-line' if coverage else ''}
+SEED ?= 1
+NNC_JOBS ?= 8
+MAKEFLAGS += -j$(NNC_JOBS)
+export NNC_SEED = $(SEED)
+export COCOTB_RANDOM_SEED = $(SEED)
+include $(shell cocotb-config --makefiles)/Makefile.sim
+"""
+
+
+def param_values(contract: dict, overrides: dict | None = None) -> dict[str, int]:
+    vals = {}
+    for p in contract["interface"]["parameters"]:
+        try:
+            vals[p["name"]] = int(_param_default(p), 0)
+        except ValueError:
+            pass
+    vals.update(overrides or {})
+    return vals
+
+
+def build_inputs(contract: dict, rtl: list[Path], sva: list[Path], test_file: Path, params: dict[str, int],
+                 coverage: bool = True) -> dict[str, object]:
+    files: dict[str, object] = {}
+    srcs = []
+    for f in rtl:
+        files[f"rtl/{f.name}"] = f
+        srcs.append(f"rtl/{f.name}")
+    for f in sva:
+        files[f"sva/{f.name}"] = f
+        srcs.append(f"sva/{f.name}")
+    files["nnc_tb_top.sv"] = tb_top(contract, [f.stem for f in sva])
+    srcs.append("nnc_tb_top.sv")
+    files[test_file.name] = test_file
+    files["nnc_cocotb.py"] = SIMLIB
+    iface = contract["interface"]
+    files["nnc_interface.json"] = json.dumps({
+        "clock": iface["clock"], "reset": iface["reset"], "parameters": params,
+        "ports": [{"name": p["name"], "direction": p["direction"], "width": p["width"]} for p in iface["ports"]]})
+    files["Makefile"] = makefile(srcs, test_file.stem, params, coverage)
+    return files
+
+
+SIM_SCRIPT = """make SEED={seed} NNC_JOBS={jobs} > sim.log 2>&1
+echo "NNC_MAKE_RC=$?" >> sim.log
+if [ -f coverage.dat ]; then verilator_coverage --write-info coverage.info coverage.dat >> sim.log 2>&1; fi
+"""
+
+
+# ---------------------------------------------------------------------------------------- results
+_EXC = re.compile(r"^\s*(?:\S+\.)?([A-Z]\w*(?:Error|Exception|Exit|Timeout\w*))\b:?\s*(.*)$")
+
+
+def parse_results(out_dir: Path, rtl_names: list[str]) -> dict:
+    log = (out_dir / "sim.log").read_text(encoding="utf-8", errors="replace") if (out_dir / "sim.log").is_file() else ""
+    tests = []
+    xml = out_dir / "results.xml"
+    if xml.is_file():
+        for tc in ET.parse(xml).getroot().iter("testcase"):
+            fail = tc.find("failure")
+            err = tc.find("error")
+            bad = fail if fail is not None else err
+            rec = {"name": tc.get("name"), "status": "fail" if bad is not None else
+                   ("skip" if tc.find("skipped") is not None else "pass"), "sim_time_ns": tc.get("sim_time_ns")}
+            if bad is not None:
+                text = (bad.get("message") or "") + "\n" + (bad.text or "")
+                rec["message"] = text.strip()[:2000]
+            tests.append(rec)
+    # Exception type and traceback per failed test, from the cocotb log.
+    blocks = re.split(r"(?=\n\s*[\d.]+\w*s?\s+\w+\s+cocotb\.regression\s+running )", log)
+    for t in tests:
+        if t["status"] != "fail":
+            continue
+        blk = next((b for b in blocks if f".{t['name']} " in b or f"{t['name']} (" in b), "")
+        tb = blk[blk.find("Traceback"):] if "Traceback" in blk else ""
+        exc = None
+        for line in reversed(tb.splitlines()):
+            m = _EXC.match(line.strip())
+            if m:
+                exc = m.group(1)
+                t["message"] = (m.group(2) or t.get("message", ""))[:2000]
+                break
+        t["exception"] = exc or ("AssertionError" if "AssertionError" in blk else None)
+        t["traceback"] = tb[-3000:]
+        t["checks"] = sorted(set(re.findall(r"CHK-\d{3}", t["name"].upper().replace("TEST_CHK_", "CHK-") + " " + t.get("message", ""))))
+    checks = {}
+    for m in re.finditer(r"NNC_CHECK (CHK-\d{3}) hits=(\d+) fails=(\d+)", log):
+        checks[m.group(1)] = {"hits": int(m.group(2)), "fails": int(m.group(3))}
+    first_fail = {}
+    for m in re.finditer(r"NNC_FAIL (CHK-\d{3}) @(\d+)", log):
+        first_fail.setdefault(m.group(1), int(m.group(2)))
+    for cid, t in first_fail.items():
+        checks.setdefault(cid, {"hits": 0, "fails": 0})["first_fail_time"] = t
+    not_verifiable = {}
+    for m in re.finditer(r"NNC_NOT_VERIFIABLE (CHK-\d{3}) ([^\n]*)", log):
+        not_verifiable.setdefault(m.group(1), m.group(2).strip()[:300])
+    cov = _line_coverage(out_dir / "coverage.info", rtl_names)
+    rc = re.search(r"NNC_MAKE_RC=(\d+)", log)
+    built = bool(tests) or "Running tests" in log
+    return {"tests": tests, "assertions": checks, "not_verifiable": not_verifiable, "coverage": cov,
+            "make_rc": int(rc.group(1)) if rc else None,
+            "built": built, "build_errors": [l for l in log.splitlines() if l.startswith("%Error")][:30]}
+
+
+def _line_coverage(info: Path, rtl_names: list[str]) -> dict:
+    if not info.is_file():
+        return {"status": "not_measured"}
+    hit = total = 0
+    per_file: dict[str, list[int]] = {}
+    current = None
+    for line in info.read_text(encoding="utf-8", errors="replace").splitlines():
+        if line.startswith("SF:"):
+            name = Path(line[3:]).name
+            current = name if name in rtl_names else None
+        elif line.startswith("DA:") and current:
+            _, cnt = line[3:].split(",")[:2]
+            total += 1
+            hit += int(cnt) > 0
+            per_file.setdefault(current, [0, 0])
+            per_file[current][0] += int(cnt) > 0
+            per_file[current][1] += 1
+    return {"status": "measured" if total else "no_rtl_points", "metric": "line", "hit": hit, "total": total,
+            "percent": round(100.0 * hit / total, 1) if total else None,
+            "files": {k: {"hit": v[0], "total": v[1]} for k, v in per_file.items()}}
+
+
+def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: Path, *, seed: int = 1,
+        params: dict | None = None, timeout_s: int = 3600) -> dict:
+    rtl = rtl_files(rtl_dir)
+    if not rtl:
+        return {"status": "error", "error": f"no RTL files in {rtl_dir}"}
+    try:
+        issues = conformance(contract, dut_ports(rtl, contract["top"]))
+    except ValueError as e:
+        issues = [str(e)]
+    base = {"date": datetime.now(timezone.utc).isoformat(timespec="seconds"), "seed": seed,
+            "rtl_files": [f.name for f in rtl], "integration": {"ok": not issues, "issues": issues}}
+    if issues:
+        return {**base, "status": "integration_failed"}
+    sva = sorted(sva_dir.glob("nnc_chk_*.sv"))
+    pv = param_values(contract, params)
+    files = build_inputs(contract, rtl, sva, test_file, pv)
+    res = host.run(files, SIM_SCRIPT.format(seed=seed, jobs=8), ["sim.log", "results.xml", "coverage.info"],
+                   timeout_s=timeout_s, tag="sim")
+    parsed = parse_results(res.out_dir, [f.name for f in rtl])
+    status = "build_failed" if not parsed["built"] else "ran"
+    return {**base, "status": status, "params": pv, "host": host.name, "out_dir": str(res.out_dir), **parsed}

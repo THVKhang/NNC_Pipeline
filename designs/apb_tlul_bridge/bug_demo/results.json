@@ -1,0 +1,210 @@
+{
+ "date": "2026-11-07T17:30:56+00:00",
+ "seed": 1,
+ "rtl_files": [
+  "m_apb_if.sv",
+  "m_tlul_if.sv",
+  "m_apb_tlul_bridge.sv"
+ ],
+ "integration": {
+  "ok": true,
+  "issues": []
+ },
+ "status": "ran",
+ "params": {
+  "PARA_ADDR_W": 32,
+  "PARA_SRC_W": 8,
+  "PARA_SRC_ID": 0,
+  "PARA_A_USER_W": 1,
+  "PARA_D_SINK_W": 1,
+  "PARA_D_USER_W": 1
+ },
+ "host": "wsl",
+ "tests": [
+  {
+   "name": "test_chk_017_illegal_strobe",
+   "status": "pass",
+   "sim_time_ns": "1095.0"
+  },
+  {
+   "name": "test_chk_018_misaligned_address",
+   "status": "pass",
+   "sim_time_ns": "1635.0000000000002"
+  },
+  {
+   "name": "test_chk_019_back_to_back",
+   "status": "pass",
+   "sim_time_ns": "15955.0"
+  },
+  {
+   "name": "test_chk_020_ignored_inputs",
+   "status": "pass",
+   "sim_time_ns": "10925.0"
+  },
+  {
+   "name": "test_chk_021_random_scoreboard",
+   "status": "fail",
+   "sim_time_ns": "591735.0",
+   "message": "CHK-021: transfer #3 (read paddr=0x8869ceb8 pstrb=0x0): expected o_apb_pslverr=1 got 0 [209 scoreboard errors]",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/sim_2c8417b9/test_apb_tlul_bridge.py\", line 885, in test_chk_021_random_scoreboard\n                                                            env.scoreboard()\n                                                          File \"/root/nnc_runs/sim_2c8417b9/test_apb_tlul_bridge.py\", line 654, in scoreboard\n                                                            assert not errs, f\"{errs[0]} [{len(errs)} scoreboard errors]\"\n                                                        AssertionError: CHK-021: transfer #3 (read paddr=0x8869ceb8 pstrb=0x0): expected o_apb_pslverr=1 got 0 [209 scoreboard errors]\n                                                        assert not ['CHK-021: transfer #3 (read paddr=0x8869ceb8 pstrb=0x0): expected o_apb_pslverr=1 got 0', 'CHK-021: transfer #3 (read...a=0x0 got 2963714392', 'CHK-021: transfer #140 (read paddr=0xcc8087b4 pstrb=0x0): expected o_apb_pslverr=1 got 0', ...]\n621345.00ns WARNING  cocotb.regression                  test_apb_tlul_bridge.test_chk_021_random_scoreboard failed",
+   "checks": [
+    "CHK-021"
+   ]
+  },
+  {
+   "name": "test_chk_022_async_reset",
+   "status": "pass",
+   "sim_time_ns": "925.0"
+  },
+  {
+   "name": "test_chk_023_reset_mid_transfer",
+   "status": "pass",
+   "sim_time_ns": "1565.0"
+  },
+  {
+   "name": "test_chk_024_write_prompt",
+   "status": "pass",
+   "sim_time_ns": "2145.0"
+  },
+  {
+   "name": "test_chk_025_read_prompt",
+   "status": "pass",
+   "sim_time_ns": "2185.0"
+  },
+  {
+   "name": "test_chk_026_same_cycle_response",
+   "status": "pass",
+   "sim_time_ns": "1035.0"
+  },
+  {
+   "name": "test_chk_027_d_error",
+   "status": "pass",
+   "sim_time_ns": "1575.0"
+  },
+  {
+   "name": "test_chk_028_wrong_opcode_source",
+   "status": "fail",
+   "sim_time_ns": "3745.0",
+   "message": "CHK-028: transfer #29 (read paddr=0x8d503b90 pstrb=0x0): expected o_apb_pslverr=1 got 0 [33 scoreboard errors]",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/sim_2c8417b9/test_apb_tlul_bridge.py\", line 1172, in test_chk_028_wrong_opcode_source\n                                                            env.scoreboard()\n                                                          File \"/root/nnc_runs/sim_2c8417b9/test_apb_tlul_bridge.py\", line 654, in scoreboard\n                                                            assert not errs, f\"{errs[0]} [{len(errs)} scoreboard errors]\"\n                                                        AssertionError: CHK-028: transfer #29 (read paddr=0x8d503b90 pstrb=0x0): expected o_apb_pslverr=1 got 0 [33 scoreboard errors]\n                                                        assert not ['CHK-028: transfer #29 (read paddr=0x8d503b90 pstrb=0x0): expected o_apb_pslverr=1 got 0', 'CHK-028: transfer #29 (re...a=0x0 got 2355128969', 'CHK-028: transfer #35 (write paddr=0xb7eec238 pstrb=0xf): expected o_apb_pslverr=1 got 0', ...]\n634520.01ns WARNING  cocotb.regression                  test_apb_tlul_bridge.test_chk_028_wrong_opcode_source failed",
+   "checks": [
+    "CHK-028"
+   ]
+  },
+  {
+   "name": "test_chk_029_backpressure",
+   "status": "pass",
+   "sim_time_ns": "4965.0"
+  },
+  {
+   "name": "test_chk_030_orphan_responses",
+   "status": "pass",
+   "sim_time_ns": "3275.0"
+  },
+  {
+   "name": "test_chk_031_no_response",
+   "status": "pass",
+   "sim_time_ns": "2305.0"
+  },
+  {
+   "name": "test_regression_random",
+   "status": "pass",
+   "sim_time_ns": "249395.0"
+  }
+ ],
+ "assertions": {
+  "CHK-014": {
+   "hits": 89454,
+   "fails": 0
+  },
+  "CHK-015": {
+   "hits": 25700,
+   "fails": 0
+  },
+  "CHK-016": {
+   "hits": 6936,
+   "fails": 0
+  },
+  "CHK-012": {
+   "hits": 89415,
+   "fails": 0
+  },
+  "CHK-013": {
+   "hits": 189,
+   "fails": 0
+  },
+  "CHK-005": {
+   "hits": 7927,
+   "fails": 0
+  },
+  "CHK-006": {
+   "hits": 6938,
+   "fails": 0
+  },
+  "CHK-007": {
+   "hits": 6938,
+   "fails": 0
+  },
+  "CHK-008": {
+   "hits": 986,
+   "fails": 0
+  },
+  "CHK-009": {
+   "hits": 6931,
+   "fails": 156,
+   "first_fail_time": 30110000
+  },
+  "CHK-010": {
+   "hits": 7917,
+   "fails": 0
+  },
+  "CHK-011": {
+   "hits": 6902,
+   "fails": 0
+  },
+  "CHK-001": {
+   "hits": 7917,
+   "fails": 0
+  },
+  "CHK-002": {
+   "hits": 7917,
+   "fails": 0
+  },
+  "CHK-003": {
+   "hits": 1480,
+   "fails": 0
+  },
+  "CHK-004": {
+   "hits": 5095,
+   "fails": 0
+  }
+ },
+ "not_verifiable": {},
+ "coverage": {
+  "status": "measured",
+  "metric": "line",
+  "hit": 80,
+  "total": 82,
+  "percent": 97.6,
+  "files": {
+   "m_apb_if.sv": {
+    "hit": 37,
+    "total": 38
+   },
+   "m_tlul_if.sv": {
+    "hit": 43,
+    "total": 44
+   }
+  }
+ },
+ "make_rc": 2,
+ "built": true,
+ "build_errors": [],
+ "unreviewed_gates": [
+  "G1_rules",
+  "G2_contract",
+  "G3_verif_sources"
+ ]
+}
