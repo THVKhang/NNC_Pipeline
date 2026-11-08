@@ -44,15 +44,18 @@ PR-1, PR-4, PR-6 lấy từ hai repo tham khảo (VLSIT_RTL_Generator_AI_Flow, V
  [D] A4 Contract architect     (interface + oracle cho từng luật)
    ══ GATE 2: người duyệt contract ══
    │                ─── từ đây đến tích hợp: KHÔNG có RTL ───
+ [C] nnc plan: người chọn check của test plan (mặc định: tất cả; phần bỏ ra → NOT_SELECTED)
  [W] A5 SVA writer ×N  ──► [C] verilator --lint-only với contract shell (vòng sửa ≤ 3)
- [D] A6 Reference model / scoreboard
- [W] A7 cocotb test writer ×N
- [W] A8 Reviewer (khác model với người viết)
+ [W] A6 Functional coverage: cover point từ spec + contract ──► [C] lint (nnc_cov.sv)
+ [D] A7 cocotb test writer + reference model / scoreboard
    ══ GATE 3: người duyệt nguồn kiểm chứng ══
- [C] integrate + regression + coverage + mutation (WSL: Verilator + cocotb)
+ [C] integrate + regression + code coverage (line, block, toggle, expression) + functional coverage
+ [D] A10 gap analyst (thấy RTL) ─► [C] lọc tên nội bộ ─► [W] A11 closure test writer (không RTL)
+       └─ chỉ khi người đặt mục tiêu coverage; test mới → GATE 3 phải duyệt lại
  [C] gom lỗi thành cụm ─► [D] A9 Triage / debug (thấy cả RTL) ─► người quyết
-   ══ GATE 4: sign-off ══
- [C] report.md + rtm.json
+ [C] mutation trên dòng đã chạy ─► [D] A12 gán mutant ↔ luật ─► [C] điểm từng luật, ngưỡng 85 %
+   ══ GATE 4: sign-off (bảng điều kiện trong report) ══
+ [C] report.md + rtm.json · designs/<ip>/sim/Makefile (tái lập không cần NNC)
 ```
 
 `[C]` code tất định · `[W]` worker: 1 lượt, không tool, chạy song song · `[D]` deep agent: nhiều lượt, có tool đọc trong sandbox.
@@ -96,6 +99,8 @@ Mỗi agent là một lần chạy `claude -p` dùng tài khoản Claude Code đ
 
 **Chi phí cố định mỗi lần gọi** (đo 2026-11-07, Claude Code 2.1.319): mặc định ~US$0,33 (system prompt + tool ~20k token) → chế độ inline **US$0,0071** với Sonnet (~1,5k token). Haiku rẻ hơn nữa nhưng **không tuân thủ** yêu cầu trả ID câu trong thử nghiệm → Extractor dùng Sonnet.
 
+**Giới hạn suy nghĩ:** mỗi lần gọi đặt `MAX_THINKING_TOKENS` (mặc định 32 000, đổi bằng biến `NNC_MAX_THINKING_TOKENS`). Lý do đo được: một lần gọi A7 không giới hạn đã dùng hết 128k token output để suy nghĩ, không trả lời gì (US$2,85) rồi chạm hạn mức 5 giờ; thông báo của CLI nay được đưa vào lỗi.
+
 Mọi câu trả lời được validate lại theo schema; log mỗi lần gọi ghi model, token, chi phí, `permission_denials`. Backend **manual** cho phép chạy mọi bước không cần LLM (người điền `output.json`).
 
 ## 6. Phân bổ agent
@@ -110,11 +115,15 @@ Mọi câu trả lời được validate lại theo schema; log mỗi lần gọ
 | review | A3 Consolidator: giải đáp câu hỏi (`review.resolve_questions`) | worker inline, ngữ cảnh lớn | Sonnet | 1 | mọi câu của spec + chuẩn |
 | contract | A4 Contract architect (`contract.py`) | deep (inline, 1 lượt) | Opus | 1 (+ gap-fill) | interface (từ code) + luật |
 | gen-sva | A5 SVA writer (`gen_sva.py`) | worker + Verilator lint, sửa ≤ 3 | Sonnet | 1 / nhóm check (4) | phần contract + câu trích; khung code cố định |
-| gen-tests | A6+A7 reference model + test writer (`gen_tests.py`) | deep (inline) + kiểm tra, sửa ≤ 2 | Opus | 1 | contract + câu trích + API thư viện |
+| gen-sva | A6 functional coverage (`gen_cov.py`) | worker + Verilator lint, sửa ≤ 3 | Sonnet | 1 | interface + check + luật; khung bộ đếm cố định |
+| gen-tests | A7 reference model + test writer (`gen_tests.py`) | deep (inline) + kiểm tra, sửa ≤ 2 | Opus | 1 | contract + câu trích + API thư viện |
 | sim | repair hạ tầng test (`gen_tests.repair`) | như trên | Opus | chỉ khi test lỗi Python | lỗi Python (không gửi check thất bại, không RTL) |
+| cover | A10 gap analyst (`closure.analyse`) | **deep sandbox** | Opus | 1 / vòng closure | điểm chưa phủ, **RTL** (trừ metric functional), contract, luật |
+| cover | A11 closure test writer (`closure.write_tests`) | inline + kiểm tra | Opus | 1 / vòng | kịch bản đã lọc tên nội bộ RTL + check của contract; **không RTL** |
 | triage | A9 Debugger (`triage.py`) | **deep sandbox** `Read/Grep/Glob(./**)` | Opus | 1 / lần chạy có lỗi | spec, contract, **RTL**, test, checker, log |
+| mutate | A12 gán mutant ↔ luật (`mutate.attribute`) | **deep sandbox** | Sonnet | 1 | mutant, **RTL**, luật, contract; không sửa gì, không đổi điểm |
 
-Ghi chú: A8 "Reviewer" riêng cho mã sinh ra chưa làm — vai trò kiểm tra mã hiện do code đảm nhiệm (lint, validate cấu trúc, bộ đếm hit, mutation) cùng Gate 3.
+Ghi chú: A8 "Reviewer" riêng cho mã sinh ra chưa làm — vai trò kiểm tra mã hiện do code đảm nhiệm (lint, validate cấu trúc, bộ đếm hit, mutation) cùng Gate 3. Các agent thấy RTL (A9, A10, A12) đều chạy **sau** khi oracle đã cố định và chỉ đọc; kịch bản của A10 đi qua bộ lọc code (bỏ mọi kịch bản nhắc tên định danh của RTL không có trong spec/contract) trước khi tới A11.
 
 ## 7. Lớp mô phỏng
 
@@ -125,9 +134,13 @@ Ghi chú: A8 "Reviewer" riêng cho mã sinh ra chưa làm — vai trò kiểm tr
 | Assertion | SVA trong module checker | Chỉ dùng tín hiệu ở interface của contract. |
 | Đếm fail | action block `else` của assert | Chạy đúng, mô phỏng tiếp tục. |
 | Đếm hit | `always_ff` trên cùng antecedent | **Verilator bỏ qua action statement của `cover property`** (đã kiểm: hits = 0). `cover property` vẫn giữ cho coverage database. |
-| Functional coverage | Python (phía cocotb) | Verilator gần như bỏ qua `covergroup`. |
-| Code coverage | `verilator --coverage` | Chỉ là chẩn đoán. |
-| Mutation | bộ sinh mutant Python trên **bản copy** RTL | Mutant không compile không tính là "bị bắt". |
+| Functional coverage | module `nnc_cov.sv` (A6): mỗi cover point một bộ đếm `always_ff`, in `NNC_COVER COVP-nnn hits=` | Verilator gần như bỏ qua `covergroup`; điểm lấy từ spec, không từ RTL. |
+| Code coverage | `--coverage-line --coverage-toggle --coverage-expr`; `coverage.dat` đọc bằng code (`coverage.py`) | Chỉ tính file RTL của DUT (loại checker, tb); từng metric riêng, không gộp: line (lcov), block (nhánh), toggle (mỗi bit, 2 chiều), expression. |
+| Coverage closure | `nnc cover --target --metric` | Hiện baseline trước; tối đa 5 vòng, dừng khi đạt, 2 vòng không tăng, hoặc lỗi chức năng đầu tiên (lỗi → triage). Điểm "không thể đạt" chỉ là đề xuất cho người duyệt, không bị trừ khỏi mẫu số. |
+| Mutation | bộ sinh mutant Python trên **bản copy** RTL | Chỉ đột biến dòng đã chạy và file đã elaborate (dòng chưa phủ chỉ đo coverage); mutant không compile không tính; A12 gán mutant cho luật → điểm từng luật, ngưỡng `mutation_threshold` (mặc định 85 %). |
+| Nhiều clock | `clocks`/`resets` đọc từ bảng port (cột Signal type, Clock domain) | Các clock đồng bộ khởi động cùng lúc; chu kỳ theo `clock_periods`; một test có thể đặt tỉ lệ khác (`start_clock(dut, periods=...)`); SVA mỗi check theo clock của miền tín hiệu. |
+| Tham số dẫn xuất | `LPARA_* = clog2(...)` trong bảng tham số | Thành `localparam` trong checker/tb, không truyền vào DUT, giá trị tính sẵn cho test (`PARAMS`). |
+| Bộ tái lập | `designs/<ip>/sim/Makefile` | `help`, `tool-check`, `lint`, `sva-compile`, `regression`, `test TC=<regex>`, `coverage-report`; mọi lệnh EDA hiện trong recipe (`make -n`). |
 | Simulator khác | `SIM=questa` / `SIM=icarus` qua cocotb | Questa: SVA + covergroup đầy đủ nếu có license; Icarus: không có SVA concurrent. |
 
 **Quy tắc cho agent viết SVA/test** (đều phát hiện khi chạy smoke test):
@@ -152,17 +165,19 @@ Lưu ý: `pdftotext` bản mingw không mở được đường dẫn có ký t�
 ```
 NNC_Pipeline/
 ├── nnc/
-│   ├── cli.py              # 17 lệnh: doctor, init, status, config, doc, gate, ingest, extract, review,
-│   │                       #   contract, gen-sva, gen-tests, sim, triage, mutate, report, flow
+│   ├── cli.py              # lệnh: doctor, init, status, config, doc, answer, gate, plan, ingest, extract, review,
+│   │                       #   contract, gen-sva, gen-tests, sim, cover, triage, mutate, report, flow, inject
 │   ├── flow.py             # các giai đoạn + chuỗi có gate
+│   ├── inject.py           # áp patch lên bản copy RTL (chèn bug / thử bản sửa) rồi chạy verification đã duyệt
 │   ├── project.py          # workspace, cấu hình, gate, hash
 │   ├── ingest.py           # PDF/text theo trang, Markdown theo heading; bảng → câu
-│   ├── extract.py review.py contract.py gen_sva.py gen_tests.py sim.py mutate.py triage.py report.py
+│   ├── extract.py review.py contract.py gen_sva.py gen_cov.py gen_tests.py sim.py coverage.py closure.py
+│   ├── mutate.py triage.py report.py
 │   ├── simhost.py          # chạy EDA trong WSL (Windows) hoặc tại chỗ (Linux)
 │   ├── simlib/nnc_cocotb.py  # thư viện cho test cocotb sinh ra
 │   └── agents/             # backend claude-cli (inline/sandbox), manual, cache, chạy song song, JSON Schema
 ├── .claude/commands/       # /nnc-flow, /nnc-gate
-├── designs/<ip>/           # spec/, rtl/ (chỉ triage được đọc), work/, verif/, nnc_state.json
+├── designs/<ip>/           # spec/, rtl/ (chỉ A9/A10/A12 được đọc), work/, verif/, sim/ (Makefile tái lập), nnc_state.json
 ├── specs/                  # tài liệu gốc do người dùng thêm (PDF bản quyền: không đưa lên git)
 ├── tests/                  # unit test (không tốn token) + sim_smoke/
 └── docs/                   # ARCHITECTURE.md, GUIDE.md
@@ -172,6 +187,7 @@ NNC_Pipeline/
 
 - **Chuẩn giao thức:** AXI (IHI0022C) — đang dùng để đo trích luật.
 - **IP đầu tiên:** `apb_tlul_bridge` (VLSIT_ASIC_SOC_AI_SKILLS, Apache-2.0): cầu APB4 → TL-UL, có testbench viết tay làm mốc (36 assertion, bắt 15/15 bug chèn). Tiêu chí P5: flow tự động bắt được ít nhất các bug đó.
+- **IP thứ hai và ba (P6):** `axi2apb_bridge` (AXI4 → APB4, 4 file RTL) và `sync_fifo` (FIFO hai clock đồng bộ, 2 miền clock, 3 reset, tham số dẫn xuất, macro SRAM không elaborate) từ `common_rtl/` cùng repo (Apache-2.0), chép nguyên vẹn, xem NOTICE của từng thiết kế. Kết quả ở mục 14.
 
 ## 11. Lộ trình
 
@@ -183,13 +199,16 @@ NNC_Pipeline/
 | P3 | Runner WSL/local, kiểm tra conformance, tb top, regression, coverage, bằng chứng | Xong |
 | P4 | Mutation song song + A9 triage + report/RTM | Xong (triage kiểm bằng bug chèn, xem mục 13) |
 | P5 | `flow` có gate, `/nnc-flow`, tài liệu song ngữ, ví dụ end-to-end | Xong |
-| Tiếp | Bộ đáp án gán nhãn tay để đo precision/recall của trích luật; chạy nhiều cấu hình tham số; nhiều seed; A8 reviewer cho mã sinh; FTS5 cho deep agent tra cứu; đặt vòng repair hạ tầng cả ở mutation | Chưa làm |
+| P6 | Nhiều clock/reset, tham số dẫn xuất; code coverage nhiều metric + closure; functional coverage; mutation theo từng luật; chọn test plan; Makefile tái lập; bảng điều kiện sign-off; chạy trên 3 IP | Xong (mục 14) |
+| Tiếp | Bộ đáp án gán nhãn tay để đo precision/recall của trích luật; chạy nhiều cấu hình tham số trong một lệnh; nhiều seed; A8 reviewer cho mã sinh; FTS5 cho deep agent tra cứu; clock bất đồng bộ (CDC) | Chưa làm |
 
 ## 12. Quyết định
 
 **Đã chốt:** cocotb + Verilator (Questa/Icarus là lựa chọn qua `SIM=`); SV + SVA, không UVM; orchestrator Python; LLM qua Claude Code headless; worker inline không tool, deep agent sandbox `Read(./**)`; Extractor/review/SVA dùng Sonnet, contract/test/triage dùng Opus; trích luật bằng map toàn bộ section + ngữ cảnh cha, RAG chỉ cho tra cứu; khung code cố định (header, bộ đếm, khối final, thư viện helper) để agent chỉ viết phần có trí tuệ.
 
-**Còn mở:** có license Questa hay không; ngưỡng mutation score dùng làm điều kiện sign-off.
+**Đã chốt thêm (2026-11-08):** ngưỡng mutation theo từng luật mặc định 85 % (như repo tham khảo), đổi bằng `nnc config <ip> mutation_threshold=<n>`; mục tiêu coverage do người đặt sau khi xem baseline, không có ngưỡng mặc định.
+
+**Còn mở:** có license Questa hay không.
 
 ## 13. Kết quả end-to-end trên cầu APB4 → TL-UL
 
@@ -207,9 +226,46 @@ Thiết kế: [designs/apb_tlul_bridge](../designs/apb_tlul_bridge) — spec c�
 | mutate | **36/36 mutant bị bắt (100 %)**, toàn bộ vị trí đột biến của RTL | 0 |
 | bug chèn tay ([bug_demo](../designs/apb_tlul_bridge/bug_demo)) | bỏ so sánh `d_source`: 2 test + assertion CHK-009 (156 lần) bắt; triage chỉ đúng `m_tlul_if.sv:100` và bản sửa 1 dòng | US$0,63 |
 
-Tổng một lần chạy sạch từ đầu khoảng **US$6–7** quota Claude Code (≈ 45 phút); con số trong báo cáo (US$14,2) gồm cả các lần chạy lại khi phát triển flow.
+Tổng một lần chạy sạch từ đầu khoảng **US$6–7** quota Claude Code (≈ 45 phút); con số trong báo cáo gồm cả các lần chạy lại khi phát triển flow.
+
+*Cập nhật 2026-11-08:* sau khi sửa lỗi đánh số lại check (mục 14), checker, cover point và test của IP này được sinh lại từ contract đã sửa; số liệu hiện tại (line 96,0 %, 15/15 + 2 test closure, 36/36 mutant) ở mục 14. Bảng trên là lần chạy đầu.
 
 **Lỗi của chính flow được phát hiện nhờ chạy thật, và đã sửa:**
 1. Thư viện helper nhận `salt` kiểu int nhưng tài liệu API không nói → 17/18 test lỗi `TypeError`. Sửa thư viện; thêm luật: lỗi phát sinh bên trong `nnc_cocotb.py` là lỗi của flow, **không** gửi cho agent "sửa test".
 2. Test khai thừa: một test "pass" cho luật "tham số sai phải bị báo lúc elaboration" mà không kiểm gì. Sửa: contract đưa loại luật này vào not_verified; thêm `not_verifiable()` và trạng thái `NOT_VERIFIABLE` để test không thể pass âm thầm.
 3. Assertion bị che: test dừng ở lỗi đầu tiên, reset của test sau huỷ property `|=>` đang chờ → SVA báo 0 lỗi dù có bug. Sửa: `reset_dut` cho 2 cạnh clock trôi qua trước khi reset; demo bug sau đó cho thấy assertion bắt 156 lần.
+
+## 14. Kết quả trên 3 IP (P6, 2026-11-08)
+
+Ba thiết kế từ VLSIT_ASIC_SOC_AI_SKILLS (Apache-2.0), RTL và spec chép nguyên vẹn; mọi file trong `work/`, `verif/`, `sim/` do flow sinh. Gate G1–G3 do Claude duyệt **theo ủy quyền** (ghi rõ người duyệt "Claude (delegated by GabrielHCMUT)" và lý do trong `nnc_state.json`, báo cáo đánh dấu "a person should confirm"); **G4 để lại cho người**. Mỗi lần chạy: 1 seed, cấu hình mặc định, 36 mutant.
+
+| | apb_tlul_bridge | axi2apb_bridge | sync_fifo |
+|---|---|---|---|
+| Đầu vào | spec 741 dòng + chuẩn TL-UL; RTL 3 file | spec 616 dòng; RTL 4 file (1 226 dòng) | spec 935 dòng; RTL 6 file, 2 không elaborate (macro SRAM) |
+| Đặc điểm | 1 clock | 1 clock, 45 port | **2 clock** đồng bộ, 2 reset cứng + reset mềm, 3 tham số dẫn xuất `LPARA_*` |
+| Luật (giữ / vào) | 232 / 286 | 151 / 190 | 272 / 320 |
+| Câu hỏi: tài liệu trả lời / mở | 39 / 5 | 30 / 4 | 36 / 7 |
+| Check (assertion + test) | 31 (17 + 14) | 31 (17 + 14) | 25 (11 + 14) |
+| Luật không kiểm được bằng mô phỏng (có lý do) | 63 | 37 | 98 |
+| Sinh nguồn | lint sạch lần 1; test hợp lệ lần 1 | lint sạch lần 1; test hợp lệ lần 1 | 1 checker cần 1 vòng sửa lint; test hợp lệ lần 1; **1 vòng sửa code test** sau mô phỏng (thời gian tính bằng ps), duyệt lại G3 |
+| Mô phỏng | **15/15 test pass, 17/17 assertion hit, 0 fail** | 2/15 pass; CHK-016 fail 606 lần | 25/25 test pass; CHK-007 fail 32 lần |
+| Kết luận triage | — | **bug thật của RTL** (A) | **checker sai** (B) |
+| Line / block / expression / toggle | 96,0 / 95,6 / 100 / 95,9 % | 97,7 / 93,1 / 92,2 / 66,3 % | 99,2 / 97,3 / 92,8 / 70,6 % |
+| Functional (điểm từ spec) | 38/40 → **40/40** sau 1 vòng closure (mục tiêu minh hoạ) | 36/40 | 40/40 |
+| Mutation | 36/36; 72 luật có mutant, 0 dưới 85 % | 36/36; 74 luật, 0 dưới 85 % | 36/36 (loại 2 file không elaborate, 3 dòng chưa chạy); 82 luật, 0 dưới 85 % |
+| Luật VERIFIED / FAILED | 169 / 0 | 35 / 79 | 167 / 7 |
+| Chi phí agent | US$2,97 cho lần sinh lại từ gen-sva (contract trong cache) | US$7,37 toàn bộ | US$11,66 toàn bộ (+ US$2,85 một lần gọi hỏng, xem mục 5) |
+
+**axi2apb_bridge — bug thật trong RTL tham khảo.** Mọi giao dịch ghi phát beat đầu ra APB ở AWADDR + size (ví dụ AWADDR 0x3000, 4 beat → PADDR 0x3004…0x3010, beat cuối nằm ngoài burst); đọc thì đúng. Checker SVA độc lập (CHK-016) và 12 test cùng thấy; triage (A9) truy về `m_axi2apb_wr_seq.sv:344` (cập nhật `reg_wr_addr` khi nhận W, trước khi `o_req_addr` gửi beat đó) và bác bỏ B/C có dẫn chứng. Waveform WF-005 của chính spec (AWADDR 0x2000, AWLEN 1 → PADDR 0x2000, 0x2004) xác nhận; `rtl_v2/` ở upstream có cùng dòng. Bản sửa ứng viên thử trên **bản copy** bằng `nnc inject`: 14/15 test pass, 17/17 assertion **0 fail**, line 98,4 %. Test còn lại (CHK-019 pha D) lộ một chỗ **spec mơ hồ**: "flip the next tie preference after each completed transaction" đọc nguyên văn (cả giao dịch không tranh chấp) khác với round-robin "người được phục vụ cuối bị ưu tiên thấp" mà RTL làm; contract theo cách đọc nguyên văn do câu trả lời từ tài liệu ở G1 và quyết định ủy quyền — người thiết kế cần xác nhận. Chi tiết: [designs/axi2apb_bridge/fix_candidate](../designs/axi2apb_bridge/fix_candidate/README.md). RTL bàn giao không bị sửa.
+
+**apb_tlul_bridge — sạch, và bug chèn vẫn bị bắt.** Với thế hệ nguồn mới, demo bug chèn ([bug_demo](../designs/apb_tlul_bridge/bug_demo/README.md), `nnc inject`) cho 2/17 test fail và assertion CHK-010 fail 2 lần; triage chỉ đúng `m_tlul_if.sv:100` (US$0,60). Báo cáo đáp ứng mọi điều kiện sign-off, chỉ chờ người duyệt G4.
+
+**sync_fifo — checker sai, RTL đúng.** Mọi test (kể cả mô hình tham chiếu Python theo port) pass; assertion CHK-007 fail 32 lần, chỉ trong các test có reset mềm. Triage kết luận B: scoreboard SVA (`nnc_chk_sb.sv:51,55`) nhận biết kết thúc reset mềm qua bản đăng ký của `o_sw_rst_busy`, nên xoá hàng đợi muộn một cạnh clock so với CHK-006; RTL đúng theo REQ-SRST-005/006 và CHK-010, CHK-024 cùng xác nhận. Theo quy tắc, flow không tự sửa checker để run pass: đây là quyết định của người thiết kế (sửa checker được đề xuất, không làm yếu check).
+
+**Coverage.** `nnc cover` in baseline của mọi metric, các cover point chức năng chưa hit (kèm tên) và các mục code chưa phủ theo file; **mục tiêu do người thiết kế đặt**, không có ngưỡng mặc định. Minh hoạ trên apb_tlul_bridge (mục tiêu functional 100 % đặt theo ủy quyền): A10 đổi 2 điểm chưa hit (phản hồi trễ ≥ 8 chu kỳ; phản hồi treo lúc nhả reset) thành 2 kịch bản chỉ dùng tín hiệu của spec/contract, A11 (không RTL) viết `test_apb_tlul_bridge_cov1.py` sau 2 lần thử, 17/17 test pass, 40/40 điểm, 1 vòng, US$1,77; G3 duyệt lại. Toggle thấp ở hai IP mới chủ yếu là bit cao: ở axi2apb là bit cao của địa chỉ 32 bit (`i_axi_awaddr`, `o_apb_paddr`, …) mà test chỉ dùng vùng địa chỉ thấp, và các tín hiệu nội bộ size/mask 32 bit; ở sync_fifo là bit cao của các tín hiệu nội bộ mở rộng độ rộng (`w_wptr_ext`, `w_occ_nxt`, …), hằng 0 theo cấu trúc. Loại thứ nhất đạt được bằng kích thích (nếu người thiết kế đặt mục tiêu toggle), loại thứ hai thì không (danh sách trong `coverage.md`).
+
+**Lỗi của flow lộ ra khi chạy 3 IP, đã sửa:**
+1. Đánh số lại check: tham chiếu chéo `CHK-…` trong văn bản check, ghi chú not_verified và giả định giữ ID cũ của agent → nay viết lại trong một lượt; khoảng (`CHK-020..CHK-023`) được mở thành danh sách ID mới, dạng `CHK-015/017` cũng được xử lý. Contract của 3 IP được dựng lại từ cache, G2 duyệt lại.
+2. Một lần gọi A7 không giới hạn suy nghĩ tiêu hết 128k token mà không trả lời → giới hạn `MAX_THINKING_TOKENS` (mục 5).
+3. Test nhiều clock giả định thời điểm bắt đầu là số nguyên ns (cocotb chuyển test cách nhau 1 bước mô phỏng) → vòng sửa test tự động giải quyết; tài liệu API cho agent nay nói rõ.
+4. `coverage.md` khi chưa đặt mục tiêu chỉ hiện line → nay hiện mọi metric và danh sách chưa phủ.

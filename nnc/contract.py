@@ -109,6 +109,7 @@ def extract_interface(index: dict) -> dict:
     h = pt["header"]
     c_name, c_dir, c_w = _col(h, "port"), _col(h, "direction"), _col(h, "width")
     c_type, c_reset, c_mean = _col(h, "signal type", "type"), _col(h, "reset"), _col(h, "meaning", "description")
+    c_dom = _col(h, "clock domain", "domain")
     ports = []
     for row in pt["rows"]:
         if len(row) <= max(c_name, c_dir, c_w):
@@ -125,30 +126,57 @@ def extract_interface(index: dict) -> dict:
             "type": row[c_type] if c_type is not None and c_type < len(row) else "",
             "reset_value": row[c_reset] if c_reset is not None and c_reset < len(row) else "",
             "meaning": row[c_mean] if c_mean is not None and c_mean < len(row) else "",
+            "domain": row[c_dom].strip() if c_dom is not None and c_dom < len(row) else "",
         })
     params = []
     tt = _find_table(index, "parameter", "default")
     if tt is not None:
         ph = tt["header"]
         cn, cd, cr = _col(ph, "parameter"), _col(ph, "default"), _col(ph, "legal", "range")
+        cp = _col(ph, "purpose", "description", "meaning")
         for row in tt["rows"]:
             name = row[cn].strip() if cn is not None and cn < len(row) else ""
             if re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", name):
                 params.append({"name": name, "default": row[cd].strip() if cd is not None else "",
                                "legal": row[cr].strip() if cr is not None and cr < len(row) else ""})
+                purpose = row[cp] if cp is not None and cp < len(row) else ""
+                expr = derived_expr(params[-1]["default"], purpose, [q["name"] for q in params[:-1]])
+                if expr:
+                    params[-1]["derived"] = expr
 
     def pick(kind: str, names: tuple[str, ...]) -> dict | None:
         for p in ports:
             if p["direction"] == "input" and (kind in p["type"].lower() or any(n in p["name"].lower() for n in names)):
                 return p
         return None
+
+    def active_low(p: dict) -> bool:
+        return bool(re.search(r"(_n\b|_n_|active[- ]low)", p["name"] + " " + p["meaning"] + " " + p["type"], re.I))
     clk = pick("clock", ("clk", "clock"))
     rst = pick("reset", ("rst", "reset"))
     reset = None
     if rst is not None:
-        low = bool(re.search(r"(_n\b|_n_|active[- ]low)", rst["name"] + " " + rst["meaning"] + " " + rst["type"], re.I))
-        reset = {"name": rst["name"], "active_low": low}
+        reset = {"name": rst["name"], "active_low": active_low(rst)}
+    # Every clock and every hardware reset (by the signal-type column when the table has one), each
+    # reset tied to the clock of its domain. A request such as a software reset is not of type reset.
+    typed = c_type is not None
+    clocks = [p for p in ports if p["direction"] == "input" and p["width"] in ("", "1") and
+              (re.match(r"\s*clock\b", p["type"], re.I) if typed else re.search(r"clk|clock", p["name"], re.I))]
+    if clk is not None and clk not in clocks:
+        clocks.insert(0, clk)
+    resets = [p for p in ports if p["direction"] == "input" and p["width"] in ("", "1") and
+              (re.match(r"\s*reset\b", p["type"], re.I) if typed else re.search(r"rst|reset", p["name"], re.I))]
+    if rst is not None and rst not in resets:
+        resets.insert(0, rst)
+
+    def clock_of(r: dict) -> str | None:
+        for c in clocks:
+            if c["domain"] and r["domain"] and (c["domain"] in r["domain"] or r["domain"] in c["domain"]):
+                return c["name"]
+        return clk["name"] if clk else None
     return {"ports": ports, "parameters": params, "clock": clk["name"] if clk else None, "reset": reset,
+            "clocks": [{"name": c["name"], "domain": c["domain"]} for c in clocks],
+            "resets": [{"name": r["name"], "active_low": active_low(r), "clock": clock_of(r)} for r in resets],
             "source_table": {"section": pt["section"], "line": pt["line"]}}
 
 
@@ -170,9 +198,56 @@ def _param_default(p: dict) -> str:
     return d if m else ("0" if d in ("", "'0") else d)
 
 
+def derived_expr(default: str, purpose: str, earlier: list[str]) -> str | None:
+    """SystemVerilog expression of a derived parameter ("Derived" default, a formula such as
+    "clog2(DEPTH + 1)" in the purpose text), with short names resolved to the earlier parameters."""
+    d = default.strip()
+    if re.match(r"^\d+$", d) or re.match(r"^\d+'[bdh][0-9a-fA-F_]+$", d):
+        return None
+    text = d if re.search(r"clog2|[-+*/]", d) else purpose
+    m = re.search(r"\$?clog2\s*\(([^()]*(?:\([^()]*\)[^()]*)*)\)", text)
+    if not m:
+        return None
+    inner = re.sub(r"\s[x×]\s", " * ", m.group(1))
+
+    def resolve(w: re.Match) -> str:
+        word = w.group(0)
+        hits = [n for n in earlier if n == word or n.endswith("_" + word)]
+        return hits[0] if len(hits) == 1 else word
+    inner = re.sub(r"[A-Za-z_][A-Za-z0-9_]*", resolve, inner)
+    if any(re.match(r"[A-Za-z_]", t) and t not in earlier for t in re.findall(r"[A-Za-z_][A-Za-z0-9_]*", inner)):
+        return None
+    return f"$clog2({inner.strip()})"
+
+
+def eval_param(expr: str, values: dict[str, int]) -> int:
+    """Value of a derived-parameter expression for given parameter values ($clog2 as in SV)."""
+    def clog2(n: int) -> int:
+        return (int(n) - 1).bit_length() if n > 1 else 0
+    py = expr.replace("$clog2", "clog2")
+    if re.search(r"[^\w\s()+\-*/]", py):
+        raise ValueError(f"unsupported expression {expr}")
+    return int(eval(py, {"__builtins__": {}}, {"clog2": clog2, **values}))  # noqa: S307 (checked charset)
+
+
+def derived_values(iface: dict, values: dict[str, int]) -> dict[str, int]:
+    out = dict(values)
+    for p in iface["parameters"]:
+        if p.get("derived"):
+            out[p["name"]] = eval_param(p["derived"], out)
+    return out
+
+
+def param_decl(p: dict) -> str:
+    """A derived parameter is a localparam (the DUT computes it too; it cannot be overridden)."""
+    if p.get("derived"):
+        return f"localparam int {p['name']} = {p['derived']}"
+    return f"parameter int {p['name']} = {_param_default(p)}"
+
+
 def module_header(name: str, iface: dict, all_inputs: bool = False) -> str:
     """SystemVerilog header with the contract parameters and ports (all inputs for a checker)."""
-    params = ",\n".join(f"  parameter int {p['name']} = {_param_default(p)}" for p in iface["parameters"])
+    params = ",\n".join(f"  {param_decl(p)}" for p in iface["parameters"])
     ports = []
     for p in iface["ports"]:
         direction = "input " if all_inputs or p["direction"] == "input" else p["direction"]
@@ -194,11 +269,28 @@ def contract_shell(top: str, iface: dict) -> str:
 
 
 # --------------------------------------------------------------------------------------- planning
+def multi_clock(iface: dict) -> bool:
+    return len(iface.get("clocks") or []) > 1 or len(iface.get("resets") or []) > 1
+
+
+def _domains_text(iface: dict) -> list[str]:
+    """Extra interface lines for a design with several clocks or resets (none for one clock and one
+    reset, so that single-clock prompts and their cache entries do not change)."""
+    if not multi_clock(iface):
+        return []
+    rows = ["Clock domains (each check is evaluated on the clock of the domain of its signals):"]
+    for c in iface["clocks"]:
+        rs = [f"{r['name']} ({'active low' if r['active_low'] else 'active high'})" for r in iface["resets"]
+              if r["clock"] == c["name"]]
+        rows.append(f"  {c['name']} domain {c['domain'] or '?'}: reset {', '.join(rs) or 'none'}")
+    return rows
+
+
 def _iface_text(iface: dict, top: str) -> str:
     rows = [f"DUT top module: {top}",
             f"Clock: {iface['clock']} (rising edge)",
             f"Reset: {iface['reset']['name']} ({'active low' if iface['reset']['active_low'] else 'active high'})"
-            if iface.get("reset") else "Reset: none found",
+            if iface.get("reset") else "Reset: none found"] + _domains_text(iface) + [
             "Parameters: " + ", ".join(f"{p['name']}={p['default']} ({p['legal']})" for p in iface["parameters"]),
             "Ports (name | direction | width | type | reset value | meaning):"]
     rows += [f"  {p['name']} | {p['direction']} | {p['width']} | {p['type']} | {p['reset_value']} | {p['meaning']}"
@@ -224,6 +316,57 @@ def _decisions_text(decisions: list[dict] | None) -> str:
 def build_prompt(iface: dict, top: str, rules: list[dict], extra: str = "", decisions: list[dict] | None = None) -> str:
     return (f"INTERFACE\n{_iface_text(iface, top)}\n\nRULES ({len(rules)})\n" +
             "\n".join(_rule_text(r) for r in rules) + _decisions_text(decisions) + f"\n\n{TASK_TEXT}{extra}")
+
+
+def id_mapping(checks: list[dict], order: list[int]) -> dict[str, str]:
+    """Old check ID (as written by the agent) -> CHK-nnn in `order`. An old ID given to two checks
+    (first pass and gap fill) is ambiguous and left out (references to it stay as written)."""
+    olds = [c.get("id") for c in checks]
+    return {old: f"CHK-{n:03d}" for n, i in enumerate(order, 1) if (old := olds[i]) and olds.count(old) == 1}
+
+
+CHK_REF = re.compile(r"\bCHK-(\d{3})\b(?:(\.\.|–|—| to )(?:CHK-)?(\d{3})\b)?((?:/(?:CHK-)?\d{3}\b)*)")
+
+
+def _ref(m: re.Match, mapping: dict[str, str]) -> str:
+    """One reference: a single ID, a range (`CHK-020..CHK-023`, en dash, " to ") or a slash list
+    (`CHK-015/017`). A range is expanded to the new IDs of its members; it stays a range only when those
+    are still consecutive."""
+    first, sep, last, tail = m.group(1), m.group(2), m.group(3), m.group(4)
+    if sep:
+        lo, hi = sorted((int(first), int(last)))
+        new = sorted({mapping.get(f"CHK-{k:03d}", f"CHK-{k:03d}") for k in range(lo, hi + 1)})
+        nums = [int(x[4:]) for x in new]
+        out = (f"{new[0]}{sep}{new[-1]}" if nums == list(range(nums[0], nums[0] + len(nums)))
+               else ", ".join(new))
+    else:
+        out = mapping.get(f"CHK-{first}", f"CHK-{first}")
+    for d in re.findall(r"(\d{3})", tail):
+        out += "/" + mapping.get(f"CHK-{d}", f"CHK-{d}")
+    return out
+
+
+def rewrite_refs(v, mapping: dict[str, str], keep: tuple[str, ...] = ("rules", "id", "rule")):
+    """Replace every check ID inside strings (recursively), in one pass so that IDs never chain."""
+    if isinstance(v, str):
+        return CHK_REF.sub(lambda m: _ref(m, mapping), v)
+    if isinstance(v, list):
+        return [rewrite_refs(x, mapping, keep) for x in v]
+    if isinstance(v, dict):
+        return {k: (x if k in keep else rewrite_refs(x, mapping, keep)) for k, x in v.items()}
+    return v
+
+
+def renumber(checks: list[dict], order: list[int]) -> list[dict]:
+    """Give the checks the IDs CHK-001... in `order` and rewrite every reference to an old ID inside
+    their texts (a check may say "uses the tracker of CHK-015")."""
+    mapping = id_mapping(checks, order)
+    out = []
+    for n, i in enumerate(order, 1):
+        c = rewrite_refs(checks[i], mapping)
+        c["id"] = f"CHK-{n:03d}"
+        out.append(c)
+    return out
 
 
 def plan(rules_doc: dict, iface: dict, top: str, backend, log_dir: Path, *, model: str | None = "opus",
@@ -260,11 +403,10 @@ def plan(rules_doc: dict, iface: dict, top: str, backend, log_dir: Path, *, mode
     not_verified = [n for n in not_verified if n["rule"] in ids]
     # Stable numbering: assertions first, by group, then tests, each in the order given.
     order = sorted(range(len(checks)), key=lambda i: (checks[i]["kind"] != "assertion", checks[i]["group"], i))
-    renum = []
-    for n, i in enumerate(order, 1):
-        c = dict(checks[i])
-        c["id"] = f"CHK-{n:03d}"
-        renum.append(c)
+    renum = renumber(checks, order)
+    mapping = id_mapping(checks, order)           # notes and assumptions cite checks too
+    not_verified = rewrite_refs(not_verified, mapping)
+    assumptions = rewrite_refs(assumptions, mapping)
     still = sorted(ids - covered())
     return {
         "top": top,
@@ -295,8 +437,40 @@ def summarize(c: dict) -> str:
             f", unknown IDs {len(cov['unknown_ids'])}\ncalls: {u['calls']} ({u['cached']} cached)  cost US${u['cost_usd']}")
 
 
+def selected(c: dict) -> dict:
+    """The contract restricted to the checks selected for this run (all unless `nnc plan --select`)."""
+    sel = c.get("selection")
+    if not sel or sel.get("mode") != "selected":
+        return c
+    keep = set(sel["checks"])
+    return {**c, "checks": [ch for ch in c["checks"] if ch["id"] in keep]}
+
+
+def select_checks(c: dict, checks: list[str] | None, by: str, reason: str = "") -> dict:
+    """Record the test-plan selection (None = all checks). The selection is part of the Gate 2 artifact."""
+    ids = {ch["id"] for ch in c["checks"]}
+    if checks is None:
+        c["selection"] = {"mode": "all", "checks": sorted(ids), "by": by,
+                          "date": datetime.now(timezone.utc).isoformat(timespec="seconds"), "reason": reason}
+        return c
+    unknown = sorted(set(checks) - ids)
+    if unknown:
+        raise ValueError(f"unknown check IDs {unknown}")
+    c["selection"] = {"mode": "selected", "checks": sorted(set(checks)), "by": by, "reason": reason,
+                      "date": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                      "not_selected": sorted(ids - set(checks))}
+    return c
+
+
 def to_markdown(c: dict) -> str:
     out = ["# Verification contract (Gate 2)", "", "```", summarize(c), "```", ""]
+    sel = c.get("selection")
+    if sel and sel.get("mode") == "selected":
+        out += [f"> **Test plan selection** by {sel['by']} ({sel['date']}): {len(sel['checks'])} of "
+                f"{len(c['checks'])} checks selected. Not selected (reported NOT_SELECTED, never PASS): "
+                f"{', '.join(sel['not_selected'])}. {sel.get('reason', '')}", ""]
+    elif sel:
+        out += [f"> **Test plan selection** by {sel['by']} ({sel['date']}): all {len(c['checks'])} applicable checks.", ""]
     if c["contract"]["unreviewed_gates"]:
         out += [f"> **UNREVIEWED:** built while {', '.join(c['contract']['unreviewed_gates'])} was not approved.", ""]
     out += ["## Interface", "", "| Port | Dir | Width | Type |", "|---|---|---|---|"]
@@ -304,7 +478,8 @@ def to_markdown(c: dict) -> str:
     out += ["", "## Checks", "", "| ID | Kind | Group | Title | Rules | Behavior / expected |", "|---|---|---|---|---|---|"]
     for ch in c["checks"]:
         text = ch["behavior"] + (f" — STIMULUS: {ch['stimulus']} — EXPECTED: {ch['expected']}" if ch["kind"] == "test" else "")
-        out.append(f"| {ch['id']} | {ch['kind']} | {ch['group']} | {ch['title']} | {', '.join(ch['rules'])} | "
+        mark = "" if not sel or sel.get("mode") != "selected" or ch["id"] in sel["checks"] else " (not selected)"
+        out.append(f"| {ch['id']}{mark} | {ch['kind']} | {ch['group']} | {ch['title']} | {', '.join(ch['rules'])} | "
                    f"{text.replace('|', chr(92) + '|')} |")
     if c["not_verified"]:
         out += ["", "## Not verified by simulation", "", "| Rule | Reason | Note |", "|---|---|---|"]

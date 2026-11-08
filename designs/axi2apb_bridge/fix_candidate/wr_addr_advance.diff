@@ -1,0 +1,15 @@
+--- rtl/m_axi2apb_wr_seq.sv
++++ rtl/m_axi2apb_wr_seq.sv
+@@ -340,10 +340,11 @@
+       if ((reg_fsm_wr_current_state == ENUM_ST_WDAT) && i_axi_wvalid) begin
+         reg_wr_data <= i_axi_wdata;
+         reg_wr_strb <= i_axi_wstrb;
+         reg_wr_beats_left <= $bits(reg_wr_beats_left)'(reg_wr_beats_left - 9'd1);
+-        reg_wr_addr <= w_wr_nxt_addr;
+       end
++      if ((reg_fsm_wr_current_state == ENUM_ST_WAIT) && i_rsp_valid)
++        reg_wr_addr <= w_wr_nxt_addr;
+       if ((reg_fsm_wr_current_state == ENUM_ST_DRAIN) && i_axi_wvalid)
+         reg_wr_beats_left <= $bits(reg_wr_beats_left)'(reg_wr_beats_left - 9'd1);
+       if ((reg_fsm_wr_current_state == ENUM_ST_WAIT) && i_rsp_valid && i_rsp_err)
+         reg_wr_err <= 1'b1;

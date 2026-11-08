@@ -1,0 +1,540 @@
+{
+ "module": "nnc_cov",
+ "file": "nnc_cov.sv",
+ "points": [
+  {
+   "id": "COVP-001",
+   "title": "Write accepted",
+   "rules": [
+    "SF-3-01",
+    "SF-6.3-07"
+   ],
+   "checks": [
+    "CHK-006",
+    "CHK-010"
+   ],
+   "condition": "i_wr_en=1 and o_full=0 at a write clock edge."
+  },
+  {
+   "id": "COVP-002",
+   "title": "Rejected unblocked write (full)",
+   "rules": [
+    "SF-3-07",
+    "SF-6.3-08",
+    "SF-12-01",
+    "SF-10.2-05"
+   ],
+   "checks": [
+    "CHK-011",
+    "CHK-015"
+   ],
+   "condition": "i_wr_en=1, o_full=1, i_rst_n_sw=1 and o_sw_rst_busy=0."
+  },
+  {
+   "id": "COVP-003",
+   "title": "o_overflow pulse observed",
+   "rules": [
+    "SF-3-17",
+    "SF-6.2-06",
+    "SF-15.3-10"
+   ],
+   "checks": [
+    "CHK-011"
+   ],
+   "condition": "o_overflow=1 sampled at a write clock edge."
+  },
+  {
+   "id": "COVP-004",
+   "title": "Three or more consecutive rejected writes",
+   "rules": [
+    "SF-12-11",
+    "SF-12-02"
+   ],
+   "checks": [
+    "CHK-011",
+    "CHK-015"
+   ],
+   "condition": "A rejected unblocked write that is at least the third in a row of consecutive rejected writes."
+  },
+  {
+   "id": "COVP-005",
+   "title": "Write request during software reset block",
+   "rules": [
+    "SF-3-35",
+    "SF-3-37",
+    "SF-6.3-11",
+    "SF-12-07"
+   ],
+   "checks": [
+    "CHK-009",
+    "CHK-011"
+   ],
+   "condition": "i_wr_en=1 while i_rst_n_sw=0 or o_sw_rst_busy=1."
+  },
+  {
+   "id": "COVP-006",
+   "title": "Software reset sequence starts",
+   "rules": [
+    "SF-3-33",
+    "SF-10.7-02",
+    "SF-10.7-08"
+   ],
+   "checks": [
+    "CHK-008",
+    "CHK-022"
+   ],
+   "condition": "o_sw_rst_busy=0 and i_rst_n_sw=0 at a write edge."
+  },
+  {
+   "id": "COVP-007",
+   "title": "Software reset low level of exactly 1 cycle",
+   "rules": [
+    "SF-3-33",
+    "SF-10.7-08"
+   ],
+   "checks": [
+    "CHK-022"
+   ],
+   "condition": "i_rst_n_sw returns to 1 after a low level that lasted exactly one write cycle."
+  },
+  {
+   "id": "COVP-008",
+   "title": "Software reset low level of 3 to 9 cycles",
+   "rules": [
+    "SF-3-34",
+    "SF-10.7-04"
+   ],
+   "checks": [
+    "CHK-022"
+   ],
+   "condition": "i_rst_n_sw returns to 1 after a low level of 3 to 9 write cycles."
+  },
+  {
+   "id": "COVP-009",
+   "title": "Software reset low level of 10 or more cycles",
+   "rules": [
+    "SF-3-34",
+    "SF-3-48"
+   ],
+   "checks": [
+    "CHK-022"
+   ],
+   "condition": "i_rst_n_sw returns to 1 after a low level of at least 10 write cycles."
+  },
+  {
+   "id": "COVP-010",
+   "title": "o_sw_rst_busy falls (sequence completion)",
+   "rules": [
+    "SF-3-36",
+    "SF-6.2-02",
+    "SF-10.7-06",
+    "SF-7.3-03"
+   ],
+   "checks": [
+    "CHK-008",
+    "CHK-010",
+    "CHK-022"
+   ],
+   "condition": "o_sw_rst_busy was 1 at the previous write edge and is 0 now."
+  },
+  {
+   "id": "COVP-011",
+   "title": "Busy held for 3 or more cycles",
+   "rules": [
+    "SF-3-44",
+    "SF-10.7-04"
+   ],
+   "checks": [
+    "CHK-022"
+   ],
+   "condition": "o_sw_rst_busy=1 for at least the fourth consecutive write cycle."
+  },
+  {
+   "id": "COVP-012",
+   "title": "New software reset request while busy",
+   "rules": [
+    "SF-3-47",
+    "SF-10.7-10"
+   ],
+   "checks": [
+    "CHK-024"
+   ],
+   "condition": "i_rst_n_sw=0 while o_sw_rst_busy=1."
+  },
+  {
+   "id": "COVP-013",
+   "title": "Software reset started while FIFO full",
+   "rules": [
+    "SF-3-42",
+    "SF-7.3-03"
+   ],
+   "checks": [
+    "CHK-024"
+   ],
+   "condition": "Software reset start (busy 0, i_rst_n_sw 0) when o_full was 1 unblocked in the previous cycle."
+  },
+  {
+   "id": "COVP-014",
+   "title": "o_full rises",
+   "rules": [
+    "SF-3-05",
+    "SF-3-54",
+    "SF-10.4-07",
+    "SF-15.2-03"
+   ],
+   "checks": [
+    "CHK-007",
+    "CHK-015"
+   ],
+   "condition": "o_full=1 without block while it was not full in the previous write cycle."
+  },
+  {
+   "id": "COVP-015",
+   "title": "o_full falls",
+   "rules": [
+    "SF-3-53",
+    "SF-10.2-04",
+    "SF-13-04"
+   ],
+   "checks": [
+    "CHK-012",
+    "CHK-007"
+   ],
+   "condition": "o_full=0 now while the previous write cycle had unblocked o_full=1."
+  },
+  {
+   "id": "COVP-016",
+   "title": "Simultaneous accepted write and read",
+   "rules": [
+    "SF-10.4-01",
+    "SF-6.3-09"
+   ],
+   "checks": [
+    "CHK-016"
+   ],
+   "condition": "i_wr_en with o_full=0 and i_rd_en with o_empty=0 sampled at a write edge."
+  },
+  {
+   "id": "COVP-017",
+   "title": "Write to full FIFO with read request accepted (no bypass)",
+   "rules": [
+    "SF-20.2-05",
+    "SF-3-07"
+   ],
+   "checks": [
+    "CHK-016",
+    "CHK-006"
+   ],
+   "condition": "i_wr_en=1, o_full=1 unblocked, with i_rd_en=1 and o_empty=0."
+  },
+  {
+   "id": "COVP-018",
+   "title": "o_full_thr active while not full",
+   "rules": [
+    "SF-3-14",
+    "SF-10.3-07",
+    "SF-15.2-05"
+   ],
+   "checks": [
+    "CHK-025",
+    "CHK-010"
+   ],
+   "condition": "o_full_thr=1 and o_full=0."
+  },
+  {
+   "id": "COVP-019",
+   "title": "Blocked write: o_full_thr shows empty value 1 (threshold 0)",
+   "rules": [
+    "SF-3-35",
+    "SF-10.6-03"
+   ],
+   "checks": [
+    "CHK-009"
+   ],
+   "condition": "Blocked, i_full_thr=0 and o_full_thr=1."
+  },
+  {
+   "id": "COVP-020",
+   "title": "Blocked write: o_full_thr 0 (threshold not 0)",
+   "rules": [
+    "SF-3-35",
+    "SF-10.6-03"
+   ],
+   "checks": [
+    "CHK-009"
+   ],
+   "condition": "Blocked, i_full_thr!=0 and o_full_thr=0."
+  },
+  {
+   "id": "COVP-021",
+   "title": "Full threshold above DEPTH while FIFO full",
+   "rules": [
+    "SF-9-05",
+    "SF-9-06"
+   ],
+   "checks": [
+    "CHK-025"
+   ],
+   "condition": "i_full_thr > DEPTH, o_full=1 unblocked, o_full_thr=0."
+  },
+  {
+   "id": "COVP-022",
+   "title": "Full threshold equal DEPTH at full",
+   "rules": [
+    "SF-3-14",
+    "SF-9-06"
+   ],
+   "checks": [
+    "CHK-025"
+   ],
+   "condition": "i_full_thr == DEPTH, o_full=1 unblocked and o_full_thr=1."
+  },
+  {
+   "id": "COVP-023",
+   "title": "Write pointer wrap",
+   "rules": [
+    "SF-3-13",
+    "SF-9-01"
+   ],
+   "checks": [
+    "CHK-017"
+   ],
+   "condition": "Accepted write that is the 2xDEPTH-th since the helper count was cleared."
+  },
+  {
+   "id": "COVP-024",
+   "title": "Second write pointer wrap",
+   "rules": [
+    "SF-3-13",
+    "SF-15.2-08"
+   ],
+   "checks": [
+    "CHK-017"
+   ],
+   "condition": "Write pointer wrap after a previous wrap already occurred."
+  },
+  {
+   "id": "COVP-025",
+   "title": "Write-domain hardware reset during activity, release observed",
+   "rules": [
+    "SF-3-29",
+    "SF-10.2-09",
+    "SF-15.2-01"
+   ],
+   "checks": [
+    "CHK-021"
+   ],
+   "condition": "First write edge after release of a reset that hit while traffic, full or software reset was active."
+  },
+  {
+   "id": "COVP-026",
+   "title": "Write-domain hardware reset while overflow pulse active",
+   "rules": [
+    "SF-12-03",
+    "SF-7.3-01"
+   ],
+   "checks": [
+    "CHK-021"
+   ],
+   "condition": "First write edge after release of a reset that was asserted when an overflow pulse was active."
+  },
+  {
+   "id": "COVP-027",
+   "title": "Hardware reset during software reset sequence",
+   "rules": [
+    "SF-3-46",
+    "SF-7.3-08",
+    "SF-10.7-09"
+   ],
+   "checks": [
+    "CHK-023"
+   ],
+   "condition": "First write edge after release of a reset that was asserted during a software reset sequence."
+  },
+  {
+   "id": "COVP-028",
+   "title": "Read accepted",
+   "rules": [
+    "SF-3-02",
+    "SF-6.3-09"
+   ],
+   "checks": [
+    "CHK-006"
+   ],
+   "condition": "i_rd_en=1 and o_empty=0 at a read clock edge."
+  },
+  {
+   "id": "COVP-029",
+   "title": "Rejected unblocked read (empty)",
+   "rules": [
+    "SF-3-11",
+    "SF-6.3-10",
+    "SF-12-04",
+    "SF-10.2-06"
+   ],
+   "checks": [
+    "CHK-005",
+    "CHK-015"
+   ],
+   "condition": "i_rd_en=1, o_empty=1 and o_sw_rst_busy=0."
+  },
+  {
+   "id": "COVP-030",
+   "title": "o_underflow pulse observed",
+   "rules": [
+    "SF-3-18",
+    "SF-15.3-11"
+   ],
+   "checks": [
+    "CHK-005"
+   ],
+   "condition": "o_underflow=1 sampled at a read clock edge."
+  },
+  {
+   "id": "COVP-031",
+   "title": "Three or more consecutive rejected reads",
+   "rules": [
+    "SF-12-11",
+    "SF-10.3-08",
+    "SF-10.3-03"
+   ],
+   "checks": [
+    "CHK-005",
+    "CHK-020"
+   ],
+   "condition": "A rejected unblocked read that is at least the third in a row."
+  },
+  {
+   "id": "COVP-032",
+   "title": "Read request during software reset block",
+   "rules": [
+    "SF-3-38",
+    "SF-3-39",
+    "SF-6.3-11"
+   ],
+   "checks": [
+    "CHK-003",
+    "CHK-005"
+   ],
+   "condition": "i_rd_en=1 while o_sw_rst_busy=1 (o_empty=1)."
+  },
+  {
+   "id": "COVP-033",
+   "title": "o_empty rises",
+   "rules": [
+    "SF-3-54",
+    "SF-10.4-06",
+    "SF-15.2-04"
+   ],
+   "checks": [
+    "CHK-014",
+    "CHK-007"
+   ],
+   "condition": "o_empty=1 unblocked while it was 0 in the previous read cycle."
+  },
+  {
+   "id": "COVP-034",
+   "title": "o_empty falls",
+   "rules": [
+    "SF-3-52",
+    "SF-10.2-02",
+    "SF-13-03"
+   ],
+   "checks": [
+    "CHK-012",
+    "CHK-014"
+   ],
+   "condition": "o_empty=0 now while it was 1 in the previous read cycle."
+  },
+  {
+   "id": "COVP-035",
+   "title": "Four or more back-to-back accepted reads",
+   "rules": [
+    "SF-3-03",
+    "SF-10.3-01",
+    "SF-13-02"
+   ],
+   "checks": [
+    "CHK-014",
+    "CHK-018",
+    "CHK-019"
+   ],
+   "condition": "Accepted read that is at least the fifth consecutive accepted read."
+  },
+  {
+   "id": "COVP-036",
+   "title": "o_empty_thr active while not empty",
+   "rules": [
+    "SF-3-15",
+    "SF-10.3-07"
+   ],
+   "checks": [
+    "CHK-025"
+   ],
+   "condition": "o_empty_thr=1 and o_empty=0, not busy."
+  },
+  {
+   "id": "COVP-037",
+   "title": "o_empty_thr inactive (occupancy above threshold)",
+   "rules": [
+    "SF-3-15",
+    "SF-15.2-05"
+   ],
+   "checks": [
+    "CHK-025"
+   ],
+   "condition": "o_empty_thr=0 and o_empty=0."
+  },
+  {
+   "id": "COVP-038",
+   "title": "Empty threshold above DEPTH with data present",
+   "rules": [
+    "SF-9-05",
+    "SF-9-06"
+   ],
+   "checks": [
+    "CHK-025"
+   ],
+   "condition": "i_empty_thr > DEPTH, o_empty=0, not busy, o_empty_thr=1."
+  },
+  {
+   "id": "COVP-039",
+   "title": "Read pointer wrap",
+   "rules": [
+    "SF-3-13",
+    "SF-9-01"
+   ],
+   "checks": [
+    "CHK-017"
+   ],
+   "condition": "Accepted read that is the 2xDEPTH-th since the helper count was cleared."
+  },
+  {
+   "id": "COVP-040",
+   "title": "Read-domain hardware reset during activity, release observed",
+   "rules": [
+    "SF-3-29",
+    "SF-7.3-02",
+    "SF-10.2-09"
+   ],
+   "checks": [
+    "CHK-021"
+   ],
+   "condition": "First read edge after release of a reset asserted while the FIFO was non-empty or busy."
+  }
+ ],
+ "status": "lint_clean",
+ "attempts": 1,
+ "problems": [],
+ "lint_errors": "",
+ "usage": {
+  "calls": 1,
+  "cached": 0,
+  "cost_usd": 0.243,
+  "input_tokens": 2,
+  "output_tokens": 18226,
+  "cache_creation_input_tokens": 14818,
+  "cache_read_input_tokens": 0
+ },
+ "prompt_version": "cov-v1"
+}

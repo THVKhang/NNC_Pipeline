@@ -20,11 +20,14 @@ approve a gate yourself.
    - **G1_rules** → `work/rules.md`: counts, every *open question* (verbatim, with rule IDs), the
      rejected rules, and 5–10 representative rules. Ask the user to answer the open questions or to
      accept them as open.
-   - **G2_contract** → `work/contract.md`: interface, each check (ID, kind, title), the rules declared
-     not verifiable and the assumptions.
-   - **G3_verif_sources** → `verif/sva/*.sv` and `verif/tests/*.py`, and `work/gen_sva.json`,
-     `work/gen_tests.json` (lint status, attempts).
-   - **G4_signoff** → `work/report.md` and `work/triage.md`.
+   - **G2_contract** → `work/contract.md`: interface (clocks, resets, derived parameters), each check
+     (ID, kind, title), the rules declared not verifiable and the assumptions. Offer the test-plan
+     choice: all applicable checks (recommended) or a selection (`python -m nnc plan <design> --select
+     ...|--exclude ... --by "<their name>"`; left-out checks are reported NOT_SELECTED).
+   - **G3_verif_sources** → `verif/sva/*.sv` (checkers and `nnc_cov.sv`), `verif/tests/*.py`, and
+     `work/gen_sva.json`, `work/gen_cov.json`, `work/gen_tests.json` (lint status, attempts, cover points).
+   - **G4_signoff** → the *Sign-off conditions* table of `work/report.md`, then `work/triage.md`,
+     `work/coverage.md` and the per-rule mutation scores.
    Then ask for a decision with options, effects and a recommendation, for example:
    > 1. Approve G1 as is — the contract will be built from these 232 rules. (Recommended if the open
    >    questions do not change expected behaviour.)
@@ -36,6 +39,14 @@ approve a gate yourself.
 5. After `sim`: if `work/triage.md` lists failures, present each analysis (failure, spec says, RTL
    does, test does, candidates A/B/C, options) and wait for the designer's decision. Never change the
    RTL, a test, an assertion or an expected value to make a run pass.
+6. Coverage: `cover` prints the measured baseline of every metric (line, block, toggle, expression,
+   functional). Explain what each metric counts, then ask whether the designer wants a target and on
+   which metric (never propose a number as if it were a rule). Only with their answer run
+   `python -m nnc cover <design> --target <n> --metric <m>`; the new closure tests change `verif/`, so G3
+   must be presented and approved again before the report.
+7. `mutate` gives a score per rule against `mutation_threshold` (default 85 %). Present the rules below
+   the threshold and the mutants claimed equivalent: the designer accepts an equivalence or asks for a
+   stronger check; the score itself never changes.
 
 ## Rules
 

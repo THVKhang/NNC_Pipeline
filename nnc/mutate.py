@@ -9,12 +9,15 @@ simulation host; mutants run in parallel. A mutant is
 """
 from __future__ import annotations
 
+import json
 import random
 import re
 from dataclasses import dataclass
 from pathlib import Path
 
-from nnc.sim import SIM_SCRIPT, build_inputs, param_values, parse_results, rtl_files
+from nnc import coverage as coverage_mod
+from nnc.agents.backend import AgentTask
+from nnc.sim import SIM_SCRIPT, build_inputs, checker_files, param_values, parse_results, rtl_files
 from nnc.simhost import SimHost
 
 OPERATORS = [
@@ -97,13 +100,28 @@ def select(cands: list[Mutant], count: int, seed: int = 1) -> list[Mutant]:
     return chosen
 
 
-def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: Path, *, count: int = 12,
-        seed: int = 1, parallel: int = 4, timeout_s: int = 7200) -> dict:
+def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: Path | list[Path], *, count: int = 12,
+        seed: int = 1, parallel: int = 4, timeout_s: int = 7200, clock_periods: dict | None = None,
+        baseline: dict | None = None) -> dict:
+    """Mutants are drawn from lines the baseline regression executed: a line never reached (uncovered),
+    or a file this configuration does not elaborate (for example a memory macro of another branch),
+    would only give survivors that measure coverage, not checking."""
     rtl = rtl_files(rtl_dir)
-    mutants = select(candidates(rtl), count, seed)
-    sva = sorted(sva_dir.glob("nnc_chk_*.sv"))
+    pool = candidates(rtl)
+    excluded = {"files": [], "lines": 0}
+    if baseline and (baseline.get("coverage") or {}).get("metrics"):
+        cov = baseline["coverage"]
+        elab = coverage_mod.elaborated_files(cov)
+        dead = coverage_mod.uncovered_lines(cov)
+        if elab is not None:
+            excluded["files"] = sorted({m.file for m in pool if m.file not in elab})
+        before = len(pool)
+        pool = [m for m in pool if m.file not in excluded["files"] and (m.file, m.line) not in dead]
+        excluded["lines"] = before - len(pool)
+    mutants = select(pool, count, seed)
+    sva = checker_files(sva_dir)
     pv = param_values(contract)
-    base = build_inputs(contract, rtl, sva, test_file, pv, coverage=False)
+    base = build_inputs(contract, rtl, sva, test_file, pv, coverage=False, clock_periods=clock_periods)
     files: dict[str, object] = {}
     for m in mutants:
         for rel, src in base.items():
@@ -125,7 +143,75 @@ def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: 
                         "killed_by_checks": failed_checks})
     counted = [r for r in results if r["status"] != "not_compiled"]
     killed = sum(r["status"] == "killed" for r in counted)
-    return {"mutants": results, "candidates": len(candidates(rtl)), "count": len(results),
+    return {"mutants": results, "candidates": len(pool), "count": len(results),
             "killed": killed, "survived": sum(r["status"] == "survived" for r in counted),
             "not_compiled": len(results) - len(counted),
-            "score": round(100.0 * killed / len(counted), 1) if counted else None, "seed": seed}
+            "score": round(100.0 * killed / len(counted), 1) if counted else None, "seed": seed,
+            "excluded_uncovered": excluded}
+
+
+# ------------------------------------------------------------------- per-requirement attribution
+ATTR_SYSTEM = (
+    "You are a design-verification engineer. You read RTL and requirements to say which requirements a code "
+    "line implements. You change nothing. Return the answer in the required JSON structure."
+)
+ATTR_SCHEMA = {
+    "type": "object", "required": ["mutants"], "additionalProperties": False,
+    "properties": {"mutants": {"type": "array", "items": {
+        "type": "object", "additionalProperties": False, "required": ["id", "rules", "equivalent", "reason"],
+        "properties": {"id": {"type": "string"}, "rules": {"type": "array", "items": {"type": "string"}},
+                       "equivalent": {"type": "boolean"}, "reason": {"type": "string"}}}}},
+}
+
+
+def attribute(mutation: dict, files: dict[str, Path], rule_ids: set[str], backend, log_dir: Path, *,
+              model: str = "sonnet") -> dict:
+    """Agent A12 (sandbox, reads RTL): for every mutant, the rule IDs whose observable behaviour the
+    mutated line implements, and whether the mutant is likely equivalent (no observable change for any
+    legal stimulus). Code keeps only known rule IDs. The designer reviews equivalence claims; they never
+    change the score."""
+    listing = [{"id": m["id"], "file": f"rtl/{m['file']}", "line": m["line"], "original": m["original"].strip(),
+                "mutated": m["mutated"].strip(), "status": m["status"]} for m in mutation["mutants"]
+               if m["status"] != "not_compiled"]
+    if not listing:
+        return {"mutants": {}, "unknown_ids": []}
+    instructions = (
+        "FILES\n" + "\n".join(f"  {n}" for n in sorted(files)) + "\n\nMUTANTS (one changed RTL line each)\n" +
+        json.dumps(listing, indent=1) +
+        "\n\nFor each mutant: read the RTL around the line and rules.json (and contract.json for the checks). Give the "
+        "IDs of the rules whose required observable behaviour depends on this line (the requirements the mutant "
+        "would break), most specific first, at most 5; an empty list if none. Set equivalent=true only if no legal "
+        "stimulus of the specification can make the mutant behave differently at the ports, and explain why in "
+        "`reason` (for a non-equivalent mutant, say in one sentence what would change).")
+    res = backend.run(AgentTask("A12_mutation_map", instructions, ATTR_SCHEMA, inputs=dict(files),
+                                tools=("Read", "Grep", "Glob"), system_prompt=ATTR_SYSTEM, model=model,
+                                max_turns=40), log_dir)
+    out, unknown = {}, set()
+    for m in res.output["mutants"]:
+        good = [r for r in m["rules"] if r in rule_ids]
+        unknown |= set(m["rules"]) - rule_ids
+        out[m["id"]] = {"rules": good, "equivalent": m["equivalent"], "reason": m["reason"]}
+    return {"mutants": out, "unknown_ids": sorted(unknown), "model": model,
+            "cost_usd": res.cost_usd if hasattr(res, "cost_usd") else None}
+
+
+def rule_scores(mutation: dict, threshold: float) -> dict[str, dict]:
+    """Per rule: compiled mutants attributed to it, killed, score, and whether it meets the threshold."""
+    attr = (mutation.get("attribution") or {}).get("mutants", {})
+    per: dict[str, dict] = {}
+    for m in mutation["mutants"]:
+        if m["status"] == "not_compiled":
+            continue
+        a = attr.get(m["id"], {})
+        for r in a.get("rules", []):
+            s = per.setdefault(r, {"relevant": 0, "killed": 0, "survived": [], "claimed_equivalent": []})
+            s["relevant"] += 1
+            s["killed"] += m["status"] == "killed"
+            if m["status"] == "survived":
+                s["survived"].append(m["id"])
+                if a.get("equivalent"):
+                    s["claimed_equivalent"].append(m["id"])
+    for s in per.values():
+        s["score"] = round(100.0 * s["killed"] / s["relevant"], 1)
+        s["meets_threshold"] = s["score"] >= threshold
+    return dict(sorted(per.items()))

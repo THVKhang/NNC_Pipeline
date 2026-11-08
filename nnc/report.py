@@ -6,9 +6,11 @@ Status of a check:
   NOT_HIT   assertion never active (proves nothing, principle PR-4)
   NOT_RUN   no evidence (not built, test missing, simulation not run)
   NOT_VERIFIABLE  the test declared (not_verifiable) that this run cannot verify it
+  NOT_SELECTED    left out of the test plan by the designer (`nnc plan --select`); never PASS
 Status of a rule: VERIFIED (all its checks PASS), FAILED (any FAIL), PARTIAL (some PASS, rest not
 proven), NOT_PROVEN (checks exist, none PASS), NOT_VERIFIED_BY_SIM (declared in the contract with a
-reason), UNMAPPED (no check and no reason: a contract gap).
+reason), NOT_SELECTED (all its checks left out of the test plan), UNMAPPED (no check and no
+reason: a contract gap).
 """
 from __future__ import annotations
 
@@ -25,7 +27,12 @@ def check_status(results: dict | None, contract: dict, test_map: dict[str, list[
     tests = [dict(t, doc=" ".join(test_map.get(t["name"], []))) for t in (results or {}).get("tests", [])]
     asserts = (results or {}).get("assertions", {})
     ran = bool(results) and results.get("status") == "ran"
+    sel = contract.get("selection") or {}
+    off = set(sel.get("not_selected", [])) if sel.get("mode") == "selected" else set()
     for c in contract["checks"]:
+        if c["id"] in off:
+            out[c["id"]] = {"status": "NOT_SELECTED", "by": sel.get("by")}
+            continue
         if c["kind"] == "assertion":
             v = asserts.get(c["id"])
             if not ran or v is None:
@@ -53,13 +60,17 @@ def check_status(results: dict | None, contract: dict, test_map: dict[str, list[
     return out
 
 
-def rtm(rules_doc: dict, contract: dict, statuses: dict[str, dict]) -> list[dict]:
+def rtm(rules_doc: dict, contract: dict, statuses: dict[str, dict], mutation: dict | None = None) -> list[dict]:
     nv = {n["rule"]: n for n in contract.get("not_verified", [])}
+    mscore = (mutation or {}).get("rule_scores", {})
     rows = []
     for r in rules_doc["rules"]:
         chks = [c["id"] for c in contract["checks"] if r["id"] in c["rules"]]
         sts = [statuses[c]["status"] for c in chks if c in statuses]
-        if chks:
+        if chks and all(s == "NOT_SELECTED" for s in sts):
+            st = "NOT_SELECTED"
+        elif chks:
+            sts = [s for s in sts if s != "NOT_SELECTED"]
             if any(s == "FAIL" for s in sts):
                 st = "FAILED"
             elif sts and all(s == "PASS" for s in sts):
@@ -75,7 +86,7 @@ def rtm(rules_doc: dict, contract: dict, statuses: dict[str, dict]) -> list[dict
         rows.append({"rule": r["id"], "spec_refs": r.get("spec_refs", []), "doc": r.get("doc"),
                      "section": r["section"], "sentences": r["sentences"], "strength": r["strength"],
                      "statement": r["statement"], "checks": chks, "check_status": {c: statuses[c]["status"] for c in chks if c in statuses},
-                     "status": st, "not_verified": nv.get(r["id"])})
+                     "status": st, "not_verified": nv.get(r["id"]), "mutation": mscore.get(r["id"])})
     return rows
 
 
@@ -88,9 +99,9 @@ def _count(items, key="status") -> dict:
 
 def build(design_name: str, gates: list, rules_doc: dict, contract: dict, results: dict | None,
           mutation: dict | None, triage: dict | None, costs: dict, unreviewed: list[str],
-          test_map: dict[str, list[str]] | None = None) -> dict:
+          test_map: dict[str, list[str]] | None = None, closure: dict | None = None) -> dict:
     statuses = check_status(results, contract, test_map)
-    rows = rtm(rules_doc, contract, statuses)
+    rows = rtm(rules_doc, contract, statuses, mutation)
     return {
         "design": design_name, "date": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "gates": [{"gate": g.gate, "state": g.state, "detail": g.detail} for g in gates],
@@ -101,11 +112,73 @@ def build(design_name: str, gates: list, rules_doc: dict, contract: dict, result
             "status": results.get("status"), "seed": results.get("seed"), "params": results.get("params"),
             "tests": _count(results.get("tests", [])), "integration": results.get("integration"),
             "coverage": results.get("coverage")},
-        "mutation": None if not mutation else {k: mutation[k] for k in ("count", "killed", "survived", "not_compiled", "score")},
+        "mutation": None if not mutation else {
+            **{k: mutation[k] for k in ("count", "killed", "survived", "not_compiled", "score")},
+            "threshold": mutation.get("threshold"),
+            "rules_attributed": len(mutation.get("rule_scores") or {}),
+            "rules_below_threshold": sorted(r for r, v in (mutation.get("rule_scores") or {}).items()
+                                            if not v["meets_threshold"])},
+        "coverage_closure": None if not closure else {k: closure.get(k) for k in
+                                                      ("metric", "target", "status", "baseline", "final")},
         "triage": None if not triage else {"clusters": triage.get("clusters"), "analysed": triage.get("analysed")},
         "agent_cost_usd": costs,
         "rtm": rows,
     }
+
+
+COVERAGE_LABELS = {"line": "lines", "block": "statement blocks and branch arms", "toggle": "bit toggles 0->1 and 1->0",
+                   "expression": "condition terms", "fsm": "FSM states/arcs",
+                   "functional": "cover points of the specification"}
+
+
+def _coverage_rows(cov: dict) -> list[str]:
+    """One row per code-coverage metric of the DUT RTL (never merged into one number)."""
+    metrics = cov.get("metrics") or ({"line": cov} if cov.get("percent") is not None else {})
+    if not metrics:
+        return [f"| Code coverage (RTL) | {cov.get('status', 'not measured')} |"]
+    return [f"| Code coverage (RTL), {m} | {v['percent']} % ({v['hit']}/{v['total']} {COVERAGE_LABELS.get(m, m)}) |"
+            for m, v in metrics.items() if v.get("total")]
+
+
+def _closure_rows(rep: dict) -> list[str]:
+    c = rep.get("coverage_closure")
+    if not c or c.get("status") in (None, "not_requested"):
+        return ["| Coverage target | not requested (`nnc cover <design> --target <n> --metric <m>`) |"]
+    b, f = c.get("baseline") or {}, c.get("final") or {}
+    return [f"| Coverage target | {c['metric']} {c.get('target')} %: **{c['status']}** (baseline {b.get('percent')} % -> "
+            f"{f.get('percent')} %, work/coverage.md) |"]
+
+
+def signoff_conditions(rep: dict) -> list[tuple[str, bool, str]]:
+    """The evidence a person needs before G4: every condition with its state (the person decides)."""
+    by = rep["checks"]["by_status"]
+    sim = rep.get("simulation") or {}
+    mut = rep.get("mutation")
+    clo = rep.get("coverage_closure")
+    unmapped = rep["rules"]["by_status"].get("UNMAPPED", 0)
+    conds = [
+        ("Gates G1-G3 approved", not rep["unreviewed_gates"] and all(
+            g["state"] == "APPROVED" for g in rep["gates"] if g["gate"] != "G4_signoff"),
+         "approved on delegation by an agent: a person should confirm" if any(
+             "delegated" in (g.get("detail") or "") for g in rep["gates"]) else ""),
+        ("Interface conformance of the DUT", bool((sim.get("integration") or {}).get("ok")), ""),
+        ("Every selected check PASS (no FAIL, NOT_HIT, NOT_RUN)", set(by) <= {"PASS", "NOT_VERIFIABLE", "NOT_SELECTED"},
+         ", ".join(f"{k} {v}" for k, v in by.items() if k not in ("PASS", "NOT_SELECTED"))),
+        ("Every planned check selected", "NOT_SELECTED" not in by,
+         f"{by.get('NOT_SELECTED')} check(s) not selected in the test plan" if "NOT_SELECTED" in by else ""),
+        ("Every rule in a check or declared not verifiable", unmapped == 0, f"{unmapped} unmapped" if unmapped else ""),
+        ("Mutation run", bool(mut), "" if mut else "nnc mutate <design>"),
+    ]
+    if mut and mut.get("threshold") is None:
+        conds.append(("Per-requirement mutation score", False, "mutants not attributed to rules: re-run nnc mutate"))
+    elif mut:
+        below = mut.get("rules_below_threshold") or []
+        conds.append((f"Per-requirement mutation score >= {mut.get('threshold'):g} %", not below,
+                      (f"{len(below)} rule(s) below: {', '.join(below[:10])}" if below else
+                       f"{mut.get('rules_attributed')} rules with attributed mutants")))
+    if clo and clo.get("status") not in (None, "not_requested"):
+        conds.append((f"Coverage target {clo['metric']} {clo.get('target')} %", clo["status"] == "target_met", clo["status"]))
+    return conds
 
 
 def to_markdown(rep: dict, contract: dict, mutation: dict | None) -> str:
@@ -120,12 +193,16 @@ def to_markdown(rep: dict, contract: dict, mutation: dict | None) -> str:
             f"| Checks | {rep['checks']['total']} — {rep['checks']['by_status']} |",
             f"| Tests | {sim.get('tests', 'not run')} |",
             f"| Integration | {'OK' if (sim.get('integration') or {}).get('ok') else sim.get('integration')} |",
-            f"| Line coverage (RTL) | {str(cov.get('percent')) + ' % (' + str(cov.get('hit')) + '/' + str(cov.get('total')) + ')' if cov.get('percent') is not None else cov.get('status', 'not measured')} |",
+            *_coverage_rows(cov),
             f"| Mutation score | {str(rep['mutation']['score']) + ' % (' + str(rep['mutation']['killed']) + ' killed / ' + str(rep['mutation']['survived']) + ' survived / ' + str(rep['mutation']['not_compiled']) + ' not compiled)' if rep['mutation'] else 'not run'} |",
+            *_closure_rows(rep),
             f"| Triage | {'no failure to analyse' if not rep['triage'] or not rep['triage'].get('clusters') else str(rep['triage']['clusters']) + ' failure(s), ' + str(rep['triage'].get('analysed')) + ' analysed: work/triage.md'} |",
             f"| Agent cost | US${rep['agent_cost_usd']['total_usd']} in {rep['agent_cost_usd']['calls']} calls "
             f"({', '.join(f'{k} {v}' for k, v in rep['agent_cost_usd']['by_agent'].items())}) |", "",
-            "## Gates", "", "| Gate | State | Detail |", "|---|---|---|"]
+            "## Sign-off conditions", "", "| Condition | State |", "|---|---|"]
+    out += [f"| {name} | {'met' if ok else '**not met**'}{' — ' + note if note else ''} |"
+            for name, ok, note in signoff_conditions(rep)]
+    out += ["", "## Gates", "", "| Gate | State | Detail |", "|---|---|---|"]
     out += [f"| {g['gate']} | {g['state']} | {g['detail']} |" for g in rep["gates"]]
     out += ["", "## Checks", "", "| Check | Kind | Title | Status | Evidence |", "|---|---|---|---|---|"]
     for c in contract["checks"]:
@@ -133,15 +210,23 @@ def to_markdown(rep: dict, contract: dict, mutation: dict | None) -> str:
         ev = (f"hits {d.get('hits')}, fails {d.get('fails')}" if c["kind"] == "assertion" else ", ".join(d.get("tests", [])))
         out.append(f"| {c['id']} | {c['kind']} | {c['title']} | **{d['status']}** | {ev} |")
     out += ["", "## Requirement traceability (RTM)", "",
-            "| Rule | Spec ref | Statement | Checks | Status |", "|---|---|---|---|---|"]
+            "| Rule | Spec ref | Statement | Checks | Mutation | Status |", "|---|---|---|---|---|---|"]
     for r in rep["rtm"]:
         chk = ", ".join(f"{k}:{v}" for k, v in r["check_status"].items()) or (
             f"not verified: {r['not_verified']['reason']}" if r["not_verified"] else "—")
-        out.append(f"| {r['rule']} | {', '.join(r['spec_refs'])} | {r['statement'].replace('|', chr(92) + '|')} | {chk} | **{r['status']}** |")
+        mu = r.get("mutation")
+        mtxt = (f"{mu['score']} % ({mu['killed']}/{mu['relevant']})" + ("" if mu["meets_threshold"] else " **below**")
+                if mu else "—")
+        out.append(f"| {r['rule']} | {', '.join(r['spec_refs'])} | {r['statement'].replace('|', chr(92) + '|')} | {chk} | {mtxt} | **{r['status']}** |")
     if mutation:
-        out += ["", "## Mutants", "", "| ID | File:line | Operator | Status | Caught by |", "|---|---|---|---|---|"]
-        out += [f"| {m['id']} | {m['file']}:{m['line']} | {m['operator']} | {m['status']} | "
-                f"{', '.join(m['killed_by_checks'] + m['killed_by_tests'])[:120]} |" for m in mutation["mutants"]]
+        attr = (mutation.get("attribution") or {}).get("mutants", {})
+        out += ["", "## Mutants", "", "| ID | File:line | Operator | Status | Caught by | Rules | Equivalent? |",
+                "|---|---|---|---|---|---|---|"]
+        for m in mutation["mutants"]:
+            a = attr.get(m["id"], {})
+            eq = ("claimed: " + a.get("reason", "")[:160]) if a.get("equivalent") else ""
+            out.append(f"| {m['id']} | {m['file']}:{m['line']} | {m['operator']} | {m['status']} | "
+                       f"{', '.join(m['killed_by_checks'] + m['killed_by_tests'])[:120]} | {', '.join(a.get('rules', []))} | {eq} |")
     out += ["", "## Not verified by this run", "",
             "- Formal proof, CDC/RDC, STA, synthesis and DFT checks are outside this flow.",
             "- Rules marked NOT_VERIFIED_BY_SIM carry the contract's reason (static, structural, not observable...).",

@@ -15,6 +15,7 @@ from pathlib import Path
 
 from nnc.agents.backend import AgentTask
 from nnc.agents.runtime import Usage
+from nnc.contract import multi_clock
 
 PROMPT_VERSION = "tests-v1"
 SYSTEM_PROMPT = (
@@ -65,6 +66,30 @@ RULES_TEXT = """CODING RULES
 """
 
 
+MULTI_CLOCK_DOC = """SEVERAL CLOCKS: CLOCKS = {name: period_ns}; all start together when start_clock is called (synchronous
+  clocks). A test does not start at a whole number of ns (cocotb advances one simulator step between
+  tests): compute absolute times in integer ps from get_sim_time(unit="ps"), or count clock edges.
+  start_clock(dut) starts all of them; reset_dut asserts every hardware reset together and releases each
+  at a falling edge of its own clock. next_cycle(dut, n, clock="<name>"), wait_until(..., clock="<name>")
+  and clk(dut, "<name>") work on the named clock (default: the first one). Drive and sample the signals
+  of a domain at falling edges of that domain's clock; never assume a fixed ratio between the clocks
+  beyond CLOCKS of this run. A test that needs another ratio of these synchronous clocks starts them with
+  start_clock(dut, periods={"<clock>": ns, ...}) (all start at the same instant, so they stay synchronous).
+"""
+
+
+def _multi_clock_text(iface: dict) -> str:
+    if not multi_clock(iface):
+        return ""
+    lines = ["CLOCK DOMAINS:"]
+    for c in iface["clocks"]:
+        rs = [r["name"] for r in iface["resets"] if r["clock"] == c["name"]]
+        sig = [p["name"] for p in iface["ports"] if p.get("domain") == c["domain"]
+               and p["name"] not in {c["name"], *rs}]
+        lines.append(f"  {c['name']} ({c['domain']}): reset {', '.join(rs) or 'none'}; signals {', '.join(sig)}")
+    return "\n".join(lines) + "\n" + MULTI_CLOCK_DOC
+
+
 def build_prompt(contract: dict, rules_doc: dict) -> str:
     iface = contract["interface"]
     rules_by_id = {r["id"]: r for r in rules_doc["rules"]}
@@ -79,8 +104,14 @@ def build_prompt(contract: dict, rules_doc: dict) -> str:
     tests = [block(c) for c in contract["checks"] if c["kind"] == "test"]
     asserts = [f"[{c['id']}] {c['title']}: {c['behavior']}" for c in contract["checks"] if c["kind"] == "assertion"]
     reset = iface.get("reset") or {}
+    derived = [p["name"] for p in iface["parameters"] if p.get("derived")]
+    if derived:
+        params += (f"\n  derived (computed by the design, never set): " +
+                   ", ".join(f"{p['name']} = {p['derived']}" for p in iface["parameters"] if p.get("derived")) +
+                   "; PARAMS holds their values for this run")
     return (f"DUT top: {contract['top']}  clock: {iface['clock']}  reset: {reset.get('name')} "
-            f"({'active low' if reset.get('active_low') else 'active high'})\nPARAMETERS: {params}\n"
+            f"({'active low' if reset.get('active_low') else 'active high'})\n" + _multi_clock_text(iface) +
+            f"PARAMETERS: {params}\n"
             f"PORTS (name | direction | width | type | reset value | meaning)\n{ports}\n\n"
             f"TEST CHECKS TO IMPLEMENT ({len(tests)})\n" + "\n".join(tests) +
             f"\n\nASSERTION CHECKS (checked by SVA during every test; your traffic must exercise them)\n" +

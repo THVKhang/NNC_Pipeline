@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import tempfile
@@ -141,6 +142,17 @@ def _write_log(log_dir: Path, task: AgentTask, record: dict) -> Path:
     return path
 
 
+DEFAULT_THINKING_TOKENS = "32000"
+
+
+def agent_env() -> dict:
+    """Environment of a headless agent call. Thinking is capped (NNC_MAX_THINKING_TOKENS, default 32000):
+    an uncapped call once spent its whole 128k output budget thinking and returned no answer."""
+    env = dict(os.environ)
+    env["MAX_THINKING_TOKENS"] = os.environ.get("NNC_MAX_THINKING_TOKENS", DEFAULT_THINKING_TOKENS)
+    return env
+
+
 class ClaudeCliBackend:
     """Run an agent step with Claude Code in headless mode (uses the logged-in Claude Code account)."""
 
@@ -182,7 +194,7 @@ class ClaudeCliBackend:
             try:
                 proc = subprocess.run(
                     self.build_argv(task), cwd=sandbox, input=prompt, capture_output=True, text=True,
-                    encoding="utf-8", errors="replace", timeout=self.timeout_s,
+                    encoding="utf-8", errors="replace", timeout=self.timeout_s, env=agent_env(),
                 )
             except subprocess.TimeoutExpired as e:
                 record["error"] = f"timeout after {self.timeout_s} s"
@@ -207,7 +219,9 @@ class ClaudeCliBackend:
             if proc.returncode != 0 or reply.get("is_error") or not isinstance(output, dict):
                 record["result_text"] = str(reply.get("result"))[-4000:]
                 log = _write_log(log_dir, task, record)
-                raise AgentError(f"{task.name}: agent failed ({reply.get('subtype')}); see {log}")
+                hint = str(reply.get("result") or "").strip().splitlines()
+                raise AgentError(f"{task.name}: agent failed ({reply.get('subtype')}"
+                                 f"{': ' + hint[-1][:200] if hint else ''}); see {log}")
             errors = validate(output, task.schema)
             if errors:
                 record["schema_errors"] = errors

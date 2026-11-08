@@ -208,6 +208,56 @@ def _stage(name: str):
     return run
 
 
+def cmd_plan(args) -> int:
+    """Show the checks of the contract, or record the test-plan selection (part of Gate 2)."""
+    from nnc import contract as contract_mod
+    d = _open(args)
+    path = d.work / "contract.json"
+    if not path.is_file():
+        raise ProjectError("no contract yet: run 'nnc flow <design> --from contract'")
+    c = json.loads(path.read_text(encoding="utf-8"))
+    if not (args.all or args.select or args.exclude):
+        sel = c.get("selection") or {"mode": "all (default, not recorded)"}
+        print(f"selection: {sel.get('mode')}" + (f" by {sel['by']}" if sel.get("by") else ""))
+        for ch in c["checks"]:
+            on = sel.get("mode") != "selected" or ch["id"] in sel["checks"]
+            print(f"  [{'x' if on else ' '}] {ch['id']} {ch['kind']:<9} {ch['title']}")
+        return 0
+    if not args.by:
+        raise ProjectError("--by <name> is required to record a selection")
+    ids = [x["id"] for x in c["checks"]]
+    if args.all:
+        chosen = None
+    elif args.select:
+        chosen = [x.strip() for x in args.select.split(",") if x.strip()]
+    else:
+        drop = {x.strip() for x in args.exclude.split(",") if x.strip()}
+        chosen = [i for i in ids if i not in drop]
+    contract_mod.select_checks(c, chosen, args.by, args.reason or "")
+    contract_mod.write_outputs(c, d.work)
+    n = len(ids) if chosen is None else len(chosen)
+    print(f"test plan: {n} of {len(ids)} checks selected by {args.by}; contract.json changed, so G2_contract must be "
+          f"approved again (then re-run gen-sva and gen-tests)")
+    return 0
+
+
+def cmd_inject(args) -> int:
+    d = _open(args)
+    out = Path(args.out) if args.out else d.root / "bug_demo"
+    res = flow.run_inject(d, _options(args), Path(args.patch), out, do_triage=not args.no_triage)
+    return 0 if res["caught"] else 3
+
+
+def cmd_cover(args) -> int:
+    d = _open(args)
+    vals = {k: v for k, v in (("coverage_target", args.target), ("coverage_metric", args.metric),
+                              ("coverage_rounds", args.rounds)) if v is not None}
+    if vals:
+        d.set_config(**{k: str(v) for k, v in vals.items()})
+    flow.stage_cover(d, _options(args))
+    return 0
+
+
 def cmd_flow(args) -> int:
     d = _open(args)
     last = flow.run_flow(d, _options(args), args.from_stage, args.to_stage)
@@ -306,6 +356,36 @@ def build_parser() -> argparse.ArgumentParser:
         s.add_argument("--mutants", type=int, default=12)
         _agent_args(s)
         s.set_defaults(func=_stage(name))
+
+    s = sub.add_parser("plan", help="show the contract checks, or select the checks of the test plan (Gate 2)")
+    s.add_argument("design")
+    g = s.add_mutually_exclusive_group()
+    g.add_argument("--all", action="store_true", help="all applicable checks (recommended)")
+    g.add_argument("--select", help="comma-separated check IDs to keep")
+    g.add_argument("--exclude", help="comma-separated check IDs to leave out")
+    s.add_argument("--by", help="name of the person who decides")
+    s.add_argument("--reason", help="why (recorded in the contract)")
+    s.set_defaults(func=cmd_plan)
+
+    s = sub.add_parser("inject", help="run the approved verification on a patched copy of the RTL (bug injection)")
+    s.add_argument("design")
+    s.add_argument("patch", help="unified diff against files of rtl/ (matched by file name)")
+    s.add_argument("--out", help="output folder (default designs/<ip>/bug_demo)")
+    s.add_argument("--no-triage", action="store_true", help="simulate only")
+    s.add_argument("--unreviewed", action="store_true", help="run past an unapproved gate (results marked UNREVIEWED)")
+    s.add_argument("--seed", type=int, default=1)
+    _agent_args(s)
+    s.set_defaults(func=cmd_inject)
+
+    s = sub.add_parser("cover", help="code-coverage baseline, and closure towards a target with new spec-based tests")
+    s.add_argument("design")
+    s.add_argument("--target", type=float, help="target percentage 0-100 (stored in the design configuration)")
+    s.add_argument("--metric", choices=("line", "block", "toggle", "expression", "functional"), help="metric (default line)")
+    s.add_argument("--rounds", type=int, help="closure rounds at most (default 5)")
+    s.add_argument("--unreviewed", action="store_true", help="run past an unapproved gate (results marked UNREVIEWED)")
+    s.add_argument("--seed", type=int, default=1)
+    _agent_args(s)
+    s.set_defaults(func=cmd_cover)
 
     s = sub.add_parser("flow", help="run the stages in order, stopping at the first gate that needs review")
     s.add_argument("design")

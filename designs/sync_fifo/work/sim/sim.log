@@ -1,0 +1,260 @@
+rm -f results.xml
+"make" -f Makefile results.xml
+make[1]: Entering directory '/root/nnc_runs/sim_2a577664'
+make[1]: warning: -j8 forced in makefile: resetting jobserver mode.
+mkdir -p sim_build
+/opt/oss-cad-suite/bin/verilator -cc --exe -Mdir sim_build --top-module nnc_tb_top --timescale 1ns/1ps --vpi --public-flat-rw --prefix Vtop -o Vtop -LDFLAGS "-Wl,-rpath,/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/libs -L/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/libs -lcocotbvpi_verilator" --assert --timing -Wno-fatal -Wno-WIDTH -Wno-UNOPTFLAT -GPARA_SFIFO_DEPTH=8 -GPARA_SFIFO_DATA_W=32 -GPARA_SFIFO_PTR_RETIME=0 -GPARA_SFIFO_MEM_USE_MACRO=0 --coverage-line --coverage-toggle --coverage-expr /root/nnc_runs/sim_2a577664/rtl/VLSIT_CELL_SRAM_1W1R.sv /root/nnc_runs/sim_2a577664/rtl/m_vlsit_sfifo_ram_macro.sv /root/nnc_runs/sim_2a577664/rtl/m_vlsit_sfifo_mem.sv /root/nnc_runs/sim_2a577664/rtl/m_vlsit_sfifo_rd.sv /root/nnc_runs/sim_2a577664/rtl/m_vlsit_sfifo_wr.sv /root/nnc_runs/sim_2a577664/rtl/m_vlsit_sfifo_top.sv /root/nnc_runs/sim_2a577664/sva/nnc_chk_clk.sv /root/nnc_runs/sim_2a577664/sva/nnc_chk_inputs.sv /root/nnc_runs/sim_2a577664/sva/nnc_chk_rd.sv /root/nnc_runs/sim_2a577664/sva/nnc_chk_sb.sv /root/nnc_runs/sim_2a577664/sva/nnc_chk_srst.sv /root/nnc_runs/sim_2a577664/sva/nnc_chk_wr.sv /root/nnc_runs/sim_2a577664/sva/nnc_cov.sv /root/nnc_runs/sim_2a577664/nnc_tb_top.sv /opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/share/lib/verilator/verilator.cpp
+%Warning-MULTIDRIVEN: /root/nnc_runs/sim_2a577664/sva/nnc_chk_inputs.sv:44:63: Variable written to in always_ff also written by other process (IEEE 1800-2023 9.2.2.4): 'hits_CHK_002'
+                                                                             : ... note: In instance 'nnc_tb_top.u_nnc_chk_inputs'
+                      /root/nnc_runs/sim_2a577664/sva/nnc_chk_inputs.sv:44:63: 
+   44 |   always_ff @(posedge i_clk_rd) if (!(!i_rst_n_rd) && (1'b1)) hits_CHK_002 <= hits_CHK_002 + 1;
+      |                                                               ^~~~~~~~~~~~
+                      /root/nnc_runs/sim_2a577664/sva/nnc_chk_inputs.sv:38:63: ... Location of other write
+   38 |   always_ff @(posedge i_clk_wr) if (!(!i_rst_n_wr) && (1'b1)) hits_CHK_002 <= hits_CHK_002 + 1;
+      |                                                               ^~~~~~~~~~~~
+                      ... For warning description see https://verilator.org/warn/MULTIDRIVEN?v=5.055
+                      ... Use "/* verilator lint_off MULTIDRIVEN */" and lint_on around source to disable this message.
+- V e r i l a t i o n   R e p o r t: Verilator 5.055 devel rev v5.054-94-g4d23f6ea0 (mod)
+- Verilator: Built from 0.676 MB sources in 16 modules, into 1.401 MB in 6 C++ files needing 0.000 MB
+- Verilator: Walltime 0.070 s (elab=0.004, cvt=0.049, bld=0.000); cpu 0.055 s on 1 threads; allocated 27.750 MB
+make -C sim_build  -f Vtop.mk
+make[2]: Entering directory '/root/nnc_runs/sim_2a577664/sim_build'
+g++  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"     -Os  -c -o verilator.o /opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/share/lib/verilator/verilator.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o verilated.o /opt/oss-cad-suite/share/verilator/include/verilated.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o verilated_dpi.o /opt/oss-cad-suite/share/verilator/include/verilated_dpi.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o verilated_vpi.o /opt/oss-cad-suite/share/verilator/include/verilated_vpi.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o verilated_cov.o /opt/oss-cad-suite/share/verilator/include/verilated_cov.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o verilated_covergroup.o /opt/oss-cad-suite/share/verilator/include/verilated_covergroup.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o verilated_threads.o /opt/oss-cad-suite/share/verilator/include/verilated_threads.cpp
+python3 /opt/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__Dpi.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o Vtop__ALL.o Vtop__ALL.cpp
+g++    -rdynamic verilator.o verilated.o verilated_dpi.o verilated_vpi.o verilated_cov.o verilated_covergroup.o verilated_threads.o Vtop__ALL.a   -Wl,-rpath,/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/libs -L/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/libs -lcocotbvpi_verilator  -pthread -lpthread -latomic -ldl   -o Vtop
+rm Vtop__ALL.verilator_deplist.tmp
+make[2]: Leaving directory '/root/nnc_runs/sim_2a577664/sim_build'
+rm -f results.xml
+COCOTB_TEST_MODULES=test_sync_fifo COCOTB_TESTCASE= COCOTB_TEST_FILTER= COCOTB_TOPLEVEL=nnc_tb_top TOPLEVEL_LANG=verilog \
+         sim_build/Vtop  --assert --timing -Wno-fatal -Wno-WIDTH -Wno-UNOPTFLAT -GPARA_SFIFO_DEPTH=8 -GPARA_SFIFO_DATA_W=32 -GPARA_SFIFO_PTR_RETIME=0 -GPARA_SFIFO_MEM_USE_MACRO=0 --coverage-line --coverage-toggle --coverage-expr   
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:216  in gpi_load_users                  Running entry func 'initialize' from loaded library '/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/libs/libcocotb.so'
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:96   in initialize                      Using Python 3.11.6 interpreter at /opt/oss-cad-suite/bin/tabbypy3
+     0.00ns INFO     cocotb                             Running on Verilator version 5.055 devel
+     0.00ns INFO     cocotb                             Seeding Python random module with supplied seed 1
+     0.00ns INFO     cocotb                             Initialized cocotb v2.1.0.dev0+41564633 from /opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_sync_fifo.test_chk_012_strict_later_latency_3_2 (1/25)
+                                                            CHK-012: o_empty / o_full fall after the first strictly later edge at every alignment of 3:2.
+   837.00ns INFO     cocotb.regression                  test_sync_fifo.test_chk_012_strict_later_latency_3_2 passed
+   837.00ns INFO     cocotb.regression                  running test_sync_fifo.test_chk_013_random_ratios/ratio=0 (2/25)
+                                                            CHK-013: constrained-random traffic with scoreboard over clock ratios and reset release phases.
+  4042.00ns INFO     cocotb.nnc_tb_top                  CHK-013 10_10 wr_first: reads=134 ovf=97 unf=20 sw=2 coincident ops=74
+  7252.00ns INFO     cocotb.nnc_tb_top                  CHK-013 10_10 rd_first: reads=121 ovf=130 unf=43 sw=7 coincident ops=150
+ 10402.00ns INFO     cocotb.nnc_tb_top                  CHK-013 10_10 both: reads=116 ovf=179 unf=96 sw=12 coincident ops=230
+ 10413.00ns INFO     cocotb.regression                  test_sync_fifo.test_chk_013_random_ratios/ratio=0 passed
+ 10413.00ns INFO     cocotb.regression                  running test_sync_fifo.test_chk_013_random_ratios/ratio=1 (3/25)
+                                                            CHK-013: constrained-random traffic with scoreboard over clock ratios and reset release phases.
+ 14169.00ns INFO     cocotb.nnc_tb_top                  CHK-013 12_8 wr_first: reads=78 ovf=19 unf=174 sw=8 coincident ops=19
+ 17937.00ns INFO     cocotb.nnc_tb_top                  CHK-013 12_8 rd_first: reads=138 ovf=78 unf=266 sw=11 coincident ops=48
+ 21681.00ns INFO     cocotb.nnc_tb_top                  CHK-013 12_8 both: reads=96 ovf=78 unf=407 sw=16 coincident ops=71
+ 21688.00ns INFO     cocotb.regression                  test_sync_fifo.test_chk_013_random_ratios/ratio=1 passed
+ 21688.00ns INFO     cocotb.regression                  running test_sync_fifo.test_chk_013_random_ratios/ratio=2 (4/25)
+                                                            CHK-013: constrained-random traffic with scoreboard over clock ratios and reset release phases.
+ 25510.00ns INFO     cocotb.nnc_tb_top                  CHK-013 8_12 wr_first: reads=90 ovf=79 unf=24 sw=9 coincident ops=21
+ 29254.00ns INFO     cocotb.nnc_tb_top                  CHK-013 8_12 rd_first: reads=109 ovf=186 unf=47 sw=18 coincident ops=51
+ 33010.00ns INFO     cocotb.nnc_tb_top                  CHK-013 8_12 both: reads=133 ovf=259 unf=112 sw=24 coincident ops=96
+ 33013.00ns INFO     cocotb.regression                  test_sync_fifo.test_chk_013_random_ratios/ratio=2 passed
+ 33013.00ns INFO     cocotb.regression                  running test_sync_fifo.test_chk_013_random_ratios/ratio=3 (5/25)
+                                                            CHK-013: constrained-random traffic with scoreboard over clock ratios and reset release phases.
+ 38093.00ns INFO     cocotb.nnc_tb_top                  CHK-013 8_16 wr_first: reads=169 ovf=100 unf=51 sw=7 coincident ops=89
+ 43165.00ns INFO     cocotb.nnc_tb_top                  CHK-013 8_16 rd_first: reads=121 ovf=276 unf=92 sw=14 coincident ops=149
+ 48253.00ns INFO     cocotb.nnc_tb_top                  CHK-013 8_16 both: reads=113 ovf=434 unf=108 sw=22 coincident ops=201
+ 48258.00ns INFO     cocotb.regression                  test_sync_fifo.test_chk_013_random_ratios/ratio=3 passed
+ 48258.00ns INFO     cocotb.regression                  running test_sync_fifo.test_chk_013_random_ratios/ratio=4 (6/25)
+                                                            CHK-013: constrained-random traffic with scoreboard over clock ratios and reset release phases.
+ 53222.00ns INFO     cocotb.nnc_tb_top                  CHK-013 16_8 wr_first: reads=145 ovf=0 unf=173 sw=9 coincident ops=93
+ 58174.00ns INFO     cocotb.nnc_tb_top                  CHK-013 16_8 rd_first: reads=107 ovf=20 unf=325 sw=14 coincident ops=149
+ 63158.00ns INFO     cocotb.nnc_tb_top                  CHK-013 16_8 both: reads=120 ovf=32 unf=469 sw=20 coincident ops=218
+ 63163.00ns INFO     cocotb.regression                  test_sync_fifo.test_chk_013_random_ratios/ratio=4 passed
+ 63163.00ns INFO     cocotb.regression                  running test_sync_fifo.test_chk_013_random_ratios/ratio=5 (7/25)
+                                                            CHK-013: constrained-random traffic with scoreboard over clock ratios and reset release phases.
+ 72025.01ns INFO     cocotb.nnc_tb_top                  CHK-013 12_28 wr_first: reads=141 ovf=237 unf=10 sw=9 coincident ops=8
+ 80845.01ns INFO     cocotb.nnc_tb_top                  CHK-013 12_28 rd_first: reads=119 ovf=437 unf=27 sw=21 coincident ops=21
+ 89749.01ns INFO     cocotb.nnc_tb_top                  CHK-013 12_28 both: reads=125 ovf=615 unf=63 sw=33 coincident ops=28
+ 89762.01ns INFO     cocotb.regression                  test_sync_fifo.test_chk_013_random_ratios/ratio=5 passed
+ 89762.01ns INFO     cocotb.regression                  running test_sync_fifo.test_chk_013_random_ratios/ratio=6 (8/25)
+                                                            CHK-013: constrained-random traffic with scoreboard over clock ratios and reset release phases.
+ 98444.01ns INFO     cocotb.nnc_tb_top                  CHK-013 28_12 wr_first: reads=185 ovf=11 unf=159 sw=9 coincident ops=12
+107084.01ns INFO     cocotb.nnc_tb_top                  CHK-013 28_12 rd_first: reads=166 ovf=11 unf=407 sw=15 coincident ops=27
+115844.01ns INFO     cocotb.nnc_tb_top                  CHK-013 28_12 both: reads=172 ovf=21 unf=587 sw=24 coincident ops=37
+115873.01ns INFO     cocotb.regression                  test_sync_fifo.test_chk_013_random_ratios/ratio=6 passed
+115873.01ns INFO     cocotb.regression                  running test_sync_fifo.test_chk_013_random_ratios/ratio=7 (9/25)
+                                                            CHK-013: constrained-random traffic with scoreboard over clock ratios and reset release phases.
+126965.01ns INFO     cocotb.nnc_tb_top                  CHK-013 36_8 wr_first: reads=132 ovf=0 unf=693 sw=8 coincident ops=6
+138085.01ns INFO     cocotb.nnc_tb_top                  CHK-013 36_8 rd_first: reads=104 ovf=1 unf=1328 sw=14 coincident ops=8
+149221.01ns INFO     cocotb.nnc_tb_top                  CHK-013 36_8 both: reads=201 ovf=1 unf=1886 sw=20 coincident ops=14
+149228.01ns INFO     cocotb.regression                  test_sync_fifo.test_chk_013_random_ratios/ratio=7 passed
+149228.01ns INFO     cocotb.regression                  running test_sync_fifo.test_chk_014_first_word_show_ahead (10/25)
+                                                            CHK-014: first-word latency with equal clocks, show-ahead, no bubble, o_empty after last read.
+149464.01ns INFO     cocotb.regression                  test_sync_fifo.test_chk_014_first_word_show_ahead passed
+149464.01ns INFO     cocotb.regression                  running test_sync_fifo.test_chk_015_full_empty_overflow_underflow (11/25)
+                                                            CHK-015: fill to full, overflow pulses, drain to empty, underflow pulses, independent next request.
+149890.01ns INFO     cocotb.regression                  test_sync_fifo.test_chk_015_full_empty_overflow_underflow passed
+149890.01ns INFO     cocotb.regression                  running test_sync_fifo.test_chk_016_no_bypass_simultaneous (12/25)
+                                                            CHK-016: no full-FIFO bypass; simultaneous accepted write and read.
+150416.01ns INFO     cocotb.regression                  test_sync_fifo.test_chk_016_no_bypass_simultaneous passed
+150416.01ns INFO     cocotb.regression                  running test_sync_fifo.test_chk_017_pointer_wrap/ratio=0 (13/25)
+                                                            CHK-017: order and flags over many pointer wraps (equal clocks and 3:2).
+161622.01ns INFO     cocotb.regression                  test_sync_fifo.test_chk_017_pointer_wrap/ratio=0 passed
+161622.01ns INFO     cocotb.regression                  running test_sync_fifo.test_chk_017_pointer_wrap/ratio=1 (14/25)
+                                                            CHK-017: order and flags over many pointer wraps (equal clocks and 3:2).
+172195.01ns INFO     cocotb.regression                  test_sync_fifo.test_chk_017_pointer_wrap/ratio=1 passed
+172195.01ns INFO     cocotb.regression                  running test_sync_fifo.test_chk_018_gap_free_equal (15/25)
+                                                            CHK-018: gap-free streaming with equal clocks.
+174361.01ns INFO     cocotb.regression                  test_sync_fifo.test_chk_018_gap_free_equal passed
+174361.01ns INFO     cocotb.regression                  running test_sync_fifo.test_chk_019_write_faster (16/25)
+                                                            CHK-019: continuous traffic, write clock 8 ns faster than read clock 12 ns (WF-010).
+178382.02ns INFO     cocotb.regression                  test_sync_fifo.test_chk_019_write_faster passed
+178382.02ns INFO     cocotb.regression                  running test_sync_fifo.test_chk_020_read_faster (17/25)
+                                                            CHK-020: continuous traffic, read clock 8 ns faster than write clock 12 ns (WF-011).
+182205.02ns INFO     cocotb.regression                  test_sync_fifo.test_chk_020_read_faster passed
+182205.02ns INFO     cocotb.regression                  running test_sync_fifo.test_chk_021_hw_reset (18/25)
+                                                            CHK-021: hardware reset values, asynchronous assertion, synchronous release, pulse clearing.
+182651.02ns INFO     cocotb.regression                  test_sync_fifo.test_chk_021_hw_reset passed
+182651.02ns INFO     cocotb.regression                  running test_sync_fifo.test_chk_022_sw_reset_sequence/ratio=0 (19/25)
+                                                            CHK-022: software reset with low levels of 1, 3, 10 cycles, blocking, busy, data afterwards.
+183787.02ns INFO     cocotb.regression                  test_sync_fifo.test_chk_022_sw_reset_sequence/ratio=0 passed
+183787.02ns INFO     cocotb.regression                  running test_sync_fifo.test_chk_022_sw_reset_sequence/ratio=1 (20/25)
+                                                            CHK-022: software reset with low levels of 1, 3, 10 cycles, blocking, busy, data afterwards.
+184712.02ns INFO     cocotb.regression                  test_sync_fifo.test_chk_022_sw_reset_sequence/ratio=1 passed
+184712.02ns INFO     cocotb.regression                  running test_sync_fifo.test_chk_022_sw_reset_sequence/ratio=2 (21/25)
+                                                            CHK-022: software reset with low levels of 1, 3, 10 cycles, blocking, busy, data afterwards.
+185751.02ns INFO     cocotb.regression                  test_sync_fifo.test_chk_022_sw_reset_sequence/ratio=2 passed
+185751.02ns INFO     cocotb.regression                  running test_sync_fifo.test_chk_023_hw_reset_priority (22/25)
+                                                            CHK-023: hardware reset has priority at every step of the software reset sequence.
+185996.02ns INFO     cocotb.nnc_tb_top                  CHK-023: busy interval K=7
+188607.02ns INFO     cocotb.regression                  test_sync_fifo.test_chk_023_hw_reset_priority passed
+188607.02ns INFO     cocotb.regression                  running test_sync_fifo.test_chk_024_sw_reset_full_and_rerequest (23/25)
+                                                            CHK-024: software reset while full; new request during the sequence served as a new sequence.
+193343.02ns INFO     cocotb.regression                  test_sync_fifo.test_chk_024_sw_reset_full_and_rerequest passed
+193343.02ns INFO     cocotb.regression                  running test_sync_fifo.test_chk_025_thresholds (24/25)
+                                                            CHK-025: threshold flags (WF-005) and threshold sweep including values above DEPTH.
+197389.02ns INFO     cocotb.regression                  test_sync_fifo.test_chk_025_thresholds passed
+197389.02ns INFO     cocotb.regression                  running test_sync_fifo.test_regression_random (25/25)
+                                                            CHK-001..CHK-011 (assertion checks): broad random traffic with software and hardware resets,
+238404.02ns INFO     cocotb.nnc_tb_top                  regression: writes=1416 reads=1293 ovf=566 unf=793 sw=34 coincident ops=727
+238415.02ns INFO     cocotb.regression                  test_sync_fifo.test_regression_random passed
+238415.02ns INFO     cocotb.regression                  *******************************************************************************************************************
+                                                        ** TEST                                                       STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *******************************************************************************************************************
+                                                        ** test_sync_fifo.test_chk_012_strict_later_latency_3_2        PASS         837.00           0.04      19705.83  **
+                                                        ** test_sync_fifo.test_chk_013_random_ratios/ratio=0           PASS        9576.00           0.32      29976.60  **
+                                                        ** test_sync_fifo.test_chk_013_random_ratios/ratio=1           PASS       11275.00           0.59      19130.40  **
+                                                        ** test_sync_fifo.test_chk_013_random_ratios/ratio=2           PASS       11325.00           0.58      19606.27  **
+                                                        ** test_sync_fifo.test_chk_013_random_ratios/ratio=3           PASS       15245.00           0.61      25015.38  **
+                                                        ** test_sync_fifo.test_chk_013_random_ratios/ratio=4           PASS       14905.00           0.58      25898.13  **
+                                                        ** test_sync_fifo.test_chk_013_random_ratios/ratio=5           PASS       26599.00           0.89      29818.95  **
+                                                        ** test_sync_fifo.test_chk_013_random_ratios/ratio=6           PASS       26111.00           0.87      29941.33  **
+                                                        ** test_sync_fifo.test_chk_013_random_ratios/ratio=7           PASS       33355.00           1.48      22607.42  **
+                                                        ** test_sync_fifo.test_chk_014_first_word_show_ahead           PASS         236.00           0.01      27584.11  **
+                                                        ** test_sync_fifo.test_chk_015_full_empty_overflow_underflow   PASS         426.00           0.01      29021.61  **
+                                                        ** test_sync_fifo.test_chk_016_no_bypass_simultaneous          PASS         526.00           0.02      28837.00  **
+                                                        ** test_sync_fifo.test_chk_017_pointer_wrap/ratio=0            PASS       11206.00           0.38      29694.46  **
+                                                        ** test_sync_fifo.test_chk_017_pointer_wrap/ratio=1            PASS       10573.00           0.55      19170.59  **
+                                                        ** test_sync_fifo.test_chk_018_gap_free_equal                  PASS        2166.00           0.08      26672.41  **
+                                                        ** test_sync_fifo.test_chk_019_write_faster                    PASS        4021.00           0.22      18248.40  **
+                                                        ** test_sync_fifo.test_chk_020_read_faster                     PASS        3823.00           0.23      16316.11  **
+                                                        ** test_sync_fifo.test_chk_021_hw_reset                        PASS         446.00           0.02      25454.61  **
+                                                        ** test_sync_fifo.test_chk_022_sw_reset_sequence/ratio=0       PASS        1136.00           0.04      29344.89  **
+                                                        ** test_sync_fifo.test_chk_022_sw_reset_sequence/ratio=1       PASS         925.00           0.06      15944.78  **
+                                                        ** test_sync_fifo.test_chk_022_sw_reset_sequence/ratio=2       PASS        1039.00           0.05      19299.06  **
+                                                        ** test_sync_fifo.test_chk_023_hw_reset_priority               PASS        2856.00           0.09      31812.84  **
+                                                        ** test_sync_fifo.test_chk_024_sw_reset_full_and_rerequest     PASS        4736.00           0.14      33185.69  **
+                                                        ** test_sync_fifo.test_chk_025_thresholds                      PASS        4046.00           0.13      31063.97  **
+                                                        ** test_sync_fifo.test_regression_random                       PASS       41026.00           1.34      30540.89  **
+                                                        *******************************************************************************************************************
+                                                        ** TESTS=25 PASS=25 FAIL=0 SKIP=0                                        238415.02           9.36      25477.74  **
+                                                        *******************************************************************************************************************
+NNC_FAIL CHK-007 @8387000
+NNC_FAIL CHK-007 @10227000
+NNC_FAIL CHK-007 @23032000
+NNC_FAIL CHK-007 @24208000
+NNC_FAIL CHK-007 @27064000
+NNC_FAIL CHK-007 @27544000
+NNC_FAIL CHK-007 @27832000
+NNC_FAIL CHK-007 @30016000
+NNC_FAIL CHK-007 @32968000
+NNC_FAIL CHK-007 @33861000
+NNC_FAIL CHK-007 @40757000
+NNC_FAIL CHK-007 @44021000
+NNC_FAIL CHK-007 @62850000
+NNC_FAIL CHK-007 @65791000
+NNC_FAIL CHK-007 @66379000
+NNC_FAIL CHK-007 @68059000
+NNC_FAIL CHK-007 @69151000
+NNC_FAIL CHK-007 @70039000
+NNC_FAIL CHK-007 @73039000
+NNC_FAIL CHK-007 @75835000
+NNC_FAIL CHK-007 @77719000
+NNC_FAIL CHK-007 @78247000
+NNC_FAIL CHK-007 @79315000
+NNC_FAIL CHK-007 @79567000
+NNC_FAIL CHK-007 @79927000
+NNC_FAIL CHK-007 @88411000
+NNC_FAIL CHK-007 @88999000
+NNC_FAIL CHK-007 @188907000
+NNC_FAIL CHK-007 @203459000
+NNC_FAIL CHK-007 @214589000
+NNC_FAIL CHK-007 @214889000
+NNC_FAIL CHK-007 @222819000
+- (null):0: Verilog $finish
+NNC_COVER COVP-001 hits=7130
+NNC_COVER COVP-002 hits=2347
+NNC_COVER COVP-003 hits=2346
+NNC_COVER COVP-004 hits=923
+NNC_COVER COVP-005 hits=1177
+NNC_COVER COVP-006 hits=244
+NNC_COVER COVP-007 hits=43
+NNC_COVER COVP-008 hits=148
+NNC_COVER COVP-009 hits=34
+NNC_COVER COVP-010 hits=236
+NNC_COVER COVP-011 hits=1363
+NNC_COVER COVP-012 hits=1159
+NNC_COVER COVP-013 hits=48
+NNC_COVER COVP-014 hits=1009
+NNC_COVER COVP-015 hits=958
+NNC_COVER COVP-016 hits=3129
+NNC_COVER COVP-017 hits=945
+NNC_COVER COVP-018 hits=2291
+NNC_COVER COVP-019 hits=77
+NNC_COVER COVP-020 hits=2256
+NNC_COVER COVP-021 hits=1492
+NNC_COVER COVP-022 hits=464
+NNC_COVER COVP-023 hits=413
+NNC_COVER COVP-024 hits=372
+NNC_COVER COVP-025 hits=11
+NNC_COVER COVP-026 hits=1
+NNC_COVER COVP-027 hits=8
+NNC_COVER COVP-028 hits=6380
+NNC_COVER COVP-029 hits=4585
+NNC_COVER COVP-030 hits=4683
+NNC_COVER COVP-031 hits=1754
+NNC_COVER COVP-032 hits=1287
+NNC_COVER COVP-033 hits=1786
+NNC_COVER COVP-034 hits=1947
+NNC_COVER COVP-035 hits=1738
+NNC_COVER COVP-036 hits=6272
+NNC_COVER COVP-037 hits=5437
+NNC_COVER COVP-038 hits=3757
+NNC_COVER COVP-039 hits=369
+NNC_COVER COVP-040 hits=14
+NNC_CHECK CHK-009 hits=2333 fails=0
+NNC_CHECK CHK-010 hits=16629 fails=0
+NNC_CHECK CHK-011 hits=18976 fails=0
+NNC_CHECK CHK-008 hits=16887 fails=0
+NNC_CHECK CHK-006 hits=11709 fails=0
+NNC_CHECK CHK-007 hits=18962 fails=32
+NNC_CHECK CHK-003 hits=2554 fails=0
+NNC_CHECK CHK-004 hits=18787 fails=0
+NNC_CHECK CHK-005 hits=5871 fails=0
+NNC_CHECK CHK-002 hits=28418 fails=0
+NNC_CHECK CHK-001 hits=18976 fails=0
+make[1]: Leaving directory '/root/nnc_runs/sim_2a577664'
+NNC_MAKE_RC=0

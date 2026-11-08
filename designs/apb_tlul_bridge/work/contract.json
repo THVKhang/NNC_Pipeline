@@ -8,7 +8,8 @@
     "width": "1",
     "type": "Clock",
     "reset_value": "Not applicable (clock)",
-    "meaning": "Clock for both interfaces"
+    "meaning": "Clock for both interfaces",
+    "domain": "CLK-CORE"
    },
    {
     "name": "i_rst_n_core",
@@ -16,7 +17,8 @@
     "width": "1",
     "type": "Reset (asynchronous assertion, level)",
     "reset_value": "Not applicable (reset)",
-    "meaning": "Active-low reset"
+    "meaning": "Active-low reset",
+    "domain": "RST-CORE"
    },
    {
     "name": "i_apb_psel",
@@ -24,7 +26,8 @@
     "width": "1",
     "type": "Level (high for the whole transfer)",
     "reset_value": "Not used in reset",
-    "meaning": "APB select"
+    "meaning": "APB select",
+    "domain": "CLK-CORE"
    },
    {
     "name": "i_apb_penable",
@@ -32,7 +35,8 @@
     "width": "1",
     "type": "Level (high during the Access phase)",
     "reset_value": "Not used in reset",
-    "meaning": "APB enable (Access phase)"
+    "meaning": "APB enable (Access phase)",
+    "domain": "CLK-CORE"
    },
    {
     "name": "i_apb_pwrite",
@@ -40,7 +44,8 @@
     "width": "1",
     "type": "Data (valid with i_apb_psel)",
     "reset_value": "Not used in reset",
-    "meaning": "1 = write"
+    "meaning": "1 = write",
+    "domain": "CLK-CORE"
    },
    {
     "name": "i_apb_paddr",
@@ -48,7 +53,8 @@
     "width": "PARA_ADDR_W",
     "type": "Data (valid with i_apb_psel)",
     "reset_value": "Not used in reset",
-    "meaning": "Byte address"
+    "meaning": "Byte address",
+    "domain": "CLK-CORE"
    },
    {
     "name": "i_apb_pprot",
@@ -56,7 +62,8 @@
     "width": "3",
     "type": "Data (ignored)",
     "reset_value": "Not used",
-    "meaning": "Protection type"
+    "meaning": "Protection type",
+    "domain": "CLK-CORE"
    },
    {
     "name": "i_apb_pstrb",
@@ -64,7 +71,8 @@
     "width": "4",
     "type": "Data (valid with i_apb_psel)",
     "reset_value": "Not used in reset",
-    "meaning": "Write strobes"
+    "meaning": "Write strobes",
+    "domain": "CLK-CORE"
    },
    {
     "name": "i_apb_pwdata",
@@ -72,7 +80,8 @@
     "width": "32",
     "type": "Data (valid with i_apb_psel)",
     "reset_value": "Not used in reset",
-    "meaning": "Write data"
+    "meaning": "Write data",
+    "domain": "CLK-CORE"
    },
    {
     "name": "o_apb_pready",
@@ -80,7 +89,8 @@
     "width": "1",
     "type": "Pulse (1 cycle per transfer)",
     "reset_value": "0",
-    "meaning": "Transfer ready"
+    "meaning": "Transfer ready",
+    "domain": "CLK-CORE"
    },
    {
     "name": "o_apb_prdata",
@@ -88,7 +98,8 @@
     "width": "32",
     "type": "Data (valid with o_apb_pready)",
     "reset_value": "0",
-    "meaning": "Read data"
+    "meaning": "Read data",
+    "domain": "CLK-CORE"
    },
    {
     "name": "o_apb_pslverr",
@@ -96,7 +107,8 @@
     "width": "1",
     "type": "Level (high only with o_apb_pready)",
     "reset_value": "0",
-    "meaning": "Transfer error"
+    "meaning": "Transfer error",
+    "domain": "CLK-CORE"
    },
    {
     "name": "o_tlul_a_valid",
@@ -104,7 +116,8 @@
     "width": "1",
     "type": "Level (set at the Setup edge, held until i_tlul_a_ready)",
     "reset_value": "0",
-    "meaning": "Request valid"
+    "meaning": "Request valid",
+    "domain": "CLK-CORE"
    },
    {
     "name": "i_tlul_a_ready",
@@ -112,7 +125,8 @@
     "width": "1",
     "type": "Level (handshake with o_tlul_a_valid)",
     "reset_value": "Not used in reset",
-    "meaning": "Request accepted"
+    "meaning": "Request accepted",
+    "domain": "CLK-CORE"
    },
    {
     "name": "o_tlul_a_opcode",
@@ -120,7 +134,8 @@
     "width": "3",
     "type": "Data (valid with o_tlul_a_valid)",
     "reset_value": "0",
-    "meaning": "Request opcode: bit 2 from a flop (1 = Get); bits [1:0] constant 0 (PutFullData 3'b000, Get 3'b100)"
+    "meaning": "Request opcode: bit 2 from a flop (1 = Get); bits [1:0] constant 0 (PutFullData 3'b000, Get 3'b100)",
+    "domain": "CLK-CORE"
    },
    {
     "name": "o_tlul_a_param",
@@ -128,7 +143,8 @@
     "width": "3",
     "type": "Static (constant 3'b000)",
     "reset_value": "3'b000",
-    "meaning": "Reserved, always 3'b000"
+    "meaning": "Reserved, always 3'b000",
+    "domain": "CLK-CORE"
    },
    {
     "name": "o_tlul_a_size",
@@ -136,7 +152,8 @@
     "width": "2",
     "type": "Static (constant 2'b10)",
     "reset_value": "2'b10",
-    "meaning": "Request size, always 2'b10 (4 bytes)"
+    "meaning": "Request size, always 2'b10 (4 bytes)",
+    "domain": "CLK-CORE"
    },
    {
     "name": "o_tlul_a_source",
@@ -144,7 +161,8 @@
     "width": "PARA_SRC_W",
     "type": "Static (constant PARA_SRC_ID)",
     "reset_value": "PARA_SRC_ID",
-    "meaning": "Request identifier, always PARA_SRC_ID"
+    "meaning": "Request identifier, always PARA_SRC_ID",
+    "domain": "CLK-CORE"
    },
    {
     "name": "o_tlul_a_address",
@@ -152,7 +170,8 @@
     "width": "PARA_ADDR_W",
     "type": "Data (valid with o_tlul_a_valid)",
     "reset_value": "0",
-    "meaning": "Request address: bits [PARA_ADDR_W-1:2] from flops, bits [1:0] constant 0"
+    "meaning": "Request address: bits [PARA_ADDR_W-1:2] from flops, bits [1:0] constant 0",
+    "domain": "CLK-CORE"
    },
    {
     "name": "o_tlul_a_mask",
@@ -160,7 +179,8 @@
     "width": "4",
     "type": "Static (constant 4'b1111)",
     "reset_value": "4'b1111",
-    "meaning": "Byte lanes, always 4'b1111"
+    "meaning": "Byte lanes, always 4'b1111",
+    "domain": "CLK-CORE"
    },
    {
     "name": "o_tlul_a_data",
@@ -168,7 +188,8 @@
     "width": "32",
     "type": "Data (valid with o_tlul_a_valid)",
     "reset_value": "0",
-    "meaning": "Write data (copy of PWDATA; unused by the device on Get)"
+    "meaning": "Write data (copy of PWDATA; unused by the device on Get)",
+    "domain": "CLK-CORE"
    },
    {
     "name": "o_tlul_a_user",
@@ -176,7 +197,8 @@
     "width": "PARA_A_USER_W",
     "type": "Static (constant 0)",
     "reset_value": "'0",
-    "meaning": "A-channel user bits, always '0 (DEC-004)"
+    "meaning": "A-channel user bits, always '0 (DEC-004)",
+    "domain": "CLK-CORE"
    },
    {
     "name": "i_tlul_d_valid",
@@ -184,7 +206,8 @@
     "width": "1",
     "type": "Level (handshake with o_tlul_d_ready)",
     "reset_value": "Not used in reset",
-    "meaning": "Response valid"
+    "meaning": "Response valid",
+    "domain": "CLK-CORE"
    },
    {
     "name": "o_tlul_d_ready",
@@ -192,7 +215,8 @@
     "width": "1",
     "type": "Level (0 in reset, then constant 1)",
     "reset_value": "0 in reset, then 1 (DEC-010)",
-    "meaning": "Response accepted"
+    "meaning": "Response accepted",
+    "domain": "CLK-CORE"
    },
    {
     "name": "i_tlul_d_opcode",
@@ -200,7 +224,8 @@
     "width": "3",
     "type": "Data (valid with i_tlul_d_valid)",
     "reset_value": "Not used in reset",
-    "meaning": "Response opcode (3'b000 AccessAck, 3'b001 AccessAckData)"
+    "meaning": "Response opcode (3'b000 AccessAck, 3'b001 AccessAckData)",
+    "domain": "CLK-CORE"
    },
    {
     "name": "i_tlul_d_source",
@@ -208,7 +233,8 @@
     "width": "PARA_SRC_W",
     "type": "Data (valid with i_tlul_d_valid)",
     "reset_value": "Not used in reset",
-    "meaning": "Response identifier, expected PARA_SRC_ID"
+    "meaning": "Response identifier, expected PARA_SRC_ID",
+    "domain": "CLK-CORE"
    },
    {
     "name": "i_tlul_d_data",
@@ -216,7 +242,8 @@
     "width": "32",
     "type": "Data (valid with i_tlul_d_valid)",
     "reset_value": "Not used in reset",
-    "meaning": "Read data"
+    "meaning": "Read data",
+    "domain": "CLK-CORE"
    },
    {
     "name": "i_tlul_d_error",
@@ -224,7 +251,8 @@
     "width": "1",
     "type": "Data (valid with i_tlul_d_valid)",
     "reset_value": "Not used in reset",
-    "meaning": "Response error"
+    "meaning": "Response error",
+    "domain": "CLK-CORE"
    },
    {
     "name": "i_tlul_d_param",
@@ -232,7 +260,8 @@
     "width": "3",
     "type": "Data (ignored)",
     "reset_value": "Not used in reset",
-    "meaning": "Response parameter (reserved)"
+    "meaning": "Response parameter (reserved)",
+    "domain": "CLK-CORE"
    },
    {
     "name": "i_tlul_d_size",
@@ -240,7 +269,8 @@
     "width": "2",
     "type": "Data (ignored)",
     "reset_value": "Not used in reset",
-    "meaning": "Response size"
+    "meaning": "Response size",
+    "domain": "CLK-CORE"
    },
    {
     "name": "i_tlul_d_sink",
@@ -248,7 +278,8 @@
     "width": "PARA_D_SINK_W",
     "type": "Data (ignored)",
     "reset_value": "Not used in reset",
-    "meaning": "Response sink identifier"
+    "meaning": "Response sink identifier",
+    "domain": "CLK-CORE"
    },
    {
     "name": "i_tlul_d_user",
@@ -256,7 +287,8 @@
     "width": "PARA_D_USER_W",
     "type": "Data (ignored)",
     "reset_value": "Not used in reset",
-    "meaning": "Response user bits"
+    "meaning": "Response user bits",
+    "domain": "CLK-CORE"
    }
   ],
   "parameters": [
@@ -296,6 +328,19 @@
    "name": "i_rst_n_core",
    "active_low": true
   },
+  "clocks": [
+   {
+    "name": "i_clk_core",
+    "domain": "CLK-CORE"
+   }
+  ],
+  "resets": [
+   {
+    "name": "i_rst_n_core",
+    "active_low": true,
+    "clock": "i_clk_core"
+   }
+  ],
   "source_table": {
    "section": "6.2",
    "line": 223
@@ -505,7 +550,7 @@
     "BR-3-32",
     "BR-1.1-01"
    ],
-   "behavior": "This uses the counted-response definition of CHK-014. If i_rst_n_core=1 at rising edges E and E+1 and o_apb_pready=1 at E+1, then at E one of two things held: (a) a counted response; or (b) i_apb_psel=1, i_apb_penable=0 and (i_apb_paddr[1:0]!=2'b00 or (i_apb_pwrite=1 and i_apb_pstrb!=4'b1111)). As a result, an i_tlul_d_valid that is not a counted response (an orphan) never produces o_apb_pready. Together with CHK-003 and CHK-004, it leaves o_apb_pslverr and o_apb_prdata unchanged.",
+   "behavior": "This uses the counted-response definition of CHK-010. If i_rst_n_core=1 at rising edges E and E+1 and o_apb_pready=1 at E+1, then at E one of two things held: (a) a counted response; or (b) i_apb_psel=1, i_apb_penable=0 and (i_apb_paddr[1:0]!=2'b00 or (i_apb_pwrite=1 and i_apb_pstrb!=4'b1111)). As a result, an i_tlul_d_valid that is not a counted response (an orphan) never produces o_apb_pready. Together with CHK-003 and CHK-004, it leaves o_apb_pslverr and o_apb_prdata unchanged.",
    "stimulus": "",
    "expected": ""
   },
@@ -525,7 +570,7 @@
     "BR-15.3-06",
     "BR-20-11"
    ],
-   "behavior": "At every rising edge of i_clk_core where i_rst_n_core=0, these outputs are all 0: o_tlul_a_valid, o_tlul_d_ready, o_apb_pready, o_apb_pslverr, o_apb_prdata=32'h0, o_tlul_a_opcode=3'b000, o_tlul_a_address=0 and o_tlul_a_data=32'h0. The constant fields of CHK-013 also hold.",
+   "behavior": "At every rising edge of i_clk_core where i_rst_n_core=0, these outputs are all 0: o_tlul_a_valid, o_tlul_d_ready, o_apb_pready, o_apb_pslverr, o_apb_prdata=32'h0, o_tlul_a_opcode=3'b000, o_tlul_a_address=0 and o_tlul_a_data=32'h0. The constant fields of CHK-017 also hold.",
    "stimulus": "",
    "expected": ""
   },
@@ -791,7 +836,7 @@
    ],
    "behavior": "Inputs declared ignored have no effect on any output.",
    "stimulus": "Run a fixed sequence of 12 transfers (writes, reads, one illegal strobe, one misaligned, one d_error) with a fixed device timing. Repeat it 8 times, once per i_apb_pprot value 3'b000..3'b111. Each repeat also drives random i_tlul_d_param, i_tlul_d_size, i_tlul_d_sink (PARA_D_SINK_W bits) and i_tlul_d_user (PARA_D_USER_W bits), both with i_tlul_d_valid=1 and at other times.",
-   "expected": "All outputs (o_apb_*, o_tlul_*) are cycle-for-cycle identical across the 8 repeats and equal to the reference model results of CHK-020..CHK-023."
+   "expected": "All outputs (o_apb_*, o_tlul_*) are cycle-for-cycle identical across the 8 repeats and equal to the reference model results of CHK-018, CHK-019, CHK-023, CHK-024."
   },
   {
    "id": "CHK-026",
@@ -849,7 +894,7 @@
    ],
    "behavior": "Setup detection by level and the minimum Setup-to-Setup interval for every ordered pair of transfer kinds.",
    "stimulus": "Transfer kinds: aligned full-strobe write, aligned read, illegal-strobe write (PSTRB=4'b0101), and misaligned access (PADDR[1:0]=2'b10). Device modes for legal transfers: prompt (response in the cycle after acceptance), same-cycle response, and prompt with i_tlul_d_error=1. Run every ordered pair (first, second) of kinds under each device mode. In the cycle after PREADY, drive the second transfer's Setup with i_apb_psel held at 1 and only i_apb_penable dropped to 0. Repeat every pair with i_apb_psel=0 for 1 idle cycle and for 5 idle cycles between the transfers.",
-   "expected": "Each transfer completes once, in order, with the results of CHK-020..CHK-023 and CHK-026. The second Setup edge is accepted: o_tlul_a_valid=1 (legal) or o_apb_pready=1 with o_apb_pslverr=1 (illegal) at the next edge. Setup-to-Setup interval with psel held high: 4 cycles after a prompt or d_error transfer, 3 after a same-cycle-response transfer, 2 after a local error. With g idle cycles the interval is exactly that minimum plus g. Illegal transfers never produce o_tlul_a_valid=1."
+   "expected": "Each transfer completes once, in order, with the results of CHK-018, CHK-019, CHK-023, CHK-024 and CHK-027. The second Setup edge is accepted: o_tlul_a_valid=1 (legal) or o_apb_pready=1 with o_apb_pslverr=1 (illegal) at the next edge. Setup-to-Setup interval with psel held high: 4 cycles after a prompt or d_error transfer, 3 after a same-cycle-response transfer, 2 after a local error. With g idle cycles the interval is exactly that minimum plus g. Illegal transfers never produce o_tlul_a_valid=1."
   },
   {
    "id": "CHK-029",
@@ -961,12 +1006,12 @@
   {
    "rule": "BR-6.2-01",
    "reason": "not_applicable_to_dut",
-   "note": "Binds the APB requester. The DUT's reaction to a violation is checked by CHK-007 and CHK-022."
+   "note": "Binds the APB requester. The DUT's reaction to a violation is checked by CHK-007 and CHK-018."
   },
   {
    "rule": "BR-6.2-02",
    "reason": "not_applicable_to_dut",
-   "note": "Binds the APB requester. The DUT's reaction to a violation is checked by CHK-007 and CHK-022."
+   "note": "Binds the APB requester. The DUT's reaction to a violation is checked by CHK-007 and CHK-018."
   },
   {
    "rule": "BR-6.3-01",
@@ -1011,12 +1056,12 @@
   {
    "rule": "BR-9-01",
    "reason": "covered_by_other_check",
-   "note": "Lane mapping is shown by CHK-006/CHK-020: o_tlul_a_data equals PWDATA bit for bit, and CHK-013: a_mask=4'b1111."
+   "note": "Lane mapping is shown by CHK-006/CHK-023: o_tlul_a_data equals PWDATA bit for bit, and CHK-017: a_mask=4'b1111."
   },
   {
    "rule": "BR-9-02",
    "reason": "not_applicable_to_dut",
-   "note": "Binds the requester. Misalignment handling is checked by CHK-007 and CHK-022."
+   "note": "Binds the requester. Misalignment handling is checked by CHK-007 and CHK-018."
   },
   {
    "rule": "BR-14.1-01",
@@ -1076,7 +1121,7 @@
   {
    "rule": "BR-15.1-04",
    "reason": "design_guideline",
-   "note": "Seed recording is a flow requirement; CHK-030 records it."
+   "note": "Seed recording is a flow requirement; CHK-029 records it."
   },
   {
    "rule": "BR-15.1-05",
@@ -1126,7 +1171,7 @@
   {
    "rule": "BR-20-03",
    "reason": "not_applicable_to_dut",
-   "note": "Binds the TL-UL device. It is a stimulus constraint, except in CHK-027 and CHK-028, which deliberately violate it."
+   "note": "Binds the TL-UL device. It is a stimulus constraint, except in CHK-021 and CHK-022, which deliberately violate it."
   },
   {
    "rule": "BR-20-08",
@@ -1136,7 +1181,7 @@
   {
    "rule": "TL-T3.2-04",
    "reason": "covered_by_other_check",
-   "note": "Per the designer decision, satisfied by construction; the single-outstanding property CHK-009 and the response mapping CHK-014 cover it."
+   "note": "Per the designer decision, satisfied by construction; the single-outstanding property CHK-008 and the response mapping CHK-010 cover it."
   },
   {
    "rule": "TL-T3.3-01",
@@ -1146,7 +1191,7 @@
   {
    "rule": "TL-T4.1.1-01",
    "reason": "design_guideline",
-   "note": "A relaxation (MAY) for hosts. CHK-016 checks o_tlul_a_valid=0 throughout reset anyway."
+   "note": "A relaxation (MAY) for hosts. CHK-012 checks o_tlul_a_valid=0 throughout reset anyway."
   },
   {
    "rule": "TL-T4.1.1-02",
@@ -1161,12 +1206,12 @@
   {
    "rule": "TL-T4.1.3.2-01",
    "reason": "design_guideline",
-   "note": "Optional host use of source IDs; the DUT uses the constant PARA_SRC_ID (CHK-013)."
+   "note": "Optional host use of source IDs; the DUT uses the constant PARA_SRC_ID (CHK-017)."
   },
   {
    "rule": "TL-T4.1.3.2.2-01",
    "reason": "not_applicable_to_dut",
-   "note": "Concerns fabric source-ID growth or contraction. The DUT's d_source comparison over PARA_SRC_W bits is defined by REQ-ERR-005 (CHK-024)."
+   "note": "Concerns fabric source-ID growth or contraction. The DUT's d_source comparison over PARA_SRC_W bits is defined by REQ-ERR-005 (CHK-020)."
   },
   {
    "rule": "TL-T4.1.3.3-01",
@@ -1176,22 +1221,22 @@
   {
    "rule": "TL-T4.1.3.4-03",
    "reason": "not_applicable_to_dut",
-   "note": "Device permission; the DUT's handling of d_error is checked by CHK-023."
+   "note": "Device permission; the DUT's handling of d_error is checked by CHK-019."
   },
   {
    "rule": "TL-T4.1.3.4-05",
    "reason": "not_applicable_to_dut",
-   "note": "The DUT never issues PutPartialData (CHK-013)."
+   "note": "The DUT never issues PutPartialData (CHK-017)."
   },
   {
    "rule": "TL-T4.1.3.4-06",
    "reason": "not_applicable_to_dut",
-   "note": "The DUT never issues PutPartialData (CHK-013)."
+   "note": "The DUT never issues PutPartialData (CHK-017)."
   },
   {
    "rule": "TL-T4.1.3.4-07",
    "reason": "not_applicable_to_dut",
-   "note": "Device obligation. The DUT never generates undefined a_opcode (CHK-013)."
+   "note": "Device obligation. The DUT never generates undefined a_opcode (CHK-017)."
   },
   {
    "rule": "TL-T4.1.3.5-01",
@@ -1201,7 +1246,7 @@
   {
    "rule": "TL-T4.1.3.5-02",
    "reason": "not_applicable_to_dut",
-   "note": "Device-side check. The DUT always drives a_size=2'b10 (CHK-013)."
+   "note": "Device-side check. The DUT always drives a_size=2'b10 (CHK-017)."
   },
   {
    "rule": "TL-T4.1.3.5-03",
@@ -1211,7 +1256,7 @@
   {
    "rule": "TL-T4.1.3.5-04",
    "reason": "not_applicable_to_dut",
-   "note": "Device-side check. The DUT always drives a_mask=4'b1111 (CHK-013)."
+   "note": "Device-side check. The DUT always drives a_mask=4'b1111 (CHK-017)."
   },
   {
    "rule": "TL-T4.1.3.5-05",
@@ -1227,12 +1272,12 @@
  "assumptions": [
   "Black-box only (designer decision): all checks use top-level ports. Rules about internal FSM states and registers are mapped to their effects at the ports. The checker-side flags req_open, pending and exp_get are computed only from port signals.",
   "Cycle naming: E0 is the rising edge that ends the Setup cycle (i_apb_psel=1, i_apb_penable=0 sampled). A1, A2, A3 are the cycles that end at E1, E2, E3. Values are sampled at rising edges, just before the edge. An Access phase of N cycles means o_apb_pready is sampled 1 at E_N. The Setup-to-Setup interval is the number of edges between consecutive Setup edges.",
-  "The testbench APB requester follows REF-001 (ASM-001). Every transfer starts with exactly one Setup cycle; PSEL, PENABLE, PADDR, PWRITE, PWDATA and PSTRB are held until PREADY; and psel=1 with penable=0 is never sampled in the middle of a transfer. Every sampled psel=1/penable=0 is therefore treated as a Setup edge while the bridge is idle (used in CHK-005..CHK-008, CHK-015).",
+  "The testbench APB requester follows REF-001 (ASM-001). Every transfer starts with exactly one Setup cycle; PSEL, PENABLE, PADDR, PWRITE, PWDATA and PSTRB are held until PREADY; and psel=1 with penable=0 is never sampled in the middle of a transfer. Every sampled psel=1/penable=0 is therefore treated as a Setup edge while the bridge is idle (used in CHK-005, CHK-006, CHK-007, CHK-014, CHK-011).",
   "Unless a test says otherwise, the TL-UL device model follows REF-005. It returns exactly one response per accepted request, no earlier than the acceptance cycle, with d_source equal to a_source and d_opcode 3'b001 for Get or 3'b000 for PutFullData. A 'prompt device' asserts i_tlul_a_ready whenever o_tlul_a_valid=1 and i_tlul_d_valid for one cycle in the cycle after acceptance.",
   "Reset release is synchronous (1 time unit after a rising edge), and the requester and device models are reset together with the bridge (DEP-002, BR-7.3-05). During reset the requester keeps i_apb_psel=0 from the edge before release.",
   "o_tlul_a_data is checked only for writes. For reads its value is unused by the device and the spec does not say whether PWDATA is loaded.",
   "A wrong-opcode response is consumed and reported as PSLVERR=1, PRDATA=0 (DEC-008). This is taken as the DUT's form of the host-side 'discard' in TL-T4.1.3.5-08; orphans are discarded with no APB effect.",
-  "Tests run in the default configuration (CFG-BASE) unless rerun in another single configuration. CHK-024's wrong source uses PARA_SRC_ID XOR 1 so that it works for any PARA_SRC_W."
+  "Tests run in the default configuration (CFG-BASE) unless rerun in another single configuration. CHK-020's wrong source uses PARA_SRC_ID XOR 1 so that it works for any PARA_SRC_W."
  ],
  "decisions": [
   {
@@ -1298,14 +1343,14 @@
  "contract": {
   "prompt_version": "contract-v1",
   "model": "opus",
-  "date": "2026-11-07T18:11:59+00:00",
+  "date": "2026-11-08T10:00:36+00:00",
   "usage": {
    "calls": 1,
-   "cached": 0,
-   "cost_usd": 1.2989,
-   "input_tokens": 2,
-   "output_tokens": 41685,
-   "cache_creation_input_tokens": 57441,
+   "cached": 1,
+   "cost_usd": 0.0,
+   "input_tokens": 0,
+   "output_tokens": 0,
+   "cache_creation_input_tokens": 0,
    "cache_read_input_tokens": 0
   },
   "rules_sha_source": [

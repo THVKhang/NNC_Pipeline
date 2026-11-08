@@ -1,0 +1,586 @@
+{
+ "module": "nnc_cov",
+ "file": "nnc_cov.sv",
+ "points": [
+  {
+   "id": "COVP-001",
+   "title": "Supported read beat returned OKAY",
+   "rules": [
+    "AB-5.3-01",
+    "AB-10.2-01",
+    "AB-6.3-01"
+   ],
+   "checks": [
+    "CHK-010",
+    "CHK-011"
+   ],
+   "condition": "R handshake of a supported read transaction with RRESP=OKAY."
+  },
+  {
+   "id": "COVP-002",
+   "title": "Supported read beat returned SLVERR from PSLVERR",
+   "rules": [
+    "AB-3-33",
+    "AB-10.2-05",
+    "AB-6.3-10",
+    "AB-12-06"
+   ],
+   "checks": [
+    "CHK-011",
+    "CHK-024",
+    "CHK-026"
+   ],
+   "condition": "R handshake of a supported read transaction with RRESP=SLVERR."
+  },
+  {
+   "id": "COVP-003",
+   "title": "Unsupported read beat returned SLVERR",
+   "rules": [
+    "AB-3-30",
+    "AB-12-01",
+    "AB-10.2-03",
+    "AB-6.3-02"
+   ],
+   "checks": [
+    "CHK-012",
+    "CHK-022"
+   ],
+   "condition": "R handshake of an unsupported read transaction with RRESP=SLVERR."
+  },
+  {
+   "id": "COVP-004",
+   "title": "Supported write completes with B OKAY",
+   "rules": [
+    "AB-5.3-05",
+    "AB-10.2-02",
+    "AB-10.1-03"
+   ],
+   "checks": [
+    "CHK-008"
+   ],
+   "condition": "B handshake of a supported write with BRESP=OKAY."
+  },
+  {
+   "id": "COVP-005",
+   "title": "Supported write completes with B SLVERR",
+   "rules": [
+    "AB-3-34",
+    "AB-3-41",
+    "AB-10.2-06",
+    "AB-12-07",
+    "AB-12-11"
+   ],
+   "checks": [
+    "CHK-008",
+    "CHK-025",
+    "CHK-026"
+   ],
+   "condition": "B handshake of a supported write with BRESP=SLVERR."
+  },
+  {
+   "id": "COVP-006",
+   "title": "Unsupported write completes with one SLVERR B",
+   "rules": [
+    "AB-3-35",
+    "AB-3-37",
+    "AB-12-04",
+    "AB-6.3-05",
+    "AB-10.2-04"
+   ],
+   "checks": [
+    "CHK-023",
+    "CHK-015"
+   ],
+   "condition": "B handshake of an unsupported write with BRESP=SLVERR."
+  },
+  {
+   "id": "COVP-007",
+   "title": "Read FIXED burst of 16 beats completes",
+   "rules": [
+    "AB-3-07",
+    "AB-10.2-01"
+   ],
+   "checks": [
+    "CHK-010",
+    "CHK-016",
+    "CHK-027"
+   ],
+   "condition": "Final R handshake of a supported FIXED read with ARLEN=15."
+  },
+  {
+   "id": "COVP-008",
+   "title": "Write FIXED burst of 16 beats completes",
+   "rules": [
+    "AB-3-07",
+    "AB-10.2-02"
+   ],
+   "checks": [
+    "CHK-008",
+    "CHK-016",
+    "CHK-027"
+   ],
+   "condition": "B handshake of a supported FIXED write with AWLEN=15."
+  },
+  {
+   "id": "COVP-009",
+   "title": "Read INCR burst of 256 beats completes",
+   "rules": [
+    "AB-3-07",
+    "AB-5.4-05"
+   ],
+   "checks": [
+    "CHK-010",
+    "CHK-016",
+    "CHK-027"
+   ],
+   "condition": "Final R handshake of a supported INCR read with ARLEN=255."
+  },
+  {
+   "id": "COVP-010",
+   "title": "Write INCR burst of 256 beats completes",
+   "rules": [
+    "AB-3-07",
+    "AB-5.4-05"
+   ],
+   "checks": [
+    "CHK-008",
+    "CHK-013",
+    "CHK-027"
+   ],
+   "condition": "B handshake of a supported INCR write with AWLEN=255."
+  },
+  {
+   "id": "COVP-011",
+   "title": "Read WRAP burst of 16 beats completes",
+   "rules": [
+    "AB-3-07",
+    "AB-10.2-01"
+   ],
+   "checks": [
+    "CHK-010",
+    "CHK-016",
+    "CHK-027"
+   ],
+   "condition": "Final R handshake of a supported WRAP read with ARLEN=15."
+  },
+  {
+   "id": "COVP-012",
+   "title": "Write WRAP burst of 16 beats completes",
+   "rules": [
+    "AB-3-07",
+    "AB-10.2-02"
+   ],
+   "checks": [
+    "CHK-008",
+    "CHK-016",
+    "CHK-027"
+   ],
+   "condition": "B handshake of a supported WRAP write with AWLEN=15."
+  },
+  {
+   "id": "COVP-013",
+   "title": "Minimum WRAP burst of 2 beats completes",
+   "rules": [
+    "AB-3-07"
+   ],
+   "checks": [
+    "CHK-016",
+    "CHK-027"
+   ],
+   "condition": "Completion (final R or B) of a supported WRAP transaction with length 2 beats."
+  },
+  {
+   "id": "COVP-014",
+   "title": "Single-beat INCR transaction completes",
+   "rules": [
+    "AB-3-07",
+    "AB-5.4-05"
+   ],
+   "checks": [
+    "CHK-010",
+    "CHK-008",
+    "CHK-027"
+   ],
+   "condition": "Completion (final R or B) of a supported INCR transaction with length 1 beat."
+  },
+  {
+   "id": "COVP-015",
+   "title": "Byte transfer with unaligned start address on APB",
+   "rules": [
+    "AB-3-08",
+    "AB-3-10",
+    "AB-9-03",
+    "AB-9-13"
+   ],
+   "checks": [
+    "CHK-004",
+    "CHK-028"
+   ],
+   "condition": "APB transfer completes in a transaction with AxSIZE=0 and AxADDR[1:0] not zero."
+  },
+  {
+   "id": "COVP-016",
+   "title": "Halfword write on upper lanes with PSTRB 1100",
+   "rules": [
+    "AB-3-11",
+    "AB-9-11",
+    "AB-9-03"
+   ],
+   "checks": [
+    "CHK-016",
+    "CHK-028"
+   ],
+   "condition": "APB write completes in a size-1 transaction starting at AxADDR[1]=1 with PSTRB=4'b1100."
+  },
+  {
+   "id": "COVP-017",
+   "title": "Word transfer with unaligned start address",
+   "rules": [
+    "AB-3-10",
+    "AB-9-13"
+   ],
+   "checks": [
+    "CHK-004",
+    "CHK-028"
+   ],
+   "condition": "APB transfer completes in a transaction with AxSIZE=2 and AxADDR[1:0] not zero."
+  },
+  {
+   "id": "COVP-018",
+   "title": "Aligned word write with full strobes",
+   "rules": [
+    "AB-3-11",
+    "AB-3-08"
+   ],
+   "checks": [
+    "CHK-016",
+    "CHK-028"
+   ],
+   "condition": "APB write completes in a size-2 transaction with PSTRB=4'b1111."
+  },
+  {
+   "id": "COVP-019",
+   "title": "Write beat with zero byte strobes",
+   "rules": [
+    "AB-3-11",
+    "AB-9-11"
+   ],
+   "checks": [
+    "CHK-016"
+   ],
+   "condition": "APB write completes with PSTRB=4'b0000."
+  },
+  {
+   "id": "COVP-020",
+   "title": "Read request with unsupported size or reserved burst accepted",
+   "rules": [
+    "AB-9-06",
+    "AB-9-08",
+    "AB-3-09",
+    "AB-12-02"
+   ],
+   "checks": [
+    "CHK-022",
+    "CHK-015"
+   ],
+   "condition": "AR handshake with ARSIZE greater than 2 or ARBURST=2'b11."
+  },
+  {
+   "id": "COVP-021",
+   "title": "Write request with unsupported size or reserved burst accepted",
+   "rules": [
+    "AB-9-06",
+    "AB-9-08",
+    "AB-3-09",
+    "AB-12-05"
+   ],
+   "checks": [
+    "CHK-023",
+    "CHK-015"
+   ],
+   "condition": "AW handshake with AWSIZE greater than 2 or AWBURST=2'b11."
+  },
+  {
+   "id": "COVP-022",
+   "title": "Request with illegal cache value accepted",
+   "rules": [
+    "AB-3-17",
+    "AB-9-09"
+   ],
+   "checks": [
+    "CHK-022",
+    "CHK-023"
+   ],
+   "condition": "AR or AW handshake with AxCACHE other than 0000 and 0001."
+  },
+  {
+   "id": "COVP-023",
+   "title": "INCR burst crossing a 4-KiB boundary accepted",
+   "rules": [
+    "AB-9-02",
+    "AB-3-09"
+   ],
+   "checks": [
+    "CHK-022",
+    "CHK-023",
+    "CHK-015"
+   ],
+   "condition": "AR or AW handshake of an INCR burst whose aligned start offset plus total bytes exceeds 4096."
+  },
+  {
+   "id": "COVP-024",
+   "title": "Illegal FIXED or WRAP length accepted",
+   "rules": [
+    "AB-3-07",
+    "AB-3-09"
+   ],
+   "checks": [
+    "CHK-022",
+    "CHK-023"
+   ],
+   "condition": "AR or AW handshake of a FIXED burst longer than 16 beats or a WRAP burst whose length is not 2, 4, 8 or 16."
+  },
+  {
+   "id": "COVP-025",
+   "title": "INCR burst ending exactly at 4-KiB boundary is supported",
+   "rules": [
+    "AB-9-02",
+    "AB-3-07"
+   ],
+   "checks": [
+    "CHK-016",
+    "CHK-027"
+   ],
+   "condition": "AR or AW handshake of an otherwise legal INCR burst whose aligned start offset plus total bytes equals exactly 4096."
+  },
+  {
+   "id": "COVP-026",
+   "title": "RREADY backpressure for 3 or more cycles",
+   "rules": [
+    "AB-5.3-01",
+    "AB-5.4-06",
+    "AB-6.2-04",
+    "AB-5.1-03"
+   ],
+   "checks": [
+    "CHK-009",
+    "CHK-021"
+   ],
+   "condition": "RVALID high with RREADY low for a third or later consecutive cycle."
+  },
+  {
+   "id": "COVP-027",
+   "title": "BREADY backpressure for 3 or more cycles",
+   "rules": [
+    "AB-5.4-06",
+    "AB-6.2-02",
+    "AB-5.1-03"
+   ],
+   "checks": [
+    "CHK-007",
+    "CHK-021"
+   ],
+   "condition": "BVALID high with BREADY low for a third or later consecutive cycle."
+  },
+  {
+   "id": "COVP-028",
+   "title": "Request held pending while a transaction owns the bridge",
+   "rules": [
+    "AB-3-02",
+    "AB-5.1-04",
+    "AB-10.4-02",
+    "AB-3-06"
+   ],
+   "checks": [
+    "CHK-014",
+    "CHK-021"
+   ],
+   "condition": "AWVALID or ARVALID high with the matching READY low while a transaction is active."
+  },
+  {
+   "id": "COVP-029",
+   "title": "WVALID presented before AW accepted",
+   "rules": [
+    "AB-5.3-03",
+    "AB-5.3-04",
+    "AB-5.3-02"
+   ],
+   "checks": [
+    "CHK-013",
+    "CHK-020"
+   ],
+   "condition": "WVALID high while no transaction is active and no AW handshake occurs at that edge."
+  },
+  {
+   "id": "COVP-030",
+   "title": "APB wait states of 3 or more cycles",
+   "rules": [
+    "AB-3-22",
+    "AB-5.4-03",
+    "AB-6.2-10"
+   ],
+   "checks": [
+    "CHK-002"
+   ],
+   "condition": "APB ACCESS phase with PREADY low for a third or later consecutive cycle."
+  },
+  {
+   "id": "COVP-031",
+   "title": "Long APB wait of 32 or more cycles",
+   "rules": [
+    "AB-3-39",
+    "AB-3-40",
+    "AB-6.3-08",
+    "AB-10.3-02",
+    "AB-12-08"
+   ],
+   "checks": [
+    "CHK-018",
+    "CHK-002"
+   ],
+   "condition": "APB ACCESS phase with PREADY low after at least 32 prior consecutive wait cycles."
+  },
+  {
+   "id": "COVP-032",
+   "title": "Write continues cleanly after an earlier PSLVERR beat",
+   "rules": [
+    "AB-10.2-06",
+    "AB-12-07",
+    "AB-6.3-11"
+   ],
+   "checks": [
+    "CHK-025"
+   ],
+   "condition": "APB write completes with PSLVERR=0 after an earlier APB write of the same transaction completed with PSLVERR=1."
+  },
+  {
+   "id": "COVP-033",
+   "title": "Read burst continues with OKAY beat after an earlier error beat",
+   "rules": [
+    "AB-12-06",
+    "AB-10.2-05",
+    "AB-3-33"
+   ],
+   "checks": [
+    "CHK-024"
+   ],
+   "condition": "R handshake with RRESP=OKAY of a supported read after an earlier APB read of the same transaction completed with PSLVERR=1."
+  },
+  {
+   "id": "COVP-034",
+   "title": "Reset applied during activity then idle after reset",
+   "rules": [
+    "AB-10.1-06",
+    "AB-7.3-01",
+    "AB-12-09",
+    "AB-20-06",
+    "AB-3-27"
+   ],
+   "checks": [
+    "CHK-031",
+    "CHK-017"
+   ],
+   "condition": "First edge after reset release, where reset was asserted while a transaction was active or APB PSEL was high, with bridge idle and PSEL, BVALID, RVALID all low."
+  },
+  {
+   "id": "COVP-035",
+   "title": "First tie after reset won by AR",
+   "rules": [
+    "AB-3-03",
+    "AB-3-04",
+    "AB-10.4-01"
+   ],
+   "checks": [
+    "CHK-019",
+    "CHK-031"
+   ],
+   "condition": "Idle bridge accepts AR with AWVALID also high and no transaction has completed since reset."
+  },
+  {
+   "id": "COVP-036",
+   "title": "Tie won by AW after a completed read",
+   "rules": [
+    "AB-3-05",
+    "AB-3-03",
+    "AB-5.1-02"
+   ],
+   "checks": [
+    "CHK-019"
+   ],
+   "condition": "Idle bridge accepts AW with ARVALID also high and the previous completed transaction was a read."
+  },
+  {
+   "id": "COVP-037",
+   "title": "Tie won by AR after a completed write",
+   "rules": [
+    "AB-3-05",
+    "AB-3-03",
+    "AB-5.1-02"
+   ],
+   "checks": [
+    "CHK-019"
+   ],
+   "condition": "Idle bridge accepts AR with AWVALID also high and the previous completed transaction was a write."
+  },
+  {
+   "id": "COVP-038",
+   "title": "Maximum ID value echoed on R or B",
+   "rules": [
+    "AB-3-13",
+    "AB-3-14",
+    "AB-5.4-04",
+    "AB-9-05"
+   ],
+   "checks": [
+    "CHK-030",
+    "CHK-008",
+    "CHK-010"
+   ],
+   "condition": "R or B handshake where the response ID has all bits set."
+  },
+  {
+   "id": "COVP-039",
+   "title": "PPROT all ones on completed APB transfer",
+   "rules": [
+    "AB-1.2-02",
+    "AB-3-15",
+    "AB-9-10",
+    "AB-18-01",
+    "AB-18-02"
+   ],
+   "checks": [
+    "CHK-029",
+    "CHK-016"
+   ],
+   "condition": "APB transfer completes with PPROT=3'b111."
+  },
+  {
+   "id": "COVP-040",
+   "title": "WRAP burst address wraps back to lower boundary",
+   "rules": [
+    "AB-3-07",
+    "AB-10.2-01",
+    "AB-15.2-01"
+   ],
+   "checks": [
+    "CHK-016",
+    "CHK-027"
+   ],
+   "condition": "SETUP phase of a non-first APB transfer of a supported WRAP transaction where PADDR is lower than the previous transfer PADDR."
+  }
+ ],
+ "status": "lint_clean",
+ "attempts": 1,
+ "problems": [],
+ "lint_errors": "",
+ "usage": {
+  "calls": 1,
+  "cached": 0,
+  "cost_usd": 0.3396,
+  "input_tokens": 2,
+  "output_tokens": 28513,
+  "cache_creation_input_tokens": 13270,
+  "cache_read_input_tokens": 0
+ },
+ "prompt_version": "cov-v1"
+}

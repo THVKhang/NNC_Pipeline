@@ -1,0 +1,5872 @@
+{
+ "version": 1,
+ "doc": {
+  "file": "AXI2APB_Bridge_Design_Specification.md",
+  "sha256": "ad57565eb2e02be583bd8b8cacd9c1ae11577af085221a1799454526f3c69b5a",
+  "length": 616,
+  "location": "line"
+ },
+ "sections": [
+  {
+   "id": "front",
+   "title": "Front matter",
+   "level": 0,
+   "parent": null,
+   "page_start": 1,
+   "page_end": 1,
+   "sentences": []
+  },
+  {
+   "id": "T1",
+   "title": "AXI2APB Bridge Design Specification",
+   "level": 1,
+   "parent": null,
+   "page_start": 12,
+   "page_end": 16,
+   "sentences": [
+    {
+     "id": "T1:s1",
+     "text": "Purpose / Mục đích: Normative product contract for a single-clock AXI4 Subordinate to APB4 Manager bridge.",
+     "page": 14,
+     "normative": false
+    },
+    {
+     "id": "T1:s2",
+     "text": "English statements are normative; Vietnamese text provides equivalent review context. / Hợp đồng thiết kế cho cầu nối AXI4 Subordinate sang APB4 Manager dùng chung một clock.",
+     "page": 14,
+     "normative": false
+    },
+    {
+     "id": "T1:s3",
+     "text": "Nội dung tiếng Anh là quy định chuẩn; phần tiếng Việt diễn giải cùng ý.",
+     "page": 14,
+     "normative": false
+    },
+    {
+     "id": "T1:s4",
+     "text": "shall = mandatory and testable; should = recommended; may = optional. / shall = bắt buộc, kiểm chứng được; should = khuyến nghị; may = tùy chọn.",
+     "page": 16,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T1.1",
+   "title": "Document map",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 18,
+   "page_end": 41,
+   "sentences": [
+    {
+     "id": "T1.1:s1",
+     "text": "Purpose, scope, and product context",
+     "page": 20,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s2",
+     "text": "Normative references and precedence",
+     "page": 21,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s3",
+     "text": "Requirements and traceability",
+     "page": 22,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s4",
+     "text": "Features and configurations",
+     "page": 23,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s5",
+     "text": "Architecture",
+     "page": 24,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s6",
+     "text": "External interfaces and ports",
+     "page": 25,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s7",
+     "text": "Clock, reset, and power",
+     "page": 26,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s8",
+     "text": "Parameters and elaboration configurations",
+     "page": 27,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s9",
+     "text": "Data representation and arithmetic",
+     "page": 28,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s10",
+     "text": "Detailed functional behavior",
+     "page": 29,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s11",
+     "text": "Register and programming model",
+     "page": 30,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s12",
+     "text": "Error handling and recovery",
+     "page": 31,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s13",
+     "text": "Performance, power, and area",
+     "page": 32,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s14",
+     "text": "RTL implementation contract",
+     "page": 33,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s15",
+     "text": "Verification specification",
+     "page": 34,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s16",
+     "text": "DFT and testability",
+     "page": 35,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s17",
+     "text": "Physical design and timing integration",
+     "page": 36,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s18",
+     "text": "Security, safety, and reliability",
+     "page": 37,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s19",
+     "text": "Requirement-to-verification traceability",
+     "page": 38,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s20",
+     "text": "Assumptions, dependencies, and decisions",
+     "page": 39,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s21",
+     "text": "Glossary",
+     "page": 40,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s22",
+     "text": "References used to shape this template",
+     "page": 41,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "1",
+   "title": "Purpose, scope, and product context",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 43,
+   "page_end": 43,
+   "sentences": []
+  },
+  {
+   "id": "1.1",
+   "title": "Purpose and scope",
+   "level": 3,
+   "parent": "1",
+   "page_start": 45,
+   "page_end": 51,
+   "sentences": [
+    {
+     "id": "1.1:s1",
+     "text": "Convert transactions from one AXI4 Manager into ordered APB4 transfers through one APB port.",
+     "page": 47,
+     "normative": false
+    },
+    {
+     "id": "1.1:s2",
+     "text": "The bridge uses one shared clock and has one global transaction active at a time. / Chuyển giao dịch từ một AXI4 Manager thành các transfer APB4 tuần tự qua một cổng.",
+     "page": 47,
+     "normative": false
+    },
+    {
+     "id": "1.1:s3",
+     "text": "Bridge dùng chung một clock và mỗi lúc chỉ có một giao dịch hoạt động.",
+     "page": 47,
+     "normative": false
+    },
+    {
+     "id": "1.1:s4",
+     "text": "Included: AXI4 read/write channels; FIXED, INCR and WRAP bursts; 32-bit addresses/data; 1-, 2-, and 4-byte transfers; IDs; PSTRB; PPROT; error propagation and defensive request rejection. / Bao gồm: kênh đọc/ghi AXI4; burst FIXED, INCR, WRAP; địa chỉ/dữ liệu 32 bit; transfer 1, 2, 4 byte; ID; PSTRB; PPROT; truyền lỗi và từ chối request phòng vệ.",
+     "page": 49,
+     "normative": false
+    },
+    {
+     "id": "1.1:s5",
+     "text": "Excluded: internal address decode, multiple APB ports, exclusive accesses, USER/QOS/REGION sidebands, CSR, CDC, timeout, speculation and pipelined transactions. / Không bao gồm: giải mã địa chỉ nội bộ, nhiều cổng APB, exclusive access, sideband USER/QOS/REGION, CSR, CDC, timeout, speculation và transaction pipeline.",
+     "page": 51,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "1.2",
+   "title": "Deployment assumptions",
+   "level": 3,
+   "parent": "1",
+   "page_start": 53,
+   "page_end": 61,
+   "sentences": [
+    {
+     "id": "1.2:s1",
+     "text": "Item: Target SoC / product class; Specification: Memory-mapped peripheral subsystem; exact SoC TBD. / Hệ thống ngoại vi ánh xạ bộ nhớ; SoC cụ thể TBD.",
+     "page": 57,
+     "normative": false
+    },
+    {
+     "id": "1.2:s2",
+     "text": "Item: Technology / library assumptions; Specification: common_rtl has shared RTL wrappers and stand-in cell models, but no target Liberty/DB/LEF; keep bridge logic technology-independent and select physical library/corner in SoC PPA. / common_rtl có wrapper RTL và mô hình cell stand-in, không có Liberty/DB/LEF đích; RTL bridge độc lập công nghệ, SoC chọn thư viện vật lý/corner khi làm PPA.",
+     "page": 58,
+     "normative": false
+    },
+    {
+     "id": "1.2:s3",
+     "text": "Item: Operating modes and workload; Specification: Peripheral AXI4 accesses; workload TBD. / Truy cập ngoại vi AXI4; workload TBD.",
+     "page": 59,
+     "normative": false
+    },
+    {
+     "id": "1.2:s4",
+     "text": "Item: Security / privilege context; Specification: AxPROT passes to PPROT; system policy TBD. / AxPROT truyền sang PPROT; policy hệ thống TBD.",
+     "page": 60,
+     "normative": false
+    },
+    {
+     "id": "1.2:s5",
+     "text": "Item: External dependencies; Specification: AXI Manager, APB decoder, default error Completer, APB Completers, shared clock/reset controller. / AXI Manager, decoder APB, Completer lỗi mặc định, APB Completers, bộ điều khiển clock/reset chung.",
+     "page": 61,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "1.3",
+   "title": "Feature summary",
+   "level": 3,
+   "parent": "1",
+   "page_start": 63,
+   "page_end": 71,
+   "sentences": [
+    {
+     "id": "1.3:s1",
+     "text": "Feature ID: FEAT-001; Feature: AXI4-to-APB4 conversion / Chuyển AXI4 sang APB4; Required / optional: Required; Configuration condition: CFG-BASE; Requirements: REQ-FUNC-001",
+     "page": 67,
+     "normative": true
+    },
+    {
+     "id": "1.3:s2",
+     "text": "Feature ID: FEAT-002; Feature: FIXED/INCR/WRAP bursts / Burst FIXED/INCR/WRAP; Required / optional: Required; Configuration condition: CFG-BASE; Requirements: REQ-IF-002",
+     "page": 68,
+     "normative": true
+    },
+    {
+     "id": "1.3:s3",
+     "text": "Feature ID: FEAT-003; Feature: 32-bit data and byte strobes / Dữ liệu 32 bit, strobe byte; Required / optional: Required; Configuration condition: CFG-BASE; Requirements: REQ-IF-004",
+     "page": 69,
+     "normative": true
+    },
+    {
+     "id": "1.3:s4",
+     "text": "Feature ID: FEAT-004; Feature: AXI ID echo / Phản hồi AXI ID; Required / optional: Required; Configuration condition: CFG-BASE; Requirements: REQ-IF-005",
+     "page": 70,
+     "normative": true
+    },
+    {
+     "id": "1.3:s5",
+     "text": "Feature ID: FEAT-005; Feature: Protection/error mapping / Ánh xạ bảo vệ/lỗi; Required / optional: Required; Configuration condition: CFG-BASE; Requirements: REQ-ERR-002",
+     "page": 71,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "title": "Normative references and precedence",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 73,
+   "page_end": 73,
+   "sentences": []
+  },
+  {
+   "id": "2.1",
+   "title": "Normative references",
+   "level": 3,
+   "parent": "2",
+   "page_start": 75,
+   "page_end": 85,
+   "sentences": [
+    {
+     "id": "2.1:s1",
+     "text": "Ref ID: REF-001; Document and revision: Arm AMBA AXI and ACE Protocol Specification, IHI 0022H.c; Applicable clauses: A3.1–A3.4, A4.3–A4.7, A5.1–A5.2, A6, A7.2.3; Authority / notes: AXI4 authority; licensed source retained outside this folder.",
+     "page": 79,
+     "normative": false
+    },
+    {
+     "id": "2.1:s2",
+     "text": "Ref ID: REF-002; Document and revision: Arm AMBA APB Protocol Specification, IHI 0024 Issue D; Applicable clauses: APB4 profile; §§2.1, 3.1–3.5; Authority / notes: APB authority; APB5-only signals excluded.",
+     "page": 80,
+     "normative": false
+    },
+    {
+     "id": "2.1:s3",
+     "text": "Ref ID: REF-003; Document and revision: VLSIT RTL Design Rules v2, ../../spec_template/VLSIT_RTL_Design_Rule.md; Applicable clauses: All applicable rules; Authority / notes: Mandatory RTL baseline.",
+     "page": 81,
+     "normative": true
+    },
+    {
+     "id": "2.1:s4",
+     "text": "Ref ID: REF-004; Document and revision: IEEE 1800-2017 SystemVerilog; Applicable clauses: Synthesizable subset; Authority / notes: Subject to REF-003 and frontend support.",
+     "page": 82,
+     "normative": false
+    },
+    {
+     "id": "2.1:s5",
+     "text": "Ref ID: REF-005; Document and revision: Approved product decisions recorded in this document and vlsit_qa_log.md; Applicable clauses: Section 20; Authority / notes: Product behavior.",
+     "page": 83,
+     "normative": false
+    },
+    {
+     "id": "2.1:s6",
+     "text": "Arm standards are licensed references and are not copied here.",
+     "page": 85,
+     "normative": false
+    },
+    {
+     "id": "2.1:s7",
+     "text": "Citations identify source clauses without reproducing text. / Tiêu chuẩn Arm có giấy phép, không sao chép vào đây.",
+     "page": 85,
+     "normative": false
+    },
+    {
+     "id": "2.1:s8",
+     "text": "Dẫn chiếu điều khoản để nhận diện nguồn, không sao chép nội dung.",
+     "page": 85,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "2.2",
+   "title": "Source-of-truth and conflict handling",
+   "level": 3,
+   "parent": "2",
+   "page_start": 87,
+   "page_end": 91,
+   "sentences": [
+    {
+     "id": "2.2:s1",
+     "text": "The selected standards define protocol behavior; this specification defines the bridge profile and product choices.",
+     "page": 89,
+     "normative": false
+    },
+    {
+     "id": "2.2:s2",
+     "text": "A product choice cannot weaken a protocol requirement. / Tiêu chuẩn đã chọn xác định hành vi giao thức; tài liệu này xác định profile bridge và lựa chọn sản phẩm.",
+     "page": 89,
+     "normative": true
+    },
+    {
+     "id": "2.2:s3",
+     "text": "Lựa chọn sản phẩm không được làm yếu yêu cầu chuẩn.",
+     "page": 89,
+     "normative": false
+    },
+    {
+     "id": "2.2:s4",
+     "text": "Naming rule: VLSIT RTL Design Rules v2 at ../../spec_template/VLSIT_RTL_Design_Rule.md, the default rule used by the VLSIT RTL generator.",
+     "page": 91,
+     "normative": false
+    },
+    {
+     "id": "2.2:s5",
+     "text": "Top module: m_axi2apb_bridge. / Quy tắc tên: VLSIT RTL Design Rules v2 tại đường dẫn trên, là rule mặc định của RTL generator.",
+     "page": 91,
+     "normative": false
+    },
+    {
+     "id": "2.2:s6",
+     "text": "Module top: m_axi2apb_bridge.",
+     "page": 91,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "2.3",
+   "title": "Compliance declaration",
+   "level": 3,
+   "parent": "2",
+   "page_start": 93,
+   "page_end": 98,
+   "sentences": [
+    {
+     "id": "2.3:s1",
+     "text": "Standard: AMBA AXI; Revision / profile: IHI 0022 Issue H.c, AXI4; Role implemented: Subordinate; Options: 32-bit address/data; configurable ID width; no AxLOCK, USER, QOS, REGION; Deviations: Unsupported AxCACHE returns SLVERR.",
+     "page": 97,
+     "normative": false
+    },
+    {
+     "id": "2.3:s2",
+     "text": "Standard: AMBA APB; Revision / profile: IHI 0024 Issue D, APB4 profile; Role implemented: Manager / Requester; Options: 32-bit address/data, PSTRB and PPROT; Deviations: External decoder; no APB5 sidebands.",
+     "page": 98,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "title": "Requirements and traceability",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 100,
+   "page_end": 129,
+   "sentences": [
+    {
+     "id": "3:s1",
+     "text": "Each mandatory requirement has a unique ID, source and verification method.",
+     "page": 102,
+     "normative": true
+    },
+    {
+     "id": "3:s2",
+     "text": "Section 19 provides the trace. / Mỗi yêu cầu bắt buộc có ID, nguồn và phương pháp kiểm chứng.",
+     "page": 102,
+     "normative": false
+    },
+    {
+     "id": "3:s3",
+     "text": "Mục 19 liên kết các yêu cầu.",
+     "page": 102,
+     "normative": false
+    },
+    {
+     "id": "3:s4",
+     "text": "ID: REQ-FUNC-001; Requirement using shall/should/may: The bridge shall convert each accepted AXI transaction into ordered APB transfers and return its AXI completion. / Chuyển giao dịch AXI thành APB tuần tự và trả completion.; Source: REF-001/002; Applies to: CFG-BASE; Verification method: Independent model simulation",
+     "page": 106,
+     "normative": true
+    },
+    {
+     "id": "3:s5",
+     "text": "ID: REQ-FUNC-002; Requirement using shall/should/may: The bridge shall keep at most one global read or write transaction active. / Mỗi lúc chỉ một giao dịch đọc hoặc ghi hoạt động.; Source: Decision; Applies to: CFG-BASE; Verification method: Assertions",
+     "page": 107,
+     "normative": true
+    },
+    {
+     "id": "3:s6",
+     "text": "ID: REQ-FUNC-003; Requirement using shall/should/may: When AR and AW are both pending, the bridge shall grant by round-robin, choose AR for the first tie after reset, and flip the next tie preference after each completed transaction. / Khi AR và AW cùng chờ, bridge phân xử round-robin, ưu tiên AR ở lần hòa đầu tiên sau reset và đổi ưu tiên sau mỗi giao dịch hoàn tất.; Source: Decision; WF-011; Applies to: CFG-BASE; Verification method: Directed arbitration test",
+     "page": 108,
+     "normative": true
+    },
+    {
+     "id": "3:s7",
+     "text": "ID: REQ-IF-001; Requirement using shall/should/may: The bridge shall accept an AXI transfer only when VALID and READY are high at rising ACLK. / Chỉ nhận AXI khi VALID và READY cao tại cạnh lên ACLK.; Source: REF-001 A3.1–A3.2; Applies to: CFG-BASE; Verification method: AXI checker",
+     "page": 109,
+     "normative": true
+    },
+    {
+     "id": "3:s8",
+     "text": "ID: REQ-IF-002; Requirement using shall/should/may: The bridge shall support FIXED (1–16 beats), INCR (1–256 beats), and WRAP (2/4/8/16 beats). / Hỗ trợ FIXED (1–16 beat), INCR (1–256 beat) và WRAP (2/4/8/16 beat).; Source: REF-001 A3.4; Applies to: CFG-BASE; Verification method: Burst scoreboard",
+     "page": 110,
+     "normative": true
+    },
+    {
+     "id": "3:s9",
+     "text": "ID: REQ-IF-003; Requirement using shall/should/may: The bridge shall support AxSIZE 0/1/2 (1/2/4 bytes); reject unsupported size/burst and 4-KiB crossing without APB. / Hỗ trợ AxSIZE 0/1/2; từ chối size/burst không hỗ trợ và vượt 4 KiB, không truy cập APB.; Source: REF-001 A3.4; decision; Applies to: CFG-BASE; Verification method: Negative tests",
+     "page": 111,
+     "normative": true
+    },
+    {
+     "id": "3:s10",
+     "text": "ID: REQ-IF-004; Requirement using shall/should/may: The bridge shall align APB PADDR down to four-byte word; copy WSTRB to PSTRB and drive PSTRB=0 on reads. / Căn PADDR xuống word 4 byte; chép WSTRB sang PSTRB, PSTRB=0 khi đọc.; Source: REF-002 §§2.1, 3.2; Applies to: CFG-BASE; Verification method: APB monitor",
+     "page": 112,
+     "normative": true
+    },
+    {
+     "id": "3:s11",
+     "text": "ID: REQ-IF-005; Requirement using shall/should/may: The bridge shall echo ARID on every R beat and AWID on the corresponding B response. / Phản hồi ARID trên mọi beat R và AWID trên B tương ứng.; Source: REF-001 A5.1–A5.2; Applies to: CFG-BASE; Verification method: ID scoreboard",
+     "page": 113,
+     "normative": true
+    },
+    {
+     "id": "3:s12",
+     "text": "ID: REQ-IF-006; Requirement using shall/should/may: The bridge shall copy AxPROT to PPROT; omit AxLOCK, USER, QOS and REGION ports. / Chép AxPROT sang PPROT; bỏ các port AxLOCK, USER, QOS, REGION.; Source: REF-001 A4.7; REF-002 §3.5; decision; Applies to: CFG-BASE; Verification method: Interface inspection",
+     "page": 114,
+     "normative": true
+    },
+    {
+     "id": "3:s13",
+     "text": "ID: REQ-IF-007; Requirement using shall/should/may: The bridge shall accept only AxCACHE 0000/0001; otherwise return SLVERR without PSEL. / Chỉ nhận AxCACHE 0000/0001; trường hợp khác trả SLVERR, không bật PSEL.; Source: REF-001 A4.3–A4.4; decision; Applies to: CFG-BASE; Verification method: Attribute test",
+     "page": 115,
+     "normative": true
+    },
+    {
+     "id": "3:s14",
+     "text": "ID: REQ-IF-008; Requirement using shall/should/may: The bridge shall do not implement exclusive access; integration shall not send exclusive traffic. / Không triển khai exclusive; hệ thống không gửi exclusive traffic.; Source: REF-001 A7.2.3; decision; Applies to: CFG-BASE; Verification method: Interface review",
+     "page": 116,
+     "normative": true
+    },
+    {
+     "id": "3:s15",
+     "text": "ID: REQ-IF-009; Requirement using shall/should/may: The bridge shall hold AXI VALID/payload through handshake and APB control/payload stable while PREADY=0. / Giữ ổn định VALID/payload AXI đến handshake và APB khi PREADY=0.; Source: REF-001 A3.2; REF-002 §3.1; Applies to: CFG-BASE; Verification method: Protocol assertions",
+     "page": 117,
+     "normative": true
+    },
+    {
+     "id": "3:s16",
+     "text": "ID: REQ-CLK-001; Requirement using shall/should/may: The bridge shall use one shared ACLK/PCLK domain; contain no asynchronous clock crossing. / Dùng chung ACLK/PCLK; không có CDC bất đồng bộ.; Source: Decision; Applies to: CFG-BASE; Verification method: CDC analysis",
+     "page": 118,
+     "normative": true
+    },
+    {
+     "id": "3:s17",
+     "text": "ID: REQ-RESET-001; Requirement using shall/should/may: The bridge shall use one active-low reset synchronous to ACLK; the SoC shall supply the reset synchronized to ACLK, and AXI VALID outputs shall be low while reset is sampled active. / Bridge dùng một reset active-low đồng bộ với ACLK; SoC phải cấp reset đã đồng bộ với ACLK và AXI VALID phải thấp khi reset được lấy mẫu ở mức active.; Source: REF-001 A3.1; decision; Applies to: CFG-BASE; Verification method: Reset test",
+     "page": 119,
+     "normative": true
+    },
+    {
+     "id": "3:s18",
+     "text": "ID: REQ-PARAM-001; Requirement using shall/should/may: PARA_AXI_ID_W shall range from 1 to 16, default 4, and set both read/write ID widths. / PARA_AXI_ID_W từ 1 đến 16, mặc định 4, đặt độ rộng ID đọc/ghi.; Source: Decision; Applies to: CFG-BASE; Verification method: Elaboration sweep",
+     "page": 120,
+     "normative": true
+    },
+    {
+     "id": "3:s19",
+     "text": "ID: REQ-ERR-001; Requirement using shall/should/may: The bridge shall unsupported reads return ARLEN+1 SLVERR beats, RLAST only on final beat, no APB. / Read không hỗ trợ trả ARLEN+1 beat SLVERR, RLAST ở beat cuối, không APB.; Source: Decision; Applies to: CFG-BASE; Verification method: Negative read test",
+     "page": 121,
+     "normative": true
+    },
+    {
+     "id": "3:s20",
+     "text": "ID: REQ-ERR-002; Requirement using shall/should/may: The bridge shall map read PSLVERR to that R beat SLVERR; accumulate write errors into final BRESP after all declared W beats. / Lỗi read trả SLVERR ở beat đó; lỗi write tích lũy vào BRESP cuối sau đủ beat W.; Source: REF-001 A3.4.5; REF-002 §3.4; decision; Applies to: CFG-BASE; Verification method: Error injection",
+     "page": 122,
+     "normative": true
+    },
+    {
+     "id": "3:s21",
+     "text": "ID: REQ-ERR-003; Requirement using shall/should/may: The bridge shall unsupported writes drain AWLEN+1 W beats without APB, then return one SLVERR B. / Write không hỗ trợ nhận đủ AWLEN+1 beat W, không APB, rồi trả B SLVERR.; Source: Decision; Applies to: CFG-BASE; Verification method: Negative write test",
+     "page": 123,
+     "normative": true
+    },
+    {
+     "id": "3:s22",
+     "text": "ID: REQ-ERR-004; Requirement using shall/should/may: The bridge shall external APB fabric provides default unmapped Completer with PREADY=1 and PSLVERR=1. / Fabric APB cung cấp Completer mặc định cho địa chỉ unmapped, PREADY=1, PSLVERR=1.; Source: Decision; Applies to: Integration; Verification method: Integration test",
+     "page": 124,
+     "normative": true
+    },
+    {
+     "id": "3:s23",
+     "text": "ID: REQ-ERR-005; Requirement using shall/should/may: The bridge shall have no APB timeout; hold access while PREADY=0 and wait indefinitely if it never rises. / Không timeout APB; giữ access khi PREADY=0, chờ vô hạn nếu không lên.; Source: Decision; Applies to: CFG-BASE; Verification method: Wait-state assertion",
+     "page": 125,
+     "normative": true
+    },
+    {
+     "id": "3:s24",
+     "text": "ID: REQ-ERR-006; Requirement using shall/should/may: The bridge shall completed APB transfer with PSLVERR=1 causes associated AXI response SLVERR. / APB hoàn tất với PSLVERR=1 làm AXI response báo SLVERR.; Source: REF-002 §3.4; Applies to: CFG-BASE; Verification method: Error injection",
+     "page": 126,
+     "normative": true
+    },
+    {
+     "id": "3:s25",
+     "text": "ID: REQ-CSR-001; Requirement using shall/should/may: The bridge shall contain no software-visible CSR interface. / Không có CSR phần mềm.; Source: Decision; Applies to: CFG-BASE; Verification method: Port inspection",
+     "page": 127,
+     "normative": true
+    },
+    {
+     "id": "3:s26",
+     "text": "ID: REQ-VER-001; Requirement using shall/should/may: Verification shall derive expected verification results from this specification and cited standards, never generated RTL. / Expected result lấy từ đặc tả và chuẩn, không từ RTL được sinh.; Source: Verification policy; Applies to: All; Verification method: Reference-model review",
+     "page": 128,
+     "normative": true
+    },
+    {
+     "id": "3:s27",
+     "text": "ID: REQ-VER-002; Requirement using shall/should/may: Verification deliverables shall retain generated testbench sources/commands and use one Makefile as the documented command entry point. / Lưu testbench/lệnh chạy; dùng một Makefile làm điểm vào được mô tả.; Source: Verification policy; Applies to: All; Verification method: Artifact audit",
+     "page": 129,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "4",
+   "title": "Features and configurations",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 131,
+   "page_end": 137,
+   "sentences": [
+    {
+     "id": "4:s1",
+     "text": "Configuration ID: CFG-BASE; Enabled features: Full AXI4 Subordinate, APB4 Manager, legal FIXED/INCR/WRAP, ID echo; Disabled features: CDC, timeout, CSR, exclusive, USER/QOS/REGION; Interfaces / widths: AXI 32/32; APB 32/32; ID default 4; shared clock; Intended use: Peripheral transactions; Verification target: Protocol/function/error/boundary/backpressure",
+     "page": 135,
+     "normative": true
+    },
+    {
+     "id": "4:s2",
+     "text": "Only CFG-BASE is defined.",
+     "page": 137,
+     "normative": false
+    },
+    {
+     "id": "4:s3",
+     "text": "AXI ID width is elaboration-configurable.",
+     "page": 137,
+     "normative": false
+    },
+    {
+     "id": "4:s4",
+     "text": "Decoder and default error Completer are external. / Chỉ định nghĩa CFG-BASE. Độ rộng ID cấu hình khi elaboration.",
+     "page": 137,
+     "normative": false
+    },
+    {
+     "id": "4:s5",
+     "text": "Decoder và Completer lỗi mặc định ở ngoài.",
+     "page": 137,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "5",
+   "title": "Architecture",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 139,
+   "page_end": 139,
+   "sentences": []
+  },
+  {
+   "id": "5.1",
+   "title": "Overview and block responsibilities",
+   "level": 3,
+   "parent": "5",
+   "page_start": 141,
+   "page_end": 149,
+   "sentences": [
+    {
+     "id": "5.1:s1",
+     "text": "The RTL hierarchy has one structural top and three child modules.",
+     "page": 143,
+     "normative": false
+    },
+    {
+     "id": "5.1:s2",
+     "text": "The top contains only instances and port wiring.",
+     "page": 143,
+     "normative": false
+    },
+    {
+     "id": "5.1:s3",
+     "text": "The read and write sequencers translate AXI transactions into internal APB requests. m_axi2apb_apb_ctrl combines round-robin AR/AW arbitration, transaction ownership, and the shared APB4 controller.",
+     "page": 143,
+     "normative": false
+    },
+    {
+     "id": "5.1:s4",
+     "text": "AXI response backpressure stalls the owning sequencer. / Hierarchy RTL gồm một top cấu trúc và ba module con.",
+     "page": 143,
+     "normative": false
+    },
+    {
+     "id": "5.1:s5",
+     "text": "Top chỉ chứa instance và kết nối port.",
+     "page": 143,
+     "normative": false
+    },
+    {
+     "id": "5.1:s6",
+     "text": "Sequencer đọc/ghi chuyển AXI thành yêu cầu APB nội bộ. m_axi2apb_apb_ctrl gộp phân xử AR/AW round-robin, quản lý quyền sở hữu giao dịch và điều khiển APB4 dùng chung.",
+     "page": 143,
+     "normative": false
+    },
+    {
+     "id": "5.1:s7",
+     "text": "Backpressure response AXI giữ sequencer đang sở hữu giao dịch.",
+     "page": 143,
+     "normative": false
+    },
+    {
+     "id": "5.1:s8",
+     "text": "RTL module: m_axi2apb_rd_seq; Responsibility: Validate AR, generate burst addresses, request APB reads, and return R beats / Kiểm tra AR, sinh địa chỉ burst, yêu cầu APB read và trả beat R; Internal interface: AXI AR/R; rd_req / rd_rsp; Clock/reset domain: CLK-AXI / RST-AXI; State or storage: Address, beat count, ID",
+     "page": 147,
+     "normative": false
+    },
+    {
+     "id": "5.1:s9",
+     "text": "RTL module: m_axi2apb_wr_seq; Responsibility: Accept AW/W, request APB writes, aggregate errors, and return B / Nhận AW/W, yêu cầu APB write, tích lũy lỗi và trả B; Internal interface: AXI AW/W/B; wr_req / wr_rsp; Clock/reset domain: CLK-AXI / RST-AXI; State or storage: Address, beat count, ID, error status",
+     "page": 148,
+     "normative": false
+    },
+    {
+     "id": "5.1:s10",
+     "text": "RTL module: m_axi2apb_apb_ctrl; Responsibility: Arbitrate AR/AW round-robin, retain the transaction owner through final R/B, select read/write requests, and drive APB setup/access / Phân xử AR/AW round-robin, giữ quyền sở hữu đến R/B cuối, chọn yêu cầu đọc/ghi và điều khiển APB setup/access; Internal interface: AXI ARVALID/AWVALID; sequencer ready/done; gnt_rd/gnt_wr; rd_req/rd_rsp; wr_req/wr_rsp; APB4; Clock/reset domain: CLK-AXI / RST-AXI; State or storage: Arbitration turn, active owner, APB phase and payload",
+     "page": 149,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "5.2",
+   "title": "Block diagram",
+   "level": 3,
+   "parent": "5",
+   "page_start": 151,
+   "page_end": 157,
+   "sentences": [
+    {
+     "id": "5.2:s1",
+     "text": "The enclosing frame is the top module m_axi2apb_bridge; each solid module box inside it is one child RTL module.",
+     "page": 153,
+     "normative": false
+    },
+    {
+     "id": "5.2:s2",
+     "text": "Dashed side panels show the top-level AXI4/APB4 port bundles and are not RTL modules.",
+     "page": 153,
+     "normative": false
+    },
+    {
+     "id": "5.2:s3",
+     "text": "The APB decoder, default error Completer, and peripheral Completers are outside this RTL hierarchy. / Khung ngoài là top m_axi2apb_bridge; mỗi khối module nét liền bên trong là một RTL module con.",
+     "page": 153,
+     "normative": false
+    },
+    {
+     "id": "5.2:s4",
+     "text": "Hai bảng nét đứt hai bên mô tả nhóm port AXI4/APB4 và không phải RTL module.",
+     "page": 153,
+     "normative": false
+    },
+    {
+     "id": "5.2:s5",
+     "text": "Decoder APB, default error Completer và các Completer ngoại vi nằm ngoài hierarchy RTL này.",
+     "page": 153,
+     "normative": false
+    },
+    {
+     "id": "5.2:s6",
+     "text": "Editable vector source: figures/vlsit_block_diagram.svg. / File vector SVG có thể chỉnh sửa tại đường dẫn trên.",
+     "page": 157,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "5.3",
+   "title": "Transaction and dataflow",
+   "level": 3,
+   "parent": "5",
+   "page_start": 159,
+   "page_end": 163,
+   "sentences": [
+    {
+     "id": "5.3:s1",
+     "text": "Read: accept AR, validate, perform one APB read per beat in AXI order, then present RVALID/RDATA/RRESP/RLAST/RID and hold until RREADY. / Read: nhận AR, kiểm tra, thực hiện APB read mỗi beat theo thứ tự AXI, rồi đưa RVALID/RDATA/RRESP/RLAST/RID, giữ đến RREADY.",
+     "page": 161,
+     "normative": false
+    },
+    {
+     "id": "5.3:s2",
+     "text": "Write: accept AW then W beats in order.",
+     "page": 163,
+     "normative": false
+    },
+    {
+     "id": "5.3:s3",
+     "text": "WVALID may precede AW but WREADY remains low until AW.",
+     "page": 163,
+     "normative": true
+    },
+    {
+     "id": "5.3:s4",
+     "text": "Perform one APB write per beat; after the last APB completion, return B. / Write: nhận AW rồi W theo thứ tự.",
+     "page": 163,
+     "normative": false
+    },
+    {
+     "id": "5.3:s5",
+     "text": "WVALID có thể đến trước AW nhưng WREADY thấp đến khi nhận AW.",
+     "page": 163,
+     "normative": false
+    },
+    {
+     "id": "5.3:s6",
+     "text": "Mỗi beat ghi APB; trả B sau APB cuối.",
+     "page": 163,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "5.4",
+   "title": "Invariants",
+   "level": 3,
+   "parent": "5",
+   "page_start": 165,
+   "page_end": 171,
+   "sentences": [
+    {
+     "id": "5.4:s1",
+     "text": "One transaction owns the bridge; reads and writes do not interleave.",
+     "page": 167,
+     "normative": false
+    },
+    {
+     "id": "5.4:s2",
+     "text": "APB transfers are sequential; payload/control remain stable during wait.",
+     "page": 168,
+     "normative": true
+    },
+    {
+     "id": "5.4:s3",
+     "text": "IDs are retained and echoed unchanged.",
+     "page": 169,
+     "normative": false
+    },
+    {
+     "id": "5.4:s4",
+     "text": "Read count is ARLEN+1; legal write count is AWLEN+1.",
+     "page": 170,
+     "normative": true
+    },
+    {
+     "id": "5.4:s5",
+     "text": "AXI response payload remains stable while VALID=1 and READY=0.",
+     "page": 171,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "6",
+   "title": "External interfaces and ports",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 173,
+   "page_end": 173,
+   "sentences": []
+  },
+  {
+   "id": "6.1",
+   "title": "Interface inventory",
+   "level": 3,
+   "parent": "6",
+   "page_start": 175,
+   "page_end": 180,
+   "sentences": [
+    {
+     "id": "6.1:s1",
+     "text": "Interface ID: IF-001; Type and revision: AXI4, IHI 0022 H.c; Role: Subordinate; Direction at IP boundary: AXI Manager ↔ bridge; Clock domain: CLK-AXI; Required / optional: Required; Configurations: CFG-BASE",
+     "page": 179,
+     "normative": true
+    },
+    {
+     "id": "6.1:s2",
+     "text": "Interface ID: IF-002; Type and revision: APB4, IHI 0024 D; Role: Manager/Requester; Direction at IP boundary: Bridge ↔ APB fabric; Clock domain: CLK-AXI; PCLK=ACLK; Required / optional: Required; Configurations: CFG-BASE",
+     "page": 180,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "6.2",
+   "title": "Complete port list",
+   "level": 3,
+   "parent": "6",
+   "page_start": 182,
+   "page_end": 232,
+   "sentences": [
+    {
+     "id": "6.2:s1",
+     "text": "Inputs are sampled on rising i_clk_axi when the associated handshake/completion condition holds.",
+     "page": 184,
+     "normative": false
+    },
+    {
+     "id": "6.2:s2",
+     "text": "APB setup uses PSEL=1/PENABLE=0; access uses PSEL=1/PENABLE=1 and completes at PREADY=1. / Input được lấy mẫu tại cạnh lên i_clk_axi khi handshake/điều kiện hoàn tất tương ứng.",
+     "page": 184,
+     "normative": false
+    },
+    {
+     "id": "6.2:s3",
+     "text": "APB setup dùng PSEL=1/PENABLE=0; access dùng PSEL=1/PENABLE=1 và hoàn tất khi PREADY=1.",
+     "page": 184,
+     "normative": false
+    },
+    {
+     "id": "6.2:s4",
+     "text": "Port: i_clk_axi; Direction: Input; Width: 1; Meaning (function): Shared ACLK/PCLK / Clock AXI/APB chung; Clock domain: CLK-AXI; Signal type: clock; Reset / idle value: Not applicable (clock is not resettable); Timing / sampling: Rising edge; Configurations: CFG-BASE",
+     "page": 188,
+     "normative": false
+    },
+    {
+     "id": "6.2:s5",
+     "text": "Port: i_rst_n_axi; Direction: Input; Width: 1; Meaning (function): Shared active-low synchronous reset / Reset active-low đồng bộ dùng chung; Clock domain: Synchronous to CLK-AXI; Signal type: reset; Reset / idle value: 0 asserts; Timing / sampling: Sampled on rising CLK-AXI edge; SoC supplies a clock-synchronous reset; Configurations: CFG-BASE",
+     "page": 189,
+     "normative": false
+    },
+    {
+     "id": "6.2:s6",
+     "text": "Port: i_axi_awid; Direction: Input; Width: PARA_AXI_ID_W; Meaning (function): Write ID / ID ghi; Clock domain: CLK-AXI; Signal type: data (AWVALID); Reset / idle value: Ignored if AWVALID=0; Timing / sampling: AW handshake; Configurations: CFG-BASE",
+     "page": 190,
+     "normative": false
+    },
+    {
+     "id": "6.2:s7",
+     "text": "Port: i_axi_awaddr; Direction: Input; Width: 32; Meaning (function): Write byte address / Địa chỉ byte ghi; Clock domain: CLK-AXI; Signal type: data (AWVALID); Reset / idle value: Ignored if AWVALID=0; Timing / sampling: AW handshake; Configurations: CFG-BASE",
+     "page": 191,
+     "normative": false
+    },
+    {
+     "id": "6.2:s8",
+     "text": "Port: i_axi_awlen; Direction: Input; Width: 8; Meaning (function): Write beats minus one / Số beat ghi trừ một; Clock domain: CLK-AXI; Signal type: data (AWVALID); Reset / idle value: Ignored if AWVALID=0; Timing / sampling: AW handshake; Configurations: CFG-BASE",
+     "page": 192,
+     "normative": false
+    },
+    {
+     "id": "6.2:s9",
+     "text": "Port: i_axi_awsize; Direction: Input; Width: 3; Meaning (function): Write byte-size encoding / Mã kích thước ghi; Clock domain: CLK-AXI; Signal type: data (AWVALID); Reset / idle value: Ignored if AWVALID=0; Timing / sampling: AW handshake; Configurations: CFG-BASE",
+     "page": 193,
+     "normative": false
+    },
+    {
+     "id": "6.2:s10",
+     "text": "Port: i_axi_awburst; Direction: Input; Width: 2; Meaning (function): Write burst type / Loại burst ghi; Clock domain: CLK-AXI; Signal type: data (AWVALID); Reset / idle value: Ignored if AWVALID=0; Timing / sampling: AW handshake; Configurations: CFG-BASE",
+     "page": 194,
+     "normative": false
+    },
+    {
+     "id": "6.2:s11",
+     "text": "Port: i_axi_awcache; Direction: Input; Width: 4; Meaning (function): Write memory attribute / Thuộc tính ghi; Clock domain: CLK-AXI; Signal type: data (AWVALID); Reset / idle value: Ignored if AWVALID=0; Timing / sampling: AW handshake; Configurations: CFG-BASE",
+     "page": 195,
+     "normative": false
+    },
+    {
+     "id": "6.2:s12",
+     "text": "Port: i_axi_awprot; Direction: Input; Width: 3; Meaning (function): Write protection / Bảo vệ ghi; Clock domain: CLK-AXI; Signal type: data (AWVALID); Reset / idle value: Ignored if AWVALID=0; Timing / sampling: AW handshake; Configurations: CFG-BASE",
+     "page": 196,
+     "normative": false
+    },
+    {
+     "id": "6.2:s13",
+     "text": "Port: i_axi_awvalid; Direction: Input; Width: 1; Meaning (function): Write address valid / Địa chỉ ghi hợp lệ; Clock domain: CLK-AXI; Signal type: level; Reset / idle value: 0 in reset; Timing / sampling: Hold payload to AWREADY; Configurations: CFG-BASE",
+     "page": 197,
+     "normative": false
+    },
+    {
+     "id": "6.2:s14",
+     "text": "Port: o_axi_awready; Direction: Output; Width: 1; Meaning (function): Accept write address / Nhận địa chỉ ghi; Clock domain: CLK-AXI; Signal type: level; Reset / idle value: 0 in reset; Timing / sampling: AW handshake; Configurations: CFG-BASE",
+     "page": 198,
+     "normative": false
+    },
+    {
+     "id": "6.2:s15",
+     "text": "Port: i_axi_wdata; Direction: Input; Width: 32; Meaning (function): Write beat data / Dữ liệu beat ghi; Clock domain: CLK-AXI; Signal type: data (WVALID); Reset / idle value: Ignored if WVALID=0; Timing / sampling: W handshake; Configurations: CFG-BASE",
+     "page": 199,
+     "normative": false
+    },
+    {
+     "id": "6.2:s16",
+     "text": "Port: i_axi_wstrb; Direction: Input; Width: 4; Meaning (function): Write byte lanes / Lane byte ghi; Clock domain: CLK-AXI; Signal type: data (WVALID); Reset / idle value: Ignored if WVALID=0; Timing / sampling: W handshake; copied to PSTRB; Configurations: CFG-BASE",
+     "page": 200,
+     "normative": false
+    },
+    {
+     "id": "6.2:s17",
+     "text": "Port: i_axi_wlast; Direction: Input; Width: 1; Meaning (function): Final W beat marker / Đánh dấu W cuối; Clock domain: CLK-AXI; Signal type: data (WVALID); Reset / idle value: Ignored if WVALID=0; Timing / sampling: AXI-compliant Manager asserts on beat AWLEN+1; malformed WLAST is outside the guaranteed profile; Configurations: CFG-BASE",
+     "page": 201,
+     "normative": false
+    },
+    {
+     "id": "6.2:s18",
+     "text": "Port: i_axi_wvalid; Direction: Input; Width: 1; Meaning (function): Write data valid / Dữ liệu ghi hợp lệ; Clock domain: CLK-AXI; Signal type: level; Reset / idle value: 0 in reset; Timing / sampling: Hold payload to WREADY; Configurations: CFG-BASE",
+     "page": 202,
+     "normative": false
+    },
+    {
+     "id": "6.2:s19",
+     "text": "Port: o_axi_wready; Direction: Output; Width: 1; Meaning (function): Accept write data / Nhận dữ liệu ghi; Clock domain: CLK-AXI; Signal type: level; Reset / idle value: 0 in reset; Timing / sampling: W handshake; Configurations: CFG-BASE",
+     "page": 203,
+     "normative": false
+    },
+    {
+     "id": "6.2:s20",
+     "text": "Port: o_axi_bid; Direction: Output; Width: PARA_AXI_ID_W; Meaning (function): Write response ID / ID response ghi; Clock domain: CLK-AXI; Signal type: data (BVALID); Reset / idle value: 0 in reset; Timing / sampling: Stable to B handshake; Configurations: CFG-BASE",
+     "page": 204,
+     "normative": true
+    },
+    {
+     "id": "6.2:s21",
+     "text": "Port: o_axi_bresp; Direction: Output; Width: 2; Meaning (function): Write response status / Trạng thái B; Clock domain: CLK-AXI; Signal type: data (BVALID); Reset / idle value: 0 in reset; Timing / sampling: Stable to B handshake; Configurations: CFG-BASE",
+     "page": 205,
+     "normative": true
+    },
+    {
+     "id": "6.2:s22",
+     "text": "Port: o_axi_bvalid; Direction: Output; Width: 1; Meaning (function): Write response valid / B hợp lệ; Clock domain: CLK-AXI; Signal type: level; Reset / idle value: 0 in reset; Timing / sampling: Hold to BREADY; Configurations: CFG-BASE",
+     "page": 206,
+     "normative": false
+    },
+    {
+     "id": "6.2:s23",
+     "text": "Port: i_axi_bready; Direction: Input; Width: 1; Meaning (function): Accept B response / Nhận B; Clock domain: CLK-AXI; Signal type: level; Reset / idle value: Ignored in reset; Timing / sampling: B handshake; Configurations: CFG-BASE",
+     "page": 207,
+     "normative": false
+    },
+    {
+     "id": "6.2:s24",
+     "text": "Port: i_axi_arid; Direction: Input; Width: PARA_AXI_ID_W; Meaning (function): Read ID / ID đọc; Clock domain: CLK-AXI; Signal type: data (ARVALID); Reset / idle value: Ignored if ARVALID=0; Timing / sampling: AR handshake; Configurations: CFG-BASE",
+     "page": 208,
+     "normative": false
+    },
+    {
+     "id": "6.2:s25",
+     "text": "Port: i_axi_araddr; Direction: Input; Width: 32; Meaning (function): Read byte address / Địa chỉ byte đọc; Clock domain: CLK-AXI; Signal type: data (ARVALID); Reset / idle value: Ignored if ARVALID=0; Timing / sampling: AR handshake; Configurations: CFG-BASE",
+     "page": 209,
+     "normative": false
+    },
+    {
+     "id": "6.2:s26",
+     "text": "Port: i_axi_arlen; Direction: Input; Width: 8; Meaning (function): Read beats minus one / Số beat đọc trừ một; Clock domain: CLK-AXI; Signal type: data (ARVALID); Reset / idle value: Ignored if ARVALID=0; Timing / sampling: AR handshake; Configurations: CFG-BASE",
+     "page": 210,
+     "normative": false
+    },
+    {
+     "id": "6.2:s27",
+     "text": "Port: i_axi_arsize; Direction: Input; Width: 3; Meaning (function): Read byte-size encoding / Mã kích thước đọc; Clock domain: CLK-AXI; Signal type: data (ARVALID); Reset / idle value: Ignored if ARVALID=0; Timing / sampling: AR handshake; Configurations: CFG-BASE",
+     "page": 211,
+     "normative": false
+    },
+    {
+     "id": "6.2:s28",
+     "text": "Port: i_axi_arburst; Direction: Input; Width: 2; Meaning (function): Read burst type / Loại burst đọc; Clock domain: CLK-AXI; Signal type: data (ARVALID); Reset / idle value: Ignored if ARVALID=0; Timing / sampling: AR handshake; Configurations: CFG-BASE",
+     "page": 212,
+     "normative": false
+    },
+    {
+     "id": "6.2:s29",
+     "text": "Port: i_axi_arcache; Direction: Input; Width: 4; Meaning (function): Read memory attribute / Thuộc tính đọc; Clock domain: CLK-AXI; Signal type: data (ARVALID); Reset / idle value: Ignored if ARVALID=0; Timing / sampling: AR handshake; Configurations: CFG-BASE",
+     "page": 213,
+     "normative": false
+    },
+    {
+     "id": "6.2:s30",
+     "text": "Port: i_axi_arprot; Direction: Input; Width: 3; Meaning (function): Read protection / Bảo vệ đọc; Clock domain: CLK-AXI; Signal type: data (ARVALID); Reset / idle value: Ignored if ARVALID=0; Timing / sampling: AR handshake; Configurations: CFG-BASE",
+     "page": 214,
+     "normative": false
+    },
+    {
+     "id": "6.2:s31",
+     "text": "Port: i_axi_arvalid; Direction: Input; Width: 1; Meaning (function): Read address valid / Địa chỉ đọc hợp lệ; Clock domain: CLK-AXI; Signal type: level; Reset / idle value: 0 in reset; Timing / sampling: Hold payload to ARREADY; Configurations: CFG-BASE",
+     "page": 215,
+     "normative": false
+    },
+    {
+     "id": "6.2:s32",
+     "text": "Port: o_axi_arready; Direction: Output; Width: 1; Meaning (function): Accept read address / Nhận địa chỉ đọc; Clock domain: CLK-AXI; Signal type: level; Reset / idle value: 0 in reset; Timing / sampling: AR handshake; Configurations: CFG-BASE",
+     "page": 216,
+     "normative": false
+    },
+    {
+     "id": "6.2:s33",
+     "text": "Port: o_axi_rid; Direction: Output; Width: PARA_AXI_ID_W; Meaning (function): Read response ID / ID response đọc; Clock domain: CLK-AXI; Signal type: data (RVALID); Reset / idle value: 0 in reset; Timing / sampling: Stable to R handshake; Configurations: CFG-BASE",
+     "page": 217,
+     "normative": true
+    },
+    {
+     "id": "6.2:s34",
+     "text": "Port: o_axi_rdata; Direction: Output; Width: 32; Meaning (function): Read beat data / Dữ liệu beat đọc; Clock domain: CLK-AXI; Signal type: data (RVALID); Reset / idle value: 0 in reset; Timing / sampling: Stable to R handshake; Configurations: CFG-BASE",
+     "page": 218,
+     "normative": true
+    },
+    {
+     "id": "6.2:s35",
+     "text": "Port: o_axi_rresp; Direction: Output; Width: 2; Meaning (function): Read response status / Trạng thái R; Clock domain: CLK-AXI; Signal type: data (RVALID); Reset / idle value: 0 in reset; Timing / sampling: Stable to R handshake; Configurations: CFG-BASE",
+     "page": 219,
+     "normative": true
+    },
+    {
+     "id": "6.2:s36",
+     "text": "Port: o_axi_rlast; Direction: Output; Width: 1; Meaning (function): Final read beat marker / Đánh dấu beat cuối; Clock domain: CLK-AXI; Signal type: data (RVALID); Reset / idle value: 0 in reset; Timing / sampling: High only on final beat; Configurations: CFG-BASE",
+     "page": 220,
+     "normative": false
+    },
+    {
+     "id": "6.2:s37",
+     "text": "Port: o_axi_rvalid; Direction: Output; Width: 1; Meaning (function): Read data valid / Dữ liệu đọc hợp lệ; Clock domain: CLK-AXI; Signal type: level; Reset / idle value: 0 in reset; Timing / sampling: Hold to RREADY; Configurations: CFG-BASE",
+     "page": 221,
+     "normative": false
+    },
+    {
+     "id": "6.2:s38",
+     "text": "Port: i_axi_rready; Direction: Input; Width: 1; Meaning (function): Accept read beat / Nhận beat đọc; Clock domain: CLK-AXI; Signal type: level; Reset / idle value: Ignored in reset; Timing / sampling: R handshake; Configurations: CFG-BASE",
+     "page": 222,
+     "normative": false
+    },
+    {
+     "id": "6.2:s39",
+     "text": "Port: o_apb_paddr; Direction: Output; Width: 32; Meaning (function): Word-aligned byte address / Địa chỉ byte căn word; Clock domain: CLK-AXI; Signal type: data (PSEL); Reset / idle value: 0 idle; Timing / sampling: Stable through transfer; Configurations: CFG-BASE",
+     "page": 223,
+     "normative": true
+    },
+    {
+     "id": "6.2:s40",
+     "text": "Port: o_apb_pwrite; Direction: Output; Width: 1; Meaning (function): APB direction / Hướng đọc/ghi APB; Clock domain: CLK-AXI; Signal type: data (PSEL); Reset / idle value: 0 idle; Timing / sampling: Stable through transfer; Configurations: CFG-BASE",
+     "page": 224,
+     "normative": true
+    },
+    {
+     "id": "6.2:s41",
+     "text": "Port: o_apb_pwdata; Direction: Output; Width: 32; Meaning (function): APB write data / Dữ liệu ghi APB; Clock domain: CLK-AXI; Signal type: data (PSEL and PWRITE); Reset / idle value: 0 idle; Timing / sampling: Stable during wait; Configurations: CFG-BASE",
+     "page": 225,
+     "normative": true
+    },
+    {
+     "id": "6.2:s42",
+     "text": "Port: o_apb_pstrb; Direction: Output; Width: 4; Meaning (function): APB byte strobes / Strobe byte APB; Clock domain: CLK-AXI; Signal type: data (PSEL and PWRITE); Reset / idle value: 0 idle; zero on read; Timing / sampling: Stable through access; Configurations: CFG-BASE",
+     "page": 226,
+     "normative": true
+    },
+    {
+     "id": "6.2:s43",
+     "text": "Port: o_apb_pprot; Direction: Output; Width: 3; Meaning (function): Copy of AxPROT / Bản sao AxPROT; Clock domain: CLK-AXI; Signal type: data (PSEL); Reset / idle value: 0 idle; Timing / sampling: Stable through transfer; Configurations: CFG-BASE",
+     "page": 227,
+     "normative": true
+    },
+    {
+     "id": "6.2:s44",
+     "text": "Port: o_apb_psel; Direction: Output; Width: 1; Meaning (function): Select APB decoder / Chọn decoder APB; Clock domain: CLK-AXI; Signal type: level; Reset / idle value: 0 idle; Timing / sampling: Setup starts high; Configurations: CFG-BASE",
+     "page": 228,
+     "normative": false
+    },
+    {
+     "id": "6.2:s45",
+     "text": "Port: o_apb_penable; Direction: Output; Width: 1; Meaning (function): APB access phase / Pha access APB; Clock domain: CLK-AXI; Signal type: level; Reset / idle value: 0 idle; Timing / sampling: Hold until PREADY; Configurations: CFG-BASE",
+     "page": 229,
+     "normative": false
+    },
+    {
+     "id": "6.2:s46",
+     "text": "Port: i_apb_pready; Direction: Input; Width: 1; Meaning (function): APB transfer ready / APB sẵn sàng; Clock domain: CLK-AXI; Signal type: level; Reset / idle value: Ignored when PSEL=0; Timing / sampling: Sample in access; Configurations: CFG-BASE",
+     "page": 230,
+     "normative": false
+    },
+    {
+     "id": "6.2:s47",
+     "text": "Port: i_apb_prdata; Direction: Input; Width: 32; Meaning (function): APB read data / Dữ liệu đọc APB; Clock domain: CLK-AXI; Signal type: data (read completion); Reset / idle value: Ignored otherwise; Timing / sampling: Sample at completion; Configurations: CFG-BASE",
+     "page": 231,
+     "normative": false
+    },
+    {
+     "id": "6.2:s48",
+     "text": "Port: i_apb_pslverr; Direction: Input; Width: 1; Meaning (function): APB error / Lỗi APB; Clock domain: CLK-AXI; Signal type: data (completed transfer); Reset / idle value: Ignored otherwise; Timing / sampling: Sample with PREADY; Configurations: CFG-BASE",
+     "page": 232,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "6.3",
+   "title": "Protocol behavior",
+   "level": 3,
+   "parent": "6",
+   "page_start": 234,
+   "page_end": 246,
+   "sentences": [
+    {
+     "id": "6.3:s1",
+     "text": "Case: AXI read; Legal behavior: FIXED/INCR/WRAP, size 0–2, cache 0000/0001; Illegal / unsupported case: Unsupported request or 4-KiB crossing; IP response: No APB; ARLEN+1 R beats with SLVERR; Requirement IDs: REQ-IF-002/003/007, REQ-ERR-001",
+     "page": 238,
+     "normative": true
+    },
+    {
+     "id": "6.3:s2",
+     "text": "Case: AXI write; Legal behavior: AW followed by declared W beats; W may arrive early; Illegal / unsupported case: Unsupported AW request; AXI protocol violations are outside the guaranteed profile; IP response: No APB for unsupported AW; drain W, then SLVERR B; Requirement IDs: REQ-IF-002/003/007, REQ-ERR-003",
+     "page": 239,
+     "normative": true
+    },
+    {
+     "id": "6.3:s3",
+     "text": "Case: APB transfer; Legal behavior: One transfer per AXI beat; Illegal / unsupported case: PREADY never rises; IP response: Hold access; no timeout; Requirement IDs: REQ-IF-004, REQ-ERR-005",
+     "page": 240,
+     "normative": true
+    },
+    {
+     "id": "6.3:s4",
+     "text": "Case: APB error; Legal behavior: PSLVERR sampled on completed transfer; Illegal / unsupported case: Read data on error is invalid per APB; IP response: Read beat SLVERR; write error accumulates; Requirement IDs: REQ-ERR-002/006",
+     "page": 241,
+     "normative": true
+    },
+    {
+     "id": "6.3:s5",
+     "text": "Case: Unmapped address; Legal behavior: External default error Completer responds; Illegal / unsupported case: Missing default responder is integration violation; IP response: PREADY=1/PSLVERR=1, then AXI SLVERR; Requirement IDs: REQ-ERR-004",
+     "page": 242,
+     "normative": true
+    },
+    {
+     "id": "6.3:s6",
+     "text": "AXI4 prohibits a burst from crossing a 4-KiB address boundary.",
+     "page": 244,
+     "normative": false
+    },
+    {
+     "id": "6.3:s7",
+     "text": "This bridge defensively rejects such a request before issuing APB traffic. / AXI4 cấm burst vượt biên địa chỉ 4 KiB.",
+     "page": 244,
+     "normative": false
+    },
+    {
+     "id": "6.3:s8",
+     "text": "Bridge chủ động từ chối yêu cầu này trước khi phát giao dịch APB.",
+     "page": 244,
+     "normative": false
+    },
+    {
+     "id": "6.3:s9",
+     "text": "Waveform index (approved 2026-10-25): WF-001 reset; successful reads WF-002 single, WF-003 INCR, WF-004 FIXED/WRAP; successful writes WF-005 burst, WF-006 byte lane; waits and backpressure WF-007 APB wait, WF-008 AXI response stall; errors WF-009 read PSLVERR, WF-010 write PSLVERR, WF-012 unsupported request, WF-013 4-KiB crossing, WF-014 unmapped address; arbitration WF-011 AR/AW contention.",
+     "page": 246,
+     "normative": false
+    },
+    {
+     "id": "6.3:s10",
+     "text": "WaveJSON sources are paired with each SVG in figures/. / Danh sách waveform (đã duyệt ngày 2026-10-25): gồm reset, đọc/ghi thành công, byte lane, wait state, backpressure, lỗi đọc/ghi, yêu cầu không hỗ trợ, vượt biên 4 KiB, địa chỉ không ánh xạ và phân xử AR/AW.",
+     "page": 246,
+     "normative": false
+    },
+    {
+     "id": "6.3:s11",
+     "text": "File WaveJSON đi kèm từng SVG trong figures/.",
+     "page": 246,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "6.4",
+   "title": "Interrupts and events",
+   "level": 3,
+   "parent": "6",
+   "page_start": 248,
+   "page_end": 250,
+   "sentences": [
+    {
+     "id": "6.4:s1",
+     "text": "No interrupt port is in the approved baseline.",
+     "page": 250,
+     "normative": false
+    },
+    {
+     "id": "6.4:s2",
+     "text": "Diagnostics/interrupt need remains open; see ASM-006. / Baseline không có interrupt.",
+     "page": 250,
+     "normative": true
+    },
+    {
+     "id": "6.4:s3",
+     "text": "Nhu cầu chẩn đoán/interrupt còn mở; xem ASM-006.",
+     "page": 250,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "7",
+   "title": "Clock, reset, and power",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 252,
+   "page_end": 252,
+   "sentences": []
+  },
+  {
+   "id": "7.1",
+   "title": "Clock domains",
+   "level": 3,
+   "parent": "7",
+   "page_start": 254,
+   "page_end": 258,
+   "sentences": [
+    {
+     "id": "7.1:s1",
+     "text": "Domain: CLK-AXI; Clock port: i_clk_axi; APB PCLK tied to it; Edge: Rising; Frequency range: No IP-specific limit; STA target is set by the SoC; Source: SoC clock controller; Relationship to other clocks: Single synchronous domain; Gating policy: No internal gating",
+     "page": 258,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "7.2",
+   "title": "CDC and RDC",
+   "level": 3,
+   "parent": "7",
+   "page_start": 260,
+   "page_end": 266,
+   "sentences": [
+    {
+     "id": "7.2:s1",
+     "text": "No CDC or synchronizer is present because ACLK/PCLK share one input.",
+     "page": 262,
+     "normative": false
+    },
+    {
+     "id": "7.2:s2",
+     "text": "The SoC must provide i_rst_n_axi synchronous to CLK-AXI. / Không có CDC hoặc synchronizer vì ACLK/PCLK dùng chung input.",
+     "page": 262,
+     "normative": true
+    },
+    {
+     "id": "7.2:s3",
+     "text": "SoC phải cấp i_rst_n_axi đồng bộ với CLK-AXI.",
+     "page": 262,
+     "normative": false
+    },
+    {
+     "id": "7.2:s4",
+     "text": "Crossing ID: CDC-001; From → to: Not applicable (no async clock crossing); Signals: No async clock crossing; Structure: None; Reset handling: Shared reset; Constraints / verification: CDC/RDC report",
+     "page": 266,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "7.3",
+   "title": "Reset domains and sequencing",
+   "level": 3,
+   "parent": "7",
+   "page_start": 268,
+   "page_end": 274,
+   "sentences": [
+    {
+     "id": "7.3:s1",
+     "text": "Reset ID: RST-AXI; Port: i_rst_n_axi; Polarity / assertion: Active-low, synchronous assertion; Sync or async: Synchronous; Scope: AXI/APB control and state; Deassertion: SoC supplies reset synchronous to i_clk_axi; Reset value: AXI VALID=0; PSEL/PENABLE=0 after the active reset edge",
+     "page": 272,
+     "normative": false
+    },
+    {
+     "id": "7.3:s2",
+     "text": "Reset is sampled on the rising edge of i_clk_axi; keep it active for at least one rising edge.",
+     "page": 274,
+     "normative": false
+    },
+    {
+     "id": "7.3:s3",
+     "text": "The SoC owns reset synchronization and must coordinate the AXI Manager and APB fabric.",
+     "page": 274,
+     "normative": true
+    },
+    {
+     "id": "7.3:s4",
+     "text": "Reset cancels in-flight local state; completion/rollback of an interrupted transfer is not guaranteed. / Reset được lấy mẫu ở cạnh lên i_clk_axi; giữ reset active ít nhất một cạnh lên.",
+     "page": 274,
+     "normative": false
+    },
+    {
+     "id": "7.3:s5",
+     "text": "SoC quản lý đồng bộ reset và phải phối hợp reset AXI Manager với APB fabric.",
+     "page": 274,
+     "normative": false
+    },
+    {
+     "id": "7.3:s6",
+     "text": "Reset hủy state đang chạy; không đảm bảo hoàn tất/rollback transfer bị ngắt.",
+     "page": 274,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "7.4",
+   "title": "Power intent (if applicable)",
+   "level": 3,
+   "parent": "7",
+   "page_start": 276,
+   "page_end": 278,
+   "sentences": [
+    {
+     "id": "7.4:s1",
+     "text": "No IP-specific isolation, retention or power sequence is defined; SoC UPF/CPF owns it. / Không quy định isolation, retention hay trình tự nguồn riêng; SoC UPF/CPF quản lý.",
+     "page": 278,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "8",
+   "title": "Parameters and elaboration configurations",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 280,
+   "page_end": 292,
+   "sentences": [
+    {
+     "id": "8:s1",
+     "text": "Declare PARA_AXI_ID_W as parameter logic [31:0], default 4.",
+     "page": 282,
+     "normative": false
+    },
+    {
+     "id": "8:s2",
+     "text": "Its three required comments immediately precede the declaration: Parameter Description, Parameter values, Parameter unit. / Khai báo PARA_AXI_ID_W dạng parameter logic [31:0], mặc định 4.",
+     "page": 282,
+     "normative": true
+    },
+    {
+     "id": "8:s3",
+     "text": "Ba comment Parameter Description, Parameter values, Parameter unit đứng ngay trên khai báo.",
+     "page": 282,
+     "normative": false
+    },
+    {
+     "id": "8:s4",
+     "text": "Parameter: PARA_AXI_ID_W; Purpose: AXI read/write ID width / Độ rộng ID AXI; Default: 4; Legal values / range: 1–16 inclusive; Dependencies / invalid combinations: Shared width; invalid value is elaboration error; Effect: Changes ID port widths",
+     "page": 286,
+     "normative": true
+    },
+    {
+     "id": "8:s5",
+     "text": "Required comment labels are Parameter Description, Parameter values and Parameter unit.",
+     "page": 288,
+     "normative": true
+    },
+    {
+     "id": "8:s6",
+     "text": "Address/data/APB widths are fixed at 32 bits. / Nhãn comment bắt buộc là Parameter Description, Parameter values và Parameter unit. Độ rộng địa chỉ/dữ liệu/APB cố định 32 bit.",
+     "page": 288,
+     "normative": false
+    },
+    {
+     "id": "8:s7",
+     "text": "Configuration: CFG-BASE; Parameter overrides: PARA_AXI_ID_W=4; Features/interfaces: Section 4; Expected hierarchy: m_axi2apb_bridge with m_axi2apb_rd_seq, m_axi2apb_wr_seq, and m_axi2apb_apb_ctrl; Elaboration/lint/synthesis target: Check ID widths 1, 4, 16",
+     "page": 292,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "9",
+   "title": "Data representation and arithmetic",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 294,
+   "page_end": 307,
+   "sentences": [
+    {
+     "id": "9:s1",
+     "text": "Quantity: Address; Width: 32; Encoding / range: Unsigned byte address; Extension / truncation: APB PADDR clears bits [1:0]; Overflow / invalid behavior: Reject 4-KiB crossing",
+     "page": 298,
+     "normative": false
+    },
+    {
+     "id": "9:s2",
+     "text": "Quantity: AXI/APB data; Width: 32; Encoding / range: Four byte lanes; Extension / truncation: No lane rotation; Overflow / invalid behavior: Unsupported size → SLVERR",
+     "page": 299,
+     "normative": false
+    },
+    {
+     "id": "9:s3",
+     "text": "Quantity: ID; Width: PARA_AXI_ID_W; Encoding / range: Opaque unsigned; Extension / truncation: Echo unchanged; Overflow / invalid behavior: No remap",
+     "page": 300,
+     "normative": false
+    },
+    {
+     "id": "9:s4",
+     "text": "Quantity: AxSIZE; Width: 3; Encoding / range: 0=1 byte, 1=2 bytes, 2=4 bytes; Extension / truncation: Unsigned; Overflow / invalid behavior: Other values rejected",
+     "page": 301,
+     "normative": false
+    },
+    {
+     "id": "9:s5",
+     "text": "Quantity: AxLEN; Width: 8; Encoding / range: Beats minus one; Extension / truncation: 1–256 beats; Overflow / invalid behavior: Declared burst length controls expected beat count",
+     "page": 302,
+     "normative": false
+    },
+    {
+     "id": "9:s6",
+     "text": "Quantity: AxBURST; Width: 2; Encoding / range: FIXED/INCR/WRAP legal values; Extension / truncation: Per REF-001 A3.4; Overflow / invalid behavior: Reserved value rejected",
+     "page": 303,
+     "normative": true
+    },
+    {
+     "id": "9:s7",
+     "text": "Quantity: AxCACHE; Width: 4; Encoding / range: Accept 0000 Device Non-bufferable or 0001 Device Bufferable; Extension / truncation: Validation only; Overflow / invalid behavior: Other encodings rejected",
+     "page": 304,
+     "normative": false
+    },
+    {
+     "id": "9:s8",
+     "text": "Quantity: AxPROT/PPROT; Width: 3; Encoding / range: Same semantics; Extension / truncation: Direct copy; Overflow / invalid behavior: No translation",
+     "page": 305,
+     "normative": false
+    },
+    {
+     "id": "9:s9",
+     "text": "For subword writes, copy WSTRB to PSTRB unchanged; the Manager must assert only lanes legal for the address and size.",
+     "page": 307,
+     "normative": true
+    },
+    {
+     "id": "9:s10",
+     "text": "APB PADDR is word-aligned.",
+     "page": 307,
+     "normative": false
+    },
+    {
+     "id": "9:s11",
+     "text": "Return PRDATA in bus lanes; the Manager selects requested bytes using AXI address/size. / Write nhỏ hơn word chép nguyên WSTRB sang PSTRB; Manager chỉ bật lane hợp lệ.",
+     "page": 307,
+     "normative": false
+    },
+    {
+     "id": "9:s12",
+     "text": "PADDR căn word.",
+     "page": 307,
+     "normative": false
+    },
+    {
+     "id": "9:s13",
+     "text": "Trả PRDATA theo lane bus; Manager chọn byte theo địa chỉ/size AXI.",
+     "page": 307,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "10",
+   "title": "Detailed functional behavior",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 309,
+   "page_end": 309,
+   "sentences": []
+  },
+  {
+   "id": "10.1",
+   "title": "Modes and state transitions",
+   "level": 3,
+   "parent": "10",
+   "page_start": 311,
+   "page_end": 321,
+   "sentences": [
+    {
+     "id": "10.1:s1",
+     "text": "Mode/state: IDLE; Entry condition: Reset released; Behavior: Arbitrate AR/AW; Exit condition: Address handshake; Outputs / side effects: Select transaction",
+     "page": 315,
+     "normative": false
+    },
+    {
+     "id": "10.1:s2",
+     "text": "Mode/state: READ; Entry condition: AR accepted; Behavior: Validate; APB read per beat; return R; Exit condition: Final R handshake; Outputs / side effects: ARLEN+1 R beats",
+     "page": 316,
+     "normative": false
+    },
+    {
+     "id": "10.1:s3",
+     "text": "Mode/state: WRITE; Entry condition: AW accepted; Behavior: Accept W; APB write per beat; Exit condition: B handshake; Outputs / side effects: One B",
+     "page": 317,
+     "normative": false
+    },
+    {
+     "id": "10.1:s4",
+     "text": "Mode/state: REJECT_READ; Entry condition: Unsupported AR; Behavior: No APB; return error beats with zero data; Exit condition: Final R handshake; Outputs / side effects: SLVERR and final RLAST",
+     "page": 318,
+     "normative": false
+    },
+    {
+     "id": "10.1:s5",
+     "text": "Mode/state: REJECT_WRITE; Entry condition: Unsupported AW; Behavior: Drain W count; no APB; Exit condition: B handshake; Outputs / side effects: SLVERR",
+     "page": 319,
+     "normative": false
+    },
+    {
+     "id": "10.1:s6",
+     "text": "Reset in any state returns to IDLE and discards local state. / Reset ở mọi state đưa về IDLE và xóa state cục bộ.",
+     "page": 321,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "10.2",
+   "title": "Operations",
+   "level": 3,
+   "parent": "10",
+   "page_start": 323,
+   "page_end": 333,
+   "sentences": [
+    {
+     "id": "10.2:s1",
+     "text": "Operation ID: OP-001 Read; Inputs / preconditions: Legal accepted AR; Processing semantics: APB read per beat; FIXED holds address; INCR and WRAP follow AXI address rules; Result / completion: ARLEN+1 R beats; RID echo; final RLAST; Latency / ordering: Serialized; wait/backpressure extends latency",
+     "page": 327,
+     "normative": true
+    },
+    {
+     "id": "10.2:s2",
+     "text": "Operation ID: OP-002 Write; Inputs / preconditions: Legal AW plus AWLEN+1 W beats; Processing semantics: APB write per beat; WSTRB→PSTRB; accumulate PSLVERR; Result / completion: One B after final APB completion; Latency / ordering: Serialized; wait/backpressure extends latency",
+     "page": 328,
+     "normative": true
+    },
+    {
+     "id": "10.2:s3",
+     "text": "Operation ID: OP-003 Unsupported read; Inputs / preconditions: Accepted AR outside profile; Processing semantics: No APB; return declared error beats; Result / completion: ARLEN+1 R beats; SLVERR; zero data; Latency / ordering: Honor RREADY",
+     "page": 329,
+     "normative": false
+    },
+    {
+     "id": "10.2:s4",
+     "text": "Operation ID: OP-004 Unsupported write; Inputs / preconditions: Accepted AW outside profile; Processing semantics: No APB; drain declared W count; Result / completion: One SLVERR B; Latency / ordering: B after final W",
+     "page": 330,
+     "normative": false
+    },
+    {
+     "id": "10.2:s5",
+     "text": "Operation ID: OP-005 Reset; Inputs / preconditions: Reset in any state; Processing semantics: Clear local state and deselect APB; Result / completion: Idle; Latency / ordering: In-flight work canceled",
+     "page": 331,
+     "normative": false
+    },
+    {
+     "id": "10.2:s6",
+     "text": "Read PSLVERR marks its beat.",
+     "page": 333,
+     "normative": false
+    },
+    {
+     "id": "10.2:s7",
+     "text": "Write PSLVERR accumulates; later beats still execute and final BRESP is SLVERR.",
+     "page": 333,
+     "normative": false
+    },
+    {
+     "id": "10.2:s8",
+     "text": "No side effect rollback is promised. / Read PSLVERR đánh dấu beat đó.",
+     "page": 333,
+     "normative": false
+    },
+    {
+     "id": "10.2:s9",
+     "text": "Write PSLVERR tích lũy; beat sau vẫn chạy, BRESP cuối là SLVERR.",
+     "page": 333,
+     "normative": false
+    },
+    {
+     "id": "10.2:s10",
+     "text": "Không rollback side effect.",
+     "page": 333,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "10.3",
+   "title": "Cycle-level behavior",
+   "level": 3,
+   "parent": "10",
+   "page_start": 335,
+   "page_end": 358,
+   "sentences": [
+    {
+     "id": "10.3:s1",
+     "text": "Approved waveform set (R-024, 2026-10-25): the user approved all 14 scenarios; each row links to its SVG and WaveJSON source. / Bộ waveform đã duyệt (R-024, 2026-10-25): người dùng đã duyệt đủ 14 tình huống; mỗi dòng liên kết tới SVG và file nguồn WaveJSON.",
+     "page": 337,
+     "normative": false
+    },
+    {
+     "id": "10.3:s2",
+     "text": "Waveform ID: WF-001; Function / operation: OP-005 Reset; Scenario (success / error / corner): Success: synchronous active-low reset assertion/release and idle outputs; Signals shown: i_clk_axi, i_rst_n_axi, AXI VALID, APB PSEL/PENABLE; Figure: ; WaveJSON; Confirmed by user: 2026-10-25",
+     "page": 341,
+     "normative": false
+    },
+    {
+     "id": "10.3:s3",
+     "text": "Waveform ID: WF-002; Function / operation: OP-001 Read; Scenario (success / error / corner): Success: single-beat AXI read and APB completion; Signals shown: AR, APB PADDR/PSEL/PENABLE/PREADY/PRDATA, R; Figure: ; WaveJSON; Confirmed by user: 2026-10-25",
+     "page": 342,
+     "normative": false
+    },
+    {
+     "id": "10.3:s4",
+     "text": "Waveform ID: WF-003; Function / operation: OP-001 Read; Scenario (success / error / corner): Success: four-beat INCR read with final RLAST; Signals shown: AR, APB address sequence, RVALID/RREADY/RLAST; Figure: ; WaveJSON; Confirmed by user: 2026-10-25",
+     "page": 343,
+     "normative": false
+    },
+    {
+     "id": "10.3:s5",
+     "text": "Waveform ID: WF-004; Function / operation: OP-001 Read; Scenario (success / error / corner): Corner: FIXED and WRAP address sequences; Signals shown: ARBURST/ARADDR/ARLEN, APB PADDR; Figure: ; WaveJSON; Confirmed by user: 2026-10-25",
+     "page": 344,
+     "normative": false
+    },
+    {
+     "id": "10.3:s6",
+     "text": "Waveform ID: WF-005; Function / operation: OP-002 Write; Scenario (success / error / corner): Success: INCR write burst, WSTRB/PPROT and B response; Signals shown: AW, W, APB PADDR/PWDATA/PSTRB/PPROT, B; Figure: ; WaveJSON; Confirmed by user: 2026-10-25",
+     "page": 345,
+     "normative": false
+    },
+    {
+     "id": "10.3:s7",
+     "text": "Waveform ID: WF-006; Function / operation: OP-002 Write; Scenario (success / error / corner): Corner: byte write at 0x1001, APB PADDR=0x1000 and lane 1; Signals shown: AWADDR, AWSIZE, WSTRB, APB PADDR/PSTRB; Figure: ; WaveJSON; Confirmed by user: 2026-10-25",
+     "page": 346,
+     "normative": false
+    },
+    {
+     "id": "10.3:s8",
+     "text": "Waveform ID: WF-007; Function / operation: OP-001 Read; OP-002 Write; Scenario (success / error / corner): Corner: APB PREADY wait with stable APB control/data; Signals shown: PSEL, PENABLE, PADDR, PWRITE, PREADY; Figure: ; WaveJSON; Confirmed by user: 2026-10-25",
+     "page": 347,
+     "normative": true
+    },
+    {
+     "id": "10.3:s9",
+     "text": "Waveform ID: WF-008; Function / operation: OP-001 Read; OP-002 Write; Scenario (success / error / corner): Corner: RREADY and BREADY backpressure; Signals shown: RVALID/RREADY/R payload, BVALID/BREADY/B payload; Figure: ; WaveJSON; Confirmed by user: 2026-10-25",
+     "page": 348,
+     "normative": false
+    },
+    {
+     "id": "10.3:s10",
+     "text": "Waveform ID: WF-009; Function / operation: OP-001 Read; Scenario (success / error / corner): Error: middle APB read beat returns PSLVERR; later beats continue; Signals shown: APB PSLVERR, RRESP, RLAST; Figure: ; WaveJSON; Confirmed by user: 2026-10-25",
+     "page": 349,
+     "normative": false
+    },
+    {
+     "id": "10.3:s11",
+     "text": "Waveform ID: WF-010; Function / operation: OP-002 Write; Scenario (success / error / corner): Error: middle APB write returns PSLVERR; final BRESP is SLVERR; Signals shown: APB PSLVERR, WLAST, BRESP/BVALID; Figure: ; WaveJSON; Confirmed by user: 2026-10-25",
+     "page": 350,
+     "normative": false
+    },
+    {
+     "id": "10.3:s12",
+     "text": "Waveform ID: WF-011; Function / operation: REQ-FUNC-003; Scenario (success / error / corner): Corner: simultaneous AR/AW round-robin grant; WVALID before AW acceptance; Signals shown: AR/AW VALID/READY, WVALID/WREADY; Figure: ; WaveJSON; Confirmed by user: 2026-10-25",
+     "page": 351,
+     "normative": false
+    },
+    {
+     "id": "10.3:s13",
+     "text": "Waveform ID: WF-012; Function / operation: OP-003 Unsupported read; OP-004 Unsupported write; Scenario (success / error / corner): Error: unsupported size/cache/burst; no APB, read beats or write drain; Signals shown: AXI address/data/response, APB PSEL; Figure: ; WaveJSON; Confirmed by user: 2026-10-25",
+     "page": 352,
+     "normative": false
+    },
+    {
+     "id": "10.3:s14",
+     "text": "Waveform ID: WF-013; Function / operation: OP-003 Unsupported read; OP-004 Unsupported write; Scenario (success / error / corner): Boundary: request crossing 4 KiB is rejected without APB; Signals shown: AXI address/length, APB PSEL, AXI responses; Figure: ; WaveJSON; Confirmed by user: 2026-10-25",
+     "page": 353,
+     "normative": false
+    },
+    {
+     "id": "10.3:s15",
+     "text": "Waveform ID: WF-014; Function / operation: REQ-ERR-004; Scenario (success / error / corner): Error: unmapped APB address uses default error Completer; Signals shown: APB PSEL/PREADY/PSLVERR, AXI RRESP/BRESP; Figure: ; WaveJSON; Confirmed by user: 2026-10-25",
+     "page": 354,
+     "normative": false
+    },
+    {
+     "id": "10.3:s16",
+     "text": "Not required (confirmed by user, 2026-10-25): APB timeout waveform; the bridge has no internal timeout.",
+     "page": 356,
+     "normative": true
+    },
+    {
+     "id": "10.3:s17",
+     "text": "Sample on rising CLK-AXI.",
+     "page": 358,
+     "normative": false
+    },
+    {
+     "id": "10.3:s18",
+     "text": "APB setup is PSEL=1/PENABLE=0; access is PSEL=1/PENABLE=1; completion requires PREADY=1. / Lấy mẫu tại cạnh lên CLK-AXI.",
+     "page": 358,
+     "normative": true
+    },
+    {
+     "id": "10.3:s19",
+     "text": "Setup APB là PSEL=1/PENABLE=0; access là PSEL=1/PENABLE=1; hoàn tất cần PREADY=1.",
+     "page": 358,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "10.4",
+   "title": "Arbitration, buffering, and throughput",
+   "level": 3,
+   "parent": "10",
+   "page_start": 360,
+   "page_end": 362,
+   "sentences": [
+    {
+     "id": "10.4:s1",
+     "text": "AR/AW arbitration is round-robin when both are pending.",
+     "page": 362,
+     "normative": false
+    },
+    {
+     "id": "10.4:s2",
+     "text": "The selected transaction owns the bridge through final R handshake or B handshake.",
+     "page": 362,
+     "normative": false
+    },
+    {
+     "id": "10.4:s3",
+     "text": "No one-beat-per-cycle throughput guarantee is made; APB waits and AXI backpressure determine completion. / AR/AW phân xử round-robin khi cùng chờ.",
+     "page": 362,
+     "normative": false
+    },
+    {
+     "id": "10.4:s4",
+     "text": "Giao dịch giữ bridge đến handshake R cuối hoặc B.",
+     "page": 362,
+     "normative": false
+    },
+    {
+     "id": "10.4:s5",
+     "text": "Không cam kết một beat mỗi chu kỳ; APB wait và AXI backpressure quyết định thời gian.",
+     "page": 362,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "10.5",
+   "title": "Memories and storage",
+   "level": 3,
+   "parent": "10",
+   "page_start": 364,
+   "page_end": 366,
+   "sentences": [
+    {
+     "id": "10.5:s1",
+     "text": "No SRAM, ROM or external FIFO is required.",
+     "page": 366,
+     "normative": true
+    },
+    {
+     "id": "10.5:s2",
+     "text": "State flops and one active W beat are expected; no macro is assumed. / Không cần SRAM, ROM hay FIFO ngoài.",
+     "page": 366,
+     "normative": false
+    },
+    {
+     "id": "10.5:s3",
+     "text": "Dự kiến state flop và một beat W hiện hành; không giả định macro.",
+     "page": 366,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "11",
+   "title": "Register and programming model",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 368,
+   "page_end": 370,
+   "sentences": [
+    {
+     "id": "11:s1",
+     "text": "Not required (confirmed by user, 2026-10-25): No software-visible CSR; configuration is static at elaboration. / Không cần (người dùng xác nhận 2026-10-25): Không có CSR phần mềm; cấu hình cố định khi elaboration.",
+     "page": 370,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "11.1",
+   "title": "CSR specification source",
+   "level": 3,
+   "parent": "11",
+   "page_start": 372,
+   "page_end": 374,
+   "sentences": [
+    {
+     "id": "11.1:s1",
+     "text": "No CSR workbook is required. / Không cần workbook CSR.",
+     "page": 374,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "11.2",
+   "title": "Software sequences",
+   "level": 3,
+   "parent": "11",
+   "page_start": 376,
+   "page_end": 378,
+   "sentences": [
+    {
+     "id": "11.2:s1",
+     "text": "No software sequence applies.",
+     "page": 378,
+     "normative": false
+    },
+    {
+     "id": "11.2:s2",
+     "text": "SoC integration configures the address map and default APB error Completer. / Không áp dụng chuỗi phần mềm.",
+     "page": 378,
+     "normative": false
+    },
+    {
+     "id": "11.2:s3",
+     "text": "SoC cấu hình address map và Completer lỗi mặc định.",
+     "page": 378,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "12",
+   "title": "Error handling and recovery",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 380,
+   "page_end": 391,
+   "sentences": [
+    {
+     "id": "12:s1",
+     "text": "Error ID: ERR-001; Detection condition: Unsupported read; Observable response/status: ARLEN+1 SLVERR beats, zero data, final RLAST; no APB; Interrupt: None; Clear/recovery: Drain R; Reset behavior: Reset cancels",
+     "page": 384,
+     "normative": false
+    },
+    {
+     "id": "12:s2",
+     "text": "Error ID: ERR-002; Detection condition: Unsupported write; Observable response/status: Drain W count; SLVERR B; no APB; Interrupt: None; Clear/recovery: Complete B; Reset behavior: Reset cancels",
+     "page": 385,
+     "normative": false
+    },
+    {
+     "id": "12:s3",
+     "text": "Error ID: ERR-003; Detection condition: APB read PSLVERR; Observable response/status: RRESP=SLVERR; RDATA=0; Interrupt: None; Clear/recovery: Continue remaining beats; Reset behavior: Reset cancels",
+     "page": 386,
+     "normative": false
+    },
+    {
+     "id": "12:s4",
+     "text": "Error ID: ERR-004; Detection condition: APB write PSLVERR; Observable response/status: Accumulate; continue; final BRESP=SLVERR; Interrupt: None; Clear/recovery: Complete B; Reset behavior: Reset cancels",
+     "page": 387,
+     "normative": false
+    },
+    {
+     "id": "12:s5",
+     "text": "Error ID: ERR-005; Detection condition: PREADY remains low; Observable response/status: Hold APB access indefinitely; no timeout; Interrupt: None; Clear/recovery: Completer responds or system reset; Reset behavior: Reset deselects",
+     "page": 388,
+     "normative": true
+    },
+    {
+     "id": "12:s6",
+     "text": "Error ID: ERR-006; Detection condition: Unmapped address; Observable response/status: Default Completer PREADY=1/PSLVERR=1; AXI SLVERR; Interrupt: None; Clear/recovery: Correct map or handle error; Reset behavior: Reset cancels",
+     "page": 389,
+     "normative": false
+    },
+    {
+     "id": "12:s7",
+     "text": "Other AXI violations are not guaranteed to complete.",
+     "page": 391,
+     "normative": false
+    },
+    {
+     "id": "12:s8",
+     "text": "An APB failure shall never be reported as AXI OKAY. / Vi phạm AXI khác không được đảm bảo hoàn tất.",
+     "page": 391,
+     "normative": true
+    },
+    {
+     "id": "12:s9",
+     "text": "Lỗi APB không được báo thành AXI OKAY.",
+     "page": 391,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "13",
+   "title": "Performance, power, and area",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 393,
+   "page_end": 402,
+   "sentences": [
+    {
+     "id": "13:s1",
+     "text": "Frequency, throughput, completion latency, area and power targets are unspecified.",
+     "page": 395,
+     "normative": false
+    },
+    {
+     "id": "13:s2",
+     "text": "APB waits and AXI backpressure affect completion.",
+     "page": 395,
+     "normative": false
+    },
+    {
+     "id": "13:s3",
+     "text": "See ASM-002/003 for impacts. / Chưa có mục tiêu tần số, throughput, latency, area, power.",
+     "page": 395,
+     "normative": false
+    },
+    {
+     "id": "13:s4",
+     "text": "APB wait và AXI backpressure ảnh hưởng hoàn tất.",
+     "page": 395,
+     "normative": false
+    },
+    {
+     "id": "13:s5",
+     "text": "Xem ASM-002/003.",
+     "page": 395,
+     "normative": false
+    },
+    {
+     "id": "13:s6",
+     "text": "Metric ID: PPA-001; Metric: Maximum frequency; Target / limit: TBD; Conditions: Corner/library/clock TBD; Measurement method: STA; Hard / goal: TBD",
+     "page": 399,
+     "normative": false
+    },
+    {
+     "id": "13:s7",
+     "text": "Metric ID: PPA-002; Metric: Area; Target / limit: TBD; Conditions: Library/config TBD; Measurement method: Synthesis cell area; Hard / goal: TBD",
+     "page": 400,
+     "normative": false
+    },
+    {
+     "id": "13:s8",
+     "text": "Metric ID: PPA-003; Metric: Power; Target / limit: TBD; Conditions: Activity/voltage/corner TBD; Measurement method: Power analysis; Hard / goal: TBD",
+     "page": 401,
+     "normative": false
+    },
+    {
+     "id": "13:s9",
+     "text": "Metric ID: PERF-001; Metric: Latency/throughput; Target / limit: TBD; Conditions: Waits/backpressure vary; Measurement method: Cycle simulation; Hard / goal: TBD",
+     "page": 402,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "14",
+   "title": "RTL implementation contract",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 404,
+   "page_end": 404,
+   "sentences": []
+  },
+  {
+   "id": "14.1",
+   "title": "Required coding baseline",
+   "level": 3,
+   "parent": "14",
+   "page_start": 406,
+   "page_end": 408,
+   "sentences": [
+    {
+     "id": "14.1:s1",
+     "text": "VLSIT RTL Design Rules v2 is mandatory.",
+     "page": 408,
+     "normative": true
+    },
+    {
+     "id": "14.1:s2",
+     "text": "Use one synthesizable module per .sv file with matching filename; structural top; ANSI ports with input wire, output logic and inout wire only for pad wrappers; rule-compliant names; unsigned four-state logic; explicit widths; always_comb/always_ff only; named connections; and logic-section comments.",
+     "page": 408,
+     "normative": false
+    },
+    {
+     "id": "14.1:s3",
+     "text": "Prohibit package, plain always, always_latch, two-state/signed types, define/undef, latches, multiple drivers and unsynthesizable test code. / Bắt buộc VLSIT RTL Design Rules v2.",
+     "page": 408,
+     "normative": true
+    },
+    {
+     "id": "14.1:s4",
+     "text": "Mỗi file .sv có một module trùng tên file; top cấu trúc; port ANSI dùng input wire, output logic và chỉ dùng inout wire cho wrapper pad; tên theo rule; logic 4-state unsigned; độ rộng tường minh; chỉ always_comb/always_ff; named connection và comment từng phần.",
+     "page": 408,
+     "normative": false
+    },
+    {
+     "id": "14.1:s5",
+     "text": "Cấm package, always thường, always_latch, kiểu 2-state/signed, define/undef, latch, nhiều driver và mã test không tổng hợp.",
+     "page": 408,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "14.2",
+   "title": "RTL hierarchy",
+   "level": 3,
+   "parent": "14",
+   "page_start": 410,
+   "page_end": 417,
+   "sentences": [
+    {
+     "id": "14.2:s1",
+     "text": "Module: m_axi2apb_bridge; Responsibility: Structural top and protocol boundary / Top cấu trúc, biên giao thức; Parent / instance: SoC integration; instance follows NAM-07; Clock/reset domains: CLK-AXI/RST-AXI; Interface: IF-001/002",
+     "page": 414,
+     "normative": false
+    },
+    {
+     "id": "14.2:s2",
+     "text": "Module: m_axi2apb_rd_seq; Responsibility: Validate and sequence AXI reads; issue one APB request per beat and return R responses / Kiểm tra, điều khiển AXI read; phát một yêu cầu APB mỗi beat và trả R; Parent / instance: m_axi2apb_bridge / u_axi2apb_rd_seq; Clock/reset domains: CLK-AXI/RST-AXI; Interface: AXI AR/R; rd_req / rd_rsp",
+     "page": 415,
+     "normative": false
+    },
+    {
+     "id": "14.2:s3",
+     "text": "Module: m_axi2apb_wr_seq; Responsibility: Sequence AW/W beats; issue APB writes and aggregate write errors / Điều khiển beat AW/W; phát APB write và tích lũy lỗi ghi; Parent / instance: m_axi2apb_bridge / u_axi2apb_wr_seq; Clock/reset domains: CLK-AXI/RST-AXI; Interface: AXI AW/W/B; wr_req / wr_rsp",
+     "page": 416,
+     "normative": false
+    },
+    {
+     "id": "14.2:s4",
+     "text": "Module: m_axi2apb_apb_ctrl; Responsibility: Round-robin AR/AW arbitration and ownership plus shared APB4 transfer control / Phân xử và quản lý quyền sở hữu AR/AW round-robin cùng điều khiển APB4 dùng chung; Parent / instance: m_axi2apb_bridge / u_axi2apb_apb_ctrl; Clock/reset domains: CLK-AXI/RST-AXI; Interface: AXI request valid; sequencer ready/done; grants; rd_req/rd_rsp; wr_req/wr_rsp; IF-002",
+     "page": 417,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "14.3",
+   "title": "Synthesis assumptions",
+   "level": 3,
+   "parent": "14",
+   "page_start": 419,
+   "page_end": 428,
+   "sentences": [
+    {
+     "id": "14.3:s1",
+     "text": "Item: Top / source file list; Value / source: m_axi2apb_bridge; one matching source file per module listed in 14.2",
+     "page": 423,
+     "normative": false
+    },
+    {
+     "id": "14.3:s2",
+     "text": "Item: Frontend version and options; Value / source: Tool-independent IEEE 1800-2017 synthesizable subset; apply VLSIT RTL Design Rules v2; select exact frontend/options during SoC integration",
+     "page": 424,
+     "normative": false
+    },
+    {
+     "id": "14.3:s3",
+     "text": "Item: Parameters/configuration; Value / source: CFG-BASE; PARA_AXI_ID_W=4",
+     "page": 425,
+     "normative": false
+    },
+    {
+     "id": "14.3:s4",
+     "text": "Item: Libraries/corners; Value / source: No target Liberty/DB/LEF is present under common_rtl; no shared RTL cell wrapper is needed for this single-clock bridge; select the physical library/corner in SoC PPA",
+     "page": 426,
+     "normative": false
+    },
+    {
+     "id": "14.3:s5",
+     "text": "Item: Memory flow; Value / source: No macro assumed",
+     "page": 427,
+     "normative": false
+    },
+    {
+     "id": "14.3:s6",
+     "text": "Item: Lint rule configuration; Value / source: VLSIT RTL Design Rules v2; run the VLSIT RTL checker and available Verilator/slang lint flow; no project-specific waivers",
+     "page": 428,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "15",
+   "title": "Verification specification",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 430,
+   "page_end": 430,
+   "sentences": []
+  },
+  {
+   "id": "15.1",
+   "title": "Scope and strategy",
+   "level": 3,
+   "parent": "15",
+   "page_start": 432,
+   "page_end": 434,
+   "sentences": [
+    {
+     "id": "15.1:s1",
+     "text": "Use this specification and REF-001/002 as golden behavior.",
+     "page": 434,
+     "normative": false
+    },
+    {
+     "id": "15.1:s2",
+     "text": "Build testbench/reference model independently of generated RTL; RTL must not define expected results.",
+     "page": 434,
+     "normative": true
+    },
+    {
+     "id": "15.1:s3",
+     "text": "Retain testbench sources and logs; document run commands in one Makefile. / Dùng đặc tả và REF-001/002 làm golden behavior.",
+     "page": 434,
+     "normative": false
+    },
+    {
+     "id": "15.1:s4",
+     "text": "Testbench/reference model độc lập với RTL; RTL không định nghĩa expected result.",
+     "page": 434,
+     "normative": false
+    },
+    {
+     "id": "15.1:s5",
+     "text": "Lưu testbench/log; mô tả lệnh chạy trong một Makefile.",
+     "page": 434,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "15.2",
+   "title": "Requirement-based test plan",
+   "level": 3,
+   "parent": "15",
+   "page_start": 436,
+   "page_end": 446,
+   "sentences": [
+    {
+     "id": "15.2:s1",
+     "text": "Test ID: TEST-001; Requirements: REQ-FUNC-001, REQ-IF-002/004/005; Scenario / stimulus: FIXED/INCR/WRAP, legal sizes; Expected result: Independent model matches addresses/data/responses; Test type: Directed/random; Configuration: CFG-BASE",
+     "page": 440,
+     "normative": true
+    },
+    {
+     "id": "15.2:s2",
+     "text": "Test ID: TEST-002; Requirements: REQ-FUNC-002/003; Scenario / stimulus: AR/AW contention; Expected result: Single owner; round-robin grants; Test type: Directed; Configuration: CFG-BASE",
+     "page": 441,
+     "normative": false
+    },
+    {
+     "id": "15.2:s3",
+     "text": "Test ID: TEST-003; Requirements: REQ-IF-009, REQ-ERR-005; Scenario / stimulus: APB wait; RREADY/BREADY stalls; Expected result: Stable payload through stalls; Test type: Assertions; Configuration: CFG-BASE",
+     "page": 442,
+     "normative": true
+    },
+    {
+     "id": "15.2:s4",
+     "text": "Test ID: TEST-004; Requirements: REQ-ERR-002/004/006; Scenario / stimulus: APB errors and unmapped address; Expected result: Correct SLVERR; Test type: Error injection; Configuration: CFG-BASE",
+     "page": 443,
+     "normative": false
+    },
+    {
+     "id": "15.2:s5",
+     "text": "Test ID: TEST-005; Requirements: REQ-IF-003/007, REQ-ERR-001/003; Scenario / stimulus: Invalid profile requests; Expected result: No APB; correct error completion; Test type: Negative directed; Configuration: CFG-BASE",
+     "page": 444,
+     "normative": false
+    },
+    {
+     "id": "15.2:s6",
+     "text": "Test ID: TEST-006; Requirements: REQ-RESET-001; Scenario / stimulus: Reset during idle/wait/response; Expected result: Valid low, APB deselected, state cleared; Test type: Reset test; Configuration: CFG-BASE",
+     "page": 445,
+     "normative": false
+    },
+    {
+     "id": "15.2:s7",
+     "text": "Test ID: TEST-007; Requirements: REQ-PARAM-001; Scenario / stimulus: ID widths 1, 4, 16; Expected result: Correct elaboration and ID echo; Test type: Parameter sweep; Configuration: CFG-BASE",
+     "page": 446,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "15.3",
+   "title": "Assertions and coverage",
+   "level": 3,
+   "parent": "15",
+   "page_start": 448,
+   "page_end": 457,
+   "sentences": [
+    {
+     "id": "15.3:s1",
+     "text": "Check AXI payload stability, APB setup/access sequencing and wait stability, exclusive ownership, beat counts, RLAST/WLAST, ID echo, no APB on rejected requests, and reset values.",
+     "page": 450,
+     "normative": false
+    },
+    {
+     "id": "15.3:s2",
+     "text": "Cover burst/length/size/lane, APB waits, response stalls and error locations. / Kiểm tra ổn định payload AXI, trình tự APB, wait, quyền sở hữu, số beat, RLAST/WLAST, ID, không APB khi bị từ chối, reset.",
+     "page": 450,
+     "normative": false
+    },
+    {
+     "id": "15.3:s3",
+     "text": "Cover burst/length/size/lane, wait, stall response, vị trí lỗi.",
+     "page": 450,
+     "normative": false
+    },
+    {
+     "id": "15.3:s4",
+     "text": "Property / coverage ID: SVA-001; Intent: AXI/APB handshake stability; Requirements: REQ-IF-001/009; Checker / source set: Independent protocol assertions; Acceptance criterion: No failures",
+     "page": 454,
+     "normative": false
+    },
+    {
+     "id": "15.3:s5",
+     "text": "Property / coverage ID: SVA-002; Intent: Single transaction ownership; Requirements: REQ-FUNC-002/003; Checker / source set: Protocol monitor; Acceptance criterion: No overlap",
+     "page": 455,
+     "normative": false
+    },
+    {
+     "id": "15.3:s6",
+     "text": "Property / coverage ID: COV-001; Intent: Burst, lane, wait and error combinations; Requirements: REQ-IF-002/004, REQ-ERR-002; Checker / source set: Coverage model; Acceptance criterion: Threshold TBD",
+     "page": 456,
+     "normative": false
+    },
+    {
+     "id": "15.3:s7",
+     "text": "Property / coverage ID: COV-002; Intent: Every rejected request class; Requirements: REQ-ERR-001/003; Checker / source set: Coverage model; Acceptance criterion: All classes hit",
+     "page": 457,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "15.4",
+   "title": "Formal, CDC, and RDC",
+   "level": 3,
+   "parent": "15",
+   "page_start": 459,
+   "page_end": 464,
+   "sentences": [
+    {
+     "id": "15.4:s1",
+     "text": "Analysis: Formal; Scope: Arbitration, beat counts, response stability, reject path; Assumptions / constraints: AXI assumptions; liveness assumes APB eventually ready; Evaluation method: Property proof",
+     "page": 463,
+     "normative": false
+    },
+    {
+     "id": "15.4:s2",
+     "text": "Analysis: CDC / RDC; Scope: Shared clock and reset release; Assumptions / constraints: No async data crossing; Evaluation method: CDC/RDC reports",
+     "page": 464,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "16",
+   "title": "DFT and testability",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 466,
+   "page_end": 479,
+   "sentences": [
+    {
+     "id": "16:s1",
+     "text": "Scan, ATPG, test clocks and test-mode controls are owned by SoC DFT; bridge-specific details are TBD.",
+     "page": 468,
+     "normative": false
+    },
+    {
+     "id": "16:s2",
+     "text": "No memory macro/MBIST port is in the baseline.",
+     "page": 468,
+     "normative": false
+    },
+    {
+     "id": "16:s3",
+     "text": "See ASM-008. / Scan, ATPG, clock test và test mode do SoC DFT quản lý; chi tiết riêng của bridge TBD.",
+     "page": 468,
+     "normative": false
+    },
+    {
+     "id": "16:s4",
+     "text": "Baseline không có macro/port MBIST.",
+     "page": 468,
+     "normative": false
+    },
+    {
+     "id": "16:s5",
+     "text": "Xem ASM-008.",
+     "page": 468,
+     "normative": false
+    },
+    {
+     "id": "16:s6",
+     "text": "Topic: Scan architecture and scan eligibility; Requirement / decision: TBD by SoC DFT",
+     "page": 472,
+     "normative": false
+    },
+    {
+     "id": "16:s7",
+     "text": "Topic: Scan/test clocks, controls, reset; Requirement / decision: TBD by SoC DFT",
+     "page": 473,
+     "normative": false
+    },
+    {
+     "id": "16:s8",
+     "text": "Topic: Test mode and safe state; Requirement / decision: TBD by SoC DFT",
+     "page": 474,
+     "normative": false
+    },
+    {
+     "id": "16:s9",
+     "text": "Topic: MBIST, repair, LBIST; Requirement / decision: No memory macro; LBIST TBD",
+     "page": 475,
+     "normative": false
+    },
+    {
+     "id": "16:s10",
+     "text": "Topic: Test access/wrappers/test points; Requirement / decision: TBD by SoC DFT",
+     "page": 476,
+     "normative": false
+    },
+    {
+     "id": "16:s11",
+     "text": "Topic: Clock-gating test enable; Requirement / decision: No internal gating",
+     "page": 477,
+     "normative": false
+    },
+    {
+     "id": "16:s12",
+     "text": "Topic: ATPG constraints/exclusions; Requirement / decision: TBD by SoC DFT",
+     "page": 478,
+     "normative": false
+    },
+    {
+     "id": "16:s13",
+     "text": "Topic: DFT insertion and artifacts; Requirement / decision: TBD by SoC DFT",
+     "page": 479,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "17",
+   "title": "Physical design and timing integration",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 481,
+   "page_end": 481,
+   "sentences": []
+  },
+  {
+   "id": "17.1",
+   "title": "Timing constraints and budgets",
+   "level": 3,
+   "parent": "17",
+   "page_start": 483,
+   "page_end": 485,
+   "sentences": [
+    {
+     "id": "17.1:s1",
+     "text": "The SoC integrator must provide clock period, uncertainty, transition, latency, interface delays, loads, PVT/RC corners and timing modes before closure.",
+     "page": 485,
+     "normative": true
+    },
+    {
+     "id": "17.1:s2",
+     "text": "No executable SDC is defined yet. / SoC integrator cung cấp chu kỳ, uncertainty, transition, latency, delay giao diện, tải, corner PVT/RC và mode trước khi đóng timing.",
+     "page": 485,
+     "normative": false
+    },
+    {
+     "id": "17.1:s3",
+     "text": "Chưa có SDC chạy được.",
+     "page": 485,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "17.1.1",
+   "title": "Clock and analysis scenarios",
+   "level": 4,
+   "parent": "17.1",
+   "page_start": 487,
+   "page_end": 491,
+   "sentences": [
+    {
+     "id": "17.1.1:s1",
+     "text": "Clock ID: CLK-AXI; Port / source object: i_clk_axi; Primary/generated and master: Primary from SoC; Period, waveform, phase / ratio: TBD; Latency / uncertainty / transition: TBD; Clock group / mode: Functional; Constraint source: SoC SDC",
+     "page": 491,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "17.1.2",
+   "title": "Interface timing budgets",
+   "level": 4,
+   "parent": "17.1",
+   "page_start": 493,
+   "page_end": 499,
+   "sentences": [
+    {
+     "id": "17.1.2:s1",
+     "text": "Interface / port group: AXI4/APB4; Direction: Input/output; Reference clock: CLK-AXI; External min / max delay: TBD; Input transition / output load: TBD; IP timing budget: TBD; Mode / condition: Functional; Constraint source: SoC SDC",
+     "page": 497,
+     "normative": false
+    },
+    {
+     "id": "17.1.2:s2",
+     "text": "Integrator also supplies max transition/capacitance/fanout and driving-cell assumptions. / Integrator cung cấp max transition/capacitance/fanout và driving cell.",
+     "page": 499,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "17.1.3",
+   "title": "Timing exception inventory",
+   "level": 4,
+   "parent": "17.1",
+   "page_start": 501,
+   "page_end": 507,
+   "sentences": [
+    {
+     "id": "17.1.3:s1",
+     "text": "No exceptions are approved.",
+     "page": 503,
+     "normative": false
+    },
+    {
+     "id": "17.1.3:s2",
+     "text": "A later exception requires exact endpoints, mode, rationale and CDC/RDC evidence; broad exceptions are not allowed. / Chưa duyệt exception.",
+     "page": 503,
+     "normative": true
+    },
+    {
+     "id": "17.1.3:s3",
+     "text": "Exception bổ sung cần endpoint, mode, lý do, bằng chứng CDC/RDC; không dùng exception rộng.",
+     "page": 503,
+     "normative": false
+    },
+    {
+     "id": "17.1.3:s4",
+     "text": "Exception ID: EXC-001; Type / SDC command: None approved; From: Not applicable (none approved); Through: Not applicable (none approved); To: Not applicable (none approved); Value and setup/hold/min/max meaning: Not applicable (none approved); Mode / condition: All; Technical rationale: No async data crossing",
+     "page": 507,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "17.2",
+   "title": "Physical assumptions",
+   "level": 3,
+   "parent": "17",
+   "page_start": 509,
+   "page_end": 520,
+   "sentences": [
+    {
+     "id": "17.2:s1",
+     "text": "Topic: Hard/memory macros; Requirement / assumption: None assumed",
+     "page": 513,
+     "normative": false
+    },
+    {
+     "id": "17.2:s2",
+     "text": "Topic: Floorplan/pin placement; Requirement / assumption: SoC owned",
+     "page": 514,
+     "normative": false
+    },
+    {
+     "id": "17.2:s3",
+     "text": "Topic: Utilization/congestion; Requirement / assumption: TBD",
+     "page": 515,
+     "normative": false
+    },
+    {
+     "id": "17.2:s4",
+     "text": "Topic: Power intent, clock/reset trees; Requirement / assumption: SoC owned",
+     "page": 516,
+     "normative": false
+    },
+    {
+     "id": "17.2:s5",
+     "text": "Topic: High-fanout/physical-only cells; Requirement / assumption: TBD",
+     "page": 517,
+     "normative": false
+    },
+    {
+     "id": "17.2:s6",
+     "text": "Topic: ECO/spare cells; Requirement / assumption: TBD",
+     "page": 518,
+     "normative": false
+    },
+    {
+     "id": "17.2:s7",
+     "text": "Topic: Extraction/timing corners; Requirement / assumption: TBD",
+     "page": 519,
+     "normative": false
+    },
+    {
+     "id": "17.2:s8",
+     "text": "Topic: Delivery; Requirement / assumption: Soft RTL",
+     "page": 520,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "18",
+   "title": "Security, safety, and reliability",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 522,
+   "page_end": 532,
+   "sentences": [
+    {
+     "id": "18:s1",
+     "text": "Topic: Security boundary/threat; Requirement / rationale: AxPROT maps to PPROT; system policy TBD. / AxPROT ánh xạ PPROT; policy TBD.; Verification method / expected behavior: Integration review",
+     "page": 526,
+     "normative": false
+    },
+    {
+     "id": "18:s2",
+     "text": "Topic: Access control/privilege; Requirement / rationale: No local check; APB Completers enforce PPROT. / Không kiểm tra cục bộ; Completer áp dụng PPROT.; Verification method / expected behavior: Mapping tests",
+     "page": 527,
+     "normative": false
+    },
+    {
+     "id": "18:s3",
+     "text": "Topic: Secure clearing; Requirement / rationale: No sensitive storage identified; policy TBD. / Chưa xác định dữ liệu nhạy cảm; policy TBD.; Verification method / expected behavior: Security review",
+     "page": 528,
+     "normative": false
+    },
+    {
+     "id": "18:s4",
+     "text": "Topic: Information leakage; Requirement / rationale: No mitigation specified; timing follows bus waits. / Chưa quy định giảm rò rỉ; timing theo wait.; Verification method / expected behavior: Threat review",
+     "page": 529,
+     "normative": false
+    },
+    {
+     "id": "18:s5",
+     "text": "Topic: ECC/parity; Requirement / rationale: No such pins in selected profile. / Profile không có pin này.; Verification method / expected behavior: Interface review",
+     "page": 530,
+     "normative": false
+    },
+    {
+     "id": "18:s6",
+     "text": "Topic: Safety goal; Requirement / rationale: Not assigned; TBD. / Chưa xác định; TBD.; Verification method / expected behavior: Safety review",
+     "page": 531,
+     "normative": false
+    },
+    {
+     "id": "18:s7",
+     "text": "Topic: Diagnostics/recovery; Requirement / rationale: Propagate errors; no interrupt/status. / Truyền lỗi; không interrupt/status.; Verification method / expected behavior: Error injection",
+     "page": 532,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "19",
+   "title": "Requirement-to-verification traceability",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 534,
+   "page_end": 561,
+   "sentences": [
+    {
+     "id": "19:s1",
+     "text": "Requirement ID: REQ-FUNC-001; RTL module/location: Transaction path; Test/property: TEST-001; Verification method / analysis: Independent model simulation; Configuration: CFG-BASE",
+     "page": 538,
+     "normative": false
+    },
+    {
+     "id": "19:s2",
+     "text": "Requirement ID: REQ-FUNC-002; RTL module/location: Transaction owner; Test/property: TEST-002/SVA-002; Verification method / analysis: Directed/assertion; Configuration: CFG-BASE",
+     "page": 539,
+     "normative": false
+    },
+    {
+     "id": "19:s3",
+     "text": "Requirement ID: REQ-FUNC-003; RTL module/location: Arbiter; Test/property: TEST-002; Verification method / analysis: Round-robin test; Configuration: CFG-BASE",
+     "page": 540,
+     "normative": false
+    },
+    {
+     "id": "19:s4",
+     "text": "Requirement ID: REQ-IF-001; RTL module/location: AXI boundary; Test/property: SVA-001; Verification method / analysis: AXI checker; Configuration: CFG-BASE",
+     "page": 541,
+     "normative": false
+    },
+    {
+     "id": "19:s5",
+     "text": "Requirement ID: REQ-IF-002; RTL module/location: Address generator; Test/property: TEST-001; Verification method / analysis: Burst scoreboard; Configuration: CFG-BASE",
+     "page": 542,
+     "normative": false
+    },
+    {
+     "id": "19:s6",
+     "text": "Requirement ID: REQ-IF-003; RTL module/location: Request validator; Test/property: TEST-005; Verification method / analysis: Negative test; Configuration: CFG-BASE",
+     "page": 543,
+     "normative": false
+    },
+    {
+     "id": "19:s7",
+     "text": "Requirement ID: REQ-IF-004; RTL module/location: APB sequencer; Test/property: TEST-001; Verification method / analysis: APB monitor; Configuration: CFG-BASE",
+     "page": 544,
+     "normative": false
+    },
+    {
+     "id": "19:s8",
+     "text": "Requirement ID: REQ-IF-005; RTL module/location: ID state; Test/property: TEST-007; Verification method / analysis: ID scoreboard; Configuration: CFG-BASE",
+     "page": 545,
+     "normative": false
+    },
+    {
+     "id": "19:s9",
+     "text": "Requirement ID: REQ-IF-006; RTL module/location: Interface mapping; Test/property: Port review; Verification method / analysis: Static review; Configuration: CFG-BASE",
+     "page": 546,
+     "normative": false
+    },
+    {
+     "id": "19:s10",
+     "text": "Requirement ID: REQ-IF-007; RTL module/location: Request validator; Test/property: TEST-005; Verification method / analysis: Attribute rejection; Configuration: CFG-BASE",
+     "page": 547,
+     "normative": false
+    },
+    {
+     "id": "19:s11",
+     "text": "Requirement ID: REQ-IF-008; RTL module/location: AXI profile; Test/property: Port review; Verification method / analysis: Interface review; Configuration: CFG-BASE",
+     "page": 548,
+     "normative": false
+    },
+    {
+     "id": "19:s12",
+     "text": "Requirement ID: REQ-IF-009; RTL module/location: Handshake logic; Test/property: TEST-003/SVA-001; Verification method / analysis: Protocol assertions; Configuration: CFG-BASE",
+     "page": 549,
+     "normative": false
+    },
+    {
+     "id": "19:s13",
+     "text": "Requirement ID: REQ-CLK-001; RTL module/location: Clock architecture; Test/property: CDC-001; Verification method / analysis: CDC report; Configuration: CFG-BASE",
+     "page": 550,
+     "normative": false
+    },
+    {
+     "id": "19:s14",
+     "text": "Requirement ID: REQ-RESET-001; RTL module/location: Reset logic; Test/property: TEST-006; Verification method / analysis: Reset simulation; Configuration: CFG-BASE",
+     "page": 551,
+     "normative": false
+    },
+    {
+     "id": "19:s15",
+     "text": "Requirement ID: REQ-PARAM-001; RTL module/location: Parameter declaration; Test/property: TEST-007; Verification method / analysis: Elaboration sweep; Configuration: CFG-BASE",
+     "page": 552,
+     "normative": false
+    },
+    {
+     "id": "19:s16",
+     "text": "Requirement ID: REQ-ERR-001; RTL module/location: Read reject path; Test/property: TEST-005; Verification method / analysis: Malformed read test; Configuration: CFG-BASE",
+     "page": 553,
+     "normative": false
+    },
+    {
+     "id": "19:s17",
+     "text": "Requirement ID: REQ-ERR-002; RTL module/location: Response path; Test/property: TEST-004; Verification method / analysis: Error injection; Configuration: CFG-BASE",
+     "page": 554,
+     "normative": false
+    },
+    {
+     "id": "19:s18",
+     "text": "Requirement ID: REQ-ERR-003; RTL module/location: Write reject path; Test/property: TEST-005; Verification method / analysis: Malformed write test; Configuration: CFG-BASE",
+     "page": 555,
+     "normative": false
+    },
+    {
+     "id": "19:s19",
+     "text": "Requirement ID: REQ-ERR-004; RTL module/location: External APB fabric; Test/property: TEST-004; Verification method / analysis: Integration test; Configuration: CFG-BASE",
+     "page": 556,
+     "normative": false
+    },
+    {
+     "id": "19:s20",
+     "text": "Requirement ID: REQ-ERR-005; RTL module/location: APB sequencer; Test/property: TEST-003; Verification method / analysis: Wait-state assertion; Configuration: CFG-BASE",
+     "page": 557,
+     "normative": false
+    },
+    {
+     "id": "19:s21",
+     "text": "Requirement ID: REQ-ERR-006; RTL module/location: APB sampler; Test/property: TEST-004; Verification method / analysis: Error injection; Configuration: CFG-BASE",
+     "page": 558,
+     "normative": false
+    },
+    {
+     "id": "19:s22",
+     "text": "Requirement ID: REQ-CSR-001; RTL module/location: Top-level ports; Test/property: Port review; Verification method / analysis: Interface inspection; Configuration: CFG-BASE",
+     "page": 559,
+     "normative": false
+    },
+    {
+     "id": "19:s23",
+     "text": "Requirement ID: REQ-VER-001; RTL module/location: Testbench/reference model; Test/property: Review; Verification method / analysis: Golden-source audit; Configuration: All",
+     "page": 560,
+     "normative": false
+    },
+    {
+     "id": "19:s24",
+     "text": "Requirement ID: REQ-VER-002; RTL module/location: Verification collateral; Test/property: Audit; Verification method / analysis: Source/log/Makefile review; Configuration: All",
+     "page": 561,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "20",
+   "title": "Assumptions, dependencies, and decisions",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 563,
+   "page_end": 594,
+   "sentences": [
+    {
+     "id": "20:s1",
+     "text": "ID: DEC-001; Type: Decision; Assumption / dependency / unresolved decision: VLSIT RTL Design Rules v2 default.; Technical impact / version / configuration: Naming and RTL baseline.; Resolution / status: User approved.",
+     "page": 567,
+     "normative": false
+    },
+    {
+     "id": "20:s2",
+     "text": "ID: DEC-002; Type: Decision; Assumption / dependency / unresolved decision: AXI4 H.c Subordinate to APB4 D Manager; one external APB port/decoder.; Technical impact / version / configuration: Interface profile.; Resolution / status: User approved.",
+     "page": 568,
+     "normative": false
+    },
+    {
+     "id": "20:s3",
+     "text": "ID: DEC-003; Type: Decision; Assumption / dependency / unresolved decision: Shared clock, 32-bit widths, single global transaction, round-robin, with no IP-specific frequency limit.; Technical impact / version / configuration: No CDC; SoC STA defines the operating target.; Resolution / status: User approved.",
+     "page": 569,
+     "normative": false
+    },
+    {
+     "id": "20:s4",
+     "text": "ID: DEC-004; Type: Decision; Assumption / dependency / unresolved decision: FIXED/INCR/WRAP; legal lengths; 1/2/4-byte; PSTRB/PPROT.; Technical impact / version / configuration: Conversion profile.; Resolution / status: User approved.",
+     "page": 570,
+     "normative": true
+    },
+    {
+     "id": "20:s5",
+     "text": "ID: DEC-005; Type: Decision; Assumption / dependency / unresolved decision: Omit AxLOCK/exclusive traffic and USER/QOS/REGION.; Technical impact / version / configuration: Integration excludes exclusive traffic.; Resolution / status: User approved after protocol correction.",
+     "page": 571,
+     "normative": false
+    },
+    {
+     "id": "20:s6",
+     "text": "ID: DEC-006; Type: Decision; Assumption / dependency / unresolved decision: AxCACHE 0000/0001 only.; Technical impact / version / configuration: Others SLVERR/no APB.; Resolution / status: User approved.",
+     "page": 572,
+     "normative": false
+    },
+    {
+     "id": "20:s7",
+     "text": "ID: DEC-007; Type: Decision; Assumption / dependency / unresolved decision: No timeout or CSR; require default APB error Completer.; Technical impact / version / configuration: APB can wait indefinitely.; Resolution / status: User approved.",
+     "page": 573,
+     "normative": true
+    },
+    {
+     "id": "20:s8",
+     "text": "ID: DEC-008; Type: Decision; Assumption / dependency / unresolved decision: Unsupported reads error for declared beats; writes drain declared W count.; Technical impact / version / configuration: Defensive completion.; Resolution / status: User approved.",
+     "page": 574,
+     "normative": false
+    },
+    {
+     "id": "20:s9",
+     "text": "ID: DEC-009; Type: Decision; Assumption / dependency / unresolved decision: Aggregate write errors and continue all beats.; Technical impact / version / configuration: No rollback of peripheral side effects.; Resolution / status: User approved.",
+     "page": 575,
+     "normative": false
+    },
+    {
+     "id": "20:s10",
+     "text": "ID: DEC-010; Type: Decision; Assumption / dependency / unresolved decision: ID width 1–16, default 4; echo IDs.; Technical impact / version / configuration: Parameterized ID ports.; Resolution / status: User approved.",
+     "page": 576,
+     "normative": false
+    },
+    {
+     "id": "20:s11",
+     "text": "ID: DEC-011; Type: Decision; Assumption / dependency / unresolved decision: Use a hand-laid SVG vector diagram with module boxes and port bundles.; Technical impact / version / configuration: Replaces the overlapping draw.io diagram; the SVG is the editable source.; Resolution / status: Updated per user request on 2026-10-25.",
+     "page": 577,
+     "normative": false
+    },
+    {
+     "id": "20:s12",
+     "text": "ID: DEC-012; Type: Decision; Assumption / dependency / unresolved decision: Fix the RTL hierarchy as one structural top plus read sequencer, write sequencer, and one controller module that combines AR/AW arbitration with APB control.; Technical impact / version / configuration: Each module has a matching source file and a named top-level instance.; Resolution / status: User directed merging m_axi2apb_arb into m_axi2apb_apb_ctrl on 2026-10-25.",
+     "page": 578,
+     "normative": false
+    },
+    {
+     "id": "20:s13",
+     "text": "ID: DEC-013; Type: Decision; Assumption / dependency / unresolved decision: No target physical library is present in common_rtl; keep bridge logic technology-independent and defer the Liberty/corner choice to SoC PPA. Do not instantiate shared wrappers or cell stand-ins because this bridge has no internal synchronizer or memory macro.; Technical impact / version / configuration: VLSIT_CELL_* files are RTL stand-in models, not a production standard-cell library.; Resolution / status: User directed no internal synchronizer; inventory found no .lib, .db, or .lef.",
+     "page": 579,
+     "normative": false
+    },
+    {
+     "id": "20:s14",
+     "text": "ID: DEC-014; Type: Decision; Assumption / dependency / unresolved decision: Generate only portable synthesizable IEEE 1800-2017 RTL under VLSIT RTL Design Rules v2; defer the exact frontend and options to SoC integration.; Technical impact / version / configuration: Avoids tool-specific RTL without a project frontend selection.; Resolution / status: User selected the portable baseline on 2026-10-25.",
+     "page": 580,
+     "normative": false
+    },
+    {
+     "id": "20:s15",
+     "text": "ID: DEC-015; Type: Decision; Assumption / dependency / unresolved decision: Use VLSIT v2 rule checks and the available Verilator/slang lint flow without project-specific waivers.; Technical impact / version / configuration: Any lint finding must be fixed or reported under the skill rules.; Resolution / status: User approved on 2026-10-25.",
+     "page": 581,
+     "normative": true
+    },
+    {
+     "id": "20:s16",
+     "text": "ID: DEC-016; Type: Decision; Assumption / dependency / unresolved decision: Use a single active-low reset synchronous to CLK-AXI; do not instantiate an internal clock/reset synchronizer.; Technical impact / version / configuration: The SoC supplies a reset already synchronous to CLK-AXI and coordinates reset with the AXI Manager/APB fabric.; Resolution / status: User directed one synchronous clock domain and no internal synchronizer on 2026-10-25.",
+     "page": 582,
+     "normative": false
+    },
+    {
+     "id": "20:s17",
+     "text": "ID: DEC-017; Type: Decision; Assumption / dependency / unresolved decision: Assume the AXI Manager follows AXI4 WLAST/AWLEN and WSTRB rules; do not define RTL recovery for malformed write traffic.; Technical impact / version / configuration: Malformed writes are outside the guaranteed profile; APB side effects and recovery are unspecified.; Resolution / status: User selected the legal-manager assumption on 2026-10-25.",
+     "page": 583,
+     "normative": true
+    },
+    {
+     "id": "20:s18",
+     "text": "ID: ASM-001; Type: Assumption; Assumption / dependency / unresolved decision: Reset cancels local state without replay/rollback.; Technical impact / version / configuration: Requires coordinated system reset.; Resolution / status: Integration confirmation needed.",
+     "page": 584,
+     "normative": true
+    },
+    {
+     "id": "20:s19",
+     "text": "ID: ASM-002; Type: TBD; Assumption / dependency / unresolved decision: Clock frequency, throughput, latency.; Technical impact / version / configuration: No measurable performance target or executable SDC.; Resolution / status: System owner input needed.",
+     "page": 585,
+     "normative": false
+    },
+    {
+     "id": "20:s20",
+     "text": "ID: ASM-003; Type: TBD; Assumption / dependency / unresolved decision: PPA corner/library, area and power goals.; Technical impact / version / configuration: No quantitative PPA signoff.; Resolution / status: Implementation targets needed.",
+     "page": 586,
+     "normative": false
+    },
+    {
+     "id": "20:s21",
+     "text": "ID: ASM-004; Type: Resolved; Assumption / dependency / unresolved decision: AXI protocol violations such as WLAST mismatch or illegal WSTRB lanes are outside the guaranteed profile; the Manager must comply with AXI4.; Technical impact / version / configuration: No RTL recovery is defined.; Resolution / status: User selected the legal-manager assumption on 2026-10-25.",
+     "page": 587,
+     "normative": true
+    },
+    {
+     "id": "20:s22",
+     "text": "ID: ASM-005; Type: TBD; Assumption / dependency / unresolved decision: APB address map/decoder.; Technical impact / version / configuration: Requires match or default PREADY=1/PSLVERR=1.; Resolution / status: SoC integration.",
+     "page": 588,
+     "normative": true
+    },
+    {
+     "id": "20:s23",
+     "text": "ID: ASM-006; Type: TBD; Assumption / dependency / unresolved decision: Diagnostics or interrupt need.; Technical impact / version / configuration: Current ports have no status/interrupt.; Resolution / status: Product owner.",
+     "page": 589,
+     "normative": false
+    },
+    {
+     "id": "20:s24",
+     "text": "ID: ASM-007; Type: TBD; Assumption / dependency / unresolved decision: Threat model, privilege, safety class.; Technical impact / version / configuration: Current IP forwards PPROT and bus errors only.; Resolution / status: System/security review.",
+     "page": 590,
+     "normative": false
+    },
+    {
+     "id": "20:s25",
+     "text": "ID: ASM-008; Type: TBD; Assumption / dependency / unresolved decision: Scan, ATPG, test-mode contract.; Technical impact / version / configuration: DFT signoff open.; Resolution / status: SoC DFT owner.",
+     "page": 591,
+     "normative": false
+    },
+    {
+     "id": "20:s26",
+     "text": "ID: ASM-009; Type: TBD; Assumption / dependency / unresolved decision: Tool versions/options for lint/synthesis/STA/CDC.; Technical impact / version / configuration: Reproducibility criteria open.; Resolution / status: Project flow owner.",
+     "page": 592,
+     "normative": false
+    },
+    {
+     "id": "20:s27",
+     "text": "ID: ASM-010; Type: Resolved; Assumption / dependency / unresolved decision: User approved all 14 planned waveforms on 2026-10-25; SVG and WaveJSON sources are present under figures/.; Technical impact / version / configuration: Waveform plan and sources are linked in Section 10.3.; Resolution / status: Complete.",
+     "page": 593,
+     "normative": false
+    },
+    {
+     "id": "20:s28",
+     "text": "ID: ASM-011; Type: Resolved; Assumption / dependency / unresolved decision: Drive RDATA as zero when RRESP=SLVERR.; Technical impact / version / configuration: Read data is invalid on error; this deterministic value does not change the error contract.; Resolution / status: User confirmed on 2026-10-25.",
+     "page": 594,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "21",
+   "title": "Glossary",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 596,
+   "page_end": 609,
+   "sentences": [
+    {
+     "id": "21:s1",
+     "text": "Term / acronym: AXI Manager; Definition: AXI requester that initiates transactions. / Bên phát giao dịch AXI.",
+     "page": 600,
+     "normative": false
+    },
+    {
+     "id": "21:s2",
+     "text": "Term / acronym: AXI Subordinate; Definition: AXI responder that accepts requests and returns responses. / Bên nhận request và trả response AXI.",
+     "page": 601,
+     "normative": false
+    },
+    {
+     "id": "21:s3",
+     "text": "Term / acronym: APB Manager; Definition: APB requester driving PADDR/PSEL/PENABLE. / Bên phát yêu cầu APB.",
+     "page": 602,
+     "normative": false
+    },
+    {
+     "id": "21:s4",
+     "text": "Term / acronym: APB Completer; Definition: Peripheral returning PREADY/PRDATA/PSLVERR. / Ngoại vi trả PREADY/PRDATA/PSLVERR.",
+     "page": 603,
+     "normative": false
+    },
+    {
+     "id": "21:s5",
+     "text": "Term / acronym: ACLK/PCLK; Definition: AXI/APB clocks tied to one input here. / Clock AXI/APB dùng chung một input.",
+     "page": 604,
+     "normative": false
+    },
+    {
+     "id": "21:s6",
+     "text": "Term / acronym: VALID/READY; Definition: Rising-edge handshake when both are high. / Handshake cạnh lên khi cả hai cao.",
+     "page": 605,
+     "normative": false
+    },
+    {
+     "id": "21:s7",
+     "text": "Term / acronym: PSTRB; Definition: APB4 write byte-lane strobe. / Strobe lane byte ghi APB4.",
+     "page": 606,
+     "normative": false
+    },
+    {
+     "id": "21:s8",
+     "text": "Term / acronym: PPROT; Definition: APB protection attributes. / Thuộc tính bảo vệ APB.",
+     "page": 607,
+     "normative": false
+    },
+    {
+     "id": "21:s9",
+     "text": "Term / acronym: SLVERR; Definition: AXI subordinate-side error response. / Response lỗi phía Subordinate AXI.",
+     "page": 608,
+     "normative": false
+    },
+    {
+     "id": "21:s10",
+     "text": "Term / acronym: CDC; Definition: Clock-domain crossing. / Chuyển miền clock.",
+     "page": 609,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "22",
+   "title": "References used to shape this template",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 611,
+   "page_end": 613,
+   "sentences": [
+    {
+     "id": "22:s1",
+     "text": "This specification follows the VLSIT ASIC IP Design Specification Template and microspec writing guide.",
+     "page": 613,
+     "normative": false
+    },
+    {
+     "id": "22:s2",
+     "text": "Protocol claims use REF-001/002.",
+     "page": 613,
+     "normative": false
+    },
+    {
+     "id": "22:s3",
+     "text": "Reference-IP assessment is in research/vlsit_reference_ip_log.md. / Đặc tả theo VLSIT template và hướng dẫn microspec.",
+     "page": 613,
+     "normative": false
+    },
+    {
+     "id": "22:s4",
+     "text": "Nội dung giao thức dựa REF-001/002. Đánh giá IP tham chiếu ở research log.",
+     "page": 613,
+     "normative": false
+    }
+   ]
+  }
+ ],
+ "tables": [
+  {
+   "section": "1.2",
+   "header": [
+    "Item",
+    "Specification"
+   ],
+   "rows": [
+    [
+     "Target SoC / product class",
+     "Memory-mapped peripheral subsystem; exact SoC TBD. / Hệ thống ngoại vi ánh xạ bộ nhớ; SoC cụ thể TBD."
+    ],
+    [
+     "Technology / library assumptions",
+     "common_rtl has shared RTL wrappers and stand-in cell models, but no target Liberty/DB/LEF; keep bridge logic technology-independent and select physical library/corner in SoC PPA. / common_rtl có wrapper RTL và mô hình cell stand-in, không có Liberty/DB/LEF đích; RTL bridge độc lập công nghệ, SoC chọn thư viện vật lý/corner khi làm PPA."
+    ],
+    [
+     "Operating modes and workload",
+     "Peripheral AXI4 accesses; workload TBD. / Truy cập ngoại vi AXI4; workload TBD."
+    ],
+    [
+     "Security / privilege context",
+     "AxPROT passes to PPROT; system policy TBD. / AxPROT truyền sang PPROT; policy hệ thống TBD."
+    ],
+    [
+     "External dependencies",
+     "AXI Manager, APB decoder, default error Completer, APB Completers, shared clock/reset controller. / AXI Manager, decoder APB, Completer lỗi mặc định, APB Completers, bộ điều khiển clock/reset chung."
+    ]
+   ],
+   "line": 55,
+   "units": [
+    "1.2:s1",
+    "1.2:s2",
+    "1.2:s3",
+    "1.2:s4",
+    "1.2:s5"
+   ]
+  },
+  {
+   "section": "1.3",
+   "header": [
+    "Feature ID",
+    "Feature",
+    "Required / optional",
+    "Configuration condition",
+    "Requirements"
+   ],
+   "rows": [
+    [
+     "FEAT-001",
+     "AXI4-to-APB4 conversion / Chuyển AXI4 sang APB4",
+     "Required",
+     "CFG-BASE",
+     "REQ-FUNC-001"
+    ],
+    [
+     "FEAT-002",
+     "FIXED/INCR/WRAP bursts / Burst FIXED/INCR/WRAP",
+     "Required",
+     "CFG-BASE",
+     "REQ-IF-002"
+    ],
+    [
+     "FEAT-003",
+     "32-bit data and byte strobes / Dữ liệu 32 bit, strobe byte",
+     "Required",
+     "CFG-BASE",
+     "REQ-IF-004"
+    ],
+    [
+     "FEAT-004",
+     "AXI ID echo / Phản hồi AXI ID",
+     "Required",
+     "CFG-BASE",
+     "REQ-IF-005"
+    ],
+    [
+     "FEAT-005",
+     "Protection/error mapping / Ánh xạ bảo vệ/lỗi",
+     "Required",
+     "CFG-BASE",
+     "REQ-ERR-002"
+    ]
+   ],
+   "line": 65,
+   "units": [
+    "1.3:s1",
+    "1.3:s2",
+    "1.3:s3",
+    "1.3:s4",
+    "1.3:s5"
+   ]
+  },
+  {
+   "section": "2.1",
+   "header": [
+    "Ref ID",
+    "Document and revision",
+    "Applicable clauses",
+    "Authority / notes"
+   ],
+   "rows": [
+    [
+     "REF-001",
+     "Arm AMBA AXI and ACE Protocol Specification, IHI 0022H.c",
+     "A3.1–A3.4, A4.3–A4.7, A5.1–A5.2, A6, A7.2.3",
+     "AXI4 authority; licensed source retained outside this folder."
+    ],
+    [
+     "REF-002",
+     "Arm AMBA APB Protocol Specification, IHI 0024 Issue D",
+     "APB4 profile; §§2.1, 3.1–3.5",
+     "APB authority; APB5-only signals excluded."
+    ],
+    [
+     "REF-003",
+     "VLSIT RTL Design Rules v2, ../../spec_template/VLSIT_RTL_Design_Rule.md",
+     "All applicable rules",
+     "Mandatory RTL baseline."
+    ],
+    [
+     "REF-004",
+     "IEEE 1800-2017 SystemVerilog",
+     "Synthesizable subset",
+     "Subject to REF-003 and frontend support."
+    ],
+    [
+     "REF-005",
+     "Approved product decisions recorded in this document and vlsit_qa_log.md",
+     "Section 20",
+     "Product behavior."
+    ]
+   ],
+   "line": 77,
+   "units": [
+    "2.1:s1",
+    "2.1:s2",
+    "2.1:s3",
+    "2.1:s4",
+    "2.1:s5"
+   ]
+  },
+  {
+   "section": "2.3",
+   "header": [
+    "Standard",
+    "Revision / profile",
+    "Role implemented",
+    "Options",
+    "Deviations"
+   ],
+   "rows": [
+    [
+     "AMBA AXI",
+     "IHI 0022 Issue H.c, AXI4",
+     "Subordinate",
+     "32-bit address/data; configurable ID width; no AxLOCK, USER, QOS, REGION",
+     "Unsupported AxCACHE returns SLVERR."
+    ],
+    [
+     "AMBA APB",
+     "IHI 0024 Issue D, APB4 profile",
+     "Manager / Requester",
+     "32-bit address/data, PSTRB and PPROT",
+     "External decoder; no APB5 sidebands."
+    ]
+   ],
+   "line": 95,
+   "units": [
+    "2.3:s1",
+    "2.3:s2"
+   ]
+  },
+  {
+   "section": "3",
+   "header": [
+    "ID",
+    "Requirement using shall/should/may",
+    "Source",
+    "Applies to",
+    "Verification method"
+   ],
+   "rows": [
+    [
+     "REQ-FUNC-001",
+     "The bridge shall convert each accepted AXI transaction into ordered APB transfers and return its AXI completion. / Chuyển giao dịch AXI thành APB tuần tự và trả completion.",
+     "REF-001/002",
+     "CFG-BASE",
+     "Independent model simulation"
+    ],
+    [
+     "REQ-FUNC-002",
+     "The bridge shall keep at most one global read or write transaction active. / Mỗi lúc chỉ một giao dịch đọc hoặc ghi hoạt động.",
+     "Decision",
+     "CFG-BASE",
+     "Assertions"
+    ],
+    [
+     "REQ-FUNC-003",
+     "When AR and AW are both pending, the bridge shall grant by round-robin, choose AR for the first tie after reset, and flip the next tie preference after each completed transaction. / Khi AR và AW cùng chờ, bridge phân xử round-robin, ưu tiên AR ở lần hòa đầu tiên sau reset và đổi ưu tiên sau mỗi giao dịch hoàn tất.",
+     "Decision; WF-011",
+     "CFG-BASE",
+     "Directed arbitration test"
+    ],
+    [
+     "REQ-IF-001",
+     "The bridge shall accept an AXI transfer only when VALID and READY are high at rising ACLK. / Chỉ nhận AXI khi VALID và READY cao tại cạnh lên ACLK.",
+     "REF-001 A3.1–A3.2",
+     "CFG-BASE",
+     "AXI checker"
+    ],
+    [
+     "REQ-IF-002",
+     "The bridge shall support FIXED (1–16 beats), INCR (1–256 beats), and WRAP (2/4/8/16 beats). / Hỗ trợ FIXED (1–16 beat), INCR (1–256 beat) và WRAP (2/4/8/16 beat).",
+     "REF-001 A3.4",
+     "CFG-BASE",
+     "Burst scoreboard"
+    ],
+    [
+     "REQ-IF-003",
+     "The bridge shall support AxSIZE 0/1/2 (1/2/4 bytes); reject unsupported size/burst and 4-KiB crossing without APB. / Hỗ trợ AxSIZE 0/1/2; từ chối size/burst không hỗ trợ và vượt 4 KiB, không truy cập APB.",
+     "REF-001 A3.4; decision",
+     "CFG-BASE",
+     "Negative tests"
+    ],
+    [
+     "REQ-IF-004",
+     "The bridge shall align APB PADDR down to four-byte word; copy WSTRB to PSTRB and drive PSTRB=0 on reads. / Căn PADDR xuống word 4 byte; chép WSTRB sang PSTRB, PSTRB=0 khi đọc.",
+     "REF-002 §§2.1, 3.2",
+     "CFG-BASE",
+     "APB monitor"
+    ],
+    [
+     "REQ-IF-005",
+     "The bridge shall echo ARID on every R beat and AWID on the corresponding B response. / Phản hồi ARID trên mọi beat R và AWID trên B tương ứng.",
+     "REF-001 A5.1–A5.2",
+     "CFG-BASE",
+     "ID scoreboard"
+    ],
+    [
+     "REQ-IF-006",
+     "The bridge shall copy AxPROT to PPROT; omit AxLOCK, USER, QOS and REGION ports. / Chép AxPROT sang PPROT; bỏ các port AxLOCK, USER, QOS, REGION.",
+     "REF-001 A4.7; REF-002 §3.5; decision",
+     "CFG-BASE",
+     "Interface inspection"
+    ],
+    [
+     "REQ-IF-007",
+     "The bridge shall accept only AxCACHE 0000/0001; otherwise return SLVERR without PSEL. / Chỉ nhận AxCACHE 0000/0001; trường hợp khác trả SLVERR, không bật PSEL.",
+     "REF-001 A4.3–A4.4; decision",
+     "CFG-BASE",
+     "Attribute test"
+    ],
+    [
+     "REQ-IF-008",
+     "The bridge shall do not implement exclusive access; integration shall not send exclusive traffic. / Không triển khai exclusive; hệ thống không gửi exclusive traffic.",
+     "REF-001 A7.2.3; decision",
+     "CFG-BASE",
+     "Interface review"
+    ],
+    [
+     "REQ-IF-009",
+     "The bridge shall hold AXI VALID/payload through handshake and APB control/payload stable while PREADY=0. / Giữ ổn định VALID/payload AXI đến handshake và APB khi PREADY=0.",
+     "REF-001 A3.2; REF-002 §3.1",
+     "CFG-BASE",
+     "Protocol assertions"
+    ],
+    [
+     "REQ-CLK-001",
+     "The bridge shall use one shared ACLK/PCLK domain; contain no asynchronous clock crossing. / Dùng chung ACLK/PCLK; không có CDC bất đồng bộ.",
+     "Decision",
+     "CFG-BASE",
+     "CDC analysis"
+    ],
+    [
+     "REQ-RESET-001",
+     "The bridge shall use one active-low reset synchronous to ACLK; the SoC shall supply the reset synchronized to ACLK, and AXI VALID outputs shall be low while reset is sampled active. / Bridge dùng một reset active-low đồng bộ với ACLK; SoC phải cấp reset đã đồng bộ với ACLK và AXI VALID phải thấp khi reset được lấy mẫu ở mức active.",
+     "REF-001 A3.1; decision",
+     "CFG-BASE",
+     "Reset test"
+    ],
+    [
+     "REQ-PARAM-001",
+     "PARA_AXI_ID_W shall range from 1 to 16, default 4, and set both read/write ID widths. / PARA_AXI_ID_W từ 1 đến 16, mặc định 4, đặt độ rộng ID đọc/ghi.",
+     "Decision",
+     "CFG-BASE",
+     "Elaboration sweep"
+    ],
+    [
+     "REQ-ERR-001",
+     "The bridge shall unsupported reads return ARLEN+1 SLVERR beats, RLAST only on final beat, no APB. / Read không hỗ trợ trả ARLEN+1 beat SLVERR, RLAST ở beat cuối, không APB.",
+     "Decision",
+     "CFG-BASE",
+     "Negative read test"
+    ],
+    [
+     "REQ-ERR-002",
+     "The bridge shall map read PSLVERR to that R beat SLVERR; accumulate write errors into final BRESP after all declared W beats. / Lỗi read trả SLVERR ở beat đó; lỗi write tích lũy vào BRESP cuối sau đủ beat W.",
+     "REF-001 A3.4.5; REF-002 §3.4; decision",
+     "CFG-BASE",
+     "Error injection"
+    ],
+    [
+     "REQ-ERR-003",
+     "The bridge shall unsupported writes drain AWLEN+1 W beats without APB, then return one SLVERR B. / Write không hỗ trợ nhận đủ AWLEN+1 beat W, không APB, rồi trả B SLVERR.",
+     "Decision",
+     "CFG-BASE",
+     "Negative write test"
+    ],
+    [
+     "REQ-ERR-004",
+     "The bridge shall external APB fabric provides default unmapped Completer with PREADY=1 and PSLVERR=1. / Fabric APB cung cấp Completer mặc định cho địa chỉ unmapped, PREADY=1, PSLVERR=1.",
+     "Decision",
+     "Integration",
+     "Integration test"
+    ],
+    [
+     "REQ-ERR-005",
+     "The bridge shall have no APB timeout; hold access while PREADY=0 and wait indefinitely if it never rises. / Không timeout APB; giữ access khi PREADY=0, chờ vô hạn nếu không lên.",
+     "Decision",
+     "CFG-BASE",
+     "Wait-state assertion"
+    ],
+    [
+     "REQ-ERR-006",
+     "The bridge shall completed APB transfer with PSLVERR=1 causes associated AXI response SLVERR. / APB hoàn tất với PSLVERR=1 làm AXI response báo SLVERR.",
+     "REF-002 §3.4",
+     "CFG-BASE",
+     "Error injection"
+    ],
+    [
+     "REQ-CSR-001",
+     "The bridge shall contain no software-visible CSR interface. / Không có CSR phần mềm.",
+     "Decision",
+     "CFG-BASE",
+     "Port inspection"
+    ],
+    [
+     "REQ-VER-001",
+     "Verification shall derive expected verification results from this specification and cited standards, never generated RTL. / Expected result lấy từ đặc tả và chuẩn, không từ RTL được sinh.",
+     "Verification policy",
+     "All",
+     "Reference-model review"
+    ],
+    [
+     "REQ-VER-002",
+     "Verification deliverables shall retain generated testbench sources/commands and use one Makefile as the documented command entry point. / Lưu testbench/lệnh chạy; dùng một Makefile làm điểm vào được mô tả.",
+     "Verification policy",
+     "All",
+     "Artifact audit"
+    ]
+   ],
+   "line": 104,
+   "units": [
+    "3:s4",
+    "3:s5",
+    "3:s6",
+    "3:s7",
+    "3:s8",
+    "3:s9",
+    "3:s10",
+    "3:s11",
+    "3:s12",
+    "3:s13",
+    "3:s14",
+    "3:s15",
+    "3:s16",
+    "3:s17",
+    "3:s18",
+    "3:s19",
+    "3:s20",
+    "3:s21",
+    "3:s22",
+    "3:s23",
+    "3:s24",
+    "3:s25",
+    "3:s26",
+    "3:s27"
+   ]
+  },
+  {
+   "section": "4",
+   "header": [
+    "Configuration ID",
+    "Enabled features",
+    "Disabled features",
+    "Interfaces / widths",
+    "Intended use",
+    "Verification target"
+   ],
+   "rows": [
+    [
+     "CFG-BASE",
+     "Full AXI4 Subordinate, APB4 Manager, legal FIXED/INCR/WRAP, ID echo",
+     "CDC, timeout, CSR, exclusive, USER/QOS/REGION",
+     "AXI 32/32; APB 32/32; ID default 4; shared clock",
+     "Peripheral transactions",
+     "Protocol/function/error/boundary/backpressure"
+    ]
+   ],
+   "line": 133,
+   "units": [
+    "4:s1"
+   ]
+  },
+  {
+   "section": "5.1",
+   "header": [
+    "RTL module",
+    "Responsibility",
+    "Internal interface",
+    "Clock/reset domain",
+    "State or storage"
+   ],
+   "rows": [
+    [
+     "m_axi2apb_rd_seq",
+     "Validate AR, generate burst addresses, request APB reads, and return R beats / Kiểm tra AR, sinh địa chỉ burst, yêu cầu APB read và trả beat R",
+     "AXI AR/R; rd_req / rd_rsp",
+     "CLK-AXI / RST-AXI",
+     "Address, beat count, ID"
+    ],
+    [
+     "m_axi2apb_wr_seq",
+     "Accept AW/W, request APB writes, aggregate errors, and return B / Nhận AW/W, yêu cầu APB write, tích lũy lỗi và trả B",
+     "AXI AW/W/B; wr_req / wr_rsp",
+     "CLK-AXI / RST-AXI",
+     "Address, beat count, ID, error status"
+    ],
+    [
+     "m_axi2apb_apb_ctrl",
+     "Arbitrate AR/AW round-robin, retain the transaction owner through final R/B, select read/write requests, and drive APB setup/access / Phân xử AR/AW round-robin, giữ quyền sở hữu đến R/B cuối, chọn yêu cầu đọc/ghi và điều khiển APB setup/access",
+     "AXI ARVALID/AWVALID; sequencer ready/done; gnt_rd/gnt_wr; rd_req/rd_rsp; wr_req/wr_rsp; APB4",
+     "CLK-AXI / RST-AXI",
+     "Arbitration turn, active owner, APB phase and payload"
+    ]
+   ],
+   "line": 145,
+   "units": [
+    "5.1:s8",
+    "5.1:s9",
+    "5.1:s10"
+   ]
+  },
+  {
+   "section": "6.1",
+   "header": [
+    "Interface ID",
+    "Type and revision",
+    "Role",
+    "Direction at IP boundary",
+    "Clock domain",
+    "Required / optional",
+    "Configurations"
+   ],
+   "rows": [
+    [
+     "IF-001",
+     "AXI4, IHI 0022 H.c",
+     "Subordinate",
+     "AXI Manager ↔ bridge",
+     "CLK-AXI",
+     "Required",
+     "CFG-BASE"
+    ],
+    [
+     "IF-002",
+     "APB4, IHI 0024 D",
+     "Manager/Requester",
+     "Bridge ↔ APB fabric",
+     "CLK-AXI; PCLK=ACLK",
+     "Required",
+     "CFG-BASE"
+    ]
+   ],
+   "line": 177,
+   "units": [
+    "6.1:s1",
+    "6.1:s2"
+   ]
+  },
+  {
+   "section": "6.2",
+   "header": [
+    "Port",
+    "Direction",
+    "Width",
+    "Meaning (function)",
+    "Clock domain",
+    "Signal type",
+    "Reset / idle value",
+    "Timing / sampling",
+    "Configurations"
+   ],
+   "rows": [
+    [
+     "i_clk_axi",
+     "Input",
+     "1",
+     "Shared ACLK/PCLK / Clock AXI/APB chung",
+     "CLK-AXI",
+     "clock",
+     "Not applicable (clock is not resettable)",
+     "Rising edge",
+     "CFG-BASE"
+    ],
+    [
+     "i_rst_n_axi",
+     "Input",
+     "1",
+     "Shared active-low synchronous reset / Reset active-low đồng bộ dùng chung",
+     "Synchronous to CLK-AXI",
+     "reset",
+     "0 asserts",
+     "Sampled on rising CLK-AXI edge; SoC supplies a clock-synchronous reset",
+     "CFG-BASE"
+    ],
+    [
+     "i_axi_awid",
+     "Input",
+     "PARA_AXI_ID_W",
+     "Write ID / ID ghi",
+     "CLK-AXI",
+     "data (AWVALID)",
+     "Ignored if AWVALID=0",
+     "AW handshake",
+     "CFG-BASE"
+    ],
+    [
+     "i_axi_awaddr",
+     "Input",
+     "32",
+     "Write byte address / Địa chỉ byte ghi",
+     "CLK-AXI",
+     "data (AWVALID)",
+     "Ignored if AWVALID=0",
+     "AW handshake",
+     "CFG-BASE"
+    ],
+    [
+     "i_axi_awlen",
+     "Input",
+     "8",
+     "Write beats minus one / Số beat ghi trừ một",
+     "CLK-AXI",
+     "data (AWVALID)",
+     "Ignored if AWVALID=0",
+     "AW handshake",
+     "CFG-BASE"
+    ],
+    [
+     "i_axi_awsize",
+     "Input",
+     "3",
+     "Write byte-size encoding / Mã kích thước ghi",
+     "CLK-AXI",
+     "data (AWVALID)",
+     "Ignored if AWVALID=0",
+     "AW handshake",
+     "CFG-BASE"
+    ],
+    [
+     "i_axi_awburst",
+     "Input",
+     "2",
+     "Write burst type / Loại burst ghi",
+     "CLK-AXI",
+     "data (AWVALID)",
+     "Ignored if AWVALID=0",
+     "AW handshake",
+     "CFG-BASE"
+    ],
+    [
+     "i_axi_awcache",
+     "Input",
+     "4",
+     "Write memory attribute / Thuộc tính ghi",
+     "CLK-AXI",
+     "data (AWVALID)",
+     "Ignored if AWVALID=0",
+     "AW handshake",
+     "CFG-BASE"
+    ],
+    [
+     "i_axi_awprot",
+     "Input",
+     "3",
+     "Write protection / Bảo vệ ghi",
+     "CLK-AXI",
+     "data (AWVALID)",
+     "Ignored if AWVALID=0",
+     "AW handshake",
+     "CFG-BASE"
+    ],
+    [
+     "i_axi_awvalid",
+     "Input",
+     "1",
+     "Write address valid / Địa chỉ ghi hợp lệ",
+     "CLK-AXI",
+     "level",
+     "0 in reset",
+     "Hold payload to AWREADY",
+     "CFG-BASE"
+    ],
+    [
+     "o_axi_awready",
+     "Output",
+     "1",
+     "Accept write address / Nhận địa chỉ ghi",
+     "CLK-AXI",
+     "level",
+     "0 in reset",
+     "AW handshake",
+     "CFG-BASE"
+    ],
+    [
+     "i_axi_wdata",
+     "Input",
+     "32",
+     "Write beat data / Dữ liệu beat ghi",
+     "CLK-AXI",
+     "data (WVALID)",
+     "Ignored if WVALID=0",
+     "W handshake",
+     "CFG-BASE"
+    ],
+    [
+     "i_axi_wstrb",
+     "Input",
+     "4",
+     "Write byte lanes / Lane byte ghi",
+     "CLK-AXI",
+     "data (WVALID)",
+     "Ignored if WVALID=0",
+     "W handshake; copied to PSTRB",
+     "CFG-BASE"
+    ],
+    [
+     "i_axi_wlast",
+     "Input",
+     "1",
+     "Final W beat marker / Đánh dấu W cuối",
+     "CLK-AXI",
+     "data (WVALID)",
+     "Ignored if WVALID=0",
+     "AXI-compliant Manager asserts on beat AWLEN+1; malformed WLAST is outside the guaranteed profile",
+     "CFG-BASE"
+    ],
+    [
+     "i_axi_wvalid",
+     "Input",
+     "1",
+     "Write data valid / Dữ liệu ghi hợp lệ",
+     "CLK-AXI",
+     "level",
+     "0 in reset",
+     "Hold payload to WREADY",
+     "CFG-BASE"
+    ],
+    [
+     "o_axi_wready",
+     "Output",
+     "1",
+     "Accept write data / Nhận dữ liệu ghi",
+     "CLK-AXI",
+     "level",
+     "0 in reset",
+     "W handshake",
+     "CFG-BASE"
+    ],
+    [
+     "o_axi_bid",
+     "Output",
+     "PARA_AXI_ID_W",
+     "Write response ID / ID response ghi",
+     "CLK-AXI",
+     "data (BVALID)",
+     "0 in reset",
+     "Stable to B handshake",
+     "CFG-BASE"
+    ],
+    [
+     "o_axi_bresp",
+     "Output",
+     "2",
+     "Write response status / Trạng thái B",
+     "CLK-AXI",
+     "data (BVALID)",
+     "0 in reset",
+     "Stable to B handshake",
+     "CFG-BASE"
+    ],
+    [
+     "o_axi_bvalid",
+     "Output",
+     "1",
+     "Write response valid / B hợp lệ",
+     "CLK-AXI",
+     "level",
+     "0 in reset",
+     "Hold to BREADY",
+     "CFG-BASE"
+    ],
+    [
+     "i_axi_bready",
+     "Input",
+     "1",
+     "Accept B response / Nhận B",
+     "CLK-AXI",
+     "level",
+     "Ignored in reset",
+     "B handshake",
+     "CFG-BASE"
+    ],
+    [
+     "i_axi_arid",
+     "Input",
+     "PARA_AXI_ID_W",
+     "Read ID / ID đọc",
+     "CLK-AXI",
+     "data (ARVALID)",
+     "Ignored if ARVALID=0",
+     "AR handshake",
+     "CFG-BASE"
+    ],
+    [
+     "i_axi_araddr",
+     "Input",
+     "32",
+     "Read byte address / Địa chỉ byte đọc",
+     "CLK-AXI",
+     "data (ARVALID)",
+     "Ignored if ARVALID=0",
+     "AR handshake",
+     "CFG-BASE"
+    ],
+    [
+     "i_axi_arlen",
+     "Input",
+     "8",
+     "Read beats minus one / Số beat đọc trừ một",
+     "CLK-AXI",
+     "data (ARVALID)",
+     "Ignored if ARVALID=0",
+     "AR handshake",
+     "CFG-BASE"
+    ],
+    [
+     "i_axi_arsize",
+     "Input",
+     "3",
+     "Read byte-size encoding / Mã kích thước đọc",
+     "CLK-AXI",
+     "data (ARVALID)",
+     "Ignored if ARVALID=0",
+     "AR handshake",
+     "CFG-BASE"
+    ],
+    [
+     "i_axi_arburst",
+     "Input",
+     "2",
+     "Read burst type / Loại burst đọc",
+     "CLK-AXI",
+     "data (ARVALID)",
+     "Ignored if ARVALID=0",
+     "AR handshake",
+     "CFG-BASE"
+    ],
+    [
+     "i_axi_arcache",
+     "Input",
+     "4",
+     "Read memory attribute / Thuộc tính đọc",
+     "CLK-AXI",
+     "data (ARVALID)",
+     "Ignored if ARVALID=0",
+     "AR handshake",
+     "CFG-BASE"
+    ],
+    [
+     "i_axi_arprot",
+     "Input",
+     "3",
+     "Read protection / Bảo vệ đọc",
+     "CLK-AXI",
+     "data (ARVALID)",
+     "Ignored if ARVALID=0",
+     "AR handshake",
+     "CFG-BASE"
+    ],
+    [
+     "i_axi_arvalid",
+     "Input",
+     "1",
+     "Read address valid / Địa chỉ đọc hợp lệ",
+     "CLK-AXI",
+     "level",
+     "0 in reset",
+     "Hold payload to ARREADY",
+     "CFG-BASE"
+    ],
+    [
+     "o_axi_arready",
+     "Output",
+     "1",
+     "Accept read address / Nhận địa chỉ đọc",
+     "CLK-AXI",
+     "level",
+     "0 in reset",
+     "AR handshake",
+     "CFG-BASE"
+    ],
+    [
+     "o_axi_rid",
+     "Output",
+     "PARA_AXI_ID_W",
+     "Read response ID / ID response đọc",
+     "CLK-AXI",
+     "data (RVALID)",
+     "0 in reset",
+     "Stable to R handshake",
+     "CFG-BASE"
+    ],
+    [
+     "o_axi_rdata",
+     "Output",
+     "32",
+     "Read beat data / Dữ liệu beat đọc",
+     "CLK-AXI",
+     "data (RVALID)",
+     "0 in reset",
+     "Stable to R handshake",
+     "CFG-BASE"
+    ],
+    [
+     "o_axi_rresp",
+     "Output",
+     "2",
+     "Read response status / Trạng thái R",
+     "CLK-AXI",
+     "data (RVALID)",
+     "0 in reset",
+     "Stable to R handshake",
+     "CFG-BASE"
+    ],
+    [
+     "o_axi_rlast",
+     "Output",
+     "1",
+     "Final read beat marker / Đánh dấu beat cuối",
+     "CLK-AXI",
+     "data (RVALID)",
+     "0 in reset",
+     "High only on final beat",
+     "CFG-BASE"
+    ],
+    [
+     "o_axi_rvalid",
+     "Output",
+     "1",
+     "Read data valid / Dữ liệu đọc hợp lệ",
+     "CLK-AXI",
+     "level",
+     "0 in reset",
+     "Hold to RREADY",
+     "CFG-BASE"
+    ],
+    [
+     "i_axi_rready",
+     "Input",
+     "1",
+     "Accept read beat / Nhận beat đọc",
+     "CLK-AXI",
+     "level",
+     "Ignored in reset",
+     "R handshake",
+     "CFG-BASE"
+    ],
+    [
+     "o_apb_paddr",
+     "Output",
+     "32",
+     "Word-aligned byte address / Địa chỉ byte căn word",
+     "CLK-AXI",
+     "data (PSEL)",
+     "0 idle",
+     "Stable through transfer",
+     "CFG-BASE"
+    ],
+    [
+     "o_apb_pwrite",
+     "Output",
+     "1",
+     "APB direction / Hướng đọc/ghi APB",
+     "CLK-AXI",
+     "data (PSEL)",
+     "0 idle",
+     "Stable through transfer",
+     "CFG-BASE"
+    ],
+    [
+     "o_apb_pwdata",
+     "Output",
+     "32",
+     "APB write data / Dữ liệu ghi APB",
+     "CLK-AXI",
+     "data (PSEL and PWRITE)",
+     "0 idle",
+     "Stable during wait",
+     "CFG-BASE"
+    ],
+    [
+     "o_apb_pstrb",
+     "Output",
+     "4",
+     "APB byte strobes / Strobe byte APB",
+     "CLK-AXI",
+     "data (PSEL and PWRITE)",
+     "0 idle; zero on read",
+     "Stable through access",
+     "CFG-BASE"
+    ],
+    [
+     "o_apb_pprot",
+     "Output",
+     "3",
+     "Copy of AxPROT / Bản sao AxPROT",
+     "CLK-AXI",
+     "data (PSEL)",
+     "0 idle",
+     "Stable through transfer",
+     "CFG-BASE"
+    ],
+    [
+     "o_apb_psel",
+     "Output",
+     "1",
+     "Select APB decoder / Chọn decoder APB",
+     "CLK-AXI",
+     "level",
+     "0 idle",
+     "Setup starts high",
+     "CFG-BASE"
+    ],
+    [
+     "o_apb_penable",
+     "Output",
+     "1",
+     "APB access phase / Pha access APB",
+     "CLK-AXI",
+     "level",
+     "0 idle",
+     "Hold until PREADY",
+     "CFG-BASE"
+    ],
+    [
+     "i_apb_pready",
+     "Input",
+     "1",
+     "APB transfer ready / APB sẵn sàng",
+     "CLK-AXI",
+     "level",
+     "Ignored when PSEL=0",
+     "Sample in access",
+     "CFG-BASE"
+    ],
+    [
+     "i_apb_prdata",
+     "Input",
+     "32",
+     "APB read data / Dữ liệu đọc APB",
+     "CLK-AXI",
+     "data (read completion)",
+     "Ignored otherwise",
+     "Sample at completion",
+     "CFG-BASE"
+    ],
+    [
+     "i_apb_pslverr",
+     "Input",
+     "1",
+     "APB error / Lỗi APB",
+     "CLK-AXI",
+     "data (completed transfer)",
+     "Ignored otherwise",
+     "Sample with PREADY",
+     "CFG-BASE"
+    ]
+   ],
+   "line": 186,
+   "units": [
+    "6.2:s4",
+    "6.2:s5",
+    "6.2:s6",
+    "6.2:s7",
+    "6.2:s8",
+    "6.2:s9",
+    "6.2:s10",
+    "6.2:s11",
+    "6.2:s12",
+    "6.2:s13",
+    "6.2:s14",
+    "6.2:s15",
+    "6.2:s16",
+    "6.2:s17",
+    "6.2:s18",
+    "6.2:s19",
+    "6.2:s20",
+    "6.2:s21",
+    "6.2:s22",
+    "6.2:s23",
+    "6.2:s24",
+    "6.2:s25",
+    "6.2:s26",
+    "6.2:s27",
+    "6.2:s28",
+    "6.2:s29",
+    "6.2:s30",
+    "6.2:s31",
+    "6.2:s32",
+    "6.2:s33",
+    "6.2:s34",
+    "6.2:s35",
+    "6.2:s36",
+    "6.2:s37",
+    "6.2:s38",
+    "6.2:s39",
+    "6.2:s40",
+    "6.2:s41",
+    "6.2:s42",
+    "6.2:s43",
+    "6.2:s44",
+    "6.2:s45",
+    "6.2:s46",
+    "6.2:s47",
+    "6.2:s48"
+   ]
+  },
+  {
+   "section": "6.3",
+   "header": [
+    "Case",
+    "Legal behavior",
+    "Illegal / unsupported case",
+    "IP response",
+    "Requirement IDs"
+   ],
+   "rows": [
+    [
+     "AXI read",
+     "FIXED/INCR/WRAP, size 0–2, cache 0000/0001",
+     "Unsupported request or 4-KiB crossing",
+     "No APB; ARLEN+1 R beats with SLVERR",
+     "REQ-IF-002/003/007, REQ-ERR-001"
+    ],
+    [
+     "AXI write",
+     "AW followed by declared W beats; W may arrive early",
+     "Unsupported AW request; AXI protocol violations are outside the guaranteed profile",
+     "No APB for unsupported AW; drain W, then SLVERR B",
+     "REQ-IF-002/003/007, REQ-ERR-003"
+    ],
+    [
+     "APB transfer",
+     "One transfer per AXI beat",
+     "PREADY never rises",
+     "Hold access; no timeout",
+     "REQ-IF-004, REQ-ERR-005"
+    ],
+    [
+     "APB error",
+     "PSLVERR sampled on completed transfer",
+     "Read data on error is invalid per APB",
+     "Read beat SLVERR; write error accumulates",
+     "REQ-ERR-002/006"
+    ],
+    [
+     "Unmapped address",
+     "External default error Completer responds",
+     "Missing default responder is integration violation",
+     "PREADY=1/PSLVERR=1, then AXI SLVERR",
+     "REQ-ERR-004"
+    ]
+   ],
+   "line": 236,
+   "units": [
+    "6.3:s1",
+    "6.3:s2",
+    "6.3:s3",
+    "6.3:s4",
+    "6.3:s5"
+   ]
+  },
+  {
+   "section": "7.1",
+   "header": [
+    "Domain",
+    "Clock port",
+    "Edge",
+    "Frequency range",
+    "Source",
+    "Relationship to other clocks",
+    "Gating policy"
+   ],
+   "rows": [
+    [
+     "CLK-AXI",
+     "i_clk_axi; APB PCLK tied to it",
+     "Rising",
+     "No IP-specific limit; STA target is set by the SoC",
+     "SoC clock controller",
+     "Single synchronous domain",
+     "No internal gating"
+    ]
+   ],
+   "line": 256,
+   "units": [
+    "7.1:s1"
+   ]
+  },
+  {
+   "section": "7.2",
+   "header": [
+    "Crossing ID",
+    "From → to",
+    "Signals",
+    "Structure",
+    "Reset handling",
+    "Constraints / verification"
+   ],
+   "rows": [
+    [
+     "CDC-001",
+     "Not applicable (no async clock crossing)",
+     "No async clock crossing",
+     "None",
+     "Shared reset",
+     "CDC/RDC report"
+    ]
+   ],
+   "line": 264,
+   "units": [
+    "7.2:s4"
+   ]
+  },
+  {
+   "section": "7.3",
+   "header": [
+    "Reset ID",
+    "Port",
+    "Polarity / assertion",
+    "Sync or async",
+    "Scope",
+    "Deassertion",
+    "Reset value"
+   ],
+   "rows": [
+    [
+     "RST-AXI",
+     "i_rst_n_axi",
+     "Active-low, synchronous assertion",
+     "Synchronous",
+     "AXI/APB control and state",
+     "SoC supplies reset synchronous to i_clk_axi",
+     "AXI VALID=0; PSEL/PENABLE=0 after the active reset edge"
+    ]
+   ],
+   "line": 270,
+   "units": [
+    "7.3:s1"
+   ]
+  },
+  {
+   "section": "8",
+   "header": [
+    "Parameter",
+    "Purpose",
+    "Default",
+    "Legal values / range",
+    "Dependencies / invalid combinations",
+    "Effect"
+   ],
+   "rows": [
+    [
+     "PARA_AXI_ID_W",
+     "AXI read/write ID width / Độ rộng ID AXI",
+     "4",
+     "1–16 inclusive",
+     "Shared width; invalid value is elaboration error",
+     "Changes ID port widths"
+    ]
+   ],
+   "line": 284,
+   "units": [
+    "8:s4"
+   ]
+  },
+  {
+   "section": "8",
+   "header": [
+    "Configuration",
+    "Parameter overrides",
+    "Features/interfaces",
+    "Expected hierarchy",
+    "Elaboration/lint/synthesis target"
+   ],
+   "rows": [
+    [
+     "CFG-BASE",
+     "PARA_AXI_ID_W=4",
+     "Section 4",
+     "m_axi2apb_bridge with m_axi2apb_rd_seq, m_axi2apb_wr_seq, and m_axi2apb_apb_ctrl",
+     "Check ID widths 1, 4, 16"
+    ]
+   ],
+   "line": 290,
+   "units": [
+    "8:s7"
+   ]
+  },
+  {
+   "section": "9",
+   "header": [
+    "Quantity",
+    "Width",
+    "Encoding / range",
+    "Extension / truncation",
+    "Overflow / invalid behavior"
+   ],
+   "rows": [
+    [
+     "Address",
+     "32",
+     "Unsigned byte address",
+     "APB PADDR clears bits [1:0]",
+     "Reject 4-KiB crossing"
+    ],
+    [
+     "AXI/APB data",
+     "32",
+     "Four byte lanes",
+     "No lane rotation",
+     "Unsupported size → SLVERR"
+    ],
+    [
+     "ID",
+     "PARA_AXI_ID_W",
+     "Opaque unsigned",
+     "Echo unchanged",
+     "No remap"
+    ],
+    [
+     "AxSIZE",
+     "3",
+     "0=1 byte, 1=2 bytes, 2=4 bytes",
+     "Unsigned",
+     "Other values rejected"
+    ],
+    [
+     "AxLEN",
+     "8",
+     "Beats minus one",
+     "1–256 beats",
+     "Declared burst length controls expected beat count"
+    ],
+    [
+     "AxBURST",
+     "2",
+     "FIXED/INCR/WRAP legal values",
+     "Per REF-001 A3.4",
+     "Reserved value rejected"
+    ],
+    [
+     "AxCACHE",
+     "4",
+     "Accept 0000 Device Non-bufferable or 0001 Device Bufferable",
+     "Validation only",
+     "Other encodings rejected"
+    ],
+    [
+     "AxPROT/PPROT",
+     "3",
+     "Same semantics",
+     "Direct copy",
+     "No translation"
+    ]
+   ],
+   "line": 296,
+   "units": [
+    "9:s1",
+    "9:s2",
+    "9:s3",
+    "9:s4",
+    "9:s5",
+    "9:s6",
+    "9:s7",
+    "9:s8"
+   ]
+  },
+  {
+   "section": "10.1",
+   "header": [
+    "Mode/state",
+    "Entry condition",
+    "Behavior",
+    "Exit condition",
+    "Outputs / side effects"
+   ],
+   "rows": [
+    [
+     "IDLE",
+     "Reset released",
+     "Arbitrate AR/AW",
+     "Address handshake",
+     "Select transaction"
+    ],
+    [
+     "READ",
+     "AR accepted",
+     "Validate; APB read per beat; return R",
+     "Final R handshake",
+     "ARLEN+1 R beats"
+    ],
+    [
+     "WRITE",
+     "AW accepted",
+     "Accept W; APB write per beat",
+     "B handshake",
+     "One B"
+    ],
+    [
+     "REJECT_READ",
+     "Unsupported AR",
+     "No APB; return error beats with zero data",
+     "Final R handshake",
+     "SLVERR and final RLAST"
+    ],
+    [
+     "REJECT_WRITE",
+     "Unsupported AW",
+     "Drain W count; no APB",
+     "B handshake",
+     "SLVERR"
+    ]
+   ],
+   "line": 313,
+   "units": [
+    "10.1:s1",
+    "10.1:s2",
+    "10.1:s3",
+    "10.1:s4",
+    "10.1:s5"
+   ]
+  },
+  {
+   "section": "10.2",
+   "header": [
+    "Operation ID",
+    "Inputs / preconditions",
+    "Processing semantics",
+    "Result / completion",
+    "Latency / ordering"
+   ],
+   "rows": [
+    [
+     "OP-001 Read",
+     "Legal accepted AR",
+     "APB read per beat; FIXED holds address; INCR and WRAP follow AXI address rules",
+     "ARLEN+1 R beats; RID echo; final RLAST",
+     "Serialized; wait/backpressure extends latency"
+    ],
+    [
+     "OP-002 Write",
+     "Legal AW plus AWLEN+1 W beats",
+     "APB write per beat; WSTRB→PSTRB; accumulate PSLVERR",
+     "One B after final APB completion",
+     "Serialized; wait/backpressure extends latency"
+    ],
+    [
+     "OP-003 Unsupported read",
+     "Accepted AR outside profile",
+     "No APB; return declared error beats",
+     "ARLEN+1 R beats; SLVERR; zero data",
+     "Honor RREADY"
+    ],
+    [
+     "OP-004 Unsupported write",
+     "Accepted AW outside profile",
+     "No APB; drain declared W count",
+     "One SLVERR B",
+     "B after final W"
+    ],
+    [
+     "OP-005 Reset",
+     "Reset in any state",
+     "Clear local state and deselect APB",
+     "Idle",
+     "In-flight work canceled"
+    ]
+   ],
+   "line": 325,
+   "units": [
+    "10.2:s1",
+    "10.2:s2",
+    "10.2:s3",
+    "10.2:s4",
+    "10.2:s5"
+   ]
+  },
+  {
+   "section": "10.3",
+   "header": [
+    "Waveform ID",
+    "Function / operation",
+    "Scenario (success / error / corner)",
+    "Signals shown",
+    "Figure",
+    "Confirmed by user"
+   ],
+   "rows": [
+    [
+     "WF-001",
+     "OP-005 Reset",
+     "Success: synchronous active-low reset assertion/release and idle outputs",
+     "i_clk_axi, i_rst_n_axi, AXI VALID, APB PSEL/PENABLE",
+     "; WaveJSON",
+     "2026-10-25"
+    ],
+    [
+     "WF-002",
+     "OP-001 Read",
+     "Success: single-beat AXI read and APB completion",
+     "AR, APB PADDR/PSEL/PENABLE/PREADY/PRDATA, R",
+     "; WaveJSON",
+     "2026-10-25"
+    ],
+    [
+     "WF-003",
+     "OP-001 Read",
+     "Success: four-beat INCR read with final RLAST",
+     "AR, APB address sequence, RVALID/RREADY/RLAST",
+     "; WaveJSON",
+     "2026-10-25"
+    ],
+    [
+     "WF-004",
+     "OP-001 Read",
+     "Corner: FIXED and WRAP address sequences",
+     "ARBURST/ARADDR/ARLEN, APB PADDR",
+     "; WaveJSON",
+     "2026-10-25"
+    ],
+    [
+     "WF-005",
+     "OP-002 Write",
+     "Success: INCR write burst, WSTRB/PPROT and B response",
+     "AW, W, APB PADDR/PWDATA/PSTRB/PPROT, B",
+     "; WaveJSON",
+     "2026-10-25"
+    ],
+    [
+     "WF-006",
+     "OP-002 Write",
+     "Corner: byte write at 0x1001, APB PADDR=0x1000 and lane 1",
+     "AWADDR, AWSIZE, WSTRB, APB PADDR/PSTRB",
+     "; WaveJSON",
+     "2026-10-25"
+    ],
+    [
+     "WF-007",
+     "OP-001 Read; OP-002 Write",
+     "Corner: APB PREADY wait with stable APB control/data",
+     "PSEL, PENABLE, PADDR, PWRITE, PREADY",
+     "; WaveJSON",
+     "2026-10-25"
+    ],
+    [
+     "WF-008",
+     "OP-001 Read; OP-002 Write",
+     "Corner: RREADY and BREADY backpressure",
+     "RVALID/RREADY/R payload, BVALID/BREADY/B payload",
+     "; WaveJSON",
+     "2026-10-25"
+    ],
+    [
+     "WF-009",
+     "OP-001 Read",
+     "Error: middle APB read beat returns PSLVERR; later beats continue",
+     "APB PSLVERR, RRESP, RLAST",
+     "; WaveJSON",
+     "2026-10-25"
+    ],
+    [
+     "WF-010",
+     "OP-002 Write",
+     "Error: middle APB write returns PSLVERR; final BRESP is SLVERR",
+     "APB PSLVERR, WLAST, BRESP/BVALID",
+     "; WaveJSON",
+     "2026-10-25"
+    ],
+    [
+     "WF-011",
+     "REQ-FUNC-003",
+     "Corner: simultaneous AR/AW round-robin grant; WVALID before AW acceptance",
+     "AR/AW VALID/READY, WVALID/WREADY",
+     "; WaveJSON",
+     "2026-10-25"
+    ],
+    [
+     "WF-012",
+     "OP-003 Unsupported read; OP-004 Unsupported write",
+     "Error: unsupported size/cache/burst; no APB, read beats or write drain",
+     "AXI address/data/response, APB PSEL",
+     "; WaveJSON",
+     "2026-10-25"
+    ],
+    [
+     "WF-013",
+     "OP-003 Unsupported read; OP-004 Unsupported write",
+     "Boundary: request crossing 4 KiB is rejected without APB",
+     "AXI address/length, APB PSEL, AXI responses",
+     "; WaveJSON",
+     "2026-10-25"
+    ],
+    [
+     "WF-014",
+     "REQ-ERR-004",
+     "Error: unmapped APB address uses default error Completer",
+     "APB PSEL/PREADY/PSLVERR, AXI RRESP/BRESP",
+     "; WaveJSON",
+     "2026-10-25"
+    ]
+   ],
+   "line": 339,
+   "units": [
+    "10.3:s2",
+    "10.3:s3",
+    "10.3:s4",
+    "10.3:s5",
+    "10.3:s6",
+    "10.3:s7",
+    "10.3:s8",
+    "10.3:s9",
+    "10.3:s10",
+    "10.3:s11",
+    "10.3:s12",
+    "10.3:s13",
+    "10.3:s14",
+    "10.3:s15"
+   ]
+  },
+  {
+   "section": "12",
+   "header": [
+    "Error ID",
+    "Detection condition",
+    "Observable response/status",
+    "Interrupt",
+    "Clear/recovery",
+    "Reset behavior"
+   ],
+   "rows": [
+    [
+     "ERR-001",
+     "Unsupported read",
+     "ARLEN+1 SLVERR beats, zero data, final RLAST; no APB",
+     "None",
+     "Drain R",
+     "Reset cancels"
+    ],
+    [
+     "ERR-002",
+     "Unsupported write",
+     "Drain W count; SLVERR B; no APB",
+     "None",
+     "Complete B",
+     "Reset cancels"
+    ],
+    [
+     "ERR-003",
+     "APB read PSLVERR",
+     "RRESP=SLVERR; RDATA=0",
+     "None",
+     "Continue remaining beats",
+     "Reset cancels"
+    ],
+    [
+     "ERR-004",
+     "APB write PSLVERR",
+     "Accumulate; continue; final BRESP=SLVERR",
+     "None",
+     "Complete B",
+     "Reset cancels"
+    ],
+    [
+     "ERR-005",
+     "PREADY remains low",
+     "Hold APB access indefinitely; no timeout",
+     "None",
+     "Completer responds or system reset",
+     "Reset deselects"
+    ],
+    [
+     "ERR-006",
+     "Unmapped address",
+     "Default Completer PREADY=1/PSLVERR=1; AXI SLVERR",
+     "None",
+     "Correct map or handle error",
+     "Reset cancels"
+    ]
+   ],
+   "line": 382,
+   "units": [
+    "12:s1",
+    "12:s2",
+    "12:s3",
+    "12:s4",
+    "12:s5",
+    "12:s6"
+   ]
+  },
+  {
+   "section": "13",
+   "header": [
+    "Metric ID",
+    "Metric",
+    "Target / limit",
+    "Conditions",
+    "Measurement method",
+    "Hard / goal"
+   ],
+   "rows": [
+    [
+     "PPA-001",
+     "Maximum frequency",
+     "TBD",
+     "Corner/library/clock TBD",
+     "STA",
+     "TBD"
+    ],
+    [
+     "PPA-002",
+     "Area",
+     "TBD",
+     "Library/config TBD",
+     "Synthesis cell area",
+     "TBD"
+    ],
+    [
+     "PPA-003",
+     "Power",
+     "TBD",
+     "Activity/voltage/corner TBD",
+     "Power analysis",
+     "TBD"
+    ],
+    [
+     "PERF-001",
+     "Latency/throughput",
+     "TBD",
+     "Waits/backpressure vary",
+     "Cycle simulation",
+     "TBD"
+    ]
+   ],
+   "line": 397,
+   "units": [
+    "13:s6",
+    "13:s7",
+    "13:s8",
+    "13:s9"
+   ]
+  },
+  {
+   "section": "14.2",
+   "header": [
+    "Module",
+    "Responsibility",
+    "Parent / instance",
+    "Clock/reset domains",
+    "Interface"
+   ],
+   "rows": [
+    [
+     "m_axi2apb_bridge",
+     "Structural top and protocol boundary / Top cấu trúc, biên giao thức",
+     "SoC integration; instance follows NAM-07",
+     "CLK-AXI/RST-AXI",
+     "IF-001/002"
+    ],
+    [
+     "m_axi2apb_rd_seq",
+     "Validate and sequence AXI reads; issue one APB request per beat and return R responses / Kiểm tra, điều khiển AXI read; phát một yêu cầu APB mỗi beat và trả R",
+     "m_axi2apb_bridge / u_axi2apb_rd_seq",
+     "CLK-AXI/RST-AXI",
+     "AXI AR/R; rd_req / rd_rsp"
+    ],
+    [
+     "m_axi2apb_wr_seq",
+     "Sequence AW/W beats; issue APB writes and aggregate write errors / Điều khiển beat AW/W; phát APB write và tích lũy lỗi ghi",
+     "m_axi2apb_bridge / u_axi2apb_wr_seq",
+     "CLK-AXI/RST-AXI",
+     "AXI AW/W/B; wr_req / wr_rsp"
+    ],
+    [
+     "m_axi2apb_apb_ctrl",
+     "Round-robin AR/AW arbitration and ownership plus shared APB4 transfer control / Phân xử và quản lý quyền sở hữu AR/AW round-robin cùng điều khiển APB4 dùng chung",
+     "m_axi2apb_bridge / u_axi2apb_apb_ctrl",
+     "CLK-AXI/RST-AXI",
+     "AXI request valid; sequencer ready/done; grants; rd_req/rd_rsp; wr_req/wr_rsp; IF-002"
+    ]
+   ],
+   "line": 412,
+   "units": [
+    "14.2:s1",
+    "14.2:s2",
+    "14.2:s3",
+    "14.2:s4"
+   ]
+  },
+  {
+   "section": "14.3",
+   "header": [
+    "Item",
+    "Value / source"
+   ],
+   "rows": [
+    [
+     "Top / source file list",
+     "m_axi2apb_bridge; one matching source file per module listed in 14.2"
+    ],
+    [
+     "Frontend version and options",
+     "Tool-independent IEEE 1800-2017 synthesizable subset; apply VLSIT RTL Design Rules v2; select exact frontend/options during SoC integration"
+    ],
+    [
+     "Parameters/configuration",
+     "CFG-BASE; PARA_AXI_ID_W=4"
+    ],
+    [
+     "Libraries/corners",
+     "No target Liberty/DB/LEF is present under common_rtl; no shared RTL cell wrapper is needed for this single-clock bridge; select the physical library/corner in SoC PPA"
+    ],
+    [
+     "Memory flow",
+     "No macro assumed"
+    ],
+    [
+     "Lint rule configuration",
+     "VLSIT RTL Design Rules v2; run the VLSIT RTL checker and available Verilator/slang lint flow; no project-specific waivers"
+    ]
+   ],
+   "line": 421,
+   "units": [
+    "14.3:s1",
+    "14.3:s2",
+    "14.3:s3",
+    "14.3:s4",
+    "14.3:s5",
+    "14.3:s6"
+   ]
+  },
+  {
+   "section": "15.2",
+   "header": [
+    "Test ID",
+    "Requirements",
+    "Scenario / stimulus",
+    "Expected result",
+    "Test type",
+    "Configuration"
+   ],
+   "rows": [
+    [
+     "TEST-001",
+     "REQ-FUNC-001, REQ-IF-002/004/005",
+     "FIXED/INCR/WRAP, legal sizes",
+     "Independent model matches addresses/data/responses",
+     "Directed/random",
+     "CFG-BASE"
+    ],
+    [
+     "TEST-002",
+     "REQ-FUNC-002/003",
+     "AR/AW contention",
+     "Single owner; round-robin grants",
+     "Directed",
+     "CFG-BASE"
+    ],
+    [
+     "TEST-003",
+     "REQ-IF-009, REQ-ERR-005",
+     "APB wait; RREADY/BREADY stalls",
+     "Stable payload through stalls",
+     "Assertions",
+     "CFG-BASE"
+    ],
+    [
+     "TEST-004",
+     "REQ-ERR-002/004/006",
+     "APB errors and unmapped address",
+     "Correct SLVERR",
+     "Error injection",
+     "CFG-BASE"
+    ],
+    [
+     "TEST-005",
+     "REQ-IF-003/007, REQ-ERR-001/003",
+     "Invalid profile requests",
+     "No APB; correct error completion",
+     "Negative directed",
+     "CFG-BASE"
+    ],
+    [
+     "TEST-006",
+     "REQ-RESET-001",
+     "Reset during idle/wait/response",
+     "Valid low, APB deselected, state cleared",
+     "Reset test",
+     "CFG-BASE"
+    ],
+    [
+     "TEST-007",
+     "REQ-PARAM-001",
+     "ID widths 1, 4, 16",
+     "Correct elaboration and ID echo",
+     "Parameter sweep",
+     "CFG-BASE"
+    ]
+   ],
+   "line": 438,
+   "units": [
+    "15.2:s1",
+    "15.2:s2",
+    "15.2:s3",
+    "15.2:s4",
+    "15.2:s5",
+    "15.2:s6",
+    "15.2:s7"
+   ]
+  },
+  {
+   "section": "15.3",
+   "header": [
+    "Property / coverage ID",
+    "Intent",
+    "Requirements",
+    "Checker / source set",
+    "Acceptance criterion"
+   ],
+   "rows": [
+    [
+     "SVA-001",
+     "AXI/APB handshake stability",
+     "REQ-IF-001/009",
+     "Independent protocol assertions",
+     "No failures"
+    ],
+    [
+     "SVA-002",
+     "Single transaction ownership",
+     "REQ-FUNC-002/003",
+     "Protocol monitor",
+     "No overlap"
+    ],
+    [
+     "COV-001",
+     "Burst, lane, wait and error combinations",
+     "REQ-IF-002/004, REQ-ERR-002",
+     "Coverage model",
+     "Threshold TBD"
+    ],
+    [
+     "COV-002",
+     "Every rejected request class",
+     "REQ-ERR-001/003",
+     "Coverage model",
+     "All classes hit"
+    ]
+   ],
+   "line": 452,
+   "units": [
+    "15.3:s4",
+    "15.3:s5",
+    "15.3:s6",
+    "15.3:s7"
+   ]
+  },
+  {
+   "section": "15.4",
+   "header": [
+    "Analysis",
+    "Scope",
+    "Assumptions / constraints",
+    "Evaluation method"
+   ],
+   "rows": [
+    [
+     "Formal",
+     "Arbitration, beat counts, response stability, reject path",
+     "AXI assumptions; liveness assumes APB eventually ready",
+     "Property proof"
+    ],
+    [
+     "CDC / RDC",
+     "Shared clock and reset release",
+     "No async data crossing",
+     "CDC/RDC reports"
+    ]
+   ],
+   "line": 461,
+   "units": [
+    "15.4:s1",
+    "15.4:s2"
+   ]
+  },
+  {
+   "section": "16",
+   "header": [
+    "Topic",
+    "Requirement / decision"
+   ],
+   "rows": [
+    [
+     "Scan architecture and scan eligibility",
+     "TBD by SoC DFT"
+    ],
+    [
+     "Scan/test clocks, controls, reset",
+     "TBD by SoC DFT"
+    ],
+    [
+     "Test mode and safe state",
+     "TBD by SoC DFT"
+    ],
+    [
+     "MBIST, repair, LBIST",
+     "No memory macro; LBIST TBD"
+    ],
+    [
+     "Test access/wrappers/test points",
+     "TBD by SoC DFT"
+    ],
+    [
+     "Clock-gating test enable",
+     "No internal gating"
+    ],
+    [
+     "ATPG constraints/exclusions",
+     "TBD by SoC DFT"
+    ],
+    [
+     "DFT insertion and artifacts",
+     "TBD by SoC DFT"
+    ]
+   ],
+   "line": 470,
+   "units": [
+    "16:s6",
+    "16:s7",
+    "16:s8",
+    "16:s9",
+    "16:s10",
+    "16:s11",
+    "16:s12",
+    "16:s13"
+   ]
+  },
+  {
+   "section": "17.1.1",
+   "header": [
+    "Clock ID",
+    "Port / source object",
+    "Primary/generated and master",
+    "Period, waveform, phase / ratio",
+    "Latency / uncertainty / transition",
+    "Clock group / mode",
+    "Constraint source"
+   ],
+   "rows": [
+    [
+     "CLK-AXI",
+     "i_clk_axi",
+     "Primary from SoC",
+     "TBD",
+     "TBD",
+     "Functional",
+     "SoC SDC"
+    ]
+   ],
+   "line": 489,
+   "units": [
+    "17.1.1:s1"
+   ]
+  },
+  {
+   "section": "17.1.2",
+   "header": [
+    "Interface / port group",
+    "Direction",
+    "Reference clock",
+    "External min / max delay",
+    "Input transition / output load",
+    "IP timing budget",
+    "Mode / condition",
+    "Constraint source"
+   ],
+   "rows": [
+    [
+     "AXI4/APB4",
+     "Input/output",
+     "CLK-AXI",
+     "TBD",
+     "TBD",
+     "TBD",
+     "Functional",
+     "SoC SDC"
+    ]
+   ],
+   "line": 495,
+   "units": [
+    "17.1.2:s1"
+   ]
+  },
+  {
+   "section": "17.1.3",
+   "header": [
+    "Exception ID",
+    "Type / SDC command",
+    "From",
+    "Through",
+    "To",
+    "Value and setup/hold/min/max meaning",
+    "Mode / condition",
+    "Technical rationale"
+   ],
+   "rows": [
+    [
+     "EXC-001",
+     "None approved",
+     "Not applicable (none approved)",
+     "Not applicable (none approved)",
+     "Not applicable (none approved)",
+     "Not applicable (none approved)",
+     "All",
+     "No async data crossing"
+    ]
+   ],
+   "line": 505,
+   "units": [
+    "17.1.3:s4"
+   ]
+  },
+  {
+   "section": "17.2",
+   "header": [
+    "Topic",
+    "Requirement / assumption"
+   ],
+   "rows": [
+    [
+     "Hard/memory macros",
+     "None assumed"
+    ],
+    [
+     "Floorplan/pin placement",
+     "SoC owned"
+    ],
+    [
+     "Utilization/congestion",
+     "TBD"
+    ],
+    [
+     "Power intent, clock/reset trees",
+     "SoC owned"
+    ],
+    [
+     "High-fanout/physical-only cells",
+     "TBD"
+    ],
+    [
+     "ECO/spare cells",
+     "TBD"
+    ],
+    [
+     "Extraction/timing corners",
+     "TBD"
+    ],
+    [
+     "Delivery",
+     "Soft RTL"
+    ]
+   ],
+   "line": 511,
+   "units": [
+    "17.2:s1",
+    "17.2:s2",
+    "17.2:s3",
+    "17.2:s4",
+    "17.2:s5",
+    "17.2:s6",
+    "17.2:s7",
+    "17.2:s8"
+   ]
+  },
+  {
+   "section": "18",
+   "header": [
+    "Topic",
+    "Requirement / rationale",
+    "Verification method / expected behavior"
+   ],
+   "rows": [
+    [
+     "Security boundary/threat",
+     "AxPROT maps to PPROT; system policy TBD. / AxPROT ánh xạ PPROT; policy TBD.",
+     "Integration review"
+    ],
+    [
+     "Access control/privilege",
+     "No local check; APB Completers enforce PPROT. / Không kiểm tra cục bộ; Completer áp dụng PPROT.",
+     "Mapping tests"
+    ],
+    [
+     "Secure clearing",
+     "No sensitive storage identified; policy TBD. / Chưa xác định dữ liệu nhạy cảm; policy TBD.",
+     "Security review"
+    ],
+    [
+     "Information leakage",
+     "No mitigation specified; timing follows bus waits. / Chưa quy định giảm rò rỉ; timing theo wait.",
+     "Threat review"
+    ],
+    [
+     "ECC/parity",
+     "No such pins in selected profile. / Profile không có pin này.",
+     "Interface review"
+    ],
+    [
+     "Safety goal",
+     "Not assigned; TBD. / Chưa xác định; TBD.",
+     "Safety review"
+    ],
+    [
+     "Diagnostics/recovery",
+     "Propagate errors; no interrupt/status. / Truyền lỗi; không interrupt/status.",
+     "Error injection"
+    ]
+   ],
+   "line": 524,
+   "units": [
+    "18:s1",
+    "18:s2",
+    "18:s3",
+    "18:s4",
+    "18:s5",
+    "18:s6",
+    "18:s7"
+   ]
+  },
+  {
+   "section": "19",
+   "header": [
+    "Requirement ID",
+    "RTL module/location",
+    "Test/property",
+    "Verification method / analysis",
+    "Configuration"
+   ],
+   "rows": [
+    [
+     "REQ-FUNC-001",
+     "Transaction path",
+     "TEST-001",
+     "Independent model simulation",
+     "CFG-BASE"
+    ],
+    [
+     "REQ-FUNC-002",
+     "Transaction owner",
+     "TEST-002/SVA-002",
+     "Directed/assertion",
+     "CFG-BASE"
+    ],
+    [
+     "REQ-FUNC-003",
+     "Arbiter",
+     "TEST-002",
+     "Round-robin test",
+     "CFG-BASE"
+    ],
+    [
+     "REQ-IF-001",
+     "AXI boundary",
+     "SVA-001",
+     "AXI checker",
+     "CFG-BASE"
+    ],
+    [
+     "REQ-IF-002",
+     "Address generator",
+     "TEST-001",
+     "Burst scoreboard",
+     "CFG-BASE"
+    ],
+    [
+     "REQ-IF-003",
+     "Request validator",
+     "TEST-005",
+     "Negative test",
+     "CFG-BASE"
+    ],
+    [
+     "REQ-IF-004",
+     "APB sequencer",
+     "TEST-001",
+     "APB monitor",
+     "CFG-BASE"
+    ],
+    [
+     "REQ-IF-005",
+     "ID state",
+     "TEST-007",
+     "ID scoreboard",
+     "CFG-BASE"
+    ],
+    [
+     "REQ-IF-006",
+     "Interface mapping",
+     "Port review",
+     "Static review",
+     "CFG-BASE"
+    ],
+    [
+     "REQ-IF-007",
+     "Request validator",
+     "TEST-005",
+     "Attribute rejection",
+     "CFG-BASE"
+    ],
+    [
+     "REQ-IF-008",
+     "AXI profile",
+     "Port review",
+     "Interface review",
+     "CFG-BASE"
+    ],
+    [
+     "REQ-IF-009",
+     "Handshake logic",
+     "TEST-003/SVA-001",
+     "Protocol assertions",
+     "CFG-BASE"
+    ],
+    [
+     "REQ-CLK-001",
+     "Clock architecture",
+     "CDC-001",
+     "CDC report",
+     "CFG-BASE"
+    ],
+    [
+     "REQ-RESET-001",
+     "Reset logic",
+     "TEST-006",
+     "Reset simulation",
+     "CFG-BASE"
+    ],
+    [
+     "REQ-PARAM-001",
+     "Parameter declaration",
+     "TEST-007",
+     "Elaboration sweep",
+     "CFG-BASE"
+    ],
+    [
+     "REQ-ERR-001",
+     "Read reject path",
+     "TEST-005",
+     "Malformed read test",
+     "CFG-BASE"
+    ],
+    [
+     "REQ-ERR-002",
+     "Response path",
+     "TEST-004",
+     "Error injection",
+     "CFG-BASE"
+    ],
+    [
+     "REQ-ERR-003",
+     "Write reject path",
+     "TEST-005",
+     "Malformed write test",
+     "CFG-BASE"
+    ],
+    [
+     "REQ-ERR-004",
+     "External APB fabric",
+     "TEST-004",
+     "Integration test",
+     "CFG-BASE"
+    ],
+    [
+     "REQ-ERR-005",
+     "APB sequencer",
+     "TEST-003",
+     "Wait-state assertion",
+     "CFG-BASE"
+    ],
+    [
+     "REQ-ERR-006",
+     "APB sampler",
+     "TEST-004",
+     "Error injection",
+     "CFG-BASE"
+    ],
+    [
+     "REQ-CSR-001",
+     "Top-level ports",
+     "Port review",
+     "Interface inspection",
+     "CFG-BASE"
+    ],
+    [
+     "REQ-VER-001",
+     "Testbench/reference model",
+     "Review",
+     "Golden-source audit",
+     "All"
+    ],
+    [
+     "REQ-VER-002",
+     "Verification collateral",
+     "Audit",
+     "Source/log/Makefile review",
+     "All"
+    ]
+   ],
+   "line": 536,
+   "units": [
+    "19:s1",
+    "19:s2",
+    "19:s3",
+    "19:s4",
+    "19:s5",
+    "19:s6",
+    "19:s7",
+    "19:s8",
+    "19:s9",
+    "19:s10",
+    "19:s11",
+    "19:s12",
+    "19:s13",
+    "19:s14",
+    "19:s15",
+    "19:s16",
+    "19:s17",
+    "19:s18",
+    "19:s19",
+    "19:s20",
+    "19:s21",
+    "19:s22",
+    "19:s23",
+    "19:s24"
+   ]
+  },
+  {
+   "section": "20",
+   "header": [
+    "ID",
+    "Type",
+    "Assumption / dependency / unresolved decision",
+    "Technical impact / version / configuration",
+    "Resolution / status"
+   ],
+   "rows": [
+    [
+     "DEC-001",
+     "Decision",
+     "VLSIT RTL Design Rules v2 default.",
+     "Naming and RTL baseline.",
+     "User approved."
+    ],
+    [
+     "DEC-002",
+     "Decision",
+     "AXI4 H.c Subordinate to APB4 D Manager; one external APB port/decoder.",
+     "Interface profile.",
+     "User approved."
+    ],
+    [
+     "DEC-003",
+     "Decision",
+     "Shared clock, 32-bit widths, single global transaction, round-robin, with no IP-specific frequency limit.",
+     "No CDC; SoC STA defines the operating target.",
+     "User approved."
+    ],
+    [
+     "DEC-004",
+     "Decision",
+     "FIXED/INCR/WRAP; legal lengths; 1/2/4-byte; PSTRB/PPROT.",
+     "Conversion profile.",
+     "User approved."
+    ],
+    [
+     "DEC-005",
+     "Decision",
+     "Omit AxLOCK/exclusive traffic and USER/QOS/REGION.",
+     "Integration excludes exclusive traffic.",
+     "User approved after protocol correction."
+    ],
+    [
+     "DEC-006",
+     "Decision",
+     "AxCACHE 0000/0001 only.",
+     "Others SLVERR/no APB.",
+     "User approved."
+    ],
+    [
+     "DEC-007",
+     "Decision",
+     "No timeout or CSR; require default APB error Completer.",
+     "APB can wait indefinitely.",
+     "User approved."
+    ],
+    [
+     "DEC-008",
+     "Decision",
+     "Unsupported reads error for declared beats; writes drain declared W count.",
+     "Defensive completion.",
+     "User approved."
+    ],
+    [
+     "DEC-009",
+     "Decision",
+     "Aggregate write errors and continue all beats.",
+     "No rollback of peripheral side effects.",
+     "User approved."
+    ],
+    [
+     "DEC-010",
+     "Decision",
+     "ID width 1–16, default 4; echo IDs.",
+     "Parameterized ID ports.",
+     "User approved."
+    ],
+    [
+     "DEC-011",
+     "Decision",
+     "Use a hand-laid SVG vector diagram with module boxes and port bundles.",
+     "Replaces the overlapping draw.io diagram; the SVG is the editable source.",
+     "Updated per user request on 2026-10-25."
+    ],
+    [
+     "DEC-012",
+     "Decision",
+     "Fix the RTL hierarchy as one structural top plus read sequencer, write sequencer, and one controller module that combines AR/AW arbitration with APB control.",
+     "Each module has a matching source file and a named top-level instance.",
+     "User directed merging m_axi2apb_arb into m_axi2apb_apb_ctrl on 2026-10-25."
+    ],
+    [
+     "DEC-013",
+     "Decision",
+     "No target physical library is present in common_rtl; keep bridge logic technology-independent and defer the Liberty/corner choice to SoC PPA. Do not instantiate shared wrappers or cell stand-ins because this bridge has no internal synchronizer or memory macro.",
+     "VLSIT_CELL_* files are RTL stand-in models, not a production standard-cell library.",
+     "User directed no internal synchronizer; inventory found no .lib, .db, or .lef."
+    ],
+    [
+     "DEC-014",
+     "Decision",
+     "Generate only portable synthesizable IEEE 1800-2017 RTL under VLSIT RTL Design Rules v2; defer the exact frontend and options to SoC integration.",
+     "Avoids tool-specific RTL without a project frontend selection.",
+     "User selected the portable baseline on 2026-10-25."
+    ],
+    [
+     "DEC-015",
+     "Decision",
+     "Use VLSIT v2 rule checks and the available Verilator/slang lint flow without project-specific waivers.",
+     "Any lint finding must be fixed or reported under the skill rules.",
+     "User approved on 2026-10-25."
+    ],
+    [
+     "DEC-016",
+     "Decision",
+     "Use a single active-low reset synchronous to CLK-AXI; do not instantiate an internal clock/reset synchronizer.",
+     "The SoC supplies a reset already synchronous to CLK-AXI and coordinates reset with the AXI Manager/APB fabric.",
+     "User directed one synchronous clock domain and no internal synchronizer on 2026-10-25."
+    ],
+    [
+     "DEC-017",
+     "Decision",
+     "Assume the AXI Manager follows AXI4 WLAST/AWLEN and WSTRB rules; do not define RTL recovery for malformed write traffic.",
+     "Malformed writes are outside the guaranteed profile; APB side effects and recovery are unspecified.",
+     "User selected the legal-manager assumption on 2026-10-25."
+    ],
+    [
+     "ASM-001",
+     "Assumption",
+     "Reset cancels local state without replay/rollback.",
+     "Requires coordinated system reset.",
+     "Integration confirmation needed."
+    ],
+    [
+     "ASM-002",
+     "TBD",
+     "Clock frequency, throughput, latency.",
+     "No measurable performance target or executable SDC.",
+     "System owner input needed."
+    ],
+    [
+     "ASM-003",
+     "TBD",
+     "PPA corner/library, area and power goals.",
+     "No quantitative PPA signoff.",
+     "Implementation targets needed."
+    ],
+    [
+     "ASM-004",
+     "Resolved",
+     "AXI protocol violations such as WLAST mismatch or illegal WSTRB lanes are outside the guaranteed profile; the Manager must comply with AXI4.",
+     "No RTL recovery is defined.",
+     "User selected the legal-manager assumption on 2026-10-25."
+    ],
+    [
+     "ASM-005",
+     "TBD",
+     "APB address map/decoder.",
+     "Requires match or default PREADY=1/PSLVERR=1.",
+     "SoC integration."
+    ],
+    [
+     "ASM-006",
+     "TBD",
+     "Diagnostics or interrupt need.",
+     "Current ports have no status/interrupt.",
+     "Product owner."
+    ],
+    [
+     "ASM-007",
+     "TBD",
+     "Threat model, privilege, safety class.",
+     "Current IP forwards PPROT and bus errors only.",
+     "System/security review."
+    ],
+    [
+     "ASM-008",
+     "TBD",
+     "Scan, ATPG, test-mode contract.",
+     "DFT signoff open.",
+     "SoC DFT owner."
+    ],
+    [
+     "ASM-009",
+     "TBD",
+     "Tool versions/options for lint/synthesis/STA/CDC.",
+     "Reproducibility criteria open.",
+     "Project flow owner."
+    ],
+    [
+     "ASM-010",
+     "Resolved",
+     "User approved all 14 planned waveforms on 2026-10-25; SVG and WaveJSON sources are present under figures/.",
+     "Waveform plan and sources are linked in Section 10.3.",
+     "Complete."
+    ],
+    [
+     "ASM-011",
+     "Resolved",
+     "Drive RDATA as zero when RRESP=SLVERR.",
+     "Read data is invalid on error; this deterministic value does not change the error contract.",
+     "User confirmed on 2026-10-25."
+    ]
+   ],
+   "line": 565,
+   "units": [
+    "20:s1",
+    "20:s2",
+    "20:s3",
+    "20:s4",
+    "20:s5",
+    "20:s6",
+    "20:s7",
+    "20:s8",
+    "20:s9",
+    "20:s10",
+    "20:s11",
+    "20:s12",
+    "20:s13",
+    "20:s14",
+    "20:s15",
+    "20:s16",
+    "20:s17",
+    "20:s18",
+    "20:s19",
+    "20:s20",
+    "20:s21",
+    "20:s22",
+    "20:s23",
+    "20:s24",
+    "20:s25",
+    "20:s26",
+    "20:s27",
+    "20:s28"
+   ]
+  },
+  {
+   "section": "21",
+   "header": [
+    "Term / acronym",
+    "Definition"
+   ],
+   "rows": [
+    [
+     "AXI Manager",
+     "AXI requester that initiates transactions. / Bên phát giao dịch AXI."
+    ],
+    [
+     "AXI Subordinate",
+     "AXI responder that accepts requests and returns responses. / Bên nhận request và trả response AXI."
+    ],
+    [
+     "APB Manager",
+     "APB requester driving PADDR/PSEL/PENABLE. / Bên phát yêu cầu APB."
+    ],
+    [
+     "APB Completer",
+     "Peripheral returning PREADY/PRDATA/PSLVERR. / Ngoại vi trả PREADY/PRDATA/PSLVERR."
+    ],
+    [
+     "ACLK/PCLK",
+     "AXI/APB clocks tied to one input here. / Clock AXI/APB dùng chung một input."
+    ],
+    [
+     "VALID/READY",
+     "Rising-edge handshake when both are high. / Handshake cạnh lên khi cả hai cao."
+    ],
+    [
+     "PSTRB",
+     "APB4 write byte-lane strobe. / Strobe lane byte ghi APB4."
+    ],
+    [
+     "PPROT",
+     "APB protection attributes. / Thuộc tính bảo vệ APB."
+    ],
+    [
+     "SLVERR",
+     "AXI subordinate-side error response. / Response lỗi phía Subordinate AXI."
+    ],
+    [
+     "CDC",
+     "Clock-domain crossing. / Chuyển miền clock."
+    ]
+   ],
+   "line": 598,
+   "units": [
+    "21:s1",
+    "21:s2",
+    "21:s3",
+    "21:s4",
+    "21:s5",
+    "21:s6",
+    "21:s7",
+    "21:s8",
+    "21:s9",
+    "21:s10"
+   ]
+  }
+ ],
+ "signals": {
+  "ACLK": 8,
+  "ANSI": 2,
+  "APB4": 18,
+  "ARLEN": 8,
+  "ARVALID": 8,
+  "ATPG": 4,
+  "AWLEN": 5,
+  "AWVALID": 8,
+  "BREADY": 3,
+  "BRESP": 6,
+  "BVALID": 4,
+  "CDC": 13,
+  "CSR": 6,
+  "DFT": 10,
+  "FIFO": 2,
+  "FIXED": 11,
+  "IDLE": 2,
+  "IEEE": 3,
+  "INCR": 12,
+  "LEF": 2,
+  "MBIST": 3,
+  "OKAY": 2,
+  "PADDR": 10,
+  "PARA_AXI_ID_W": 11,
+  "PCLK": 7,
+  "PENABLE": 9,
+  "PPA": 4,
+  "PPROT": 11,
+  "PRDATA": 4,
+  "PREADY": 18,
+  "PSEL": 19,
+  "PSLVERR": 19,
+  "PSTRB": 11,
+  "PVT": 2,
+  "PWRITE": 3,
+  "QOS": 5,
+  "RDATA": 3,
+  "RDC": 4,
+  "READY": 4,
+  "REGION": 5,
+  "RID": 2,
+  "RLAST": 9,
+  "ROM": 2,
+  "RREADY": 6,
+  "RRESP": 5,
+  "RTL": 54,
+  "RVALID": 7,
+  "SDC": 6,
+  "SLVERR": 27,
+  "SRAM": 2,
+  "STA": 4,
+  "SVG": 6,
+  "TBD": 33,
+  "USER": 5,
+  "VALID": 8,
+  "VLSIT": 12,
+  "WLAST": 6,
+  "WRAP": 11,
+  "WREADY": 4,
+  "WSTRB": 8,
+  "WVALID": 6,
+  "i_clk_axi": 9,
+  "i_rst_n_axi": 5
+ },
+ "warnings": [],
+ "stats": {
+  "sections": 61,
+  "sentences": 418,
+  "normative": 88,
+  "chars": 71653
+ }
+}

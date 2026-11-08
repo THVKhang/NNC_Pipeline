@@ -1,0 +1,42 @@
+{
+ "analyses": [
+  {
+   "failure": "CHK-007 (Occupancy bounds and safe-direction flag lag): 32 fails / 18962 hits, first at 8387000 ps (8387 ns, test_chk_013_random_ratios/ratio=0). Every failure time is in sim.log:175-206. They fall inside tests that use software reset: CHK-013 random tests (sw=2..33 per phase, sim.log:48-92), CHK-024 'sw reset while full' (188907 ns, inside 188607-193343 ns, sim.log:134-136), and test_regression_random (203459..222819 ns, sw=34, sim.log:142). All 25 cocotb tests PASS (sim.log:173), including the Python CHK-007 checks at test_sync_fifo.py:326-328 and :279-281. No CHK-007 failure falls in a test without software reset, such as CHK-014..CHK-021.",
+   "spec_says": "contract.json:397 (CHK-007): \"With Q from CHK-006 (size before the edge) ... At every i_clk_wr rising edge where size(Q) == PARA_SFIFO_DEPTH, o_full=1.\" contract.json:379 (CHK-006, defines Q): \"Q is cleared at the i_clk_wr edge after which o_sw_rst_busy goes from 1 to 0, and while either hardware reset is asserted.\" Spec SyncFIFO_Design_Specification.md:153 REQ-SRST-005: \"At the end of a software reset sequence the FIFO shall be empty, both pointers shall be 0, and every stored word shall be discarded.\" Spec :154 REQ-SRST-006: \"The FIFO is ready for writes when o_sw_rst_busy is 0 and i_rst_n_sw is 1.\" rules.json:627 SF-3-05: \"o_full shall be 1 whenever PARA_SFIFO_DEPTH words are stored\". rules.json:6767 SF-15.3-09 / SVA-005: \"o_full is 1 whenever the scoreboard holds DEPTH words\". contract.json:463 (CHK-010) also says the counters are cleared \"at the i_clk_wr rising edge after which o_sw_rst_busy goes from 1 to 0 (the occupancy computed at that edge is 0)\".",
+   "rtl_does": "m_vlsit_sfifo_wr.sv:128-129: in state PTR, w_wptr_nxt is forced to 0. m_vlsit_sfifo_rd.sv:123-124: the read pointer is reset in RST. So during HOLD/REL, w_occ_nxt (wr.sv:139-143) = 0, and reg_full <= (w_occ_nxt >= DEPTH) = 0 (wr.sv:155). o_full = w_wr_blk | reg_full (wr.sv:232); w_wr_blk = reg_sw_rst_busy | ~i_rst_n_sw (wr.sv:114). At edge E_f, REL->RUN (wr.sv:191-193) and reg_sw_rst_busy <= 0 (wr.sv:216). From E_f on, o_full = 0 with i_rst_n_sw=1: the FIFO is empty, so it accepts writes as REQ-SRST-005/006 require. At the next write edge E_f+1, the RTL shows o_full=0 because no word is stored. This is correct RTL behaviour. CHK-010, which models the same clearing, passes 16629/16629 (sim.log:249).",
+   "test_does": "Checker nnc_chk_sb.sv: sb_busy_q <= o_sw_rst_busy (line 51). Q is cleared by `if (sb_busy_q && !o_sw_rst_busy) wbase <= wcnt;` (line 55). This condition is first true at edge E_f+1, the first edge where busy is sampled 0, not at E_f. The new wbase is visible only after E_f+1. At E_f+1, a_CHK_007 (lines 76-78) samples the stale sb_size = wcnt - sb_head (lines 45-48), which is the pre-reset occupancy. If the software reset started with a full FIFO (size 8), the property `(sb_size != PARA_SFIFO_DEPTH) || o_full` fails, because the RTL correctly has o_full=0. Stimulus that triggers this: test_chk_024 (a), test_sync_fifo.py:1284-1306. It fills DEPTH words (o_full=1 asserted at :1285), pulses i_rst_n_sw low (:1290), waits for busy=0 and asserts o_full==0 at that point (:1303), and passes. The random writer _rand_writer (:515-543) issues i_rst_n_sw lows at random while density up to 100% keeps the FIFO full often (ovf counts in sim.log:48-142). The Python reference model clears at the right edge, when busy is sampled 1 before the edge and 0 after (`if busy == 1 and S[\"busy\"] == 0: self._clear_data()`, test_sync_fifo.py:343-344). So its own CHK-007 check at :326-328 never fails.",
+   "candidates": [
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "The SVA scoreboard clears Q one write edge late. nnc_chk_sb.sv:51,55 detects the busy 1->0 transition with a registered copy (sb_busy_q), so wbase is updated at E_f+1. contract.json:379 says to clear at E_f, the edge after which busy goes 1->0, and CHK-007 uses 'size before the edge' (contract.json:397). So at E_f+1, Q should already be empty, but the SVA still holds the old count. The Python monitor follows the contract exactly (test_sync_fifo.py:343-344) and its CHK-007 checks (:326-328) pass in every test. CHK-024 (a) explicitly expects o_full=0 right after busy falls with the 8 old words discarded (:1303, contract.json:784), and that test passes. A CHK-007 failure occurs at 188907 ns inside that test. The sibling SVA model nnc_chk_wr.sv:60-64 clears while block_w is active and CHK-010 never fails. All failures are in tests with software resets.",
+     "evidence_against": "No waveform or per-failure trace is in the directory. So it is inferred, not shown, that each of the 32 failure times is the first write edge after a software-reset sequence that started with a full FIFO. A read-side failure from a_CHK_007_rd (nnc_chk_sb.sv:82-84) would also add to fails_CHK_007 and cannot be told apart in the log. Its condition (sb_size==0 with o_empty=0) is not produced by this late-clear mechanism: a stale size is non-zero, which is the safe direction."
+    },
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "Taken literally, the assertion says the RTL reports o_full=0 at a write edge where the reference holds DEPTH words. That would violate SF-3-05 (rules.json:627) and SVA-005 (rules.json:6767) if the reference were right.",
+     "evidence_against": "REQ-SRST-005 (spec:153) requires the FIFO to be empty at the end of the sequence. REQ-SRST-006 (spec:154) says writes are possible once busy=0 and i_rst_n_sw=1. The RTL resets both pointers (wr.sv:128-129, rd.sv:123-124), and reg_full is computed from occupancy 0 (wr.sv:155). The independent Python scoreboard, CHK-010 (0 fails) and the directed CHK-024 (a) check of o_full=0 after busy=0 (test_sync_fifo.py:1303) all agree with the RTL. Making o_full=1 here would break CHK-010 and CHK-024."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "The phrase 'cleared at the i_clk_wr edge after which o_sw_rst_busy goes from 1 to 0' (contract.json:379) needs to look ahead: at E_f, busy is still sampled 1, and that it falls is only known after the edge. A checker writer could read it as 'the first edge where busy is sampled 0', which is what nnc_chk_sb.sv:55 implements. CHK-007's 'size before the edge' does not say how this clear interacts with it.",
+     "evidence_against": "CHK-010 (contract.json:463) states the same timing without ambiguity: '(the occupancy computed at that edge is 0)'. CHK-024's expected text (contract.json:784) says 'After o_sw_rst_busy=0: o_full=0 ... the 8 old words are never read'. The Python model applies this reading. Both documents together are clear enough. The problem is the SVA implementation, not the specification."
+    }
+   ],
+   "most_likely": "B_test_wrong",
+   "options": "1) Fix the checker (recommended; this does not weaken the check). In nnc_chk_sb.sv, clear Q at E_f, not E_f+1. One way: clear while the write side is blocked, the same way as nnc_chk_wr.sv:60-64. For example, at a write edge where (!i_rst_n_sw || o_sw_rst_busy), set `wbase <= wcnt` (no push can happen then because o_full=1). Then at E_f+1 the sampled sb_size is already 0. Another way: compute the clear combinationally, e.g. effective head = (sb_busy_q && !o_sw_rst_busy) ? wcnt : sb_head, and use it in the a_CHK_007/a_CHK_006 expressions. The rd-domain rcnt <= sb_head logic (lines 63-67) must still see the cleared value. Re-run and confirm that CHK-007 shows 0 fails while CHK-006 still passes. Also consider giving a_CHK_007_rd its own fail counter or message tag, so that write-side and read-side failures can be told apart. 2) Fix the RTL: not supported. Holding o_full=1 for an extra cycle after busy falls would contradict REQ-SRST-005/006, CHK-010 and CHK-024. 3) Clarify the spec (optional): in the CHK-006 description at contract.json:379, add the wording CHK-010 already uses, 'the size of Q used at the following edge is 0'. That would make it explicit that the clear takes effect at E_f itself."
+  }
+ ],
+ "clusters": 1,
+ "analysed": 1,
+ "usage": {
+  "calls": 1,
+  "cached": 0,
+  "cost_usd": 0.9932,
+  "input_tokens": 22,
+  "output_tokens": 10496,
+  "cache_creation_input_tokens": 82847,
+  "cache_read_input_tokens": 601293
+ },
+ "prompt_version": "triage-v1",
+ "denials": []
+}

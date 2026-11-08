@@ -270,5 +270,185 @@ class GateConfigTest(unittest.TestCase):
             self.assertEqual(des.require_gate("G2_contract", unreviewed=True), ["G1_rules", "G2_contract"])
 
 
+class CoverageClosureTest(unittest.TestCase):
+    def test_parse_dat_counts_only_dut_files(self):
+        from nnc.coverage import parse_dat, summarize_uncovered
+        rec = lambda f, l, page, o, n: (f"C '\x01f\x02/x/{f}\x01l\x02{l}\x01page\x02{page}/m\x01o\x02{o}' {n}\n")
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "coverage.dat"
+            p.write_text("# SystemC::Coverage-3\n" + rec("dut.sv", 3, "v_toggle", "a[0]:0->1", 4) +
+                         rec("dut.sv", 3, "v_toggle", "a[0]:1->0", 0) + rec("dut.sv", 3, "v_toggle", "a[1]:1->0", 0) +
+                         rec("dut.sv", 9, "v_line", "if", 2) + rec("nnc_chk_x.sv", 1, "v_line", "", 0), encoding="utf-8")
+            r = parse_dat(p, ["dut.sv"])
+        self.assertEqual(r["metrics"]["toggle"]["total"], 3)
+        self.assertEqual(r["metrics"]["toggle"]["hit"], 1)
+        self.assertEqual(r["metrics"]["block"]["percent"], 100.0)            # the checker point is excluded
+        g = summarize_uncovered(r["uncovered"])
+        self.assertEqual((g[0]["what"], g[0]["points"]), ("a", 2))
+
+    def test_leak_filter_and_module_validation(self):
+        from nnc import closure
+        with tempfile.TemporaryDirectory() as d:
+            rtl = Path(d) / "m.sv"
+            rtl.write_text("module m(input i_wr_en); logic r_wr_ptr_q; // c_comment_only\nendmodule\n", encoding="utf-8")
+            private = closure.rtl_private_names([rtl], "The port i_wr_en requests a write.")
+        self.assertEqual(private, {"r_wr_ptr_q"})
+        self.assertEqual(closure.leaks("Hold i_wr_en high until r_wr_ptr_q wraps", private), ["r_wr_ptr_q"])
+        contract = {"checks": [{"id": "CHK-004", "kind": "test"}]}
+        good = ('import cocotb\nfrom nnc_cocotb import *\nimport test_x as base\n@cocotb.test()\n'
+                'async def test_cov_101_wrap(dut):\n    """COV-101 CHK-004: wrap."""\n    assert 1 == 1\n')
+        self.assertEqual(closure.validate_module(good, contract, [{"id": "COV-101"}]), [])
+        bad = good.replace("import test_x as base", "from test_x import *").replace("    assert 1 == 1\n", "    pass\n")
+        probs = closure.validate_module(bad, contract, [{"id": "COV-101"}, {"id": "COV-102"}])
+        self.assertTrue(any("star-import" in p for p in probs) and any("COV-102" in p for p in probs)
+                        and any("assert" in p for p in probs))
+
+
+class SelectionAndSignoffTest(unittest.TestCase):
+    def test_not_selected_checks_never_pass(self):
+        from nnc.contract import select_checks, selected
+        c = {"checks": [{"id": "CHK-001", "kind": "assertion", "rules": ["R1"]},
+                        {"id": "CHK-002", "kind": "test", "rules": ["R2"]}], "not_verified": []}
+        select_checks(c, ["CHK-001"], "Designer")
+        self.assertEqual([x["id"] for x in selected(c)["checks"]], ["CHK-001"])
+        results = {"status": "ran", "tests": [{"name": "test_chk_002_x", "status": "pass"}],
+                   "assertions": {"CHK-001": {"hits": 3, "fails": 0}}}
+        st = report.check_status(results, c)
+        self.assertEqual((st["CHK-001"]["status"], st["CHK-002"]["status"]), ("PASS", "NOT_SELECTED"))
+        rows = report.rtm({"rules": [{"id": r, "section": "1", "sentences": [], "strength": "MUST", "statement": "s"}
+                                     for r in ("R1", "R2")]}, c, st, None)
+        self.assertEqual([r["status"] for r in rows], ["VERIFIED", "NOT_SELECTED"])
+        with self.assertRaises(ValueError):
+            select_checks(c, ["CHK-009"], "Designer")
+
+    def test_signoff_conditions(self):
+        rep = {"checks": {"by_status": {"PASS": 3}}, "rules": {"by_status": {"VERIFIED": 3}}, "unreviewed_gates": [],
+               "gates": [{"gate": "G1_rules", "state": "APPROVED", "detail": "by Claude (delegated by X)"}],
+               "simulation": {"integration": {"ok": True}},
+               "mutation": {"threshold": 85.0, "rules_below_threshold": ["R7"], "rules_attributed": 4},
+               "coverage_closure": {"metric": "line", "target": 95.0, "status": "target_met"}}
+        conds = {name: (ok, note) for name, ok, note in report.signoff_conditions(rep)}
+        self.assertIn("delegation", conds["Gates G1-G3 approved"][1])
+        self.assertFalse(conds["Per-requirement mutation score >= 85 %"][0])
+        self.assertTrue(conds["Coverage target line 95.0 %"][0])
+
+
+class InjectTest(unittest.TestCase):
+    PATCH = ("--- a/rtl/m.sv\n+++ b/rtl/m.sv\n@@ -2,3 +2,2 @@\n assign a = b;\n-assign c = d |\n-            e;\n"
+             "+assign c = d;\n")
+
+    def test_patch_applies_to_a_copy_only(self):
+        from nnc import inject
+        with tempfile.TemporaryDirectory() as d:
+            rtl = Path(d) / "rtl"
+            rtl.mkdir()
+            src = "module m;\nassign a = b;\nassign c = d |\n            e;\nendmodule\n"
+            (rtl / "m.sv").write_text(src, encoding="utf-8")
+            changed = inject.make_copy(rtl, self.PATCH, Path(d) / "bug" / "rtl")
+            self.assertEqual(changed, ["m.sv"])
+            self.assertEqual((Path(d) / "bug" / "rtl" / "m.sv").read_text(encoding="utf-8"),
+                             "module m;\nassign a = b;\nassign c = d;\nendmodule\n")
+            self.assertEqual((rtl / "m.sv").read_text(encoding="utf-8"), src)          # original untouched
+            with self.assertRaises(inject.PatchError):
+                inject.make_copy(rtl, self.PATCH.replace("assign a = b;", "assign z = y;"), Path(d) / "x")
+
+
+class RenumberTest(unittest.TestCase):
+    def test_references_follow_the_new_ids(self):
+        from nnc.contract import renumber
+        checks = [{"id": "CHK-001", "kind": "test", "rules": ["R1"], "behavior": "uses the tracker of CHK-002"},
+                  {"id": "CHK-002", "kind": "assertion", "rules": ["R2"], "behavior": "tracker; see CHK-001",
+                   "notes": ["CHK-001 and CHK-009"]}]
+        out = renumber(checks, [1, 0])
+        self.assertEqual([c["id"] for c in out], ["CHK-001", "CHK-002"])
+        self.assertEqual(out[0]["behavior"], "tracker; see CHK-002")       # no chained replacement
+        self.assertEqual(out[0]["notes"], ["CHK-002 and CHK-009"])           # unknown ID left as written
+        self.assertEqual(out[1]["behavior"], "uses the tracker of CHK-001")
+        self.assertEqual(out[1]["rules"], ["R1"])
+
+    def test_ranges_and_slash_lists(self):
+        from nnc.contract import rewrite_refs
+        m = {"CHK-020": "CHK-023", "CHK-021": "CHK-021", "CHK-022": "CHK-022", "CHK-023": "CHK-019",
+             "CHK-015": "CHK-014", "CHK-017": "CHK-017", "CHK-001": "CHK-002", "CHK-002": "CHK-003"}
+        self.assertEqual(rewrite_refs("results of CHK-020..CHK-023.", m),
+                         "results of CHK-019, CHK-021, CHK-022, CHK-023.")
+        self.assertEqual(rewrite_refs("see CHK-001..CHK-002", m), "see CHK-002..CHK-003")
+        self.assertEqual(rewrite_refs("trackers CHK-015/017", m), "trackers CHK-014/CHK-017")
+        self.assertEqual(rewrite_refs("CHK-020 to CHK-021", m), "CHK-021, CHK-023")
+
+
+MC_SPEC = """# Two-clock FIFO
+
+## 6. Ports
+
+| Port | Direction | Width | Meaning | Clock domain | Signal type |
+|---|---|---|---|---|---|
+| i_clk_wr | Input | 1 | Write clock | CLK-WR | Clock (rising edge) |
+| i_rst_n_wr | Input | 1 | Write reset | CLK-WR | Reset (active-low level) |
+| i_wr_en | Input | 1 | Write request | CLK-WR | Level |
+| i_thr | Input | LPARA_OCC_W | Threshold | static | Static |
+| i_rst_n_sw | Input | 1 | Software reset request, active-low | CLK-WR | Level (control) |
+| i_clk_rd | Input | 1 | Read clock | CLK-RD | Clock (rising edge) |
+| i_rst_n_rd | Input | 1 | Read reset | CLK-RD | Reset (active-low level) |
+| o_empty | Output | 1 | Empty flag | CLK-RD | Level |
+
+## 8. Parameters
+
+| Parameter | Purpose | Default | Legal values |
+|---|---|---|---|
+| PARA_FIFO_DEPTH | Entries | 8 | 2 or more |
+| LPARA_OCC_W | Occupancy width: clog2(DEPTH + 1) | Derived | At least 2 |
+"""
+
+
+class MultiClockTest(unittest.TestCase):
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        spec = Path(self._tmp.name) / "fifo.md"
+        spec.write_text(MC_SPEC, encoding="utf-8")
+        self.iface = extract_interface(build_index(spec))
+        self.contract = {"top": "m_fifo", "interface": self.iface, "checks": []}
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def test_clocks_resets_and_derived_parameter(self):
+        from nnc.contract import derived_values, eval_param
+        self.assertEqual([c["name"] for c in self.iface["clocks"]], ["i_clk_wr", "i_clk_rd"])
+        self.assertEqual([(r["name"], r["clock"]) for r in self.iface["resets"]],
+                         [("i_rst_n_wr", "i_clk_wr"), ("i_rst_n_rd", "i_clk_rd")])   # not the software reset
+        occ = self.iface["parameters"][1]
+        self.assertEqual(occ["derived"], "$clog2(PARA_FIFO_DEPTH + 1)")
+        self.assertEqual(derived_values(self.iface, {"PARA_FIFO_DEPTH": 8})["LPARA_OCC_W"], 4)
+        self.assertEqual(eval_param("$clog2(PARA_FIFO_DEPTH)", {"PARA_FIFO_DEPTH": 1}), 0)
+        self.assertIn("localparam int LPARA_OCC_W = $clog2(PARA_FIFO_DEPTH + 1)", module_header("x", self.iface))
+
+    def test_sim_inputs_and_prompts(self):
+        top = sim.tb_top(self.contract, ["nnc_chk_a"])
+        self.assertIn("m_fifo #(.PARA_FIFO_DEPTH(PARA_FIFO_DEPTH)) u_dut", top)     # derived not passed
+        pv = sim.param_values(self.contract)
+        self.assertEqual(pv, {"PARA_FIFO_DEPTH": 8})
+        files = sim.build_inputs(self.contract, [], [], Path("test_x.py"), pv,
+                                 clock_periods=sim.parse_periods("i_clk_rd=20"))
+        cfg = json.loads(files["nnc_interface.json"])
+        self.assertEqual(cfg["clocks"], {"i_clk_wr": 10, "i_clk_rd": 20})
+        self.assertEqual(cfg["parameters"]["LPARA_OCC_W"], 4)
+        self.assertNotIn("LPARA_OCC_W", files["Makefile"])
+        with self.assertRaises(ValueError):
+            sim.clock_table(self.iface, {"i_clk_x": 5})
+        sva_prompt = gen_sva.build_prompt("g", self.iface, [], {})
+        self.assertIn("@(posedge i_clk_rd) disable iff (!i_rst_n_rd)   signals: o_empty", sva_prompt)
+        self.assertIn("SEVERAL CLOCKS", gen_tests.build_prompt(self.contract, {"rules": []}))
+
+    def test_single_clock_prompts_unchanged(self):
+        spec = Path(self._tmp.name) / "one.md"
+        spec.write_text(MD_SPEC, encoding="utf-8")
+        iface = extract_interface(build_index(spec))
+        c = {"top": "m_demo", "interface": iface, "checks": []}
+        self.assertNotIn("SEVERAL CLOCKS", gen_sva.build_prompt("g", iface, [], {}))
+        self.assertNotIn("CLOCK DOMAINS", gen_tests.build_prompt(c, {"rules": []}))
+        self.assertNotIn("clocks", json.loads(sim.build_inputs(c, [], [], Path("t.py"), {})["nnc_interface.json"]))
+
+
 if __name__ == "__main__":
     unittest.main()

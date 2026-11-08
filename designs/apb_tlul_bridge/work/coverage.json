@@ -1,0 +1,113 @@
+{
+ "metric": "functional",
+ "target": 100.0,
+ "baseline": {
+  "hit": 38,
+  "total": 40,
+  "percent": 95.0,
+  "files": {
+   "nnc_cov.sv": {
+    "hit": 38,
+    "total": 40
+   }
+  }
+ },
+ "rounds": [
+  {
+   "round": 1,
+   "scenarios": [
+    {
+     "id": "COV-101",
+     "points": [
+      0
+     ],
+     "checks": [
+      "CHK-010",
+      "CHK-008",
+      "CHK-009",
+      "CHK-011",
+      "CHK-016",
+      "CHK-002",
+      "CHK-005",
+      "CHK-004"
+     ],
+     "rules": [
+      "BR-3-09",
+      "BR-5.3-06",
+      "BR-5.3-07",
+      "BR-10.1-03",
+      "BR-10.3-02",
+      "BR-15.2-08",
+      "BR-12-09",
+      "BR-3-06",
+      "BR-5.4-01",
+      "BR-3-10"
+     ],
+     "stimulus": "Default configuration, after a normal synchronous reset release with the APB idle. Run aligned reads (i_apb_pwrite=0, i_apb_paddr[1:0]=2'b00) and aligned full-strobe writes (i_apb_pstrb=4'b1111). For each one, drive one Setup cycle and then keep the Access phase going (i_apb_psel=1, i_apb_penable=1, address, data and control held stable) until o_apb_pready. The device asserts i_tlul_a_ready in the first cycle where o_tlul_a_valid=1, so the request is accepted at once. It then keeps i_tlul_d_valid=0 for a long time before it answers: it gives a single one-cycle correct response (i_tlul_d_opcode=3'b001 for the read, 3'b000 for the write, i_tlul_d_source=PARA_SRC_ID, i_tlul_d_error=0, random non-zero i_tlul_d_data) 8, 9, 12 and 20 cycles after the acceptance cycle. Also run a variant where i_tlul_a_ready is first held at 0 for 3 cycles and the response comes 10 cycles after acceptance. Repeat one long-delay read with i_tlul_d_error=1 so the error completion is also counted. During the wait, keep the APB requester in the Access phase and drive no other D-channel traffic. Between transfers, keep i_apb_psel=0 for 2 idle cycles."
+    },
+    {
+     "id": "COV-102",
+     "points": [
+      1
+     ],
+     "checks": [
+      "CHK-013",
+      "CHK-011",
+      "CHK-012",
+      "CHK-004",
+      "CHK-003",
+      "CHK-008",
+      "CHK-006",
+      "CHK-010"
+     ],
+     "rules": [
+      "BR-3-22",
+      "BR-6.2-15",
+      "BR-7.3-03",
+      "BR-15.3-06",
+      "BR-20-11",
+      "BR-3-11",
+      "BR-6.3-08",
+      "BR-10.1-06",
+      "BR-15.3-09",
+      "BR-7.3-05",
+      "BR-3-32",
+      "TL-T4.1.1-01"
+     ],
+     "stimulus": "Robustness case for a stale or orphan response at reset release, in the same style as the stale-response and orphan tests. Hold i_rst_n_core=0 for at least 5 rising edges with i_apb_psel=0 and i_tlul_a_ready=0. Drive i_tlul_d_valid=1 during reset with a correct-looking response: i_tlul_d_opcode=3'b001, i_tlul_d_source=PARA_SRC_ID, i_tlul_d_error=0 and random non-zero i_tlul_d_data. Release i_rst_n_core synchronously, 1 time unit after a rising edge. Keep i_tlul_d_valid=1 through the first rising edge after the release, then drop it 1 time unit after that edge. Keep the APB idle (i_apb_psel=0) for 5 more cycles. Then run one aligned full-strobe write and one aligned read with a prompt device. In a second run, pulse i_tlul_d_valid only in the cycle that ends at the first edge after release (low during reset), with i_tlul_d_opcode=3'b000 and i_tlul_d_error=1. Follow it with the same idle period and transfers. In a third run, start the APB Setup in the first cycle after release as well, so the Setup edge and the d_valid pulse coincide at that first edge."
+    }
+   ],
+   "tests": [
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "percent": 100.0,
+   "hit": 40,
+   "total": 40
+  }
+ ],
+ "unreachable": [],
+ "dropped": [],
+ "prompt_version": "closure-v1",
+ "usage": {
+  "calls": 3,
+  "cached": 0,
+  "cost_usd": 1.7674,
+  "input_tokens": 16,
+  "output_tokens": 37535,
+  "cache_creation_input_tokens": 123239,
+  "cache_read_input_tokens": 111524
+ },
+ "status": "target_met",
+ "final": {
+  "hit": 40,
+  "total": 40,
+  "percent": 100.0,
+  "files": {
+   "nnc_cov.sv": {
+    "hit": 40,
+    "total": 40
+   }
+  }
+ }
+}

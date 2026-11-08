@@ -1,0 +1,554 @@
+{
+ "module": "nnc_cov",
+ "file": "nnc_cov.sv",
+ "points": [
+  {
+   "id": "COVP-001",
+   "title": "Legal full-strobe write Setup",
+   "rules": [
+    "BR-1.3-01",
+    "BR-3-03",
+    "BR-3-01"
+   ],
+   "checks": [
+    "CHK-006",
+    "CHK-023"
+   ],
+   "condition": "Setup edge (psel=1, penable=0) with aligned address, pwrite=1 and pstrb=4'b1111."
+  },
+  {
+   "id": "COVP-002",
+   "title": "Legal read Setup",
+   "rules": [
+    "BR-1.3-02",
+    "BR-3-04",
+    "BR-3-05"
+   ],
+   "checks": [
+    "CHK-006",
+    "CHK-024"
+   ],
+   "condition": "Setup edge with aligned address and pwrite=0."
+  },
+  {
+   "id": "COVP-003",
+   "title": "Misaligned read Setup",
+   "rules": [
+    "BR-T1-04",
+    "BR-9-04",
+    "BR-2.3-02"
+   ],
+   "checks": [
+    "CHK-007",
+    "CHK-018"
+   ],
+   "condition": "Setup edge with pwrite=0 and paddr[1:0]!=0."
+  },
+  {
+   "id": "COVP-004",
+   "title": "Misaligned write with full strobe Setup",
+   "rules": [
+    "BR-T1-04",
+    "BR-T1-05",
+    "BR-12-04"
+   ],
+   "checks": [
+    "CHK-007",
+    "CHK-018"
+   ],
+   "condition": "Setup edge with pwrite=1, pstrb=4'b1111 and paddr[1:0]!=0."
+  },
+  {
+   "id": "COVP-005",
+   "title": "Aligned write with PSTRB zero Setup",
+   "rules": [
+    "BR-T1-03",
+    "BR-2.3-01",
+    "BR-20-05"
+   ],
+   "checks": [
+    "CHK-007",
+    "CHK-018"
+   ],
+   "condition": "Setup edge with aligned address, pwrite=1 and pstrb=4'b0000."
+  },
+  {
+   "id": "COVP-006",
+   "title": "Aligned write with partial PSTRB Setup",
+   "rules": [
+    "BR-T1-03",
+    "BR-1.1-04",
+    "BR-12-02"
+   ],
+   "checks": [
+    "CHK-007",
+    "CHK-018"
+   ],
+   "condition": "Setup edge with aligned address, pwrite=1 and pstrb neither 0 nor 4'b1111."
+  },
+  {
+   "id": "COVP-007",
+   "title": "Aligned read with PSTRB not full (ignored)",
+   "rules": [
+    "BR-3-05",
+    "BR-6.3-04"
+   ],
+   "checks": [
+    "CHK-006",
+    "CHK-024"
+   ],
+   "condition": "Setup edge with aligned address, pwrite=0 and pstrb!=4'b1111."
+  },
+  {
+   "id": "COVP-008",
+   "title": "Legal Setup at highest word address",
+   "rules": [
+    "BR-9-03"
+   ],
+   "checks": [
+    "CHK-006"
+   ],
+   "condition": "Legal Setup edge with all address bits [PARA_ADDR_W-1:2] set."
+  },
+  {
+   "id": "COVP-009",
+   "title": "Write completes in 3 Access cycles with PRDATA 0",
+   "rules": [
+    "BR-3-34",
+    "BR-13-01",
+    "BR-15.2-02",
+    "BR-3-10"
+   ],
+   "checks": [
+    "CHK-023",
+    "CHK-005"
+   ],
+   "condition": "PREADY edge for a write after 2 earlier Access cycles, no PSLVERR, PRDATA=0."
+  },
+  {
+   "id": "COVP-010",
+   "title": "Read completes in 3 Access cycles",
+   "rules": [
+    "BR-3-34",
+    "BR-15.2-05",
+    "BR-3-09"
+   ],
+   "checks": [
+    "CHK-024"
+   ],
+   "condition": "PREADY edge for a read after 2 earlier Access cycles, no PSLVERR."
+  },
+  {
+   "id": "COVP-011",
+   "title": "Write with same-cycle response, 2 Access cycles",
+   "rules": [
+    "BR-3-35",
+    "BR-6.3-09",
+    "BR-13-02"
+   ],
+   "checks": [
+    "CHK-027"
+   ],
+   "condition": "PREADY edge for a write after 1 earlier Access cycle without PSLVERR."
+  },
+  {
+   "id": "COVP-012",
+   "title": "Read with same-cycle response, 2 Access cycles",
+   "rules": [
+    "BR-3-35",
+    "BR-5.3-08",
+    "BR-15.2-10"
+   ],
+   "checks": [
+    "CHK-027"
+   ],
+   "condition": "PREADY edge for a read after 1 earlier Access cycle without PSLVERR."
+  },
+  {
+   "id": "COVP-013",
+   "title": "Local error completion in 1 Access cycle",
+   "rules": [
+    "BR-13-03",
+    "BR-3-24",
+    "BR-10.3-01",
+    "BR-12-01"
+   ],
+   "checks": [
+    "CHK-007",
+    "CHK-018"
+   ],
+   "condition": "PREADY edge in the first Access cycle with PSLVERR=1 and PRDATA=0."
+  },
+  {
+   "id": "COVP-014",
+   "title": "Channel A back-pressure",
+   "rules": [
+    "BR-3-08",
+    "BR-10.3-02",
+    "BR-5.4-03"
+   ],
+   "checks": [
+    "CHK-015",
+    "CHK-026"
+   ],
+   "condition": "a_valid=1 and a_ready=0."
+  },
+  {
+   "id": "COVP-015",
+   "title": "Channel A accepted after 3 or more stall cycles",
+   "rules": [
+    "BR-6.3-07",
+    "BR-15.2-08"
+   ],
+   "checks": [
+    "CHK-015",
+    "CHK-016",
+    "CHK-026"
+   ],
+   "condition": "a_valid and a_ready both 1 after at least 3 consecutive stall cycles."
+  },
+  {
+   "id": "COVP-016",
+   "title": "Response in acceptance cycle after back-pressure",
+   "rules": [
+    "BR-6.3-09",
+    "BR-10.1-05"
+   ],
+   "checks": [
+    "CHK-027",
+    "CHK-026"
+   ],
+   "condition": "Acceptance edge following at least 1 stall cycle with d_valid=1 at the same edge."
+  },
+  {
+   "id": "COVP-017",
+   "title": "Response delayed 1 to 3 cycles after acceptance",
+   "rules": [
+    "BR-3-34",
+    "BR-5.3-06"
+   ],
+   "checks": [
+    "CHK-010",
+    "CHK-026"
+   ],
+   "condition": "Counted response where the request was pending for 1 to 3 cycles earlier."
+  },
+  {
+   "id": "COVP-018",
+   "title": "Response delayed 8 or more cycles",
+   "rules": [
+    "BR-3-34",
+    "BR-6.3-08"
+   ],
+   "checks": [
+    "CHK-010",
+    "CHK-026"
+   ],
+   "condition": "Counted response where the request was pending for at least 8 cycles earlier."
+  },
+  {
+   "id": "COVP-019",
+   "title": "Write response with d_error",
+   "rules": [
+    "BR-1.3-04",
+    "BR-20-10",
+    "BR-6.3-14"
+   ],
+   "checks": [
+    "CHK-019",
+    "CHK-005"
+   ],
+   "condition": "Counted response for a write with d_error=1, correct opcode and source."
+  },
+  {
+   "id": "COVP-020",
+   "title": "Read response with d_error",
+   "rules": [
+    "BR-1.3-04",
+    "BR-20-10",
+    "BR-6.3-15",
+    "BR-9-10"
+   ],
+   "checks": [
+    "CHK-019",
+    "CHK-005"
+   ],
+   "condition": "Counted response for a read with d_error=1, correct opcode and source."
+  },
+  {
+   "id": "COVP-021",
+   "title": "Write answered with AccessAckData",
+   "rules": [
+    "BR-9-09",
+    "BR-6.3-14"
+   ],
+   "checks": [
+    "CHK-020"
+   ],
+   "condition": "Counted response for a write with d_opcode=3'b001."
+  },
+  {
+   "id": "COVP-022",
+   "title": "Read answered with AccessAck",
+   "rules": [
+    "BR-9-09",
+    "BR-6.3-15"
+   ],
+   "checks": [
+    "CHK-020"
+   ],
+   "condition": "Counted response for a read with d_opcode=3'b000."
+  },
+  {
+   "id": "COVP-023",
+   "title": "Undefined d_opcode on a counted response",
+   "rules": [
+    "TL-T4.1.3.4-08",
+    "BR-9-09"
+   ],
+   "checks": [
+    "CHK-020"
+   ],
+   "condition": "Counted response with d_opcode greater than 3'b001."
+  },
+  {
+   "id": "COVP-024",
+   "title": "Wrong d_source on a counted response",
+   "rules": [
+    "BR-8-04",
+    "BR-20-10",
+    "TL-T4.1.3.2.3-01"
+   ],
+   "checks": [
+    "CHK-020"
+   ],
+   "condition": "Counted response with d_source!=PARA_SRC_ID."
+  },
+  {
+   "id": "COVP-025",
+   "title": "Orphan response while APB idle",
+   "rules": [
+    "BR-3-11",
+    "BR-6.3-08",
+    "TL-T4.1.3.5-08",
+    "BR-10.1-06"
+   ],
+   "checks": [
+    "CHK-021",
+    "CHK-011"
+   ],
+   "condition": "d_valid=1, not a counted response, and psel=0."
+  },
+  {
+   "id": "COVP-026",
+   "title": "Orphan response during Setup or blocked channel A",
+   "rules": [
+    "BR-10.1-06",
+    "BR-15.3-09"
+   ],
+   "checks": [
+    "CHK-021",
+    "CHK-011"
+   ],
+   "condition": "d_valid=1, not counted, and either Setup phase or a_valid=1 with a_ready=0."
+  },
+  {
+   "id": "COVP-027",
+   "title": "Orphan response in the PREADY cycle",
+   "rules": [
+    "BR-6.3-08",
+    "BR-15.2-09"
+   ],
+   "checks": [
+    "CHK-021",
+    "CHK-011",
+    "CHK-002"
+   ],
+   "condition": "d_valid=1, not counted, with o_apb_pready=1."
+  },
+  {
+   "id": "COVP-028",
+   "title": "No response for 16 or more Access cycles",
+   "rules": [
+    "BR-12-09",
+    "BR-20-07"
+   ],
+   "checks": [
+    "CHK-022"
+   ],
+   "condition": "Access cycle without PREADY after at least 16 earlier Access cycles."
+  },
+  {
+   "id": "COVP-029",
+   "title": "Ignored response fields non-default",
+   "rules": [
+    "BR-8-06",
+    "BR-8-07",
+    "TL-T3.3-02"
+   ],
+   "checks": [
+    "CHK-025"
+   ],
+   "condition": "Counted response with d_param nonzero, d_size!=2, d_sink nonzero or d_user nonzero."
+  },
+  {
+   "id": "COVP-030",
+   "title": "Non-zero PPROT on a legal Setup",
+   "rules": [
+    "BR-2.3-03"
+   ],
+   "checks": [
+    "CHK-025"
+   ],
+   "condition": "Legal Setup edge with pprot!=0."
+  },
+  {
+   "id": "COVP-031",
+   "title": "Back-to-back write then read, PSEL held",
+   "rules": [
+    "BR-3-14",
+    "BR-1.3-05",
+    "BR-3-37",
+    "BR-3-38"
+   ],
+   "checks": [
+    "CHK-028"
+   ],
+   "condition": "Setup in the cycle after PREADY, previous transfer a legal write, new one a legal read."
+  },
+  {
+   "id": "COVP-032",
+   "title": "Back-to-back read then write, PSEL held",
+   "rules": [
+    "BR-3-14",
+    "BR-6.3-05",
+    "BR-20-12"
+   ],
+   "checks": [
+    "CHK-028"
+   ],
+   "condition": "Setup in the cycle after PREADY, previous transfer a legal read, new one a legal write."
+  },
+  {
+   "id": "COVP-033",
+   "title": "Back-to-back legal then illegal",
+   "rules": [
+    "BR-3-14",
+    "BR-3-38"
+   ],
+   "checks": [
+    "CHK-028",
+    "CHK-018"
+   ],
+   "condition": "Setup in the cycle after PREADY, previous transfer legal, new one illegal."
+  },
+  {
+   "id": "COVP-034",
+   "title": "Back-to-back illegal then legal",
+   "rules": [
+    "BR-3-37",
+    "BR-3-38",
+    "BR-13-04"
+   ],
+   "checks": [
+    "CHK-028",
+    "CHK-018"
+   ],
+   "condition": "Setup in the cycle after PREADY, previous transfer illegal, new one legal."
+  },
+  {
+   "id": "COVP-035",
+   "title": "Back-to-back illegal then illegal",
+   "rules": [
+    "BR-3-14",
+    "BR-13-04"
+   ],
+   "checks": [
+    "CHK-028",
+    "CHK-018"
+   ],
+   "condition": "Setup in the cycle after PREADY, previous and new transfers both illegal."
+  },
+  {
+   "id": "COVP-036",
+   "title": "Recovery after reset during pending a_valid",
+   "rules": [
+    "BR-3-32",
+    "BR-7.3-05",
+    "BR-15.2-11"
+   ],
+   "checks": [
+    "CHK-031",
+    "CHK-030"
+   ],
+   "condition": "PREADY of a new transfer after a reset that hit while a_valid was high, the new Setup seen after release."
+  },
+  {
+   "id": "COVP-037",
+   "title": "Recovery after reset while waiting for response",
+   "rules": [
+    "BR-3-32",
+    "BR-7.3-05",
+    "BR-15.2-11"
+   ],
+   "checks": [
+    "CHK-031",
+    "CHK-030"
+   ],
+   "condition": "PREADY of a new transfer after a reset that hit while a request was accepted and awaiting a response, the new Setup seen after release."
+  },
+  {
+   "id": "COVP-038",
+   "title": "Setup at first edge after reset release",
+   "rules": [
+    "BR-5.3-12",
+    "BR-7.3-01"
+   ],
+   "checks": [
+    "CHK-030",
+    "CHK-013"
+   ],
+   "condition": "Setup edge where reset was asserted at the previous edge."
+  },
+  {
+   "id": "COVP-039",
+   "title": "d_valid at first edge after reset release",
+   "rules": [
+    "BR-6.2-15",
+    "BR-20-11"
+   ],
+   "checks": [
+    "CHK-030",
+    "CHK-013"
+   ],
+   "condition": "d_valid=1 at the first edge after reset release."
+  },
+  {
+   "id": "COVP-040",
+   "title": "Back-to-back write then write, PSEL held",
+   "rules": [
+    "BR-3-14",
+    "BR-6.3-05",
+    "BR-3-37"
+   ],
+   "checks": [
+    "CHK-028"
+   ],
+   "condition": "Setup in the cycle after PREADY, previous transfer a legal write, new one a legal write."
+  }
+ ],
+ "status": "lint_clean",
+ "attempts": 1,
+ "problems": [],
+ "lint_errors": "",
+ "usage": {
+  "calls": 1,
+  "cached": 0,
+  "cost_usd": 0.2892,
+  "input_tokens": 2,
+  "output_tokens": 22978,
+  "cache_creation_input_tokens": 14461,
+  "cache_read_input_tokens": 718
+ },
+ "prompt_version": "cov-v1"
+}

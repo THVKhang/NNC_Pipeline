@@ -1,5 +1,5 @@
 {
- "date": "2026-11-07T17:30:56+00:00",
+ "date": "2026-11-08T10:49:51+00:00",
  "seed": 1,
  "rtl_files": [
   "m_apb_if.sv",
@@ -22,162 +22,173 @@
  "host": "wsl",
  "tests": [
   {
-   "name": "test_chk_017_illegal_strobe",
+   "name": "test_chk_018_local_error",
    "status": "pass",
-   "sim_time_ns": "1095.0"
+   "sim_time_ns": "1785.0"
   },
   {
-   "name": "test_chk_018_misaligned_address",
+   "name": "test_chk_019_device_error",
    "status": "pass",
-   "sim_time_ns": "1635.0000000000002"
+   "sim_time_ns": "1435.0000000000002"
   },
   {
-   "name": "test_chk_019_back_to_back",
-   "status": "pass",
-   "sim_time_ns": "15955.0"
-  },
-  {
-   "name": "test_chk_020_ignored_inputs",
-   "status": "pass",
-   "sim_time_ns": "10925.0"
-  },
-  {
-   "name": "test_chk_021_random_scoreboard",
+   "name": "test_chk_020_wrong_opcode_source",
    "status": "fail",
-   "sim_time_ns": "591735.0",
-   "message": "CHK-021: transfer #3 (read paddr=0x8869ceb8 pstrb=0x0): expected o_apb_pslverr=1 got 0 [209 scoreboard errors]",
+   "sim_time_ns": "1585.0000000000005",
+   "message": "CHK-010: expected o_apb_pslverr=1 at cycle 157 got 0",
    "exception": "AssertionError",
-   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/sim_2c8417b9/test_apb_tlul_bridge.py\", line 885, in test_chk_021_random_scoreboard\n                                                            env.scoreboard()\n                                                          File \"/root/nnc_runs/sim_2c8417b9/test_apb_tlul_bridge.py\", line 654, in scoreboard\n                                                            assert not errs, f\"{errs[0]} [{len(errs)} scoreboard errors]\"\n                                                        AssertionError: CHK-021: transfer #3 (read paddr=0x8869ceb8 pstrb=0x0): expected o_apb_pslverr=1 got 0 [209 scoreboard errors]\n                                                        assert not ['CHK-021: transfer #3 (read paddr=0x8869ceb8 pstrb=0x0): expected o_apb_pslverr=1 got 0', 'CHK-021: transfer #3 (read...a=0x0 got 2963714392', 'CHK-021: transfer #140 (read paddr=0xcc8087b4 pstrb=0x0): expected o_apb_pslverr=1 got 0', ...]\n621345.00ns WARNING  cocotb.regression                  test_apb_tlul_bridge.test_chk_021_random_scoreboard failed",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/sim_d1a2ec55/test_apb_tlul_bridge.py\", line 794, in test_chk_020_wrong_opcode_source\n                                                            await b.run(seq)\n                                                          File \"/root/nnc_runs/sim_d1a2ec55/test_apb_tlul_bridge.py\", line 624, in run\n                                                            await self.cycle()\n                                                          File \"/root/nnc_runs/sim_d1a2ec55/test_apb_tlul_bridge.py\", line 553, in cycle\n                                                            self._finalize()\n                                                          File \"/root/nnc_runs/sim_d1a2ec55/test_apb_tlul_bridge.py\", line 525, in _finalize\n                                                            self.mon.check(r)\n                                                          File \"/root/nnc_runs/sim_d1a2ec55/test_apb_tlul_bridge.py\", line 227, in check\n                                                            assert r[\"o_apb_pslverr\"] == e[0], \\\n                                                        AssertionError: CHK-010: expected o_apb_pslverr=1 at cycle 157 got 0\n                                                        assert 0 == 1\n  4805.00ns WARNING  cocotb.regression                  test_apb_tlul_bridge.test_chk_020_wrong_opcode_source failed",
    "checks": [
-    "CHK-021"
+    "CHK-010",
+    "CHK-020"
    ]
   },
   {
-   "name": "test_chk_022_async_reset",
+   "name": "test_chk_021_orphan_responses",
    "status": "pass",
-   "sim_time_ns": "925.0"
+   "sim_time_ns": "2035.0"
   },
   {
-   "name": "test_chk_023_reset_mid_transfer",
+   "name": "test_chk_022_no_response_no_timeout",
    "status": "pass",
-   "sim_time_ns": "1565.0"
+   "sim_time_ns": "20235.0"
   },
   {
-   "name": "test_chk_024_write_prompt",
+   "name": "test_chk_023_prompt_write",
    "status": "pass",
-   "sim_time_ns": "2145.0"
+   "sim_time_ns": "1275.0"
   },
   {
-   "name": "test_chk_025_read_prompt",
+   "name": "test_chk_024_prompt_read",
    "status": "pass",
-   "sim_time_ns": "2185.0"
+   "sim_time_ns": "1655.0"
   },
   {
-   "name": "test_chk_026_same_cycle_response",
+   "name": "test_chk_025_ignored_inputs",
    "status": "pass",
-   "sim_time_ns": "1035.0"
+   "sim_time_ns": "5424.999999999996"
   },
   {
-   "name": "test_chk_027_d_error",
+   "name": "test_chk_026_backpressure_delay",
    "status": "pass",
-   "sim_time_ns": "1575.0"
+   "sim_time_ns": "11355.0"
   },
   {
-   "name": "test_chk_028_wrong_opcode_source",
+   "name": "test_chk_027_same_cycle_response",
+   "status": "pass",
+   "sim_time_ns": "1055.0"
+  },
+  {
+   "name": "test_chk_028_back_to_back",
+   "status": "pass",
+   "sim_time_ns": "15465.0"
+  },
+  {
+   "name": "test_chk_029_random_scoreboard",
    "status": "fail",
-   "sim_time_ns": "3745.0",
-   "message": "CHK-028: transfer #29 (read paddr=0x8d503b90 pstrb=0x0): expected o_apb_pslverr=1 got 0 [33 scoreboard errors]",
+   "sim_time_ns": "3125.0",
+   "message": "CHK-010: expected o_apb_pslverr=1 at cycle 311 got 0",
    "exception": "AssertionError",
-   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/sim_2c8417b9/test_apb_tlul_bridge.py\", line 1172, in test_chk_028_wrong_opcode_source\n                                                            env.scoreboard()\n                                                          File \"/root/nnc_runs/sim_2c8417b9/test_apb_tlul_bridge.py\", line 654, in scoreboard\n                                                            assert not errs, f\"{errs[0]} [{len(errs)} scoreboard errors]\"\n                                                        AssertionError: CHK-028: transfer #29 (read paddr=0x8d503b90 pstrb=0x0): expected o_apb_pslverr=1 got 0 [33 scoreboard errors]\n                                                        assert not ['CHK-028: transfer #29 (read paddr=0x8d503b90 pstrb=0x0): expected o_apb_pslverr=1 got 0', 'CHK-028: transfer #29 (re...a=0x0 got 2355128969', 'CHK-028: transfer #35 (write paddr=0xb7eec238 pstrb=0xf): expected o_apb_pslverr=1 got 0', ...]\n634520.01ns WARNING  cocotb.regression                  test_apb_tlul_bridge.test_chk_028_wrong_opcode_source failed",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/sim_d1a2ec55/test_apb_tlul_bridge.py\", line 1157, in test_chk_029_random_scoreboard\n                                                            await b.run(seq)\n                                                          File \"/root/nnc_runs/sim_d1a2ec55/test_apb_tlul_bridge.py\", line 624, in run\n                                                            await self.cycle()\n                                                          File \"/root/nnc_runs/sim_d1a2ec55/test_apb_tlul_bridge.py\", line 553, in cycle\n                                                            self._finalize()\n                                                          File \"/root/nnc_runs/sim_d1a2ec55/test_apb_tlul_bridge.py\", line 525, in _finalize\n                                                            self.mon.check(r)\n                                                          File \"/root/nnc_runs/sim_d1a2ec55/test_apb_tlul_bridge.py\", line 227, in check\n                                                            assert r[\"o_apb_pslverr\"] == e[0], \\\n                                                        AssertionError: CHK-010: expected o_apb_pslverr=1 at cycle 311 got 0\n                                                        assert 0 == 1\n 66430.01ns WARNING  cocotb.regression                  test_apb_tlul_bridge.test_chk_029_random_scoreboard failed",
    "checks": [
-    "CHK-028"
+    "CHK-010",
+    "CHK-029"
    ]
   },
   {
-   "name": "test_chk_029_backpressure",
+   "name": "test_chk_030_reset",
    "status": "pass",
-   "sim_time_ns": "4965.0"
+   "sim_time_ns": "435.0"
   },
   {
-   "name": "test_chk_030_orphan_responses",
+   "name": "test_chk_031_reset_abandons_transfer",
    "status": "pass",
-   "sim_time_ns": "3275.0"
-  },
-  {
-   "name": "test_chk_031_no_response",
-   "status": "pass",
-   "sim_time_ns": "2305.0"
+   "sim_time_ns": "1665.0"
   },
   {
    "name": "test_regression_random",
    "status": "pass",
-   "sim_time_ns": "249395.0"
+   "sim_time_ns": "287475.0"
+  },
+  {
+   "name": "test_cov_101_long_response_delay",
+   "status": "pass",
+   "sim_time_ns": "2265.0"
+  },
+  {
+   "name": "test_cov_102_stale_response_at_reset_release",
+   "status": "pass",
+   "sim_time_ns": "1135.0"
   }
  ],
  "assertions": {
   "CHK-014": {
-   "hits": 89454,
+   "hits": 3558,
    "fails": 0
   },
   "CHK-015": {
-   "hits": 25700,
+   "hits": 8916,
    "fails": 0
   },
   "CHK-016": {
-   "hits": 6936,
+   "hits": 3557,
+   "fails": 0
+  },
+  "CHK-017": {
+   "hits": 35949,
    "fails": 0
   },
   "CHK-012": {
-   "hits": 89415,
+   "hits": 196,
    "fails": 0
   },
   "CHK-013": {
-   "hits": 189,
-   "fails": 0
-  },
-  "CHK-005": {
-   "hits": 7927,
+   "hits": 35716,
    "fails": 0
   },
   "CHK-006": {
-   "hits": 6938,
+   "hits": 3561,
    "fails": 0
   },
   "CHK-007": {
-   "hits": 6938,
+   "hits": 199,
    "fails": 0
   },
   "CHK-008": {
-   "hits": 986,
+   "hits": 12473,
    "fails": 0
   },
   "CHK-009": {
-   "hits": 6931,
-   "fails": 156,
-   "first_fail_time": 30110000
-  },
-  "CHK-010": {
-   "hits": 7917,
+   "hits": 12473,
    "fails": 0
   },
+  "CHK-010": {
+   "hits": 3554,
+   "fails": 2,
+   "first_fail_time": 4800000
+  },
   "CHK-011": {
-   "hits": 6902,
+   "hits": 3750,
    "fails": 0
   },
   "CHK-001": {
-   "hits": 7917,
+   "hits": 3750,
    "fails": 0
   },
   "CHK-002": {
-   "hits": 7917,
+   "hits": 3750,
    "fails": 0
   },
   "CHK-003": {
-   "hits": 1480,
+   "hits": 422,
    "fails": 0
   },
   "CHK-004": {
-   "hits": 5095,
+   "hits": 31966,
+   "fails": 0
+  },
+  "CHK-005": {
+   "hits": 2045,
    "fails": 0
   }
  },
@@ -185,26 +196,452 @@
  "coverage": {
   "status": "measured",
   "metric": "line",
-  "hit": 80,
-  "total": 82,
-  "percent": 97.6,
+  "hit": 192,
+  "total": 200,
+  "percent": 96.0,
   "files": {
    "m_apb_if.sv": {
-    "hit": 37,
-    "total": 38
+    "hit": 71,
+    "total": 72
+   },
+   "m_apb_tlul_bridge.sv": {
+    "hit": 36,
+    "total": 39
    },
    "m_tlul_if.sv": {
-    "hit": 43,
-    "total": 44
+    "hit": 85,
+    "total": 89
    }
-  }
+  },
+  "metrics": {
+   "line": {
+    "hit": 192,
+    "total": 200,
+    "percent": 96.0,
+    "files": {
+     "m_apb_if.sv": {
+      "hit": 71,
+      "total": 72
+     },
+     "m_apb_tlul_bridge.sv": {
+      "hit": 36,
+      "total": 39
+     },
+     "m_tlul_if.sv": {
+      "hit": 85,
+      "total": 89
+     }
+    }
+   },
+   "block": {
+    "hit": 43,
+    "total": 45,
+    "percent": 95.6,
+    "files": {
+     "m_apb_if.sv": {
+      "hit": 19,
+      "total": 20
+     },
+     "m_tlul_if.sv": {
+      "hit": 24,
+      "total": 25
+     }
+    }
+   },
+   "expression": {
+    "hit": 46,
+    "total": 46,
+    "percent": 100.0,
+    "files": {
+     "m_apb_if.sv": {
+      "hit": 21,
+      "total": 21
+     },
+     "m_tlul_if.sv": {
+      "hit": 25,
+      "total": 25
+     }
+    }
+   },
+   "toggle": {
+    "hit": 1920,
+    "total": 2002,
+    "percent": 95.9,
+    "files": {
+     "m_apb_if.sv": {
+      "hit": 562,
+      "total": 562
+     },
+     "m_apb_tlul_bridge.sv": {
+      "hit": 657,
+      "total": 696
+     },
+     "m_tlul_if.sv": {
+      "hit": 701,
+      "total": 744
+     }
+    }
+   },
+   "functional": {
+    "hit": 40,
+    "total": 40,
+    "percent": 100.0,
+    "files": {
+     "nnc_cov.sv": {
+      "hit": 40,
+      "total": 40
+     }
+    }
+   }
+  },
+  "uncovered": [
+   {
+    "metric": "block",
+    "file": "m_apb_if.sv",
+    "line": 100,
+    "what": "case",
+    "points": 1,
+    "detail": [
+     "case"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_tlul_if.sv",
+    "line": 144,
+    "what": "case",
+    "points": 1,
+    "detail": [
+     "case"
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_apb_if.sv",
+    "line": 100,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_apb_tlul_bridge.sv",
+    "line": 63,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_apb_tlul_bridge.sv",
+    "line": 65,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_apb_tlul_bridge.sv",
+    "line": 69,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_tlul_if.sv",
+    "line": 54,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_tlul_if.sv",
+    "line": 56,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_tlul_if.sv",
+    "line": 60,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_tlul_if.sv",
+    "line": 144,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_apb_tlul_bridge.sv",
+    "line": 65,
+    "what": "o_tlul_a_source",
+    "points": 16,
+    "detail": [
+     "o_tlul_a_source[0]:0->1",
+     "o_tlul_a_source[0]:1->0",
+     "o_tlul_a_source[1]:0->1",
+     "o_tlul_a_source[1]:1->0",
+     "o_tlul_a_source[2]:0->1",
+     "o_tlul_a_source[2]:1->0",
+     "o_tlul_a_source[3]:0->1",
+     "o_tlul_a_source[3]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_tlul_if.sv",
+    "line": 56,
+    "what": "o_tlul_a_source",
+    "points": 16,
+    "detail": [
+     "o_tlul_a_source[0]:0->1",
+     "o_tlul_a_source[0]:1->0",
+     "o_tlul_a_source[1]:0->1",
+     "o_tlul_a_source[1]:1->0",
+     "o_tlul_a_source[2]:0->1",
+     "o_tlul_a_source[2]:1->0",
+     "o_tlul_a_source[3]:0->1",
+     "o_tlul_a_source[3]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_apb_tlul_bridge.sv",
+    "line": 63,
+    "what": "o_tlul_a_param",
+    "points": 6,
+    "detail": [
+     "o_tlul_a_param[0]:0->1",
+     "o_tlul_a_param[0]:1->0",
+     "o_tlul_a_param[1]:0->1",
+     "o_tlul_a_param[1]:1->0",
+     "o_tlul_a_param[2]:0->1",
+     "o_tlul_a_param[2]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_tlul_if.sv",
+    "line": 54,
+    "what": "o_tlul_a_param",
+    "points": 6,
+    "detail": [
+     "o_tlul_a_param[0]:0->1",
+     "o_tlul_a_param[0]:1->0",
+     "o_tlul_a_param[1]:0->1",
+     "o_tlul_a_param[1]:1->0",
+     "o_tlul_a_param[2]:0->1",
+     "o_tlul_a_param[2]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_apb_tlul_bridge.sv",
+    "line": 62,
+    "what": "o_tlul_a_opcode",
+    "points": 4,
+    "detail": [
+     "o_tlul_a_opcode[0]:0->1",
+     "o_tlul_a_opcode[0]:1->0",
+     "o_tlul_a_opcode[1]:0->1",
+     "o_tlul_a_opcode[1]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_apb_tlul_bridge.sv",
+    "line": 66,
+    "what": "o_tlul_a_address",
+    "points": 4,
+    "detail": [
+     "o_tlul_a_address[0]:0->1",
+     "o_tlul_a_address[0]:1->0",
+     "o_tlul_a_address[1]:0->1",
+     "o_tlul_a_address[1]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_apb_tlul_bridge.sv",
+    "line": 67,
+    "what": "o_tlul_a_mask",
+    "points": 4,
+    "detail": [
+     "o_tlul_a_mask[0]:1->0",
+     "o_tlul_a_mask[1]:1->0",
+     "o_tlul_a_mask[2]:1->0",
+     "o_tlul_a_mask[3]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_tlul_if.sv",
+    "line": 53,
+    "what": "o_tlul_a_opcode",
+    "points": 4,
+    "detail": [
+     "o_tlul_a_opcode[0]:0->1",
+     "o_tlul_a_opcode[0]:1->0",
+     "o_tlul_a_opcode[1]:0->1",
+     "o_tlul_a_opcode[1]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_tlul_if.sv",
+    "line": 57,
+    "what": "o_tlul_a_address",
+    "points": 4,
+    "detail": [
+     "o_tlul_a_address[0]:0->1",
+     "o_tlul_a_address[0]:1->0",
+     "o_tlul_a_address[1]:0->1",
+     "o_tlul_a_address[1]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_tlul_if.sv",
+    "line": 58,
+    "what": "o_tlul_a_mask",
+    "points": 4,
+    "detail": [
+     "o_tlul_a_mask[0]:1->0",
+     "o_tlul_a_mask[1]:1->0",
+     "o_tlul_a_mask[2]:1->0",
+     "o_tlul_a_mask[3]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_tlul_if.sv",
+    "line": 86,
+    "what": "w_exp_opcode",
+    "points": 4,
+    "detail": [
+     "w_exp_opcode[1]:0->1",
+     "w_exp_opcode[1]:1->0",
+     "w_exp_opcode[2]:0->1",
+     "w_exp_opcode[2]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_apb_tlul_bridge.sv",
+    "line": 64,
+    "what": "o_tlul_a_size",
+    "points": 3,
+    "detail": [
+     "o_tlul_a_size[0]:0->1",
+     "o_tlul_a_size[0]:1->0",
+     "o_tlul_a_size[1]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_tlul_if.sv",
+    "line": 55,
+    "what": "o_tlul_a_size",
+    "points": 3,
+    "detail": [
+     "o_tlul_a_size[0]:0->1",
+     "o_tlul_a_size[0]:1->0",
+     "o_tlul_a_size[1]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_apb_tlul_bridge.sv",
+    "line": 69,
+    "what": "o_tlul_a_user",
+    "points": 2,
+    "detail": [
+     "o_tlul_a_user[0]:0->1",
+     "o_tlul_a_user[0]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_tlul_if.sv",
+    "line": 60,
+    "what": "o_tlul_a_user",
+    "points": 2,
+    "detail": [
+     "o_tlul_a_user[0]:0->1",
+     "o_tlul_a_user[0]:1->0"
+    ]
+   }
+  ]
+ },
+ "functional": {
+  "COVP-001": 1748,
+  "COVP-002": 1813,
+  "COVP-003": 52,
+  "COVP-004": 45,
+  "COVP-005": 1,
+  "COVP-006": 99,
+  "COVP-007": 1711,
+  "COVP-008": 1,
+  "COVP-009": 387,
+  "COVP-010": 442,
+  "COVP-011": 128,
+  "COVP-012": 121,
+  "COVP-013": 199,
+  "COVP-014": 8916,
+  "COVP-015": 1319,
+  "COVP-016": 241,
+  "COVP-017": 728,
+  "COVP-018": 10,
+  "COVP-019": 112,
+  "COVP-020": 96,
+  "COVP-021": 1,
+  "COVP-022": 1,
+  "COVP-023": 13,
+  "COVP-024": 2,
+  "COVP-025": 33,
+  "COVP-026": 18,
+  "COVP-027": 4,
+  "COVP-028": 1981,
+  "COVP-029": 78,
+  "COVP-030": 3094,
+  "COVP-031": 299,
+  "COVP-032": 276,
+  "COVP-033": 31,
+  "COVP-034": 36,
+  "COVP-035": 13,
+  "COVP-036": 3,
+  "COVP-037": 3,
+  "COVP-038": 3,
+  "COVP-039": 4,
+  "COVP-040": 266
  },
  "make_rc": 2,
  "built": true,
  "build_errors": [],
- "unreviewed_gates": [
-  "G1_rules",
-  "G2_contract",
-  "G3_verif_sources"
- ]
+ "unreviewed_gates": []
 }

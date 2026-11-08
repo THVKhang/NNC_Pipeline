@@ -14,7 +14,7 @@ from pathlib import Path
 
 from nnc.agents.backend import AgentTask
 from nnc.agents.runtime import Usage
-from nnc.contract import module_header
+from nnc.contract import module_header, multi_clock
 from nnc.simhost import SimHost, lint_sv
 
 PROMPT_VERSION = "sva-v1"
@@ -89,6 +89,19 @@ def build_prompt(group: str, iface: dict, checks: list[dict], rules_by_id: dict)
         lines.append(f"[{c['id']}] {c['title']} (rules {', '.join(c['rules'])})\n  BEHAVIOR: {c['behavior']}\n"
                      f"  SOURCE: {quotes}")
     rules = RULES_TEXT.replace("{clk}", iface["clock"] or "clk").replace("{rst_off}", _reset_off(iface))
+    if multi_clock(iface):
+        doms = []
+        for c in iface["clocks"]:
+            rs = [r for r in iface["resets"] if r["clock"] == c["name"]]
+            off = " || ".join(f"!{r['name']}" if r["active_low"] else r["name"] for r in rs) or "1'b0"
+            sig = [p["name"] for p in iface["ports"] if p.get("domain") == c["domain"]
+                   and p["name"] not in {c["name"], *(r["name"] for r in rs)}]
+            doms.append(f"  @(posedge {c['name']}) disable iff ({off})   signals: {', '.join(sig)}")
+        rules += ("- SEVERAL CLOCKS: the template above shows the first clock. Write each assertion, its hit "
+                  "counter and its helper registers on the clock of the domain of the signals it checks, with "
+                  "that domain's reset:\n" + "\n".join(doms) + "\n  A check that relates signals of two "
+                  "domains samples on the clock of the domain of its consequent and uses only $past/$stable of "
+                  "that clock.\n")
     return (f"INTERFACE (all are inputs of the checker; directions are as seen by the DUT)\n{ports}\n\n"
             f"EXISTING CODE (header and counters)\n```systemverilog\n{head}\n```\n"
             f"EXISTING CODE (end)\n```systemverilog\n{tail}\n```\n\n"

@@ -1,0 +1,1509 @@
+{
+ "date": "2026-11-08T10:09:43+00:00",
+ "seed": 1,
+ "rtl_files": [
+  "m_axi2apb_apb_ctrl.sv",
+  "m_axi2apb_rd_seq.sv",
+  "m_axi2apb_wr_seq.sv",
+  "m_axi2apb_bridge.sv"
+ ],
+ "integration": {
+  "ok": true,
+  "issues": []
+ },
+ "status": "ran",
+ "params": {
+  "PARA_AXI_ID_W": 4
+ },
+ "host": "wsl",
+ "tests": [
+  {
+   "name": "test_chk_018_long_apb_wait",
+   "status": "pass",
+   "sim_time_ns": "20395.0"
+  },
+  {
+   "name": "test_chk_019_arbitration_round_robin",
+   "status": "fail",
+   "sim_time_ns": "1045.0",
+   "message": "CHK-019: phase D tie won by W4 after 1 completion got W4=85 R4=73",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/sim_11d1741f/test_axi2apb_bridge.py\", line 1078, in test_chk_019_arbitration_round_robin\n                                                            assert w4.hs_edge < r4.hs_edge and r4.hs_edge >= T(w4).done, \\\n                                                        AssertionError: CHK-019: phase D tie won by W4 after 1 completion got W4=85 R4=73\n                                                        assert (85 < 73)\n                                                         +  where 85 = <test_axi2apb_bridge.WriteReq object at 0x7f9ed8e37f10>.hs_edge\n                                                         +  and   73 = <test_axi2apb_bridge.ReadReq object at 0x7f9ed8e37a90>.hs_edge\n 21440.00ns WARNING  cocotb.regression                  test_axi2apb_bridge.test_chk_019_arbitration_round_robin failed",
+   "checks": [
+    "CHK-019"
+   ]
+  },
+  {
+   "name": "test_chk_020_wvalid_before_aw",
+   "status": "pass",
+   "sim_time_ns": "445.0"
+  },
+  {
+   "name": "test_chk_021_response_backpressure",
+   "status": "pass",
+   "sim_time_ns": "32004.999999999996"
+  },
+  {
+   "name": "test_chk_022_unsupported_reads",
+   "status": "pass",
+   "sim_time_ns": "12885.0"
+  },
+  {
+   "name": "test_chk_023_unsupported_writes",
+   "status": "pass",
+   "sim_time_ns": "13095.0"
+  },
+  {
+   "name": "test_chk_024_read_pslverr",
+   "status": "pass",
+   "sim_time_ns": "605.0"
+  },
+  {
+   "name": "test_chk_025_write_pslverr",
+   "status": "pass",
+   "sim_time_ns": "1105.0"
+  },
+  {
+   "name": "test_chk_026_unmapped_default_completer",
+   "status": "pass",
+   "sim_time_ns": "345.0"
+  },
+  {
+   "name": "test_chk_027_random_legal_bursts",
+   "status": "pass",
+   "sim_time_ns": "2295715.0"
+  },
+  {
+   "name": "test_chk_028_subword_unaligned",
+   "status": "pass",
+   "sim_time_ns": "1425.0"
+  },
+  {
+   "name": "test_chk_029_prot_passthrough",
+   "status": "pass",
+   "sim_time_ns": "2095.0"
+  },
+  {
+   "name": "test_chk_030_id_echo",
+   "status": "pass",
+   "sim_time_ns": "7635.0"
+  },
+  {
+   "name": "test_chk_031_reset_mid_transaction",
+   "status": "pass",
+   "sim_time_ns": "2035.0"
+  },
+  {
+   "name": "test_regression_random",
+   "status": "pass",
+   "sim_time_ns": "764995.0"
+  }
+ ],
+ "assertions": {
+  "CHK-017": {
+   "hits": 88,
+   "fails": 0
+  },
+  "CHK-014": {
+   "hits": 206044,
+   "fails": 0
+  },
+  "CHK-015": {
+   "hits": 2407,
+   "fails": 0
+  },
+  "CHK-016": {
+   "hits": 104494,
+   "fails": 0
+  },
+  "CHK-013": {
+   "hits": 22804,
+   "fails": 0
+  },
+  "CHK-009": {
+   "hits": 29920,
+   "fails": 0
+  },
+  "CHK-010": {
+   "hits": 51119,
+   "fails": 0
+  },
+  "CHK-011": {
+   "hits": 49861,
+   "fails": 0
+  },
+  "CHK-012": {
+   "hits": 1258,
+   "fails": 0
+  },
+  "CHK-007": {
+   "hits": 3076,
+   "fails": 0
+  },
+  "CHK-008": {
+   "hits": 4592,
+   "fails": 0
+  },
+  "CHK-001": {
+   "hits": 189026,
+   "fails": 0
+  },
+  "CHK-002": {
+   "hits": 63849,
+   "fails": 0
+  },
+  "CHK-003": {
+   "hits": 41726,
+   "fails": 0
+  },
+  "CHK-004": {
+   "hits": 315502,
+   "fails": 0
+  },
+  "CHK-005": {
+   "hits": 73017,
+   "fails": 0
+  },
+  "CHK-006": {
+   "hits": 168202,
+   "fails": 0
+  }
+ },
+ "not_verifiable": {},
+ "coverage": {
+  "status": "measured",
+  "metric": "line",
+  "hit": 734,
+  "total": 746,
+  "percent": 98.4,
+  "files": {
+   "m_axi2apb_apb_ctrl.sv": {
+    "hit": 186,
+    "total": 190
+   },
+   "m_axi2apb_bridge.sv": {
+    "hit": 66,
+    "total": 66
+   },
+   "m_axi2apb_rd_seq.sv": {
+    "hit": 250,
+    "total": 254
+   },
+   "m_axi2apb_wr_seq.sv": {
+    "hit": 232,
+    "total": 236
+   }
+  },
+  "metrics": {
+   "line": {
+    "hit": 734,
+    "total": 746,
+    "percent": 98.4,
+    "files": {
+     "m_axi2apb_apb_ctrl.sv": {
+      "hit": 186,
+      "total": 190
+     },
+     "m_axi2apb_bridge.sv": {
+      "hit": 66,
+      "total": 66
+     },
+     "m_axi2apb_rd_seq.sv": {
+      "hit": 250,
+      "total": 254
+     },
+     "m_axi2apb_wr_seq.sv": {
+      "hit": 232,
+      "total": 236
+     }
+    }
+   },
+   "block": {
+    "hit": 206,
+    "total": 218,
+    "percent": 94.5,
+    "files": {
+     "m_axi2apb_apb_ctrl.sv": {
+      "hit": 53,
+      "total": 57
+     },
+     "m_axi2apb_rd_seq.sv": {
+      "hit": 77,
+      "total": 81
+     },
+     "m_axi2apb_wr_seq.sv": {
+      "hit": 76,
+      "total": 80
+     }
+    }
+   },
+   "expression": {
+    "hit": 98,
+    "total": 106,
+    "percent": 92.5,
+    "files": {
+     "m_axi2apb_apb_ctrl.sv": {
+      "hit": 31,
+      "total": 35
+     },
+     "m_axi2apb_rd_seq.sv": {
+      "hit": 28,
+      "total": 30
+     },
+     "m_axi2apb_wr_seq.sv": {
+      "hit": 39,
+      "total": 41
+     }
+    }
+   },
+   "toggle": {
+    "hit": 3178,
+    "total": 4690,
+    "percent": 67.8,
+    "files": {
+     "m_axi2apb_apb_ctrl.sv": {
+      "hit": 630,
+      "total": 766
+     },
+     "m_axi2apb_bridge.sv": {
+      "hit": 766,
+      "total": 932
+     },
+     "m_axi2apb_rd_seq.sv": {
+      "hit": 880,
+      "total": 1484
+     },
+     "m_axi2apb_wr_seq.sv": {
+      "hit": 902,
+      "total": 1508
+     }
+    }
+   },
+   "functional": {
+    "hit": 38,
+    "total": 40,
+    "percent": 95.0,
+    "files": {
+     "nnc_cov.sv": {
+      "hit": 38,
+      "total": 40
+     }
+    }
+   }
+  },
+  "uncovered": [
+   {
+    "metric": "block",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 111,
+    "what": "else",
+    "points": 1,
+    "detail": [
+     "else"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 115,
+    "what": "else",
+    "points": 1,
+    "detail": [
+     "else"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 126,
+    "what": "case",
+    "points": 1,
+    "detail": [
+     "case"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 147,
+    "what": "case",
+    "points": 1,
+    "detail": [
+     "case"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 171,
+    "what": "if",
+    "points": 1,
+    "detail": [
+     "if"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 182,
+    "what": "if",
+    "points": 1,
+    "detail": [
+     "if"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 274,
+    "what": "else",
+    "points": 1,
+    "detail": [
+     "else"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 297,
+    "what": "case",
+    "points": 1,
+    "detail": [
+     "case"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 172,
+    "what": "if",
+    "points": 1,
+    "detail": [
+     "if"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 181,
+    "what": "if",
+    "points": 1,
+    "detail": [
+     "if"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 259,
+    "what": "else",
+    "points": 1,
+    "detail": [
+     "else"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 278,
+    "what": "case",
+    "points": 1,
+    "detail": [
+     "case"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 111,
+    "what": "(i_axi_arvalid==0) => 0",
+    "points": 1,
+    "detail": [
+     "(i_axi_arvalid==0) => 0"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 111,
+    "what": "(i_rd_ready==0) => 0",
+    "points": 1,
+    "detail": [
+     "(i_rd_ready==0) => 0"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 115,
+    "what": "(i_axi_awvalid==0) => 0",
+    "points": 1,
+    "detail": [
+     "(i_axi_awvalid==0) => 0"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 115,
+    "what": "(i_wr_ready==0) => 0",
+    "points": 1,
+    "detail": [
+     "(i_wr_ready==0) => 0"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 182,
+    "what": "(((i_axi_araddr & (w_ar_size_bytes - LPARA_COUNT_ONE)) != 32'h0)==1) => 1",
+    "points": 1,
+    "detail": [
+     "(((i_axi_araddr & (w_ar_size_bytes - LPARA_COUNT_ONE)) != 32'h0)==1) => 1"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 182,
+    "what": "(w_ar_wrap_len_valid==0) => 1",
+    "points": 1,
+    "detail": [
+     "(w_ar_wrap_len_valid==0) => 1"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 181,
+    "what": "(((i_axi_awaddr & (w_aw_size_bytes - LPARA_COUNT_ONE)) != 32'h0)==1) => 1",
+    "points": 1,
+    "detail": [
+     "(((i_axi_awaddr & (w_aw_size_bytes - LPARA_COUNT_ONE)) != 32'h0)==1) => 1"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 181,
+    "what": "(w_aw_wrap_len_valid==0) => 1",
+    "points": 1,
+    "detail": [
+     "(w_aw_wrap_len_valid==0) => 1"
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 126,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 127,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 147,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 148,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 172,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 184,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 297,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 298,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 173,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 183,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 278,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 279,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 112,
+    "what": "w_rd_size_mask",
+    "points": 50,
+    "detail": [
+     "w_rd_size_mask[10]:0->1",
+     "w_rd_size_mask[10]:1->0",
+     "w_rd_size_mask[11]:0->1",
+     "w_rd_size_mask[11]:1->0",
+     "w_rd_size_mask[12]:0->1",
+     "w_rd_size_mask[12]:1->0",
+     "w_rd_size_mask[13]:0->1",
+     "w_rd_size_mask[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 116,
+    "what": "w_wr_size_mask",
+    "points": 50,
+    "detail": [
+     "w_wr_size_mask[10]:0->1",
+     "w_wr_size_mask[10]:1->0",
+     "w_wr_size_mask[11]:0->1",
+     "w_wr_size_mask[11]:1->0",
+     "w_wr_size_mask[12]:0->1",
+     "w_wr_size_mask[12]:1->0",
+     "w_wr_size_mask[13]:0->1",
+     "w_wr_size_mask[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 101,
+    "what": "w_ar_size_bytes",
+    "points": 48,
+    "detail": [
+     "w_ar_size_bytes[10]:0->1",
+     "w_ar_size_bytes[10]:1->0",
+     "w_ar_size_bytes[11]:0->1",
+     "w_ar_size_bytes[11]:1->0",
+     "w_ar_size_bytes[12]:0->1",
+     "w_ar_size_bytes[12]:1->0",
+     "w_ar_size_bytes[13]:0->1",
+     "w_ar_size_bytes[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 111,
+    "what": "w_rd_size_bytes",
+    "points": 48,
+    "detail": [
+     "w_rd_size_bytes[10]:0->1",
+     "w_rd_size_bytes[10]:1->0",
+     "w_rd_size_bytes[11]:0->1",
+     "w_rd_size_bytes[11]:1->0",
+     "w_rd_size_bytes[12]:0->1",
+     "w_rd_size_bytes[12]:1->0",
+     "w_rd_size_bytes[13]:0->1",
+     "w_rd_size_bytes[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 105,
+    "what": "w_aw_size_bytes",
+    "points": 48,
+    "detail": [
+     "w_aw_size_bytes[10]:0->1",
+     "w_aw_size_bytes[10]:1->0",
+     "w_aw_size_bytes[11]:0->1",
+     "w_aw_size_bytes[11]:1->0",
+     "w_aw_size_bytes[12]:0->1",
+     "w_aw_size_bytes[12]:1->0",
+     "w_aw_size_bytes[13]:0->1",
+     "w_aw_size_bytes[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 115,
+    "what": "w_wr_size_bytes",
+    "points": 48,
+    "detail": [
+     "w_wr_size_bytes[10]:0->1",
+     "w_wr_size_bytes[10]:1->0",
+     "w_wr_size_bytes[11]:0->1",
+     "w_wr_size_bytes[11]:1->0",
+     "w_wr_size_bytes[12]:0->1",
+     "w_wr_size_bytes[12]:1->0",
+     "w_wr_size_bytes[13]:0->1",
+     "w_wr_size_bytes[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 105,
+    "what": "w_ar_wrap_bytes",
+    "points": 44,
+    "detail": [
+     "w_ar_wrap_bytes[10]:0->1",
+     "w_ar_wrap_bytes[10]:1->0",
+     "w_ar_wrap_bytes[11]:0->1",
+     "w_ar_wrap_bytes[11]:1->0",
+     "w_ar_wrap_bytes[12]:0->1",
+     "w_ar_wrap_bytes[12]:1->0",
+     "w_ar_wrap_bytes[13]:0->1",
+     "w_ar_wrap_bytes[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 109,
+    "what": "w_ar_total_bytes",
+    "points": 44,
+    "detail": [
+     "w_ar_total_bytes[11]:0->1",
+     "w_ar_total_bytes[11]:1->0",
+     "w_ar_total_bytes[12]:0->1",
+     "w_ar_total_bytes[12]:1->0",
+     "w_ar_total_bytes[13]:0->1",
+     "w_ar_total_bytes[13]:1->0",
+     "w_ar_total_bytes[14]:0->1",
+     "w_ar_total_bytes[14]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 115,
+    "what": "w_rd_wrap_bytes",
+    "points": 44,
+    "detail": [
+     "w_rd_wrap_bytes[10]:0->1",
+     "w_rd_wrap_bytes[10]:1->0",
+     "w_rd_wrap_bytes[11]:0->1",
+     "w_rd_wrap_bytes[11]:1->0",
+     "w_rd_wrap_bytes[12]:0->1",
+     "w_rd_wrap_bytes[12]:1->0",
+     "w_rd_wrap_bytes[13]:0->1",
+     "w_rd_wrap_bytes[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 109,
+    "what": "w_aw_wrap_bytes",
+    "points": 44,
+    "detail": [
+     "w_aw_wrap_bytes[10]:0->1",
+     "w_aw_wrap_bytes[10]:1->0",
+     "w_aw_wrap_bytes[11]:0->1",
+     "w_aw_wrap_bytes[11]:1->0",
+     "w_aw_wrap_bytes[12]:0->1",
+     "w_aw_wrap_bytes[12]:1->0",
+     "w_aw_wrap_bytes[13]:0->1",
+     "w_aw_wrap_bytes[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 113,
+    "what": "w_aw_total_bytes",
+    "points": 44,
+    "detail": [
+     "w_aw_total_bytes[11]:0->1",
+     "w_aw_total_bytes[11]:1->0",
+     "w_aw_total_bytes[12]:0->1",
+     "w_aw_total_bytes[12]:1->0",
+     "w_aw_total_bytes[13]:0->1",
+     "w_aw_total_bytes[13]:1->0",
+     "w_aw_total_bytes[14]:0->1",
+     "w_aw_total_bytes[14]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 119,
+    "what": "w_wr_wrap_bytes",
+    "points": 44,
+    "detail": [
+     "w_wr_wrap_bytes[10]:0->1",
+     "w_wr_wrap_bytes[10]:1->0",
+     "w_wr_wrap_bytes[11]:0->1",
+     "w_wr_wrap_bytes[11]:1->0",
+     "w_wr_wrap_bytes[12]:0->1",
+     "w_wr_wrap_bytes[12]:1->0",
+     "w_wr_wrap_bytes[13]:0->1",
+     "w_wr_wrap_bytes[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 28,
+    "what": "i_rd_req_addr",
+    "points": 34,
+    "detail": [
+     "i_rd_req_addr[0]:0->1",
+     "i_rd_req_addr[0]:1->0",
+     "i_rd_req_addr[16]:0->1",
+     "i_rd_req_addr[16]:1->0",
+     "i_rd_req_addr[17]:0->1",
+     "i_rd_req_addr[17]:1->0",
+     "i_rd_req_addr[18]:0->1",
+     "i_rd_req_addr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 37,
+    "what": "i_wr_req_addr",
+    "points": 34,
+    "detail": [
+     "i_wr_req_addr[0]:0->1",
+     "i_wr_req_addr[0]:1->0",
+     "i_wr_req_addr[16]:0->1",
+     "i_wr_req_addr[16]:1->0",
+     "i_wr_req_addr[17]:0->1",
+     "i_wr_req_addr[17]:1->0",
+     "i_wr_req_addr[18]:0->1",
+     "i_wr_req_addr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 49,
+    "what": "o_apb_paddr",
+    "points": 34,
+    "detail": [
+     "o_apb_paddr[0]:0->1",
+     "o_apb_paddr[0]:1->0",
+     "o_apb_paddr[16]:0->1",
+     "o_apb_paddr[16]:1->0",
+     "o_apb_paddr[17]:0->1",
+     "o_apb_paddr[17]:1->0",
+     "o_apb_paddr[18]:0->1",
+     "o_apb_paddr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 80,
+    "what": "reg_apb_addr",
+    "points": 34,
+    "detail": [
+     "reg_apb_addr[0]:0->1",
+     "reg_apb_addr[0]:1->0",
+     "reg_apb_addr[16]:0->1",
+     "reg_apb_addr[16]:1->0",
+     "reg_apb_addr[17]:0->1",
+     "reg_apb_addr[17]:1->0",
+     "reg_apb_addr[18]:0->1",
+     "reg_apb_addr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_bridge.sv",
+    "line": 63,
+    "what": "o_apb_paddr",
+    "points": 34,
+    "detail": [
+     "o_apb_paddr[0]:0->1",
+     "o_apb_paddr[0]:1->0",
+     "o_apb_paddr[16]:0->1",
+     "o_apb_paddr[16]:1->0",
+     "o_apb_paddr[17]:0->1",
+     "o_apb_paddr[17]:1->0",
+     "o_apb_paddr[18]:0->1",
+     "o_apb_paddr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_bridge.sv",
+    "line": 80,
+    "what": "w_rd_req_addr",
+    "points": 34,
+    "detail": [
+     "w_rd_req_addr[0]:0->1",
+     "w_rd_req_addr[0]:1->0",
+     "w_rd_req_addr[16]:0->1",
+     "w_rd_req_addr[16]:1->0",
+     "w_rd_req_addr[17]:0->1",
+     "w_rd_req_addr[17]:1->0",
+     "w_rd_req_addr[18]:0->1",
+     "w_rd_req_addr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_bridge.sv",
+    "line": 92,
+    "what": "w_wr_req_addr",
+    "points": 34,
+    "detail": [
+     "w_wr_req_addr[0]:0->1",
+     "w_wr_req_addr[0]:1->0",
+     "w_wr_req_addr[16]:0->1",
+     "w_wr_req_addr[16]:1->0",
+     "w_wr_req_addr[17]:0->1",
+     "w_wr_req_addr[17]:1->0",
+     "w_wr_req_addr[18]:0->1",
+     "w_wr_req_addr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 67,
+    "what": "o_req_addr",
+    "points": 34,
+    "detail": [
+     "o_req_addr[0]:0->1",
+     "o_req_addr[0]:1->0",
+     "o_req_addr[16]:0->1",
+     "o_req_addr[16]:1->0",
+     "o_req_addr[17]:0->1",
+     "o_req_addr[17]:1->0",
+     "o_req_addr[18]:0->1",
+     "o_req_addr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 68,
+    "what": "o_req_addr",
+    "points": 34,
+    "detail": [
+     "o_req_addr[0]:0->1",
+     "o_req_addr[0]:1->0",
+     "o_req_addr[16]:0->1",
+     "o_req_addr[16]:1->0",
+     "o_req_addr[17]:0->1",
+     "o_req_addr[17]:1->0",
+     "o_req_addr[18]:0->1",
+     "o_req_addr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 110,
+    "what": "w_ar_end_page",
+    "points": 32,
+    "detail": [
+     "w_ar_end_page[10]:0->1",
+     "w_ar_end_page[10]:1->0",
+     "w_ar_end_page[11]:0->1",
+     "w_ar_end_page[11]:1->0",
+     "w_ar_end_page[12]:0->1",
+     "w_ar_end_page[12]:1->0",
+     "w_ar_end_page[13]:0->1",
+     "w_ar_end_page[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 114,
+    "what": "w_aw_end_page",
+    "points": 32,
+    "detail": [
+     "w_aw_end_page[10]:0->1",
+     "w_aw_end_page[10]:1->0",
+     "w_aw_end_page[11]:0->1",
+     "w_aw_end_page[11]:1->0",
+     "w_aw_end_page[12]:0->1",
+     "w_aw_end_page[12]:1->0",
+     "w_aw_end_page[13]:0->1",
+     "w_aw_end_page[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_bridge.sv",
+    "line": 23,
+    "what": "i_axi_awaddr",
+    "points": 30,
+    "detail": [
+     "i_axi_awaddr[16]:0->1",
+     "i_axi_awaddr[16]:1->0",
+     "i_axi_awaddr[17]:0->1",
+     "i_axi_awaddr[17]:1->0",
+     "i_axi_awaddr[18]:0->1",
+     "i_axi_awaddr[18]:1->0",
+     "i_axi_awaddr[19]:0->1",
+     "i_axi_awaddr[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_bridge.sv",
+    "line": 45,
+    "what": "i_axi_araddr",
+    "points": 30,
+    "detail": [
+     "i_axi_araddr[16]:0->1",
+     "i_axi_araddr[16]:1->0",
+     "i_axi_araddr[17]:0->1",
+     "i_axi_araddr[17]:1->0",
+     "i_axi_araddr[18]:0->1",
+     "i_axi_araddr[18]:1->0",
+     "i_axi_araddr[19]:0->1",
+     "i_axi_araddr[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 48,
+    "what": "i_axi_araddr",
+    "points": 30,
+    "detail": [
+     "i_axi_araddr[16]:0->1",
+     "i_axi_araddr[16]:1->0",
+     "i_axi_araddr[17]:0->1",
+     "i_axi_araddr[17]:1->0",
+     "i_axi_araddr[18]:0->1",
+     "i_axi_araddr[18]:1->0",
+     "i_axi_araddr[19]:0->1",
+     "i_axi_araddr[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 90,
+    "what": "reg_rd_addr",
+    "points": 30,
+    "detail": [
+     "reg_rd_addr[16]:0->1",
+     "reg_rd_addr[16]:1->0",
+     "reg_rd_addr[17]:0->1",
+     "reg_rd_addr[17]:1->0",
+     "reg_rd_addr[18]:0->1",
+     "reg_rd_addr[18]:1->0",
+     "reg_rd_addr[19]:0->1",
+     "reg_rd_addr[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 107,
+    "what": "w_ar_wrap_base",
+    "points": 30,
+    "detail": [
+     "w_ar_wrap_base[16]:0->1",
+     "w_ar_wrap_base[16]:1->0",
+     "w_ar_wrap_base[17]:0->1",
+     "w_ar_wrap_base[17]:1->0",
+     "w_ar_wrap_base[18]:0->1",
+     "w_ar_wrap_base[18]:1->0",
+     "w_ar_wrap_base[19]:0->1",
+     "w_ar_wrap_base[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 108,
+    "what": "w_ar_base_addr",
+    "points": 30,
+    "detail": [
+     "w_ar_base_addr[16]:0->1",
+     "w_ar_base_addr[16]:1->0",
+     "w_ar_base_addr[17]:0->1",
+     "w_ar_base_addr[17]:1->0",
+     "w_ar_base_addr[18]:0->1",
+     "w_ar_base_addr[18]:1->0",
+     "w_ar_base_addr[19]:0->1",
+     "w_ar_base_addr[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 117,
+    "what": "w_rd_wrap_base",
+    "points": 30,
+    "detail": [
+     "w_rd_wrap_base[16]:0->1",
+     "w_rd_wrap_base[16]:1->0",
+     "w_rd_wrap_base[17]:0->1",
+     "w_rd_wrap_base[17]:1->0",
+     "w_rd_wrap_base[18]:0->1",
+     "w_rd_wrap_base[18]:1->0",
+     "w_rd_wrap_base[19]:0->1",
+     "w_rd_wrap_base[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 47,
+    "what": "i_axi_awaddr",
+    "points": 30,
+    "detail": [
+     "i_axi_awaddr[16]:0->1",
+     "i_axi_awaddr[16]:1->0",
+     "i_axi_awaddr[17]:0->1",
+     "i_axi_awaddr[17]:1->0",
+     "i_axi_awaddr[18]:0->1",
+     "i_axi_awaddr[18]:1->0",
+     "i_axi_awaddr[19]:0->1",
+     "i_axi_awaddr[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 93,
+    "what": "reg_wr_addr",
+    "points": 30,
+    "detail": [
+     "reg_wr_addr[16]:0->1",
+     "reg_wr_addr[16]:1->0",
+     "reg_wr_addr[17]:0->1",
+     "reg_wr_addr[17]:1->0",
+     "reg_wr_addr[18]:0->1",
+     "reg_wr_addr[18]:1->0",
+     "reg_wr_addr[19]:0->1",
+     "reg_wr_addr[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 111,
+    "what": "w_aw_wrap_base",
+    "points": 30,
+    "detail": [
+     "w_aw_wrap_base[16]:0->1",
+     "w_aw_wrap_base[16]:1->0",
+     "w_aw_wrap_base[17]:0->1",
+     "w_aw_wrap_base[17]:1->0",
+     "w_aw_wrap_base[18]:0->1",
+     "w_aw_wrap_base[18]:1->0",
+     "w_aw_wrap_base[19]:0->1",
+     "w_aw_wrap_base[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 112,
+    "what": "w_aw_base_addr",
+    "points": 30,
+    "detail": [
+     "w_aw_base_addr[16]:0->1",
+     "w_aw_base_addr[16]:1->0",
+     "w_aw_base_addr[17]:0->1",
+     "w_aw_base_addr[17]:1->0",
+     "w_aw_base_addr[18]:0->1",
+     "w_aw_base_addr[18]:1->0",
+     "w_aw_base_addr[19]:0->1",
+     "w_aw_base_addr[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 121,
+    "what": "w_wr_wrap_base",
+    "points": 30,
+    "detail": [
+     "w_wr_wrap_base[16]:0->1",
+     "w_wr_wrap_base[16]:1->0",
+     "w_wr_wrap_base[17]:0->1",
+     "w_wr_wrap_base[17]:1->0",
+     "w_wr_wrap_base[18]:0->1",
+     "w_wr_wrap_base[18]:1->0",
+     "w_wr_wrap_base[19]:0->1",
+     "w_wr_wrap_base[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 122,
+    "what": "w_wr_addr_plus_size",
+    "points": 30,
+    "detail": [
+     "w_wr_addr_plus_size[16]:0->1",
+     "w_wr_addr_plus_size[16]:1->0",
+     "w_wr_addr_plus_size[17]:0->1",
+     "w_wr_addr_plus_size[17]:1->0",
+     "w_wr_addr_plus_size[18]:0->1",
+     "w_wr_addr_plus_size[18]:1->0",
+     "w_wr_addr_plus_size[19]:0->1",
+     "w_wr_addr_plus_size[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 123,
+    "what": "w_wr_nxt_addr",
+    "points": 30,
+    "detail": [
+     "w_wr_nxt_addr[16]:0->1",
+     "w_wr_nxt_addr[16]:1->0",
+     "w_wr_nxt_addr[17]:0->1",
+     "w_wr_nxt_addr[17]:1->0",
+     "w_wr_nxt_addr[18]:0->1",
+     "w_wr_nxt_addr[18]:1->0",
+     "w_wr_nxt_addr[19]:0->1",
+     "w_wr_nxt_addr[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 118,
+    "what": "w_rd_addr_plus_size",
+    "points": 28,
+    "detail": [
+     "w_rd_addr_plus_size[17]:0->1",
+     "w_rd_addr_plus_size[17]:1->0",
+     "w_rd_addr_plus_size[18]:0->1",
+     "w_rd_addr_plus_size[18]:1->0",
+     "w_rd_addr_plus_size[19]:0->1",
+     "w_rd_addr_plus_size[19]:1->0",
+     "w_rd_addr_plus_size[20]:0->1",
+     "w_rd_addr_plus_size[20]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 119,
+    "what": "w_rd_nxt_addr",
+    "points": 28,
+    "detail": [
+     "w_rd_nxt_addr[17]:0->1",
+     "w_rd_nxt_addr[17]:1->0",
+     "w_rd_nxt_addr[18]:0->1",
+     "w_rd_nxt_addr[18]:1->0",
+     "w_rd_nxt_addr[19]:0->1",
+     "w_rd_nxt_addr[19]:1->0",
+     "w_rd_nxt_addr[20]:0->1",
+     "w_rd_nxt_addr[20]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 106,
+    "what": "w_ar_wrap_mask",
+    "points": 23,
+    "detail": [
+     "w_ar_wrap_mask[10]:1->0",
+     "w_ar_wrap_mask[11]:1->0",
+     "w_ar_wrap_mask[12]:1->0",
+     "w_ar_wrap_mask[13]:1->0",
+     "w_ar_wrap_mask[14]:1->0",
+     "w_ar_wrap_mask[15]:1->0",
+     "w_ar_wrap_mask[16]:1->0",
+     "w_ar_wrap_mask[17]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 116,
+    "what": "w_rd_wrap_mask",
+    "points": 23,
+    "detail": [
+     "w_rd_wrap_mask[10]:1->0",
+     "w_rd_wrap_mask[11]:1->0",
+     "w_rd_wrap_mask[12]:1->0",
+     "w_rd_wrap_mask[13]:1->0",
+     "w_rd_wrap_mask[14]:1->0",
+     "w_rd_wrap_mask[15]:1->0",
+     "w_rd_wrap_mask[16]:1->0",
+     "w_rd_wrap_mask[17]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 110,
+    "what": "w_aw_wrap_mask",
+    "points": 23,
+    "detail": [
+     "w_aw_wrap_mask[10]:1->0",
+     "w_aw_wrap_mask[11]:1->0",
+     "w_aw_wrap_mask[12]:1->0",
+     "w_aw_wrap_mask[13]:1->0",
+     "w_aw_wrap_mask[14]:1->0",
+     "w_aw_wrap_mask[15]:1->0",
+     "w_aw_wrap_mask[16]:1->0",
+     "w_aw_wrap_mask[17]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 120,
+    "what": "w_wr_wrap_mask",
+    "points": 23,
+    "detail": [
+     "w_wr_wrap_mask[10]:1->0",
+     "w_wr_wrap_mask[11]:1->0",
+     "w_wr_wrap_mask[12]:1->0",
+     "w_wr_wrap_mask[13]:1->0",
+     "w_wr_wrap_mask[14]:1->0",
+     "w_wr_wrap_mask[15]:1->0",
+     "w_wr_wrap_mask[16]:1->0",
+     "w_wr_wrap_mask[17]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_bridge.sv",
+    "line": 39,
+    "what": "o_axi_bresp",
+    "points": 2,
+    "detail": [
+     "o_axi_bresp[0]:0->1",
+     "o_axi_bresp[0]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_bridge.sv",
+    "line": 57,
+    "what": "o_axi_rresp",
+    "points": 2,
+    "detail": [
+     "o_axi_rresp[0]:0->1",
+     "o_axi_rresp[0]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 61,
+    "what": "o_axi_rresp",
+    "points": 2,
+    "detail": [
+     "o_axi_rresp[0]:0->1",
+     "o_axi_rresp[0]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 97,
+    "what": "reg_rd_resp",
+    "points": 2,
+    "detail": [
+     "reg_rd_resp[0]:0->1",
+     "reg_rd_resp[0]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 103,
+    "what": "w_ar_wrap_log2",
+    "points": 2,
+    "detail": [
+     "w_ar_wrap_log2[3]:0->1",
+     "w_ar_wrap_log2[3]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 113,
+    "what": "w_rd_wrap_log2",
+    "points": 2,
+    "detail": [
+     "w_rd_wrap_log2[3]:0->1",
+     "w_rd_wrap_log2[3]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 62,
+    "what": "o_axi_bresp",
+    "points": 2,
+    "detail": [
+     "o_axi_bresp[0]:0->1",
+     "o_axi_bresp[0]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 107,
+    "what": "w_aw_wrap_log2",
+    "points": 2,
+    "detail": [
+     "w_aw_wrap_log2[3]:0->1",
+     "w_aw_wrap_log2[3]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 117,
+    "what": "w_wr_wrap_log2",
+    "points": 2,
+    "detail": [
+     "w_wr_wrap_log2[3]:0->1",
+     "w_wr_wrap_log2[3]:1->0"
+    ]
+   },
+   {
+    "metric": "functional",
+    "file": "nnc_cov.sv",
+    "line": 0,
+    "what": "COVP-019",
+    "points": 1,
+    "detail": []
+   },
+   {
+    "metric": "functional",
+    "file": "nnc_cov.sv",
+    "line": 0,
+    "what": "COVP-024",
+    "points": 1,
+    "detail": []
+   }
+  ]
+ },
+ "functional": {
+  "COVP-001": 20642,
+  "COVP-002": 40,
+  "COVP-003": 517,
+  "COVP-004": 1453,
+  "COVP-005": 16,
+  "COVP-006": 47,
+  "COVP-007": 33,
+  "COVP-008": 30,
+  "COVP-009": 1,
+  "COVP-010": 1,
+  "COVP-011": 123,
+  "COVP-012": 124,
+  "COVP-013": 257,
+  "COVP-014": 63,
+  "COVP-015": 11825,
+  "COVP-016": 1772,
+  "COVP-017": 3661,
+  "COVP-018": 5050,
+  "COVP-019": 0,
+  "COVP-020": 12,
+  "COVP-021": 12,
+  "COVP-022": 69,
+  "COVP-023": 6,
+  "COVP-024": 0,
+  "COVP-025": 5,
+  "COVP-026": 12105,
+  "COVP-027": 1778,
+  "COVP-028": 304502,
+  "COVP-029": 905,
+  "COVP-030": 12277,
+  "COVP-031": 1936,
+  "COVP-032": 4,
+  "COVP-033": 3,
+  "COVP-034": 5,
+  "COVP-035": 7,
+  "COVP-036": 1137,
+  "COVP-037": 1157,
+  "COVP-038": 1380,
+  "COVP-039": 4725,
+  "COVP-040": 574
+ },
+ "make_rc": 2,
+ "built": true,
+ "build_errors": [],
+ "unreviewed_gates": []
+}
