@@ -353,6 +353,21 @@ class InjectTest(unittest.TestCase):
                 inject.make_copy(rtl, self.PATCH.replace("assign a = b;", "assign z = y;"), Path(d) / "x")
 
 
+class HashPortabilityTest(unittest.TestCase):
+    def test_line_endings_do_not_change_an_approval(self):
+        from nnc.project import hash_path
+        with tempfile.TemporaryDirectory() as t:
+            a, b = Path(t) / "a" / "x.json", Path(t) / "b" / "x.json"
+            a.parent.mkdir()
+            b.parent.mkdir()
+            a.write_bytes(b'{\r\n  "k": 1\r\n}\r\n')
+            b.write_bytes(b'{\n  "k": 1\n}\n')
+            self.assertEqual(hash_path(a), hash_path(b))
+            self.assertEqual(hash_path(a.parent), hash_path(b.parent))
+            b.write_bytes(b'{\n  "k": 2\n}\n')
+            self.assertNotEqual(hash_path(a), hash_path(b))
+
+
 class RenumberTest(unittest.TestCase):
     def test_references_follow_the_new_ids(self):
         from nnc.contract import renumber

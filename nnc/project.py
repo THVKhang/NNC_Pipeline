@@ -61,10 +61,11 @@ def _now() -> str:
 def hash_path(path: Path) -> str | None:
     """SHA-256 of a file, or of a folder (sorted relative paths and contents); None if missing.
 
-    An empty folder hashes like a missing one: it holds no artifact to approve.
+    An empty folder hashes like a missing one: it holds no artifact to approve. Line endings are
+    normalised (CRLF -> LF) so that an approval made on Windows still holds on a git checkout elsewhere.
     """
     if path.is_file():
-        return hashlib.sha256(path.read_bytes()).hexdigest()
+        return hashlib.sha256(_content(path)).hexdigest()
     if path.is_dir():
         files = sorted(p for p in path.rglob("*") if p.is_file())
         if not files:
@@ -73,9 +74,13 @@ def hash_path(path: Path) -> str | None:
         for f in files:
             h.update(f.relative_to(path).as_posix().encode("utf-8"))
             h.update(b"\0")
-            h.update(hashlib.sha256(f.read_bytes()).digest())
+            h.update(hashlib.sha256(_content(f)).digest())
         return h.hexdigest()
     return None
+
+
+def _content(path: Path) -> bytes:
+    return path.read_bytes().replace(b"\r\n", b"\n")
 
 
 @dataclass(frozen=True)
