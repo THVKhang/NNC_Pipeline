@@ -746,7 +746,7 @@
    "id": "CHK-019",
    "kind": "test",
    "group": "arb",
-   "title": "AR/AW round-robin: AR wins first tie, preference flips after every completion",
+   "title": "AR/AW round-robin: AR wins the first tie, then the side not served last wins",
    "rules": [
     "AB-3-03",
     "AB-3-04",
@@ -755,9 +755,9 @@
     "AB-10.4-01",
     "AB-10.1-01"
    ],
-   "behavior": "When AR and AW tie, the winner is set by a preference that starts at AR after reset and flips after every completed transaction. A request with no competitor is granted directly.",
+   "behavior": "When AR and AW tie, AR wins the first tie after reset. After that the tie goes to the side that did not complete the last transaction (round-robin: a completed read gives the next tie to AW, a completed write gives it to AR), whether or not that transaction had a tie. A request with no competitor is granted directly.",
    "stimulus": "Phase A: after reset, with the bridge idle, assert i_axi_arvalid (read R1, INCR len 1) and i_axi_awvalid (write W1, len 1, with its W beats) at the same rising edge and hold both until their handshakes. Phase B: right after R1's AR handshake, assert a new AR (R2) and hold it. Phase C: right after W1's AW handshake, assert a new AW (W2) and hold it. Phase D: reset; send a lone AW (W3) and let it complete; then, with the bridge idle, assert AR (R4) and AW (W4) at the same edge.",
-   "expected": "Phase A: the R1 AR handshake comes first, and the W1 AW handshake happens only at or after R1's final R handshake. Phase B: when R1 completes (1 completion, preference AW), W1 is granted before R2. Phase C: when W1 completes (2 completions, preference AR), R2 is granted before W2, then W2 is granted. Phase D: W3 is granted with no wait for an AR; after it completes (1 completion), the R4/W4 tie is won by W4."
+   "expected": "Phase A: the R1 AR handshake comes first, and the W1 AW handshake happens only at or after R1's final R handshake. Phase B: when R1 completes (a read completed, preference AW), W1 is granted before R2. Phase C: when W1 completes (a write completed, preference AR), R2 is granted before W2, then W2 is granted. Phase D: W3 is granted with no wait for an AR; after it completes (a write completed, preference AR), the R4/W4 tie is won by R4."
   },
   {
    "id": "CHK-020",
@@ -983,7 +983,7 @@
     "AB-3-04"
    ],
    "behavior": "Reset in any state drops the in-flight work and returns the bridge to idle. Nothing is replayed afterwards, and arbitration starts again from its reset preference.",
-   "stimulus": "(a) Start a 4-beat read. During beat 1's APB ACCESS, with i_apb_pready=0, drive i_rst_n_axi=0 for 1 edge (AXI VALIDs 0 while reset is sampled). (b) Reset while o_axi_rvalid=1 and i_axi_rready=0 in a burst. (c) Reset after 2 of 4 W beats of a write. (d) Before one of the resets, complete one transaction so the preference is AW. After each reset, idle for 20 cycles, then assert an AR and an AW at the same edge.",
+   "stimulus": "(a) Start a 4-beat read. During beat 1's APB ACCESS, with i_apb_pready=0, drive i_rst_n_axi=0 for 1 edge (AXI VALIDs 0 while reset is sampled). (b) Reset while o_axi_rvalid=1 and i_axi_rready=0 in a burst. (c) Reset after 2 of 4 W beats of a write. (d) Before one of the resets, complete one read so the preference is AW. After each reset, idle for 20 cycles, then assert an AR and an AW at the same edge.",
    "expected": "At the edge after the reset edge: o_apb_psel=0, o_apb_penable=0, o_axi_rvalid=0, o_axi_bvalid=0, and all response and APB payload outputs are 0 (CHK-017). During the 20 idle cycles o_apb_psel stays 0 and no R or B is produced, so the interrupted transfer is not replayed. The tie after reset is won by AR, even when the preference before reset was AW. The new transactions complete normally."
   }
  ],
@@ -1200,9 +1200,9 @@
     "AB-5.1-02"
    ],
    "question": "What is the round-robin policy when only one of AR/AW is pending, and how is the arbitration turn updated after a grant?",
-   "answer": "When only one of AR/AW is pending it is granted (no wait for the other). The tie preference matters only when both are pending: AR wins the first tie after reset, and the preference flips after every completed transaction, tie or not (REQ-FUNC-003, answered question 4). Tests check the order only on ties.",
+   "answer": "Round-robin between the two sides: when only one of AR/AW is pending it is granted at once. On a tie, AR wins the first tie after reset; after that the preference goes to the side that did NOT complete the last transaction (a completed read gives the next tie to AW, a completed write gives it to AR), whether or not that transaction had a tie. This is the only reading under which REQ-FUNC-003 'grant by round-robin' (AB-3-03, also 10.4, DEC-003) and 'flip the next tie preference after each completed transaction' (AB-3-05) both hold: a pure toggle would let the side just served win the next tie while the other side waits. Revises the decision of 2026-11-08T05:05:57 after the CHK-019 phase D finding (fix_candidate/README.md, finding 2). Tests check the order only on ties.",
    "by": "Claude (delegated by GabrielHCMUT)",
-   "at": "2026-11-08T05:05:57+00:00"
+   "at": "2026-11-08T15:29:02+00:00"
   },
   {
    "rules": [

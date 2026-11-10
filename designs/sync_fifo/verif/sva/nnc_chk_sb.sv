@@ -40,10 +40,17 @@ module nnc_chk_sb #(
   logic [(PARA_SFIFO_DATA_W)-1:0] sb_mem [PARA_SFIFO_DEPTH];
   logic sb_busy_q = 1'b0;
 
+  // Q is cleared at the i_clk_wr edge after which o_sw_rst_busy goes from 1 to 0 (CHK-006, CHK-010).
+  // That fall is seen only after the edge, so until the next i_clk_wr edge (sb_busy_q=1, o_sw_rst_busy=0)
+  // the clear is applied combinationally; the next edge registers it in wbase.
+  logic        sb_clr;
+  int unsigned sb_base;
   int unsigned sb_head;
   int unsigned sb_size;
   always_comb begin
-    sb_head = (rcnt < wbase) ? wbase : rcnt;
+    sb_clr  = sb_busy_q && !o_sw_rst_busy;
+    sb_base = sb_clr ? wcnt : wbase;
+    sb_head = (rcnt < sb_base) ? sb_base : rcnt;
     sb_size = wcnt - sb_head;
   end
 

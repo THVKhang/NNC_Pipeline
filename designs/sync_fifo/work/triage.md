@@ -1,3 +1,5 @@
+> **Resolved on 2026-11-08 / Đã xử lý.** The analysis below is kept as the record of the finding. Option 1 was applied: `verif/sva/nnc_chk_sb.sv` now empties the reference queue from the `i_clk_wr` edge after which `o_sw_rst_busy` falls (contract CHK-006/CHK-010). Re-run: 25/25 tests pass, CHK-007 0 fails in 18 962 hits, CHK-006 0 fails, mutation 100 %. The RTL was not changed. / Đã áp dụng phương án 1 (sửa checker, không sửa RTL); chạy lại: không còn lỗi.
+
 # Failure triage
 
 Failures: 1; analysed: 1. The designer decides; nothing was changed.

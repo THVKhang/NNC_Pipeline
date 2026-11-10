@@ -132,22 +132,37 @@ def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: 
     one = SIM_SCRIPT.format(seed=seed, jobs=max(1, 12 // max(1, parallel))).replace("\n", "; ")
     script = (f"ls -d M* | xargs -P {parallel} -I{{}} bash -c 'cd {{}} && {one}'\n")
     res = host.run(files, script, ["M*/sim.log", "M*/results.xml"], timeout_s=timeout_s, tag="mutate")
+    base_fail = baseline_failures(baseline)
     results = []
     for m in mutants:
         out = res.out_dir / m.id
         parsed = parse_results(out, [f.name for f in rtl]) if out.is_dir() else {"built": False, "tests": [], "assertions": {}}
-        failed_tests = [t["name"] for t in parsed["tests"] if t["status"] == "fail"]
-        failed_checks = [c for c, v in parsed.get("assertions", {}).items() if v["fails"] > 0]
-        status = ("not_compiled" if not parsed["built"] else "killed" if failed_tests or failed_checks else "survived")
-        results.append({**m.__dict__, "status": status, "killed_by_tests": failed_tests,
-                        "killed_by_checks": failed_checks})
+        results.append({**m.__dict__, **classify(parsed, base_fail)})
     counted = [r for r in results if r["status"] != "not_compiled"]
     killed = sum(r["status"] == "killed" for r in counted)
     return {"mutants": results, "candidates": len(pool), "count": len(results),
             "killed": killed, "survived": sum(r["status"] == "survived" for r in counted),
             "not_compiled": len(results) - len(counted),
             "score": round(100.0 * killed / len(counted), 1) if counted else None, "seed": seed,
-            "excluded_uncovered": excluded}
+            "excluded_uncovered": excluded, "baseline_failing": {k: sorted(v) for k, v in base_fail.items()}}
+
+
+def baseline_failures(baseline: dict | None) -> dict[str, set]:
+    """Tests and checks that already fail on the unmutated RTL."""
+    baseline = baseline or {}
+    return {"tests": {t["name"] for t in baseline.get("tests", []) if t.get("status") == "fail"},
+            "checks": {c for c, v in (baseline.get("assertions") or {}).items() if (v or {}).get("fails", 0) > 0}}
+
+
+def classify(parsed: dict, base_fail: dict[str, set]) -> dict:
+    """A mutant is killed only by a test or check that PASSES on the unmutated RTL: a failure that is
+    already there in the baseline says nothing about the mutant (otherwise a failing regression would
+    'kill' every mutant and report 100 %)."""
+    failed_tests = [t["name"] for t in parsed["tests"] if t["status"] == "fail" and t["name"] not in base_fail["tests"]]
+    failed_checks = [c for c, v in parsed.get("assertions", {}).items()
+                     if v["fails"] > 0 and c not in base_fail["checks"]]
+    status = ("not_compiled" if not parsed["built"] else "killed" if failed_tests or failed_checks else "survived")
+    return {"status": status, "killed_by_tests": failed_tests, "killed_by_checks": failed_checks}
 
 
 # ------------------------------------------------------------------- per-requirement attribution

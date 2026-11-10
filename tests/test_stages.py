@@ -169,6 +169,17 @@ class SimIntegrationTest(Workspace):
         self.assertEqual([m.id for m in picked], ["M01", "M02", "M03"])
         self.assertEqual([m.line for m in picked], [m.line for m in mutate.select(mutate.candidates([self.rtl]), 3, seed=7)])
 
+    def test_mutation_ignores_baseline_failures(self):
+        base = mutate.baseline_failures({"tests": [{"name": "t_a", "status": "fail"}, {"name": "t_b", "status": "pass"}],
+                                         "assertions": {"CHK-001": {"fails": 3}, "CHK-002": {"fails": 0}}})
+        same = {"built": True, "tests": [{"name": "t_a", "status": "fail"}, {"name": "t_b", "status": "pass"}],
+                "assertions": {"CHK-001": {"fails": 5}, "CHK-002": {"fails": 0}}}
+        self.assertEqual(mutate.classify(same, base)["status"], "survived")   # only baseline failures
+        new = {**same, "assertions": {"CHK-001": {"fails": 5}, "CHK-002": {"fails": 1}}}
+        self.assertEqual(mutate.classify(new, base), {"status": "killed", "killed_by_tests": [],
+                                                      "killed_by_checks": ["CHK-002"]})
+        self.assertEqual(mutate.classify({**same, "built": False}, base)["status"], "not_compiled")
+
 
 class GeneratorValidationTest(Workspace):
     def test_sva_scaffold_and_validation(self):

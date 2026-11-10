@@ -3,40 +3,49 @@
   {
    "id": "M01",
    "file": "m_axi2apb_rd_seq.sv",
-   "line": 374,
+   "line": 182,
    "operator": "or_to_and",
-   "original": "if (((reg_fsm_rd_current_state == ENUM_ST_RESP) ||",
-   "mutated": "      if (((reg_fsm_rd_current_state == ENUM_ST_RESP) &&",
+   "original": "if (!w_ar_wrap_len_valid ||",
+   "mutated": "        if (!w_ar_wrap_len_valid &&",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M02",
+   "file": "m_axi2apb_wr_seq.sv",
+   "line": 332,
+   "operator": "eq_to_ne",
+   "original": "if ((reg_fsm_wr_current_state == ENUM_ST_IDLE) && i_gnt_wr && i_axi_awvalid) begin",
+   "mutated": "      if ((reg_fsm_wr_current_state != ENUM_ST_IDLE) && i_gnt_wr && i_axi_awvalid) begin",
    "status": "killed",
    "killed_by_tests": [
     "test_chk_018_long_apb_wait",
     "test_chk_019_arbitration_round_robin",
     "test_chk_020_wvalid_before_aw",
     "test_chk_021_response_backpressure",
-    "test_chk_022_unsupported_reads",
     "test_chk_023_unsupported_writes",
-    "test_chk_024_read_pslverr",
     "test_chk_025_write_pslverr",
     "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
     "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
+    "test_chk_029_pprot_passthrough",
     "test_chk_030_id_echo",
     "test_chk_031_reset_mid_transaction",
     "test_regression_random"
    ],
    "killed_by_checks": [
     "CHK-016",
-    "CHK-010"
+    "CHK-013"
    ]
   },
   {
-   "id": "M02",
+   "id": "M03",
    "file": "m_axi2apb_wr_seq.sv",
-   "line": 303,
-   "operator": "eq_to_ne",
-   "original": "if ((reg_fsm_wr_current_state == ENUM_ST_WDAT) ||",
-   "mutated": "    if ((reg_fsm_wr_current_state != ENUM_ST_WDAT) ||",
+   "line": 291,
+   "operator": "zero_to_one",
+   "original": "o_axi_wready = 1'b0;",
+   "mutated": "    o_axi_wready = 1'b1;",
    "status": "killed",
    "killed_by_tests": [
     "test_chk_018_long_apb_wait",
@@ -50,7 +59,7 @@
     "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
     "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
+    "test_chk_029_pprot_passthrough",
     "test_chk_030_id_echo",
     "test_chk_031_reset_mid_transaction",
     "test_regression_random"
@@ -61,81 +70,26 @@
    ]
   },
   {
-   "id": "M03",
-   "file": "m_axi2apb_wr_seq.sv",
-   "line": 195,
-   "operator": "zero_to_one",
-   "original": "w_aw_valid = 1'b0;",
-   "mutated": "      w_aw_valid = 1'b1;",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_long_apb_wait",
-    "test_chk_019_arbitration_round_robin",
-    "test_chk_020_wvalid_before_aw",
-    "test_chk_021_response_backpressure",
-    "test_chk_023_unsupported_writes",
-    "test_chk_025_write_pslverr",
-    "test_chk_026_unmapped_default_completer",
-    "test_chk_027_random_legal_bursts",
-    "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
-    "test_chk_030_id_echo",
-    "test_chk_031_reset_mid_transaction",
-    "test_regression_random"
-   ],
-   "killed_by_checks": [
-    "CHK-015",
-    "CHK-016"
-   ]
-  },
-  {
    "id": "M04",
    "file": "m_axi2apb_wr_seq.sv",
-   "line": 259,
+   "line": 261,
    "operator": "negate_if",
    "original": "if (i_req_ready)",
    "mutated": "        if (!(i_req_ready))",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_long_apb_wait",
-    "test_chk_019_arbitration_round_robin",
-    "test_chk_020_wvalid_before_aw",
-    "test_chk_021_response_backpressure",
-    "test_chk_023_unsupported_writes",
-    "test_chk_025_write_pslverr",
-    "test_chk_026_unmapped_default_completer",
-    "test_chk_027_random_legal_bursts",
-    "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
-    "test_chk_030_id_echo",
-    "test_chk_031_reset_mid_transaction",
-    "test_regression_random"
-   ],
-   "killed_by_checks": [
-    "CHK-016"
-   ]
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": []
   },
   {
    "id": "M05",
    "file": "m_axi2apb_wr_seq.sv",
-   "line": 182,
+   "line": 235,
    "operator": "ne_to_eq",
-   "original": "((i_axi_awaddr & (w_aw_size_bytes - LPARA_COUNT_ONE)) != 32'd0))",
-   "mutated": "            ((i_axi_awaddr & (w_aw_size_bytes - LPARA_COUNT_ONE)) == 32'd0))",
+   "original": "if ((w_wr_addr_plus_size & w_wr_wrap_mask) != w_wr_wrap_base)",
+   "mutated": "        if ((w_wr_addr_plus_size & w_wr_wrap_mask) == w_wr_wrap_base)",
    "status": "killed",
    "killed_by_tests": [
-    "test_chk_018_long_apb_wait",
-    "test_chk_019_arbitration_round_robin",
-    "test_chk_020_wvalid_before_aw",
-    "test_chk_021_response_backpressure",
-    "test_chk_023_unsupported_writes",
-    "test_chk_025_write_pslverr",
-    "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
-    "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
-    "test_chk_030_id_echo",
-    "test_chk_031_reset_mid_transaction",
     "test_regression_random"
    ],
    "killed_by_checks": [
@@ -162,7 +116,7 @@
     "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
     "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
+    "test_chk_029_pprot_passthrough",
     "test_chk_030_id_echo",
     "test_chk_031_reset_mid_transaction",
     "test_regression_random"
@@ -191,24 +145,20 @@
     "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
     "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
+    "test_chk_029_pprot_passthrough",
     "test_chk_030_id_echo",
     "test_chk_031_reset_mid_transaction",
     "test_regression_random"
    ],
-   "killed_by_checks": [
-    "CHK-016",
-    "CHK-011",
-    "CHK-008"
-   ]
+   "killed_by_checks": []
   },
   {
    "id": "M08",
    "file": "m_axi2apb_wr_seq.sv",
-   "line": 340,
+   "line": 351,
    "operator": "and_to_or",
-   "original": "if ((reg_fsm_wr_current_state == ENUM_ST_WDAT) && i_axi_wvalid) begin",
-   "mutated": "      if ((reg_fsm_wr_current_state == ENUM_ST_WDAT) || i_axi_wvalid) begin",
+   "original": "if ((reg_fsm_wr_current_state == ENUM_ST_WAIT) && i_rsp_valid && i_rsp_err)",
+   "mutated": "      if ((reg_fsm_wr_current_state == ENUM_ST_WAIT) && i_rsp_valid || i_rsp_err)",
    "status": "killed",
    "killed_by_tests": [
     "test_chk_018_long_apb_wait",
@@ -217,16 +167,14 @@
     "test_chk_021_response_backpressure",
     "test_chk_023_unsupported_writes",
     "test_chk_025_write_pslverr",
-    "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
     "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
+    "test_chk_029_pprot_passthrough",
     "test_chk_030_id_echo",
     "test_chk_031_reset_mid_transaction",
     "test_regression_random"
    ],
    "killed_by_checks": [
-    "CHK-016",
     "CHK-008"
    ]
   },
@@ -237,25 +185,9 @@
    "operator": "zero_to_one",
    "original": "o_apb_pwrite   = 1'b0;",
    "mutated": "    o_apb_pwrite   = 1'b1;",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_long_apb_wait",
-    "test_chk_019_arbitration_round_robin",
-    "test_chk_020_wvalid_before_aw",
-    "test_chk_021_response_backpressure",
-    "test_chk_023_unsupported_writes",
-    "test_chk_025_write_pslverr",
-    "test_chk_026_unmapped_default_completer",
-    "test_chk_027_random_legal_bursts",
-    "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
-    "test_chk_030_id_echo",
-    "test_chk_031_reset_mid_transaction",
-    "test_regression_random"
-   ],
-   "killed_by_checks": [
-    "CHK-016"
-   ]
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": []
   },
   {
    "id": "M10",
@@ -268,22 +200,18 @@
    "killed_by_tests": [
     "test_chk_018_long_apb_wait",
     "test_chk_019_arbitration_round_robin",
-    "test_chk_020_wvalid_before_aw",
     "test_chk_021_response_backpressure",
     "test_chk_022_unsupported_reads",
-    "test_chk_023_unsupported_writes",
     "test_chk_024_read_pslverr",
-    "test_chk_025_write_pslverr",
     "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
     "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
+    "test_chk_029_pprot_passthrough",
     "test_chk_030_id_echo",
     "test_chk_031_reset_mid_transaction",
     "test_regression_random"
    ],
    "killed_by_checks": [
-    "CHK-016",
     "CHK-011"
    ]
   },
@@ -305,49 +233,40 @@
     "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
     "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
+    "test_chk_029_pprot_passthrough",
     "test_chk_030_id_echo",
     "test_chk_031_reset_mid_transaction",
     "test_regression_random"
    ],
    "killed_by_checks": [
+    "CHK-016",
     "CHK-005"
    ]
   },
   {
    "id": "M12",
    "file": "m_axi2apb_rd_seq.sv",
-   "line": 312,
+   "line": 307,
    "operator": "zero_to_one",
-   "original": "o_axi_rvalid   = 1'b0;",
-   "mutated": "    o_axi_rvalid   = 1'b1;",
+   "original": "o_axi_arready  = 1'b0;",
+   "mutated": "    o_axi_arready  = 1'b1;",
    "status": "killed",
    "killed_by_tests": [
-    "test_chk_018_long_apb_wait",
     "test_chk_019_arbitration_round_robin",
-    "test_chk_020_wvalid_before_aw",
     "test_chk_021_response_backpressure",
     "test_chk_022_unsupported_reads",
-    "test_chk_023_unsupported_writes",
-    "test_chk_024_read_pslverr",
-    "test_chk_025_write_pslverr",
-    "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
-    "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
     "test_chk_030_id_echo",
-    "test_chk_031_reset_mid_transaction",
     "test_regression_random"
    ],
    "killed_by_checks": [
-    "CHK-017",
     "CHK-014"
    ]
   },
   {
    "id": "M13",
    "file": "m_axi2apb_wr_seq.sv",
-   "line": 303,
+   "line": 305,
    "operator": "or_to_and",
    "original": "if ((reg_fsm_wr_current_state == ENUM_ST_WDAT) ||",
    "mutated": "    if ((reg_fsm_wr_current_state == ENUM_ST_WDAT) &&",
@@ -362,13 +281,12 @@
     "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
     "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
+    "test_chk_029_pprot_passthrough",
     "test_chk_030_id_echo",
     "test_chk_031_reset_mid_transaction",
     "test_regression_random"
    ],
    "killed_by_checks": [
-    "CHK-016",
     "CHK-008"
    ]
   },
@@ -379,25 +297,9 @@
    "operator": "and_to_or",
    "original": "if ((reg_fsm_ctrl_current_state == ENUM_ST_ACTRD) && i_rd_done)",
    "mutated": "      if ((reg_fsm_ctrl_current_state == ENUM_ST_ACTRD) || i_rd_done)",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_long_apb_wait",
-    "test_chk_019_arbitration_round_robin",
-    "test_chk_020_wvalid_before_aw",
-    "test_chk_021_response_backpressure",
-    "test_chk_023_unsupported_writes",
-    "test_chk_025_write_pslverr",
-    "test_chk_026_unmapped_default_completer",
-    "test_chk_027_random_legal_bursts",
-    "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
-    "test_chk_030_id_echo",
-    "test_chk_031_reset_mid_transaction",
-    "test_regression_random"
-   ],
-   "killed_by_checks": [
-    "CHK-016"
-   ]
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": []
   },
   {
    "id": "M15",
@@ -419,7 +321,7 @@
     "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
     "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
+    "test_chk_029_pprot_passthrough",
     "test_chk_030_id_echo",
     "test_chk_031_reset_mid_transaction",
     "test_regression_random"
@@ -429,40 +331,36 @@
   {
    "id": "M16",
    "file": "m_axi2apb_rd_seq.sv",
-   "line": 376,
+   "line": 196,
    "operator": "ne_to_eq",
-   "original": "(reg_rd_beats_left != 9'd1)) begin",
-   "mutated": "          (reg_rd_beats_left == 9'd1)) begin",
+   "original": "w_ar_cross_4k = (w_ar_end_page != {1'b0, i_axi_araddr[31:12]});",
+   "mutated": "    w_ar_cross_4k = (w_ar_end_page == {1'b0, i_axi_araddr[31:12]});",
    "status": "killed",
    "killed_by_tests": [
     "test_chk_018_long_apb_wait",
     "test_chk_019_arbitration_round_robin",
-    "test_chk_020_wvalid_before_aw",
     "test_chk_021_response_backpressure",
     "test_chk_022_unsupported_reads",
-    "test_chk_023_unsupported_writes",
     "test_chk_024_read_pslverr",
-    "test_chk_025_write_pslverr",
     "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
     "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
+    "test_chk_029_pprot_passthrough",
     "test_chk_030_id_echo",
     "test_chk_031_reset_mid_transaction",
     "test_regression_random"
    ],
    "killed_by_checks": [
-    "CHK-016",
-    "CHK-010"
+    "CHK-011"
    ]
   },
   {
    "id": "M17",
    "file": "m_axi2apb_rd_seq.sv",
-   "line": 321,
+   "line": 323,
    "operator": "eq_to_ne",
-   "original": "if (reg_fsm_rd_current_state == ENUM_ST_REQ)",
-   "mutated": "    if (reg_fsm_rd_current_state != ENUM_ST_REQ)",
+   "original": "if ((reg_fsm_rd_current_state == ENUM_ST_RESP) ||",
+   "mutated": "    if ((reg_fsm_rd_current_state != ENUM_ST_RESP) ||",
    "status": "killed",
    "killed_by_tests": [
     "test_chk_018_long_apb_wait",
@@ -476,194 +374,176 @@
     "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
     "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
+    "test_chk_029_pprot_passthrough",
     "test_chk_030_id_echo",
     "test_chk_031_reset_mid_transaction",
     "test_regression_random"
    ],
    "killed_by_checks": [
-    "CHK-015",
-    "CHK-016",
-    "CHK-011"
+    "CHK-017",
+    "CHK-014"
    ]
   },
   {
    "id": "M18",
    "file": "m_axi2apb_rd_seq.sv",
-   "line": 267,
+   "line": 328,
    "operator": "negate_if",
-   "original": "if (w_ar_valid)",
-   "mutated": "          if (!(w_ar_valid))",
+   "original": "if (reg_fsm_rd_current_state == ENUM_ST_ERR) begin",
+   "mutated": "    if (!(reg_fsm_rd_current_state == ENUM_ST_ERR)) begin",
    "status": "killed",
    "killed_by_tests": [
     "test_chk_018_long_apb_wait",
     "test_chk_019_arbitration_round_robin",
-    "test_chk_020_wvalid_before_aw",
     "test_chk_021_response_backpressure",
     "test_chk_022_unsupported_reads",
-    "test_chk_023_unsupported_writes",
     "test_chk_024_read_pslverr",
-    "test_chk_025_write_pslverr",
     "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
     "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
+    "test_chk_029_pprot_passthrough",
     "test_chk_030_id_echo",
     "test_chk_031_reset_mid_transaction",
     "test_regression_random"
    ],
    "killed_by_checks": [
-    "CHK-015",
-    "CHK-016",
+    "CHK-017",
     "CHK-011"
    ]
   },
   {
    "id": "M19",
    "file": "m_axi2apb_rd_seq.sv",
-   "line": 332,
+   "line": 375,
    "operator": "and_to_or",
-   "original": "if (o_axi_rvalid && i_axi_rready && o_axi_rlast)",
-   "mutated": "    if (o_axi_rvalid && i_axi_rready || o_axi_rlast)",
+   "original": "(reg_fsm_rd_current_state == ENUM_ST_ERR)) && i_axi_rready &&",
+   "mutated": "           (reg_fsm_rd_current_state == ENUM_ST_ERR)) || i_axi_rready &&",
    "status": "killed",
    "killed_by_tests": [
     "test_chk_018_long_apb_wait",
     "test_chk_019_arbitration_round_robin",
-    "test_chk_020_wvalid_before_aw",
     "test_chk_021_response_backpressure",
     "test_chk_022_unsupported_reads",
-    "test_chk_023_unsupported_writes",
     "test_chk_024_read_pslverr",
-    "test_chk_025_write_pslverr",
     "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
     "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
-    "test_chk_030_id_echo",
-    "test_chk_031_reset_mid_transaction",
-    "test_regression_random"
-   ],
-   "killed_by_checks": [
-    "CHK-014",
-    "CHK-016"
-   ]
-  },
-  {
-   "id": "M20",
-   "file": "m_axi2apb_wr_seq.sv",
-   "line": 300,
-   "operator": "one_to_zero",
-   "original": "o_wr_ready = 1'b1;",
-   "mutated": "      o_wr_ready = 1'b0;",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_long_apb_wait",
-    "test_chk_019_arbitration_round_robin",
-    "test_chk_020_wvalid_before_aw",
-    "test_chk_021_response_backpressure",
-    "test_chk_023_unsupported_writes",
-    "test_chk_025_write_pslverr",
-    "test_chk_026_unmapped_default_completer",
-    "test_chk_027_random_legal_bursts",
-    "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
-    "test_chk_030_id_echo",
-    "test_chk_031_reset_mid_transaction",
-    "test_regression_random"
-   ],
-   "killed_by_checks": [
-    "CHK-016"
-   ]
-  },
-  {
-   "id": "M21",
-   "file": "m_axi2apb_rd_seq.sv",
-   "line": 182,
-   "operator": "or_to_and",
-   "original": "if (!w_ar_wrap_len_valid ||",
-   "mutated": "        if (!w_ar_wrap_len_valid &&",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_long_apb_wait",
-    "test_chk_019_arbitration_round_robin",
-    "test_chk_020_wvalid_before_aw",
-    "test_chk_021_response_backpressure",
-    "test_chk_023_unsupported_writes",
-    "test_chk_025_write_pslverr",
-    "test_chk_026_unmapped_default_completer",
-    "test_chk_027_random_legal_bursts",
-    "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
-    "test_chk_030_id_echo",
-    "test_chk_031_reset_mid_transaction",
-    "test_regression_random"
-   ],
-   "killed_by_checks": [
-    "CHK-016"
-   ]
-  },
-  {
-   "id": "M22",
-   "file": "m_axi2apb_wr_seq.sv",
-   "line": 348,
-   "operator": "eq_to_ne",
-   "original": "if ((reg_fsm_wr_current_state == ENUM_ST_WAIT) && i_rsp_valid && i_rsp_err)",
-   "mutated": "      if ((reg_fsm_wr_current_state != ENUM_ST_WAIT) && i_rsp_valid && i_rsp_err)",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_long_apb_wait",
-    "test_chk_019_arbitration_round_robin",
-    "test_chk_020_wvalid_before_aw",
-    "test_chk_021_response_backpressure",
-    "test_chk_023_unsupported_writes",
-    "test_chk_025_write_pslverr",
-    "test_chk_026_unmapped_default_completer",
-    "test_chk_027_random_legal_bursts",
-    "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
+    "test_chk_029_pprot_passthrough",
     "test_chk_030_id_echo",
     "test_chk_031_reset_mid_transaction",
     "test_regression_random"
    ],
    "killed_by_checks": [
     "CHK-016",
-    "CHK-008"
+    "CHK-009",
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M20",
+   "file": "m_axi2apb_wr_seq.sv",
+   "line": 313,
+   "operator": "one_to_zero",
+   "original": "o_wr_done = 1'b1;",
+   "mutated": "      o_wr_done = 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_long_apb_wait",
+    "test_chk_019_arbitration_round_robin",
+    "test_chk_021_response_backpressure",
+    "test_chk_026_unmapped_default_completer",
+    "test_chk_027_random_legal_bursts",
+    "test_chk_028_subword_unaligned",
+    "test_chk_029_pprot_passthrough",
+    "test_chk_030_id_echo",
+    "test_chk_031_reset_mid_transaction",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M21",
+   "file": "m_axi2apb_rd_seq.sv",
+   "line": 323,
+   "operator": "or_to_and",
+   "original": "if ((reg_fsm_rd_current_state == ENUM_ST_RESP) ||",
+   "mutated": "    if ((reg_fsm_rd_current_state == ENUM_ST_RESP) &&",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_long_apb_wait",
+    "test_chk_019_arbitration_round_robin",
+    "test_chk_021_response_backpressure",
+    "test_chk_022_unsupported_reads",
+    "test_chk_024_read_pslverr",
+    "test_chk_026_unmapped_default_completer",
+    "test_chk_027_random_legal_bursts",
+    "test_chk_028_subword_unaligned",
+    "test_chk_029_pprot_passthrough",
+    "test_chk_030_id_echo",
+    "test_chk_031_reset_mid_transaction",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-014",
+    "CHK-015",
+    "CHK-016"
+   ]
+  },
+  {
+   "id": "M22",
+   "file": "m_axi2apb_wr_seq.sv",
+   "line": 308,
+   "operator": "eq_to_ne",
+   "original": "if (reg_fsm_wr_current_state == ENUM_ST_REQ)",
+   "mutated": "    if (reg_fsm_wr_current_state != ENUM_ST_REQ)",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_long_apb_wait",
+    "test_chk_019_arbitration_round_robin",
+    "test_chk_020_wvalid_before_aw",
+    "test_chk_021_response_backpressure",
+    "test_chk_023_unsupported_writes",
+    "test_chk_025_write_pslverr",
+    "test_chk_026_unmapped_default_completer",
+    "test_chk_027_random_legal_bursts",
+    "test_chk_028_subword_unaligned",
+    "test_chk_029_pprot_passthrough",
+    "test_chk_030_id_echo",
+    "test_chk_031_reset_mid_transaction",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-015",
+    "CHK-016"
    ]
   },
   {
    "id": "M23",
    "file": "m_axi2apb_wr_seq.sv",
-   "line": 131,
+   "line": 290,
    "operator": "zero_to_one",
-   "original": "w_aw_beats = $bits(w_aw_beats)'({1'b0, i_axi_awlen} + LPARA_COUNT_ONE);",
-   "mutated": "    w_aw_beats = $bits(w_aw_beats)'({1'b1, i_axi_awlen} + LPARA_COUNT_ONE);",
+   "original": "o_axi_awready = 1'b0;",
+   "mutated": "    o_axi_awready = 1'b1;",
    "status": "killed",
    "killed_by_tests": [
-    "test_chk_018_long_apb_wait",
     "test_chk_019_arbitration_round_robin",
-    "test_chk_020_wvalid_before_aw",
     "test_chk_021_response_backpressure",
     "test_chk_023_unsupported_writes",
-    "test_chk_025_write_pslverr",
-    "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
-    "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
     "test_chk_030_id_echo",
-    "test_chk_031_reset_mid_transaction",
     "test_regression_random"
    ],
    "killed_by_checks": [
-    "CHK-016"
+    "CHK-014"
    ]
   },
   {
    "id": "M24",
    "file": "m_axi2apb_wr_seq.sv",
-   "line": 271,
+   "line": 265,
    "operator": "negate_if",
-   "original": "if (i_axi_wvalid && (reg_wr_beats_left == 9'd1))",
-   "mutated": "        if (!(i_axi_wvalid && (reg_wr_beats_left == 9'd1)))",
+   "original": "if (i_rsp_valid) begin",
+   "mutated": "        if (!(i_rsp_valid)) begin",
    "status": "killed",
    "killed_by_tests": [
     "test_chk_018_long_apb_wait",
@@ -675,12 +555,13 @@
     "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
     "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
+    "test_chk_029_pprot_passthrough",
     "test_chk_030_id_echo",
     "test_chk_031_reset_mid_transaction",
     "test_regression_random"
    ],
    "killed_by_checks": [
+    "CHK-014",
     "CHK-016",
     "CHK-008"
    ]
@@ -688,24 +569,13 @@
   {
    "id": "M25",
    "file": "m_axi2apb_wr_seq.sv",
-   "line": 196,
+   "line": 184,
    "operator": "ne_to_eq",
-   "original": "if ((i_axi_awcache != LPARA_CACHE_DEV_NB[3:0]) &&",
-   "mutated": "    if ((i_axi_awcache == LPARA_CACHE_DEV_NB[3:0]) &&",
+   "original": "((i_axi_awaddr & (w_aw_size_bytes - LPARA_COUNT_ONE)) != 32'd0))",
+   "mutated": "            ((i_axi_awaddr & (w_aw_size_bytes - LPARA_COUNT_ONE)) == 32'd0))",
    "status": "killed",
    "killed_by_tests": [
-    "test_chk_018_long_apb_wait",
-    "test_chk_019_arbitration_round_robin",
-    "test_chk_020_wvalid_before_aw",
-    "test_chk_021_response_backpressure",
-    "test_chk_023_unsupported_writes",
-    "test_chk_025_write_pslverr",
-    "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
-    "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
-    "test_chk_030_id_echo",
-    "test_chk_031_reset_mid_transaction",
     "test_regression_random"
    ],
    "killed_by_checks": []
@@ -719,23 +589,10 @@
    "mutated": "        if (!(reg_turn_rd)) begin",
    "status": "killed",
    "killed_by_tests": [
-    "test_chk_018_long_apb_wait",
     "test_chk_019_arbitration_round_robin",
-    "test_chk_020_wvalid_before_aw",
-    "test_chk_021_response_backpressure",
-    "test_chk_023_unsupported_writes",
-    "test_chk_025_write_pslverr",
-    "test_chk_026_unmapped_default_completer",
-    "test_chk_027_random_legal_bursts",
-    "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
-    "test_chk_030_id_echo",
-    "test_chk_031_reset_mid_transaction",
-    "test_regression_random"
+    "test_chk_031_reset_mid_transaction"
    ],
-   "killed_by_checks": [
-    "CHK-016"
-   ]
+   "killed_by_checks": []
   },
   {
    "id": "M27",
@@ -748,16 +605,13 @@
    "killed_by_tests": [
     "test_chk_018_long_apb_wait",
     "test_chk_019_arbitration_round_robin",
-    "test_chk_020_wvalid_before_aw",
     "test_chk_021_response_backpressure",
     "test_chk_022_unsupported_reads",
-    "test_chk_023_unsupported_writes",
     "test_chk_024_read_pslverr",
-    "test_chk_025_write_pslverr",
     "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
     "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
+    "test_chk_029_pprot_passthrough",
     "test_chk_030_id_echo",
     "test_chk_031_reset_mid_transaction",
     "test_regression_random"
@@ -769,10 +623,10 @@
   {
    "id": "M28",
    "file": "m_axi2apb_wr_seq.sv",
-   "line": 310,
+   "line": 342,
    "operator": "and_to_or",
-   "original": "if (o_axi_bvalid && i_axi_bready)",
-   "mutated": "    if (o_axi_bvalid || i_axi_bready)",
+   "original": "if ((reg_fsm_wr_current_state == ENUM_ST_WDAT) && i_axi_wvalid) begin",
+   "mutated": "      if ((reg_fsm_wr_current_state == ENUM_ST_WDAT) || i_axi_wvalid) begin",
    "status": "killed",
    "killed_by_tests": [
     "test_chk_018_long_apb_wait",
@@ -784,14 +638,14 @@
     "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
     "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
+    "test_chk_029_pprot_passthrough",
     "test_chk_030_id_echo",
     "test_chk_031_reset_mid_transaction",
     "test_regression_random"
    ],
    "killed_by_checks": [
-    "CHK-014",
-    "CHK-016"
+    "CHK-016",
+    "CHK-013"
    ]
   },
   {
@@ -814,7 +668,7 @@
     "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
     "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
+    "test_chk_029_pprot_passthrough",
     "test_chk_030_id_echo",
     "test_chk_031_reset_mid_transaction",
     "test_regression_random"
@@ -828,28 +682,17 @@
   {
    "id": "M30",
    "file": "m_axi2apb_rd_seq.sv",
-   "line": 318,
+   "line": 148,
    "operator": "one_to_zero",
-   "original": "o_rd_ready    = 1'b1;",
-   "mutated": "      o_rd_ready    = 1'b0;",
+   "original": "w_ar_wrap_len_valid = 1'b1;",
+   "mutated": "        w_ar_wrap_len_valid = 1'b0;",
    "status": "killed",
    "killed_by_tests": [
-    "test_chk_018_long_apb_wait",
-    "test_chk_019_arbitration_round_robin",
-    "test_chk_020_wvalid_before_aw",
-    "test_chk_021_response_backpressure",
-    "test_chk_023_unsupported_writes",
-    "test_chk_025_write_pslverr",
-    "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
-    "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
-    "test_chk_030_id_echo",
-    "test_chk_031_reset_mid_transaction",
     "test_regression_random"
    ],
    "killed_by_checks": [
-    "CHK-016"
+    "CHK-011"
    ]
   },
   {
@@ -872,13 +715,14 @@
     "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
     "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
+    "test_chk_029_pprot_passthrough",
     "test_chk_030_id_echo",
     "test_chk_031_reset_mid_transaction",
     "test_regression_random"
    ],
    "killed_by_checks": [
     "CHK-011",
+    "CHK-008",
     "CHK-001",
     "CHK-006"
    ]
@@ -892,53 +736,26 @@
    "mutated": "    w_ar_beats           = $bits(w_ar_beats)'({1'b1, i_axi_arlen} + LPARA_COUNT_ONE);",
    "status": "killed",
    "killed_by_tests": [
-    "test_chk_018_long_apb_wait",
-    "test_chk_019_arbitration_round_robin",
-    "test_chk_020_wvalid_before_aw",
     "test_chk_021_response_backpressure",
     "test_chk_022_unsupported_reads",
-    "test_chk_023_unsupported_writes",
-    "test_chk_025_write_pslverr",
-    "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
-    "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
     "test_chk_030_id_echo",
-    "test_chk_031_reset_mid_transaction",
     "test_regression_random"
    ],
    "killed_by_checks": [
-    "CHK-015",
-    "CHK-016",
     "CHK-011"
    ]
   },
   {
    "id": "M33",
    "file": "m_axi2apb_wr_seq.sv",
-   "line": 181,
+   "line": 183,
    "operator": "or_to_and",
    "original": "if (!w_aw_wrap_len_valid ||",
    "mutated": "        if (!w_aw_wrap_len_valid &&",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_long_apb_wait",
-    "test_chk_019_arbitration_round_robin",
-    "test_chk_020_wvalid_before_aw",
-    "test_chk_021_response_backpressure",
-    "test_chk_023_unsupported_writes",
-    "test_chk_025_write_pslverr",
-    "test_chk_026_unmapped_default_completer",
-    "test_chk_027_random_legal_bursts",
-    "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
-    "test_chk_030_id_echo",
-    "test_chk_031_reset_mid_transaction",
-    "test_regression_random"
-   ],
-   "killed_by_checks": [
-    "CHK-016"
-   ]
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": []
   },
   {
    "id": "M34",
@@ -951,24 +768,21 @@
    "killed_by_tests": [
     "test_chk_018_long_apb_wait",
     "test_chk_019_arbitration_round_robin",
-    "test_chk_020_wvalid_before_aw",
     "test_chk_021_response_backpressure",
     "test_chk_022_unsupported_reads",
-    "test_chk_023_unsupported_writes",
     "test_chk_024_read_pslverr",
-    "test_chk_025_write_pslverr",
     "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
     "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
+    "test_chk_029_pprot_passthrough",
     "test_chk_030_id_echo",
     "test_chk_031_reset_mid_transaction",
     "test_regression_random"
    ],
    "killed_by_checks": [
+    "CHK-014",
     "CHK-015",
-    "CHK-016",
-    "CHK-011"
+    "CHK-016"
    ]
   },
   {
@@ -980,18 +794,7 @@
    "mutated": "        if ((w_rd_addr_plus_size & w_rd_wrap_mask) == w_rd_wrap_base)",
    "status": "killed",
    "killed_by_tests": [
-    "test_chk_018_long_apb_wait",
-    "test_chk_019_arbitration_round_robin",
-    "test_chk_020_wvalid_before_aw",
-    "test_chk_021_response_backpressure",
-    "test_chk_023_unsupported_writes",
-    "test_chk_025_write_pslverr",
-    "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
-    "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
-    "test_chk_030_id_echo",
-    "test_chk_031_reset_mid_transaction",
     "test_regression_random"
    ],
    "killed_by_checks": [
@@ -1001,450 +804,420 @@
   {
    "id": "M36",
    "file": "m_axi2apb_rd_seq.sv",
-   "line": 324,
+   "line": 326,
    "operator": "eq_to_ne",
-   "original": "(reg_fsm_rd_current_state == ENUM_ST_ERR)) begin",
-   "mutated": "        (reg_fsm_rd_current_state != ENUM_ST_ERR)) begin",
+   "original": "o_axi_rlast  = (reg_rd_beats_left == 9'd1);",
+   "mutated": "      o_axi_rlast  = (reg_rd_beats_left != 9'd1);",
    "status": "killed",
    "killed_by_tests": [
     "test_chk_018_long_apb_wait",
     "test_chk_019_arbitration_round_robin",
-    "test_chk_020_wvalid_before_aw",
     "test_chk_021_response_backpressure",
     "test_chk_022_unsupported_reads",
-    "test_chk_023_unsupported_writes",
     "test_chk_024_read_pslverr",
-    "test_chk_025_write_pslverr",
     "test_chk_026_unmapped_default_completer",
     "test_chk_027_random_legal_bursts",
     "test_chk_028_subword_unaligned",
-    "test_chk_029_prot_passthrough",
+    "test_chk_029_pprot_passthrough",
     "test_chk_030_id_echo",
     "test_chk_031_reset_mid_transaction",
     "test_regression_random"
    ],
    "killed_by_checks": [
-    "CHK-017",
-    "CHK-014"
+    "CHK-014",
+    "CHK-010"
    ]
   }
  ],
- "candidates": 226,
+ "candidates": 235,
  "count": 36,
- "killed": 36,
- "survived": 0,
+ "killed": 31,
+ "survived": 5,
  "not_compiled": 0,
- "score": 100.0,
+ "score": 86.1,
  "seed": 1,
  "excluded_uncovered": {
   "files": [],
-  "lines": 6
+  "lines": 0
  },
  "threshold": 85.0,
  "attribution": {
   "mutants": {
    "M01": {
-    "rules": [
-     "AB-6.2-06",
-     "AB-5.4-05",
-     "AB-10.2-01",
-     "AB-3-31",
-     "AB-10.2-03"
-    ],
-    "equivalent": false,
-    "reason": "With && the (RESP && ERR) term is never true, so beats_left, address and error-state data never update after an R handshake. Multi-beat reads never reach the last beat, so RLAST is never raised and the beat count and addresses are wrong."
+    "rules": [],
+    "equivalent": true,
+    "reason": "The || to && change only matters for WRAP bursts with an illegal length (not 2/4/8/16) or an address not aligned to the size. Both are AXI-illegal. The plan's assumptions say they are never generated and no rule defines the response. For legal WRAP both terms are 0, so the result is the same."
    },
    "M02": {
     "rules": [
-     "AB-5.3-04",
-     "AB-5.3-02",
-     "AB-3-35",
-     "AB-3-06",
-     "AB-6.3-03"
+     "AB-3-14",
+     "AB-3-10",
+     "AB-3-15",
+     "AB-10.2-02",
+     "AB-3-18"
     ],
     "equivalent": false,
-    "reason": "WREADY is high in every state except WDAT (and in DRAIN). It is high before AW is accepted and low when W data is expected, which breaks WREADY gating and the W beat count."
+    "reason": "The AW context (ID, address, len, size, burst, prot, error flag) would be captured whenever the FSM is not IDLE, and never at the AW handshake. BID, PADDR, PPROT and the unsupported-write decision would be wrong."
    },
    "M03": {
     "rules": [
-     "AB-9-06",
-     "AB-3-08",
-     "AB-3-09",
-     "AB-6.3-05",
-     "AB-12-04"
+     "AB-5.3-04",
+     "AB-5.3-02",
+     "AB-3-06",
+     "AB-3-35",
+     "AB-5.3-03"
     ],
     "equivalent": false,
-    "reason": "The AWSIZE>2 check now sets w_aw_valid=1 instead of 0. Writes with unsupported size 3..7 are accepted and sent to APB instead of being drained and answered with SLVERR."
+    "reason": "WREADY would default to 1 in IDLE, REQ, WAIT and BRESP. W beats would be accepted before AW and while an APB beat is in flight, and without being captured."
    },
    "M04": {
-    "rules": [
-     "AB-5.3-05",
-     "AB-10.2-02",
-     "AB-6.3-07",
-     "AB-10.1-03",
-     "AB-6.2-01"
-    ],
-    "equivalent": false,
-    "reason": "The REQ state advances on !i_req_ready. The write sequencer moves to WAIT before the APB controller accepts the beat, and it stalls once the controller accepts it. APB writes are lost or hang."
+    "rules": [],
+    "equivalent": true,
+    "reason": "In REQ the APB FSM is always IDLE and the grant is held, so i_req_ready is 1 in the first REQ cycle. The mutant stays in REQ one extra cycle, until the APB FSM reaches SETUP and req_ready drops to 0. Then it moves to WAIT. The earliest rsp_valid comes two cycles after that, so WAIT is entered in time. The APB transfer and every other output are unchanged, and the extra o_req_valid cycle is ignored by the APB FSM."
    },
    "M05": {
     "rules": [
      "AB-3-07",
-     "AB-6.3-01",
-     "AB-20-01",
+     "AB-10.2-02",
+     "AB-6.3-07",
      "AB-15.2-01",
-     "AB-10.2-02"
+     "AB-20-01"
     ],
     "equivalent": false,
-    "reason": "The WRAP alignment test is inverted. Legal aligned WRAP writes are rejected with SLVERR and no APB access, while unaligned ones are accepted."
+    "reason": "The WRAP next-address decision is inverted. Beats that should wrap would increment, and beats that should increment would jump to the wrap base. APB addresses for legal WRAP writes would be wrong."
    },
    "M06": {
     "rules": [
      "AB-6.2-01",
      "AB-10.3-04",
-     "AB-5.3-05",
      "AB-6.3-07",
-     "AB-10.2-01"
+     "AB-5.3-01",
+     "AB-5.3-05"
     ],
     "equivalent": false,
-    "reason": "req_ready is given when the APB FSM is not IDLE, not when it is IDLE. Payload capture needs req_ready in IDLE, so APB SETUP starts without a captured payload, and the sequencer handshake happens in the wrong phase."
+    "reason": "req_ready would be asserted only while the APB FSM is not IDLE. The request would never be captured in IDLE, and the sequencers would see ready in the wrong phase. The APB transfer would be corrupted or never run."
    },
    "M07": {
     "rules": [
-     "AB-3-41",
      "AB-6.3-09",
-     "AB-10.2-05",
-     "AB-3-33",
-     "AB-10.2-06"
+     "AB-5.3-05",
+     "AB-5.3-01",
+     "AB-6.3-10",
+     "AB-6.3-11"
     ],
     "equivalent": false,
-    "reason": "The response (rsp_valid, data, err) is latched when the APB FSM is not in ACCESS but PREADY is high. PRDATA and PSLVERR are not captured at the true completion, so R and B responses are lost or wrong."
+    "reason": "The response pulse (rd/wr rsp_valid, data, err) would fire outside the ACCESS state whenever PREADY is high. It would not fire at the real completion, so read data, PSLVERR and B/R timing would be wrong or the bridge would hang."
    },
    "M08": {
     "rules": [
-     "AB-9-11",
-     "AB-3-11",
-     "AB-5.3-02",
-     "AB-5.4-05",
-     "AB-9-03"
+     "AB-6.3-11",
+     "AB-10.2-06",
+     "AB-3-34",
+     "AB-12-07",
+     "AB-3-41"
     ],
     "equivalent": false,
-    "reason": "The W capture, beats_left decrement and address advance now fire when WDAT or wvalid is true. Data, strobes and address are captured or consumed without a W handshake, or in non-WDAT states, so PWDATA, PSTRB and the beat count are corrupted."
+    "reason": "reg_wr_err would be set whenever the sticky registered rsp_err is 1, in any state, not only at a WAIT completion with PSLVERR. A write error would leak into the following error-free write, which would return SLVERR in BRESP."
    },
    "M09": {
     "rules": [],
     "equivalent": true,
-    "reason": "Line 165 is only the default assignment ahead of the case on reg_fsm_apb_current_state. Every case branch (SETUP, ACCESS and default) assigns o_apb_pwrite again, so the initial 1 never reaches the port."
+    "reason": "This is a default assignment in p_com_outputs. The following case on the APB state has SETUP, ACCESS and a default branch, and each branch assigns o_apb_pwrite. The default value is always overwritten, so the port never changes."
    },
    "M10": {
     "rules": [
      "AB-6.3-01",
-     "AB-3-01",
+     "AB-5.3-01",
      "AB-10.2-01",
-     "AB-20-01",
+     "AB-3-01",
      "AB-3-07"
     ],
     "equivalent": false,
-    "reason": "The default of w_ar_valid becomes 0 and nothing sets it back to 1. Every read is treated as unsupported, so legal reads get SLVERR with no APB access."
+    "reason": "w_ar_valid is never set back to 1. Every read, including legal ones, would be treated as unsupported. It would get SLVERR beats with no APB access."
    },
    "M11": {
     "rules": [
      "AB-10.2-02",
+     "AB-6.3-07",
      "AB-5.3-05",
      "AB-1.1-01",
-     "AB-6.2-12",
-     "AB-6.3-07"
+     "AB-3-01"
     ],
     "equivalent": false,
-    "reason": "Write transfers latch pwrite=0, so they appear on APB as reads. The write response goes to the read response path and the AXI write never completes correctly."
+    "reason": "A captured write would set reg_apb_wr=0. PWRITE would be 0 on writes, so they would be issued as APB reads. The completion would also be routed to the read response path, so no B would be returned."
    },
    "M12": {
     "rules": [
-     "AB-3-27",
-     "AB-7.3-01",
-     "AB-5.3-01",
-     "AB-6.2-04",
-     "AB-10.4-02"
+     "AB-10.4-02",
+     "AB-5.1-04",
+     "AB-3-02",
+     "AB-3-06",
+     "AB-5.1-03"
     ],
     "equivalent": false,
-    "reason": "The default of o_axi_rvalid becomes 1 and is never cleared. RVALID is high in IDLE, REQ and WAIT and during reset, giving spurious R beats."
+    "reason": "ARREADY would default to 1 outside IDLE and without a grant. A new AR could be accepted while a transaction is active, or when the read side is not granted."
    },
    "M13": {
     "rules": [
      "AB-5.3-02",
-     "AB-6.3-03",
      "AB-3-35",
-     "AB-5.3-05",
+     "AB-6.3-03",
+     "AB-6.3-05",
      "AB-10.1-03"
     ],
     "equivalent": false,
-    "reason": "WREADY needs state==WDAT and state==DRAIN at once, which never happens. WREADY is never raised, so write data is never accepted and writes hang."
+    "reason": "The state cannot equal both WDAT and DRAIN. WREADY would never be asserted, so no W beat is accepted and every write hangs."
    },
    "M14": {
     "rules": [],
     "equivalent": true,
-    "reason": "turn_rd is only read in the ctrl IDLE state. The controller leaves ACTRD only through i_rd_done, and then both versions clear turn_rd. The mutant also clears it early while waiting in ACTRD, but that value is never observed. The else-if write branch is not affected because rd_done never occurs outside ACTRD."
+    "reason": "i_rd_done can only be 1 while the controller is in ACTRD. In the mutant, reg_turn_rd clears to 0 at the start of ACTRD instead of at its end. reg_turn_rd is only read in controller IDLE, and the only exit from ACTRD is rd_done, which sets the same value. The tie-break order is identical."
    },
    "M15": {
     "rules": [
      "AB-6.2-01",
      "AB-10.3-04",
-     "AB-5.3-05",
+     "AB-6.3-07",
      "AB-5.3-01",
-     "AB-6.3-07"
+     "AB-5.3-05"
     ],
     "equivalent": false,
-    "reason": "The APB start needs both read and write grants and requests at once, which never happens. APB SETUP never begins and every transfer hangs."
+    "reason": "The APB FSM would need both a read request and a write request at once to leave IDLE. That can never happen, so no APB transfer would start."
    },
    "M16": {
     "rules": [
-     "AB-6.2-06",
-     "AB-5.4-05",
-     "AB-10.2-01",
-     "AB-3-31",
+     "AB-9-02",
+     "AB-6.3-14",
+     "AB-6.3-02",
+     "AB-3-09",
      "AB-3-30"
     ],
     "equivalent": false,
-    "reason": "The beat counter and address update only on the last beat instead of on every non-last beat. Multi-beat reads do not advance the address or count, so the address sequence and RLAST position are wrong."
+    "reason": "The 4-KiB crossing flag is inverted. Reads that cross 4 KiB would be accepted and issue APB traffic, and non-crossing legal reads would be rejected with SLVERR."
    },
    "M17": {
     "rules": [
-     "AB-10.2-01",
+     "AB-3-27",
+     "AB-7.3-01",
      "AB-5.3-01",
-     "AB-6.3-07",
-     "AB-6.3-01",
-     "AB-1.1-01"
+     "AB-6.2-06",
+     "AB-5.4-05"
     ],
     "equivalent": false,
-    "reason": "The read APB request valid is asserted in every state except REQ. The APB read is not requested in REQ, so legal reads stall or issue spurious requests."
+    "reason": "RVALID would be high in every state except RESP, including IDLE, reset, REQ and WAIT. It would be low in RESP. Spurious R beats would appear and the real beat would never be presented."
    },
    "M18": {
     "rules": [
-     "AB-6.3-02",
-     "AB-3-32",
-     "AB-12-02",
      "AB-10.2-03",
-     "AB-6.3-01"
+     "AB-12-01",
+     "AB-3-30",
+     "AB-6.3-02",
+     "AB-3-33"
     ],
     "equivalent": false,
-    "reason": "The IDLE branch is inverted. Valid reads go to the ERR state (SLVERR beats, no APB) and invalid reads go to the APB REQ path."
+    "reason": "The forced zero data and SLVERR would apply in every state except ERR. Unsupported reads would return stored data and resp instead of zero and SLVERR, and legal beats would be forced to SLVERR."
    },
    "M19": {
     "rules": [
-     "AB-5.1-04",
-     "AB-10.4-02",
+     "AB-5.4-05",
+     "AB-6.2-06",
+     "AB-5.3-01",
      "AB-5.1-03",
-     "AB-3-02",
-     "AB-1.1-02"
+     "AB-6.2-04"
     ],
     "equivalent": false,
-    "reason": "rd_done fires on any R handshake or on RLAST alone. The owner is released after every beat, or before RREADY on the last beat, so another transaction can start mid-burst."
+    "reason": "beats_left and the address would advance whenever RESP/ERR is active even with RREADY low. They would also advance in non-R states when RREADY is high. The beat count, RLAST position and held R payload would be wrong."
    },
    "M20": {
     "rules": [
      "AB-10.4-02",
      "AB-5.1-04",
+     "AB-10.1-03",
      "AB-3-05",
-     "AB-10.4-01",
-     "AB-3-03"
+     "AB-3-02"
     ],
     "equivalent": false,
-    "reason": "wr_ready stays 0 in IDLE, so the controller never moves GRW to ACTWR and never sees wr_done. After the first write the controller stays in GRW, the turn never flips, and reads are starved."
+    "reason": "o_wr_done would never be asserted. The controller would stay in ACTWR forever, the arbitration preference would never flip, and no further transaction would be accepted."
    },
    "M21": {
     "rules": [
-     "AB-3-07",
-     "AB-3-09",
-     "AB-9-08",
-     "AB-6.3-02",
-     "AB-20-01"
+     "AB-5.3-01",
+     "AB-5.4-05",
+     "AB-10.2-01",
+     "AB-10.2-03",
+     "AB-3-01"
     ],
     "equivalent": false,
-    "reason": "The invalid-WRAP test uses && instead of ||. WRAP with a bad length (not 2/4/8/16 beats) but aligned, or with a good length but unaligned, is now accepted instead of rejected. The bad-length case is an unsupported burst under the spec, so the mutant issues APB for it instead of SLVERR."
+    "reason": "The state cannot be both RESP and ERR. RVALID would never be asserted, so no R beat would be returned and reads would hang."
    },
    "M22": {
     "rules": [
-     "AB-3-34",
-     "AB-10.2-06",
-     "AB-6.3-11",
-     "AB-12-07",
-     "AB-12-11"
+     "AB-6.3-07",
+     "AB-5.3-05",
+     "AB-3-36",
+     "AB-6.3-05",
+     "AB-10.2-02"
     ],
     "equivalent": false,
-    "reason": "The write error is accumulated only when not in WAIT. rsp_valid only arrives in WAIT, so PSLVERR on APB writes is never recorded and BRESP is OKAY instead of SLVERR."
+    "reason": "o_req_valid would be asserted in every state except REQ. The APB FSM could start spurious transfers (including for unsupported writes), and in REQ the request would never be raised."
    },
    "M23": {
     "rules": [
-     "AB-3-07",
-     "AB-9-02",
-     "AB-6.3-01",
-     "AB-3-09",
-     "AB-20-01"
+     "AB-10.4-02",
+     "AB-3-02",
+     "AB-5.1-04",
+     "AB-3-06",
+     "AB-5.1-03"
     ],
     "equivalent": false,
-    "reason": "The AW beat count gets a 1 prefix, adding 256 to the 9-bit sum. The INCR total byte count for the 4-KiB check is wrong, so legal INCR writes are rejected as 4-KiB crossings."
+    "reason": "AWREADY would default to 1 outside IDLE and without a grant. A new AW could be accepted while a transaction is active, or when the write side is not granted."
    },
    "M24": {
     "rules": [
-     "AB-3-35",
-     "AB-12-04",
-     "AB-6.3-05",
-     "AB-10.2-04",
-     "AB-3-37"
+     "AB-5.3-05",
+     "AB-6.3-07",
+     "AB-10.2-02",
+     "AB-3-34",
+     "AB-6.3-11"
     ],
     "equivalent": false,
-    "reason": "DRAIN exits when the last-beat condition is false. The reject path leaves DRAIN right away and gives B before all AWLEN+1 W beats are drained, and the beat count goes wrong."
+    "reason": "The WAIT state would advance when no APB response is valid. It would advance before the APB completion, with wrong beat counting and address advance, and would miss the real response pulse."
    },
    "M25": {
     "rules": [
-     "AB-3-17",
-     "AB-3-18",
-     "AB-9-09",
-     "AB-3-09",
-     "AB-6.3-01"
+     "AB-3-07",
+     "AB-20-01",
+     "AB-15.2-01",
+     "AB-10.2-02",
+     "AB-6.3-07"
     ],
     "equivalent": false,
-    "reason": "The cache check is now cache==0 && cache!=1. AWCACHE=0000 (legal) is rejected, and illegal values such as 0010 are accepted and sent to APB."
+    "reason": "The WRAP alignment check is inverted. Legal aligned WRAP writes would be rejected as unsupported, with SLVERR and no APB. Misaligned ones would be accepted."
    },
    "M26": {
     "rules": [
      "AB-3-04",
-     "AB-3-03",
      "AB-3-05",
-     "AB-5.1-02",
-     "AB-10.4-01"
+     "AB-3-03",
+     "AB-10.4-01",
+     "AB-5.1-02"
     ],
     "equivalent": false,
-    "reason": "The turn bit is inverted, so AW wins the first tie after reset and the preference alternates the wrong way."
+    "reason": "The tie-break preference is inverted. The first tie after reset would go to AW, and later ties would favour the side just served. Lone requests are still granted."
    },
    "M27": {
     "rules": [
      "AB-10.2-01",
-     "AB-9-10",
-     "AB-6.2-13",
+     "AB-3-10",
      "AB-3-15",
-     "AB-5.3-05"
+     "AB-6.2-13",
+     "AB-6.3-07"
     ],
     "equivalent": false,
-    "reason": "Payload capture requires the APB FSM not to be IDLE, but req_ready is only high in IDLE. Address, data, strobe and PPROT are never latched, so PADDR and PPROT stay 0."
+    "reason": "o_rd_req_ready is only 1 in APB IDLE, so the read capture branch would never run. APB read address, PPROT and PWRITE would not be loaded and would keep stale values."
    },
    "M28": {
     "rules": [
-     "AB-10.4-02",
-     "AB-5.1-04",
-     "AB-3-02",
-     "AB-1.1-02",
-     "AB-5.1-03"
+     "AB-5.4-05",
+     "AB-5.3-02",
+     "AB-3-11",
+     "AB-9-03",
+     "AB-10.2-02"
     ],
     "equivalent": false,
-    "reason": "wr_done fires as soon as BVALID is high, even without BREADY. The owner is released while B is still pending, so a new transaction can start during B backpressure."
+    "reason": "W data would be captured and beats_left decremented whenever WVALID is high in any state, or whenever the state is WDAT without WVALID. PWDATA, PSTRB and the beat count would be corrupted."
    },
    "M29": {
     "rules": [
-     "AB-6.2-08",
      "AB-6.2-01",
      "AB-10.3-04",
+     "AB-6.2-08",
      "AB-7.3-01",
-     "AB-12-09"
+     "AB-6.1-02"
     ],
     "equivalent": false,
-    "reason": "In the idle/default branch PENABLE becomes 1 while PSEL is 0, so PENABLE is high without PSEL and in reset."
+    "reason": "PENABLE would be 1 in the idle/default APB state with PSEL=0. It would be asserted without PSEL, including after reset."
    },
    "M30": {
     "rules": [
-     "AB-10.4-02",
-     "AB-5.1-04",
-     "AB-10.4-01",
-     "AB-3-05",
-     "AB-3-03"
+     "AB-3-07",
+     "AB-20-01",
+     "AB-15.2-01",
+     "AB-10.2-01",
+     "AB-6.3-01"
     ],
     "equivalent": false,
-    "reason": "rd_ready stays 0 in IDLE, so the controller never leaves GRD to ACTRD and never sees rd_done. After the first read the controller stays in GRD, the turn never flips, and writes are starved."
+    "reason": "A WRAP burst with ARLEN=7 (8 beats) would be treated as an invalid length. Legal 8-beat WRAP reads would be rejected with SLVERR and no APB."
    },
    "M31": {
     "rules": [
      "AB-6.2-01",
      "AB-10.3-04",
+     "AB-3-22",
      "AB-3-40",
-     "AB-6.3-08",
-     "AB-3-22"
+     "AB-6.1-02"
     ],
     "equivalent": false,
-    "reason": "PSEL is 0 during the ACCESS phase, so PENABLE is high without PSEL. The APB access phase is wrong."
+    "reason": "PSEL would be 0 during ACCESS while PENABLE=1. The APB access phase would be illegal and the completer would not see a selected access."
    },
    "M32": {
     "rules": [
      "AB-3-07",
-     "AB-9-02",
      "AB-6.3-01",
-     "AB-3-09",
-     "AB-20-01"
+     "AB-6.3-14",
+     "AB-9-02",
+     "AB-3-09"
     ],
     "equivalent": false,
-    "reason": "The AR beat count gets a 1 prefix, adding 256. The INCR total byte count for the 4-KiB check is wrong, so legal INCR reads are rejected as 4-KiB crossings."
+    "reason": "The INCR beat count would be inflated by 256. The 4-KiB crossing check would flag legal INCR reads near the end of a page, rejecting them with SLVERR and no APB."
    },
    "M33": {
-    "rules": [
-     "AB-3-07",
-     "AB-3-09",
-     "AB-9-08",
-     "AB-20-01"
-    ],
-    "equivalent": false,
-    "reason": "The invalid-WRAP test uses && instead of ||. WRAP writes with a bad length (not 2/4/8/16 beats) but aligned, or with a good length but unaligned, are now accepted instead of rejected. The bad-length case is an unsupported burst under the spec, so the mutant issues APB writes for it instead of SLVERR."
+    "rules": [],
+    "equivalent": true,
+    "reason": "The || to && change only matters for WRAP writes with an illegal length or an unaligned address. Both are AXI-illegal. The plan's assumptions say they are never generated and no rule defines the response. For legal WRAP both terms are 0, so the result is the same."
    },
    "M34": {
     "rules": [
      "AB-6.3-07",
-     "AB-10.2-01",
-     "AB-5.4-05",
+     "AB-3-32",
      "AB-12-02",
-     "AB-6.3-02"
+     "AB-5.3-01",
+     "AB-6.2-01"
     ],
     "equivalent": false,
-    "reason": "APB SETUP now starts whenever gnt_rd is high or rd_req_valid is high, even with no read request (for example during R backpressure, or in an unsupported read). This produces spurious APB transfers."
+    "reason": "An APB transfer would start whenever o_gnt_rd is high, even without a valid read request. Extra APB transfers would appear, including for unsupported reads, and the transfer count would exceed ARLEN+1."
    },
    "M35": {
     "rules": [
      "AB-3-07",
      "AB-10.2-01",
+     "AB-6.3-07",
      "AB-15.2-01",
-     "AB-6.3-01",
      "AB-20-01"
     ],
     "equivalent": false,
-    "reason": "The WRAP next-address condition is inverted. A WRAP read wraps when it should not and increments across the wrap boundary, so the APB addresses are wrong."
+    "reason": "The WRAP next-address decision for reads is inverted. Wrapping bursts would increment past the boundary instead of wrapping, and non-wrapping beats would jump to the wrap base."
    },
    "M36": {
     "rules": [
-     "AB-3-30",
-     "AB-10.2-03",
-     "AB-12-01",
-     "AB-6.3-02",
-     "AB-3-31"
+     "AB-6.2-06",
+     "AB-3-31",
+     "AB-5.4-05",
+     "AB-10.2-01",
+     "AB-12-01"
     ],
     "equivalent": false,
-    "reason": "RVALID/RLAST are driven in RESP and in every state except ERR. Unsupported reads never present their SLVERR beats, and RVALID is high in IDLE, REQ and WAIT."
+    "reason": "RLAST would be inverted. It would be high on every beat except the last and low on the final beat. The transaction would never complete correctly."
    }
   },
-  "unknown_ids": [
-   "AB-6.3-04"
-  ],
+  "unknown_ids": [],
   "model": "sonnet",
-  "cost_usd": 0.5882797
+  "cost_usd": 0.5447873000000001
  },
  "rule_scores": {
   "AB-1.1-01": {
-   "relevant": 2,
-   "killed": 2,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "AB-1.1-02": {
-   "relevant": 2,
-   "killed": 2,
+   "relevant": 1,
+   "killed": 1,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1459,48 +1232,32 @@
    "meets_threshold": true
   },
   "AB-10.2-01": {
-   "relevant": 8,
-   "killed": 8,
+   "relevant": 6,
+   "killed": 6,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "AB-10.2-02": {
-   "relevant": 3,
-   "killed": 3,
+   "relevant": 7,
+   "killed": 7,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "AB-10.2-03": {
-   "relevant": 3,
-   "killed": 3,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "AB-10.2-04": {
-   "relevant": 1,
-   "killed": 1,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "AB-10.2-05": {
-   "relevant": 1,
-   "killed": 1,
+   "relevant": 2,
+   "killed": 2,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "AB-10.2-06": {
-   "relevant": 2,
-   "killed": 2,
+   "relevant": 1,
+   "killed": 1,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1515,22 +1272,6 @@
    "meets_threshold": true
   },
   "AB-10.4-01": {
-   "relevant": 3,
-   "killed": 3,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "AB-10.4-02": {
-   "relevant": 5,
-   "killed": 5,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "AB-12-01": {
    "relevant": 1,
    "killed": 1,
    "survived": [],
@@ -1538,7 +1279,15 @@
    "score": 100.0,
    "meets_threshold": true
   },
-  "AB-12-02": {
+  "AB-10.4-02": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB-12-01": {
    "relevant": 2,
    "killed": 2,
    "survived": [],
@@ -1546,9 +1295,9 @@
    "score": 100.0,
    "meets_threshold": true
   },
-  "AB-12-04": {
-   "relevant": 2,
-   "killed": 2,
+  "AB-12-02": {
+   "relevant": 1,
+   "killed": 1,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1562,57 +1311,41 @@
    "score": 100.0,
    "meets_threshold": true
   },
-  "AB-12-09": {
-   "relevant": 1,
-   "killed": 1,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "AB-12-11": {
-   "relevant": 1,
-   "killed": 1,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
   "AB-15.2-01": {
-   "relevant": 2,
-   "killed": 2,
+   "relevant": 4,
+   "killed": 4,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "AB-20-01": {
-   "relevant": 7,
-   "killed": 7,
+   "relevant": 4,
+   "killed": 4,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "AB-3-01": {
-   "relevant": 1,
-   "killed": 1,
+   "relevant": 3,
+   "killed": 3,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "AB-3-02": {
-   "relevant": 2,
-   "killed": 2,
+   "relevant": 3,
+   "killed": 3,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "AB-3-03": {
-   "relevant": 3,
-   "killed": 3,
+   "relevant": 1,
+   "killed": 1,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1627,6 +1360,14 @@
    "meets_threshold": true
   },
   "AB-3-05": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB-3-06": {
    "relevant": 3,
    "killed": 3,
    "survived": [],
@@ -1634,33 +1375,25 @@
    "score": 100.0,
    "meets_threshold": true
   },
-  "AB-3-06": {
-   "relevant": 1,
-   "killed": 1,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
   "AB-3-07": {
-   "relevant": 7,
-   "killed": 7,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "AB-3-08": {
-   "relevant": 1,
-   "killed": 1,
+   "relevant": 6,
+   "killed": 6,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "AB-3-09": {
-   "relevant": 6,
-   "killed": 6,
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB-3-10": {
+   "relevant": 2,
+   "killed": 2,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1674,7 +1407,7 @@
    "score": 100.0,
    "meets_threshold": true
   },
-  "AB-3-15": {
+  "AB-3-14": {
    "relevant": 1,
    "killed": 1,
    "survived": [],
@@ -1682,9 +1415,9 @@
    "score": 100.0,
    "meets_threshold": true
   },
-  "AB-3-17": {
-   "relevant": 1,
-   "killed": 1,
+  "AB-3-15": {
+   "relevant": 2,
+   "killed": 2,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1723,8 +1456,8 @@
    "meets_threshold": true
   },
   "AB-3-31": {
-   "relevant": 3,
-   "killed": 3,
+   "relevant": 1,
+   "killed": 1,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1747,22 +1480,22 @@
    "meets_threshold": true
   },
   "AB-3-34": {
-   "relevant": 1,
-   "killed": 1,
+   "relevant": 2,
+   "killed": 2,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "AB-3-35": {
-   "relevant": 3,
-   "killed": 3,
+   "relevant": 2,
+   "killed": 2,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
-  "AB-3-37": {
+  "AB-3-36": {
    "relevant": 1,
    "killed": 1,
    "survived": [],
@@ -1795,24 +1528,24 @@
    "meets_threshold": true
   },
   "AB-5.1-03": {
-   "relevant": 2,
-   "killed": 2,
+   "relevant": 3,
+   "killed": 3,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "AB-5.1-04": {
-   "relevant": 4,
-   "killed": 4,
+   "relevant": 3,
+   "killed": 3,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "AB-5.3-01": {
-   "relevant": 3,
-   "killed": 3,
+   "relevant": 8,
+   "killed": 8,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1821,6 +1554,14 @@
   "AB-5.3-02": {
    "relevant": 3,
    "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB-5.3-03": {
+   "relevant": 1,
+   "killed": 1,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1843,8 +1584,16 @@
    "meets_threshold": true
   },
   "AB-5.4-05": {
-   "relevant": 4,
-   "killed": 4,
+   "relevant": 5,
+   "killed": 5,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB-6.1-02": {
+   "relevant": 2,
+   "killed": 2,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1867,22 +1616,14 @@
    "meets_threshold": true
   },
   "AB-6.2-06": {
-   "relevant": 2,
-   "killed": 2,
+   "relevant": 3,
+   "killed": 3,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "AB-6.2-08": {
-   "relevant": 1,
-   "killed": 1,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "AB-6.2-12": {
    "relevant": 1,
    "killed": 1,
    "survived": [],
@@ -1899,24 +1640,24 @@
    "meets_threshold": true
   },
   "AB-6.3-01": {
-   "relevant": 8,
-   "killed": 8,
+   "relevant": 3,
+   "killed": 3,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "AB-6.3-02": {
-   "relevant": 4,
-   "killed": 4,
+   "relevant": 2,
+   "killed": 2,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "AB-6.3-03": {
-   "relevant": 2,
-   "killed": 2,
+   "relevant": 1,
+   "killed": 1,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1931,16 +1672,8 @@
    "meets_threshold": true
   },
   "AB-6.3-07": {
-   "relevant": 6,
-   "killed": 6,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "AB-6.3-08": {
-   "relevant": 1,
-   "killed": 1,
+   "relevant": 10,
+   "killed": 10,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1954,9 +1687,25 @@
    "score": 100.0,
    "meets_threshold": true
   },
-  "AB-6.3-11": {
+  "AB-6.3-10": {
    "relevant": 1,
    "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB-6.3-11": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB-6.3-14": {
+   "relevant": 2,
+   "killed": 2,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1979,46 +1728,6 @@
    "meets_threshold": true
   },
   "AB-9-03": {
-   "relevant": 1,
-   "killed": 1,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "AB-9-06": {
-   "relevant": 1,
-   "killed": 1,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "AB-9-08": {
-   "relevant": 2,
-   "killed": 2,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "AB-9-09": {
-   "relevant": 1,
-   "killed": 1,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "AB-9-10": {
-   "relevant": 1,
-   "killed": 1,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "AB-9-11": {
    "relevant": 1,
    "killed": 1,
    "survived": [],

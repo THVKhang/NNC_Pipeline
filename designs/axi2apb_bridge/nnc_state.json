@@ -15,28 +15,28 @@
   "design": "axi2apb_bridge",
   "gates": {
     "G1_rules": {
-      "at": "2026-11-08T05:05:58+00:00",
+      "at": "2026-11-08T15:29:08+00:00",
       "by": "Claude (delegated by GabrielHCMUT)",
       "hashes": {
-        "work/rules.json": "e9916171d4c8c04bc40a2ce7ba82d9d989d4bfd61c8f56e5680a39c425de375c"
+        "work/rules.json": "b9036116ca18755c27bd757a6a53c8815e86bf69637493b6d88977fbcff78076"
       },
-      "note": "Delegated by the user ('làm theo thứ tự trên'): 151 rules reviewed; 4 open questions decided from the specification text and recorded in rules.md."
+      "note": "Only change: decision 2 (AR/AW tie preference) revised to round-robin after the CHK-019 phase D finding; the designer GabrielHCMUT asked Claude to choose because the arbitration wording was unclear to them. Rules themselves unchanged."
     },
     "G2_contract": {
-      "at": "2026-11-08T10:12:49+00:00",
+      "at": "2026-11-08T15:29:35+00:00",
       "by": "Claude (delegated by GabrielHCMUT)",
       "hashes": {
-        "work/contract.json": "f43653ab7d5127d9344d14affe6ddcf3788759aade0ba273d47d397c5a94aa7d"
+        "work/contract.json": "920fd092d56cd0a5cbf1761171ca3b92dfd322b7921851ec3abf09d8d9da9459"
       },
-      "note": "Range references fixed: CHK-027 expected text and two notes now name CHK-001..CHK-017 (all 17 assertions) and the CHK-014/CHK-016 trackers. No change to checks, kinds, stimulus or rule coverage. The approved G3 tests were generated from the previous wording; they run all assertions in every test (b.final), so their behaviour does not depend on this sentence."
+      "note": "Edited at review to follow revised decision 2 (round-robin): CHK-019 title/behavior/expected (phase D: the tie after a lone write is won by R4), CHK-031 stimulus (d) 'complete one read', decision 2 text. No other check changed; both are tests, so SVA checkers are unaffected and only the cocotb module is regenerated."
     },
     "G3_verif_sources": {
-      "at": "2026-11-08T09:59:45+00:00",
+      "at": "2026-11-10T03:29:09+00:00",
       "by": "Claude (delegated by GabrielHCMUT)",
       "hashes": {
-        "verif": "2791b0c900239189e73c27716b269b5bba09980f9e6227be094a9c660e7e185c"
+        "verif": "4d5836d705550a283068370a98780f97a3535c7e7baf7afc185a47fc6988697f"
       },
-      "note": "Reviewed: 6 checker modules lint-clean (17 assertion checks), nnc_cov.sv 40 observation-only cover points whose decode follows the spec's unsupported-request list, test module covers the 14 test checks plus a random regression. Tests reached from cache; no RTL was given to generators."
+      "note": "Re-approved after a triage-driven test fix (2026-11-10): triage judged B_test_wrong for test_chk_031 (fix_candidate/triage_chk031_reset.md). The reference model now records APB writes that completed before a reset cut the burst (spec:163/333/584: per-beat writes, no rollback), with the same pwdata/pstrb = W beat check as at B. The final memory comparison stays byte-exact; no check removed or relaxed."
     }
   },
   "version": 1

@@ -59,21 +59,25 @@ In Claude Code: `/nnc-flow my_ip` runs the same steps and presents each gate. Fu
 
 ## Results on three designs | Kết quả trên ba thiết kế
 
-Specifications and RTL from [VLSIT_ASIC_SOC_AI_SKILLS](https://github.com/nguyenquanicd/VLSIT_ASIC_SOC_AI_SKILLS) `common_rtl/` (Apache-2.0, unchanged copies, see each design's NOTICE). Everything under `work/`, `verif/` and `sim/` was produced by the flow. Gates G1–G3 were approved by Claude **on the user's delegation** (recorded as such, with reasons); **G4 sign-off is left to a person**.
+Specifications and RTL from [VLSIT_ASIC_SOC_AI_SKILLS](https://github.com/nguyenquanicd/VLSIT_ASIC_SOC_AI_SKILLS) `common_rtl/` (Apache-2.0; copies unchanged except one line fixed in axi2apb's `m_axi2apb_wr_seq.sv`, see each design's NOTICE). Everything under `work/`, `verif/` and `sim/` was produced by the flow. Gates G1–G3 were approved by Claude **on the user's delegation** (recorded as such, with reasons); **G4 sign-off is left to a person**.
 
 | | [apb_tlul_bridge](designs/apb_tlul_bridge) | [axi2apb_bridge](designs/axi2apb_bridge) | [sync_fifo](designs/sync_fifo) |
 |---|---|---|---|
 | Design | APB4 → TL-UL, 1 clock | AXI4 → APB4, 1 clock, 45 ports | two synchronous clocks, 2 hardware resets + software reset, derived parameters |
 | Rules kept / open questions | 232 / 5 | 151 / 4 | 272 / 7 |
 | Checks (assertions + tests) | 31 (17 + 14) | 31 (17 + 14) | 25 (11 + 14) |
-| Simulation | **15/15 tests, 17/17 assertions, 0 fails** | 2/15 tests; CHK-016 fails 606× | 25/25 tests; CHK-007 fails 32× |
+| First run | **15/15 tests, 17/17 assertions, 0 fails** | 2/15 tests; CHK-016 fails 606× | 25/25 tests; CHK-007 fails 32× |
 | Triage verdict | — | **real RTL bug** | **checker wrong**, RTL right |
-| Line / block / expr. / toggle / functional | 96.0 / 95.6 / 100 / 95.9 % / 38 → **40 of 40** after one closure round | 97.7 / 93.1 / 92.2 / 66.3 % / 36 of 40 | 99.2 / 97.3 / 92.8 / 70.6 % / 40 of 40 |
-| Mutation (36 mutants) | 100 %, 0 rules below 85 % | 100 %, 0 rules below 85 % | 100 %, 0 rules below 85 % |
-| Agent cost | ≈ US$6–7 for a clean run | US$7.4 | US$11.7 |
+| After the fixes | — | **15/15 tests, 17/17 assertions, 0 fails** | **25/25 tests, 11/11 assertions, 0 fails** |
+| Line / block / expr. / toggle / functional | 96.0 / 95.6 / 100 / 95.9 % / 38 → **40 of 40** after one closure round | 98.9 / 95.9 / 96.2 / 74.8 % / 39 of 40 | 99.2 / 97.3 / 92.8 / 70.6 % / 40 of 40 |
+| Mutation (36 mutants) | 100 %, 0 rules below 85 % | 86.1 % (5 survivors), 0 rules below 85 % | 100 %, 0 rules below 85 % |
+| Rules VERIFIED / FAILED | 169 / 0 | 114 / 0 | 174 / 0 |
+| Agent cost | ≈ US$6–7 for a clean run | US$11.9 | US$15.0 |
 
-- **axi2apb_bridge — a bug in the delivered RTL.** Every AXI write issues its first APB transfer at AWADDR + size; the last beat lands outside the burst. Found by an SVA checker and 12 tests that never saw the RTL, traced by triage to `m_axi2apb_wr_seq.sv:344`, and confirmed by the specification's own waveform WF-005. Upstream `rtl_v2/` has the same line. The fix candidate, run on a copy with `nnc inject`, clears every assertion failure; the one test still failing exposes an ambiguous arbitration sentence in the specification. → [fix_candidate/README.md](designs/axi2apb_bridge/fix_candidate/README.md)
-- **sync_fifo — a wrong checker, caught.** All tests pass; one generated SVA scoreboard clears its queue one clock edge late after a software reset. Triage says *B: checker wrong* with evidence (the RTL matches the specification and three other checks). The flow does not edit the checker to make the run pass; that is the designer's call. → [work/triage.md](designs/sync_fifo/work/triage.md)
+A mutant counts as killed only by a test or check that passes on the unmutated RTL. Before this rule the failing first run of axi2apb_bridge reported a meaningless 100 %; on the fixed RTL the 5 survivors point at checks still worth adding (or at equivalent mutants).
+
+- **axi2apb_bridge — a bug in the delivered RTL, found and fixed.** Every AXI write issued its first APB transfer at AWADDR + size; the last beat landed outside the burst. Found by an SVA checker and 12 tests that never saw the RTL, traced by triage to `m_axi2apb_wr_seq.sv:344`, and confirmed by the specification's own waveform WF-005 (upstream `rtl_v2/` has the same line). The one-line fix was checked on a copy with `nnc inject`, then applied. The remaining failure exposed an ambiguous arbitration sentence; the decision is round-robin (what the RTL does), so the contract and test were regenerated, not the RTL. A last failure was the test bench's reference model ignoring APB writes that a reset cut short (triage: *test wrong*); fixed without relaxing the check. → [fix_candidate/README.md](designs/axi2apb_bridge/fix_candidate/README.md)
+- **sync_fifo — a wrong checker, caught and fixed.** All tests passed; one generated SVA scoreboard cleared its queue one clock edge late after a software reset. Triage said *B: checker wrong* with evidence (the RTL matches the specification and three other checks). The scoreboard now clears in the same cycle; CHK-007 has 0 fails and mutation stays at 100 %. → [work/triage.md](designs/sync_fifo/work/triage.md)
 - **apb_tlul_bridge — clean, and an injected bug is caught.** → [work/report.md](designs/apb_tlul_bridge/work/report.md), [bug_demo](designs/apb_tlul_bridge/bug_demo)
 
 Coverage targets are the designer's choice: `cover` shows every baseline, the functional points never hit and the uncovered code items, and runs closure only when a target is set. On apb_tlul_bridge a demonstration target (functional 100 %, set on delegation) was closed in one round: the analyst turned the two missed points (response delayed ≥ 8 cycles, response pending at reset release) into two specification-level scenarios, a writer without RTL access produced `test_apb_tlul_bridge_cov1.py`, and both tests pass (US$1.77).

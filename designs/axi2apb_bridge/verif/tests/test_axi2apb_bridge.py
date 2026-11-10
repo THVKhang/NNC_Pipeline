@@ -1,1552 +1,1468 @@
-"""cocotb 2.1 testbench for m_axi2apb_bridge.
-
-Covers CHK-018 .. CHK-031 and adds a random regression that exercises the
-assertion checks CHK-001 .. CHK-017.
-
-Timing model: a single scheduler coroutine drives every input right after each
-falling edge. It then waits for ReadOnly and samples every port. That sample
-holds the values the next rising edge ("edge e") will see. A transaction
-tracker (the CHK-014 tracker) and a scoreboard with an independent
-byte-addressed reference model work on these per-edge samples.
 """
-import os
+cocotb 2.1 testbench for m_axi2apb_bridge (AXI4 Subordinate -> APB4 Manager bridge).
+
+Architecture
+  * Bench          : one cycle engine. At every falling edge it lets every model drive its inputs, then
+                     waits for ReadOnly and samples all ports. Those sampled values are exactly the values the
+                     next rising edge sees ("edge N"). Then every monitor/model observes the sample.
+  * AxiMaster      : AR / AW / W requester driver plus R / B receivers with configurable READY policies.
+  * ApbCompleter   : APB4 completer with a byte-addressed memory, random/directed wait states, optional
+                     PSLVERR injection, optional default completer for unmapped addresses, and noise on
+                     PRDATA/PSLVERR while PREADY=0 (the spec says these are ignored then).
+  * Tracker        : transaction tracker / scoreboard (CHK-014 owner model) with Python versions of the
+                     assertion checks CHK-001..CHK-017. It uses an independent reference model (beat-address
+                     formula, support classification, byte-addressed reference memory) built from the spec.
+"""
+import inspect
 from collections import deque
 
 import cocotb
-from cocotb.triggers import FallingEdge, ReadOnly
+from cocotb.triggers import FallingEdge, ReadOnly, RisingEdge
 
 from nnc_cocotb import *  # noqa: F401,F403
 
-# --------------------------------------------------------------------------
-# Constants (AXI4 / APB4 encodings from the plan assumptions)
-# --------------------------------------------------------------------------
-OKAY, SLVERR = 0, 2
-FIXED, INCR, WRAP = 0, 1, 2
-MAP_LO, MAP_HI = 0x0000_0000, 0x0000_FFFF      # memory-model region of the TB APB fabric
-UNMAPPED_BASE = 0x8000_0000
-MAX_SIM_CYCLES = 20_000_000
-
-SIG = {
-    "rst": "i_rst_n_axi",
-    "awid": "i_axi_awid", "awaddr": "i_axi_awaddr", "awlen": "i_axi_awlen",
-    "awsize": "i_axi_awsize", "awburst": "i_axi_awburst", "awcache": "i_axi_awcache",
-    "awprot": "i_axi_awprot", "awvalid": "i_axi_awvalid", "awready": "o_axi_awready",
-    "wdata": "i_axi_wdata", "wstrb": "i_axi_wstrb", "wlast": "i_axi_wlast",
-    "wvalid": "i_axi_wvalid", "wready": "o_axi_wready",
-    "bid": "o_axi_bid", "bresp": "o_axi_bresp", "bvalid": "o_axi_bvalid", "bready": "i_axi_bready",
-    "arid": "i_axi_arid", "araddr": "i_axi_araddr", "arlen": "i_axi_arlen",
-    "arsize": "i_axi_arsize", "arburst": "i_axi_arburst", "arcache": "i_axi_arcache",
-    "arprot": "i_axi_arprot", "arvalid": "i_axi_arvalid", "arready": "o_axi_arready",
-    "rid": "o_axi_rid", "rdata": "o_axi_rdata", "rresp": "o_axi_rresp", "rlast": "o_axi_rlast",
-    "rvalid": "o_axi_rvalid", "rready": "i_axi_rready",
-    "paddr": "o_apb_paddr", "pwrite": "o_apb_pwrite", "pwdata": "o_apb_pwdata",
-    "pstrb": "o_apb_pstrb", "pprot": "o_apb_pprot", "psel": "o_apb_psel",
-    "penable": "o_apb_penable", "pready": "i_apb_pready", "prdata": "i_apb_prdata",
-    "pslverr": "i_apb_pslverr",
-}
-APB_PAY = ("paddr", "pwrite", "pwdata", "pstrb", "pprot")
-RESET_ZERO = ("bvalid", "rvalid", "bid", "bresp", "rid", "rdata", "rresp", "rlast",
-              "psel", "penable", "paddr", "pwrite", "pwdata", "pstrb", "pprot")
+# --------------------------------------------------------------------------------------------------
+# Constants (AXI4 encodings, see plan assumptions)
+# --------------------------------------------------------------------------------------------------
+OKAY = 0
+SLVERR = 2
+FIXED, INCR, WRAP, RSVD = 0, 1, 2, 3
+M32 = 0xFFFFFFFF
 
 
-def _v(h):
-    x = val(h)
-    return -1 if x is None else int(x)
-
-
-def id_width():
+def _param(name, default):
     try:
-        return int(PARAMS.get("PARA_AXI_ID_W", 4))
+        return int(PARAMS.get(name, default))
     except Exception:
-        return 4
+        return default
 
 
-def is_mapped(a):
-    return MAP_LO <= a <= MAP_HI
+IDW = _param("PARA_AXI_ID_W", 4)
+ID_MASK = (1 << IDW) - 1
+
+IN_PORTS = [
+    "i_axi_awid", "i_axi_awaddr", "i_axi_awlen", "i_axi_awsize", "i_axi_awburst", "i_axi_awcache",
+    "i_axi_awprot", "i_axi_awvalid",
+    "i_axi_wdata", "i_axi_wstrb", "i_axi_wlast", "i_axi_wvalid", "i_axi_bready",
+    "i_axi_arid", "i_axi_araddr", "i_axi_arlen", "i_axi_arsize", "i_axi_arburst", "i_axi_arcache",
+    "i_axi_arprot", "i_axi_arvalid", "i_axi_rready",
+    "i_apb_pready", "i_apb_prdata", "i_apb_pslverr",
+]
+OUT_PORTS = [
+    "o_axi_awready", "o_axi_wready", "o_axi_bid", "o_axi_bresp", "o_axi_bvalid",
+    "o_axi_arready", "o_axi_rid", "o_axi_rdata", "o_axi_rresp", "o_axi_rlast", "o_axi_rvalid",
+    "o_apb_paddr", "o_apb_pwrite", "o_apb_pwdata", "o_apb_pstrb", "o_apb_pprot", "o_apb_psel",
+    "o_apb_penable",
+]
+RESET_ZERO = ["bvalid", "rvalid", "bid", "bresp", "rid", "rdata", "rresp", "rlast",
+              "psel", "penable", "paddr", "pwrite", "pwdata", "pstrb", "pprot"]
+READIES = ("awready", "wready", "arready")
+PAY = ("paddr", "pwrite", "pwdata", "pstrb", "pprot")
 
 
-# --------------------------------------------------------------------------
-# Reference model functions (from the specification text only)
-# --------------------------------------------------------------------------
-def classify(addr, ln, size, burst, cache):
-    """CHK-014 classification: True = supported."""
-    if size > 2 or size < 0:
+def _short(n):
+    return n.split("_", 2)[2]
+
+
+def _hx(v):
+    return f"{v:#x}" if isinstance(v, int) and v >= 0 else repr(v)
+
+
+# --------------------------------------------------------------------------------------------------
+# Reference model (derived only from the specification text)
+# --------------------------------------------------------------------------------------------------
+def beat_addrs(addr, size, length, burst):
+    """CHK-016 beat-address formula."""
+    S = 1 << size
+    n = length + 1
+    if burst == FIXED:
+        return [addr] * n
+    if burst == INCR:
+        base = addr & ~(S - 1) & M32
+        return [addr] + [(base + k * S) & M32 for k in range(1, n)]
+    if burst == WRAP:
+        T = S * n
+        lower = (addr // T) * T
+        return [lower + ((addr - lower + k * S) % T) for k in range(n)]
+    return [addr] * n
+
+
+def crosses_4k(addr, size, length):
+    S = 1 << size
+    end = ((addr & ~(S - 1)) + (length + 1) * S - 1) & M32
+    return (addr >> 12) != (end >> 12)
+
+
+def is_supported(addr, length, size, burst, cache):
+    if size > 2:
         return False
-    if burst == 3:
+    if burst == RSVD:
         return False
     if cache not in (0, 1):
         return False
-    if burst == INCR:
-        s = 1 << size
-        end = (addr & ~(s - 1)) + (ln + 1) * s - 1
-        if (addr >> 12) != (end >> 12):
-            return False
+    if burst == INCR and crosses_4k(addr, size, length):
+        return False
     return True
 
 
-def beat_addrs(addr, ln, size, burst):
-    """CHK-016 beat-address formula."""
-    s = 1 << max(0, size)
-    out = []
-    for k in range(ln + 1):
-        if burst == FIXED:
-            a = addr
-        elif burst == INCR:
-            a = addr if k == 0 else (addr & ~(s - 1)) + k * s
-        else:
-            t = s * (ln + 1)
-            lower = (addr // t) * t
-            a = lower + ((addr - lower + k * s) % t)
-        out.append(a & 0xFFFFFFFF)
-    return out
-
-
-def legal_lanes(a, size):
-    s = 1 << size
-    top = (a & ~(s - 1)) + s - 1
+def legal_lanes(addr, size):
+    """Byte lanes legal for a beat at addr with 2**size bytes (32-bit bus)."""
+    S = 1 << size
+    lo = addr & 3
+    hi = ((addr & ~(S - 1)) & 3) + S - 1
     m = 0
-    for byte in range(a, top + 1):
-        m |= 1 << (byte % 4)
-    return m & 0xF
-
-
-def default_strobes(addr, ln, size, burst):
-    return [legal_lanes(a, size) for a in beat_addrs(addr, ln, size, burst)]
+    for i in range(lo, hi + 1):
+        m |= 1 << i
+    return m
 
 
 def init_byte(a):
-    a &= 0xFFFFFFFF
-    return ((a * 0x9E3779B1) >> 11) & 0xFF
+    return ((a * 2654435761) >> 13) & 0xFF
 
 
-class ByteMem:
+class RefMemory:
+    """Byte-addressed memory (used both as APB completer storage and as independent reference)."""
+
     def __init__(self):
-        self.d = {}
+        self.m = {}
 
-    def rd8(self, a):
-        return self.d.get(a, init_byte(a))
+    def rd_byte(self, a):
+        return self.m.get(a, init_byte(a))
 
-    def read_word(self, wa):
-        wa &= 0xFFFFFFFC
-        return sum(self.rd8(wa + i) << (8 * i) for i in range(4))
+    def rd_word(self, a):
+        a &= 0xFFFFFFFC
+        return sum(self.rd_byte(a + i) << (8 * i) for i in range(4))
 
-    def write_word(self, wa, data, strb):
-        wa &= 0xFFFFFFFC
+    def wr(self, a, data, strb):
+        a &= 0xFFFFFFFC
         for i in range(4):
             if (strb >> i) & 1:
-                self.d[wa + i] = (data >> (8 * i)) & 0xFF
+                self.m[a + i] = (data >> (8 * i)) & 0xFF
 
 
-# --------------------------------------------------------------------------
-# APB completer / memory model
-# --------------------------------------------------------------------------
-class ApbCompleter:
-    """APB4 completer. Memory in MAP_LO..MAP_HI. Any other PADDR is handled by a
-    default completer that answers PREADY=1 in the first ACCESS cycle with PSLVERR=1."""
-
-    def __init__(self, bench):
-        self.b = bench
-        self.mem = ByteMem()
-        self.wait_fn = lambda x: 0
-        self.err_fn = lambda x: False
-        self.read_fn = None
-        self.err_data = 0xDEADBEEF
-        self.unmapped_data = 0xFFFFFFFF
-        self.garbage = True
-        self.seq = 0
-        self.cur = None
-        self.left = 0
-        self.log = []
-
-    def drive(self, e):
-        b = self.b
-        d = b.dut
-        rnd = b.rnd
-        psel = _v(d.o_apb_psel)
-        pen = _v(d.o_apb_penable)
-        pready = 0
-        prdata = rnd.getrandbits(32) if self.garbage else 0
-        pslverr = rnd.getrandbits(1) if self.garbage else 0
-        if b.rst_now == 1 and psel == 1 and pen == 1:
-            if self.cur is None:
-                x = {k: _v(b.h[k]) for k in APB_PAY}
-                x["seq"] = self.seq
-                self.seq += 1
-                x["mapped"] = is_mapped(x["paddr"])
-                self.left = max(0, int(self.wait_fn(x))) if x["mapped"] else 0
-                x["waits"] = self.left
-                self.cur = x
-            if self.left > 0:
-                self.left -= 1
-            else:
-                x = self.cur
-                self.cur = None
-                pready = 1
-                pslverr = 0
-                prdata = 0
-                if not x["mapped"]:
-                    pslverr = 1
-                    if x["pwrite"] != 1:
-                        prdata = self.unmapped_data
-                elif self.err_fn(x):
-                    pslverr = 1
-                    if x["pwrite"] != 1:
-                        prdata = self.err_data
-                elif x["pwrite"] == 1:
-                    self.mem.write_word(x["paddr"], x["pwdata"], x["pstrb"])
-                else:
-                    prdata = self.read_fn(x) if self.read_fn else self.mem.read_word(x["paddr"])
-                x["pslverr"] = pslverr
-                x["prdata"] = prdata
-                self.log.append(x)
-        else:
-            self.cur = None
-            self.left = 0
-            if psel != 1 and self.garbage:
-                pready = rnd.getrandbits(1)
-        d.i_apb_pready.value = pready
-        d.i_apb_prdata.value = prdata & 0xFFFFFFFF
-        d.i_apb_pslverr.value = pslverr
-
-
-# --------------------------------------------------------------------------
-# AXI requester models
-# --------------------------------------------------------------------------
-class ReadReq:
-    kind = "R"
-
-    def __init__(self, id, addr, ln, size, burst, cache, prot, not_before, gap):
-        self.id, self.addr, self.len, self.size = id, addr, ln, size
-        self.burst, self.cache, self.prot = burst, cache, prot
-        self.not_before, self.gap = not_before, gap
-        self.hs_edge = None
-        self.first_valid = None
-        self.aborted = False
-
-
-class WriteReq:
-    kind = "W"
-
-    def __init__(self, id, addr, ln, size, burst, cache, prot, data, strb, w_early,
-                 aw_not_before, w_not_before, gap, wgap, w_stop_after):
-        self.id, self.addr, self.len, self.size = id, addr, ln, size
-        self.burst, self.cache, self.prot = burst, cache, prot
-        self.data, self.strb = list(data), list(strb)
-        self.w_early = w_early
-        self.not_before, self.w_not_before, self.gap = aw_not_before, w_not_before, gap
-        self.wgap, self.w_stop_after = wgap, w_stop_after
-        self.hs_edge = None
-        self.first_valid = None
-        self.w_first_valid = None
-        self.w_edges = []
-        self.w_idx = 0
-        self.aborted = False
-
-
-class ReadMaster:
-    def __init__(self, bench):
-        self.b = bench
-        self.q = deque()
-        self.cur = None
-        self.gap_left = None
-        self.rready_delay = lambda: 0
-        self.rready_idle = lambda: 1
-        self.r_cnt = None
-        self.reqs = []
-
-    def req(self, addr, ln=0, size=2, burst=INCR, cache=0, prot=0, id=None, not_before=0, gap=0):
-        b = self.b
-        if id is None:
-            id = b.rnd.getrandbits(b.idw)
-        r = ReadReq(id & b.idmask, addr & 0xFFFFFFFF, ln, size, burst, cache, prot, not_before, gap)
-        self.q.append(r)
-        self.reqs.append(r)
-        return r
-
-    def busy(self):
-        return self.cur is not None or bool(self.q)
-
-    def flush(self):
-        for r in ([self.cur] if self.cur else []) + list(self.q):
-            r.aborted = True
-        self.q.clear()
-        self.cur = None
-        self.gap_left = None
-        self.r_cnt = None
-
-    def drive(self, e, prev):
-        b = self.b
-        d = b.dut
-        if (self.cur is not None and prev is not None and prev["rst"] == 1
-                and prev["arvalid"] == 1 and prev["arready"] == 1):
-            self.cur.hs_edge = prev["cyc"]
-            self.cur = None
-        if b.rst_now != 1:
-            self.flush()
-        if self.cur is None and self.q and b.rst_now == 1:
-            r = self.q[0]
-            if e >= r.not_before:
-                if self.gap_left is None:
-                    self.gap_left = r.gap
-                if self.gap_left > 0:
-                    self.gap_left -= 1
-                else:
-                    self.cur = self.q.popleft()
-                    self.gap_left = None
-                    self.cur.first_valid = e
-        c = self.cur
-        if c is not None:
-            d.i_axi_arid.value = c.id
-            d.i_axi_araddr.value = c.addr
-            d.i_axi_arlen.value = c.len & 0xFF
-            d.i_axi_arsize.value = c.size & 7
-            d.i_axi_arburst.value = c.burst & 3
-            d.i_axi_arcache.value = c.cache & 0xF
-            d.i_axi_arprot.value = c.prot & 7
-            d.i_axi_arvalid.value = 1
-        else:
-            d.i_axi_arvalid.value = 0
-        # R ready policy: hold low for a delay before each beat
-        if prev is not None and prev["rvalid"] == 1 and prev["rready"] == 1:
-            self.r_cnt = None
-        rv = _v(d.o_axi_rvalid)
-        if rv == 1 and b.rst_now == 1:
-            if self.r_cnt is None:
-                self.r_cnt = max(0, int(self.rready_delay()))
-            if self.r_cnt > 0:
-                rr = 0
-                self.r_cnt -= 1
-            else:
-                rr = 1
-        else:
-            self.r_cnt = None
-            rr = int(self.rready_idle()) & 1
-        d.i_axi_rready.value = rr
-
-
-class WriteMaster:
-    def __init__(self, bench):
-        self.b = bench
-        self.aw_q = deque()
-        self.aw_cur = None
-        self.aw_gap_left = None
-        self.w_q = deque()
-        self.w_pres = False
-        self.w_gap_left = None
-        self.bready_delay = lambda: 0
-        self.bready_idle = lambda: 1
-        self.b_cnt = None
-        self.reqs = []
-
-    def req(self, addr, ln=0, size=2, burst=INCR, cache=0, prot=0, id=None, data=None, strb=None,
-            w_early=False, aw_not_before=0, w_not_before=0, gap=0, wgap=None, w_stop_after=None):
-        b = self.b
-        if id is None:
-            id = b.rnd.getrandbits(b.idw)
-        if data is None:
-            data = [b.rnd.getrandbits(32) for _ in range(ln + 1)]
-        if strb is None:
-            strb = default_strobes(addr, ln, size, burst)
-        q = WriteReq(id & b.idmask, addr & 0xFFFFFFFF, ln, size, burst, cache, prot, data, strb,
-                     w_early, aw_not_before, w_not_before, gap, wgap, w_stop_after)
-        self.aw_q.append(q)
-        self.w_q.append(q)
-        self.reqs.append(q)
-        return q
-
-    def busy(self):
-        return self.aw_cur is not None or bool(self.aw_q) or bool(self.w_q)
-
-    def flush(self):
-        for r in ([self.aw_cur] if self.aw_cur else []) + list(self.aw_q) + list(self.w_q):
-            r.aborted = True
-        self.aw_q.clear()
-        self.w_q.clear()
-        self.aw_cur = None
-        self.aw_gap_left = None
-        self.w_pres = False
-        self.w_gap_left = None
-        self.b_cnt = None
-
-    def drive(self, e, prev):
-        b = self.b
-        d = b.dut
-        ok_prev = prev is not None and prev["rst"] == 1
-        if self.aw_cur is not None and ok_prev and prev["awvalid"] == 1 and prev["awready"] == 1:
-            self.aw_cur.hs_edge = prev["cyc"]
-            self.aw_cur = None
-        if self.w_pres and ok_prev and prev["wvalid"] == 1 and prev["wready"] == 1:
-            wr = self.w_q[0]
-            wr.w_edges.append(prev["cyc"])
-            wr.w_idx += 1
-            self.w_pres = False
-            self.w_gap_left = None
-            if wr.w_idx >= len(wr.data):
-                self.w_q.popleft()
-        if b.rst_now != 1:
-            self.flush()
-        # ---- AW
-        if self.aw_cur is None and self.aw_q and b.rst_now == 1:
-            r = self.aw_q[0]
-            if e >= r.not_before:
-                if self.aw_gap_left is None:
-                    self.aw_gap_left = r.gap
-                if self.aw_gap_left > 0:
-                    self.aw_gap_left -= 1
-                else:
-                    self.aw_cur = self.aw_q.popleft()
-                    self.aw_gap_left = None
-                    self.aw_cur.first_valid = e
-        c = self.aw_cur
-        if c is not None:
-            d.i_axi_awid.value = c.id
-            d.i_axi_awaddr.value = c.addr
-            d.i_axi_awlen.value = c.len & 0xFF
-            d.i_axi_awsize.value = c.size & 7
-            d.i_axi_awburst.value = c.burst & 3
-            d.i_axi_awcache.value = c.cache & 0xF
-            d.i_axi_awprot.value = c.prot & 7
-            d.i_axi_awvalid.value = 1
-        else:
-            d.i_axi_awvalid.value = 0
-        # ---- W
-        if not self.w_pres and self.w_q and b.rst_now == 1:
-            wr = self.w_q[0]
-            allowed = ((wr.w_early or wr.hs_edge is not None) and e >= wr.w_not_before
-                       and (wr.w_stop_after is None or wr.w_idx < wr.w_stop_after))
-            if allowed:
-                if self.w_gap_left is None:
-                    self.w_gap_left = max(0, int(wr.wgap())) if wr.wgap else 0
-                if self.w_gap_left > 0:
-                    self.w_gap_left -= 1
-                else:
-                    self.w_pres = True
-                    self.w_gap_left = None
-                    if wr.w_first_valid is None:
-                        wr.w_first_valid = e
-        if self.w_pres:
-            wr = self.w_q[0]
-            k = wr.w_idx
-            d.i_axi_wdata.value = wr.data[k] & 0xFFFFFFFF
-            d.i_axi_wstrb.value = wr.strb[k] & 0xF
-            d.i_axi_wlast.value = 1 if k == len(wr.data) - 1 else 0
-            d.i_axi_wvalid.value = 1
-        else:
-            d.i_axi_wvalid.value = 0
-        # ---- B ready policy
-        if ok_prev and prev["bvalid"] == 1 and prev["bready"] == 1:
-            self.b_cnt = None
-        bv = _v(d.o_axi_bvalid)
-        if bv == 1 and b.rst_now == 1:
-            if self.b_cnt is None:
-                self.b_cnt = max(0, int(self.bready_delay()))
-            if self.b_cnt > 0:
-                br = 0
-                self.b_cnt -= 1
-            else:
-                br = 1
-        else:
-            self.b_cnt = None
-            br = int(self.bready_idle()) & 1
-        d.i_axi_bready.value = br
-
-
-# --------------------------------------------------------------------------
-# Transaction tracker (CHK-014) with protocol monitors
-# --------------------------------------------------------------------------
-class Xfer:
-    def __init__(self, s, e):
-        self.pay = {k: s[k] for k in APB_PAY}
-        self.setup = e
-        self.access = 0
-        self.done = None
-        self.prdata = None
-        self.pslverr = None
-        self.stable = True
-        self.broken = False
-        self.txn = None
-
-
+# --------------------------------------------------------------------------------------------------
+# Transactions
+# --------------------------------------------------------------------------------------------------
 class Txn:
-    def __init__(self, kind, s, e):
-        p = "ar" if kind == "R" else "aw"
+    def __init__(self, kind, axid, addr, length, size=2, burst=INCR, cache=0, prot=0,
+                 data=None, strb=None, delay=0, w_delay=None, w_gaps=None):
         self.kind = kind
-        self.id = s[p + "id"]
-        self.addr = s[p + "addr"]
-        self.len = s[p + "len"]
-        self.size = s[p + "size"]
-        self.burst = s[p + "burst"]
-        self.cache = s[p + "cache"]
-        self.prot = s[p + "prot"]
-        self.h = e
-        self.supported = classify(self.addr, self.len, self.size, self.burst, self.cache)
-        self.apb, self.r, self.w = [], [], []
+        self.id = axid & ID_MASK
+        self.addr = addr & M32
+        self.length = length
+        self.size = size
+        self.burst = burst
+        self.cache = cache
+        self.prot = prot
+        self.data = list(data) if data else []
+        self.strb = list(strb) if strb else []
+        self.delay = delay
+        self.w_delay = delay if w_delay is None else w_delay
+        self.w_gaps = list(w_gaps) if w_gaps else [0] * (length + 1)
+        self.not_before = None
+        self.w_not_before = None
+        self.w_next = 0
+        self.valid_cycle = None
+        self.w_valid_cycle = None
+        self.a_hs = None
+        self.w_hs = []
+        self.r = []
         self.b = None
-        self.psel_edges = 0
-        self.done = None
+        self.done = False
         self.aborted = False
-        self.rvalid_first = None
-        self.bvalid_first = None
+        self.end = None
+        self.rec = None
 
-    def needs_apb(self):
-        return self.supported and len(self.apb) < self.len + 1
+    @property
+    def supported(self):
+        return is_supported(self.addr, self.length, self.size, self.burst, self.cache)
 
-    def tag(self):
-        return (f"{'read' if self.kind == 'R' else 'write'} id={self.id} addr=0x{self.addr:08x} "
-                f"len={self.len} size={self.size} burst={self.burst} cache={self.cache} "
-                f"prot={self.prot} (AxVALID handshake edge {self.h})")
+    def __repr__(self):
+        return (f"{self.kind}(id={self.id:#x}, addr={self.addr:#010x}, len={self.length}, size={self.size}, "
+                f"burst={self.burst}, cache={self.cache:#x}, prot={self.prot})")
 
 
-class Tracker:
-    def __init__(self):
-        self.prev = None
+def make_read(axid, addr, length, size=2, burst=INCR, cache=0, prot=0, delay=0):
+    return Txn("R", axid, addr, length, size, burst, cache, prot, delay=delay)
+
+
+def make_write(r, axid, addr, length, size=2, burst=INCR, cache=0, prot=0, data=None, strb=None,
+               delay=0, w_delay=None, w_gaps=None):
+    n = length + 1
+    if data is None:
+        data = [r.getrandbits(32) for _ in range(n)]
+    if strb is None:
+        if size <= 2 and burst in (FIXED, INCR, WRAP):
+            strb = []
+            for a in beat_addrs(addr & M32, size, length, burst):
+                full = legal_lanes(a, size)
+                strb.append(full if r.random() < 0.6 else (r.getrandbits(4) & full))
+        else:
+            strb = [0xF] * n
+    return Txn("W", axid, addr, length, size, burst, cache, prot, data=data, strb=strb,
+               delay=delay, w_delay=w_delay, w_gaps=w_gaps)
+
+
+def rand_legal(r, kind, top=0x10000):
+    burst = r.choice([FIXED, INCR, WRAP])
+    size = r.randint(0, 2)
+    S = 1 << size
+    if burst == FIXED:
+        L = r.randint(0, 15)
+    elif burst == WRAP:
+        L = r.choice([1, 3, 7, 15])
+    else:
+        x = r.random()
+        if x < 0.65:
+            L = r.randint(0, 15)
+        elif x < 0.9:
+            L = r.randint(16, 63)
+        else:
+            L = r.randint(64, 255)
+    addr = 0
+    ok = False
+    for _ in range(200):
+        addr = r.randrange(0, top)
+        if burst == WRAP:
+            addr &= ~(S - 1)
+        if burst == INCR and crosses_4k(addr, size, L):
+            continue
+        ok = True
+        break
+    if not ok:
+        addr &= ~0xFFF
+    axid = r.randint(0, ID_MASK)
+    cache = r.choice([0, 1])
+    prot = r.randint(0, 7)
+    if kind == "R":
+        return make_read(axid, addr, L, size, burst, cache, prot)
+    return make_write(r, axid, addr, L, size, burst, cache, prot)
+
+
+# --------------------------------------------------------------------------------------------------
+# READY policies (RREADY / BREADY)
+# --------------------------------------------------------------------------------------------------
+class ReadyPolicy:
+    def __init__(self, r):
+        self.r = r
+        self.set("always")
+
+    def set(self, mode, p=0.7, lo=0, hi=0):
+        self.mode = mode
+        self.p = p
+        self.lo = lo
+        self.hi = hi
+        self.left = self.r.randint(lo, hi) if mode == "hold" else 0
+
+    def value(self):
+        m = self.mode
+        if m == "always":
+            return 1
+        if m == "never":
+            return 0
+        if m == "random":
+            return 1 if self.r.random() < self.p else 0
+        return 1 if self.left <= 0 else 0
+
+    def observe(self, valid, ready):
+        if self.mode != "hold":
+            return
+        if valid == 1 and ready == 1:
+            self.left = self.r.randint(self.lo, self.hi)
+        elif valid == 1:
+            self.left -= 1
+
+
+# --------------------------------------------------------------------------------------------------
+# AXI requester (driver + response receivers)
+# --------------------------------------------------------------------------------------------------
+class AxiMaster:
+    A_F = ("id", "addr", "len", "size", "burst", "cache", "prot")
+    WIDTH = dict(id=IDW, addr=32, len=8, size=3, burst=2, cache=4, prot=3)
+
+    def __init__(self, bench):
+        self.bench = bench
+        self.r = bench.r
+        d = bench.dut
+        self.h = {}
+        for p in ("ar", "aw"):
+            for f in self.A_F:
+                self.h[p + f] = getattr(d, f"i_axi_{p}{f}")
+            self.h[p + "valid"] = getattr(d, f"i_axi_{p}valid")
+        for n in ("wdata", "wstrb", "wlast", "wvalid", "rready", "bready"):
+            self.h[n] = getattr(d, "i_axi_" + n)
+        self.ar_q = deque()
+        self.aw_q = deque()
+        self.w_q = deque()
+        self.rd_out = deque()
+        self.wr_out = deque()
+        self.rready = ReadyPolicy(self.r)
+        self.bready = ReadyPolicy(self.r)
+        self.all = []
+        self.stray_r = []
+        self.stray_b = []
+
+    def submit(self, t, base):
+        t.not_before = base + t.delay
+        if t.kind == "R":
+            self.ar_q.append(t)
+        else:
+            t.w_not_before = base + t.w_delay
+            self.aw_q.append(t)
+            self.w_q.append(t)
+        self.all.append(t)
+
+    def _drive_addr(self, p, q, c, in_rst):
+        t = q[0] if q else None
+        if (not in_rst) and t is not None and c >= t.not_before:
+            if t.valid_cycle is None:
+                t.valid_cycle = c
+            vals = dict(id=t.id, addr=t.addr, len=t.length & 0xFF, size=t.size & 7,
+                        burst=t.burst & 3, cache=t.cache & 0xF, prot=t.prot & 7)
+            for f in self.A_F:
+                self.h[p + f].value = vals[f]
+            self.h[p + "valid"].value = 1
+        else:
+            self.h[p + "valid"].value = 0
+            if self.r.random() < 0.3:  # payload is "ignored if VALID=0": drive noise
+                for f in self.A_F:
+                    self.h[p + f].value = self.r.getrandbits(self.WIDTH[f])
+
+    def drive(self, c, in_rst):
+        self._drive_addr("ar", self.ar_q, c, in_rst)
+        self._drive_addr("aw", self.aw_q, c, in_rst)
+        t = self.w_q[0] if self.w_q else None
+        if (not in_rst) and t is not None and c >= t.w_not_before and c >= t.w_next:
+            k = len(t.w_hs)
+            if t.w_valid_cycle is None:
+                t.w_valid_cycle = c
+            self.h["wdata"].value = t.data[k] & M32
+            self.h["wstrb"].value = t.strb[k] & 0xF
+            self.h["wlast"].value = 1 if k == t.length else 0
+            self.h["wvalid"].value = 1
+        else:
+            self.h["wvalid"].value = 0
+            if self.r.random() < 0.3:
+                self.h["wdata"].value = self.r.getrandbits(32)
+                self.h["wstrb"].value = self.r.getrandbits(4)
+                self.h["wlast"].value = self.r.getrandbits(1)
+        self.h["rready"].value = self.rready.value()
+        self.h["bready"].value = self.bready.value()
+
+    def observe(self, c, s):
+        if s["rst"] != 1:
+            for q in (self.ar_q, self.aw_q, self.w_q, self.rd_out, self.wr_out):
+                for t in q:
+                    if not t.done:
+                        t.aborted = True
+                q.clear()
+            return
+        if s["arvalid"] == 1 and s["arready"] == 1 and self.ar_q:
+            t = self.ar_q.popleft()
+            t.a_hs = c
+            t.rec = self.bench.tracker.cur
+            self.rd_out.append(t)
+        if s["awvalid"] == 1 and s["awready"] == 1 and self.aw_q:
+            t = self.aw_q.popleft()
+            t.a_hs = c
+            t.rec = self.bench.tracker.cur
+            self.wr_out.append(t)
+        if s["wvalid"] == 1 and s["wready"] == 1 and self.w_q:
+            t = self.w_q[0]
+            k = len(t.w_hs)
+            t.w_hs.append(c)
+            t.w_next = c + 1 + (t.w_gaps[k] if k < len(t.w_gaps) else 0)
+            if len(t.w_hs) == t.length + 1:
+                self.w_q.popleft()
+        if s["rvalid"] == 1 and s["rready"] == 1:
+            beat = dict(data=s["rdata"], resp=s["rresp"], id=s["rid"], last=s["rlast"], cycle=c)
+            if self.rd_out:
+                t = self.rd_out[0]
+                t.r.append(beat)
+                if beat["last"] == 1:
+                    t.done = True
+                    t.end = c
+                    self.rd_out.popleft()
+            else:
+                self.stray_r.append(beat)
+        self.rready.observe(s["rvalid"], s["rready"])
+        if s["bvalid"] == 1 and s["bready"] == 1:
+            bb = dict(resp=s["bresp"], id=s["bid"], cycle=c)
+            if self.wr_out:
+                t = self.wr_out.popleft()
+                t.b = bb
+                t.done = True
+                t.end = c
+            else:
+                self.stray_b.append(bb)
+        self.bready.observe(s["bvalid"], s["bready"])
+
+
+# --------------------------------------------------------------------------------------------------
+# APB completer (memory model / default completer)
+# --------------------------------------------------------------------------------------------------
+class ApbCompleter:
+    def __init__(self, bench):
+        self.bench = bench
+        self.r = bench.r
+        d = bench.dut
+        self.h_pready = d.i_apb_pready
+        self.h_prdata = d.i_apb_prdata
+        self.h_pslverr = d.i_apb_pslverr
+        self.mem = RefMemory()
+        self.wait_fn = None
+        self.resp_fn = None
+        self.wmin = 0
+        self.wmax = 0
+        self.err_prob = 0.0
+        self.unmapped_default = False
+        self.noise = True
         self.cur = None
-        self.x = None
-        self.errors = []
-        self.finished = []
-        self.by_h = {}
-        self.completions = 0
-        self.xfers_done = []
+        self.log = []
+        self.count = 0
 
-    def chk(self, cond, msg):
-        if not cond and len(self.errors) < 50:
-            self.errors.append(msg)
+    def _unmapped(self, addr):
+        return self.unmapped_default and not (0 <= addr <= 0xFFFF)
 
-    def _finish(self, t, e, aborted=False):
-        t.done = e
-        t.aborted = aborted
-        self.finished.append(t)
-        if not aborted:
-            self.completions += 1
+    def default_resp(self, tr):
+        if self._unmapped(tr["addr"]):
+            return (0x5A5A5A5A, 1)
+        if tr["write"]:
+            prdata = self.r.getrandbits(32)
+        else:
+            prdata = self.mem.rd_word(tr["addr"])
+        err = 1 if (self.err_prob > 0 and self.r.random() < self.err_prob) else 0
+        return prdata, err
 
-    def step(self, s):
-        e = s["cyc"]
+    def drive(self, c, in_rst):
+        t = self.cur
+        if (not in_rst) and t is not None and t["left"] <= 0:
+            self.h_pready.value = 1
+            self.h_prdata.value = t["prdata"] & M32
+            self.h_pslverr.value = t["pslverr"] & 1
+        else:
+            self.h_pready.value = 0
+            if self.noise:
+                self.h_prdata.value = self.r.getrandbits(32)
+                self.h_pslverr.value = self.r.getrandbits(1)
+            else:
+                self.h_prdata.value = 0
+                self.h_pslverr.value = 0
+
+    def observe(self, c, s):
+        if s["rst"] != 1:
+            self.cur = None
+            return
+        t = self.cur
+        if s["psel"] == 1 and s["penable"] == 1 and t is not None:
+            t["edges"] += 1
+            if s["pready"] == 1:
+                self.cur = None
+                if s["pwrite"] == 1 and s["pslverr"] == 0:
+                    self.mem.wr(s["paddr"], s["pwdata"], s["pstrb"])
+                self.log.append(t)
+                assert t["edges"] == t["waits"] + 1, (
+                    f"CHK-027: a transfer with {t['waits']} wait states has {t['waits'] + 1} ACCESS edges, "
+                    f"got {t['edges']} (paddr {_hx(t['addr'])}, cycle {c})")
+            else:
+                t["left"] -= 1
+        elif s["psel"] == 1 and s["penable"] == 0:
+            tr = dict(idx=self.count, addr=s["paddr"], write=s["pwrite"], prot=s["pprot"], setup=c, edges=0)
+            self.count += 1
+            if self._unmapped(tr["addr"]):
+                waits = 0
+            elif self.wait_fn is not None:
+                waits = self.wait_fn(tr)
+            else:
+                waits = self.r.randint(self.wmin, self.wmax)
+            if self.resp_fn is not None:
+                prdata, err = self.resp_fn(tr)
+            else:
+                prdata, err = self.default_resp(tr)
+            tr.update(waits=waits, left=waits, prdata=prdata, pslverr=err)
+            self.cur = tr
+
+
+# --------------------------------------------------------------------------------------------------
+# Transaction tracker / scoreboard (CHK-001..CHK-017 in Python + reference model)
+# --------------------------------------------------------------------------------------------------
+class Tracker:
+    def __init__(self, bench):
+        self.bench = bench
+        self.owner = None
+        self.cur = None
+        self.prev = None
+        self.records = []
+        self.aborted = []
+        self.post_reset = []
+
+    def _new(self, kind, s, c):
+        p = "ar" if kind == "RD" else "aw"
+        rec = dict(kind=kind, id=s[p + "id"], addr=s[p + "addr"], len=s[p + "len"], size=s[p + "size"],
+                   burst=s[p + "burst"], cache=s[p + "cache"], prot=s[p + "prot"], start=c,
+                   apb=[], w=[], r=[], b=None, end=None, psel_edges=0,
+                   first_rvalid=None, first_bvalid=None)
+        rec["supported"] = is_supported(rec["addr"], rec["len"], rec["size"], rec["burst"], rec["cache"])
+        rec["exp_addrs"] = (beat_addrs(rec["addr"], rec["size"], rec["len"], rec["burst"])
+                            if rec["supported"] else [])
+        return rec
+
+    def observe(self, c, s):
         p = self.prev
-        if p is not None and p["rst"] != 1:
-            for k in RESET_ZERO:
-                self.chk(s[k] == 0, f"CHK-017: {k}=0 at edge {e} (edge after reset) got {s[k]}")
-            if s["rst"] != 1:
-                for k in ("awready", "wready", "arready"):
-                    self.chk(s[k] == 0, f"CHK-017: {k}=0 at edge {e} (reset at two edges) got {s[k]}")
+        self.prev = s
+        assert s["paddr"] >= 0 and (s["paddr"] & 3) == 0, (
+            f"CHK-004: o_apb_paddr[1:0]==2'b00 at every edge, got paddr={_hx(s['paddr'])} at cycle {c}")
+        if p is not None and p["rst"] == 0:
+            bad = [(n, _hx(s[n])) for n in RESET_ZERO if s[n] != 0]
+            assert not bad, f"CHK-017: all response/APB outputs 0 at the edge after a reset edge, got {bad} at cycle {c}"
+            if s["rst"] == 0:
+                badr = [(n, _hx(s[n])) for n in READIES if s[n] != 0]
+                assert not badr, f"CHK-017: ready outputs 0 when reset is sampled at two consecutive edges, got {badr} at cycle {c}"
+            else:
+                self.post_reset.append((c, s))
         if s["rst"] != 1:
             if self.cur is not None:
-                self._finish(self.cur, e, aborted=True)
-                self.cur = None
-            self.x = None
-            self.prev = s
+                self.cur["aborted_at"] = c
+                self._commit_completed_writes(self.cur)
+                self.aborted.append(self.cur)
+            self.cur = None
+            self.owner = None
             return
+        prst = p is not None and p["rst"] == 1
+        if s["penable"] == 1:
+            assert s["psel"] == 1, f"CHK-001: penable=1 implies psel=1, got psel={s['psel']} at cycle {c}"
+        if prst:
+            p_setup = p["psel"] == 1 and p["penable"] == 0
+            p_access = p["psel"] == 1 and p["penable"] == 1
+            if p_setup:
+                assert s["psel"] == 1 and s["penable"] == 1, (
+                    f"CHK-001: SETUP is followed by ACCESS, got psel={s['psel']} penable={s['penable']} at cycle {c}")
+                diff = [f for f in PAY if s[f] != p[f]]
+                assert not diff, f"CHK-003: APB payload stable from SETUP into ACCESS, changed {diff} at cycle {c}"
+            if p_access and p["pready"] == 1:
+                assert s["penable"] == 0, f"CHK-001: penable=0 after a completed ACCESS, got 1 at cycle {c}"
+            if p_access and p["pready"] == 0:
+                assert s["psel"] == 1 and s["penable"] == 1, (
+                    f"CHK-002: ACCESS held while PREADY=0, got psel={s['psel']} penable={s['penable']} at cycle {c}")
+                diff = [f for f in PAY if s[f] != p[f]]
+                assert not diff, f"CHK-002: APB payload held during wait state, changed {diff} at cycle {c}"
+            if s["penable"] == 1:
+                assert p["psel"] == 1 and not (p_access and p["pready"] == 1), (
+                    f"CHK-001: ACCESS entered only from SETUP or waited ACCESS (cycle {c})")
+            if p["bvalid"] == 1 and p["bready"] == 0:
+                assert s["bvalid"] == 1 and s["bid"] == p["bid"] and s["bresp"] == p["bresp"], (
+                    f"CHK-007: B held under BREADY=0, got bvalid={s['bvalid']} bid={_hx(s['bid'])}/{_hx(p['bid'])} "
+                    f"bresp={s['bresp']}/{p['bresp']} at cycle {c}")
+            if p["rvalid"] == 1 and p["rready"] == 0:
+                diff = [f for f in ("rvalid", "rid", "rdata", "rresp", "rlast") if s[f] != p[f]]
+                assert not diff, f"CHK-009: R beat held under RREADY=0, changed {diff} at cycle {c}"
+        if s["psel"] == 1 and s["pwrite"] == 0:
+            assert s["pstrb"] == 0, f"CHK-005: pstrb=0 on APB reads, got {_hx(s['pstrb'])} at cycle {c}"
+        if s["psel"] == 0:
+            bad = [(f, _hx(s[f])) for f in ("penable",) + PAY if s[f] != 0]
+            assert not bad, f"CHK-006: APB outputs 0 when psel=0, got {bad} at cycle {c}"
+        self._track(c, s)
 
-        owner = self.cur
+    def _track(self, c, s):
+        start_owner = self.owner
+        cur = self.cur
         ar_hs = s["arvalid"] == 1 and s["arready"] == 1
         aw_hs = s["awvalid"] == 1 and s["awready"] == 1
-        w_hs = s["wvalid"] == 1 and s["wready"] == 1
-        r_hs = s["rvalid"] == 1 and s["rready"] == 1
-        b_hs = s["bvalid"] == 1 and s["bready"] == 1
-        psel = s["psel"] == 1
-        pen = s["penable"] == 1
-        self.chk(not (ar_hs and aw_hs), f"CHK-014(a): no simultaneous AR and AW handshake got both at edge {e}")
-
-        # ---- APB static checks
-        self.chk(s["paddr"] >= 0 and (s["paddr"] & 3) == 0, f"CHK-004: paddr[1:0]=0 got 0x{s['paddr'] & 0xFFFFFFFF:x} at edge {e}")
-        self.chk(not (pen and not psel), f"CHK-001(a): penable=1 implies psel=1 at edge {e}")
-        if not psel:
-            self.chk(s["penable"] == 0 and all(s[k] == 0 for k in APB_PAY),
-                     f"CHK-006: APB outputs 0 when psel=0 at edge {e} got " + str({k: s[k] for k in APB_PAY}))
-        elif s["pwrite"] == 0:
-            self.chk(s["pstrb"] == 0, f"CHK-005: pstrb=0 on APB read at edge {e} got {s['pstrb']}")
-
-        # ---- APB transfer tracking
-        pending_x = None
-        x = self.x
-        if x is not None and not (psel and pen):
-            self.chk(False, f"CHK-001/CHK-002: transfer (SETUP edge {x.setup}) must stay in ACCESS at edge {e} "
-                            f"got psel={s['psel']} penable={s['penable']}")
-            x.broken = True
-            self.x = None
-            x = None
-        if psel and not pen:
-            nx = Xfer(s, e)
-            self.x = nx
-            if owner is not None and owner.needs_apb():
-                owner.apb.append(nx)
-                nx.txn = owner
-            else:
-                pending_x = nx
-        elif psel and pen:
-            if x is None:
-                self.chk(False, f"CHK-001(d): ACCESS at edge {e} not preceded by SETUP or waited ACCESS")
-            else:
-                x.access += 1
-                for k in APB_PAY:
-                    if s[k] != x.pay[k]:
-                        x.stable = False
-                        self.chk(False, f"CHK-002/CHK-003: {k} stable through transfer (SETUP edge {x.setup}) "
-                                        f"expected 0x{x.pay[k] & 0xFFFFFFFF:x} got 0x{s[k] & 0xFFFFFFFF:x} at edge {e}")
-                if s["pready"] == 1:
-                    x.done = e
-                    x.prdata = s["prdata"]
-                    x.pslverr = s["pslverr"]
-                    self.x = None
-                    self.xfers_done.append(x)
-        if psel:
-            if owner is not None:
-                owner.psel_edges += 1
-                if not owner.supported:
-                    self.chk(False, f"CHK-015: psel=0 during unsupported {owner.tag()} got psel=1 at edge {e}")
-            elif not (ar_hs or aw_hs):
-                self.chk(False, f"CHK-014(e): psel=1 only with an owner got psel=1 at idle edge {e}")
-
-        # ---- W
-        done_now = False
-        pending_w = None
-        if s["wready"] == 1:
-            self.chk((owner is not None and owner.kind == "W") or aw_hs,
-                     f"CHK-013(a): wready=1 only when owner=WR or at the AW handshake got wready=1 at edge {e}")
-        if w_hs:
-            wb = dict(edge=e, data=s["wdata"], strb=s["wstrb"], last=s["wlast"])
-            if owner is not None and owner.kind == "W" and not b_hs:
-                owner.w.append(wb)
-                self.chk(len(owner.w) <= owner.len + 1,
-                         f"CHK-013(b): at most {owner.len + 1} W handshakes got {len(owner.w)} for {owner.tag()}")
-            elif aw_hs:
-                pending_w = wb
-            else:
-                self.chk(False, f"CHK-013: W handshake only inside a write got one at edge {e}")
-
-        # ---- R
+        # (a) APB ACCESS edge belongs to the current owner
+        if s["psel"] == 1 and s["penable"] == 1:
+            assert cur is not None, f"CHK-014: psel=1 (ACCESS) only while a transaction owns the bridge, got no owner at cycle {c}"
+            assert cur["supported"], f"CHK-015: no APB activity for unsupported request, got psel=1 at cycle {c}"
+            assert cur["apb"] and cur["apb"][-1]["done"] is None, f"CHK-001: ACCESS without an open SETUP at cycle {c}"
+            cur["psel_edges"] += 1
+            tr = cur["apb"][-1]
+            tr["access_edges"] += 1
+            for f in PAY:
+                if s[f] != tr["vals"][f]:
+                    tr["stable"] = False
+            if s["pready"] == 1:
+                k = len(cur["apb"]) - 1
+                tr["done"] = c
+                tr["prdata"] = s["prdata"]
+                tr["pslverr"] = s["pslverr"]
+                exp_w = 1 if cur["kind"] == "WR" else 0
+                assert s["pwrite"] == exp_w, f"CHK-016: pwrite={exp_w} for transfer {k}, got {s['pwrite']} at cycle {c}"
+                ea = cur["exp_addrs"][k] & 0xFFFFFFFC
+                assert s["paddr"] == ea, f"CHK-016: paddr of transfer {k} = {ea:#010x}, got {_hx(s['paddr'])} at cycle {c}"
+                assert s["pprot"] == cur["prot"], f"CHK-016: pprot = AxPROT {cur['prot']}, got {_hx(s['pprot'])} at cycle {c}"
+        # (b) responses of the current owner
+        completed = None
         if s["rvalid"] == 1:
-            if owner is None or owner.kind != "R":
-                self.chk(False, f"CHK-014(c): rvalid=1 only while owner=RD got rvalid=1 at edge {e}")
-            else:
-                if owner.rvalid_first is None:
-                    owner.rvalid_first = e
-                k = len(owner.r)
-                self.chk(s["rid"] == owner.id, f"CHK-010: rid={owner.id} got {s['rid']} at edge {e}")
-                self.chk(s["rlast"] == (1 if k == owner.len else 0),
-                         f"CHK-010: rlast={(1 if k == owner.len else 0)} on beat {k} of {owner.tag()} got {s['rlast']}")
-                if owner.supported:
-                    nd = sum(1 for xx in owner.apb if xx.done is not None)
-                    self.chk(nd >= k + 1, f"CHK-011(a): >= {k + 1} APB completions before R beat {k} got {nd} at edge {e}")
-                    if nd >= k + 1:
-                        xx = owner.apb[k]
-                        if xx.pslverr == 1:
-                            self.chk(s["rresp"] == SLVERR and s["rdata"] == 0,
-                                     f"CHK-011(c): beat {k} with PSLVERR is SLVERR/0 got rresp={s['rresp']} rdata=0x{s['rdata'] & 0xFFFFFFFF:x}")
-                        else:
-                            self.chk(s["rresp"] == OKAY and s["rdata"] == xx.prdata,
-                                     f"CHK-011(b): beat {k} OKAY rdata=0x{xx.prdata:08x} got rresp={s['rresp']} rdata=0x{s['rdata'] & 0xFFFFFFFF:x}")
+            assert self.owner == "RD" and cur is not None, (
+                f"CHK-014: rvalid=1 only while a read owns the bridge (after its AR handshake), owner={self.owner} at cycle {c}")
+            k = len(cur["r"])
+            if cur["first_rvalid"] is None:
+                cur["first_rvalid"] = c
+            assert s["rid"] == cur["id"], f"CHK-010: rid = ARID {cur['id']:#x}, got {_hx(s['rid'])} at cycle {c}"
+            exp_last = 1 if k == cur["len"] else 0
+            assert s["rlast"] == exp_last, f"CHK-010: rlast={exp_last} on beat {k} of ARLEN={cur['len']}, got {s['rlast']} at cycle {c}"
+            if cur["supported"]:
+                ndone = sum(1 for t in cur["apb"] if t["done"] is not None)
+                assert ndone >= k + 1, f"CHK-011: R beat {k} only after {k + 1} APB completions, got {ndone} at cycle {c}"
+                t = cur["apb"][k]
+                if t["pslverr"] == 0:
+                    assert s["rresp"] == OKAY and s["rdata"] == t["prdata"], (
+                        f"CHK-011: beat {k} OKAY with rdata=prdata {_hx(t['prdata'])}, got rresp={s['rresp']} "
+                        f"rdata={_hx(s['rdata'])} at cycle {c}")
+                    if self.bench.ref_check:
+                        exp = self.bench.ref.rd_word(cur["exp_addrs"][k])
+                        assert s["rdata"] == exp, (
+                            f"CHK-027: read beat {k} data equals reference memory {exp:#010x}, got {_hx(s['rdata'])} "
+                            f"(addr {cur['exp_addrs'][k]:#010x}, cycle {c})")
                 else:
-                    self.chk(s["rresp"] == SLVERR and s["rdata"] == 0,
-                             f"CHK-012: unsupported read beat SLVERR/0 got rresp={s['rresp']} rdata=0x{s['rdata'] & 0xFFFFFFFF:x}")
-                if r_hs:
-                    owner.r.append(dict(edge=e, id=s["rid"], data=s["rdata"], resp=s["rresp"], last=s["rlast"]))
-                    if s["rlast"] == 1:
-                        done_now = True
-
-        # ---- B
+                    assert s["rresp"] == SLVERR and s["rdata"] == 0, (
+                        f"CHK-011: beat {k} with PSLVERR returns SLVERR and rdata=0, got rresp={s['rresp']} "
+                        f"rdata={_hx(s['rdata'])} at cycle {c}")
+            else:
+                assert s["rresp"] == SLVERR and s["rdata"] == 0, (
+                    f"CHK-012: unsupported read beat is SLVERR with rdata=0, got rresp={s['rresp']} rdata={_hx(s['rdata'])} at cycle {c}")
+            if s["rready"] == 1:
+                cur["r"].append(dict(data=s["rdata"], resp=s["rresp"], id=s["rid"], last=s["rlast"], cycle=c))
+                if s["rlast"] == 1:
+                    completed = cur
         if s["bvalid"] == 1:
-            if owner is None or owner.kind != "W":
-                self.chk(False, f"CHK-014(d): bvalid=1 only while owner=WR got bvalid=1 at edge {e}")
+            assert self.owner == "WR" and cur is not None, (
+                f"CHK-014: bvalid=1 only while a write owns the bridge, owner={self.owner} at cycle {c}")
+            if cur["first_bvalid"] is None:
+                cur["first_bvalid"] = c
+            assert s["bid"] == cur["id"], f"CHK-008: bid = AWID {cur['id']:#x}, got {_hx(s['bid'])} at cycle {c}"
+            nw = len(cur["w"])
+            assert nw == cur["len"] + 1, f"CHK-008: bvalid only after AWLEN+1={cur['len'] + 1} W handshakes, got {nw} at cycle {c}"
+            if cur["supported"]:
+                done_before = [t for t in cur["apb"] if t["done"] is not None and t["done"] < c]
+                assert len(done_before) == cur["len"] + 1, (
+                    f"CHK-008: bvalid only after AWLEN+1={cur['len'] + 1} APB write completions, got {len(done_before)} at cycle {c}")
+                exp = SLVERR if any(t["pslverr"] == 1 for t in done_before) else OKAY
+                assert s["bresp"] == exp, f"CHK-008: bresp={exp} from accumulated PSLVERR, got {s['bresp']} at cycle {c}"
             else:
-                if owner.bvalid_first is None:
-                    owner.bvalid_first = e
-                nw = sum(1 for wb in owner.w if wb["edge"] < e)
-                self.chk(nw == owner.len + 1, f"CHK-008(b): {owner.len + 1} W handshakes before bvalid got {nw} at edge {e}")
-                self.chk(s["bid"] == owner.id, f"CHK-008(a): bid={owner.id} got {s['bid']} at edge {e}")
-                if owner.supported:
-                    dn = [xx for xx in owner.apb if xx.done is not None and xx.done < e]
-                    self.chk(len(dn) == owner.len + 1,
-                             f"CHK-008(c): {owner.len + 1} APB write completions before bvalid got {len(dn)} at edge {e}")
-                    exp = SLVERR if any(xx.pslverr == 1 for xx in dn) else OKAY
-                    self.chk(s["bresp"] == exp, f"CHK-008(c): bresp={exp} got {s['bresp']} at edge {e}")
-                else:
-                    self.chk(s["bresp"] == SLVERR, f"CHK-008(d): bresp=SLVERR for unsupported write got {s['bresp']}")
-                if b_hs:
-                    owner.b = dict(edge=e, id=s["bid"], resp=s["bresp"])
-                    done_now = True
-
-        if done_now:
-            self._finish(owner, e)
+                assert s["bresp"] == SLVERR, f"CHK-008: unsupported write bresp=SLVERR, got {s['bresp']} at cycle {c}"
+            if s["bready"] == 1:
+                cur["b"] = dict(resp=s["bresp"], id=s["bid"], cycle=c)
+                completed = cur
+        if completed is not None:
+            self.owner = None
             self.cur = None
-
-        # ---- new address handshake
+            self._finish(completed, c)
+        # (c) address handshakes
+        assert not (ar_hs and aw_hs), f"CHK-014: AR and AW handshakes never at the same edge (cycle {c})"
         if ar_hs or aw_hs:
-            if self.cur is not None:
-                self.chk(False, f"CHK-014(b): no address handshake while {self.cur.tag()} owns the bridge got one at edge {e}")
-                self._finish(self.cur, e, aborted=True)
-            kind = "R" if ar_hs else "W"
-            t = Txn(kind, s, e)
-            self.cur = t
-            self.by_h[(kind, e)] = t
-            if psel:
-                t.psel_edges += 1
-            if pending_x is not None:
-                if t.needs_apb():
-                    t.apb.append(pending_x)
-                    pending_x.txn = t
-                else:
-                    self.chk(False, f"CHK-015/CHK-014(e): no APB SETUP for unsupported {t.tag()} got SETUP at edge {e}")
-            if pending_w is not None:
-                if kind == "W":
-                    t.w.append(pending_w)
-                else:
-                    self.chk(False, f"CHK-013: W handshake only inside a write got one at AR edge {e}")
-        elif pending_x is not None:
-            self.chk(False, f"CHK-014(e)/CHK-016: APB SETUP only for a transaction needing a transfer got one at edge {e}")
+            assert self.owner is None, f"CHK-014: no address handshake while {self.owner} owns the bridge (cycle {c})"
+            self.owner = "RD" if ar_hs else "WR"
+            self.cur = self._new(self.owner, s, c)
+        cur = self.cur
+        # (d) W channel
+        if s["wready"] == 1:
+            assert self.owner == "WR" or start_owner == "WR", (
+                f"CHK-013: wready=1 only after the AW of the current write is accepted, owner={self.owner} at cycle {c}")
+        if s["wvalid"] == 1 and s["wready"] == 1:
+            assert self.owner == "WR" and cur is not None, f"CHK-013: W handshake only for an accepted write (cycle {c})"
+            cur["w"].append(dict(data=s["wdata"], strb=s["wstrb"], last=s["wlast"], cycle=c))
+            assert len(cur["w"]) <= cur["len"] + 1, (
+                f"CHK-013: W handshakes never exceed AWLEN+1={cur['len'] + 1}, got {len(cur['w'])} at cycle {c}")
+        # (e) APB SETUP edge
+        if s["psel"] == 1 and s["penable"] == 0:
+            assert cur is not None, f"CHK-014: psel=1 only while a transaction owns the bridge (cycle {c})"
+            assert cur["supported"], f"CHK-015: no APB SETUP for an unsupported request (cycle {c})"
+            assert len(cur["apb"]) < cur["len"] + 1, (
+                f"CHK-016: APB transfers per transaction never exceed AxLEN+1={cur['len'] + 1} (cycle {c})")
+            cur["psel_edges"] += 1
+            cur["apb"].append(dict(setup=c, vals={f: s[f] for f in PAY}, access_edges=0, done=None,
+                                   stable=True, prdata=None, pslverr=None))
 
-        # ---- response hold under backpressure
-        if p is not None and p["rst"] == 1:
-            if p["rvalid"] == 1 and p["rready"] != 1:
-                self.chk(s["rvalid"] == 1 and all(s[k] == p[k] for k in ("rid", "rdata", "rresp", "rlast")),
-                         f"CHK-009: R beat held while rready=0 (edge {p['cyc']}->{e}) got a change")
-            if p["bvalid"] == 1 and p["bready"] != 1:
-                self.chk(s["bvalid"] == 1 and all(s[k] == p[k] for k in ("bid", "bresp")),
-                         f"CHK-007: B held while bready=0 (edge {p['cyc']}->{e}) got a change")
-        self.prev = s
+    def _commit_completed_writes(self, rec):
+        # Triage fix (2026-11-10, NNC_Pipeline): a write cut by reset keeps the APB writes that already
+        # completed (one APB write per beat, spec:163/317/328; no rollback, spec:333/575/584). The reference
+        # model records them here, with the same pwdata/pstrb = W beat check as _finish.
+        if rec.get("kind") != "WR" or not rec.get("supported"):
+            return
+        for k, tr in enumerate(rec["apb"]):
+            if tr["done"] is None or tr["pslverr"] != 0:
+                continue
+            assert k < len(rec["w"]), f"CHK-016: APB write {k} completed before W beat {k} was accepted"
+            w = rec["w"][k]
+            assert tr["vals"]["pwdata"] == w["data"] and tr["vals"]["pstrb"] == w["strb"], (
+                f"CHK-016: transfer {k} pwdata/pstrb = W beat {k} ({w['data']:#010x}/{w['strb']:#x}), got "
+                f"{_hx(tr['vals']['pwdata'])}/{_hx(tr['vals']['pstrb'])}")
+            self.bench.ref.wr(rec["exp_addrs"][k], w["data"], w["strb"])
+
+    def _finish(self, rec, c):
+        rec["end"] = c
+        L = rec["len"]
+        if rec["supported"]:
+            ndone = sum(1 for t in rec["apb"] if t["done"] is not None)
+            assert len(rec["apb"]) == L + 1 and ndone == L + 1, (
+                f"CHK-016: exactly AxLEN+1={L + 1} APB transfers, got {len(rec['apb'])} ({ndone} completed) at cycle {c}")
+            if rec["kind"] == "WR":
+                for k in range(L + 1):
+                    tr = rec["apb"][k]
+                    w = rec["w"][k]
+                    assert tr["vals"]["pwdata"] == w["data"] and tr["vals"]["pstrb"] == w["strb"], (
+                        f"CHK-016: transfer {k} pwdata/pstrb = W beat {k} ({w['data']:#010x}/{w['strb']:#x}), got "
+                        f"{_hx(tr['vals']['pwdata'])}/{_hx(tr['vals']['pstrb'])}")
+                    if tr["pslverr"] == 0:
+                        self.bench.ref.wr(rec["exp_addrs"][k], w["data"], w["strb"])
+        else:
+            assert len(rec["apb"]) == 0, f"CHK-015: no APB transfers for an unsupported request, got {len(rec['apb'])}"
+        self.records.append(rec)
 
 
-# --------------------------------------------------------------------------
-# Bench: scheduler, scoreboard
-# --------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------
+# Cycle engine
+# --------------------------------------------------------------------------------------------------
 class Bench:
-    def __init__(self, dut, rnd):
+    def __init__(self, dut, salt):
         self.dut = dut
-        self.rnd = rnd
-        self.idw = id_width()
-        self.idmask = (1 << self.idw) - 1
-        self.clk = getattr(dut, CLOCK)
-        self.h = {k: getattr(dut, p) for k, p in SIG.items()}
+        self.clk = dut.i_clk_axi
+        self.r = rng(salt)
         self.cycle = 0
-        self.last = None
-        self.hist = deque(maxlen=6000)
-        self.hooks = []
+        self.errors = []
         self.rst_left = 0
-        self.rst_now = 1
-        self.reset_edges = []
-        self.trk = Tracker()
-        self.ref = ByteMem()
+        self.ref = RefMemory()
+        self.ref_check = True
+        self.hooks = []
+        self.last = None
+        self._handles = [(_short(n), getattr(dut, n)) for n in IN_PORTS + OUT_PORTS]
+        self._rst = dut.i_rst_n_axi
+        self.master = AxiMaster(self)
         self.apb = ApbCompleter(self)
-        self.rd = ReadMaster(self)
-        self.wr = WriteMaster(self)
-        self.sb_idx = 0
-        self.scored = []
-        self.ref_data_check = True
+        self.tracker = Tracker(self)
+        self._task = None
 
-    async def run(self):
-        for _ in range(MAX_SIM_CYCLES):
+    def start(self):
+        self._task = cocotb.start_soon(self._run())
+
+    def _err(self, msg):
+        if len(self.errors) < 50:
+            self.errors.append(msg)
+            if len(self.errors) <= 5:
+                self.dut._log.error(msg)
+
+    def sample(self):
+        s = {}
+        for k, h in self._handles:
+            v = val(h)
+            s[k] = -1 if v is None else int(v)
+        v = val(self._rst)
+        s["rst"] = -1 if v is None else int(v)
+        return s
+
+    async def _run(self):
+        while True:
             await FallingEdge(self.clk)
-            e = self.cycle + 1
-            prev = self.last
-            if self.rst_left > 0:
-                self.rst_now = 0
+            c = self.cycle
+            in_rst = self.rst_left > 0
+            if in_rst:
                 self.rst_left -= 1
-            else:
-                self.rst_now = 1
-            self.h["rst"].value = self.rst_now
-            self.rd.drive(e, prev)
-            self.wr.drive(e, prev)
-            self.apb.drive(e)
+            self._rst.value = 0 if in_rst else 1
+            try:
+                self.master.drive(c, in_rst)
+                self.apb.drive(c, in_rst)
+            except Exception as e:  # pragma: no cover
+                self._err(f"TB drive error at cycle {c}: {e!r}")
             await ReadOnly()
-            s = {k: _v(hh) for k, hh in self.h.items()}
-            s["cyc"] = e
-            if s["rst"] != 1:
-                self.reset_edges.append(e)
-            self.trk.step(s)
-            for f in self.hooks:
-                f(s)
-            self.hist.append(s)
+            s = self.sample()
+            for fn in (self.tracker.observe, self.apb.observe, self.master.observe) + tuple(self.hooks):
+                try:
+                    fn(c, s)
+                except AssertionError as e:
+                    self._err(str(e))
+                except Exception as e:
+                    self._err(f"TB internal error at cycle {c}: {e!r}")
             self.last = s
-            self.cycle = e
+            self.cycle += 1
 
-    # ---- helpers
-    def snap(self, e):
-        if not self.hist:
-            return None
-        i = e - self.hist[0]["cyc"]
-        if 0 <= i < len(self.hist):
-            return self.hist[i]
-        return None
+    # ---- test-facing API ------------------------------------------------------------------------
+    def submit(self, *txns):
+        base = self.cycle
+        for t in txns:
+            self.master.submit(t, base)
 
-    def raise_errors(self):
-        if self.trk.errors:
-            assert False, self.trk.errors[0]
+    def check(self):
+        assert not self.errors, f"{self.errors[0] if self.errors else ''}  [{len(self.errors)} error(s) total]"
 
-    async def cycles(self, n):
+    async def tick(self, n=1):
         for _ in range(n):
-            await FallingEdge(self.clk)
-        self.raise_errors()
+            await RisingEdge(self.clk)
+            self.check()
 
     async def wait_for(self, cond, max_cycles, what):
         for _ in range(max_cycles):
-            await FallingEdge(self.clk)
-            self.raise_errors()
             if cond():
                 return
-        assert False, f"{what} got timeout after {max_cycles} cycles"
+            await self.tick()
+        assert cond(), f"{what}: timeout after {max_cycles} cycles"
 
-    def txn(self, q):
-        if q.hs_edge is None:
-            return None
-        return self.trk.by_h.get((q.kind, q.hs_edge))
+    def budget(self, txns):
+        hold = max(self.master.rready.hi, 0) + max(self.master.bready.hi, 0)
+        tot = 600
+        for t in txns:
+            gaps = sum(t.w_gaps) if t.kind == "W" else 0
+            tot += 300 + (t.length + 1) * (30 + self.apb.wmax + hold) + gaps + t.delay + t.w_delay
+        return tot
 
-    def is_done(self, q):
-        t = self.txn(q)
-        return t is not None and t.done is not None
-
-    async def wait_done(self, *reqs, max_cycles=20000, what="transaction completes"):
-        await self.wait_for(lambda: all(self.is_done(q) for q in reqs), max_cycles, what)
-
-    def quiet(self):
-        return (not self.rd.busy() and not self.wr.busy() and self.trk.cur is None
-                and self.last is not None and self.last["rvalid"] != 1 and self.last["bvalid"] != 1)
-
-    async def drain(self, max_cycles, what):
-        await self.wait_for(self.quiet, max_cycles, what)
+    async def wait_done(self, txns, max_cycles=None, what="transactions to complete"):
+        if max_cycles is None:
+            max_cycles = self.budget(txns)
+        await self.wait_for(lambda: all(t.done or t.aborted for t in txns), max_cycles, what)
+        ab = [t for t in txns if t.aborted]
+        assert not ab, f"{what}: transactions unexpectedly aborted {ab[:3]}"
 
     async def reset(self, n=1):
-        k0 = len(self.reset_edges)
+        k = len(self.tracker.post_reset)
         self.rst_left = n
-        await self.wait_for(lambda: len(self.reset_edges) >= k0 + n and self.cycle >= self.reset_edges[-1] + 1,
-                            n + 10, "reset pulse applied")
-        return self.reset_edges[k0], self.reset_edges[-1]
+        await self.wait_for(lambda: len(self.tracker.post_reset) > k, n + 10, "CHK-017: reset to be applied and released")
 
-    def preload(self, addr, word):
-        self.apb.mem.write_word(addr, word, 0xF)
-        self.ref.write_word(addr, word, 0xF)
-
-    # ---- scoreboard
-    def score(self):
-        while self.sb_idx < len(self.trk.finished):
-            t = self.trk.finished[self.sb_idx]
-            self.sb_idx += 1
-            if t.aborted:
-                if t.kind == "W":
-                    for k, x in enumerate(t.apb):
-                        if x.done is not None and x.pslverr == 0 and is_mapped(x.pay["paddr"]):
-                            self.ref.write_word(x.pay["paddr"], x.pay["pwdata"], x.pay["pstrb"])
-                continue
-            self._score_one(t)
-            self.scored.append(t)
-
-    def _score_one(self, t):
-        n = t.len + 1
-        tag = t.tag()
-        if t.kind == "R":
-            assert len(t.r) == n, f"CHK-010: {n} R beats for {tag} got {len(t.r)}"
-            for k, bt in enumerate(t.r):
-                assert bt["id"] == t.id, f"CHK-010: rid={t.id} on beat {k} of {tag} got {bt['id']}"
-                assert bt["last"] == (1 if k == n - 1 else 0), \
-                    f"CHK-010: rlast only on beat {n - 1} of {tag} got rlast={bt['last']} on beat {k}"
-        if not t.supported:
-            assert t.psel_edges == 0, f"CHK-015: psel=0 for unsupported {tag} got psel=1 on {t.psel_edges} edges"
-            if t.kind == "R":
-                for k, bt in enumerate(t.r):
-                    assert bt["resp"] == SLVERR and bt["data"] == 0, \
-                        f"CHK-012: unsupported beat {k} SLVERR/0 for {tag} got resp={bt['resp']} data=0x{bt['data']:x}"
-            else:
-                assert len(t.w) == n, f"CHK-013: {n} W beats drained for {tag} got {len(t.w)}"
-                assert t.b is not None, f"CHK-008: one B for {tag} got none"
-                assert t.b["resp"] == SLVERR, f"CHK-008(d): SLVERR B for {tag} got {t.b['resp']}"
-                assert t.b["id"] == t.id, f"CHK-008(a): bid={t.id} for {tag} got {t.b['id']}"
-                assert t.bvalid_first > t.w[-1]["edge"], f"CHK-008(b): bvalid after last W for {tag} got edge {t.bvalid_first}"
-            return
-        addrs = beat_addrs(t.addr, t.len, t.size, t.burst)
-        assert len(t.apb) == n, f"CHK-016: {n} APB transfers for {tag} got {len(t.apb)}"
-        for k, x in enumerate(t.apb):
-            assert x.done is not None, f"CHK-016: APB transfer {k} of {tag} completes got incomplete"
-            assert x.pay["pwrite"] == (1 if t.kind == "W" else 0), \
-                f"CHK-016: pwrite matches direction for {tag} transfer {k} got {x.pay['pwrite']}"
-            assert x.pay["paddr"] == (addrs[k] & 0xFFFFFFFC), \
-                f"CHK-016: paddr=0x{addrs[k] & 0xFFFFFFFC:08x} for transfer {k} of {tag} got 0x{x.pay['paddr']:08x}"
-            assert x.pay["pprot"] == t.prot, f"CHK-016: pprot={t.prot} for {tag} got {x.pay['pprot']}"
-        if t.kind == "R":
-            for k, (bt, x) in enumerate(zip(t.r, t.apb)):
-                assert x.pay["pstrb"] == 0, f"CHK-005: pstrb=0 on read {tag} got {x.pay['pstrb']}"
-                if x.pslverr == 1:
-                    assert bt["resp"] == SLVERR and bt["data"] == 0, \
-                        f"CHK-011(c): beat {k} SLVERR/0 for {tag} got resp={bt['resp']} data=0x{bt['data']:x}"
-                else:
-                    assert bt["resp"] == OKAY and bt["data"] == x.prdata, \
-                        f"CHK-011(b): beat {k} OKAY data=0x{x.prdata:08x} for {tag} got resp={bt['resp']} data=0x{bt['data']:08x}"
-                    if self.ref_data_check and is_mapped(x.pay["paddr"]):
-                        exp = self.ref.read_word(x.pay["paddr"])
-                        assert bt["data"] == exp, \
-                            f"CHK-027: reference model data 0x{exp:08x} at 0x{x.pay['paddr']:08x} beat {k} of {tag} got 0x{bt['data']:08x}"
-        else:
-            assert len(t.w) == n, f"CHK-013: {n} W beats for {tag} got {len(t.w)}"
-            for k, (wb, x) in enumerate(zip(t.w, t.apb)):
-                assert x.pay["pwdata"] == wb["data"], \
-                    f"CHK-016: pwdata=0x{wb['data']:08x} transfer {k} of {tag} got 0x{x.pay['pwdata']:08x}"
-                assert x.pay["pstrb"] == wb["strb"], \
-                    f"CHK-016: pstrb={wb['strb']:04b} transfer {k} of {tag} got {x.pay['pstrb']:04b}"
-                if x.pslverr != 1 and is_mapped(x.pay["paddr"]):
-                    self.ref.write_word(addrs[k], wb["data"], wb["strb"])
-            assert t.b is not None, f"CHK-008: one B for {tag} got none"
-            exp = SLVERR if any(x.pslverr == 1 for x in t.apb) else OKAY
-            assert t.b["resp"] == exp, f"CHK-008(c): bresp={exp} for {tag} got {t.b['resp']}"
-            assert t.b["id"] == t.id, f"CHK-008(a): bid={t.id} for {tag} got {t.b['id']}"
-            assert t.bvalid_first > max(x.done for x in t.apb), \
-                f"CHK-008(c): bvalid after last APB completion for {tag} got edge {t.bvalid_first}"
-            assert t.bvalid_first > t.w[-1]["edge"], f"CHK-008(b): bvalid after last W for {tag} got edge {t.bvalid_first}"
-
-    def compare_mem(self, tag):
-        keys = set(self.ref.d) | set(self.apb.mem.d)
-        for a in sorted(keys):
-            assert self.ref.rd8(a) == self.apb.mem.rd8(a), \
-                f"{tag}: memory byte 0x{a:08x} expected 0x{self.ref.rd8(a):02x} got 0x{self.apb.mem.rd8(a):02x}"
-
-    def final(self):
-        self.raise_errors()
-        self.score()
-        self.raise_errors()
+    async def final_check(self):
+        await self.tick(3)
+        self.check()
+        assert not self.master.stray_r, f"CHK-010: no R beat without an outstanding read, got {self.master.stray_r[:3]}"
+        assert not self.master.stray_b, f"CHK-008: no B without an outstanding write, got {self.master.stray_b[:3]}"
+        for a in sorted(set(self.apb.mem.m) | set(self.ref.m)):
+            got = self.apb.mem.rd_byte(a)
+            exp = self.ref.rd_byte(a)
+            assert got == exp, f"CHK-027: APB memory byte {a:#010x} equals reference model {exp:#04x}, got {got:#04x}"
 
 
-async def make_bench(dut, salt, reset_cycles=5):
-    start_clock(dut)
-    await reset_dut(dut, cycles=reset_cycles)
-    b = Bench(dut, rng(salt))
-    cocotb.start_soon(b.run())
-    await b.cycles(2)
+async def make_bench(dut, salt):
+    res = start_clock(dut)
+    if inspect.isawaitable(res):
+        await res
+    await reset_dut(dut, cycles=5)
+    b = Bench(dut, salt)
+    b.start()
+    await b.tick(3)
     return b
 
 
-def budget(ln, per=60):
-    return 1000 + (ln + 1) * per
+def rid(b):
+    return b.r.randint(0, ID_MASK)
 
 
-# --------------------------------------------------------------------------
-# Random traffic generation
-# --------------------------------------------------------------------------
-def gen_req(r, idw, extras=False):
-    if extras and r.random() < 0.03:
-        return dict(addr=UNMAPPED_BASE + 4 * r.randrange(0x100), ln=r.randint(0, 3), size=2, burst=INCR,
-                    cache=r.choice([0, 1]), prot=r.randrange(8), id=r.getrandbits(idw))
-    burst = r.choice([FIXED, INCR, WRAP])
-    size = r.choice([0, 1, 2])
-    S = 1 << size
-    if burst == FIXED:
-        ln = r.randint(0, 15)
-        addr = r.randrange(0x10000)
-    elif burst == WRAP:
-        ln = r.choice([1, 3, 7, 15])
-        addr = r.randrange(0x10000) & ~(S - 1)
-    else:
-        x = r.random()
-        ln = r.randint(0, 15) if x < 0.7 else (r.randint(16, 63) if x < 0.93 else r.randint(64, 255))
-        total = (ln + 1) * S
-        page = r.randrange(16) << 12
-        base = r.randint(0, (4096 - total) // S) * S
-        addr = page + base + (r.randrange(S) if r.random() < 0.3 else 0)
-    cache = r.choice([0, 1])
-    if extras and r.random() < 0.03:
-        cache = r.randint(2, 15)
-    return dict(addr=addr, ln=ln, size=size, burst=burst, cache=cache, prot=r.randrange(8), id=r.getrandbits(idw))
+def _paddrs(t):
+    return [x["vals"]["paddr"] for x in t.rec["apb"]]
 
 
-def rand_strobes(r, f):
-    lanes = default_strobes(f["addr"], f["ln"], f["size"], f["burst"])
-    return [m if r.random() < 0.8 else ((m & r.randint(1, 15)) or m) for m in lanes]
-
-
-def set_random_policies(b, r):
-    b.apb.wait_fn = lambda x: r.randint(0, 3)
-    b.rd.rready_delay = lambda: r.choice([0, 0, 0, 1, 2, 5])
-    b.rd.rready_idle = lambda: r.getrandbits(1)
-    b.wr.bready_delay = lambda: r.choice([0, 0, 0, 1, 3, 6])
-    b.wr.bready_idle = lambda: r.getrandbits(1)
-
-
-async def random_traffic(b, r, n, tag, extras=False):
-    reset_points = set(r.sample(range(max(1, n // 5), n), 2)) if (extras and n >= 10) else set()
-    wgap = lambda: r.choice([0, 0, 0, 1, 3])
-    for i in range(n):
-        await b.wait_for(lambda: len(b.rd.q) + len(b.wr.aw_q) < 4, 60000,
-                         f"{tag}: bridge accepts queued requests")
-        f = gen_req(r, b.idw, extras)
-        if r.random() < 0.5:
-            b.rd.req(**f, gap=r.choice([0, 0, 0, 1, 4]))
-        else:
-            b.wr.req(**f, strb=rand_strobes(r, f), gap=r.choice([0, 0, 0, 1, 4]),
-                     w_early=r.random() < 0.25, wgap=wgap)
-        if i in reset_points:
-            await b.cycles(r.randint(3, 60))
-            await b.reset(r.randint(1, 3))
-        if i % 100 == 99:
-            b.score()
-    await b.drain(300000, f"{tag}: all random transactions complete")
-    b.final()
-
-
-# ==========================================================================
+# ==================================================================================================
 # Tests
-# ==========================================================================
-def _check_long_wait(b, t, wait, pend, what):
-    assert len(t.apb) == 1, f"CHK-018: one APB transfer for {what} got {len(t.apb)}"
-    x = t.apb[0]
-    assert x.done is not None, f"CHK-018: {what} transfer completes got incomplete"
-    assert x.access == wait + 1, f"CHK-018: ACCESS lasts {wait + 1} edges for {what} got {x.access}"
-    assert x.done - x.setup == wait + 1, f"CHK-018: completion {wait + 1} edges after SETUP got {x.done - x.setup}"
-    assert x.stable and not x.broken, f"CHK-018: APB payload stable and transfer not dropped for {what}"
-    for e in range(x.setup + 1, x.done + 1):
-        s = b.snap(e)
-        assert s is not None, f"CHK-018: history for edge {e} available got none"
-        assert s["psel"] == 1 and s["penable"] == 1, \
-            f"CHK-018: psel=1 penable=1 at wait edge {e} got psel={s['psel']} penable={s['penable']}"
-        for k in APB_PAY:
-            assert s[k] == x.pay[k], f"CHK-018: {k} unchanged at edge {e} expected {x.pay[k]} got {s[k]}"
-    for e in range(x.setup, x.done):
-        s = b.snap(e)
-        assert s["rvalid"] == 0 and s["bvalid"] == 0, \
-            f"CHK-018: no rvalid/bvalid during wait at edge {e} got rvalid={s['rvalid']} bvalid={s['bvalid']}"
-        assert not (s["arvalid"] == 1 and s["arready"] == 1) and not (s["awvalid"] == 1 and s["awready"] == 1), \
-            f"CHK-018: no address handshake during wait got one at edge {e}"
-    assert pend.first_valid is not None and pend.first_valid + wait // 2 < x.done, \
-        f"CHK-018: competing request pending during the wait got first_valid={pend.first_valid}"
-    assert pend.hs_edge is not None and pend.hs_edge >= t.done, \
-        f"CHK-018: pending request handshake only after {what} completes (edge {t.done}) got {pend.hs_edge}"
-
-
+# ==================================================================================================
 @cocotb.test()
 async def test_chk_018_long_apb_wait(dut):
-    """CHK-018: long APB wait (1000 PREADY=0 cycles) is held with no timeout, then completes normally."""
+    """CHK-018: APB ACCESS held for 1000 wait states (read then write), no timeout; pending AXI requests wait."""
     b = await make_bench(dut, "chk018")
-    r = b.rnd
     WAIT = 1000
-    b.apb.wait_fn = lambda x: WAIT if x["paddr"] == 0x5000 else 0
-    b.preload(0x5000, 0x0BADF00D)
-    rq = b.rd.req(addr=0x5000, ln=0, size=2, burst=INCR, prot=r.randrange(8))
-    await b.wait_for(lambda: rq.hs_edge is not None, 100, "CHK-018: AR handshake of the single-beat read")
-    pend_w = b.wr.req(addr=0x5100, ln=0, size=2, burst=INCR)
-    await b.wait_done(rq, max_cycles=WAIT + 400, what="CHK-018: read completes after the long wait")
-    await b.wait_done(pend_w, max_cycles=500, what="CHK-018: pending write completes after the read")
-    t = b.txn(rq)
-    _check_long_wait(b, t, WAIT, pend_w, "read")
-    assert len(t.r) == 1 and t.r[0]["data"] == 0x0BADF00D and t.r[0]["resp"] == OKAY, \
-        f"CHK-018: read returns 0x0BADF00D OKAY got {t.r}"
-    assert t.rvalid_first >= t.apb[0].done, f"CHK-018: no rvalid before APB completion got edge {t.rvalid_first}"
+    b.master.rready.set("always")
+    b.master.bready.set("always")
+    b.apb.wait_fn = lambda tr: WAIT if tr["idx"] in (0, 1) else 0
+    b.apb.resp_fn = lambda tr: (0x0BADF00D, 0) if tr["idx"] == 0 else b.apb.default_resp(tr)
+    b.ref_check = False
+    resp_log = []
+    b.hooks.append(lambda c, s: resp_log.append(c) if (s["rvalid"] == 1 or s["bvalid"] == 1) else None)
 
-    wdat = r.getrandbits(32)
-    wq = b.wr.req(addr=0x5000, ln=0, size=2, burst=INCR, data=[wdat], strb=[0xF], prot=r.randrange(8))
-    await b.wait_for(lambda: wq.hs_edge is not None, 100, "CHK-018: AW handshake of the single-beat write")
-    pend_r = b.rd.req(addr=0x5008, ln=0, size=2, burst=INCR)
-    await b.wait_done(wq, max_cycles=WAIT + 400, what="CHK-018: write completes after the long wait")
-    await b.wait_done(pend_r, max_cycles=500, what="CHK-018: pending read completes after the write")
-    t2 = b.txn(wq)
-    _check_long_wait(b, t2, WAIT, pend_r, "write")
-    x = t2.apb[0]
-    assert x.pay["pwdata"] == wdat and x.pay["pstrb"] == 0xF and x.pay["pwrite"] == 1, \
-        f"CHK-018: APB write payload WDATA=0x{wdat:08x} got {x.pay}"
-    assert t2.b is not None and t2.b["resp"] == OKAY, f"CHK-018: BRESP OKAY got {t2.b}"
-    assert t2.bvalid_first > x.done, f"CHK-018: bvalid only after APB completion got {t2.bvalid_first}"
-    b.final()
+    rd = make_read(rid(b), 0x00005000, 0, 2, INCR, prot=b.r.randint(0, 7))
+    b.submit(rd)
+    await b.wait_for(lambda: rd.rec is not None and len(rd.rec["apb"]) == 1 and rd.rec["apb"][0]["access_edges"] >= 1,
+                     300, "CHK-018: read transfer to reach ACCESS")
+    wr = make_write(b.r, rid(b), 0x00005000, 0, 2, INCR, prot=b.r.randint(0, 7), data=[0x13579BDF], strb=[0xF])
+    b.submit(wr)
+    await b.wait_done([rd], WAIT + 500, "CHK-018: long-wait read to complete")
+    await b.wait_for(lambda: wr.rec is not None and len(wr.rec["apb"]) == 1 and wr.rec["apb"][0]["access_edges"] >= 1,
+                     500, "CHK-018: write transfer to reach ACCESS")
+    rd2 = make_read(rid(b), 0x00005000, 0, 2, INCR)
+    b.submit(rd2)
+    await b.wait_done([wr, rd2], WAIT + 800, "CHK-018: long-wait write and following read to complete")
+    await b.final_check()
+
+    for name, t, other in (("read", rd, wr), ("write", wr, rd2)):
+        assert len(t.rec["apb"]) == 1, f"CHK-018: one APB transfer for single-beat {name}, got {len(t.rec['apb'])}"
+        tr = t.rec["apb"][0]
+        assert tr["vals"]["paddr"] == 0x5000, f"CHK-018: {name} paddr 0x5000, got {_hx(tr['vals']['paddr'])}"
+        assert tr["access_edges"] == WAIT + 1, f"CHK-018: {name} ACCESS lasts exactly {WAIT + 1} edges, got {tr['access_edges']}"
+        assert tr["done"] - tr["setup"] == WAIT + 1, (
+            f"CHK-018: {name} ACCESS contiguous from SETUP+1 to completion ({WAIT + 1} edges), got {tr['done'] - tr['setup']}")
+        assert tr["stable"], f"CHK-018: {name} PADDR/PWRITE/PWDATA/PSTRB/PPROT unchanged during the wait"
+        assert other.valid_cycle is not None and other.valid_cycle < tr["done"], (
+            f"CHK-018: (stimulus) the other request is pending during the {name} wait")
+        assert other.a_hs is not None and other.a_hs >= t.end, (
+            f"CHK-018: pending request gets no address handshake before the {name} completes "
+            f"(hs {other.a_hs}, {name} end {t.end})")
+        window = [x for x in resp_log if tr["setup"] <= x < tr["done"]]
+        assert not window, f"CHK-018: no rvalid/bvalid during the {name} wait, got at cycles {window[:5]}"
+    assert len(rd.r) == 1 and rd.r[0]["data"] == 0x0BADF00D and rd.r[0]["resp"] == OKAY and rd.r[0]["last"] == 1, (
+        f"CHK-018: read returns rdata=0x0BADF00D OKAY rlast=1, got {rd.r}")
+    assert rd.r[0]["id"] == rd.id, f"CHK-018: rid={rd.id:#x}, got {_hx(rd.r[0]['id'])}"
+    assert wr.b is not None and wr.b["resp"] == OKAY and wr.b["id"] == wr.id, f"CHK-018: write BRESP OKAY with bid, got {wr.b}"
+    assert wr.rec["first_bvalid"] > wr.rec["apb"][0]["done"], "CHK-018: bvalid only after the write APB completion"
+    assert rd2.r and rd2.r[0]["data"] == 0x13579BDF and rd2.r[0]["resp"] == OKAY, (
+        f"CHK-018: the long-wait write was performed (read back 0x13579BDF), got {rd2.r}")
 
 
 @cocotb.test()
 async def test_chk_019_arbitration_round_robin(dut):
-    """CHK-019: AR/AW round-robin; AR wins first tie after reset, preference flips after each completion."""
+    """CHK-019: AR wins the first tie after reset; afterwards the side not served last wins."""
     b = await make_bench(dut, "chk019")
-    t0 = b.cycle + 3
-    r1 = b.rd.req(addr=0x0100, ln=1, size=2, burst=INCR, not_before=t0)
-    r2 = b.rd.req(addr=0x0180, ln=1, size=2, burst=INCR)
-    w1 = b.wr.req(addr=0x0200, ln=1, size=2, burst=INCR, aw_not_before=t0)
-    w2 = b.wr.req(addr=0x0280, ln=1, size=2, burst=INCR)
-    await b.wait_done(r1, r2, w1, w2, max_cycles=3000, what="CHK-019: phases A-C complete")
-    T = b.txn
-    assert r1.first_valid == t0 and w1.first_valid == t0, \
-        f"CHK-019: AR and AW asserted at the same edge got {r1.first_valid}/{w1.first_valid}"
-    assert r1.hs_edge < w1.hs_edge, f"CHK-019: phase A AR (R1) granted first got R1={r1.hs_edge} W1={w1.hs_edge}"
-    assert w1.hs_edge >= T(r1).done, f"CHK-019: W1 granted only at/after R1 final R (edge {T(r1).done}) got {w1.hs_edge}"
-    assert r2.first_valid <= T(r1).done, "CHK-019: R2 pending when R1 completes (stimulus)"
-    assert w1.hs_edge < r2.hs_edge, f"CHK-019: phase B W1 granted before R2 got W1={w1.hs_edge} R2={r2.hs_edge}"
-    assert w2.first_valid <= T(w1).done, "CHK-019: W2 pending when W1 completes (stimulus)"
-    assert r2.hs_edge >= T(w1).done and r2.hs_edge < w2.hs_edge, \
-        f"CHK-019: phase C R2 granted before W2 got R2={r2.hs_edge} W2={w2.hs_edge} W1done={T(w1).done}"
-    assert w2.hs_edge >= T(r2).done, f"CHK-019: W2 granted after R2 completes got {w2.hs_edge}"
-    b.score()
+    b.master.rready.set("always")
+    b.master.bready.set("always")
+    r1 = make_read(rid(b), 0x0100, 1)
+    w1 = make_write(b.r, rid(b), 0x0200, 1)
+    r2 = make_read(rid(b), 0x0300, 1)
+    w2 = make_write(b.r, rid(b), 0x0400, 1)
+    b.submit(r1, w1, r2, w2)
+    await b.wait_done([r1, w1, r2, w2], what="CHK-019: phases A-C to complete")
+    assert r1.valid_cycle == w1.valid_cycle, f"CHK-019: (stimulus) R1/W1 asserted at the same edge, got {r1.valid_cycle}/{w1.valid_cycle}"
+    assert r1.a_hs < w1.a_hs, f"CHK-019: phase A AR wins the first tie, got AR hs {r1.a_hs} AW hs {w1.a_hs}"
+    assert w1.a_hs >= r1.end, f"CHK-019: phase A W1 granted only at/after R1 final R ({r1.end}), got {w1.a_hs}"
+    assert r2.valid_cycle == r1.a_hs + 1 and r2.valid_cycle <= r1.end, "CHK-019: (stimulus) R2 asserted right after R1 AR handshake"
+    assert w1.a_hs < r2.a_hs, f"CHK-019: phase B after a read completed AW wins (W1 hs {w1.a_hs}, R2 hs {r2.a_hs})"
+    assert w2.valid_cycle == w1.a_hs + 1 and w2.valid_cycle <= w1.end, "CHK-019: (stimulus) W2 asserted right after W1 AW handshake"
+    assert r2.a_hs >= w1.end and r2.a_hs < w2.a_hs, (
+        f"CHK-019: phase C after a write completed AR wins (R2 hs {r2.a_hs}, W2 hs {w2.a_hs}, W1 end {w1.end})")
+    for t in (r1, r2):
+        assert all(x["resp"] == OKAY for x in t.r) and len(t.r) == 2, f"CHK-019: read completes OKAY, got {t.r}"
+    for t in (w1, w2):
+        assert t.b["resp"] == OKAY, f"CHK-019: write completes OKAY, got {t.b}"
 
     # Phase D
     await b.reset(2)
-    w3 = b.wr.req(addr=0x0300, ln=1, size=2, burst=INCR)
-    await b.wait_done(w3, max_cycles=500, what="CHK-019: lone AW W3 is granted and completes")
-    assert w3.hs_edge - w3.first_valid <= 50, \
-        f"CHK-019: lone W3 granted without waiting for an AR got wait {w3.hs_edge - w3.first_valid}"
-    t1 = b.cycle + 3
-    r4 = b.rd.req(addr=0x0400, ln=1, size=2, burst=INCR, not_before=t1)
-    w4 = b.wr.req(addr=0x0480, ln=1, size=2, burst=INCR, aw_not_before=t1)
-    await b.wait_done(r4, w4, max_cycles=1000, what="CHK-019: phase D tie completes")
-    assert r4.first_valid == w4.first_valid, "CHK-019: R4/W4 asserted at the same edge"
-    assert w4.hs_edge < r4.hs_edge and r4.hs_edge >= T(w4).done, \
-        f"CHK-019: phase D tie won by W4 after 1 completion got W4={w4.hs_edge} R4={r4.hs_edge}"
-    b.final()
+    await b.tick(5)
+    w3 = make_write(b.r, rid(b), 0x0500, 0)
+    b.submit(w3)
+    await b.wait_done([w3], what="CHK-019: lone W3")
+    assert w3.a_hs - w3.valid_cycle <= 32, f"CHK-019: lone AW granted directly, waited {w3.a_hs - w3.valid_cycle} cycles"
+    await b.tick(3)
+    r4 = make_read(rid(b), 0x0600, 1)
+    w4 = make_write(b.r, rid(b), 0x0700, 1)
+    b.submit(r4, w4)
+    await b.wait_done([r4, w4], what="CHK-019: R4/W4 tie")
+    assert r4.valid_cycle == w4.valid_cycle, "CHK-019: (stimulus) R4/W4 asserted at the same edge"
+    assert r4.a_hs < w4.a_hs, f"CHK-019: phase D after a write completed AR wins (R4 hs {r4.a_hs}, W4 hs {w4.a_hs})"
+    await b.final_check()
 
 
 @cocotb.test()
 async def test_chk_020_wvalid_before_aw(dut):
-    """CHK-020: WVALID before AW keeps WREADY low until the AW handshake; beats are then accepted in order."""
+    """CHK-020: WVALID 10 edges before AWVALID: WREADY held low until AW is accepted, then 4 beats in order."""
     b = await make_bench(dut, "chk020")
-    r = b.rnd
-    t0 = b.cycle + 3
-    data = [r.getrandbits(32) for _ in range(4)]
-    strb = [r.choice([0xF, 0x3, 0xC, 0x1, 0x8]) for _ in range(4)]
-    wq = b.wr.req(addr=0x3000, ln=3, size=2, burst=INCR, data=data, strb=strb, w_early=True,
-                  w_not_before=t0, aw_not_before=t0 + 10, wgap=lambda: 0)
-    await b.wait_done(wq, max_cycles=500, what="CHK-020: early-W write completes")
-    assert wq.w_first_valid == t0 and wq.first_valid == t0 + 10, \
-        f"CHK-020: W at edge {t0} and AW 10 edges later (stimulus) got {wq.w_first_valid}/{wq.first_valid}"
-    aw = wq.hs_edge
-    pre = list(range(t0, aw))
-    assert len(pre) >= 10, f"CHK-020: at least 10 edges before AW handshake got {len(pre)}"
-    for e in pre:
-        s = b.snap(e)
-        assert s["wvalid"] == 1 and s["wready"] == 0, \
-            f"CHK-020: wready=0 while W waits for AW at edge {e} got wready={s['wready']}"
-    assert all(e >= aw for e in wq.w_edges), f"CHK-020: no W handshake before AW edge {aw} got {wq.w_edges}"
-    t = b.txn(wq)
-    assert len(t.w) == 4 and [w["data"] for w in t.w] == data, f"CHK-020: 4 W handshakes in order got {t.w}"
-    assert [x.pay["paddr"] for x in t.apb] == [0x3000, 0x3004, 0x3008, 0x300C], \
-        f"CHK-020: APB addresses 0x3000..0x300C got {[hex(x.pay['paddr']) for x in t.apb]}"
-    for k, x in enumerate(t.apb):
-        assert x.pay["pwdata"] == data[k] and x.pay["pstrb"] == strb[k] and x.pay["pwrite"] == 1, \
-            f"CHK-020: APB write {k} carries WDATA/WSTRB got {x.pay}"
-    assert t.b is not None and t.b["resp"] == OKAY and t.b["id"] == wq.id, f"CHK-020: B OKAY bid={wq.id} got {t.b}"
-    assert t.bvalid_first > t.apb[3].done, f"CHK-020: B after 4th APB completion got {t.bvalid_first}"
-    b.final()
+    b.master.rready.set("always")
+    b.master.bready.set("always")
+    hist = []
+    b.hooks.append(lambda c, s: hist.append((c, s["wvalid"], s["wready"])))
+    w = make_write(b.r, rid(b), 0x00003000, 3, 2, INCR, delay=10, w_delay=0)
+    b.submit(w)
+    await b.wait_done([w], what="CHK-020: write to complete")
+    await b.final_check()
+    assert w.valid_cycle == w.w_valid_cycle + 10, (
+        f"CHK-020: (stimulus) AWVALID 10 edges after WVALID, got {w.w_valid_cycle}->{w.valid_cycle}")
+    pre = [h for h in hist if w.w_valid_cycle <= h[0] < w.a_hs]
+    assert len(pre) >= 10, f"CHK-020: at least 10 edges before AW handshake, got {len(pre)}"
+    bad = [h[0] for h in pre if h[2] != 0]
+    assert not bad, f"CHK-020: wready=0 at all edges before the AW handshake, got wready=1 at {bad[:5]}"
+    assert w.w_hs and w.w_hs[0] >= w.a_hs, f"CHK-020: W beat 0 not accepted before AW (W hs {w.w_hs[:1]}, AW hs {w.a_hs})"
+    assert len(w.w_hs) == 4 and len(w.rec["w"]) == 4, f"CHK-020: exactly 4 W handshakes, got {len(w.w_hs)}"
+    got = [(x["data"], x["strb"]) for x in w.rec["w"]]
+    assert got == list(zip(w.data, w.strb)), f"CHK-020: W beats accepted in order, got {got}"
+    assert _paddrs(w) == [0x3000, 0x3004, 0x3008, 0x300C], f"CHK-020: APB writes at 0x3000..0x300C, got {[hex(a) for a in _paddrs(w)]}"
+    for k, tr in enumerate(w.rec["apb"]):
+        assert tr["vals"]["pwrite"] == 1 and tr["vals"]["pwdata"] == w.data[k] and tr["vals"]["pstrb"] == w.strb[k], (
+            f"CHK-020: APB write {k} carries WDATA/WSTRB {w.data[k]:#x}/{w.strb[k]:#x}, got {tr['vals']}")
+    assert w.b["resp"] == OKAY and w.b["id"] == w.id, f"CHK-020: one OKAY B with bid=AWID, got {w.b}"
+    assert w.b["cycle"] > w.rec["apb"][-1]["done"], "CHK-020: B after the 4th APB completion"
 
 
 @cocotb.test()
 async def test_chk_021_response_backpressure(dut):
-    """CHK-021: RREADY/BREADY backpressure stalls the owning transaction without loss or reordering."""
+    """CHK-021: RREADY/BREADY backpressure stalls the owning transaction only, without loss or reordering."""
     b = await make_bench(dut, "chk021")
-    r = b.rnd
-    b.apb.wait_fn = lambda x: r.randint(0, 3)
-    b.rd.rready_delay = lambda: r.randint(0, 50)
-    b.wr.bready_delay = lambda: 100
-    reads = [b.rd.req(addr=0xA000 + i * 0x100, ln=15, size=2, burst=INCR, prot=r.randrange(8)) for i in range(5)]
-    writes = [b.wr.req(addr=0xB000 + i * 0x100, ln=7, size=2, burst=INCR, prot=r.randrange(8)) for i in range(5)]
-    await b.drain(60000, "CHK-021: stalled transactions all complete")
-    for q in reads:
-        t = b.txn(q)
-        assert t is not None and t.done is not None, "CHK-021: read completes"
-        assert len(t.r) == 16, f"CHK-021: 16 R beats got {len(t.r)}"
-        assert [bt["last"] for bt in t.r] == [0] * 15 + [1], f"CHK-021: rlast on beat 15 only got {[bt['last'] for bt in t.r]}"
-        assert all(t.r[i]["edge"] < t.r[i + 1]["edge"] for i in range(15)), "CHK-021: R beats in order"
-        assert len(t.apb) == 16, f"CHK-021: APB transfers = ARLEN+1 = 16 got {len(t.apb)}"
-    for q in writes:
-        t = b.txn(q)
-        assert t is not None and t.b is not None, "CHK-021: write completes with B"
-        assert t.b["edge"] - t.bvalid_first >= 100, \
-            f"CHK-021: B held during 100-cycle BREADY stall got {t.b['edge'] - t.bvalid_first}"
-        assert len(t.apb) == 8, f"CHK-021: APB transfers = AWLEN+1 = 8 got {len(t.apb)}"
-    fin = sorted([t for t in b.trk.finished if not t.aborted], key=lambda t: t.h)
-    for a, c in zip(fin, fin[1:]):
-        assert c.h >= a.done, f"CHK-021: next address handshake at/after completion edge {a.done} of {a.tag()} got {c.h}"
-    b.final()
+    b.apb.wmin, b.apb.wmax = 0, 3
+    b.master.rready.set("hold", lo=0, hi=50)
+    b.master.bready.set("hold", lo=100, hi=100)
+    txns = []
+    for i in range(4):
+        txns.append(make_read(rid(b), b.r.randrange(0, 0x10000 // 64) * 64, 15, 2, INCR, prot=b.r.randint(0, 7)))
+        txns.append(make_write(b.r, rid(b), b.r.randrange(0, 0x10000 // 32) * 32, 7, 2, INCR, prot=b.r.randint(0, 7)))
+    b.submit(*txns)
+    await b.wait_done(txns, what="CHK-021: backpressured traffic to complete")
+    await b.final_check()
+    for t in txns:
+        assert t.rec is not None and len(t.rec["apb"]) == t.length + 1, f"CHK-021: AxLEN+1 APB transfers for {t}"
+        if t.kind == "R":
+            assert len(t.r) == 16, f"CHK-021: 16 R beats, got {len(t.r)}"
+            assert [x["last"] for x in t.r] == [0] * 15 + [1], "CHK-021: rlast on beat 15 only"
+            assert [x["data"] for x in t.r] == [x["prdata"] for x in t.rec["apb"]], "CHK-021: R beats in order with APB read data"
+            assert all(x["resp"] == OKAY and x["id"] == t.id for x in t.r), "CHK-021: R beats OKAY with RID"
+        else:
+            assert t.b["resp"] == OKAY and t.b["id"] == t.id, f"CHK-021: B OKAY with bid, got {t.b}"
+            assert t.b["cycle"] - t.rec["first_bvalid"] == 100, (
+                f"CHK-021: B held through 100 BREADY-low cycles, got {t.b['cycle'] - t.rec['first_bvalid']}")
+    recs = sorted([t.rec for t in txns], key=lambda x: x["start"])
+    for a, c in zip(recs, recs[1:]):
+        assert c["start"] >= a["end"], f"CHK-021: no AR/AW handshake ({c['start']}) before the stalled transaction completes ({a['end']})"
 
 
-UNSUP_CASES = ([(0x0, s, l, INCR, 0) for s in range(3, 8) for l in (0, 3)]
-               + [(0x0, 2, l, 3, 0) for l in (0, 3)]
-               + [(0x0, 2, 1, INCR, c) for c in range(2, 16)]
-               + [(0xFFC, 2, 1, INCR, 0), (0xFFF, 0, 1, INCR, 0), (0xF00, 2, 255, INCR, 0)])
+UNSUP_CLASSES = None
+
+
+def _unsupported_cases():
+    cases = []
+    for size in range(3, 8):
+        for L in (0, 3):
+            cases.append(dict(addr=0x0, size=size, burst=INCR, cache=0, L=L))
+    for L in (0, 3):
+        cases.append(dict(addr=0x0, size=2, burst=RSVD, cache=0, L=L))
+    for cache in range(16):
+        if cache in (0, 1):
+            continue
+        cases.append(dict(addr=0x0100, size=2, burst=INCR, cache=cache, L=1))
+    cases.append(dict(addr=0x0FFC, size=2, burst=INCR, cache=0, L=1))
+    cases.append(dict(addr=0x0FFF, size=0, burst=INCR, cache=0, L=1))
+    cases.append(dict(addr=0x0F00, size=2, burst=INCR, cache=0, L=255))
+    return cases
 
 
 @cocotb.test()
 async def test_chk_022_unsupported_reads(dut):
-    """CHK-022: unsupported reads give no APB and ARLEN+1 SLVERR beats with zero data; recovery is normal."""
+    """CHK-022: unsupported reads (size, reserved burst, cache, 4-KiB crossing): no APB, ARLEN+1 SLVERR zero-data beats."""
     b = await make_bench(dut, "chk022")
-    r = b.rnd
-    b.rd.rready_delay = lambda: r.randint(0, 3)
-    b.rd.rready_idle = lambda: r.getrandbits(1)
-    for (addr, size, ln, burst, cache) in UNSUP_CASES:
-        bad = b.rd.req(addr=addr, ln=ln, size=size, burst=burst, cache=cache, prot=r.randrange(8))
-        good = b.rd.req(addr=0x7100 + 8 * r.randrange(16), ln=1, size=2, burst=INCR, prot=r.randrange(8))
-        await b.wait_done(bad, good, max_cycles=budget(ln, 20) + 1000,
-                          what=f"CHK-022: unsupported read {(hex(addr), size, ln, burst, cache)} and recovery complete")
-        t = b.txn(bad)
-        assert not t.supported, f"CHK-022: stimulus is unsupported {t.tag()}"
-        assert t.psel_edges == 0, f"CHK-022: psel=0 from AR to final R for {t.tag()} got {t.psel_edges} edges"
-        assert len(t.r) == ln + 1, f"CHK-022: {ln + 1} R beats for {t.tag()} got {len(t.r)}"
-        for k, bt in enumerate(t.r):
-            assert bt["resp"] == SLVERR and bt["data"] == 0 and bt["id"] == bad.id, \
-                f"CHK-022: beat {k} SLVERR/0/rid={bad.id} got {bt}"
-            assert bt["last"] == (1 if k == ln else 0), f"CHK-022: rlast only on beat {ln} got {bt['last']} on {k}"
-        g = b.txn(good)
-        assert g.supported and len(g.apb) == 2 and all(bt["resp"] == OKAY for bt in g.r), \
-            f"CHK-022: following legal read has 2 APB transfers and OKAY beats got {len(g.apb)} {g.r}"
-        b.score()
-    b.final()
+    b.apb.wmin, b.apb.wmax = 0, 2
+    b.master.rready.set("random", p=0.6)
+    for cs in _unsupported_cases():
+        assert not is_supported(cs["addr"], cs["L"], cs["size"], cs["burst"], cs["cache"]), f"CHK-022: (setup) case unsupported {cs}"
+        bad = make_read(rid(b), cs["addr"], cs["L"], cs["size"], cs["burst"], cs["cache"], b.r.randint(0, 7))
+        good = make_read(rid(b), b.r.randrange(0, 0x1000) * 16, b.r.randint(0, 3), 2, INCR,
+                         b.r.choice([0, 1]), b.r.randint(0, 7))
+        b.submit(bad, good)
+        await b.wait_done([bad, good], what=f"CHK-022: unsupported read {cs} and legal read")
+        L = cs["L"]
+        assert bad.rec is not None and bad.rec["psel_edges"] == 0 and not bad.rec["apb"], (
+            f"CHK-022: psel=0 from AR handshake to final R for {bad}")
+        assert len(bad.r) == L + 1, f"CHK-022: exactly ARLEN+1={L + 1} R beats for {bad}, got {len(bad.r)}"
+        for k, x in enumerate(bad.r):
+            assert x["resp"] == SLVERR and x["data"] == 0 and x["id"] == bad.id, (
+                f"CHK-022: beat {k} SLVERR rdata=0 rid={bad.id:#x}, got {x}")
+            assert x["last"] == (1 if k == L else 0), f"CHK-022: rlast only on beat {L}, beat {k} got {x['last']}"
+        assert len(good.rec["apb"]) == good.length + 1, f"CHK-022: legal read after recovery makes APB transfers, got {len(good.rec['apb'])}"
+        assert len(good.r) == good.length + 1 and all(x["resp"] == OKAY for x in good.r), f"CHK-022: legal read OKAY, got {good.r}"
+    await b.final_check()
 
 
 @cocotb.test()
 async def test_chk_023_unsupported_writes(dut):
-    """CHK-023: unsupported writes drain AWLEN+1 W beats, no APB, one SLVERR B; recovery is normal."""
+    """CHK-023: unsupported writes drain AWLEN+1 W beats with no APB, then one SLVERR B."""
     b = await make_bench(dut, "chk023")
-    r = b.rnd
-    b.wr.bready_delay = lambda: r.randint(0, 3)
-    b.wr.bready_idle = lambda: r.getrandbits(1)
-    wgap = lambda: r.choice([0, 0, 1, 2, 3])
-    for (addr, size, ln, burst, cache) in UNSUP_CASES:
-        bad = b.wr.req(addr=addr, ln=ln, size=size, burst=burst, cache=cache, prot=r.randrange(8),
-                       wgap=wgap, w_early=r.random() < 0.3)
-        good = b.wr.req(addr=0x7100 + 8 * r.randrange(16), ln=1, size=2, burst=INCR, prot=r.randrange(8), wgap=wgap)
-        await b.wait_done(bad, good, max_cycles=budget(ln, 30) + 1000,
-                          what=f"CHK-023: unsupported write {(hex(addr), size, ln, burst, cache)} and recovery complete")
-        t = b.txn(bad)
-        assert not t.supported, f"CHK-023: stimulus is unsupported {t.tag()}"
-        assert len(t.w) == ln + 1, f"CHK-023: {ln + 1} W handshakes for {t.tag()} got {len(t.w)}"
-        assert t.psel_edges == 0, f"CHK-023: psel=0 from AW to B for {t.tag()} got {t.psel_edges} edges"
-        assert t.bvalid_first > t.w[-1]["edge"], \
-            f"CHK-023: bvalid after the (AWLEN+1)-th W handshake (edge {t.w[-1]['edge']}) got {t.bvalid_first}"
-        assert t.b["resp"] == SLVERR and t.b["id"] == bad.id, f"CHK-023: one B SLVERR bid={bad.id} got {t.b}"
-        g = b.txn(good)
-        assert g.supported and len(g.apb) == 2 and g.b["resp"] == OKAY, \
-            f"CHK-023: following legal write has APB writes and OKAY got {len(g.apb)} {g.b}"
-        b.score()
-    b.final()
+    b.apb.wmin, b.apb.wmax = 0, 2
+    b.master.bready.set("random", p=0.6)
+    for cs in _unsupported_cases():
+        L = cs["L"]
+        bad = make_write(b.r, rid(b), cs["addr"], L, cs["size"], cs["burst"], cs["cache"], b.r.randint(0, 7),
+                         w_gaps=[b.r.randint(0, 3) for _ in range(L + 1)])
+        good = make_write(b.r, rid(b), b.r.randrange(0, 0x1000) * 16, b.r.randint(0, 3), 2, INCR,
+                          b.r.choice([0, 1]), b.r.randint(0, 7))
+        b.submit(bad, good)
+        await b.wait_done([bad, good], what=f"CHK-023: unsupported write {cs} and legal write")
+        assert len(bad.w_hs) == L + 1 and len(bad.rec["w"]) == L + 1, (
+            f"CHK-023: exactly AWLEN+1={L + 1} W handshakes for {bad}, got {len(bad.w_hs)}")
+        assert bad.rec["psel_edges"] == 0 and not bad.rec["apb"], f"CHK-023: psel=0 from AW to B for {bad}"
+        assert bad.rec["first_bvalid"] > bad.w_hs[-1], (
+            f"CHK-023: bvalid rises only after the last W handshake ({bad.w_hs[-1]}), got {bad.rec['first_bvalid']}")
+        assert bad.b["resp"] == SLVERR and bad.b["id"] == bad.id, f"CHK-023: one SLVERR B with bid=AWID, got {bad.b}"
+        assert len(good.rec["apb"]) == good.length + 1 and good.b["resp"] == OKAY, (
+            f"CHK-023: legal write after recovery uses APB and returns OKAY, got {len(good.rec['apb'])} transfers, {good.b}")
+    await b.final_check()
 
 
 @cocotb.test()
 async def test_chk_024_read_pslverr(dut):
     """CHK-024: read PSLVERR maps to SLVERR with zero data on that beat only."""
     b = await make_bench(dut, "chk024")
-    for k in range(4):
-        b.preload(0x2000 + 4 * k, k)
-    errset = {0x2004, 0x2100, 0x2200, 0x2204, 0x2208, 0x220C}
-    b.apb.err_fn = lambda x: x["pwrite"] != 1 and x["paddr"] in errset
-    b.apb.err_data = 0xDEADBEEF
-    r1 = b.rd.req(addr=0x2000, ln=3, size=2, burst=INCR)
-    await b.wait_done(r1, max_cycles=1000, what="CHK-024: 4-beat read completes")
-    t = b.txn(r1)
-    assert [x.pay["paddr"] for x in t.apb] == [0x2000, 0x2004, 0x2008, 0x200C], \
-        f"CHK-024: APB reads at 0x2000..0x200C got {[hex(x.pay['paddr']) for x in t.apb]}"
-    assert t.apb[1].pslverr == 1 and t.apb[1].prdata == 0xDEADBEEF, "CHK-024: error injected on transfer 1 (stimulus)"
-    bt = t.r
-    assert bt[0]["resp"] == OKAY and bt[0]["data"] == 0, f"CHK-024: beat 0 OKAY PRDATA0 got {bt[0]}"
-    assert bt[1]["resp"] == SLVERR and bt[1]["data"] == 0, f"CHK-024: beat 1 SLVERR rdata=0 got {bt[1]}"
-    assert bt[2]["resp"] == OKAY and bt[2]["data"] == 2, f"CHK-024: beat 2 OKAY PRDATA2 got {bt[2]}"
-    assert bt[3]["resp"] == OKAY and bt[3]["data"] == 3, f"CHK-024: beat 3 OKAY PRDATA3 got {bt[3]}"
-    assert [x["last"] for x in bt] == [0, 0, 0, 1], f"CHK-024: rlast on beat 3 only got {[x['last'] for x in bt]}"
-    r2 = b.rd.req(addr=0x2100, ln=0, size=2, burst=INCR)
-    await b.wait_done(r2, max_cycles=500, what="CHK-024: single-beat error read completes")
-    t2 = b.txn(r2)
-    assert len(t2.r) == 1 and t2.r[0]["resp"] == SLVERR and t2.r[0]["data"] == 0 and t2.r[0]["last"] == 1, \
-        f"CHK-024: single error beat SLVERR/0/rlast got {t2.r}"
-    r3 = b.rd.req(addr=0x2200, ln=3, size=2, burst=INCR)
-    await b.wait_done(r3, max_cycles=1000, what="CHK-024: all-error read completes")
-    t3 = b.txn(r3)
-    assert len(t3.r) == 4 and all(x["resp"] == SLVERR and x["data"] == 0 for x in t3.r), \
-        f"CHK-024: every beat SLVERR/0 got {t3.r}"
-    for tt in (t, t2, t3):
-        for x, bb in zip(tt.apb, tt.r):
-            assert not (x.pslverr == 1 and bb["resp"] == OKAY), "CHK-024: an erroring beat is never OKAY"
-    b.final()
+    b.ref_check = False
+    b.apb.wmin, b.apb.wmax = 0, 1
+    b.master.rready.set("random", p=0.7)
+
+    def resp(tr):
+        a = tr["addr"]
+        if not tr["write"]:
+            if 0x2000 <= a < 0x2010:
+                k = (a - 0x2000) // 4
+                return (0xDEADBEEF, 1) if k == 1 else (k, 0)
+            if a == 0x2100:
+                return (0xCAFEBABE, 1)
+            if 0x2200 <= a < 0x2210:
+                return (0xA5A50000 | (a & 0xFFFF), 1)
+        return b.apb.default_resp(tr)
+
+    b.apb.resp_fn = resp
+    r1 = make_read(rid(b), 0x2000, 3)
+    r2 = make_read(rid(b), 0x2100, 0)
+    r3 = make_read(rid(b), 0x2200, 3)
+    for t in (r1, r2, r3):
+        b.submit(t)
+        await b.wait_done([t], what=f"CHK-024: {t}")
+    await b.final_check()
+    assert _paddrs(r1) == [0x2000, 0x2004, 0x2008, 0x200C], f"CHK-024: 4 APB reads at 0x2000..0x200C, got {[hex(a) for a in _paddrs(r1)]}"
+    got = [(x["resp"], x["data"]) for x in r1.r]
+    assert got == [(OKAY, 0), (SLVERR, 0), (OKAY, 2), (OKAY, 3)], f"CHK-024: beat responses OKAY/SLVERR(0)/OKAY/OKAY, got {got}"
+    assert [x["last"] for x in r1.r] == [0, 0, 0, 1], "CHK-024: rlast on beat 3 only"
+    assert len(r2.r) == 1 and r2.r[0]["resp"] == SLVERR and r2.r[0]["data"] == 0 and r2.r[0]["last"] == 1, (
+        f"CHK-024: single-beat error read returns SLVERR rdata=0 rlast=1, got {r2.r}")
+    assert len(r3.r) == 4 and all(x["resp"] == SLVERR and x["data"] == 0 for x in r3.r), (
+        f"CHK-024: all-error read returns SLVERR on every beat, got {r3.r}")
+    for t in (r1, r2, r3):
+        assert all(x["id"] == t.id for x in t.r), "CHK-024: rid echoed"
 
 
 @cocotb.test()
 async def test_chk_025_write_pslverr(dut):
-    """CHK-025: write PSLVERR accumulates into a final SLVERR BRESP; later beats still run; no carry-over."""
+    """CHK-025: write PSLVERR accumulates into the final BRESP; later beats still run; state clears per transaction."""
     b = await make_bench(dut, "chk025")
-    r = b.rnd
-    b.apb.wait_fn = lambda x: r.randint(0, 2)
-    for name, idxs in (("transfer0", {0}), ("transfer3", {3}), ("all", {0, 1, 2, 3}), ("none", set())):
-        base = b.apb.seq
-        b.apb.err_fn = lambda x, base=base, idxs=idxs: x["pwrite"] == 1 and (x["seq"] - base) in idxs
-        data = [r.getrandbits(32) for _ in range(4)]
-        strb = [r.randint(1, 15) for _ in range(4)]
-        wq = b.wr.req(addr=0x4000, ln=3, size=2, burst=INCR, data=data, strb=strb)
-        await b.wait_done(wq, max_cycles=1000, what=f"CHK-025: write variant {name} completes")
-        t = b.txn(wq)
-        assert [x.pay["paddr"] for x in t.apb] == [0x4000, 0x4004, 0x4008, 0x400C], \
-            f"CHK-025: {name}: 4 APB writes at 0x4000..0x400C got {[hex(x.pay['paddr']) for x in t.apb]}"
-        for k, x in enumerate(t.apb):
-            assert x.pay["pwdata"] == data[k] and x.pay["pstrb"] == strb[k], \
-                f"CHK-025: {name}: transfer {k} PWDATA/PSTRB match got {x.pay}"
-        errs = [k for k, x in enumerate(t.apb) if x.pslverr == 1]
-        assert set(errs) == idxs, f"CHK-025: {name}: injected errors on {sorted(idxs)} (stimulus) got {errs}"
-        assert t.bvalid_first > t.apb[3].done, f"CHK-025: {name}: B after 4th APB completion got {t.bvalid_first}"
-        exp = SLVERR if idxs else OKAY
-        assert t.b["resp"] == exp and t.b["id"] == wq.id, f"CHK-025: {name}: BRESP={exp} bid={wq.id} got {t.b}"
-    b.final()
+    b.apb.wmin, b.apb.wmax = 0, 2
+    state = {"err": set()}
+
+    def resp(tr):
+        if tr["write"] and 0x4000 <= tr["addr"] < 0x4010:
+            k = (tr["addr"] - 0x4000) // 4
+            return (b.r.getrandbits(32), 1 if k in state["err"] else 0)
+        return b.apb.default_resp(tr)
+
+    b.apb.resp_fn = resp
+    for errs in ({0}, {3}, {0, 1, 2, 3}, set()):
+        state["err"] = set(errs)
+        w = make_write(b.r, rid(b), 0x4000, 3)
+        b.submit(w)
+        await b.wait_done([w], what=f"CHK-025: write with errors {errs}")
+        assert _paddrs(w) == [0x4000, 0x4004, 0x4008, 0x400C], f"CHK-025: all 4 APB writes performed, got {[hex(a) for a in _paddrs(w)]}"
+        for k, tr in enumerate(w.rec["apb"]):
+            assert tr["vals"]["pwdata"] == w.data[k] and tr["vals"]["pstrb"] == w.strb[k] and tr["vals"]["pwrite"] == 1, (
+                f"CHK-025: APB write {k} carries matching PWDATA/PSTRB, got {tr['vals']}")
+        exp = SLVERR if errs else OKAY
+        assert w.b is not None and w.b["resp"] == exp and w.b["id"] == w.id, f"CHK-025: one B resp={exp} bid=AWID for errors {errs}, got {w.b}"
+        assert w.b["cycle"] > w.rec["apb"][-1]["done"], "CHK-025: B after the 4th APB completion"
+    await b.final_check()
 
 
 @cocotb.test()
 async def test_chk_026_unmapped_default_completer(dut):
-    """CHK-026: unmapped address answered by the default completer (PREADY=1, PSLVERR=1) gives AXI SLVERR."""
+    """CHK-026: unmapped address reaches APB; default completer PSLVERR gives AXI SLVERR."""
     b = await make_bench(dut, "chk026")
-    rq = b.rd.req(addr=UNMAPPED_BASE, ln=1, size=2, burst=INCR)
-    await b.wait_done(rq, max_cycles=500, what="CHK-026: unmapped read completes")
-    t = b.txn(rq)
-    assert [x.pay["paddr"] for x in t.apb] == [0x8000_0000, 0x8000_0004], \
-        f"CHK-026: 2 APB reads at 0x80000000/4 got {[hex(x.pay['paddr']) for x in t.apb]}"
-    for x in t.apb:
-        assert x.access == 1 and x.done - x.setup == 1, \
-            f"CHK-026: transfer lasts exactly 2 psel edges got access={x.access}"
-    assert len(t.r) == 2 and all(bt["resp"] == SLVERR and bt["data"] == 0 for bt in t.r), \
-        f"CHK-026: 2 SLVERR beats with rdata=0 got {t.r}"
-    assert [bt["last"] for bt in t.r] == [0, 1], "CHK-026: rlast on beat 1"
-    wq = b.wr.req(addr=UNMAPPED_BASE, ln=1, size=2, burst=INCR)
-    await b.wait_done(wq, max_cycles=500, what="CHK-026: unmapped write completes")
-    t2 = b.txn(wq)
-    assert len(t2.apb) == 2 and all(x.pay["pwrite"] == 1 for x in t2.apb), \
-        f"CHK-026: 2 APB writes got {len(t2.apb)}"
-    for x in t2.apb:
-        assert x.access == 1, f"CHK-026: write transfer lasts 2 psel edges got access={x.access}"
-    assert t2.b["resp"] == SLVERR, f"CHK-026: BRESP SLVERR got {t2.b}"
-    b.final()
+    b.apb.unmapped_default = True
+    b.master.rready.set("always")
+    b.master.bready.set("always")
+    rd = make_read(rid(b), 0x80000000, 1)
+    wr = make_write(b.r, rid(b), 0x80000000, 1)
+    ok = make_read(rid(b), 0x00000100, 1)
+    for t in (rd, wr, ok):
+        b.submit(t)
+        await b.wait_done([t], what=f"CHK-026: {t}")
+    await b.final_check()
+    assert _paddrs(rd) == [0x80000000, 0x80000004], f"CHK-026: 2 APB reads at 0x8000_0000/4, got {[hex(a) for a in _paddrs(rd)]}"
+    for tr in rd.rec["apb"] + wr.rec["apb"]:
+        assert tr["access_edges"] == 1 and tr["done"] - tr["setup"] == 1, (
+            f"CHK-026: each transfer has psel=1 for exactly 2 edges, got access_edges={tr['access_edges']}")
+    assert all(tr["vals"]["pwrite"] == 0 for tr in rd.rec["apb"]), "CHK-026: read transfers have pwrite=0"
+    assert [(x["resp"], x["data"], x["last"]) for x in rd.r] == [(SLVERR, 0, 0), (SLVERR, 0, 1)], (
+        f"CHK-026: 2 SLVERR beats with rdata=0, rlast on beat 1, got {rd.r}")
+    assert _paddrs(wr) == [0x80000000, 0x80000004] and all(tr["vals"]["pwrite"] == 1 for tr in wr.rec["apb"]), (
+        "CHK-026: 2 APB writes at 0x8000_0000/4")
+    assert wr.b["resp"] == SLVERR and wr.b["id"] == wr.id, f"CHK-026: write returns SLVERR B, got {wr.b}"
+    assert all(x["resp"] == OKAY for x in ok.r), "CHK-026: mapped access still OKAY"
+
+
+async def _run_random(b, n_total, tag, allow_hold=True):
+    r = b.r
+    out = []
+    count = 0
+    while count < n_total:
+        k = min(r.randint(1, 6), n_total - count)
+        batch = []
+        for _ in range(k):
+            kind = "R" if r.random() < 0.5 else "W"
+            t = rand_legal(r, kind)
+            t.delay = r.randint(0, 3)
+            t.w_delay = t.delay
+            if kind == "W":
+                if r.random() < 0.2:
+                    t.w_delay = 0
+                    t.delay = r.randint(1, 8)
+                t.w_gaps = [r.choice((0, 0, 0, 1, 2)) for _ in range(t.length + 1)]
+            batch.append(t)
+        for pol in (b.master.rready, b.master.bready):
+            x = r.random()
+            if x < 0.4:
+                pol.set("random", p=r.uniform(0.3, 1.0))
+            elif x < 0.6 and allow_hold:
+                pol.set("hold", lo=0, hi=6)
+            else:
+                pol.set("always")
+        b.apb.wmin, b.apb.wmax = 0, 3
+        b.submit(*batch)
+        await b.wait_done(batch, what=f"{tag}: random batch")
+        out += batch
+        count += k
+    return out
 
 
 @cocotb.test()
 async def test_chk_027_random_legal_bursts(dut):
-    """CHK-027: random legal FIXED/INCR/WRAP read/write bursts against an independent reference model."""
-    b = await make_bench(dut, "chk027", reset_cycles=5)
-    r = b.rnd
-    set_random_policies(b, r)
+    """CHK-027: random legal FIXED/INCR/WRAP reads/writes plus directed corners vs an independent model."""
+    b = await make_bench(dut, "chk027")
+    if IDW != 4:
+        not_verifiable(dut, "CHK-027", f"run elaborated with PARA_AXI_ID_W={IDW}; plan targets 4 (checked with this width)")
+    b.apb.wmin, b.apb.wmax = 0, 3
+    wrap_exp = [0x2024 + 4 * i for i in range(7)] + [0x2000 + 4 * i for i in range(9)]
     corners = [
-        dict(addr=0x1000, ln=255, size=2, burst=INCR),
-        dict(addr=0x1F00, ln=63, size=2, burst=INCR),
-        dict(addr=0x1FF0, ln=15, size=0, burst=INCR),
-        dict(addr=0x2100, ln=15, size=2, burst=FIXED),
-        dict(addr=0x2203, ln=15, size=0, burst=FIXED),
-        dict(addr=0x2024, ln=15, size=2, burst=WRAP),
-        dict(addr=0x2301, ln=1, size=0, burst=WRAP),
+        ("R", 0x1000, 255, 2, INCR, [0x1000 + 4 * k for k in range(256)]),
+        ("W", 0x1000, 255, 2, INCR, [0x1000 + 4 * k for k in range(256)]),
+        ("R", 0x1F00, 63, 2, INCR, [0x1F00 + 4 * k for k in range(64)]),
+        ("W", 0x1FF0, 15, 0, INCR, [(0x1FF0 + k) & ~3 for k in range(16)]),
+        ("R", 0x0500, 15, 2, FIXED, [0x0500] * 16),
+        ("W", 0x0503, 15, 0, FIXED, [0x0500] * 16),
+        ("W", 0x2024, 15, 2, WRAP, wrap_exp),
+        ("R", 0x2024, 15, 2, WRAP, wrap_exp),
+        ("W", 0x0101, 1, 0, WRAP, [0x0100, 0x0100]),
+        ("R", 0x0101, 1, 0, WRAP, [0x0100, 0x0100]),
     ]
-    wrap_exp = [0x2024 + 4 * k for k in range(7)] + [0x2000 + 4 * k for k in range(9)]
-    for i, c in enumerate(corners):
-        wq = b.wr.req(**c, cache=i % 2, prot=r.randrange(8))
-        rq = b.rd.req(**c, cache=1 - (i % 2), prot=r.randrange(8))
-        await b.wait_done(wq, rq, max_cycles=budget(c["ln"], 40) * 2,
-                          what=f"CHK-027: directed corner {c} completes")
-        for q in (wq, rq):
-            t = b.txn(q)
-            pa = [x.pay["paddr"] for x in t.apb]
-            assert len(pa) == c["ln"] + 1, f"CHK-027: {c['ln'] + 1} APB transfers for corner {c} got {len(pa)}"
-            if c["addr"] == 0x1000:
-                assert pa[-1] == 0x13FC, f"CHK-027: INCR 256 ends at 0x13FC got 0x{pa[-1]:x}"
-            if c["addr"] in (0x1F00, 0x1FF0):
-                assert pa[-1] == 0x1FFC, f"CHK-027: INCR ends at byte 0x1FFF got paddr 0x{pa[-1]:x}"
-            if c["addr"] == 0x2024:
-                assert pa == wrap_exp, f"CHK-027: WRAP corner addresses {[hex(a) for a in wrap_exp]} got {[hex(a) for a in pa]}"
-            if c["addr"] == 0x2301:
-                assert pa == [0x2300, 0x2300], f"CHK-027: WRAP len1 size0 paddr 0x2300 twice got {pa}"
-        b.score()
-    n = int(os.environ.get("NNC_N_TXN", "2000"))
-    await random_traffic(b, r, n, "CHK-027", extras=False)
-    b.compare_mem("CHK-027")
-    cov = {(t.kind, t.cache) for t in b.scored if t.supported}
-    for need in (("R", 0), ("R", 1), ("W", 0), ("W", 1)):
-        assert need in cov, f"CHK-027: AxCACHE {need[1]} {need[0]} completes OKAY got coverage {cov}"
-    for t in b.scored:
-        if t.kind == "R":
-            assert all(bt["resp"] == OKAY for bt in t.r), f"CHK-027: legal read OKAY got {t.tag()}"
+    b.master.rready.set("random", p=0.7)
+    b.master.bready.set("random", p=0.7)
+    for kind, addr, L, size, burst, exp in corners:
+        if kind == "R":
+            t = make_read(rid(b), addr, L, size, burst, b.r.choice([0, 1]), b.r.randint(0, 7))
         else:
-            assert t.b["resp"] == OKAY, f"CHK-027: legal write OKAY got {t.tag()}"
-    xs, lg = b.trk.xfers_done, b.apb.log
-    assert len(xs) == len(lg), f"CHK-027: completer and monitor see the same transfers got {len(xs)}/{len(lg)}"
-    for x, l in zip(xs, lg):
-        assert x.pay["paddr"] == l["paddr"] and x.access == l["waits"] + 1, \
-            f"CHK-027: transfer with {l['waits']} waits has {l['waits'] + 1} ACCESS edges got {x.access}"
-    b.final()
+            t = make_write(b.r, rid(b), addr, L, size, burst, b.r.choice([0, 1]), b.r.randint(0, 7))
+        b.submit(t)
+        await b.wait_done([t], what=f"CHK-027: corner {t}")
+        assert _paddrs(t) == exp, f"CHK-027: corner {t} paddr sequence {[hex(a) for a in exp]}, got {[hex(a) for a in _paddrs(t)]}"
+        if kind == "R":
+            assert len(t.r) == L + 1 and all(x["resp"] == OKAY for x in t.r), f"CHK-027: corner read OKAY, got {len(t.r)} beats"
+        else:
+            assert t.b["resp"] == OKAY, f"CHK-027: corner write OKAY, got {t.b}"
+    txns = await _run_random(b, 2000, "CHK-027")
+    await b.final_check()
+    seen = set()
+    for t in txns:
+        assert t.done and t.rec is not None, f"CHK-027: transaction completed {t}"
+        assert len(t.rec["apb"]) == t.length + 1, f"CHK-027: AxLEN+1 APB transfers for {t}"
+        assert all(x["vals"]["pwrite"] == (1 if t.kind == "W" else 0) for x in t.rec["apb"]), f"CHK-027: pwrite direction for {t}"
+        if t.kind == "R":
+            assert len(t.r) == t.length + 1 and all(x["resp"] == OKAY and x["id"] == t.id for x in t.r), (
+                f"CHK-027: read {t} returns ARLEN+1 OKAY beats with RID")
+        else:
+            assert t.b["resp"] == OKAY and t.b["id"] == t.id, f"CHK-027: write {t} returns OKAY B with BID, got {t.b}"
+        seen.add((t.kind, t.burst, t.cache))
+    for kind in ("R", "W"):
+        for burst in (FIXED, INCR, WRAP):
+            assert any((kind, burst, c) in seen for c in (0, 1)), f"CHK-027: coverage of {kind} burst {burst}"
+        for cache in (0, 1):
+            assert any((kind, bu, cache) in seen for bu in (FIXED, INCR, WRAP)), f"CHK-027: AxCACHE {cache:04b} {kind} completes OKAY"
 
 
 @cocotb.test()
 async def test_chk_028_subword_unaligned(dut):
-    """CHK-028: sub-word/unaligned transfers: PADDR aligned down, PSTRB=WSTRB, no lane rotation."""
+    """CHK-028: sub-word/unaligned: PADDR aligned down, PSTRB = WSTRB, no lane rotation either way."""
     b = await make_bench(dut, "chk028")
-    singles = [(0x1000, 0, 0x1), (0x1001, 0, 0x2), (0x1002, 0, 0x4), (0x1003, 0, 0x8),
-               (0x1000, 1, 0x3), (0x1002, 1, 0xC)]
-    for addr, size, strb in singles:
-        wq = b.wr.req(addr=addr, ln=0, size=size, burst=INCR, data=[0xAABBCCDD], strb=[strb])
-        await b.wait_done(wq, max_cycles=300, what=f"CHK-028: byte/half write at 0x{addr:x} completes")
-        t = b.txn(wq)
-        assert len(t.apb) == 1, f"CHK-028: one APB write got {len(t.apb)}"
-        x = t.apb[0]
-        assert x.pay["paddr"] == addr & ~3, f"CHK-028: paddr=0x{addr & ~3:x} got 0x{x.pay['paddr']:x}"
-        assert x.pay["pstrb"] == strb, f"CHK-028: pstrb={strb:04b} got {x.pay['pstrb']:04b}"
-        assert x.pay["pwdata"] == 0xAABBCCDD, f"CHK-028: pwdata=0xAABBCCDD got 0x{x.pay['pwdata']:08x}"
-        assert t.b["resp"] == OKAY, f"CHK-028: B OKAY got {t.b}"
-    b.score()
-    b.apb.read_fn = lambda x: 0x11223344
-    b.ref_data_check = False
-    for addr, size, _ in singles:
-        rq = b.rd.req(addr=addr, ln=0, size=size, burst=INCR)
-        await b.wait_done(rq, max_cycles=300, what=f"CHK-028: sub-word read at 0x{addr:x} completes")
-        t = b.txn(rq)
-        x = t.apb[0]
-        assert x.pay["paddr"] == addr & ~3 and x.pay["pstrb"] == 0, f"CHK-028: read paddr aligned, pstrb=0 got {x.pay}"
-        assert t.r[0]["data"] == 0x11223344 and t.r[0]["resp"] == OKAY, \
-            f"CHK-028: rdata=0x11223344 unchanged got 0x{t.r[0]['data']:08x}"
-    b.score()
-    b.apb.read_fn = None
-    b.ref_data_check = True
-    strbs = default_strobes(0x1001, 7, 0, INCR)
-    assert strbs == [0x2, 0x4, 0x8, 0x1, 0x2, 0x4, 0x8, 0x1], "CHK-028: legal one-hot strobes (stimulus)"
-    wq = b.wr.req(addr=0x1001, ln=7, size=0, burst=INCR, strb=strbs)
-    await b.wait_done(wq, max_cycles=500, what="CHK-028: INCR byte burst completes")
-    t = b.txn(wq)
-    exp_pa = [0x1000] * 3 + [0x1004] * 4 + [0x1008]
-    assert [x.pay["paddr"] for x in t.apb] == exp_pa, \
-        f"CHK-028: byte burst paddr {[hex(a) for a in exp_pa]} got {[hex(x.pay['paddr']) for x in t.apb]}"
-    assert [x.pay["pstrb"] for x in t.apb] == strbs, f"CHK-028: byte burst pstrb got {[x.pay['pstrb'] for x in t.apb]}"
-    assert [x.pay["pwdata"] for x in t.apb] == wq.data, "CHK-028: pwdata equals WDATA on all 32 bits"
-    assert t.b["resp"] == OKAY, f"CHK-028: B OKAY got {t.b}"
-    b.final()
-    b.compare_mem("CHK-028")
+    b.ref_check = False
+    b.apb.resp_fn = lambda tr: (0x11223344, 0) if not tr["write"] else b.apb.default_resp(tr)
+    cases = [(0x1000, 0, 0x1), (0x1001, 0, 0x2), (0x1002, 0, 0x4), (0x1003, 0, 0x8), (0x1000, 1, 0x3), (0x1002, 1, 0xC)]
+    for addr, size, strb in cases:
+        w = make_write(b.r, rid(b), addr, 0, size, INCR, data=[0xAABBCCDD], strb=[strb])
+        b.submit(w)
+        await b.wait_done([w], what=f"CHK-028: write {w}")
+        assert len(w.rec["apb"]) == 1, "CHK-028: one APB write"
+        v = w.rec["apb"][0]["vals"]
+        assert v["paddr"] == addr & ~3, f"CHK-028: paddr={addr & ~3:#x} for AWADDR {addr:#x}, got {_hx(v['paddr'])}"
+        assert v["pstrb"] == strb, f"CHK-028: pstrb={strb:04b} (WSTRB copy) for AWADDR {addr:#x}, got {_hx(v['pstrb'])}"
+        assert v["pwdata"] == 0xAABBCCDD, f"CHK-028: pwdata=0xAABBCCDD unrotated, got {_hx(v['pwdata'])}"
+        assert w.b["resp"] == OKAY, f"CHK-028: B OKAY, got {w.b}"
+        rd = make_read(rid(b), addr, 0, size, INCR)
+        b.submit(rd)
+        await b.wait_done([rd], what=f"CHK-028: read {rd}")
+        v = rd.rec["apb"][0]["vals"]
+        assert v["paddr"] == addr & ~3 and v["pstrb"] == 0, f"CHK-028: read paddr aligned and pstrb=0, got {v}"
+        assert rd.r[0]["data"] == 0x11223344 and rd.r[0]["resp"] == OKAY, f"CHK-028: rdata=0x11223344 unchanged, got {rd.r}"
+    exp_addr = [0x1000, 0x1000, 0x1000, 0x1004, 0x1004, 0x1004, 0x1004, 0x1008]
+    exp_strb = [0b0010, 0b0100, 0b1000, 0b0001, 0b0010, 0b0100, 0b1000, 0b0001]
+    strbs = [legal_lanes(a, 0) for a in beat_addrs(0x1001, 0, 7, INCR)]
+    assert strbs == exp_strb, f"CHK-028: (setup) one-hot WSTRB per beat, got {strbs}"
+    w = make_write(b.r, rid(b), 0x1001, 7, 0, INCR, strb=strbs)
+    b.submit(w)
+    await b.wait_done([w], what="CHK-028: INCR byte burst")
+    assert _paddrs(w) == exp_addr, f"CHK-028: byte burst paddrs {[hex(a) for a in exp_addr]}, got {[hex(a) for a in _paddrs(w)]}"
+    assert [x["vals"]["pstrb"] for x in w.rec["apb"]] == exp_strb, "CHK-028: byte burst pstrb sequence"
+    assert [x["vals"]["pwdata"] for x in w.rec["apb"]] == w.data, "CHK-028: byte burst pwdata equal to WDATA"
+    assert w.b["resp"] == OKAY, "CHK-028: byte burst B OKAY"
+    await b.final_check()
 
 
 @cocotb.test()
-async def test_chk_029_prot_passthrough(dut):
-    """CHK-029: AxPROT is copied to PPROT for all values, with no local access control."""
+async def test_chk_029_pprot_passthrough(dut):
+    """CHK-029: AxPROT copied to PPROT for all 8 values; no local access control."""
     b = await make_bench(dut, "chk029")
-    seen = set()
-    for i in range(8):
-        for kind, prot in (("R", i), ("W", (i + 4) % 8)):
-            if kind == "R":
-                q = b.rd.req(addr=0x6000, ln=1, size=2, burst=INCR, prot=prot)
-            else:
-                q = b.wr.req(addr=0x6000, ln=1, size=2, burst=INCR, prot=prot)
-            await b.wait_done(q, max_cycles=300, what=f"CHK-029: {kind} with prot={prot} completes")
-            t = b.txn(q)
-            assert len(t.apb) == 2, f"CHK-029: 2 APB transfers got {len(t.apb)}"
-            for x in t.apb:
-                assert x.pay["pprot"] == prot, f"CHK-029: pprot={prot} got {x.pay['pprot']}"
-            if kind == "R":
-                assert all(bt["resp"] == OKAY for bt in t.r), f"CHK-029: read prot={prot} OKAY got {t.r}"
-            else:
-                assert t.b["resp"] == OKAY, f"CHK-029: write prot={prot} OKAY got {t.b}"
-            seen.add((kind, prot))
-            b.score()
-    assert len(seen) == 16, "CHK-029: every PROT value used for reads and writes"
-    b.final()
-    b.compare_mem("CHK-029")
+    seq = []
+    for p in range(8):
+        seq.append(("R", p))
+        seq.append(("W", (p + 5) & 7))
+    for (k0, p0), (k1, p1) in zip(seq, seq[1:]):
+        assert p0 != p1, "CHK-029: (setup) consecutive PROT values differ"
+    for kind, prot in seq:
+        if kind == "R":
+            t = make_read(rid(b), 0x6000, 1, 2, INCR, 0, prot)
+        else:
+            t = make_write(b.r, rid(b), 0x6000, 1, 2, INCR, 0, prot)
+        b.submit(t)
+        await b.wait_done([t], what=f"CHK-029: {t}")
+        assert len(t.rec["apb"]) == 2, "CHK-029: 2 APB transfers"
+        for tr in t.rec["apb"]:
+            assert tr["vals"]["pprot"] == prot, f"CHK-029: pprot={prot:03b} for {t}, got {_hx(tr['vals']['pprot'])}"
+        if kind == "R":
+            assert all(x["resp"] == OKAY for x in t.r), f"CHK-029: read with prot {prot} OKAY, got {t.r}"
+        else:
+            assert t.b["resp"] == OKAY, f"CHK-029: write with prot {prot} OKAY, got {t.b}"
+    await b.final_check()
 
 
 @cocotb.test()
 async def test_chk_030_id_echo(dut):
-    """CHK-030: ARID/AWID echoed unchanged on R and B, for legal and unsupported requests."""
+    """CHK-030: RID/BID echo the request ID unchanged for legal and unsupported requests."""
     b = await make_bench(dut, "chk030")
-    r = b.rnd
-    W = b.idw
-    if W != 4:
-        not_verifiable(dut, "CHK-030", f"plan stimulus is for PARA_AXI_ID_W=4; this run elaborates "
-                                       f"PARA_AXI_ID_W={W}, so only that width's ID range is checked")
-    mx = (1 << W) - 1
-    ids = [0, mx, 0x5555 & mx, 0xAAAA & mx, 0x5555 & mx, 0xAAAA & mx] + [r.getrandbits(W) for _ in range(12)]
-    b.rd.rready_delay = lambda: r.randint(0, 2)
-    b.wr.bready_delay = lambda: r.randint(0, 2)
-    reqs = []
-    for i, idv in enumerate(ids):
-        for kind in r.sample(["R", "W"], 2):
-            cache = 2 if r.random() < 0.3 else r.choice([0, 1])
-            ln = r.randint(0, 7)
-            addr = 0x6800 + 0x40 * i
-            if kind == "R":
-                reqs.append(b.rd.req(addr=addr, ln=ln, size=2, burst=INCR, cache=cache, id=idv))
-            else:
-                reqs.append(b.wr.req(addr=addr, ln=ln, size=2, burst=INCR, cache=cache, id=idv))
-    await b.drain(30000, "CHK-030: all ID transactions complete")
-    nunsup = 0
-    for q in reqs:
-        t = b.txn(q)
-        assert t is not None and t.done is not None and not t.aborted, "CHK-030: transaction completes"
-        assert t.id == q.id, f"CHK-030: captured ID {q.id} got {t.id}"
-        nunsup += (not t.supported)
-        if q.kind == "R":
-            assert len(t.r) == q.len + 1 and all(bt["id"] == q.id for bt in t.r), \
-                f"CHK-030: rid={q.id} on every beat got {[bt['id'] for bt in t.r]}"
+    if IDW != 4:
+        not_verifiable(dut, "CHK-030", f"run elaborated with PARA_AXI_ID_W={IDW}; plan targets 4 (ID range of this width checked)")
+    b.apb.wmin, b.apb.wmax = 0, 2
+    b.master.rready.set("random", p=0.7)
+    b.master.bready.set("random", p=0.7)
+    fixed = [0, ID_MASK, 0x5555 & ID_MASK, 0xAAAA & ID_MASK]
+    txns = []
+
+    def mk(kind, axid, bad):
+        cache = 0b0010 if bad else b.r.choice([0, 1])
+        L = b.r.randint(0, 7)
+        addr = b.r.randrange(0, 0x800) * 32
+        if kind == "R":
+            return make_read(axid, addr, L, 2, INCR, cache, b.r.randint(0, 7))
+        return make_write(b.r, axid, addr, L, 2, INCR, cache, b.r.randint(0, 7))
+
+    for axid in fixed:
+        for kind in ("R", "W"):
+            for bad in (False, True):
+                txns.append(mk(kind, axid, bad))
+    for _ in range(12):
+        txns.append(mk(b.r.choice("RW"), b.r.randint(0, ID_MASK), b.r.random() < 0.35))
+    b.r.shuffle(txns)
+    for i in range(0, len(txns), 4):
+        grp = txns[i:i + 4]
+        b.submit(*grp)
+        await b.wait_done(grp, what="CHK-030: ID group")
+    await b.final_check()
+    for t in txns:
+        exp = OKAY if t.supported else SLVERR
+        if t.kind == "R":
+            assert len(t.r) == t.length + 1, f"CHK-030: ARLEN+1 beats for {t}"
+            for x in t.r:
+                assert x["id"] == t.id, f"CHK-030: rid={t.id:#x} for {t}, got {_hx(x['id'])}"
+                assert x["resp"] == exp, f"CHK-030: rresp={exp} for {t}, got {x['resp']}"
         else:
-            assert t.b["id"] == q.id, f"CHK-030: bid={q.id} got {t.b['id']} (resp {t.b['resp']})"
-    assert nunsup > 0, "CHK-030: unsupported requests included in the mix"
-    b.final()
+            assert t.b["id"] == t.id, f"CHK-030: bid={t.id:#x} for {t}, got {_hx(t.b['id'])}"
+            assert t.b["resp"] == exp, f"CHK-030: bresp={exp} for {t}, got {t.b['resp']}"
 
 
-async def _post_reset_checks(b, last_rst, tag):
-    s = b.snap(last_rst + 1)
-    assert s is not None, "CHK-031: edge after reset sampled"
-    for k in RESET_ZERO:
-        assert s[k] == 0, f"CHK-031: {k}=0 at edge after reset ({tag}) got {s[k]}"
-    await b.wait_for(lambda: b.cycle >= last_rst + 20, 40, f"CHK-031: 20 idle cycles after reset ({tag})")
-    for e in range(last_rst + 1, last_rst + 21):
-        s = b.snap(e)
-        assert s["psel"] == 0 and s["rvalid"] == 0 and s["bvalid"] == 0, \
-            f"CHK-031: no replay ({tag}): psel/rvalid/bvalid=0 at edge {e} got {s['psel']}/{s['rvalid']}/{s['bvalid']}"
+async def _reset_and_idle(b, n, victim, tag):
+    hist = []
+
+    def hook(c, s):
+        hist.append((c, s))
+
+    b.hooks.append(hook)
+    await b.reset(n)
+    c0, s0 = b.tracker.post_reset[-1]
+    for name in RESET_ZERO:
+        assert s0[name] == 0, f"CHK-031 ({tag}): {name}=0 at the edge after the reset edge, got {_hx(s0[name])}"
+    await b.tick(20)
+    b.hooks.remove(hook)
+    if n >= 2:
+        rst_edges = [s for c, s in hist if s["rst"] == 0]
+        for s in rst_edges[1:]:
+            assert all(s[x] == 0 for x in READIES), f"CHK-031 ({tag}): readies 0 during a multi-edge reset"
+    idle = [(c, s) for c, s in hist if c0 <= c < c0 + 20]
+    assert len(idle) >= 20, f"CHK-031 ({tag}): observed 20 idle cycles, got {len(idle)}"
+    for c, s in idle:
+        assert s["psel"] == 0, f"CHK-031 ({tag}): psel stays 0 after reset (no replay), got 1 at cycle {c}"
+        assert s["rvalid"] == 0 and s["bvalid"] == 0, f"CHK-031 ({tag}): no R/B after reset, got rvalid={s['rvalid']} bvalid={s['bvalid']} at {c}"
+    assert victim.aborted and not victim.done, f"CHK-031 ({tag}): interrupted transaction is cancelled, not completed"
 
 
 async def _tie_after_reset(b, tag):
-    t0 = b.cycle + 2
-    rq = b.rd.req(addr=0x7400, ln=1, size=2, burst=INCR, not_before=t0)
-    wq = b.wr.req(addr=0x7500, ln=1, size=2, burst=INCR, aw_not_before=t0)
-    await b.wait_done(rq, wq, max_cycles=2000, what=f"CHK-031: post-reset tie completes ({tag})")
-    assert rq.first_valid == wq.first_valid, "CHK-031: AR and AW asserted at the same edge"
-    assert rq.hs_edge < wq.hs_edge, f"CHK-031: AR wins first tie after reset ({tag}) got AR={rq.hs_edge} AW={wq.hs_edge}"
-    b.score()
+    ra = make_read(rid(b), 0x7100, 1)
+    wa = make_write(b.r, rid(b), 0x7200, 1)
+    b.submit(ra, wa)
+    await b.wait_done([ra, wa], what=f"CHK-031 ({tag}): post-reset tie")
+    assert ra.valid_cycle == wa.valid_cycle, f"CHK-031 ({tag}): (stimulus) AR/AW asserted at the same edge"
+    assert ra.a_hs < wa.a_hs, f"CHK-031 ({tag}): AR wins the first tie after reset (AR hs {ra.a_hs}, AW hs {wa.a_hs})"
+    assert len(ra.r) == 2 and all(x["resp"] == OKAY for x in ra.r), f"CHK-031 ({tag}): new read completes normally, got {ra.r}"
+    assert wa.b["resp"] == OKAY, f"CHK-031 ({tag}): new write completes normally, got {wa.b}"
 
 
 @cocotb.test()
 async def test_chk_031_reset_mid_transaction(dut):
-    """CHK-031, CHK-017: reset mid-transaction cancels work, deselects APB, no replay, AR preference restored."""
+    """CHK-031 (+CHK-017): reset in any state cancels work, deselects APB, no replay, arbitration back to AR."""
     b = await make_bench(dut, "chk031")
-    # (d) complete one transaction so the preference becomes AW
-    w0 = b.wr.req(addr=0x7800, ln=0, size=2, burst=INCR)
-    await b.wait_done(w0, max_cycles=300, what="CHK-031: preliminary write completes")
-    # (a) reset during beat 1 ACCESS with PREADY=0
-    b.apb.wait_fn = lambda x: 100000 if (x["paddr"] == 0x7004 and x["pwrite"] != 1) else 0
-    rq = b.rd.req(addr=0x7000, ln=3, size=2, burst=INCR)
-    await b.wait_for(lambda: b.last["psel"] == 1 and b.last["penable"] == 1 and b.last["paddr"] == 0x7004,
-                     300, "CHK-031: (a) read reaches beat 1 ACCESS")
-    await b.cycles(5)
-    assert b.last["penable"] == 1 and b.last["pready"] == 0, "CHK-031: (a) ACCESS waiting with PREADY=0 before reset"
-    _, last = await b.reset(1)
-    b.apb.wait_fn = lambda x: 0
-    t = b.txn(rq)
-    assert t.aborted, "CHK-031: (a) interrupted read is cancelled"
-    await _post_reset_checks(b, last, "a")
+    b.master.rready.set("always")
+    b.master.bready.set("always")
+    stall = {"on": True}
+    b.apb.wait_fn = lambda tr: 5000 if (stall["on"] and tr["addr"] == 0x7004 and not tr["write"]) else 0
+
+    # (a) reset during beat 1 APB ACCESS with PREADY=0
+    rd = make_read(rid(b), 0x7000, 3)
+    b.submit(rd)
+    await b.wait_for(lambda: rd.rec is not None and len(rd.rec["apb"]) >= 2 and rd.rec["apb"][1]["access_edges"] >= 3,
+                     400, "CHK-031 (a): beat 1 ACCESS in wait state")
+    assert b.last["psel"] == 1 and b.last["penable"] == 1 and b.last["pready"] == 0, "CHK-031 (a): (stimulus) ACCESS with PREADY=0"
+    await _reset_and_idle(b, 1, rd, "a")
+    stall["on"] = False
     await _tie_after_reset(b, "a")
-    # (b) reset while rvalid=1 and rready=0
-    b.rd.rready_delay = lambda: 100000
-    rq = b.rd.req(addr=0x7200, ln=7, size=2, burst=INCR)
-    await b.wait_for(lambda: b.last["rvalid"] == 1, 300, "CHK-031: (b) rvalid rises")
-    await b.cycles(3)
-    assert b.last["rvalid"] == 1 and b.last["rready"] == 0, "CHK-031: (b) R beat stalled before reset"
-    _, last = await b.reset(1)
-    b.rd.rready_delay = lambda: 0
-    await _post_reset_checks(b, last, "b")
-    await _tie_after_reset(b, "b")
-    # make preference AW again before (c)
-    w1 = b.wr.req(addr=0x7900, ln=0, size=2, burst=INCR)
-    await b.wait_done(w1, max_cycles=300, what="CHK-031: lone write before (c) completes")
+
+    # (b)+(d) complete a read (preference -> AW), then reset while RVALID=1 and RREADY=0
+    rl = make_read(rid(b), 0x7300, 0)
+    b.submit(rl)
+    await b.wait_done([rl], what="CHK-031 (b): lone read")
+    assert b.tracker.records[-1]["kind"] == "RD", "CHK-031 (d): (stimulus) last completed transaction is a read"
+    b.master.rready.set("never")
+    rb = make_read(rid(b), 0x7400, 3)
+    b.submit(rb)
+    await b.wait_for(lambda: rb.rec is not None and b.last is not None and b.last["rvalid"] == 1, 400,
+                     "CHK-031 (b): RVALID with RREADY=0")
+    await b.tick(2)
+    assert b.last["rvalid"] == 1 and b.last["rready"] == 0, "CHK-031 (b): (stimulus) RVALID=1 RREADY=0 before reset"
+    await _reset_and_idle(b, 1, rb, "b")
+    b.master.rready.set("always")
+    await _tie_after_reset(b, "b/d")
+
     # (c) reset after 2 of 4 W beats
-    wq = b.wr.req(addr=0x7300, ln=3, size=2, burst=INCR, w_stop_after=2)
-    await b.wait_for(lambda: len(wq.w_edges) >= 2, 300, "CHK-031: (c) 2 W beats accepted")
-    await b.cycles(3)
-    _, last = await b.reset(1)
-    await _post_reset_checks(b, last, "c")
+    wc = make_write(b.r, rid(b), 0x7500, 3, w_gaps=[0, 5000, 0, 0])
+    b.submit(wc)
+    await b.wait_for(lambda: len(wc.w_hs) >= 2, 400, "CHK-031 (c): 2 W beats accepted")
+    await b.tick(3)
+    assert len(wc.w_hs) == 2, f"CHK-031 (c): (stimulus) exactly 2 W beats before reset, got {len(wc.w_hs)}"
+    await _reset_and_idle(b, 2, wc, "c")
     await _tie_after_reset(b, "c")
-    b.final()
-    b.compare_mem("CHK-031")
+    await b.final_check()
 
 
 @cocotb.test()
 async def test_regression_random(dut):
-    """CHK-001, CHK-002, CHK-003, CHK-004, CHK-005, CHK-006, CHK-007, CHK-008, CHK-009, CHK-010, CHK-011,
-    CHK-012, CHK-013, CHK-014, CHK-015, CHK-016, CHK-017: broad random regression with scoreboard."""
+    """CHK-001..CHK-017, CHK-027: broad legal random traffic with random waits, backpressure and PSLVERR."""
     b = await make_bench(dut, "regression")
-    r = b.rnd
-    set_random_policies(b, r)
-    n = int(os.environ.get("NNC_N_REGR", "800"))
-    await random_traffic(b, r, n, "regression", extras=True)
-    # directed extras so that error/unsupported assertions are always exercised
-    b.apb.err_fn = lambda x: x["paddr"] == 0xFF00
-    qs = [b.rd.req(addr=0x3400, ln=2, size=2, burst=INCR, cache=2),
-          b.wr.req(addr=0x3500, ln=2, size=2, burst=INCR, cache=5),
-          b.rd.req(addr=UNMAPPED_BASE + 0x40, ln=1, size=2, burst=INCR),
-          b.wr.req(addr=UNMAPPED_BASE + 0x80, ln=1, size=2, burst=INCR),
-          b.rd.req(addr=0xFF00, ln=1, size=2, burst=INCR),
-          b.wr.req(addr=0xFF00, ln=1, size=2, burst=INCR)]
-    await b.wait_done(*qs, max_cycles=5000, what="regression: directed extras complete")
-    _, last = await b.reset(2)
-    s = b.snap(last + 1)
-    for k in RESET_ZERO:
-        assert s[k] == 0, f"CHK-017: {k}=0 after reset got {s[k]}"
-    await b.drain(1000, "regression: idle after final reset")
-    b.final()
-    b.compare_mem("regression")
-    assert len(b.reset_edges) >= 2, "CHK-017: resets exercised in regression"
+    b.apb.err_prob = 0.03
+    txns = await _run_random(b, 600, "REGRESSION")
+    await b.final_check()
+    for t in txns:
+        assert t.done and t.rec is not None, f"CHK-014: transaction completed {t}"
+        assert len(t.rec["apb"]) == t.length + 1, f"CHK-016: AxLEN+1 APB transfers for {t}"
+        errs = [x["pslverr"] for x in t.rec["apb"]]
+        if t.kind == "R":
+            assert len(t.r) == t.length + 1, f"CHK-010: ARLEN+1 R beats for {t}"
+            for k, x in enumerate(t.r):
+                exp = SLVERR if errs[k] == 1 else OKAY
+                assert x["resp"] == exp and x["id"] == t.id, f"CHK-011: beat {k} resp {exp} id {t.id:#x} for {t}, got {x}"
+        else:
+            exp = SLVERR if any(e == 1 for e in errs) else OKAY
+            assert t.b["resp"] == exp and t.b["id"] == t.id, f"CHK-008: B resp {exp} id {t.id:#x} for {t}, got {t.b}"

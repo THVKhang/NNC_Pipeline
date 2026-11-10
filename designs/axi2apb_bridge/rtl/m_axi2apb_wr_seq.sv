@@ -5,6 +5,8 @@
  * AI Flow Page : https://github.com/nguyenquanicd/VLSIT_RTL_Generator_AI_Model
  * Date         : 2026-10-25
  * Description  : AXI4 write sequencer; validates AW and aggregates APB write errors.
+ * Modified     : 2026-11-08, NNC_Pipeline: the write address advances when the beat's APB response
+ *                returns, not when the W beat is captured (REQ-IF-002, WF-005; see fix_candidate/README.md).
  */
 `timescale 1ns/1ps
 
@@ -341,8 +343,9 @@ module m_axi2apb_wr_seq #(
         reg_wr_data <= i_axi_wdata;
         reg_wr_strb <= i_axi_wstrb;
         reg_wr_beats_left <= $bits(reg_wr_beats_left)'(reg_wr_beats_left - 9'd1);
-        reg_wr_addr <= w_wr_nxt_addr;
       end
+      if ((reg_fsm_wr_current_state == ENUM_ST_WAIT) && i_rsp_valid)
+        reg_wr_addr <= w_wr_nxt_addr;
       if ((reg_fsm_wr_current_state == ENUM_ST_DRAIN) && i_axi_wvalid)
         reg_wr_beats_left <= $bits(reg_wr_beats_left)'(reg_wr_beats_left - 9'd1);
       if ((reg_fsm_wr_current_state == ENUM_ST_WAIT) && i_rsp_valid && i_rsp_err)

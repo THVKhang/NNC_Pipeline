@@ -49,16 +49,21 @@ _ACTIVE = dict(CLOCKS)   # periods of the clocks started by the current test
 def start_clock(dut, period_ns: int | None = None, periods: dict | None = None):
     """Start the clock(s). cocotb ends every task of a test when the test ends: call this in each test.
     With several clocks all start together at the same instant, so they stay synchronous; `periods`
-    ({name: ns}) sets another ratio for this test only (default: the periods of the run configuration)."""
+    ({name: ns}) sets another ratio for this test only (default: the periods of the run configuration).
+    Returns None: in cocotb 2 Clock.start() gives a Task that never ends, and a test that awaited it
+    (e.g. `if inspect.isawaitable(res): await res`) would wait forever while the clock runs."""
     global _ACTIVE
     if len(CLOCKS) == 1 and not periods:
         _ACTIVE = {CLOCK: period_ns or CLOCKS[CLOCK]}
-        return Clock(clk(dut), _ACTIVE[CLOCK], unit="ns").start()
+        Clock(clk(dut), _ACTIVE[CLOCK], unit="ns").start()
+        return None
     _ACTIVE = {**CLOCKS, **{k: int(v) for k, v in (periods or {}).items()}}
     unknown = set(_ACTIVE) - set(CLOCKS)
     if unknown:
         raise ValueError(f"unknown clocks {sorted(unknown)}; the clocks are {sorted(CLOCKS)}")
-    return [Clock(getattr(dut, name), per, unit="ns").start() for name, per in _ACTIVE.items()]
+    for name, per in _ACTIVE.items():
+        Clock(getattr(dut, name), per, unit="ns").start()
+    return None
 
 
 async def reset_dut(dut, cycles: int = 5, idle: dict | None = None):

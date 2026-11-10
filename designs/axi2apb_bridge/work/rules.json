@@ -4798,9 +4798,9 @@
    "question": "What is the round-robin policy when only one of AR/AW is pending, and how is the arbitration turn updated after a grant?",
    "note": "The spec states round-robin only for the case when both AR and AW are pending. It does not explicitly state the grant behavior when only one is pending. Nor does it state how the pointer is updated at grant time as opposed to completion. The designer must define these.",
    "decision": {
-    "answer": "When only one of AR/AW is pending it is granted (no wait for the other). The tie preference matters only when both are pending: AR wins the first tie after reset, and the preference flips after every completed transaction, tie or not (REQ-FUNC-003, answered question 4). Tests check the order only on ties.",
+    "answer": "Round-robin between the two sides: when only one of AR/AW is pending it is granted at once. On a tie, AR wins the first tie after reset; after that the preference goes to the side that did NOT complete the last transaction (a completed read gives the next tie to AW, a completed write gives it to AR), whether or not that transaction had a tie. This is the only reading under which REQ-FUNC-003 'grant by round-robin' (AB-3-03, also 10.4, DEC-003) and 'flip the next tie preference after each completed transaction' (AB-3-05) both hold: a pure toggle would let the side just served win the next tie while the other side waits. Revises the decision of 2026-11-08T05:05:57 after the CHK-019 phase D finding (fix_candidate/README.md, finding 2). Tests check the order only on ties.",
     "by": "Claude (delegated by GabrielHCMUT)",
-    "at": "2026-11-08T05:05:57+00:00"
+    "at": "2026-11-08T15:29:02+00:00"
    }
   },
   {

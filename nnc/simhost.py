@@ -96,10 +96,16 @@ class WslHost(SimHost):
             proc = subprocess.run(["wsl.exe", "-d", self.distro, "-u", "root", "--", "bash", to_wsl_path(stage / "run.sh")],
                                   capture_output=True, timeout=timeout_s)
             rc = proc.returncode
+            host_out = (proc.stdout + proc.stderr).replace(b"\x00", b"").decode("utf-8", "replace")
         except subprocess.TimeoutExpired:
-            rc = 124
+            rc, host_out = 124, "timeout"
         log = stage / "out" / "nnc_run.log"
-        text = log.read_text(encoding="utf-8", errors="replace") if log.is_file() else ""
+        if log.is_file():
+            text = log.read_text(encoding="utf-8", errors="replace")
+        else:
+            # The wrapper never reached its copy-back (WSL failed to start or was killed):
+            # keep wsl.exe's own output so the failure is not an empty log.
+            text = f"NNC_HOST_ERROR wsl.exe rc={rc} produced no run log\n{host_out}"
         return RunResult(rc, text, stage / "out")
 
 
