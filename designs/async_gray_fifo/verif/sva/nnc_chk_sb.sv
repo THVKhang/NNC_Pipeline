@@ -4,7 +4,11 @@ module nnc_chk_sb #(
   parameter int PARA_AFIFO_CELL_TYPE = 2,
   parameter int PARA_AFIFO_MEM_USE_MACRO = 0,
   localparam int LPARA_ADDR_W = $clog2(PARA_AFIFO_DEPTH),
-  localparam int LPARA_PTR_W = LPARA_ADDR_W + 1
+  localparam int LPARA_PTR_W = LPARA_ADDR_W + 1,
+  // Stages S of the synchronizer cell (REQ-FUNC-013/014: options 0..4 -> 0, 2, 2, 3, 4). Hand fix of
+  // 2026-11-11: the discard point of the pre-reset words was the literal 5 (S+3 for S=2 only).
+  localparam int LPARA_SYNC_S = (PARA_AFIFO_CELL_TYPE == 0) ? 0 :
+                                (PARA_AFIFO_CELL_TYPE <= 2) ? 2 : PARA_AFIFO_CELL_TYPE
 ) (
   input  logic                        i_clk_wr,
   input  logic                        i_rst_n_wr,
@@ -70,7 +74,7 @@ module nnc_chk_sb #(
         end
         if (sw_pend) begin
           sw_cnt = sw_cnt + 1;
-          if (sw_cnt >= 5) begin
+          if (sw_cnt >= LPARA_SYNC_S + 3) begin
             p_ref.delete();
             sw_pend = 1'b0;
           end

@@ -396,10 +396,22 @@ def parse_results(out_dir: Path, rtl_names: list[str]) -> dict:
     not_verifiable = {}
     for m in re.finditer(r"NNC_NOT_VERIFIABLE (CHK-\d{3}) ([^\n]*)", log):
         not_verifiable.setdefault(m.group(1), m.group(2).strip()[:300])
-    cov = _line_coverage(out_dir / "coverage.info", rtl_names)
     functional = {m.group(1): int(m.group(2)) for m in re.finditer(r"NNC_COVER (COVP-\d{3}) hits=(\d+)", log)}
+    cov = coverage_of(out_dir / "coverage.info", out_dir / "coverage.dat", rtl_names, functional)
+    rc = re.search(r"NNC_MAKE_RC=(\d+)", log)
+    built = bool(tests) or "Running tests" in log
+    return {"tests": tests, "assertions": checks, "not_verifiable": not_verifiable, "coverage": cov,
+            "functional": functional,
+            "make_rc": int(rc.group(1)) if rc else None,
+            "built": built, "build_errors": [l for l in log.splitlines() if l.startswith("%Error")][:30]}
+
+
+def coverage_of(info: Path, dat_path: Path, rtl_names: list[str], functional: dict[str, int]) -> dict:
+    """Code coverage (lcov export + coverage.dat) and functional cover points of one run, or of a
+    merged run set (verilator_coverage --write of several coverage.dat, cover hits summed)."""
+    cov = _line_coverage(info, rtl_names)
     if cov["status"] == "measured":
-        dat = coverage_mod.parse_dat(out_dir / "coverage.dat", rtl_names)
+        dat = coverage_mod.parse_dat(dat_path, rtl_names)
         cov["metrics"] = {"line": {k: cov[k] for k in ("hit", "total", "percent", "files")}, **dat["metrics"]}
         cov["uncovered"] = coverage_mod.summarize_uncovered(cov.pop("uncovered_lines") + dat["uncovered"])
     else:
@@ -413,12 +425,7 @@ def parse_results(out_dir: Path, rtl_names: list[str]) -> dict:
         cov.setdefault("uncovered", []).extend(
             {"metric": "functional", "file": "nnc_cov.sv", "line": 0, "what": pid, "points": 1, "detail": []}
             for pid, n in sorted(functional.items()) if n == 0)
-    rc = re.search(r"NNC_MAKE_RC=(\d+)", log)
-    built = bool(tests) or "Running tests" in log
-    return {"tests": tests, "assertions": checks, "not_verifiable": not_verifiable, "coverage": cov,
-            "functional": functional,
-            "make_rc": int(rc.group(1)) if rc else None,
-            "built": built, "build_errors": [l for l in log.splitlines() if l.startswith("%Error")][:30]}
+    return cov
 
 
 def _line_coverage(info: Path, rtl_names: list[str]) -> dict:

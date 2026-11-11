@@ -1,6 +1,6 @@
 # Verification report — axi2apb_bridge
 
-Generated 2026-11-11T07:34:28+00:00 by NNC Pipeline.
+Generated 2026-11-11T12:49:11+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -278,4 +278,4 @@ Generated 2026-11-11T07:34:28+00:00 by NNC Pipeline.
 
 - Formal proof, CDC/RDC, STA, synthesis and DFT checks are outside this flow.
 - Rules marked NOT_VERIFIED_BY_SIM carry the contract's reason (static, structural, not observable...).
-- Only the default parameter configuration was simulated unless stated above.
+- Only the default parameter configuration was simulated (no run_set.json).

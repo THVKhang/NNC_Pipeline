@@ -1,0 +1,1386 @@
+{
+ "date": "2026-11-11T12:38:44+00:00",
+ "seed": 1,
+ "rtl_files": [
+  "m_axi2apb_apb_ctrl.sv",
+  "m_axi2apb_rd_seq.sv",
+  "m_axi2apb_wr_seq.sv",
+  "m_axi2apb_bridge.sv"
+ ],
+ "integration": {
+  "ok": true,
+  "issues": []
+ },
+ "status": "ran",
+ "params": {
+  "PARA_AXI_ID_W": 4
+ },
+ "host": "wsl",
+ "tests": [
+  {
+   "name": "test_chk_018_long_apb_wait",
+   "status": "pass",
+   "sim_time_ns": "20350.0"
+  },
+  {
+   "name": "test_chk_019_arbitration_round_robin",
+   "status": "pass",
+   "sim_time_ns": "1080.0"
+  },
+  {
+   "name": "test_chk_020_wvalid_before_aw",
+   "status": "pass",
+   "sim_time_ns": "470.0"
+  },
+  {
+   "name": "test_chk_021_response_backpressure",
+   "status": "pass",
+   "sim_time_ns": "29109.999999999996"
+  },
+  {
+   "name": "test_chk_022_unsupported_reads",
+   "status": "pass",
+   "sim_time_ns": "10630.0"
+  },
+  {
+   "name": "test_chk_023_unsupported_writes",
+   "status": "pass",
+   "sim_time_ns": "14450.000000000007"
+  },
+  {
+   "name": "test_chk_024_read_pslverr",
+   "status": "fail",
+   "sim_time_ns": "240.0",
+   "message": "CHK-011: beat 1 with PSLVERR returns SLVERR and rdata=0, got rresp=0 rdata=0xdeadbeef at cycle 14",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/sim_7a9972ed/test_axi2apb_bridge.py\", line 1102, in test_chk_024_read_pslverr\n                                                            await b.wait_done([t], what=f\"CHK-024: {t}\")\n                                                          File \"/root/nnc_runs/sim_7a9972ed/test_axi2apb_bridge.py\", line 810, in wait_done\n                                                            await self.wait_for(lambda: all(t.done or t.aborted for t in txns), max_cycles, what)\n                                                          File \"/root/nnc_runs/sim_7a9972ed/test_axi2apb_bridge.py\", line 796, in wait_for\n                                                            await self.tick()\n                                                          File \"/root/nnc_runs/sim_7a9972ed/test_axi2apb_bridge.py\", line 790, in tick\n                                                            self.check()\n                                                          File \"/root/nnc_runs/sim_7a9972ed/test_axi2apb_bridge.py\", line 785, in check\n                                                            assert not self.errors, f\"{self.errors[0] if self.errors else ''}  [{len(self.errors)} error(s) total]\"\n                                                        AssertionError: CHK-011: beat 1 with PSLVERR returns SLVERR and rdata=0, got rresp=0 rdata=0xdeadbeef at cycle 14\n                                                          assert (0 == 2)  [1 error(s) total]\n                                                        assert not ['CHK-011: beat 1 with PSLVERR returns SLVERR and rdata=0, got rresp=0 rdata=0xdeadbeef at cycle 14\\nassert (0 == 2)']\n                                                         +  where ['CHK-011: beat 1 with PSLVERR returns SLVERR and rdata=0, got rresp=0 rdata=0xdeadbeef at cycle 14\\nassert (0 == 2)'] = <test_axi2apb_bridge.Bench object at 0x710b5f4a3950>.errors\n 76330.01ns WARNING  cocotb.regression                  test_axi2apb_bridge.test_chk_024_read_pslverr failed",
+   "checks": [
+    "CHK-011",
+    "CHK-024"
+   ]
+  },
+  {
+   "name": "test_chk_025_write_pslverr",
+   "status": "pass",
+   "sim_time_ns": "1280.0"
+  },
+  {
+   "name": "test_chk_026_unmapped_default_completer",
+   "status": "fail",
+   "sim_time_ns": "180.0",
+   "message": "CHK-011: beat 0 with PSLVERR returns SLVERR and rdata=0, got rresp=0 rdata=0x5a5a5a5a at cycle 8",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/sim_7a9972ed/test_axi2apb_bridge.py\", line 1157, in test_chk_026_unmapped_default_completer\n                                                            await b.wait_done([t], what=f\"CHK-026: {t}\")\n                                                          File \"/root/nnc_runs/sim_7a9972ed/test_axi2apb_bridge.py\", line 810, in wait_done\n                                                            await self.wait_for(lambda: all(t.done or t.aborted for t in txns), max_cycles, what)\n                                                          File \"/root/nnc_runs/sim_7a9972ed/test_axi2apb_bridge.py\", line 796, in wait_for\n                                                            await self.tick()\n                                                          File \"/root/nnc_runs/sim_7a9972ed/test_axi2apb_bridge.py\", line 790, in tick\n                                                            self.check()\n                                                          File \"/root/nnc_runs/sim_7a9972ed/test_axi2apb_bridge.py\", line 785, in check\n                                                            assert not self.errors, f\"{self.errors[0] if self.errors else ''}  [{len(self.errors)} error(s) total]\"\n                                                        AssertionError: CHK-011: beat 0 with PSLVERR returns SLVERR and rdata=0, got rresp=0 rdata=0x5a5a5a5a at cycle 8\n                                                          assert (0 == 2)  [1 error(s) total]\n                                                        assert not ['CHK-011: beat 0 with PSLVERR returns SLVERR and rdata=0, got rresp=0 rdata=0x5a5a5a5a at cycle 8\\nassert (0 == 2)']\n                                                         +  where ['CHK-011: beat 0 with PSLVERR returns SLVERR and rdata=0, got rresp=0 rdata=0x5a5a5a5a at cycle 8\\nassert (0 == 2)'] = <test_axi2apb_bridge.Bench object at 0x710b5f447510>.errors\n 77790.01ns WARNING  cocotb.regression                  test_axi2apb_bridge.test_chk_026_unmapped_default_completer failed",
+   "checks": [
+    "CHK-011",
+    "CHK-026"
+   ]
+  },
+  {
+   "name": "test_chk_027_random_legal_bursts",
+   "status": "pass",
+   "sim_time_ns": "2403090.0"
+  },
+  {
+   "name": "test_chk_028_subword_unaligned",
+   "status": "pass",
+   "sim_time_ns": "1470.0"
+  },
+  {
+   "name": "test_chk_029_pprot_passthrough",
+   "status": "pass",
+   "sim_time_ns": "2140.0"
+  },
+  {
+   "name": "test_chk_030_id_echo",
+   "status": "pass",
+   "sim_time_ns": "6190.0"
+  },
+  {
+   "name": "test_chk_031_reset_mid_transaction",
+   "status": "pass",
+   "sim_time_ns": "1950.0"
+  },
+  {
+   "name": "test_regression_random",
+   "status": "fail",
+   "sim_time_ns": "2630.0",
+   "message": "CHK-011: beat 7 with PSLVERR returns SLVERR and rdata=0, got rresp=0 rdata=0xe62b6fb3 at cycle 253",
+   "exception": "AssertionError",
+   "traceback": "                                             ** test_axi2apb_bridge.test_regression_random                    FAIL        2630.00           0.06      41963.62  **\n                                                        *********************************************************************************************************************\n                                                        ** TESTS=15 PASS=12 FAIL=3 SKIP=0                                         2495260.01          63.15      39510.53  **\n                                                        *********************************************************************************************************************\nNNC_FAIL CHK-011 @76330000\nNNC_FAIL CHK-011 @76340000\nNNC_FAIL CHK-011 @76350000\nNNC_FAIL CHK-011 @77790000\n- (null):0: Verilog $finish\nNNC_FAIL CHK-011 @2495260000\nNNC_COVER COVP-001 hits=17263\nNNC_COVER COVP-002 hits=0\nNNC_COVER COVP-003 hits=345\nNNC_COVER COVP-004 hits=1097\nNNC_COVER COVP-005 hits=3\nNNC_COVER COVP-006 hits=33\nNNC_COVER COVP-007 hits=23\nNNC_COVER COVP-008 hits=22\nNNC_COVER COVP-009 hits=1\nNNC_COVER COVP-010 hits=1\nNNC_COVER COVP-011 hits=75\nNNC_COVER COVP-012 hits=83\nNNC_COVER COVP-013 hits=162\nNNC_COVER COVP-014 hits=64\nNNC_COVER COVP-015 hits=8552\nNNC_COVER COVP-016 hits=624\nNNC_COVER COVP-017 hits=7514\nNNC_COVER COVP-018 hits=3627\nNNC_COVER COVP-019 hits=1898\nNNC_COVER COVP-020 hits=12\nNNC_COVER COVP-021 hits=12\nNNC_COVER COVP-022 hits=37\nNNC_COVER COVP-023 hits=6\nNNC_COVER COVP-024 hits=0\nNNC_COVER COVP-025 hits=4\nNNC_COVER COVP-026 hits=7894\nNNC_COVER COVP-027 hits=791\nNNC_COVER COVP-028 hits=181436\nNNC_COVER COVP-029 hits=2141\nNNC_COVER COVP-030 hits=10437\nNNC_COVER COVP-031 hits=1936\nNNC_COVER COVP-032 hits=3\nNNC_COVER COVP-033 hits=2\nNNC_COVER COVP-034 hits=5\nNNC_COVER COVP-035 hits=7\nNNC_COVER COVP-036 hits=347\nNNC_COVER COVP-037 hits=337\nNNC_COVER COVP-038 hits=1507\nNNC_COVER COVP-039 hits=5083\nNNC_COVER COVP-040 hits=427\nNNC_CHECK CHK-017 hits=83 fails=0\nNNC_CHECK CHK-014 hits=160417 fails=0\nNNC_CHECK CHK-015 hits=1466 fails=0\nNNC_CHECK CHK-016 hits=85121 fails=0\nNNC_CHECK CHK-013 hits=17645 fails=0\nNNC_CHECK CHK-009 hits=16910 fails=0\nNNC_CHECK CHK-010 hits=34518 fails=0\nNNC_CHECK CHK-011 hits=33960 fails=5\nNNC_CHECK CHK-012 hits=558 fails=0\nNNC_CHECK CHK-007 hits=1340 fails=0\nNNC_CHECK CHK-008 hits=2473 fails=0\nNNC_CHECK CHK-001 hits=155331 fails=0\nNNC_CHECK CHK-002 hits=52945 fails=0\nNNC_CHECK CHK-003 hits=34130 fails=0\nNNC_CHECK CHK-004 hits=249444 fails=0\nNNC_CHECK CHK-005 hits=61278 fails=0\nNNC_CHECK CHK-006 hits=128241 fails=0\nmake[1]: *** [/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb_tools/makefiles/simulators/Makefile.verilator:70: results.xml] Error 3\nmake[1]: Leaving directory '/root/nnc_runs/sim_7a9972ed'\nmake: *** [/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb_tools/makefiles/Makefile.inc:17: sim] Error 2\nNNC_MAKE_RC=2\n",
+   "checks": [
+    "CHK-011"
+   ]
+  }
+ ],
+ "assertions": {
+  "CHK-017": {
+   "hits": 83,
+   "fails": 0
+  },
+  "CHK-014": {
+   "hits": 160417,
+   "fails": 0
+  },
+  "CHK-015": {
+   "hits": 1466,
+   "fails": 0
+  },
+  "CHK-016": {
+   "hits": 85121,
+   "fails": 0
+  },
+  "CHK-013": {
+   "hits": 17645,
+   "fails": 0
+  },
+  "CHK-009": {
+   "hits": 16910,
+   "fails": 0
+  },
+  "CHK-010": {
+   "hits": 34518,
+   "fails": 0
+  },
+  "CHK-011": {
+   "hits": 33960,
+   "fails": 5,
+   "first_fail_time": 76330000
+  },
+  "CHK-012": {
+   "hits": 558,
+   "fails": 0
+  },
+  "CHK-007": {
+   "hits": 1340,
+   "fails": 0
+  },
+  "CHK-008": {
+   "hits": 2473,
+   "fails": 0
+  },
+  "CHK-001": {
+   "hits": 155331,
+   "fails": 0
+  },
+  "CHK-002": {
+   "hits": 52945,
+   "fails": 0
+  },
+  "CHK-003": {
+   "hits": 34130,
+   "fails": 0
+  },
+  "CHK-004": {
+   "hits": 249444,
+   "fails": 0
+  },
+  "CHK-005": {
+   "hits": 61278,
+   "fails": 0
+  },
+  "CHK-006": {
+   "hits": 128241,
+   "fails": 0
+  }
+ },
+ "not_verifiable": {},
+ "coverage": {
+  "status": "measured",
+  "metric": "line",
+  "hit": 732,
+  "total": 746,
+  "percent": 98.1,
+  "files": {
+   "m_axi2apb_apb_ctrl.sv": {
+    "hit": 184,
+    "total": 190
+   },
+   "m_axi2apb_bridge.sv": {
+    "hit": 65,
+    "total": 66
+   },
+   "m_axi2apb_rd_seq.sv": {
+    "hit": 249,
+    "total": 254
+   },
+   "m_axi2apb_wr_seq.sv": {
+    "hit": 234,
+    "total": 236
+   }
+  },
+  "executed_lines": {
+   "m_axi2apb_apb_ctrl.sv": "13-14,17-24,27-32,36-43,46-55,75-86,88-89,92-100,102-106,110-112,114-116,118-120,122-124,133-138,140-141,143-145,154-170,172-177,181-183,186-193,195-202,204-211,217-226,231-247,249-262,265-272",
+   "m_axi2apb_bridge.sv": "18-19,22-30,33-41,44-52,55-60,63-72,76-84,88-98",
+   "m_axi2apb_rd_seq.sv": "38-39,42-44,47-55,58-63,66-69,72-73,87-119,122-136,138-141,143-145,147-149,151-153,155-157,161-164,166-172,174-177,179-182,184,186-189,193-196,198-200,202-204,208-217,219-221,223-224,226-227,229-230,232-233,237-240,242-244,246-247,249-251,253,255-256,262-268,270,273-275,277-279,281-284,286,289-292,294,304-315,317-319,321-326,328-330,332-333,337-361,363,365-366,369-371,374-381",
+   "m_axi2apb_wr_seq.sv": "39-40,43-45,48-56,59-66,69-74,77-78,92-125,128-142,144-147,149-151,153-155,157-159,161-163,167-170,172-175,177-178,180-183,185,187-188,192-198,200-202,206-215,217-222,225-228,230-236,238,240,245-251,253,256-258,260-262,264-267,269,272-274,276-278,287-299,301-303,305,307-313,317-340,342-345,347-352"
+  },
+  "metrics": {
+   "line": {
+    "hit": 732,
+    "total": 746,
+    "percent": 98.1,
+    "files": {
+     "m_axi2apb_apb_ctrl.sv": {
+      "hit": 184,
+      "total": 190
+     },
+     "m_axi2apb_bridge.sv": {
+      "hit": 65,
+      "total": 66
+     },
+     "m_axi2apb_rd_seq.sv": {
+      "hit": 249,
+      "total": 254
+     },
+     "m_axi2apb_wr_seq.sv": {
+      "hit": 234,
+      "total": 236
+     }
+    }
+   },
+   "block": {
+    "hit": 208,
+    "total": 218,
+    "percent": 95.4,
+    "files": {
+     "m_axi2apb_apb_ctrl.sv": {
+      "hit": 53,
+      "total": 57
+     },
+     "m_axi2apb_rd_seq.sv": {
+      "hit": 78,
+      "total": 81
+     },
+     "m_axi2apb_wr_seq.sv": {
+      "hit": 77,
+      "total": 80
+     }
+    }
+   },
+   "expression": {
+    "hit": 102,
+    "total": 106,
+    "percent": 96.2,
+    "files": {
+     "m_axi2apb_apb_ctrl.sv": {
+      "hit": 31,
+      "total": 35
+     },
+     "m_axi2apb_rd_seq.sv": {
+      "hit": 30,
+      "total": 30
+     },
+     "m_axi2apb_wr_seq.sv": {
+      "hit": 41,
+      "total": 41
+     }
+    }
+   },
+   "toggle": {
+    "hit": 3484,
+    "total": 4690,
+    "percent": 74.3,
+    "files": {
+     "m_axi2apb_apb_ctrl.sv": {
+      "hit": 624,
+      "total": 766
+     },
+     "m_axi2apb_bridge.sv": {
+      "hit": 822,
+      "total": 932
+     },
+     "m_axi2apb_rd_seq.sv": {
+      "hit": 1010,
+      "total": 1484
+     },
+     "m_axi2apb_wr_seq.sv": {
+      "hit": 1028,
+      "total": 1508
+     }
+    }
+   },
+   "functional": {
+    "hit": 38,
+    "total": 40,
+    "percent": 95.0,
+    "files": {
+     "nnc_cov.sv": {
+      "hit": 38,
+      "total": 40
+     }
+    }
+   }
+  },
+  "uncovered": [
+   {
+    "metric": "block",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 111,
+    "what": "else",
+    "points": 1,
+    "detail": [
+     "else"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 115,
+    "what": "else",
+    "points": 1,
+    "detail": [
+     "else"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 126,
+    "what": "case",
+    "points": 1,
+    "detail": [
+     "case"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 147,
+    "what": "case",
+    "points": 1,
+    "detail": [
+     "case"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 274,
+    "what": "else",
+    "points": 1,
+    "detail": [
+     "else"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 297,
+    "what": "case",
+    "points": 1,
+    "detail": [
+     "case"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 366,
+    "what": "if",
+    "points": 1,
+    "detail": [
+     "if"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 257,
+    "what": "else",
+    "points": 1,
+    "detail": [
+     "else"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 261,
+    "what": "else",
+    "points": 1,
+    "detail": [
+     "else"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 280,
+    "what": "case",
+    "points": 1,
+    "detail": [
+     "case"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 111,
+    "what": "(i_axi_arvalid==0) => 0",
+    "points": 1,
+    "detail": [
+     "(i_axi_arvalid==0) => 0"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 111,
+    "what": "(i_rd_ready==0) => 0",
+    "points": 1,
+    "detail": [
+     "(i_rd_ready==0) => 0"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 115,
+    "what": "(i_axi_awvalid==0) => 0",
+    "points": 1,
+    "detail": [
+     "(i_axi_awvalid==0) => 0"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 115,
+    "what": "(i_wr_ready==0) => 0",
+    "points": 1,
+    "detail": [
+     "(i_wr_ready==0) => 0"
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 33,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 87,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 126,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 127,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 147,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 148,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_bridge.sv",
+    "line": 85,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 74,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 297,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 298,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 367,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 368,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 280,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 281,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 112,
+    "what": "w_rd_size_mask",
+    "points": 50,
+    "detail": [
+     "w_rd_size_mask[10]:0->1",
+     "w_rd_size_mask[10]:1->0",
+     "w_rd_size_mask[11]:0->1",
+     "w_rd_size_mask[11]:1->0",
+     "w_rd_size_mask[12]:0->1",
+     "w_rd_size_mask[12]:1->0",
+     "w_rd_size_mask[13]:0->1",
+     "w_rd_size_mask[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 118,
+    "what": "w_wr_size_mask",
+    "points": 50,
+    "detail": [
+     "w_wr_size_mask[10]:0->1",
+     "w_wr_size_mask[10]:1->0",
+     "w_wr_size_mask[11]:0->1",
+     "w_wr_size_mask[11]:1->0",
+     "w_wr_size_mask[12]:0->1",
+     "w_wr_size_mask[12]:1->0",
+     "w_wr_size_mask[13]:0->1",
+     "w_wr_size_mask[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 101,
+    "what": "w_ar_size_bytes",
+    "points": 48,
+    "detail": [
+     "w_ar_size_bytes[10]:0->1",
+     "w_ar_size_bytes[10]:1->0",
+     "w_ar_size_bytes[11]:0->1",
+     "w_ar_size_bytes[11]:1->0",
+     "w_ar_size_bytes[12]:0->1",
+     "w_ar_size_bytes[12]:1->0",
+     "w_ar_size_bytes[13]:0->1",
+     "w_ar_size_bytes[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 111,
+    "what": "w_rd_size_bytes",
+    "points": 48,
+    "detail": [
+     "w_rd_size_bytes[10]:0->1",
+     "w_rd_size_bytes[10]:1->0",
+     "w_rd_size_bytes[11]:0->1",
+     "w_rd_size_bytes[11]:1->0",
+     "w_rd_size_bytes[12]:0->1",
+     "w_rd_size_bytes[12]:1->0",
+     "w_rd_size_bytes[13]:0->1",
+     "w_rd_size_bytes[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 107,
+    "what": "w_aw_size_bytes",
+    "points": 48,
+    "detail": [
+     "w_aw_size_bytes[10]:0->1",
+     "w_aw_size_bytes[10]:1->0",
+     "w_aw_size_bytes[11]:0->1",
+     "w_aw_size_bytes[11]:1->0",
+     "w_aw_size_bytes[12]:0->1",
+     "w_aw_size_bytes[12]:1->0",
+     "w_aw_size_bytes[13]:0->1",
+     "w_aw_size_bytes[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 117,
+    "what": "w_wr_size_bytes",
+    "points": 48,
+    "detail": [
+     "w_wr_size_bytes[10]:0->1",
+     "w_wr_size_bytes[10]:1->0",
+     "w_wr_size_bytes[11]:0->1",
+     "w_wr_size_bytes[11]:1->0",
+     "w_wr_size_bytes[12]:0->1",
+     "w_wr_size_bytes[12]:1->0",
+     "w_wr_size_bytes[13]:0->1",
+     "w_wr_size_bytes[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 115,
+    "what": "w_rd_wrap_bytes",
+    "points": 44,
+    "detail": [
+     "w_rd_wrap_bytes[10]:0->1",
+     "w_rd_wrap_bytes[10]:1->0",
+     "w_rd_wrap_bytes[11]:0->1",
+     "w_rd_wrap_bytes[11]:1->0",
+     "w_rd_wrap_bytes[12]:0->1",
+     "w_rd_wrap_bytes[12]:1->0",
+     "w_rd_wrap_bytes[13]:0->1",
+     "w_rd_wrap_bytes[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 121,
+    "what": "w_wr_wrap_bytes",
+    "points": 44,
+    "detail": [
+     "w_wr_wrap_bytes[10]:0->1",
+     "w_wr_wrap_bytes[10]:1->0",
+     "w_wr_wrap_bytes[11]:0->1",
+     "w_wr_wrap_bytes[11]:1->0",
+     "w_wr_wrap_bytes[12]:0->1",
+     "w_wr_wrap_bytes[12]:1->0",
+     "w_wr_wrap_bytes[13]:0->1",
+     "w_wr_wrap_bytes[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 105,
+    "what": "w_ar_wrap_bytes",
+    "points": 40,
+    "detail": [
+     "w_ar_wrap_bytes[12]:0->1",
+     "w_ar_wrap_bytes[12]:1->0",
+     "w_ar_wrap_bytes[13]:0->1",
+     "w_ar_wrap_bytes[13]:1->0",
+     "w_ar_wrap_bytes[14]:0->1",
+     "w_ar_wrap_bytes[14]:1->0",
+     "w_ar_wrap_bytes[15]:0->1",
+     "w_ar_wrap_bytes[15]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 111,
+    "what": "w_aw_wrap_bytes",
+    "points": 40,
+    "detail": [
+     "w_aw_wrap_bytes[12]:0->1",
+     "w_aw_wrap_bytes[12]:1->0",
+     "w_aw_wrap_bytes[13]:0->1",
+     "w_aw_wrap_bytes[13]:1->0",
+     "w_aw_wrap_bytes[14]:0->1",
+     "w_aw_wrap_bytes[14]:1->0",
+     "w_aw_wrap_bytes[15]:0->1",
+     "w_aw_wrap_bytes[15]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 37,
+    "what": "i_wr_req_addr",
+    "points": 36,
+    "detail": [
+     "i_wr_req_addr[0]:0->1",
+     "i_wr_req_addr[0]:1->0",
+     "i_wr_req_addr[16]:0->1",
+     "i_wr_req_addr[16]:1->0",
+     "i_wr_req_addr[17]:0->1",
+     "i_wr_req_addr[17]:1->0",
+     "i_wr_req_addr[18]:0->1",
+     "i_wr_req_addr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_bridge.sv",
+    "line": 92,
+    "what": "w_wr_req_addr",
+    "points": 36,
+    "detail": [
+     "w_wr_req_addr[0]:0->1",
+     "w_wr_req_addr[0]:1->0",
+     "w_wr_req_addr[16]:0->1",
+     "w_wr_req_addr[16]:1->0",
+     "w_wr_req_addr[17]:0->1",
+     "w_wr_req_addr[17]:1->0",
+     "w_wr_req_addr[18]:0->1",
+     "w_wr_req_addr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 70,
+    "what": "o_req_addr",
+    "points": 36,
+    "detail": [
+     "o_req_addr[0]:0->1",
+     "o_req_addr[0]:1->0",
+     "o_req_addr[16]:0->1",
+     "o_req_addr[16]:1->0",
+     "o_req_addr[17]:0->1",
+     "o_req_addr[17]:1->0",
+     "o_req_addr[18]:0->1",
+     "o_req_addr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 28,
+    "what": "i_rd_req_addr",
+    "points": 34,
+    "detail": [
+     "i_rd_req_addr[0]:0->1",
+     "i_rd_req_addr[0]:1->0",
+     "i_rd_req_addr[16]:0->1",
+     "i_rd_req_addr[16]:1->0",
+     "i_rd_req_addr[17]:0->1",
+     "i_rd_req_addr[17]:1->0",
+     "i_rd_req_addr[18]:0->1",
+     "i_rd_req_addr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 49,
+    "what": "o_apb_paddr",
+    "points": 34,
+    "detail": [
+     "o_apb_paddr[0]:0->1",
+     "o_apb_paddr[0]:1->0",
+     "o_apb_paddr[16]:0->1",
+     "o_apb_paddr[16]:1->0",
+     "o_apb_paddr[17]:0->1",
+     "o_apb_paddr[17]:1->0",
+     "o_apb_paddr[18]:0->1",
+     "o_apb_paddr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 80,
+    "what": "reg_apb_addr",
+    "points": 34,
+    "detail": [
+     "reg_apb_addr[0]:0->1",
+     "reg_apb_addr[0]:1->0",
+     "reg_apb_addr[16]:0->1",
+     "reg_apb_addr[16]:1->0",
+     "reg_apb_addr[17]:0->1",
+     "reg_apb_addr[17]:1->0",
+     "reg_apb_addr[18]:0->1",
+     "reg_apb_addr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_bridge.sv",
+    "line": 63,
+    "what": "o_apb_paddr",
+    "points": 34,
+    "detail": [
+     "o_apb_paddr[0]:0->1",
+     "o_apb_paddr[0]:1->0",
+     "o_apb_paddr[16]:0->1",
+     "o_apb_paddr[16]:1->0",
+     "o_apb_paddr[17]:0->1",
+     "o_apb_paddr[17]:1->0",
+     "o_apb_paddr[18]:0->1",
+     "o_apb_paddr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_bridge.sv",
+    "line": 80,
+    "what": "w_rd_req_addr",
+    "points": 34,
+    "detail": [
+     "w_rd_req_addr[0]:0->1",
+     "w_rd_req_addr[0]:1->0",
+     "w_rd_req_addr[16]:0->1",
+     "w_rd_req_addr[16]:1->0",
+     "w_rd_req_addr[17]:0->1",
+     "w_rd_req_addr[17]:1->0",
+     "w_rd_req_addr[18]:0->1",
+     "w_rd_req_addr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 67,
+    "what": "o_req_addr",
+    "points": 34,
+    "detail": [
+     "o_req_addr[0]:0->1",
+     "o_req_addr[0]:1->0",
+     "o_req_addr[16]:0->1",
+     "o_req_addr[16]:1->0",
+     "o_req_addr[17]:0->1",
+     "o_req_addr[17]:1->0",
+     "o_req_addr[18]:0->1",
+     "o_req_addr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 109,
+    "what": "w_ar_total_bytes",
+    "points": 34,
+    "detail": [
+     "w_ar_total_bytes[16]:0->1",
+     "w_ar_total_bytes[16]:1->0",
+     "w_ar_total_bytes[17]:0->1",
+     "w_ar_total_bytes[17]:1->0",
+     "w_ar_total_bytes[18]:0->1",
+     "w_ar_total_bytes[18]:1->0",
+     "w_ar_total_bytes[19]:0->1",
+     "w_ar_total_bytes[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 115,
+    "what": "w_aw_total_bytes",
+    "points": 34,
+    "detail": [
+     "w_aw_total_bytes[16]:0->1",
+     "w_aw_total_bytes[16]:1->0",
+     "w_aw_total_bytes[17]:0->1",
+     "w_aw_total_bytes[17]:1->0",
+     "w_aw_total_bytes[18]:0->1",
+     "w_aw_total_bytes[18]:1->0",
+     "w_aw_total_bytes[19]:0->1",
+     "w_aw_total_bytes[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 95,
+    "what": "reg_wr_addr",
+    "points": 32,
+    "detail": [
+     "reg_wr_addr[16]:0->1",
+     "reg_wr_addr[16]:1->0",
+     "reg_wr_addr[17]:0->1",
+     "reg_wr_addr[17]:1->0",
+     "reg_wr_addr[18]:0->1",
+     "reg_wr_addr[18]:1->0",
+     "reg_wr_addr[19]:0->1",
+     "reg_wr_addr[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 123,
+    "what": "w_wr_wrap_base",
+    "points": 32,
+    "detail": [
+     "w_wr_wrap_base[16]:0->1",
+     "w_wr_wrap_base[16]:1->0",
+     "w_wr_wrap_base[17]:0->1",
+     "w_wr_wrap_base[17]:1->0",
+     "w_wr_wrap_base[18]:0->1",
+     "w_wr_wrap_base[18]:1->0",
+     "w_wr_wrap_base[19]:0->1",
+     "w_wr_wrap_base[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 124,
+    "what": "w_wr_addr_plus_size",
+    "points": 32,
+    "detail": [
+     "w_wr_addr_plus_size[16]:0->1",
+     "w_wr_addr_plus_size[16]:1->0",
+     "w_wr_addr_plus_size[17]:0->1",
+     "w_wr_addr_plus_size[17]:1->0",
+     "w_wr_addr_plus_size[18]:0->1",
+     "w_wr_addr_plus_size[18]:1->0",
+     "w_wr_addr_plus_size[19]:0->1",
+     "w_wr_addr_plus_size[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 125,
+    "what": "w_wr_nxt_addr",
+    "points": 32,
+    "detail": [
+     "w_wr_nxt_addr[16]:0->1",
+     "w_wr_nxt_addr[16]:1->0",
+     "w_wr_nxt_addr[17]:0->1",
+     "w_wr_nxt_addr[17]:1->0",
+     "w_wr_nxt_addr[18]:0->1",
+     "w_wr_nxt_addr[18]:1->0",
+     "w_wr_nxt_addr[19]:0->1",
+     "w_wr_nxt_addr[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 90,
+    "what": "reg_rd_addr",
+    "points": 30,
+    "detail": [
+     "reg_rd_addr[16]:0->1",
+     "reg_rd_addr[16]:1->0",
+     "reg_rd_addr[17]:0->1",
+     "reg_rd_addr[17]:1->0",
+     "reg_rd_addr[18]:0->1",
+     "reg_rd_addr[18]:1->0",
+     "reg_rd_addr[19]:0->1",
+     "reg_rd_addr[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 117,
+    "what": "w_rd_wrap_base",
+    "points": 30,
+    "detail": [
+     "w_rd_wrap_base[16]:0->1",
+     "w_rd_wrap_base[16]:1->0",
+     "w_rd_wrap_base[17]:0->1",
+     "w_rd_wrap_base[17]:1->0",
+     "w_rd_wrap_base[18]:0->1",
+     "w_rd_wrap_base[18]:1->0",
+     "w_rd_wrap_base[19]:0->1",
+     "w_rd_wrap_base[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 118,
+    "what": "w_rd_addr_plus_size",
+    "points": 30,
+    "detail": [
+     "w_rd_addr_plus_size[16]:0->1",
+     "w_rd_addr_plus_size[16]:1->0",
+     "w_rd_addr_plus_size[17]:0->1",
+     "w_rd_addr_plus_size[17]:1->0",
+     "w_rd_addr_plus_size[18]:0->1",
+     "w_rd_addr_plus_size[18]:1->0",
+     "w_rd_addr_plus_size[19]:0->1",
+     "w_rd_addr_plus_size[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 119,
+    "what": "w_rd_nxt_addr",
+    "points": 30,
+    "detail": [
+     "w_rd_nxt_addr[16]:0->1",
+     "w_rd_nxt_addr[16]:1->0",
+     "w_rd_nxt_addr[17]:0->1",
+     "w_rd_nxt_addr[17]:1->0",
+     "w_rd_nxt_addr[18]:0->1",
+     "w_rd_nxt_addr[18]:1->0",
+     "w_rd_nxt_addr[19]:0->1",
+     "w_rd_nxt_addr[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 116,
+    "what": "w_rd_wrap_mask",
+    "points": 23,
+    "detail": [
+     "w_rd_wrap_mask[10]:1->0",
+     "w_rd_wrap_mask[11]:1->0",
+     "w_rd_wrap_mask[12]:1->0",
+     "w_rd_wrap_mask[13]:1->0",
+     "w_rd_wrap_mask[14]:1->0",
+     "w_rd_wrap_mask[15]:1->0",
+     "w_rd_wrap_mask[16]:1->0",
+     "w_rd_wrap_mask[17]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 122,
+    "what": "w_wr_wrap_mask",
+    "points": 23,
+    "detail": [
+     "w_wr_wrap_mask[10]:1->0",
+     "w_wr_wrap_mask[11]:1->0",
+     "w_wr_wrap_mask[12]:1->0",
+     "w_wr_wrap_mask[13]:1->0",
+     "w_wr_wrap_mask[14]:1->0",
+     "w_wr_wrap_mask[15]:1->0",
+     "w_wr_wrap_mask[16]:1->0",
+     "w_wr_wrap_mask[17]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 106,
+    "what": "w_ar_wrap_mask",
+    "points": 21,
+    "detail": [
+     "w_ar_wrap_mask[11]:1->0",
+     "w_ar_wrap_mask[12]:1->0",
+     "w_ar_wrap_mask[13]:1->0",
+     "w_ar_wrap_mask[14]:1->0",
+     "w_ar_wrap_mask[15]:1->0",
+     "w_ar_wrap_mask[16]:1->0",
+     "w_ar_wrap_mask[17]:1->0",
+     "w_ar_wrap_mask[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 112,
+    "what": "w_aw_wrap_mask",
+    "points": 21,
+    "detail": [
+     "w_aw_wrap_mask[11]:1->0",
+     "w_aw_wrap_mask[12]:1->0",
+     "w_aw_wrap_mask[13]:1->0",
+     "w_aw_wrap_mask[14]:1->0",
+     "w_aw_wrap_mask[15]:1->0",
+     "w_aw_wrap_mask[16]:1->0",
+     "w_aw_wrap_mask[17]:1->0",
+     "w_aw_wrap_mask[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 33,
+    "what": "o_rd_rsp_err",
+    "points": 2,
+    "detail": [
+     "o_rd_rsp_err:0->1",
+     "o_rd_rsp_err:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 87,
+    "what": "reg_rd_rsp_err",
+    "points": 2,
+    "detail": [
+     "reg_rd_rsp_err:0->1",
+     "reg_rd_rsp_err:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_bridge.sv",
+    "line": 39,
+    "what": "o_axi_bresp",
+    "points": 2,
+    "detail": [
+     "o_axi_bresp[0]:0->1",
+     "o_axi_bresp[0]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_bridge.sv",
+    "line": 57,
+    "what": "o_axi_rresp",
+    "points": 2,
+    "detail": [
+     "o_axi_rresp[0]:0->1",
+     "o_axi_rresp[0]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_bridge.sv",
+    "line": 85,
+    "what": "w_rd_rsp_err",
+    "points": 2,
+    "detail": [
+     "w_rd_rsp_err:0->1",
+     "w_rd_rsp_err:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 61,
+    "what": "o_axi_rresp",
+    "points": 2,
+    "detail": [
+     "o_axi_rresp[0]:0->1",
+     "o_axi_rresp[0]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 74,
+    "what": "i_rsp_err",
+    "points": 2,
+    "detail": [
+     "i_rsp_err:0->1",
+     "i_rsp_err:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 97,
+    "what": "reg_rd_resp",
+    "points": 2,
+    "detail": [
+     "reg_rd_resp[0]:0->1",
+     "reg_rd_resp[0]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 103,
+    "what": "w_ar_wrap_log2",
+    "points": 2,
+    "detail": [
+     "w_ar_wrap_log2[3]:0->1",
+     "w_ar_wrap_log2[3]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 110,
+    "what": "w_ar_end_page",
+    "points": 2,
+    "detail": [
+     "w_ar_end_page[20]:0->1",
+     "w_ar_end_page[20]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 113,
+    "what": "w_rd_wrap_log2",
+    "points": 2,
+    "detail": [
+     "w_rd_wrap_log2[3]:0->1",
+     "w_rd_wrap_log2[3]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 64,
+    "what": "o_axi_bresp",
+    "points": 2,
+    "detail": [
+     "o_axi_bresp[0]:0->1",
+     "o_axi_bresp[0]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 109,
+    "what": "w_aw_wrap_log2",
+    "points": 2,
+    "detail": [
+     "w_aw_wrap_log2[3]:0->1",
+     "w_aw_wrap_log2[3]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 116,
+    "what": "w_aw_end_page",
+    "points": 2,
+    "detail": [
+     "w_aw_end_page[20]:0->1",
+     "w_aw_end_page[20]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 119,
+    "what": "w_wr_wrap_log2",
+    "points": 2,
+    "detail": [
+     "w_wr_wrap_log2[3]:0->1",
+     "w_wr_wrap_log2[3]:1->0"
+    ]
+   },
+   {
+    "metric": "functional",
+    "file": "nnc_cov.sv",
+    "line": 0,
+    "what": "COVP-002",
+    "points": 1,
+    "detail": []
+   },
+   {
+    "metric": "functional",
+    "file": "nnc_cov.sv",
+    "line": 0,
+    "what": "COVP-024",
+    "points": 1,
+    "detail": []
+   }
+  ]
+ },
+ "functional": {
+  "COVP-001": 17263,
+  "COVP-002": 0,
+  "COVP-003": 345,
+  "COVP-004": 1097,
+  "COVP-005": 3,
+  "COVP-006": 33,
+  "COVP-007": 23,
+  "COVP-008": 22,
+  "COVP-009": 1,
+  "COVP-010": 1,
+  "COVP-011": 75,
+  "COVP-012": 83,
+  "COVP-013": 162,
+  "COVP-014": 64,
+  "COVP-015": 8552,
+  "COVP-016": 624,
+  "COVP-017": 7514,
+  "COVP-018": 3627,
+  "COVP-019": 1898,
+  "COVP-020": 12,
+  "COVP-021": 12,
+  "COVP-022": 37,
+  "COVP-023": 6,
+  "COVP-024": 0,
+  "COVP-025": 4,
+  "COVP-026": 7894,
+  "COVP-027": 791,
+  "COVP-028": 181436,
+  "COVP-029": 2141,
+  "COVP-030": 10437,
+  "COVP-031": 1936,
+  "COVP-032": 3,
+  "COVP-033": 2,
+  "COVP-034": 5,
+  "COVP-035": 7,
+  "COVP-036": 347,
+  "COVP-037": 337,
+  "COVP-038": 1507,
+  "COVP-039": 5083,
+  "COVP-040": 427
+ },
+ "make_rc": 2,
+ "built": true,
+ "build_errors": [],
+ "unreviewed_gates": []
+}

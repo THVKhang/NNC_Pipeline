@@ -1,0 +1,332 @@
+rm -f results.xml
+"make" -f Makefile results.xml
+make[1]: Entering directory '/root/nnc_runs/runset_e412cdfe/C02'
+make[1]: warning: -j3 forced in makefile: resetting jobserver mode.
+mkdir -p sim_build
+/opt/oss-cad-suite/bin/verilator -cc --exe -Mdir sim_build --top-module nnc_tb_top --timescale 1ns/1ps --vpi --public-flat-rw --prefix Vtop -o Vtop -LDFLAGS "-Wl,-rpath,/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/libs -L/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/libs -lcocotbvpi_verilator" --assert --timing -Wno-fatal -Wno-WIDTH -Wno-UNOPTFLAT -GPARA_AFIFO_DEPTH=8 -GPARA_AFIFO_DATA_W=32 -GPARA_AFIFO_CELL_TYPE=2 -GPARA_AFIFO_MEM_USE_MACRO=0 --coverage-line --coverage-toggle --coverage-expr /root/nnc_runs/runset_e412cdfe/C02/rtl/VLSIT_CELL_SYNC_DFF_RN.sv /root/nnc_runs/runset_e412cdfe/C02/rtl/VLSIT_CELL_SYNC_DFF_SN.sv /root/nnc_runs/runset_e412cdfe/C02/rtl/VLSIT_CELL_SYNC_2FF_RN.sv /root/nnc_runs/runset_e412cdfe/C02/rtl/VLSIT_CELL_SYNC_2FF_SN.sv /root/nnc_runs/runset_e412cdfe/C02/rtl/VLSIT_CELL_SYNC_3FF_RN.sv /root/nnc_runs/runset_e412cdfe/C02/rtl/VLSIT_CELL_SYNC_3FF_SN.sv /root/nnc_runs/runset_e412cdfe/C02/rtl/VLSIT_CELL_SYNC_4FF_RN.sv /root/nnc_runs/runset_e412cdfe/C02/rtl/VLSIT_CELL_SYNC_4FF_SN.sv /root/nnc_runs/runset_e412cdfe/C02/rtl/VLSIT_CELL_SRAM_1W1R.sv /root/nnc_runs/runset_e412cdfe/C02/rtl/m_vlsit_afifo_ram_macro.sv /root/nnc_runs/runset_e412cdfe/C02/rtl/m_vlsit_afifo_mem.sv /root/nnc_runs/runset_e412cdfe/C02/rtl/m_vlsit_afifo_cell_sync.sv /root/nnc_runs/runset_e412cdfe/C02/rtl/m_vlsit_afifo_sync.sv /root/nnc_runs/runset_e412cdfe/C02/rtl/m_vlsit_afifo_rd.sv /root/nnc_runs/runset_e412cdfe/C02/rtl/m_vlsit_afifo_wr.sv /root/nnc_runs/runset_e412cdfe/C02/rtl/m_vlsit_afifo_top.sv /root/nnc_runs/runset_e412cdfe/C02/sva/nnc_chk_rd.sv /root/nnc_runs/runset_e412cdfe/C02/sva/nnc_chk_sb.sv /root/nnc_runs/runset_e412cdfe/C02/sva/nnc_chk_wr.sv /root/nnc_runs/runset_e412cdfe/C02/sva/nnc_cov.sv /root/nnc_runs/runset_e412cdfe/C02/nnc_tb_top.sv /opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/share/lib/verilator/verilator.cpp
+- V e r i l a t i o n   R e p o r t: Verilator 5.055 devel rev v5.054-94-g4d23f6ea0 (mod)
+- Verilator: Built from 1.014 MB sources in 23 modules, into 1.721 MB in 9 C++ files needing 0.000 MB
+- Verilator: Walltime 0.649 s (elab=0.176, cvt=0.257, bld=0.000); cpu 0.149 s on 1 threads; allocated 29.125 MB
+make -C sim_build  -f Vtop.mk
+make[2]: Entering directory '/root/nnc_runs/runset_e412cdfe/C02/sim_build'
+g++  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"     -Os  -c -o verilator.o /opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/share/lib/verilator/verilator.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o verilated.o /opt/oss-cad-suite/share/verilator/include/verilated.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o verilated_dpi.o /opt/oss-cad-suite/share/verilator/include/verilated_dpi.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o verilated_vpi.o /opt/oss-cad-suite/share/verilator/include/verilated_vpi.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o verilated_cov.o /opt/oss-cad-suite/share/verilator/include/verilated_cov.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o verilated_covergroup.o /opt/oss-cad-suite/share/verilator/include/verilated_covergroup.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o verilated_threads.o /opt/oss-cad-suite/share/verilator/include/verilated_threads.cpp
+python3 /opt/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop_m_vlsit_afifo_cell_sync__0.cpp Vtop__Dpi.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop_m_vlsit_afifo_cell_sync__Slow.cpp Vtop_m_vlsit_afifo_cell_sync__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o Vtop__ALL.o Vtop__ALL.cpp
+g++    -rdynamic verilator.o verilated.o verilated_dpi.o verilated_vpi.o verilated_cov.o verilated_covergroup.o verilated_threads.o Vtop__ALL.a   -Wl,-rpath,/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/libs -L/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/libs -lcocotbvpi_verilator  -pthread -lpthread -latomic -ldl   -o Vtop
+rm Vtop__ALL.verilator_deplist.tmp
+make[2]: Leaving directory '/root/nnc_runs/runset_e412cdfe/C02/sim_build'
+/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb_tools/makefiles/simulators/Makefile.verilator:69: Using PLUSARGS is deprecated, please use COCOTB_PLUSARGS instead.
+rm -f results.xml
+COCOTB_TEST_MODULES=test_async_gray_fifo COCOTB_TESTCASE= COCOTB_TEST_FILTER= COCOTB_TOPLEVEL=nnc_tb_top TOPLEVEL_LANG=verilog \
+         sim_build/Vtop  --assert --timing -Wno-fatal -Wno-WIDTH -Wno-UNOPTFLAT -GPARA_AFIFO_DEPTH=8 -GPARA_AFIFO_DATA_W=32 -GPARA_AFIFO_CELL_TYPE=2 -GPARA_AFIFO_MEM_USE_MACRO=0 --coverage-line --coverage-toggle --coverage-expr +AFIFO_MSYNC_SEED=1 +AFIFO_MSYNC_EN=0  
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:216  in gpi_load_users                  Running entry func 'initialize' from loaded library '/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/libs/libcocotb.so'
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:96   in initialize                      Using Python 3.11.6 interpreter at /opt/oss-cad-suite/bin/tabbypy3
+     0.00ns INFO     cocotb                             Running on Verilator version 5.055 devel
+     0.00ns INFO     cocotb                             Seeding Python random module with supplied seed 1
+     0.00ns INFO     cocotb                             Initialized cocotb v2.1.0.dev0+41564633 from /opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_014_nominal_latency/per=0 (1/34)
+                                                            CHK-014: nominal crossing latency S edges, data before o_empty falls, o_full fall S write edges after a read.
+     0.00ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 691, 'i_clk_rd': 2116}
+   149.12ns INFO     cocotb.nnc_tb_top                  CHK-014: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+  6337.12ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_014_nominal_latency/per=0 passed
+  6337.12ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_014_nominal_latency/per=1 (2/34)
+                                                            CHK-014: nominal crossing latency S edges, data before o_empty falls, o_full fall S write edges after a read.
+  6337.12ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 443, 'i_clk_rd': 2789}
+  6470.56ns INFO     cocotb.nnc_tb_top                  CHK-014: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+ 11598.91ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_014_nominal_latency/per=1 passed
+ 11598.91ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_015_latency_with_model (3/34)
+                                                            CHK-015: crossing latency S..S+2 with the metastability model, flags never early, data correct.
+ 11598.91ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 7317, 'i_clk_rd': 2044}
+ 11724.45ns INFO     cocotb.nnc_tb_top                  CHK-015: model=off seed=1
+ 11724.45ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-015 the metastability model is not enabled in this run (or the VLSIT_SYNTHESIS build); only the plain latency was measured
+ 11724.45ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-015 seeing L=2,3,4 in both directions over the 5-seed run set needs the other seeds; this run covers seed 1 only
+ 56145.45ns INFO     cocotb.nnc_tb_top                  CHK-015: write->empty latencies {2: 100}, read->full latencies {2: 100}
+ 56353.45ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_015_latency_with_model passed
+ 56353.45ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_016_random_ratios/pair=0 (4/34)
+                                                            CHK-016: random traffic for several clock ratios, pointer wrap, order/exactly-once, INV-002 at idle points.
+ 56353.45ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 8130, 'i_clk_rd': 8497}
+ 56456.95ns INFO     cocotb.nnc_tb_top                  CHK-016: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+ 56456.95ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-016 the model-on runs with logged seeds are other configurations; this run has the model off
+ 56456.95ns INFO     cocotb.nnc_tb_top                  CHK-016: phase offset set by the random clock start delays (a fixed 3 ns offset cannot be set)
+133236.95ns INFO     cocotb.nnc_tb_top                  CHK-016: coverage {'full': True, 'empty': True, 'ovf': True, 'udf': True, 'same': True}
+133236.95ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_016_random_ratios/pair=0 passed
+133236.95ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_016_random_ratios/pair=1 (5/34)
+                                                            CHK-016: random traffic for several clock ratios, pointer wrap, order/exactly-once, INV-002 at idle points.
+133236.95ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 6659, 'i_clk_rd': 46}
+133348.61ns INFO     cocotb.nnc_tb_top                  CHK-016: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+133348.61ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-016 the model-on runs with logged seeds are other configurations; this run has the model off
+201160.35ns INFO     cocotb.nnc_tb_top                  CHK-016: coverage {'full': True, 'empty': True, 'ovf': True, 'udf': True, 'same': True}
+201160.35ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_016_random_ratios/pair=1 passed
+201160.35ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_016_random_ratios/pair=2 (6/34)
+                                                            CHK-016: random traffic for several clock ratios, pointer wrap, order/exactly-once, INV-002 at idle points.
+201160.35ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 9715, 'i_clk_rd': 10745}
+201389.59ns INFO     cocotb.nnc_tb_top                  CHK-016: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+201389.59ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-016 the model-on runs with logged seeds are other configurations; this run has the model off
+317033.59ns INFO     cocotb.nnc_tb_top                  CHK-016: coverage {'full': True, 'empty': True, 'ovf': True, 'udf': True, 'same': True}
+317033.59ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_016_random_ratios/pair=2 passed
+317033.59ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_016_random_ratios/pair=3 (7/34)
+                                                            CHK-016: random traffic for several clock ratios, pointer wrap, order/exactly-once, INV-002 at idle points.
+317033.59ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 469, 'i_clk_rd': 25574}
+317534.17ns INFO     cocotb.nnc_tb_top                  CHK-016: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+317534.17ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-016 the model-on runs with logged seeds are other configurations; this run has the model off
+587084.17ns INFO     cocotb.nnc_tb_top                  CHK-016: coverage {'full': True, 'empty': True, 'ovf': True, 'udf': True, 'same': True}
+587084.17ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_016_random_ratios/pair=3 passed
+587084.17ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_016_random_ratios/pair=4 (8/34)
+                                                            CHK-016: random traffic for several clock ratios, pointer wrap, order/exactly-once, INV-002 at idle points.
+587084.17ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 2391, 'i_clk_rd': 5307}
+587305.06ns INFO     cocotb.nnc_tb_top                  CHK-016: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+587305.06ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-016 the model-on runs with logged seeds are other configurations; this run has the model off
+695497.06ns INFO     cocotb.nnc_tb_top                  CHK-016: coverage {'full': True, 'empty': True, 'ovf': True, 'udf': True, 'same': True}
+695497.06ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_016_random_ratios/pair=4 passed
+695497.06ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_016_random_ratios/pair=5 (9/34)
+                                                            CHK-016: random traffic for several clock ratios, pointer wrap, order/exactly-once, INV-002 at idle points.
+695497.06ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 30576, 'i_clk_rd': 5146}
+696002.64ns INFO     cocotb.nnc_tb_top                  CHK-016: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+696002.64ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-016 the model-on runs with logged seeds are other configurations; this run has the model off
+960402.64ns INFO     cocotb.nnc_tb_top                  CHK-016: coverage {'full': True, 'empty': True, 'ovf': True, 'udf': True, 'same': True}
+960402.64ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_016_random_ratios/pair=5 passed
+960402.64ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_017_synthesis_branch_regression (10/34)
+                                                            CHK-017: regression of the VLSIT_SYNTHESIS build (random traffic + software resets + isolated latency).
+960402.64ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 2809, 'i_clk_rd': 4421}
+960537.21ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-017 this run is built without VLSIT_SYNTHESIS: the synthesizable cell branch is not elaborated; the same traffic and latency checks run on the simulation branch
+960537.21ns INFO     cocotb.nnc_tb_top                  CHK-017: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+1003979.91ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_017_synthesis_branch_regression passed
+1003979.91ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_018_write_n_read_n (11/34)
+                                                            CHK-018: write N then read N with a show-ahead head check, then random fill/drain.
+1003979.91ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 9723, 'i_clk_rd': 10359}
+1004123.27ns INFO     cocotb.nnc_tb_top                  CHK-018: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+1008813.27ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_018_write_n_read_n passed
+1008813.27ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_019_back_to_back_equal_clocks (12/34)
+                                                            CHK-019: back-to-back burst of 24 words with equal clocks, across the pointer wrap.
+1008813.27ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 3798, 'i_clk_rd': 9905}
+1008922.07ns INFO     cocotb.nnc_tb_top                  CHK-019: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+1008922.07ns INFO     cocotb.nnc_tb_top                  CHK-019: read phase set by the random clock start delays (a fixed 3 ns lag cannot be set)
+1009228.17ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_019_back_to_back_equal_clocks passed
+1009228.17ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_020_overflow (13/34)
+                                                            CHK-020: writes while full are dropped; o_full falls S write edges after a read.
+1009228.18ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 1372, 'i_clk_rd': 7185}
+1009368.36ns INFO     cocotb.nnc_tb_top                  CHK-020: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+1009914.36ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_020_overflow passed
+1009914.36ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_021_underflow (14/34)
+                                                            CHK-021: underflow keeps the read pointer; show-ahead of the storage while empty.
+1009914.36ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 720, 'i_clk_rd': 5327}
+1010052.69ns INFO     cocotb.nnc_tb_top                  CHK-021: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+1010850.69ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_021_underflow passed
+1010850.69ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_022_hw_reset_independent (15/34)
+                                                            CHK-022: hardware reset of both domains, independent assertion/release, clean first transfer.
+1010850.69ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 7314, 'i_clk_rd': 5978}
+1010989.67ns INFO     cocotb.nnc_tb_top                  CHK-022: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+1011689.67ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_022_hw_reset_independent passed
+1011689.67ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_023_hw_reset_during_srst (16/34)
+                                                            CHK-023: hardware reset has priority over the software reset (both domains, then one domain).
+1011689.67ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 9694, 'i_clk_rd': 2538}
+1011839.21ns INFO     cocotb.nnc_tb_top                  CHK-023: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+1013015.21ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_023_hw_reset_during_srst passed
+1013015.21ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_024_hw_reset_mid_traffic (17/34)
+                                                            CHK-024: hardware reset of both domains in the middle of traffic, clean restart.
+1013015.21ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 9229, 'i_clk_rd': 10866}
+1013173.07ns INFO     cocotb.nnc_tb_top                  CHK-024: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+1022371.07ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_024_hw_reset_mid_traffic passed
+1022371.07ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_025_srst_partial_fifo (18/34)
+                                                            CHK-025: software reset of a partly filled FIFO with i_rst_n_sw held low (four-phase sequence).
+1022371.07ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 3820, 'i_clk_rd': 4664}
+1022508.74ns INFO     cocotb.nnc_tb_top                  CHK-025: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+1023166.74ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_025_srst_partial_fifo passed
+1023166.74ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_026_srst_pulse_full_overflow (19/34)
+                                                            CHK-026: one-cycle i_rst_n_sw pulse on a full FIFO in overflow.
+1023166.74ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 5287, 'i_clk_rd': 12680}
+1023312.42ns INFO     cocotb.nnc_tb_top                  CHK-026: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+1023858.42ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_026_srst_pulse_full_overflow passed
+1023858.42ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_027_read_released_first (20/34)
+                                                            CHK-027: read side released before write side, seen through the o_underflow pulse train.
+1023858.42ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 5096, 'i_clk_rd': 2391}
+1023958.52ns INFO     cocotb.nnc_tb_top                  CHK-027: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+1025189.81ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_027_read_released_first passed
+1025189.81ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_028_srst_reassert_in_rel (21/34)
+                                                            CHK-028: i_rst_n_sw asserted again while the write FSM is in REL.
+1025189.81ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 1303, 'i_clk_rd': 4933}
+1025320.74ns INFO     cocotb.nnc_tb_top                  CHK-028: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+1026220.74ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_028_srst_reassert_in_rel passed
+1026220.74ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_029_srst_random/pair=0 (22/34)
+                                                            CHK-029: software resets under random traffic; no blocked access accepted, no data error, no deadlock.
+1026220.75ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 7594, 'i_clk_rd': 1102}
+1026333.34ns INFO     cocotb.nnc_tb_top                  CHK-029: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+1026333.34ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-029 the other model settings / seeds of the run set are other runs (this run: model off, seed 1)
+1055849.80ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_029_srst_random/pair=0 passed
+1055849.80ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_029_srst_random/pair=1 (23/34)
+                                                            CHK-029: software resets under random traffic; no blocked access accepted, no data error, no deadlock.
+1055849.80ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 4208, 'i_clk_rd': 4854}
+1056073.15ns INFO     cocotb.nnc_tb_top                  CHK-029: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+1056073.15ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-029 the other model settings / seeds of the run set are other runs (this run: model off, seed 1)
+1102234.15ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_029_srst_random/pair=1 passed
+1102234.15ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_029_srst_random/pair=2 (24/34)
+                                                            CHK-029: software resets under random traffic; no blocked access accepted, no data error, no deadlock.
+1102234.15ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 7669, 'i_clk_rd': 5127}
+1102460.32ns INFO     cocotb.nnc_tb_top                  CHK-029: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+1102460.32ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-029 the other model settings / seeds of the run set are other runs (this run: model off, seed 1)
+1181235.32ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_029_srst_random/pair=2 passed
+1181235.32ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_029_srst_random/pair=3 (25/34)
+                                                            CHK-029: software resets under random traffic; no blocked access accepted, no data error, no deadlock.
+1181235.32ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 3420, 'i_clk_rd': 23200}
+1181610.02ns INFO     cocotb.nnc_tb_top                  CHK-029: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+1181610.02ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-029 the other model settings / seeds of the run set are other runs (this run: model off, seed 1)
+1232337.02ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_029_srst_random/pair=3 passed
+1232337.02ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_030_after_srst_like_hw_reset (26/34)
+                                                            CHK-030: after a software reset the FIFO behaves like after a hardware reset (CHK-018/020/021 stimulus).
+1232337.02ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 4747, 'i_clk_rd': 3592}
+1232473.62ns INFO     cocotb.nnc_tb_top                  CHK-030: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+1235217.62ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_030_after_srst_like_hw_reset passed
+1235217.62ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_031_clock_stop_during_srst (27/34)
+                                                            CHK-031: a clock stops during the software reset; the handshake waits and completes.
+1235217.62ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 3965, 'i_clk_rd': 3562}
+1235354.18ns INFO     cocotb.nnc_tb_top                  CHK-031: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+1237697.58ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_031_clock_stop_during_srst passed
+1237697.58ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_032_threshold_flags/thr=0 (28/34)
+                                                            CHK-032: o_full_thr / o_empty_thr while filling and draining across the thresholds.
+1237697.58ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 3130, 'i_clk_rd': 2086}
+1237832.67ns INFO     cocotb.nnc_tb_top                  CHK-032: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+1239575.71ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_032_threshold_flags/thr=0 passed
+1239575.71ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_032_threshold_flags/thr=1 (29/34)
+                                                            CHK-032: o_full_thr / o_empty_thr while filling and draining across the thresholds.
+1239575.72ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 6852, 'i_clk_rd': 7245}
+1239715.96ns INFO     cocotb.nnc_tb_top                  CHK-032: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+1241457.57ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_032_threshold_flags/thr=1 passed
+1241457.57ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_032_threshold_flags/thr=2 (30/34)
+                                                            CHK-032: o_full_thr / o_empty_thr while filling and draining across the thresholds.
+1241457.57ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 1691, 'i_clk_rd': 11845}
+1241602.41ns INFO     cocotb.nnc_tb_top                  CHK-032: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+1243344.26ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_032_threshold_flags/thr=2 passed
+1243344.26ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_032_threshold_flags/thr=3 (31/34)
+                                                            CHK-032: o_full_thr / o_empty_thr while filling and draining across the thresholds.
+1243344.26ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 7435, 'i_clk_rd': 2172}
+1243479.43ns INFO     cocotb.nnc_tb_top                  CHK-032: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+1245206.70ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_032_threshold_flags/thr=3 passed
+1245206.70ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_032_threshold_flags/thr=4 (32/34)
+                                                            CHK-032: o_full_thr / o_empty_thr while filling and draining across the thresholds.
+1245206.70ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 3203, 'i_clk_rd': 6853}
+1245360.55ns INFO     cocotb.nnc_tb_top                  CHK-032: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+1247114.90ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_032_threshold_flags/thr=4 passed
+1247114.90ns INFO     cocotb.regression                  running test_async_gray_fifo.test_chk_032_threshold_flags/thr=5 (33/34)
+                                                            CHK-032: o_full_thr / o_empty_thr while filling and draining across the thresholds.
+1247114.90ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 723, 'i_clk_rd': 3557}
+1247265.46ns INFO     cocotb.nnc_tb_top                  CHK-032: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+1249020.62ns INFO     cocotb.regression                  test_async_gray_fifo.test_chk_032_threshold_flags/thr=5 passed
+1249020.62ns INFO     cocotb.regression                  running test_async_gray_fifo.test_regression_random (34/34)
+                                                            CHK-001..CHK-013 exercised, CHK-005/CHK-006 scoreboard: broad random traffic with software and hardware resets.
+1249020.62ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_wr': 1377, 'i_clk_rd': 3905}
+1249154.68ns INFO     cocotb.nnc_tb_top                  CHK-005: S=2 model=off seed=1 VLSIT_SYNTHESIS=False DEPTH=8
+1334437.18ns INFO     cocotb.nnc_tb_top                  regression coverage {'full': True, 'empty': True, 'ovf': True, 'udf': True, 'same': True}
+1334437.18ns INFO     cocotb.regression                  test_async_gray_fifo.test_regression_random passed
+1334437.18ns INFO     cocotb.regression                  ***********************************************************************************************************************
+                                                        ** TEST                                                           STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ***********************************************************************************************************************
+                                                        ** test_async_gray_fifo.test_chk_014_nominal_latency/per=0         PASS        6337.12           0.05     116098.36  **
+                                                        ** test_async_gray_fifo.test_chk_014_nominal_latency/per=1         PASS        5261.79           0.06      88141.38  **
+                                                        ** test_async_gray_fifo.test_chk_015_latency_with_model            PASS       44754.54           0.48      93108.44  **
+                                                        ** test_async_gray_fifo.test_chk_016_random_ratios/pair=0          PASS       76883.50           1.10      69578.26  **
+                                                        ** test_async_gray_fifo.test_chk_016_random_ratios/pair=1          PASS       67923.40           1.07      63522.91  **
+                                                        ** test_async_gray_fifo.test_chk_016_random_ratios/pair=2          PASS      115873.24           1.26      92033.27  **
+                                                        ** test_async_gray_fifo.test_chk_016_random_ratios/pair=3          PASS      270050.57           2.60     103870.69  **
+                                                        ** test_async_gray_fifo.test_chk_016_random_ratios/pair=4          PASS      108412.89           1.25      86565.42  **
+                                                        ** test_async_gray_fifo.test_chk_016_random_ratios/pair=5          PASS      264905.58           2.34     113266.23  **
+                                                        ** test_async_gray_fifo.test_chk_017_synthesis_branch_regression   PASS       43577.27           0.47      92568.17  **
+                                                        ** test_async_gray_fifo.test_chk_018_write_n_read_n                PASS        4833.36           0.05      95079.55  **
+                                                        ** test_async_gray_fifo.test_chk_019_back_to_back_equal_clocks     PASS         414.91           0.01      42830.29  **
+                                                        ** test_async_gray_fifo.test_chk_020_overflow                      PASS         686.18           0.01     114833.36  **
+                                                        ** test_async_gray_fifo.test_chk_021_underflow                     PASS         936.33           0.01     113412.27  **
+                                                        ** test_async_gray_fifo.test_chk_022_hw_reset_independent          PASS         838.98           0.01     120647.61  **
+                                                        ** test_async_gray_fifo.test_chk_023_hw_reset_during_srst          PASS        1325.54           0.01     123719.55  **
+                                                        ** test_async_gray_fifo.test_chk_024_hw_reset_mid_traffic          PASS        9355.87           0.09     104597.57  **
+                                                        ** test_async_gray_fifo.test_chk_025_srst_partial_fifo             PASS         795.66           0.02      49893.21  **
+                                                        ** test_async_gray_fifo.test_chk_026_srst_pulse_full_overflow      PASS         691.68           0.01     105441.45  **
+                                                        ** test_async_gray_fifo.test_chk_027_read_released_first           PASS        1331.39           0.02      72639.82  **
+                                                        ** test_async_gray_fifo.test_chk_028_srst_reassert_in_rel          PASS        1030.93           0.01      97968.74  **
+                                                        ** test_async_gray_fifo.test_chk_029_srst_random/pair=0            PASS       29629.05           0.40      74055.57  **
+                                                        ** test_async_gray_fifo.test_chk_029_srst_random/pair=1            PASS       46384.35           0.68      67787.13  **
+                                                        ** test_async_gray_fifo.test_chk_029_srst_random/pair=2            PASS       79001.17           0.74     107043.34  **
+                                                        ** test_async_gray_fifo.test_chk_029_srst_random/pair=3            PASS       51101.70           0.49     104411.16  **
+                                                        ** test_async_gray_fifo.test_chk_030_after_srst_like_hw_reset      PASS        2880.59           0.03     101771.24  **
+                                                        ** test_async_gray_fifo.test_chk_031_clock_stop_during_srst        PASS        2479.97           0.02     135152.31  **
+                                                        ** test_async_gray_fifo.test_chk_032_threshold_flags/thr=0         PASS        1878.13           0.02     112026.06  **
+                                                        ** test_async_gray_fifo.test_chk_032_threshold_flags/thr=1         PASS        1881.85           0.02      95877.99  **
+                                                        ** test_async_gray_fifo.test_chk_032_threshold_flags/thr=2         PASS        1886.69           0.02     110978.97  **
+                                                        ** test_async_gray_fifo.test_chk_032_threshold_flags/thr=3         PASS        1862.44           0.02     109541.43  **
+                                                        ** test_async_gray_fifo.test_chk_032_threshold_flags/thr=4         PASS        1908.20           0.03      60120.81  **
+                                                        ** test_async_gray_fifo.test_chk_032_threshold_flags/thr=5         PASS        1905.72           0.02     117916.14  **
+                                                        ** test_async_gray_fifo.test_regression_random                     PASS       85416.55           1.06      80433.31  **
+                                                        ***********************************************************************************************************************
+                                                        ** TESTS=34 PASS=34 FAIL=0 SKIP=0                                           1334437.18          14.52      91920.09  **
+                                                        ***********************************************************************************************************************
+AFIFO_MSYNC: nnc_tb_top.u_dut.u_vlsit_afifo_rd.u_sync_req.gen_bit_cell[0].u_vlsit_afifo_cell_sync.gen_sim_msync seed=1 enable=0 stages=2
+AFIFO_MSYNC: nnc_tb_top.u_dut.u_vlsit_afifo_wr.u_sync_ack.gen_bit_cell[0].u_vlsit_afifo_cell_sync.gen_sim_msync seed=1 enable=0 stages=2
+AFIFO_MSYNC: nnc_tb_top.u_dut.u_vlsit_afifo_wr.u_sync_rd_gray.gen_bit_cell[0].u_vlsit_afifo_cell_sync.gen_sim_msync seed=1 enable=0 stages=2
+AFIFO_MSYNC: nnc_tb_top.u_dut.u_vlsit_afifo_wr.u_sync_rd_gray.gen_bit_cell[1].u_vlsit_afifo_cell_sync.gen_sim_msync seed=1 enable=0 stages=2
+AFIFO_MSYNC: nnc_tb_top.u_dut.u_vlsit_afifo_wr.u_sync_rd_gray.gen_bit_cell[2].u_vlsit_afifo_cell_sync.gen_sim_msync seed=1 enable=0 stages=2
+AFIFO_MSYNC: nnc_tb_top.u_dut.u_vlsit_afifo_wr.u_sync_rd_gray.gen_bit_cell[3].u_vlsit_afifo_cell_sync.gen_sim_msync seed=1 enable=0 stages=2
+AFIFO_MSYNC: nnc_tb_top.u_dut.u_vlsit_afifo_rd.u_sync_wr_gray.gen_bit_cell[0].u_vlsit_afifo_cell_sync.gen_sim_msync seed=1 enable=0 stages=2
+AFIFO_MSYNC: nnc_tb_top.u_dut.u_vlsit_afifo_rd.u_sync_wr_gray.gen_bit_cell[1].u_vlsit_afifo_cell_sync.gen_sim_msync seed=1 enable=0 stages=2
+AFIFO_MSYNC: nnc_tb_top.u_dut.u_vlsit_afifo_rd.u_sync_wr_gray.gen_bit_cell[2].u_vlsit_afifo_cell_sync.gen_sim_msync seed=1 enable=0 stages=2
+AFIFO_MSYNC: nnc_tb_top.u_dut.u_vlsit_afifo_rd.u_sync_wr_gray.gen_bit_cell[3].u_vlsit_afifo_cell_sync.gen_sim_msync seed=1 enable=0 stages=2
+- (null):0: Verilog $finish
+NNC_COVER COVP-001 hits=18738
+NNC_COVER COVP-002 hits=13222
+NNC_COVER COVP-003 hits=13221
+NNC_COVER COVP-004 hits=10349
+NNC_COVER COVP-005 hits=4555
+NNC_COVER COVP-006 hits=4455
+NNC_COVER COVP-007 hits=235
+NNC_COVER COVP-008 hits=8725
+NNC_COVER COVP-009 hits=181
+NNC_COVER COVP-010 hits=5821
+NNC_COVER COVP-011 hits=47059
+NNC_COVER COVP-012 hits=7908
+NNC_COVER COVP-013 hits=26183
+NNC_COVER COVP-014 hits=245
+NNC_COVER COVP-015 hits=50
+NNC_COVER COVP-016 hits=1139
+NNC_COVER COVP-017 hits=245
+NNC_COVER COVP-018 hits=780
+NNC_COVER COVP-019 hits=1180
+NNC_COVER COVP-020 hits=65
+NNC_COVER COVP-021 hits=7
+NNC_COVER COVP-022 hits=39
+NNC_COVER COVP-023 hits=1050
+NNC_COVER COVP-024 hits=2975
+NNC_COVER COVP-025 hits=17955
+NNC_COVER COVP-026 hits=15490
+NNC_COVER COVP-027 hits=14505
+NNC_COVER COVP-028 hits=10926
+NNC_COVER COVP-029 hits=4850
+NNC_COVER COVP-030 hits=4848
+NNC_COVER COVP-031 hits=9747
+NNC_COVER COVP-032 hits=2476
+NNC_COVER COVP-033 hits=4192
+NNC_COVER COVP-034 hits=11130
+NNC_COVER COVP-035 hits=13460
+NNC_COVER COVP-036 hits=14374
+NNC_COVER COVP-037 hits=15118
+NNC_COVER COVP-038 hits=37
+NNC_COVER COVP-039 hits=1107
+NNC_COVER COVP-040 hits=2059
+NNC_CHECK CHK-007 hits=372 fails=0
+NNC_CHECK CHK-008 hits=101095 fails=0
+NNC_CHECK CHK-009 hits=4527 fails=0
+NNC_CHECK CHK-010 hits=96813 fails=0
+NNC_CHECK CHK-011 hits=4282 fails=0
+NNC_CHECK CHK-012 hits=101054 fails=0
+NNC_CHECK CHK-013 hits=101095 fails=0
+NNC_CHECK CHK-005 hits=54082 fails=0
+NNC_CHECK CHK-006 hits=101050 fails=0
+NNC_CHECK CHK-001 hits=324 fails=0
+NNC_CHECK CHK-002 hits=14175 fails=0
+NNC_CHECK CHK-003 hits=93306 fails=0
+NNC_CHECK CHK-004 hits=93023 fails=0
+make[1]: Leaving directory '/root/nnc_runs/runset_e412cdfe/C02'
+NNC_MAKE_RC=0

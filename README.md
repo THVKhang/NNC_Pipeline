@@ -82,20 +82,31 @@ A mutant counts as killed only by a test or check that passes on the unmutated R
 
 ### Asynchronous clock domains | Clock bất đồng bộ
 
-`nnc config <ip> clock_relation=async` starts every clock after its own seeded random delay, and the agents write cross-domain checks as order plus a window counted in destination edges. Build defines and simulator plusargs (`defines`, `plusargs`) reach the tests through `plusarg()` and `DEFINES`. Two clock-domain-crossing designs from the same repository, run with their metastability models on:
+`nnc config <ip> clock_relation=async` starts every clock after its own seeded random delay, and the agents write cross-domain checks as order plus a window counted in destination edges. Build defines and simulator plusargs (`defines`, `plusargs`) reach the tests through `plusarg()` and `DEFINES`. Two clock-domain-crossing designs from the same repository, each run over a **run set** (`run_set.json`): the configurations named by its specification, the metastability model on (several seeds) and off, and the synthesis branch. Results are merged per check: PASS needs one run that verified it and no run that failed it.
 
 | | [async_gray_fifo](designs/async_gray_fifo) | [async_apb_bridge](designs/async_apb_bridge) |
 |---|---|---|
-| Design | Gray-pointer FIFO, write 10 ns / read 13.7 ns, independent resets + software reset handshake | APB → APB bridge across domains, two-phase handshake |
+| Design | Gray-pointer FIFO, independent resets + software reset handshake | APB → APB bridge across domains, two- or four-phase handshake |
 | Rules kept / open questions | 416 / 9 | 260 / 7 |
-| Checks (assertions + tests) | 32 (13 + 19), 17 need another configuration | 35 (18 + 17), 7 need another configuration |
-| Result | **34/34 tests**; CHK-003, CHK-013 fail → triage **C: the specification contradicts itself** | **28/28 tests, 0 assertion fails** |
-| Line / toggle / functional | 99.3 / 99.9 % / 40 of 40 | 90.8 / 98.5 % / 33 of 40 |
-| Mutation (36) | 80.6 % (6 of 7 survivors in the simulation-only model) | 72.2 % (9 of 10 survivors cannot change a port in this configuration) |
-| Agent cost | US$32.9 (three test generations) | US$11.8 |
+| Checks (assertions + tests) | 32 (13 + 19) | 35 (18 + 17) |
+| Run set | 14 runs, 10 configurations: CFG-BASE seeds 1–5, model off, `VLSIT_SYNTHESIS`, cell 1/3/4, SRAM macro, depth 2 × width 1, clock ratios 11:3 and 3:11 | 14 runs, 12 configurations: APB4 seeds 1–3, model off, `VLSIT_SYNTHESIS`, 4-phase (model on/off), APB5, user signals, 3-/4-FF cells, CFG-MIN, completer 3× faster / 9× slower |
+| NOT_VERIFIABLE, one run → run set | 17 → **3** (statistics across seeds) | 7 → **0** |
+| Result | 26 PASS; CHK-003, CHK-013, CHK-025 fail → triage **C: the specification contradicts itself** | **35/35 checks PASS** in every configuration; rules VERIFIED 185, NOT_PROVEN 0 |
+| Line / toggle / functional (merged) | 99.1 / 99.5 % / 40 of 40 | 91.9 / 98.6 % / 39 of 40 |
+| Mutation (36), one run → run set | 80.6 → **91.7 %**, rules below 85 %: 14 → 5 | 72.2 → **83.3 %**, rules below 85 %: 18 → 3 |
+| Agent cost | US$39.5 (of which US$5.5 lost to calls cut by the usage limit) | US$12.5 |
 
-- **async_gray_fifo — a contradiction in the specification.** REQ-VER-001 makes the metastability model delay *each bit independently*. When the source Gray pointer steps twice inside that delay, the synchronized value can be a code that never existed, the occupancy estimate leaves 0..DEPTH and the threshold flags break REQ-FUNC-010 ("never optimistic"). Real synchronizers cannot do this. With the model off the same run gives 34/34 tests and 13/13 assertions with 0 fails. The RTL follows the specification, so the decision (a coherent model, or constrained stimulus) is the designer's; the checks were not relaxed. Three test-bench bugs found on the way (triage B) were fixed. → [work/triage.md](designs/async_gray_fifo/work/triage.md)
-- **async_apb_bridge — clean** for the default parameters; APB5, the four-phase handshake and other synchronizer depths need other configurations.
+- **async_gray_fifo — a contradiction in the specification.** REQ-VER-001 makes the metastability model delay *each bit independently* and lets a later change replace a pending one. When the source Gray pointer steps twice inside that delay, the synchronized value can be a code that never existed (CHK-003, CHK-013: threshold flags break "never optimistic"), and a short pointer bit can vanish so that `o_empty` falls one edge after the S..S+2 window (CHK-025). Real synchronizers cannot do either. Every model-off and synthesis-branch run passes all 34 tests and 13 assertions. The RTL follows the specification, so the decision (a coherent model, or a bound for back-to-back updates) is the designer's; the checks were not relaxed. Eight test-bench fixes followed triage B, four of them for faults only visible in other configurations (a checker discarding pre-reset words at the S=2 edge for every cell type, tests assuming depth 8). → [work/triage.md](designs/async_gray_fifo/work/triage.md)
+- **async_apb_bridge — clean in every configuration of its specification.** The 7 checks that needed APB5, user signals, the four-phase handshake, a 4-FF cell, the minimum widths or the model off are now verified in the run that has them.
+- **Mutation over a run set:** a mutant runs in the first run that executes its line; a survivor runs again in every other configuration. A four-phase or APB5 term reached in the default run is thus tested where it matters, which is where most of the gain comes from.
+
+### Bug benchmark and CI | Đo bằng bug cài sẵn và CI
+
+`nnc bench <ip>` runs the hand-written realistic faults of `designs/<ip>/bugs/bugs.json` (one-line changes: a full flag one entry early, an overflow raised for a blocked write, PPROT taken from the wrong channel, a dropped PSLVERR, a burst one beat short, an unchecked source ID, a binary instead of Gray pointer across the clock domains, a two-phase acknowledge detected on the wrong level…) against the approved verification. A bug counts as caught only when a test or check fails that passes on the unmodified RTL. **15 of 15 were caught**, 3 per design ([work/bench.md](designs/async_gray_fifo/work/bench.md)). `--triage` adds the triage verdict per bug (an agent call each).
+
+CI (`.github/workflows/ci.yml`) runs the unit tests, then each design's reproduction kit with `make` only, and `nnc kit-check` compares its outcome with the committed results. No agent runs in CI.
+
+`nnc report` also writes `work/review_packet.md` for the person who signs G4: the delegated decisions, failures with their triage, hand edits, what is not verified and a checklist.
 
 Coverage targets are the designer's choice: `cover` shows every baseline, the functional points never hit and the uncovered code items, and runs closure only when a target is set. On apb_tlul_bridge a demonstration target (functional 100 %, set on delegation) was closed in one round: the analyst turned the two missed points (response delayed ≥ 8 cycles, response pending at reset release) into two specification-level scenarios, a writer without RTL access produced `test_apb_tlul_bridge_cov1.py`, and both tests pass (US$1.77).
 
@@ -109,20 +120,22 @@ NNC Pipeline đảm nhiệm **nửa verification** của một flow từ spec t�
 
 ```
 nnc/                 orchestrator: ingest, extract, review, contract, gen_sva, gen_cov, gen_tests, sim, coverage,
-                     closure, triage, mutate, report, inject, flow
+                     closure, triage, mutate, report, inject, flow, runset (run sets), bench (bug benchmark),
+                     kitcheck (CI comparison), packet (G4 reviewer packet)
 nnc/agents/          Claude Code backend (inline worker / sandboxed deep agent), manual backend, cache, schema validator
 nnc/simlib/          helper library copied next to generated cocotb tests (clocks, resets, multi-clock helpers)
 .claude/commands/    /nnc-flow, /nnc-gate
 designs/<ip>/        spec/, rtl/, work/ (artifacts, review sheets), verif/ (generated checkers, cover points, tests),
-                     sim/ (Makefile kit to reproduce the regression)
+                     sim/ (Makefile kit to reproduce the regression), run_set.json, bugs/ (benchmark faults)
+.github/workflows/   CI: unit tests and the reproduction kit of every design
 tests/               unit tests (no tokens, no simulator) and sim_smoke/ (cocotb + Verilator smoke test)
 docs/                ARCHITECTURE.md, GUIDE.md
 ```
 
 ## Limits | Giới hạn
 
-- **EN:** Simulation only: no formal proof, CDC/RDC, STA, synthesis or DFT checks; rules of that kind are listed as not verifiable by simulation. Several clocks may be synchronous (started together) or asynchronous (seeded random phase per clock); metastability itself is modelled only if the RTL has a model. One parameter configuration and one seed per run: checks that need another configuration are reported NOT_VERIFIABLE. Generated tests and checkers can be wrong (sync_fifo shows one): that is what the gates, the hit counters, triage and the mutation score are for. Model outputs vary between runs; the cache makes a re-run reproducible.
-- **VI:** Chỉ mô phỏng: không có formal, CDC/RDC, STA, synthesis hay DFT; các luật loại đó được liệt kê là không kiểm được bằng mô phỏng. Nhiều clock có thể đồng bộ (khởi động cùng lúc) hoặc bất đồng bộ (pha ngẫu nhiên theo seed cho từng clock); metastability chỉ được mô hình nếu RTL có mô hình. Mỗi lần chạy một cấu hình tham số và một seed: check cần cấu hình khác được báo NOT_VERIFIABLE. Test và checker do agent sinh có thể sai (sync_fifo là một ví dụ): đó là lý do có gate, bộ đếm hit, triage và mutation score. Kết quả của model có thể khác giữa các lần; cache giúp chạy lại cho cùng kết quả.
+- **EN:** Simulation only: no formal proof, CDC/RDC, STA, synthesis or DFT checks; rules of that kind are listed as not verifiable by simulation. Several clocks may be synchronous (started together) or asynchronous (seeded random phase per clock); metastability itself is modelled only if the RTL has a model. One run is one configuration and one seed; a run set (`run_set.json`) runs several and merges them, and a check that no run can verify is reported NOT_VERIFIABLE. Generated tests and checkers can be wrong (sync_fifo shows one): that is what the gates, the hit counters, triage and the mutation score are for. Model outputs vary between runs; the cache makes a re-run reproducible.
+- **VI:** Chỉ mô phỏng: không có formal, CDC/RDC, STA, synthesis hay DFT; các luật loại đó được liệt kê là không kiểm được bằng mô phỏng. Nhiều clock có thể đồng bộ (khởi động cùng lúc) hoặc bất đồng bộ (pha ngẫu nhiên theo seed cho từng clock); metastability chỉ được mô hình nếu RTL có mô hình. Mỗi lần chạy là một cấu hình và một seed; run set (`run_set.json`) chạy nhiều cấu hình rồi gộp kết quả, check nào không lần chạy nào kiểm được thì báo NOT_VERIFIABLE. Test và checker do agent sinh có thể sai (sync_fifo là một ví dụ): đó là lý do có gate, bộ đếm hit, triage và mutation score. Kết quả của model có thể khác giữa các lần; cache giúp chạy lại cho cùng kết quả.
 
 ## Licence | Giấy phép
 

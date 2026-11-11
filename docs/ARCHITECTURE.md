@@ -308,4 +308,72 @@ Trước đó lần mô phỏng đầu lộ 3 lỗi **testbench** (triage B, đ�
 3. Mutation lấy cả dòng **không thuộc thiết kế đã elaborate** (nhánh `` `ifdef VLSIT_SYNTHESIS`` không biên dịch, nhánh generate không chọn): chỉ loại dòng có điểm coverage = 0, còn dòng không có điểm nào thì giữ → mutant tương đương giả (APB bridge 58,8 %, 6 mutant như vậy). Nay `results.json` ghi `executed_lines` (lcov count > 0, dạng khoảng) và mutation chỉ lấy dòng đã chạy; 3 IP cũ chạy lại theo luật mới.
 4. Hết quota 5 giờ giữa lần sinh: agent báo lỗi rõ ("resets 6:50am"), chạy lại sau khi reset là đủ; không cần sửa.
 
-**Giới hạn còn lại — một cấu hình mỗi lần chạy.** 17 + 7 check NOT_VERIFIABLE và luật NOT_PROVEN tương ứng cần tham số, define hoặc plusarg khác. Bước tiếp theo đề xuất: **chạy nhiều cấu hình** (ma trận tham số/plusarg trong config, mỗi check gộp kết quả theo cấu hình, NOT_VERIFIABLE chỉ khi không cấu hình nào kiểm được).
+**Giới hạn lúc đó — một cấu hình mỗi lần chạy.** 17 + 7 check NOT_VERIFIABLE và luật NOT_PROVEN tương ứng cần tham số, define hoặc plusarg khác. Đã giải quyết bằng run set (§16).
+
+## 16. Run set, CI, benchmark bug, gói người duyệt (2026-11-11)
+
+**Run set (`designs/<ip>/run_set.json`, `nnc/runset.py`).**
+- **Cách chạy:** một regression gồm nhiều cấu hình (tham số, define, plusarg, chu kỳ clock) và nhiều seed. Mỗi cấu hình build một lần trong thư mục riêng; các seed chạy nối tiếp, các cấu hình chạy song song. Coverage được gộp bằng `verilator_coverage --write`.
+- **Gộp kết quả không làm yếu kết luận:**
+  - Test fail ở bất kỳ lần chạy nào là FAIL. Assertion được cộng hit/fail; chỉ là NOT_HIT nếu không lần nào hit.
+  - NOT_VERIFIABLE chỉ khi **mọi** lần chạy đều khai như vậy. PASS cần một lần chạy kiểm được và không lần nào fail.
+- **Báo cáo:**
+  - Report có bảng *Run set*; mỗi check ghi `verified in …` / `failed in …`.
+  - Có thêm điều kiện sign-off "mọi lần chạy đều build được".
+  - Kết quả từng lần chạy ở `work/runs/<cấu hình>.s<seed>.json`, log ở `work/sim/runs/`.
+- **Lần chạy chính** (cấu hình đầu tiên, seed đầu tiên) dùng cho bộ tái lập `sim/`.
+- **Không cần sinh lại test:** test tự đọc tham số, define, plusarg của lần chạy.
+
+| | async_gray_fifo (14 lần chạy, 10 cấu hình) | async_apb_bridge (14 lần chạy, 12 cấu hình) |
+|---|---|---|
+| NOT_VERIFIABLE: 1 lần chạy → run set | 17 → 3 (CHK-015/016/029: thống kê qua nhiều seed, mỗi lần chạy không tự kết luận được) | 7 → 0 |
+| Kết quả | 26 PASS, 3 FAIL (CHK-003/013/025, triage C) | 35/35 PASS, luật VERIFIED 185, NOT_PROVEN 0 |
+| Mutation: 1 lần chạy → run set | 80,6 → 91,7 % | 72,2 → 83,3 % |
+| Thời gian mô phỏng | ≈ 2,5–3 phút cho cả run set | ≈ 4 phút |
+
+**Lỗi lộ ra khi chạy cấu hình khác (FIFO, triage B, sửa tay, G3 duyệt lại):** code kiểm chứng sinh ra đã ngầm viết cứng cấu hình mặc định.
+- Checker scoreboard bỏ từ trước reset ở cạnh 5 (= S+3 chỉ khi S=2), nên fail với cell 4 tầng.
+- Test ghi ngay sau khi đọc mà không chờ con trỏ đọc đi qua miền clock (với độ sâu 2, `o_full` bi quan lên sớm, spec cho phép).
+- CHK-024 chờ FIFO chứa 5 từ (không thể khi độ sâu là 2).
+- CHK-025 cần FIFO sâu hơn cửa sổ đồng bộ.
+
+Không check nào bị nới ở cấu hình mặc định.
+
+Một lỗi mới, CHK-025 ở cell3/wr_slow (`o_empty` hạ ở cạnh S+3), được triage là cùng gốc với mâu thuẫn spec của CHK-003/013: mô hình metastability theo từng bit có thể nuốt một xung bit ngắn của con trỏ khi có hai lần ghi liên tiếp. Sửa test đồng nghĩa với nới cửa sổ mong đợi, nên check được **giữ FAIL** để người viết spec quyết.
+
+**Mutation theo run set.**
+- Mutant được lấy từ dòng mà **bất kỳ** lần chạy nào đã đi qua, và chạy ở lần chạy đầu tiên đi qua dòng đó, so với baseline của chính lần chạy đó.
+- Mutant sống sót được chạy lại ở **mọi cấu hình khác** đi qua dòng đó (mỗi cấu hình một seed). Lý do: một dòng có thể chạy ở cấu hình mặc định trong khi phần bị đổi chỉ có tác dụng ở cấu hình khác (số hạng HS_TYPE, cổng APB5).
+- Lần đầu chưa có vòng chạy lại, agent A12 đã gọi các mutant đó là "tương đương". Thật ra chúng chỉ tương đương **trong cấu hình đó**.
+
+**CI (`.github/workflows/ci.yml`) và `nnc kit-check`.**
+- **Unit test:** chạy trên Python 3.11 và 3.12.
+- **Bộ tái lập:** với mỗi thiết kế, CI chạy `designs/<ip>/sim` bằng `make` thuần (Verilator của OSS CAD Suite 2026-11-07, cocotb 2.1.0, cố định phiên bản).
+- **`kit-check`:** so *kết quả* (không so số đếm) với kết quả đã commit: tập test, test fail, assertion fail, assertion không hit, check NOT_VERIFIABLE.
+- **Đã thử trong WSL:** cả 5 thiết kế cho SAME OUTCOME.
+- CI không gọi agent nào và không dùng secret.
+
+**Benchmark bug (`nnc bench`, `designs/<ip>/bugs/bugs.json`).**
+- **Bộ bug:** 15 lỗi RTL viết tay (3 mỗi thiết kế), mỗi lỗi thay một dòng, giống lỗi thật:
+  - cờ full sớm một ô; overflow cả khi bị chặn; so ngưỡng lệch một;
+  - PPROT lấy nhầm kênh; mất PSLVERR; burst thiếu một beat;
+  - không kiểm source ID; nhận ghi thiếu strobe; trả dữ liệu khi lỗi;
+  - full chỉ so MSB của Gray; truyền con trỏ nhị phân thay vì Gray;
+  - nhận ack hai pha sai mức; không chuyển PPROT.
+- **"Bắt được"** chỉ khi có test/check fail mà trên RTL gốc vẫn pass. Nếu không, FIFO với 3 lỗi có sẵn sẽ "bắt" mọi bug miễn phí. `nnc inject` cũng dùng quy tắc này, và triage chỉ nhận các lỗi mới.
+- **Kết quả: 15/15 bị bắt**, mỗi bug làm fail nhiều test/check độc lập.
+- **Độ đúng của triage** (`--triage`, ≈ US$2–3 mỗi bug, agent Opus) chưa đo trên bộ này. Bằng chứng trước đó: bug demo TL1 → A (3/3 cụm); bug thật axi2apb → A; checker sai sync_fifo → B.
+
+**Gói người duyệt (`work/review_packet.md`, `nnc/packet.py`).** `nnc report` tạo thêm một tài liệu, chỉ bằng code, chỉ gồm những điểm cần con người phán đoán:
+- quyết định gate theo uỷ quyền;
+- lỗi kèm kết luận triage;
+- chỗ sửa tay;
+- điều chưa kiểm được;
+- mutant sống sót, kèm cấu hình đã chạy.
+
+Cuối tài liệu là danh sách câu hỏi phải trả lời trước `G4_signoff`.
+
+**Chi phí và quota.**
+- Lời gọi agent bị chặn vì hết quota sẽ tự đợi tới giờ reset ghi trong thông báo, rồi gọi lại (`NNC_LIMIT_WAIT`, mặc định 6 giờ).
+- Report tách riêng tiền của các lần gọi thất bại. Tổng là US$8,4 trên 5 thiết kế: ba lần sinh test (A7) bị cắt giữa chừng sau khoảng 20 phút, cộng một lần timeout.
+- Đề xuất còn để ngỏ: tách A7 thành một module testbench chung cộng các lời gọi nhỏ theo nhóm check, để một lần ngắt chỉ mất một nhóm. Việc này thay đổi bố cục test và cần sinh lại, duyệt lại test của mọi thiết kế.

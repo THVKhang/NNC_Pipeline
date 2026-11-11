@@ -422,6 +422,9 @@ async def xfer(tb, cid, D):
 async def fill_tr(tb, cid, r):
     """Fill to DEPTH, read one word at Tr, measure the o_full fall, then drain."""
     D = [r.getrandbits(DW) for _ in range(DEPTH)]
+    # Hand fix 2026-11-11: let earlier reads cross to the write domain first. o_full may stay 1 late
+    # (REQ-FUNC-008); with DEPTH=2 a read still in the synchronizer made the first fill edge see full.
+    await tb.idle(nw=LMAX + 3)
     m0 = len(tb.sb.reads)
     ns = [await tb.w(1, x) for x in D]
     await tb.w(0)
@@ -539,6 +542,7 @@ async def scn_021(tb, cid, r):
     for k, n in enumerate(rs):
         x = await tb.rec(tb.rd, n)
         assert x["o_empty"] == 0 and x["o_rd_data"] == Wd[k], f"{cid}: read {k} expected {hx(Wd[k])} got {hx(x['o_rd_data'])}"
+    await tb.idle(nw=LMAX + 3)          # hand fix 2026-11-11: the reads cross before the next write (REQ-FUNC-008)
     await xfer(tb, cid, Wd[DEPTH])
     await tb.idle(nr=3)
     us = [await tb.r(1) for _ in range(6)]
@@ -1024,14 +1028,15 @@ async def test_chk_024_hw_reset_mid_traffic(dut):
     d = dut
     W, R = tb.models(r)
     W.gate = R.gate = True
+    tgt = max(1, min(5, DEPTH - 1))     # hand fix 2026-11-11: 5 words need DEPTH > 5 (5 for the default DEPTH 8)
     for _ in range(4000):
         await tb.wr.tick()
         q = len(tb.sb.Q)
-        if q == 5 and W.d > 0:
+        if q == tgt and W.d > 0:
             break
-        W.d, R.d = (0.8, 0.3) if q < 5 else (0.3, 0.8)
+        W.d, R.d = (0.8, 0.3) if q < tgt else (0.3, 0.8)
     else:
-        assert False, f"{cid}: the FIFO never held 5 words"
+        assert False, f"{cid}: the FIFO never held {tgt} words"
     d.i_rst_n_wr.value = 0
     d.i_rst_n_rd.value = 0
     W.run = R.run = False
@@ -1065,6 +1070,12 @@ async def test_chk_025_srst_partial_fifo(dut):
     tb = TB(dut, {WCLK: 10, RCLK: 14})
     await tb.init(ft=min(6, TMAX), et=2)
     note_model(dut, cid)
+    if min(6, DEPTH) < LMAX:            # hand fix 2026-11-11
+        not_verifiable(dut, cid, f"PARA_AFIFO_DEPTH={DEPTH} holds fewer words than the read edges the request "
+                       f"may need to cross (up to {LMAX}): reading at every edge empties the FIFO before the block, "
+                       "so the scenario cannot be built here; it runs in deeper configurations")
+        tb.finish()
+        return
     r = rng("chk025")
     d = dut
     D = [r.getrandbits(DW) for _ in range(6)]

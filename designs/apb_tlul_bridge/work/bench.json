@@ -1,0 +1,77 @@
+{
+ "design": "apb_tlul_bridge",
+ "summary": {
+  "bugs": 3,
+  "caught": 3,
+  "detection_rate": 100.0,
+  "triaged": 0,
+  "triage_correct": 0,
+  "triage_accuracy": null,
+  "triage_cost_usd": 0
+ },
+ "bugs": [
+  {
+   "id": "TL1",
+   "title": "response source ID not checked",
+   "file": "m_tlul_if.sv",
+   "spec": "a wrong d_source is an error",
+   "expect": "A_rtl_wrong",
+   "caught": true,
+   "new_failing": [
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_029_random_scoreboard",
+    "CHK-010"
+   ],
+   "status": "ran",
+   "triage_most_likely": [],
+   "triage_verdict": null,
+   "triage_correct": null,
+   "triage_cost_usd": null
+  },
+  {
+   "id": "TL2",
+   "title": "partial-strobe write accepted",
+   "file": "m_apb_if.sv",
+   "spec": "only full-word writes are legal",
+   "expect": "A_rtl_wrong",
+   "caught": true,
+   "new_failing": [
+    "test_chk_018_local_error",
+    "test_chk_025_ignored_inputs",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "CHK-014",
+    "CHK-007"
+   ],
+   "status": "ran",
+   "triage_most_likely": [],
+   "triage_verdict": null,
+   "triage_correct": null,
+   "triage_cost_usd": null
+  },
+  {
+   "id": "TL3",
+   "title": "read data returned with an error response",
+   "file": "m_tlul_if.sv",
+   "spec": "PRDATA zero on error",
+   "expect": "A_rtl_wrong",
+   "caught": true,
+   "new_failing": [
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_025_ignored_inputs",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "CHK-010",
+    "CHK-005"
+   ],
+   "status": "ran",
+   "triage_most_likely": [],
+   "triage_verdict": null,
+   "triage_correct": null,
+   "triage_cost_usd": null
+  }
+ ]
+}

@@ -1,0 +1,11 @@
+--- rtl/m_vlsit_sfifo_rd.sv
++++ rtl/m_vlsit_sfifo_rd.sv
+@@ -149,7 +149,7 @@
+       reg_req_s     <= 1'b0;
+     end else begin
+       reg_empty     <= (w_occ_nxt == '0);
+-      reg_empty_thr <= (w_empty_thr_ext >= w_occ_nxt);
++      reg_empty_thr <= (w_empty_thr_ext > w_occ_nxt);
+       // A read that is blocked by the software reset is not an error and raises no pulse.
+       reg_underflow <= i_rd_en & ~w_rd_blk & reg_empty;
+       reg_wptr_s    <= i_wr_ptr;

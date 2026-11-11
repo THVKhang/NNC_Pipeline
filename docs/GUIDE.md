@@ -84,7 +84,35 @@ python -m nnc flow my_ip --from gen-tests --agent-timeout 3600         # a large
 
 With `async` each clock starts after its own seeded random delay below one period, so the phase between the domains changes from test to test and from seed to seed; periods may be fractional (13.7 ns) so that the ratio is not an integer. The contract, SVA and test agents are told that no edge of one clock may be assumed to coincide with an edge of another: a cross-domain check states an order and a bounded window counted in edges of the destination clock, never an exact cycle. Tests can stop and restart a clock (`stop_clock`, `resume_clock`). The test agent is given the defines and plusargs of the run, and tests read them with `plusarg("NAME")` and `DEFINES` (set them before `gen-tests`; changing them later needs new tests). One run has one configuration (defines, plusargs, parameters): a check that needs another one (synthesis branch, metastability model off) is reported `NOT_VERIFIABLE`, never PASS.
 
-**VI — clock bất đồng bộ và tuỳ chọn chạy:** với IP có các miền clock không liên quan (CDC: FIFO bất đồng bộ, bridge giữa hai clock), đặt quan hệ **trước bước contract** (lệnh như trên). Với `async`, mỗi clock khởi động sau một khoảng trễ ngẫu nhiên riêng (nhỏ hơn một chu kỳ, theo seed), nên lệch pha giữa các miền thay đổi theo test và theo seed; chu kỳ có thể lẻ (13.7 ns) để tỉ lệ không nguyên. Agent contract, SVA và test được dặn: không được giả sử cạnh của hai clock trùng nhau; check qua hai miền phải nói thứ tự và một cửa sổ giới hạn tính bằng cạnh của clock đích, không bao giờ là một chu kỳ chính xác. Test có thể dừng và chạy lại một clock (`stop_clock`, `resume_clock`). `plusargs` truyền cho simulator (`{seed}` thay bằng seed của lần chạy), `defines` là macro Verilog khi build DUT; agent test được cho biết hai giá trị này và test đọc chúng bằng `plusarg("NAME")`, `DEFINES` (đặt trước `gen-tests`; đổi sau đó thì cần sinh lại test); `--agent-timeout` (giây, mặc định 1800) cho agent nhiều thời gian hơn với spec lớn. Mỗi lần chạy chỉ có một cấu hình: check cần cấu hình khác (nhánh synthesis, tắt mô hình metastability) được báo `NOT_VERIFIABLE`, không bao giờ PASS.
+**VI — clock bất đồng bộ và tuỳ chọn chạy:** với IP có các miền clock không liên quan (CDC: FIFO bất đồng bộ, bridge giữa hai clock), đặt quan hệ **trước bước contract** (lệnh như trên). Với `async`, mỗi clock khởi động sau một khoảng trễ ngẫu nhiên riêng (nhỏ hơn một chu kỳ, theo seed), nên lệch pha giữa các miền thay đổi theo test và theo seed; chu kỳ có thể lẻ (13.7 ns) để tỉ lệ không nguyên. Agent contract, SVA và test được dặn: không được giả sử cạnh của hai clock trùng nhau; check qua hai miền phải nói thứ tự và một cửa sổ giới hạn tính bằng cạnh của clock đích, không bao giờ là một chu kỳ chính xác. Test có thể dừng và chạy lại một clock (`stop_clock`, `resume_clock`). `plusargs` truyền cho simulator (`{seed}` thay bằng seed của lần chạy), `defines` là macro Verilog khi build DUT; agent test được cho biết hai giá trị này và test đọc chúng bằng `plusarg("NAME")`, `DEFINES` (đặt trước `gen-tests`; đổi sau đó thì cần sinh lại test); `--agent-timeout` (giây, mặc định 1800) cho agent nhiều thời gian hơn với spec lớn. Mỗi lần chạy chỉ có một cấu hình: check cần cấu hình khác (nhánh synthesis, tắt mô hình metastability) được báo `NOT_VERIFIABLE`, không bao giờ PASS — trừ khi có run set (mục dưới).
+
+### Run set: several configurations and seeds | Nhiều cấu hình và nhiều seed
+
+`designs/<ip>/run_set.json` lists the configurations of the specification. `nnc sim`, `cover` and `inject` then run all of them (each configuration built once, its seeds one after the other, configurations in parallel with `--workers`) and merge the results per check:
+
+```json
+{"seeds": [1],
+ "configs": [
+  {"name": "base", "note": "CFG-BASE, model on", "seeds": [1, 2, 3, 4, 5]},
+  {"name": "model_off", "plusargs": "+MSYNC_SEED={seed} +MSYNC_EN=0"},
+  {"name": "syn", "defines": "VLSIT_SYNTHESIS"},
+  {"name": "cell4", "params": {"PARA_CELL_TYPE": 4}},
+  {"name": "slow_rd", "clock_periods": "i_clk_wr=6,i_clk_rd=22"}]}
+```
+
+Each configuration starts from the design configuration and overrides only what it names: `params` (contract parameters; derived ones are refused), `defines` and `plusargs` (replaced), `clock_periods` (merged per clock), `seeds`. The first configuration with its first seed is the **primary run**: the reproduction kit `sim/` and mutation testing use it. Merging never weakens a result: a test fails if it failed in any run; an assertion's hits and fails are summed (NOT_HIT only if it was hit in no run); a check is `NOT_VERIFIABLE` only if **every** run declared it so, and PASS needs one run that verified it with no run failing it. Code coverage is the merged `coverage.dat` of all runs. The report gets a *Run set* table, each check says in which runs it was verified or failed, and a sign-off condition requires every run to build. Per-run results are in `work/runs/<config>.s<seed>.json` and logs in `work/sim/runs/`. `--single-run` ignores the file. The tests are not regenerated: they read the parameters, defines and plusargs of their run and decide themselves what they can check.
+
+**VI:** file `designs/<ip>/run_set.json` liệt kê các cấu hình mà spec yêu cầu. Khi có file này, `nnc sim`, `cover` và `inject` chạy hết mọi cấu hình: mỗi cấu hình build một lần, các seed chạy nối tiếp nhau, các cấu hình chạy song song theo `--workers`. Sau đó kết quả được gộp theo từng check.
+- **Cách khai báo:** mỗi cấu hình kế thừa config của thiết kế và chỉ thay những gì nó ghi: `params` (không nhận tham số dẫn xuất), `defines`, `plusargs`, `clock_periods`, `seeds`.
+- **Lần chạy chính:** cấu hình đầu tiên với seed đầu tiên. Bộ tái lập `sim/` và mutation testing dùng lần chạy này.
+- **Gộp kết quả không bao giờ làm yếu kết luận:**
+  - Một test chỉ cần fail ở một lần chạy là FAIL.
+  - Assertion được cộng số lần hit và số lần fail; nó chỉ là NOT_HIT khi không lần chạy nào hit.
+  - Một check chỉ là `NOT_VERIFIABLE` khi **mọi** lần chạy đều khai như vậy. Nó là PASS khi có ít nhất một lần chạy kiểm được và không lần nào fail.
+- **Coverage** là coverage.dat gộp của tất cả các lần chạy.
+- **Report** có bảng *Run set*. Mỗi check ghi rõ nó được kiểm hay bị fail ở lần chạy nào. Có thêm một điều kiện sign-off: mọi lần chạy phải build được.
+- **Không cần sinh lại test:** test tự đọc tham số, define và plusarg của lần chạy để biết mình kiểm được gì.
+- `--single-run` bỏ qua file run set.
 
 ## 4. Verification sources — Gate 3 | Mã kiểm chứng — Gate 3
 
@@ -110,7 +138,8 @@ python -m nnc flow my_ip --from sim
 | `work/coverage.md` | baseline of every metric, functional points never hit, uncovered code items per file; closure rounds, tests added, points claimed unreachable |
 | `work/triage.md` | per failure: spec says / RTL does / test does / candidates A-B-C / options — **you decide** |
 | `work/mutation.json` | mutants on executed lines of a copy of the RTL: killed / survived / not compiled, score, rules of each mutant, score per rule |
-| `work/report.md`, `work/rtm.json` | sign-off conditions, rule → check → evidence → mutation score, gates, cost |
+| `work/report.md`, `work/rtm.json` | sign-off conditions, rule → check → evidence → mutation score, gates, cost (including what failed calls cost) |
+| `work/review_packet.md` | for the G4 reviewer: only what needs a human judgement (delegated decisions, failures with their triage, hand edits, what is not verified, surviving mutants) and a checklist |
 | `sim/Makefile` | reproduce without NNC (Linux/WSL): `make help`, `make regression`, `make test TC=test_chk_003`, `make coverage-report` |
 
 ```bash
@@ -126,6 +155,35 @@ python -m nnc config my_ip mutation_threshold=85            # per-rule mutation 
 **EN:** A test that fails because of a Python error in the test code is repaired automatically (at most twice) without showing the RTL; a failed check is never "repaired". Sign off with `nnc gate approve my_ip G4_signoff` only after reading the report: its *Sign-off conditions* table shows what is met (all checks PASS, every rule mapped, per-rule mutation ≥ threshold, coverage target).
 
 **VI:** Test lỗi do code Python của test được tự sửa (tối đa 2 lần) mà không cho xem RTL; một check thất bại thì không bao giờ được "sửa". Chỉ ký `G4_signoff` sau khi đọc báo cáo: bảng *Sign-off conditions* cho biết điều kiện nào đạt (mọi check PASS, mọi luật có ánh xạ, mutation từng luật ≥ ngưỡng, mục tiêu coverage).
+
+**Reviewer packet | Gói cho người duyệt.** `nnc report` also writes `work/review_packet.md`: the delegated gate decisions to confirm, each failure with its triage verdict, hand edits of generated code, what was not verified and why, surviving mutants, and a checklist to answer before `G4_signoff`. Give it to the person who signs. — **VI:** `nnc report` còn tạo `work/review_packet.md`. Đây là tài liệu đưa cho người ký G4: nó chỉ gom những điểm cần con người phán đoán, kèm một danh sách câu hỏi phải trả lời trước khi ký.
+- Các quyết định gate do agent đưa ra theo uỷ quyền.
+- Từng lỗi, kèm kết luận của triage.
+- Các chỗ code sinh ra đã được sửa tay.
+- Những gì chưa kiểm được, và lý do.
+- Các mutant sống sót.
+
+**Mutation with a run set.** Mutants are drawn from the lines executed by any run; each is simulated in the first run that executed its line (primary first) and judged against that run's baseline. A survivor gets a second chance in every other configuration (first seed) that executed its line: a line can be reached in the default configuration while the changed term only matters in another one (a four-phase handshake term, an APB5 gate). The score is that of the run set as a whole. — **VI:** khi có run set, mutant được lấy từ dòng code mà bất kỳ lần chạy nào đã đi qua, và mô phỏng ở lần chạy đầu tiên đi qua dòng đó. Mutant nào sống sót thì được chạy lại ở mọi cấu hình khác cũng đi qua dòng đó. Như vậy điểm số là điểm của cả run set, không chỉ của cấu hình mặc định.
+
+### Bug benchmark | Đo chất lượng flow bằng bug cài sẵn
+
+```bash
+python -m nnc bench my_ip                       # every fault of bugs/bugs.json: caught or not (no agent)
+python -m nnc bench my_ip --triage AF1,AF3      # also triage the new failures of these bugs (agent cost)
+```
+
+`designs/<ip>/bugs/bugs.json` lists hand-written realistic faults, each a one-line `find`/`replace` in `rtl/` with the requirement it breaks and the expected triage verdict (`A_rtl_wrong`). The benchmark writes `bugs/<id>.diff` (so `nnc inject` reproduces one alone), runs the approved verification on a patched copy (the run set when there is one) and writes `work/bench.md`: a bug is **caught** only if a test or check fails that passes on the unmodified RTL — failures already in the baseline do not count — and the triage verdict (most frequent cause over the new failures) is compared with the expected one. — **VI:** `bugs/bugs.json` liệt kê các lỗi RTL viết tay, giống lỗi người thiết kế thật hay mắc; mỗi lỗi là một dòng `find`/`replace`. Benchmark chạy kiểm chứng đã duyệt trên bản sao RTL có lỗi, rồi ghi `work/bench.md`.
+- **Bắt được:** chỉ tính khi có test/check fail mà trên RTL gốc vẫn pass. Lỗi đã có sẵn ở baseline không được tính.
+- **Triage đúng:** kết luận phổ biến nhất của triage trùng với kết luận mong đợi (A = RTL sai).
+
+### Continuous integration | CI
+
+`.github/workflows/ci.yml` runs on every push: the unit tests (Python 3.11 and 3.12), then for each design the reproduction kit `designs/<ip>/sim` with `make` only and `nnc kit-check <ip>`, which compares the outcome with the committed results (same tests, same failing tests, same failing and never-hit assertions, same NOT_VERIFIABLE checks; counts may differ). Verilator (OSS CAD Suite 2026-11-07) and cocotb 2.1.0 are pinned. No agent runs in CI. — **VI:** mỗi lần push, CI chạy hai phần, đều không gọi agent nào.
+- **Unit test:** chạy trên Python 3.11 và 3.12.
+- **Bộ tái lập:** với từng thiết kế, CI chạy bộ tái lập bằng `make` thuần, rồi `nnc kit-check` so kết quả với kết quả đã commit: cùng test fail, cùng assertion fail hoặc không hit.
+- Phiên bản Verilator và cocotb được cố định.
+
+**Usage limit | Hết quota.** When the Claude account's usage limit stops a call ("You've hit your 5-hour limit · resets 6:50am"), the call waits until the stated reset and runs again (at most `NNC_LIMIT_WAIT` seconds in total, default 21600; `0` fails at once). The money already spent by the interrupted call is lost: the report shows it under *failed calls*. — **VI:** khi hết quota, lời gọi agent tự đợi tới giờ reset rồi chạy lại (tối đa `NNC_LIMIT_WAIT` giây, mặc định 6 giờ; `0` = báo lỗi ngay). Tiền đã tốn cho lần gọi bị ngắt thì không lấy lại được; report ghi khoản này ở mục *failed calls*.
 
 ## Exploratory run | Chạy thăm dò
 

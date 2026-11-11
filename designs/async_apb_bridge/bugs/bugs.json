@@ -1,0 +1,32 @@
+{
+ "note": "Hand-written realistic RTL faults for the bug benchmark (nnc bench). Each replaces one line of rtl/; the delivered RTL is never changed. 'expect' is the correct triage verdict.",
+ "bugs": [
+  {
+   "id": "AA1",
+   "title": "PPROT not forwarded",
+   "file": "m_vlsit_apbcdc_mst.sv",
+   "find": "assign w_req_payload[PARA_APBCDC_ADDR_W +: LPARA_PROT_W] = i_apb_pprot;",
+   "replace": "assign w_req_payload[PARA_APBCDC_ADDR_W +: LPARA_PROT_W] = '0;",
+   "spec": "the request bundle carries PPROT",
+   "expect": "A_rtl_wrong"
+  },
+  {
+   "id": "AA2",
+   "title": "two-phase acknowledge detected on the wrong level",
+   "file": "m_vlsit_apbcdc_mst.sv",
+   "find": "assign w_ack_event = (PARA_APBCDC_HS_TYPE == 32'd0) ? (w_ack_s == reg_req) : w_ack_s;",
+   "replace": "assign w_ack_event = (PARA_APBCDC_HS_TYPE == 32'd0) ? (w_ack_s != reg_req) : w_ack_s;",
+   "spec": "two-phase: ack event when ack equals req",
+   "expect": "A_rtl_wrong"
+  },
+  {
+   "id": "AA3",
+   "title": "PSLVERR dropped on the requester side",
+   "file": "m_vlsit_apbcdc_mst.sv",
+   "find": "assign o_apb_pslverr = reg_resp_payload[PARA_APBCDC_DATA_W];",
+   "replace": "assign o_apb_pslverr = 1'b0;",
+   "spec": "PSLVERR is returned",
+   "expect": "A_rtl_wrong"
+  }
+ ]
+}

@@ -16,7 +16,7 @@ from pathlib import Path
 
 from nnc import contract as contract_mod
 from nnc import extract as extract_mod
-from nnc import closure, gen_cov, gen_sva, gen_tests, mutate, report, review, sim, triage
+from nnc import closure, gen_cov, gen_sva, gen_tests, mutate, packet, report, review, runset, sim, triage
 from nnc.agents.runtime import make_backend
 from nnc.ingest import build_index, save_index
 from nnc.project import Design, ProjectError
@@ -42,6 +42,7 @@ class Options:
     seed: int = 1
     mutants: int = 12
     repair_rounds: int = 2
+    single: bool = False          # ignore run_set.json: one run of the design configuration
     timeout_s: int = 1800
     log: list[str] = field(default_factory=list)
 
@@ -212,9 +213,7 @@ def _clock_relation(d: Design) -> str | None:
 def stage_sim(d: Design, o: Options) -> None:
     _gate(d, "sim", o)
     contract = _read(d.work / "contract.json")
-    host = default_host()
-    res = sim.run(host, contract, d.root / "rtl", d.root / "verif" / "sva", test_files(d), seed=o.seed,
-                  **_simkw(d))
+    res = _regression(d, o, contract, d.root / "rtl")
     o.say("[sim] " + _summ_sim(res))
     for rnd in range(1, o.repair_rounds + 1):
         lib = gen_tests.library_errors(res) if res.get("status") == "ran" else []
@@ -230,17 +229,18 @@ def stage_sim(d: Design, o: Options) -> None:
         rep = gen_tests.repair(contract_mod.selected(contract), _read(d.work / "rules.json"), _backend(d, o), _logs(d), test_file(d), errs,
                                model=o.tests_model, round_no=rnd, run_opts=sim.sim_options(d.config()))
         o.say(f"[sim] repair: {rep['status']}")
-        res = sim.run(host, contract, d.root / "rtl", d.root / "verif" / "sva", test_files(d), seed=o.seed,
-                      **_simkw(d))
+        res = _regression(d, o, contract, d.root / "rtl")
         o.say("[sim] " + _summ_sim(res))
     _save_sim(d, res)
 
 
-def _write_kit(d: Design, contract: dict, params: dict | None) -> None:
-    """designs/<ip>/sim/: Makefile and inputs that reproduce the regression without NNC."""
+def _write_kit(d: Design, contract: dict, params: dict | None, kw: dict | None = None) -> None:
+    """designs/<ip>/sim/: Makefile and inputs that reproduce the regression without NNC (the primary run
+    of a run set)."""
+    kw = kw or _simkw(d)
     kit = sim.kit_files(contract, sim.rtl_files(d.root / "rtl"), sim.checker_files(d.root / "verif" / "sva"),
-                        test_files(d), params if params is not None else sim.param_values(contract), _periods(d),
-                        sim.sim_options(d.config()))
+                        test_files(d), params if params is not None else sim.param_values(contract),
+                        kw["clock_periods"], kw["opts"])
     for rel, text in kit.items():
         p = d.root / rel
         p.parent.mkdir(parents=True, exist_ok=True)
@@ -249,14 +249,75 @@ def _write_kit(d: Design, contract: dict, params: dict | None) -> None:
 
 def _save_sim(d: Design, res: dict) -> None:
     if (d.work / "contract.json").is_file():
-        _write_kit(d, _read(d.work / "contract.json"), res.get("params"))
+        prim = _primary(res)
+        _write_kit(d, _read(d.work / "contract.json"), res.get("params"),
+                   prim and {"clock_periods": prim["clock_periods"], "opts": prim["opts"]})
     res["unreviewed_gates"] = d.require_gate("G3_verif_sources", True)
-    out = Path(res.pop("out_dir", "")) if res.get("out_dir") else None
+    logs = _run_logs(res)
+    detail = res.pop("runs_detail", None)
+    runs_dir = d.work / "runs"
+    for old in runs_dir.glob("*.json") if runs_dir.is_dir() else []:
+        old.unlink()
+    for r in detail or []:
+        _write(runs_dir / f"{r['label']}.json", {**runset.summary(r), "result": runset.primary_result(r)})
     _write(d.work / "results.json", res)
-    if out and (out / "sim.log").is_file():
-        (d.work / "sim").mkdir(exist_ok=True)
-        (d.work / "sim" / "sim.log").write_text((out / "sim.log").read_text(encoding="utf-8", errors="replace"),
-                                                encoding="utf-8")
+    _copy_logs(logs, d.work / "sim" / "sim.log", d.work / "sim" / "runs")
+
+
+def _run_logs(res: dict) -> list[tuple[str, Path]]:
+    """(label, sim.log) of every run, primary first; label "" for a single run."""
+    out = Path(res.pop("out_dir", "")) if res.get("out_dir") else None
+    if res.get("runs_detail"):
+        return [(r["label"], Path(r["log"])) for r in res["runs_detail"]]
+    return [("", out / "sim.log")] if out else []
+
+
+def _copy_logs(logs: list[tuple[str, Path]], primary: Path, runs_dir: Path) -> None:
+    """The primary log at `primary` (as for a single run), every run's log in runs_dir/<label>.log."""
+    for old in runs_dir.glob("*.log") if runs_dir.is_dir() else []:
+        old.unlink()
+    for i, (label, log) in enumerate(logs):
+        if not log.is_file():
+            continue
+        text = log.read_text(encoding="utf-8", errors="replace")
+        if i == 0:
+            primary.parent.mkdir(parents=True, exist_ok=True)
+            primary.write_text(text, encoding="utf-8")
+        if label:
+            runs_dir.mkdir(parents=True, exist_ok=True)
+            (runs_dir / f"{label}.log").write_text(text, encoding="utf-8")
+
+
+def run_set_path(d: Design) -> Path:
+    return d.root / runset.FILE
+
+
+def _runs(d: Design, o: Options, contract: dict) -> list[dict] | None:
+    """The runs of designs/<ip>/run_set.json, or None for one run of the design configuration."""
+    if o.single or not run_set_path(d).is_file():
+        return None
+    try:
+        return runset.load(run_set_path(d), contract, d.config())
+    except runset.RunSetError as e:
+        raise ProjectError(str(e)) from e
+
+
+def _regression(d: Design, o: Options, contract: dict, rtl_dir: Path) -> dict:
+    """The regression on rtl_dir: every run of the run set (merged), else one run with --seed."""
+    runs = _runs(d, o, contract)
+    if runs is None:
+        return sim.run(default_host(), contract, rtl_dir, d.root / "verif" / "sva", test_files(d), seed=o.seed,
+                       **_simkw(d))
+    o.say(f"[sim] run set: {len(runs)} run(s) in {len({r['config'] for r in runs})} configuration(s): "
+          + ", ".join(r["label"] for r in runs))
+    return runset.run(default_host(), contract, rtl_dir, d.root / "verif" / "sva", test_files(d), runs,
+                      parallel=o.workers)
+
+
+def _primary(res: dict | None) -> dict | None:
+    """Settings of the primary run of a run-set result (None for a single run)."""
+    rs = (res or {}).get("run_set")
+    return next((r for r in rs["runs"] if r["label"] == rs["primary"]), None) if rs else None
 
 
 def _coverage_line(res: dict) -> str:
@@ -358,8 +419,7 @@ def stage_cover(d: Design, o: Options) -> None:
         mod = d.root / "verif" / "tests" / f"test_{d.name}_cov{rnd}.py"
         mod.write_text(code, encoding="utf-8")
         entry["tests"] = sorted(n for n in gen_tests.test_check_map(code))
-        res = sim.run(default_host(), contract, d.root / "rtl", d.root / "verif" / "sva", test_files(d),
-                      seed=o.seed, **_simkw(d))
+        res = _regression(d, o, contract, d.root / "rtl")
         o.say(f"[cover] round {rnd}: {len(keep)} scenarios, {len(entry['tests'])} tests -> {_summ_sim(res)}")
         new = closure.baseline(res, metric) if res.get("status") == "ran" else None
         entry.update({k: (new or {}).get(k) for k in ("percent", "hit", "total")})
@@ -384,29 +444,36 @@ def stage_cover(d: Design, o: Options) -> None:
 
 def run_inject(d: Design, o: Options, patch: Path, out: Path, do_triage: bool = True) -> dict:
     """Run the approved checkers and tests on a patched COPY of the RTL (nnc inject) and triage the
-    failures. Answers "would the flow catch this bug?" with evidence; rtl/ is never touched."""
+    failures. Answers "would the flow catch this bug?" with evidence; rtl/ is never touched. Only NEW
+    failures count (a test or check that passes on the unmodified RTL, work/results.json): a failure
+    already present in the baseline says nothing about the bug and is not sent to triage."""
     from nnc import inject
     _gate(d, "sim", o)
     contract = _read(d.work / "contract.json")
     out.mkdir(parents=True, exist_ok=True)
     changed = inject.make_copy(d.root / "rtl", patch.read_text(encoding="utf-8"), out / "rtl")
     (out / "injected_bug.diff").write_bytes(patch.read_bytes())
-    res = sim.run(default_host(), contract, out / "rtl", d.root / "verif" / "sva", test_files(d), seed=o.seed,
-                  **_simkw(d))
+    res = _regression(d, o, contract, out / "rtl")
     o.say(f"[inject] patched {changed} -> {_summ_sim(res)}")
-    log = Path(res.pop("out_dir", "")) if res.get("out_dir") else None
+    logs = _run_logs(res)
+    res.pop("runs_detail", None)
     res["unreviewed_gates"] = d.require_gate("G3_verif_sources", True)
     _write(out / "results.json", res)
-    if log and (log / "sim.log").is_file():
-        (out / "sim.log").write_bytes((log / "sim.log").read_bytes())
-    caught = bool(closure.functional_failures(res)) or res.get("status") != "ran"
+    _copy_logs(logs, out / "sim.log", out / "runs")
+    base = mutate.baseline_failures(_read(d.work / "results.json") if (d.work / "results.json").is_file() else None)
+    new_tests = [t["name"] for t in res.get("tests", []) if t["status"] == "fail" and t["name"] not in base["tests"]]
+    new_checks = [c for c, v in (res.get("assertions") or {}).items() if v["fails"] > 0 and c not in base["checks"]]
+    caught = bool(new_tests or new_checks) or res.get("status") != "ran"
     summary = {"patched": changed, "status": res.get("status"), "caught": caught,
-               "failing": closure.functional_failures(res)}
+               "failing": closure.functional_failures(res), "new_failing": new_tests + new_checks,
+               "baseline_failing": sorted(base["tests"] | base["checks"])}
     if do_triage and caught and res.get("status") == "ran":
         files: dict[str, Path] = {"contract.json": d.work / "contract.json", "rules.json": d.work / "rules.json",
                                   "results.json": out / "results.json"}
         if (out / "sim.log").is_file():
             files["sim.log"] = out / "sim.log"
+        for f in sorted((out / "runs").glob("*.log")):
+            files[f"sim_runs/{f.name}"] = f
         for doc in d.documents():
             files[f"spec/{Path(doc['file']).name}"] = d.root / doc["file"]
         for f in sim.rtl_files(out / "rtl"):
@@ -414,10 +481,14 @@ def run_inject(d: Design, o: Options, patch: Path, out: Path, do_triage: bool = 
         for f in sorted((d.root / "verif").rglob("*")):
             if f.is_file() and f.suffix in (".sv", ".py"):
                 files[f"verif/{f.relative_to(d.root / 'verif').as_posix()}"] = f
-        tri = triage.run(res, contract, files, _backend(d, o), _logs(d), model=o.triage_model)
+        only_new = {**res, "tests": [t for t in res.get("tests", []) if t["status"] != "fail" or t["name"] in new_tests],
+                    "assertions": {c: v for c, v in (res.get("assertions") or {}).items()
+                                   if v["fails"] == 0 or c in new_checks}}
+        tri = triage.run(only_new, contract, files, _backend(d, o), _logs(d), model=o.triage_model)
         _write(out / "triage.json", tri)
         (out / "triage.md").write_text(triage.to_markdown(tri), encoding="utf-8")
-        summary["triage"] = {"clusters": tri["clusters"], "most_likely": [a["most_likely"] for a in tri["analyses"]]}
+        summary["triage"] = {"clusters": tri["clusters"], "most_likely": [a["most_likely"] for a in tri["analyses"]],
+                             "cost_usd": (tri.get("usage") or {}).get("cost_usd")}
         o.say(f"[inject] triage: {tri['clusters']} failure(s) -> {out / 'triage.md'}")
     _write(out / "inject.json", summary)
     o.say(f"[inject] bug {'CAUGHT' if caught else 'NOT CAUGHT'} by the approved verification")
@@ -435,6 +506,12 @@ def stage_triage(d: Design, o: Options) -> None:
                               "results.json": d.work / "results.json"}
     if (d.work / "sim" / "sim.log").is_file():
         files["sim.log"] = d.work / "sim" / "sim.log"
+    failed = {lbl for t in results.get("tests", []) for lbl in t.get("failed_in", [])}
+    failed |= {lbl for a in (results.get("assertions") or {}).values() for lbl, v in (a.get("runs") or {}).items()
+               if v["fails"] > 0}
+    for lbl in sorted(failed):                          # logs of the runs that failed (run set)
+        if (d.work / "sim" / "runs" / f"{lbl}.log").is_file():
+            files[f"sim_runs/{lbl}.log"] = d.work / "sim" / "runs" / f"{lbl}.log"
     for doc in d.documents():
         files[f"spec/{Path(doc['file']).name}"] = d.root / doc["file"]
     for f in sim.rtl_files(d.root / "rtl"):
@@ -451,8 +528,19 @@ def stage_triage(d: Design, o: Options) -> None:
 def stage_mutate(d: Design, o: Options) -> None:
     _gate(d, "mutate", o)
     baseline = _read(d.work / "results.json") if (d.work / "results.json").is_file() else None
+    kw: dict = {**_simkw(d), "sim_seed": o.seed, "baseline": baseline}
+    rs = (baseline or {}).get("run_set")
+    if rs:      # run set: each mutant runs in the first run that executed its line, against that run's baseline
+        runs = []
+        for r in rs["runs"]:
+            f = d.work / "runs" / f"{r['label']}.json"
+            if r["status"] == "ran" and f.is_file():
+                runs.append({"label": r["label"], "params": r["overrides"], "opts": r["opts"],
+                             "clock_periods": r["clock_periods"], "seed": r["seed"], "baseline": _read(f)["result"]})
+        kw = {"runs": runs}
+        o.say(f"[mutate] run set: {len(runs)} runs; each mutant runs where its line is executed (primary first)")
     res = mutate.run(default_host(), _read(d.work / "contract.json"), d.root / "rtl", d.root / "verif" / "sva",
-                     test_files(d), count=o.mutants, seed=o.seed, **_simkw(d), baseline=baseline)
+                     test_files(d), count=o.mutants, seed=o.seed, **kw)
     ex = res.get("excluded_uncovered") or {}
     o.say(f"[mutate] {res['count']} mutants: killed {res['killed']}, survived {res['survived']}, "
           f"not compiled {res['not_compiled']}; score {res['score']} % (candidates on executed lines only; "
@@ -462,6 +550,8 @@ def stage_mutate(d: Design, o: Options) -> None:
     files: dict[str, Path] = {"contract.json": d.work / "contract.json", "rules.json": d.work / "rules.json"}
     for f in sim.rtl_files(d.root / "rtl"):
         files[f"rtl/{f.name}"] = f
+    if res.get("runs") and run_set_path(d).is_file():
+        files["run_set.json"] = run_set_path(d)
     rules = {r["id"] for r in _read(d.work / "rules.json")["rules"]}
     res["attribution"] = mutate.attribute(res, files, rules, _backend(d, o), _logs(d), model=o.review_model)
     res["rule_scores"] = mutate.rule_scores(res, threshold)
@@ -472,7 +562,9 @@ def stage_mutate(d: Design, o: Options) -> None:
 
 
 def agent_costs(d: Design) -> dict:
-    total, calls, by_stage = 0.0, 0, {}
+    """Agent cost from the call logs; `failed_usd` is what calls without a usable answer cost (usage limit
+    reached mid-answer, timeout, invalid answer): money spent for nothing."""
+    total, calls, by_stage, failed, n_failed = 0.0, 0, {}, 0.0, 0
     for f in (d.work / "logs" / "agents").glob("*.json"):
         try:
             rec = json.loads(f.read_text(encoding="utf-8"))
@@ -483,7 +575,11 @@ def agent_costs(d: Design) -> dict:
         total += cost
         calls += 1
         by_stage[stage] = round(by_stage.get(stage, 0.0) + cost, 4)
-    return {"total_usd": round(total, 4), "calls": calls, "by_agent": dict(sorted(by_stage.items()))}
+        if rec.get("output") is None or rec.get("error") or rec.get("schema_errors"):
+            failed += cost
+            n_failed += 1
+    return {"total_usd": round(total, 4), "calls": calls, "by_agent": dict(sorted(by_stage.items())),
+            "failed_usd": round(failed, 4), "failed_calls": n_failed}
 
 
 def stage_report(d: Design, o: Options) -> None:
@@ -499,7 +595,9 @@ def stage_report(d: Design, o: Options) -> None:
     rep = report.build(d.name, d.status(), _read(d.work / "rules.json"), contract, results, mutation, tri,
                        agent_costs(d), bypass, tmap, clo)
     report.write(rep, contract, mutation, d.work)
-    o.say(f"[report] rules {rep['rules']['by_status']} | checks {rep['checks']['by_status']} -> work/report.md")
+    packet.write(d)
+    o.say(f"[report] rules {rep['rules']['by_status']} | checks {rep['checks']['by_status']} -> work/report.md, "
+          f"work/review_packet.md (for the G4 reviewer)")
 
 
 RUNNERS = {"ingest": stage_ingest, "extract": stage_extract, "review": stage_review, "contract": stage_contract,

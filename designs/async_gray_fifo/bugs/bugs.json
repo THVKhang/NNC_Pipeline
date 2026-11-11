@@ -1,0 +1,32 @@
+{
+ "note": "Hand-written realistic RTL faults for the bug benchmark (nnc bench). Each replaces one line of rtl/; the delivered RTL is never changed. 'expect' is the correct triage verdict.",
+ "bugs": [
+  {
+   "id": "AF1",
+   "title": "full compares only the MSB of the Gray pointers",
+   "file": "m_vlsit_afifo_wr.sv",
+   "find": "LPARA_FULL_MSK = 32'd3 << (LPARA_PTR_W - 32'd2)",
+   "replace": "LPARA_FULL_MSK = 32'd1 << (LPARA_PTR_W - 32'd1)",
+   "spec": "full: two MSBs inverted (Gray)",
+   "expect": "A_rtl_wrong"
+  },
+  {
+   "id": "AF2",
+   "title": "overflow pulse also for a blocked write",
+   "file": "m_vlsit_afifo_wr.sv",
+   "find": "reg_overflow <= i_wr_en & ~w_wr_blk & w_full_n;",
+   "replace": "reg_overflow <= i_wr_en & w_full_n;",
+   "spec": "REQ-SRST-017",
+   "expect": "A_rtl_wrong"
+  },
+  {
+   "id": "AF3",
+   "title": "binary instead of Gray pointer launched across",
+   "file": "m_vlsit_afifo_wr.sv",
+   "find": "assign w_wgray_nxt = w_wbin_nxt ^ (w_wbin_nxt >> 1);",
+   "replace": "assign w_wgray_nxt = w_wbin_nxt;",
+   "spec": "CDC-001: Gray pointer crossing",
+   "expect": "A_rtl_wrong"
+  }
+ ]
+}

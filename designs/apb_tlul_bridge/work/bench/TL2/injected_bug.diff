@@ -1,0 +1,11 @@
+--- rtl/m_apb_if.sv
++++ rtl/m_apb_if.sv
+@@ -63,7 +63,7 @@
+ 
+   // Legal request: word-aligned address, and a full strobe when the access is a write.
+   // PSTRB is ignored on reads, where the APB requester drives it LOW.
+-  assign w_legal = (i_apb_paddr[1:0] == 2'b00) & (~i_apb_pwrite | (i_apb_pstrb == 4'b1111));
++  assign w_legal = (i_apb_paddr[1:0] == 2'b00);
+ 
+   // A legal Setup phase launches the TL-UL request; an illegal one gets a local error answer.
+   assign w_req_launch = w_setup & w_legal;

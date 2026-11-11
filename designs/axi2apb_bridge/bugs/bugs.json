@@ -1,0 +1,32 @@
+{
+ "note": "Hand-written realistic RTL faults for the bug benchmark (nnc bench). Each replaces one line of rtl/; the delivered RTL is never changed. 'expect' is the correct triage verdict.",
+ "bugs": [
+  {
+   "id": "AX1",
+   "title": "write PPROT taken from the read channel",
+   "file": "m_axi2apb_apb_ctrl.sv",
+   "find": "reg_apb_prot  <= i_wr_req_prot;",
+   "replace": "reg_apb_prot  <= i_rd_req_prot;",
+   "spec": "PPROT = AWPROT for writes",
+   "expect": "A_rtl_wrong"
+  },
+  {
+   "id": "AX2",
+   "title": "PSLVERR of a read dropped",
+   "file": "m_axi2apb_apb_ctrl.sv",
+   "find": "reg_rd_rsp_err   <= i_apb_pslverr;",
+   "replace": "reg_rd_rsp_err   <= 1'b0;",
+   "spec": "PSLVERR -> SLVERR on R",
+   "expect": "A_rtl_wrong"
+  },
+  {
+   "id": "AX3",
+   "title": "read burst one beat short",
+   "file": "m_axi2apb_rd_seq.sv",
+   "find": "reg_rd_beats_left <= $bits(reg_rd_beats_left)'({1'b0, i_axi_arlen} + LPARA_COUNT_ONE);",
+   "replace": "reg_rd_beats_left <= $bits(reg_rd_beats_left)'({1'b0, i_axi_arlen});",
+   "spec": "ARLEN+1 beats",
+   "expect": "A_rtl_wrong"
+  }
+ ]
+}

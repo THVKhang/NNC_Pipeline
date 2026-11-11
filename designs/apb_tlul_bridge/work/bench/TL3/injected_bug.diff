@@ -1,0 +1,11 @@
+--- rtl/m_tlul_if.sv
++++ rtl/m_tlul_if.sv
+@@ -103,7 +103,7 @@
+   // Response bundle for the APB side: read data only for an error-free read, zero otherwise.
+   assign o_resp_valid = w_resp_hit;
+   assign o_resp_err   = w_resp_err;
+-  assign o_resp_rdata = (reg_a_rd & ~w_resp_err) ? i_tlul_d_data : '0;
++  assign o_resp_rdata = reg_a_rd ? i_tlul_d_data : '0;
+ 
+   // Channel A outputs: valid, opcode bit 2 (1 = Get), address and data come from flip-flops.
+   assign o_tlul_a_valid   = reg_a_valid;

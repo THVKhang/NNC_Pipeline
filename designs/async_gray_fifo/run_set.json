@@ -1,0 +1,16 @@
+{
+ "note": "Configurations named by the specification: CFG-BASE, CFG-CELL (PARA_AFIFO_CELL_TYPE 1, 3, 4), CFG-MACRO (Section 4); the metastability model on with logged seeds and off (REQ-VER-001, TEST-022); the synthesis branch with VLSIT_SYNTHESIS (REQ-RTL-002, TEST-019); depth 2 and data width 1 (Section 16 configurations); the clock ratios 11:3 and 3:11 of the positive regression (Section 18). Every run starts from the design configuration (clocks 10 / 13.7 ns, model on).",
+ "seeds": [1],
+ "configs": [
+  {"name": "base", "note": "CFG-BASE, metastability model on", "seeds": [1, 2, 3, 4, 5]},
+  {"name": "model_off", "note": "CFG-BASE, model at nominal latency", "plusargs": "+AFIFO_MSYNC_SEED={seed} +AFIFO_MSYNC_EN=0"},
+  {"name": "syn", "note": "synthesis branch of the cell wrapper", "defines": "VLSIT_SYNTHESIS"},
+  {"name": "cell1", "note": "CFG-CELL, two DFF cells", "params": {"PARA_AFIFO_CELL_TYPE": 1}},
+  {"name": "cell3", "note": "CFG-CELL, 3-FF cell", "params": {"PARA_AFIFO_CELL_TYPE": 3}},
+  {"name": "cell4", "note": "CFG-CELL, 4-FF cell", "params": {"PARA_AFIFO_CELL_TYPE": 4}},
+  {"name": "macro", "note": "CFG-MACRO, SRAM macro model", "params": {"PARA_AFIFO_MEM_USE_MACRO": 1}},
+  {"name": "small", "note": "depth 2, data width 1", "params": {"PARA_AFIFO_DEPTH": 2, "PARA_AFIFO_DATA_W": 1}},
+  {"name": "wr_slow", "note": "write 22 ns, read 6 ns (11:3)", "clock_periods": "i_clk_wr=22,i_clk_rd=6"},
+  {"name": "rd_slow", "note": "write 6 ns, read 22 ns (3:11)", "clock_periods": "i_clk_wr=6,i_clk_rd=22"}
+ ]
+}

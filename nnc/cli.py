@@ -31,7 +31,8 @@ def _open(args) -> Design:
 def _options(args) -> flow.Options:
     o = flow.Options(backend=getattr(args, "backend", "claude"), unreviewed=getattr(args, "unreviewed", False),
                      workers=getattr(args, "workers", 4), seed=getattr(args, "seed", 1),
-                     mutants=getattr(args, "mutants", 12), timeout_s=getattr(args, "agent_timeout", 1800))
+                     mutants=getattr(args, "mutants", 12), timeout_s=getattr(args, "agent_timeout", 1800),
+                     single=getattr(args, "single_run", False))
     for stage in ("extract", "review", "contract", "sva", "tests", "triage"):
         v = getattr(args, f"{stage}_model", None)
         if v:
@@ -241,6 +242,25 @@ def cmd_plan(args) -> int:
     return 0
 
 
+def cmd_bench(args) -> int:
+    from nnc import bench
+    d = _open(args)
+    ids = [b["id"] for b in bench.load(d.root)]
+    tri = set(ids) if args.triage == "all" else set() if args.triage == "none" else \
+        {x.strip() for x in args.triage.split(",") if x.strip()}
+    only = {x.strip() for x in args.only.split(",")} if args.only else None
+    res = bench.run(d, _options(args), triage_ids=tri, only=only)
+    return 0 if res["summary"]["caught"] == res["summary"]["bugs"] else 3
+
+
+def cmd_kit_check(args) -> int:
+    from nnc import kitcheck
+    d = _open(args)
+    ok, lines = kitcheck.check(d.root, Path(args.kit) if args.kit else None)
+    print("\n".join(lines))
+    return 0 if ok else 1
+
+
 def cmd_inject(args) -> int:
     d = _open(args)
     out = Path(args.out) if args.out else d.root / "bug_demo"
@@ -355,6 +375,7 @@ def build_parser() -> argparse.ArgumentParser:
         s.add_argument("design")
         s.add_argument("--unreviewed", action="store_true", help="run past an unapproved gate (results marked UNREVIEWED)")
         s.add_argument("--seed", type=int, default=1)
+        s.add_argument("--single-run", action="store_true", help="ignore run_set.json: one run of the design configuration")
         s.add_argument("--mutants", type=int, default=12)
         _agent_args(s)
         s.set_defaults(func=_stage(name))
@@ -369,6 +390,21 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--reason", help="why (recorded in the contract)")
     s.set_defaults(func=cmd_plan)
 
+    s = sub.add_parser("bench", help="bug benchmark: run the faults of bugs/bugs.json against the approved verification")
+    s.add_argument("design")
+    s.add_argument("--triage", default="none", help="none (default), all, or comma-separated bug IDs to triage (agent cost)")
+    s.add_argument("--only", help="comma-separated bug IDs to run")
+    s.add_argument("--unreviewed", action="store_true", help="run past an unapproved gate (results marked UNREVIEWED)")
+    s.add_argument("--seed", type=int, default=1)
+    s.add_argument("--single-run", action="store_true", help="ignore run_set.json: one run of the design configuration")
+    _agent_args(s)
+    s.set_defaults(func=cmd_bench)
+
+    s = sub.add_parser("kit-check", help="compare a run of the reproduction kit (designs/<ip>/sim) with the recorded results")
+    s.add_argument("design")
+    s.add_argument("--kit", help="kit folder holding results.xml and sim.log (default designs/<ip>/sim)")
+    s.set_defaults(func=cmd_kit_check)
+
     s = sub.add_parser("inject", help="run the approved verification on a patched copy of the RTL (bug injection)")
     s.add_argument("design")
     s.add_argument("patch", help="unified diff against files of rtl/ (matched by file name)")
@@ -376,6 +412,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--no-triage", action="store_true", help="simulate only")
     s.add_argument("--unreviewed", action="store_true", help="run past an unapproved gate (results marked UNREVIEWED)")
     s.add_argument("--seed", type=int, default=1)
+    s.add_argument("--single-run", action="store_true", help="ignore run_set.json: one run of the design configuration")
     _agent_args(s)
     s.set_defaults(func=cmd_inject)
 
@@ -386,6 +423,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--rounds", type=int, help="closure rounds at most (default 5)")
     s.add_argument("--unreviewed", action="store_true", help="run past an unapproved gate (results marked UNREVIEWED)")
     s.add_argument("--seed", type=int, default=1)
+    s.add_argument("--single-run", action="store_true", help="ignore run_set.json: one run of the design configuration")
     _agent_args(s)
     s.set_defaults(func=cmd_cover)
 
@@ -395,6 +433,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--to", dest="to_stage", choices=flow.STAGES, default="report")
     s.add_argument("--unreviewed", action="store_true", help="do not stop at gates (exploratory run, marked UNREVIEWED)")
     s.add_argument("--seed", type=int, default=1)
+    s.add_argument("--single-run", action="store_true", help="ignore run_set.json: one run of the design configuration")
     s.add_argument("--mutants", type=int, default=12)
     _agent_args(s)
     s.set_defaults(func=cmd_flow)

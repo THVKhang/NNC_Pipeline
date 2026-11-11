@@ -1,0 +1,702 @@
+{
+ "date": "2026-11-11T12:40:22+00:00",
+ "seed": 1,
+ "rtl_files": [
+  "m_apb_if.sv",
+  "m_tlul_if.sv",
+  "m_apb_tlul_bridge.sv"
+ ],
+ "integration": {
+  "ok": true,
+  "issues": []
+ },
+ "status": "ran",
+ "params": {
+  "PARA_ADDR_W": 32,
+  "PARA_SRC_W": 8,
+  "PARA_SRC_ID": 0,
+  "PARA_A_USER_W": 1,
+  "PARA_D_SINK_W": 1,
+  "PARA_D_USER_W": 1
+ },
+ "host": "wsl",
+ "tests": [
+  {
+   "name": "test_chk_018_local_error",
+   "status": "pass",
+   "sim_time_ns": "1785.0"
+  },
+  {
+   "name": "test_chk_019_device_error",
+   "status": "fail",
+   "sim_time_ns": "115.0",
+   "message": "CHK-010: expected o_apb_prdata=0x00000000 at cycle 10 got 0x85e4e086",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 765, in test_chk_019_device_error\n                                                            await b.run(seq)\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 624, in run\n                                                            await self.cycle()\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 553, in cycle\n                                                            self._finalize()\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 525, in _finalize\n                                                            self.mon.check(r)\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 229, in check\n                                                            assert r[\"o_apb_prdata\"] == e[1], \\\n                                                        AssertionError: CHK-010: expected o_apb_prdata=0x00000000 at cycle 10 got 0x85e4e086\n                                                        assert 2246369414 == 0\n  1900.00ns WARNING  cocotb.regression                  test_apb_tlul_bridge.test_chk_019_device_error failed",
+   "checks": [
+    "CHK-010",
+    "CHK-019"
+   ]
+  },
+  {
+   "name": "test_chk_020_wrong_opcode_source",
+   "status": "fail",
+   "sim_time_ns": "125.0",
+   "message": "CHK-010: expected o_apb_prdata=0x00000000 at cycle 11 got 0x5c5f08b5",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 794, in test_chk_020_wrong_opcode_source\n                                                            await b.run(seq)\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 624, in run\n                                                            await self.cycle()\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 553, in cycle\n                                                            self._finalize()\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 525, in _finalize\n                                                            self.mon.check(r)\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 229, in check\n                                                            assert r[\"o_apb_prdata\"] == e[1], \\\n                                                        AssertionError: CHK-010: expected o_apb_prdata=0x00000000 at cycle 11 got 0x5c5f08b5\n                                                        assert 1549732021 == 0\n  2025.00ns WARNING  cocotb.regression                  test_apb_tlul_bridge.test_chk_020_wrong_opcode_source failed",
+   "checks": [
+    "CHK-010",
+    "CHK-020"
+   ]
+  },
+  {
+   "name": "test_chk_021_orphan_responses",
+   "status": "pass",
+   "sim_time_ns": "2035.0000000000002"
+  },
+  {
+   "name": "test_chk_022_no_response_no_timeout",
+   "status": "pass",
+   "sim_time_ns": "20235.0"
+  },
+  {
+   "name": "test_chk_023_prompt_write",
+   "status": "pass",
+   "sim_time_ns": "1275.0"
+  },
+  {
+   "name": "test_chk_024_prompt_read",
+   "status": "pass",
+   "sim_time_ns": "1655.0"
+  },
+  {
+   "name": "test_chk_025_ignored_inputs",
+   "status": "fail",
+   "sim_time_ns": "405.0",
+   "message": "CHK-010: expected o_apb_prdata=0x00000000 at cycle 39 got 0x4c70e8a7",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 997, in test_chk_025_ignored_inputs\n                                                            await b.run(seq)\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 624, in run\n                                                            await self.cycle()\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 553, in cycle\n                                                            self._finalize()\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 525, in _finalize\n                                                            self.mon.check(r)\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 229, in check\n                                                            assert r[\"o_apb_prdata\"] == e[1], \\\n                                                        AssertionError: CHK-010: expected o_apb_prdata=0x00000000 at cycle 39 got 0x4c70e8a7\n                                                        assert 1282468007 == 0\n 27630.01ns WARNING  cocotb.regression                  test_apb_tlul_bridge.test_chk_025_ignored_inputs failed",
+   "checks": [
+    "CHK-010",
+    "CHK-025"
+   ]
+  },
+  {
+   "name": "test_chk_026_backpressure_delay",
+   "status": "pass",
+   "sim_time_ns": "11355.0"
+  },
+  {
+   "name": "test_chk_027_same_cycle_response",
+   "status": "pass",
+   "sim_time_ns": "1055.0"
+  },
+  {
+   "name": "test_chk_028_back_to_back",
+   "status": "fail",
+   "sim_time_ns": "10365.0",
+   "message": "CHK-010: expected o_apb_prdata=0x00000000 at cycle 1035 got 0x61545236",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 1110, in test_chk_028_back_to_back\n                                                            await b.run(seq)\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 624, in run\n                                                            await self.cycle()\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 553, in cycle\n                                                            self._finalize()\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 525, in _finalize\n                                                            self.mon.check(r)\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 229, in check\n                                                            assert r[\"o_apb_prdata\"] == e[1], \\\n                                                        AssertionError: CHK-010: expected o_apb_prdata=0x00000000 at cycle 1035 got 0x61545236\n                                                        assert 1632916022 == 0\n 50405.01ns WARNING  cocotb.regression                  test_apb_tlul_bridge.test_chk_028_back_to_back failed",
+   "checks": [
+    "CHK-010",
+    "CHK-028"
+   ]
+  },
+  {
+   "name": "test_chk_029_random_scoreboard",
+   "status": "fail",
+   "sim_time_ns": "735.0",
+   "message": "CHK-010: expected o_apb_prdata=0x00000000 at cycle 72 got 0x1483030a",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 1157, in test_chk_029_random_scoreboard\n                                                            await b.run(seq)\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 624, in run\n                                                            await self.cycle()\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 553, in cycle\n                                                            self._finalize()\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 525, in _finalize\n                                                            self.mon.check(r)\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 229, in check\n                                                            assert r[\"o_apb_prdata\"] == e[1], \\\n                                                        AssertionError: CHK-010: expected o_apb_prdata=0x00000000 at cycle 72 got 0x1483030a\n                                                        assert 344130314 == 0\n 51140.01ns WARNING  cocotb.regression                  test_apb_tlul_bridge.test_chk_029_random_scoreboard failed",
+   "checks": [
+    "CHK-010",
+    "CHK-029"
+   ]
+  },
+  {
+   "name": "test_chk_030_reset",
+   "status": "pass",
+   "sim_time_ns": "435.0"
+  },
+  {
+   "name": "test_chk_031_reset_abandons_transfer",
+   "status": "pass",
+   "sim_time_ns": "1665.0"
+  },
+  {
+   "name": "test_regression_random",
+   "status": "fail",
+   "sim_time_ns": "1335.0",
+   "message": "CHK-010: expected o_apb_prdata=0x00000000 at cycle 132 got 0x1586cd57",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 1317, in test_regression_random\n                                                            await b.run(seq)\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 624, in run\n                                                            await self.cycle()\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 553, in cycle\n                                                            self._finalize()\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 525, in _finalize\n                                                            self.mon.check(r)\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 229, in check\n                                                            assert r[\"o_apb_prdata\"] == e[1], \\\n                                                        AssertionError: CHK-010: expected o_apb_prdata=0x00000000 at cycle 132 got 0x1586cd57\n                                                        assert 361155927 == 0\n 54575.01ns WARNING  cocotb.regression                  test_apb_tlul_bridge.test_regression_random failed",
+   "checks": [
+    "CHK-010"
+   ]
+  },
+  {
+   "name": "test_cov_101_long_response_delay",
+   "status": "fail",
+   "sim_time_ns": "1975.0",
+   "message": "CHK-010: expected o_apb_prdata=0x00000000 at cycle 196 got 0xefab3694",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge_cov1.py\", line 44, in test_cov_101_long_response_delay\n                                                            await b.run(seq)\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 624, in run\n                                                            await self.cycle()\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 553, in cycle\n                                                            self._finalize()\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 525, in _finalize\n                                                            self.mon.check(r)\n                                                          File \"/root/nnc_runs/sim_41647c66/test_apb_tlul_bridge.py\", line 229, in check\n                                                            assert r[\"o_apb_prdata\"] == e[1], \\\n                                                        AssertionError: CHK-010: expected o_apb_prdata=0x00000000 at cycle 196 got 0xefab3694\n                                                        assert 4020975252 == 0\n 56550.01ns WARNING  cocotb.regression                  test_apb_tlul_bridge_cov1.test_cov_101_long_response_delay failed",
+   "checks": [
+    "CHK-010"
+   ]
+  },
+  {
+   "name": "test_cov_102_stale_response_at_reset_release",
+   "status": "pass",
+   "sim_time_ns": "1135.0"
+  }
+ ],
+ "assertions": {
+  "CHK-014": {
+   "hits": 383,
+   "fails": 0
+  },
+  "CHK-015": {
+   "hits": 1465,
+   "fails": 0
+  },
+  "CHK-016": {
+   "hits": 382,
+   "fails": 0
+  },
+  "CHK-017": {
+   "hits": 5777,
+   "fails": 0
+  },
+  "CHK-012": {
+   "hits": 175,
+   "fails": 0
+  },
+  "CHK-013": {
+   "hits": 5572,
+   "fails": 0
+  },
+  "CHK-006": {
+   "hits": 386,
+   "fails": 0
+  },
+  "CHK-007": {
+   "hits": 126,
+   "fails": 0
+  },
+  "CHK-008": {
+   "hits": 1847,
+   "fails": 0
+  },
+  "CHK-009": {
+   "hits": 1847,
+   "fails": 0
+  },
+  "CHK-010": {
+   "hits": 379,
+   "fails": 7,
+   "first_fail_time": 1895000
+  },
+  "CHK-011": {
+   "hits": 502,
+   "fails": 0
+  },
+  "CHK-001": {
+   "hits": 502,
+   "fails": 0
+  },
+  "CHK-002": {
+   "hits": 502,
+   "fails": 0
+  },
+  "CHK-003": {
+   "hits": 136,
+   "fails": 0
+  },
+  "CHK-004": {
+   "hits": 5070,
+   "fails": 0
+  },
+  "CHK-005": {
+   "hits": 316,
+   "fails": 7,
+   "first_fail_time": 1895000
+  }
+ },
+ "not_verifiable": {},
+ "coverage": {
+  "status": "measured",
+  "metric": "line",
+  "hit": 192,
+  "total": 200,
+  "percent": 96.0,
+  "files": {
+   "m_apb_if.sv": {
+    "hit": 71,
+    "total": 72
+   },
+   "m_apb_tlul_bridge.sv": {
+    "hit": 36,
+    "total": 39
+   },
+   "m_tlul_if.sv": {
+    "hit": 85,
+    "total": 89
+   }
+  },
+  "executed_lines": {
+   "m_apb_if.sv": "18-35,47-58,62,66,69-70,86-93,95-97,99,107-118,124-126,128,133-141",
+   "m_apb_tlul_bridge.sv": "38-62,64,66-68,76-82",
+   "m_tlul_if.sv": "36-53,55,57-59,72-86,89,93,99-100,106,126-131,133-136,138,141-143,152-160,166-168,170,175-181,187-195"
+  },
+  "metrics": {
+   "line": {
+    "hit": 192,
+    "total": 200,
+    "percent": 96.0,
+    "files": {
+     "m_apb_if.sv": {
+      "hit": 71,
+      "total": 72
+     },
+     "m_apb_tlul_bridge.sv": {
+      "hit": 36,
+      "total": 39
+     },
+     "m_tlul_if.sv": {
+      "hit": 85,
+      "total": 89
+     }
+    }
+   },
+   "block": {
+    "hit": 43,
+    "total": 45,
+    "percent": 95.6,
+    "files": {
+     "m_apb_if.sv": {
+      "hit": 19,
+      "total": 20
+     },
+     "m_tlul_if.sv": {
+      "hit": 24,
+      "total": 25
+     }
+    }
+   },
+   "expression": {
+    "hit": 46,
+    "total": 46,
+    "percent": 100.0,
+    "files": {
+     "m_apb_if.sv": {
+      "hit": 21,
+      "total": 21
+     },
+     "m_tlul_if.sv": {
+      "hit": 25,
+      "total": 25
+     }
+    }
+   },
+   "toggle": {
+    "hit": 1920,
+    "total": 2002,
+    "percent": 95.9,
+    "files": {
+     "m_apb_if.sv": {
+      "hit": 562,
+      "total": 562
+     },
+     "m_apb_tlul_bridge.sv": {
+      "hit": 657,
+      "total": 696
+     },
+     "m_tlul_if.sv": {
+      "hit": 701,
+      "total": 744
+     }
+    }
+   },
+   "functional": {
+    "hit": 38,
+    "total": 40,
+    "percent": 95.0,
+    "files": {
+     "nnc_cov.sv": {
+      "hit": 38,
+      "total": 40
+     }
+    }
+   }
+  },
+  "uncovered": [
+   {
+    "metric": "block",
+    "file": "m_apb_if.sv",
+    "line": 100,
+    "what": "case",
+    "points": 1,
+    "detail": [
+     "case"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_tlul_if.sv",
+    "line": 145,
+    "what": "case",
+    "points": 1,
+    "detail": [
+     "case"
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_apb_if.sv",
+    "line": 100,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_apb_tlul_bridge.sv",
+    "line": 63,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_apb_tlul_bridge.sv",
+    "line": 65,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_apb_tlul_bridge.sv",
+    "line": 69,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_tlul_if.sv",
+    "line": 54,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_tlul_if.sv",
+    "line": 56,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_tlul_if.sv",
+    "line": 60,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_tlul_if.sv",
+    "line": 145,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_apb_tlul_bridge.sv",
+    "line": 65,
+    "what": "o_tlul_a_source",
+    "points": 16,
+    "detail": [
+     "o_tlul_a_source[0]:0->1",
+     "o_tlul_a_source[0]:1->0",
+     "o_tlul_a_source[1]:0->1",
+     "o_tlul_a_source[1]:1->0",
+     "o_tlul_a_source[2]:0->1",
+     "o_tlul_a_source[2]:1->0",
+     "o_tlul_a_source[3]:0->1",
+     "o_tlul_a_source[3]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_tlul_if.sv",
+    "line": 56,
+    "what": "o_tlul_a_source",
+    "points": 16,
+    "detail": [
+     "o_tlul_a_source[0]:0->1",
+     "o_tlul_a_source[0]:1->0",
+     "o_tlul_a_source[1]:0->1",
+     "o_tlul_a_source[1]:1->0",
+     "o_tlul_a_source[2]:0->1",
+     "o_tlul_a_source[2]:1->0",
+     "o_tlul_a_source[3]:0->1",
+     "o_tlul_a_source[3]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_apb_tlul_bridge.sv",
+    "line": 63,
+    "what": "o_tlul_a_param",
+    "points": 6,
+    "detail": [
+     "o_tlul_a_param[0]:0->1",
+     "o_tlul_a_param[0]:1->0",
+     "o_tlul_a_param[1]:0->1",
+     "o_tlul_a_param[1]:1->0",
+     "o_tlul_a_param[2]:0->1",
+     "o_tlul_a_param[2]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_tlul_if.sv",
+    "line": 54,
+    "what": "o_tlul_a_param",
+    "points": 6,
+    "detail": [
+     "o_tlul_a_param[0]:0->1",
+     "o_tlul_a_param[0]:1->0",
+     "o_tlul_a_param[1]:0->1",
+     "o_tlul_a_param[1]:1->0",
+     "o_tlul_a_param[2]:0->1",
+     "o_tlul_a_param[2]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_apb_tlul_bridge.sv",
+    "line": 62,
+    "what": "o_tlul_a_opcode",
+    "points": 4,
+    "detail": [
+     "o_tlul_a_opcode[0]:0->1",
+     "o_tlul_a_opcode[0]:1->0",
+     "o_tlul_a_opcode[1]:0->1",
+     "o_tlul_a_opcode[1]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_apb_tlul_bridge.sv",
+    "line": 66,
+    "what": "o_tlul_a_address",
+    "points": 4,
+    "detail": [
+     "o_tlul_a_address[0]:0->1",
+     "o_tlul_a_address[0]:1->0",
+     "o_tlul_a_address[1]:0->1",
+     "o_tlul_a_address[1]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_apb_tlul_bridge.sv",
+    "line": 67,
+    "what": "o_tlul_a_mask",
+    "points": 4,
+    "detail": [
+     "o_tlul_a_mask[0]:1->0",
+     "o_tlul_a_mask[1]:1->0",
+     "o_tlul_a_mask[2]:1->0",
+     "o_tlul_a_mask[3]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_tlul_if.sv",
+    "line": 53,
+    "what": "o_tlul_a_opcode",
+    "points": 4,
+    "detail": [
+     "o_tlul_a_opcode[0]:0->1",
+     "o_tlul_a_opcode[0]:1->0",
+     "o_tlul_a_opcode[1]:0->1",
+     "o_tlul_a_opcode[1]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_tlul_if.sv",
+    "line": 57,
+    "what": "o_tlul_a_address",
+    "points": 4,
+    "detail": [
+     "o_tlul_a_address[0]:0->1",
+     "o_tlul_a_address[0]:1->0",
+     "o_tlul_a_address[1]:0->1",
+     "o_tlul_a_address[1]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_tlul_if.sv",
+    "line": 58,
+    "what": "o_tlul_a_mask",
+    "points": 4,
+    "detail": [
+     "o_tlul_a_mask[0]:1->0",
+     "o_tlul_a_mask[1]:1->0",
+     "o_tlul_a_mask[2]:1->0",
+     "o_tlul_a_mask[3]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_tlul_if.sv",
+    "line": 86,
+    "what": "w_exp_opcode",
+    "points": 4,
+    "detail": [
+     "w_exp_opcode[1]:0->1",
+     "w_exp_opcode[1]:1->0",
+     "w_exp_opcode[2]:0->1",
+     "w_exp_opcode[2]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_apb_tlul_bridge.sv",
+    "line": 64,
+    "what": "o_tlul_a_size",
+    "points": 3,
+    "detail": [
+     "o_tlul_a_size[0]:0->1",
+     "o_tlul_a_size[0]:1->0",
+     "o_tlul_a_size[1]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_tlul_if.sv",
+    "line": 55,
+    "what": "o_tlul_a_size",
+    "points": 3,
+    "detail": [
+     "o_tlul_a_size[0]:0->1",
+     "o_tlul_a_size[0]:1->0",
+     "o_tlul_a_size[1]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_apb_tlul_bridge.sv",
+    "line": 69,
+    "what": "o_tlul_a_user",
+    "points": 2,
+    "detail": [
+     "o_tlul_a_user[0]:0->1",
+     "o_tlul_a_user[0]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_tlul_if.sv",
+    "line": 60,
+    "what": "o_tlul_a_user",
+    "points": 2,
+    "detail": [
+     "o_tlul_a_user[0]:0->1",
+     "o_tlul_a_user[0]:1->0"
+    ]
+   },
+   {
+    "metric": "functional",
+    "file": "nnc_cov.sv",
+    "line": 0,
+    "what": "COVP-021",
+    "points": 1,
+    "detail": []
+   },
+   {
+    "metric": "functional",
+    "file": "nnc_cov.sv",
+    "line": 0,
+    "what": "COVP-024",
+    "points": 1,
+    "detail": []
+   }
+  ]
+ },
+ "functional": {
+  "COVP-001": 189,
+  "COVP-002": 197,
+  "COVP-003": 28,
+  "COVP-004": 32,
+  "COVP-005": 1,
+  "COVP-006": 65,
+  "COVP-007": 187,
+  "COVP-008": 1,
+  "COVP-009": 96,
+  "COVP-010": 90,
+  "COVP-011": 28,
+  "COVP-012": 29,
+  "COVP-013": 126,
+  "COVP-014": 1465,
+  "COVP-015": 80,
+  "COVP-016": 15,
+  "COVP-017": 47,
+  "COVP-018": 9,
+  "COVP-019": 3,
+  "COVP-020": 5,
+  "COVP-021": 0,
+  "COVP-022": 1,
+  "COVP-023": 1,
+  "COVP-024": 0,
+  "COVP-025": 32,
+  "COVP-026": 14,
+  "COVP-027": 4,
+  "COVP-028": 1976,
+  "COVP-029": 5,
+  "COVP-030": 313,
+  "COVP-031": 20,
+  "COVP-032": 14,
+  "COVP-033": 12,
+  "COVP-034": 30,
+  "COVP-035": 9,
+  "COVP-036": 3,
+  "COVP-037": 3,
+  "COVP-038": 3,
+  "COVP-039": 4,
+  "COVP-040": 12
+ },
+ "make_rc": 2,
+ "built": true,
+ "build_errors": [],
+ "unreviewed_gates": []
+}

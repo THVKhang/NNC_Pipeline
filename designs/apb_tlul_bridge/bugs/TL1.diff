@@ -1,0 +1,11 @@
+--- rtl/m_tlul_if.sv
++++ rtl/m_tlul_if.sv
+@@ -98,7 +98,7 @@
+   // the constant source identifier; d_error is an error response. Any failure gives an error.
+   assign w_exp_opcode = reg_a_rd ? LPARA_D_ACK_DATA[2:0] : '0;
+   assign w_resp_err   = i_tlul_d_error | (i_tlul_d_opcode != w_exp_opcode) |
+-                        (i_tlul_d_source != PARA_SRC_ID[PARA_SRC_W-1:0]);
++                        1'b0;
+ 
+   // Response bundle for the APB side: read data only for an error-free read, zero otherwise.
+   assign o_resp_valid = w_resp_hit;

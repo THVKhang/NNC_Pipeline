@@ -24,12 +24,13 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 import tempfile
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Sequence
 
@@ -51,6 +52,47 @@ LEAN_FLAGS = ("--strict-mcp-config", "--disable-slash-commands", "--no-session-p
 
 class AgentError(Exception):
     """The agent step failed or returned an invalid answer."""
+
+
+class UsageLimitReached(AgentError):
+    """The account's usage limit stopped the call; `wait_s` until the stated reset (None if unknown)."""
+
+    def __init__(self, message: str, wait_s: float | None):
+        super().__init__(message)
+        self.wait_s = wait_s
+
+
+_LIMIT = re.compile(r"hit your .*?limit\b.*?resets\s+(?:at\s+)?(\d{1,2})(?::(\d{2}))?\s*([ap]m)?", re.I | re.S)
+DEFAULT_LIMIT_WAIT_S = 6 * 3600
+
+
+def limit_reset_wait(text: str, now: datetime | None = None) -> float | None:
+    """Seconds until the reset named in a usage-limit message ("You've hit your 5-hour limit · resets
+    6:50am (Asia/Ho_Chi_Minh)"), plus one minute; None when the text is not such a message. The time is
+    read in the local clock of this machine (the CLI prints it in the user's time zone)."""
+    m = _LIMIT.search(text or "")
+    if not m:
+        return None
+    hour, minute, ampm = int(m.group(1)), int(m.group(2) or 0), (m.group(3) or "").lower()
+    if ampm == "pm" and hour < 12:
+        hour += 12
+    if ampm == "am" and hour == 12:
+        hour = 0
+    if hour > 23 or minute > 59:
+        return None
+    now = now or datetime.now()
+    target = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+    if target <= now:
+        target += timedelta(days=1)
+    return (target - now).total_seconds() + 60
+
+
+def limit_wait_budget() -> float:
+    """Longest wait for a usage-limit reset (NNC_LIMIT_WAIT seconds, default 6 h; 0 = fail at once)."""
+    try:
+        return float(os.environ.get("NNC_LIMIT_WAIT", DEFAULT_LIMIT_WAIT_S))
+    except ValueError:
+        return DEFAULT_LIMIT_WAIT_S
 
 
 class ManualTaskPending(Exception):
@@ -183,6 +225,21 @@ class ClaudeCliBackend:
         return argv
 
     def run(self, task: AgentTask, log_dir: Path) -> AgentResult:
+        """One call; when the account's usage limit stops it, wait for the stated reset and call again
+        (at most NNC_LIMIT_WAIT seconds of waiting in total). Nothing is sent while waiting."""
+        budget = limit_wait_budget()
+        while True:
+            try:
+                return self._run_once(task, log_dir)
+            except UsageLimitReached as e:
+                if e.wait_s is None or e.wait_s > budget:
+                    raise
+                print(f"[agent] {task.name}: usage limit reached; waiting {e.wait_s / 60:.0f} min for the reset "
+                      f"(NNC_LIMIT_WAIT={budget:.0f} s)", flush=True)
+                time.sleep(e.wait_s)
+                budget -= e.wait_s
+
+    def _run_once(self, task: AgentTask, log_dir: Path) -> AgentResult:
         _check_inputs(task)
         sandbox = build_sandbox(task, self.sandbox_parent) if task.tools else None
         prompt = SANDBOX_PROMPT if task.tools else task.instructions
@@ -219,6 +276,10 @@ class ClaudeCliBackend:
             if proc.returncode != 0 or reply.get("is_error") or not isinstance(output, dict):
                 record["result_text"] = str(reply.get("result"))[-4000:]
                 log = _write_log(log_dir, task, record)
+                wait = limit_reset_wait(str(reply.get("result") or ""))
+                if wait is not None:
+                    raise UsageLimitReached(f"{task.name}: usage limit reached ({str(reply.get('result'))[:120]}); "
+                                            f"see {log}", wait)
                 hint = str(reply.get("result") or "").strip().splitlines()
                 raise AgentError(f"{task.name}: agent failed ({reply.get('subtype')}"
                                  f"{': ' + hint[-1][:200] if hint else ''}); see {log}")

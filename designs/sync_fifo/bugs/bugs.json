@@ -1,0 +1,32 @@
+{
+ "note": "Hand-written realistic RTL faults for the bug benchmark (nnc bench). Each replaces one line of rtl/; the delivered RTL is never changed. 'expect' is the correct triage verdict.",
+ "bugs": [
+  {
+   "id": "SF1",
+   "title": "full flag one entry early",
+   "file": "m_vlsit_sfifo_wr.sv",
+   "find": "reg_full     <= (w_occ_nxt >= PARA_SFIFO_DEPTH);",
+   "replace": "reg_full     <= (w_occ_nxt >= PARA_SFIFO_DEPTH - 1);",
+   "spec": "full when no free entry",
+   "expect": "A_rtl_wrong"
+  },
+  {
+   "id": "SF2",
+   "title": "overflow pulse also for a blocked write",
+   "file": "m_vlsit_sfifo_wr.sv",
+   "find": "reg_overflow <= i_wr_en & ~w_wr_blk & reg_full;",
+   "replace": "reg_overflow <= i_wr_en & reg_full;",
+   "spec": "a blocked write raises no overflow",
+   "expect": "A_rtl_wrong"
+  },
+  {
+   "id": "SF3",
+   "title": "empty threshold compare off by one",
+   "file": "m_vlsit_sfifo_rd.sv",
+   "find": "reg_empty_thr <= (w_empty_thr_ext >= w_occ_nxt);",
+   "replace": "reg_empty_thr <= (w_empty_thr_ext > w_occ_nxt);",
+   "spec": "o_empty_thr when occupancy <= threshold",
+   "expect": "A_rtl_wrong"
+  }
+ ]
+}

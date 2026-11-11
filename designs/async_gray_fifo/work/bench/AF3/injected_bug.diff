@@ -1,0 +1,11 @@
+--- rtl/m_vlsit_afifo_wr.sv
++++ rtl/m_vlsit_afifo_wr.sv
+@@ -135,7 +135,7 @@
+   end
+ 
+   // Gray code of the next write pointer: the Gray register is the launch register of CDC-001.
+-  assign w_wgray_nxt = w_wbin_nxt ^ (w_wbin_nxt >> 1);
++  assign w_wgray_nxt = w_wbin_nxt;
+ 
+   // Binary write pointer: control state, asynchronously reset to 0.
+   always_ff @(posedge i_clk_wr, negedge i_rst_n_wr) begin : p_ff_wbin

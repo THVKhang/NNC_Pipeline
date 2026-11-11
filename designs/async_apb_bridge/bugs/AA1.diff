@@ -1,0 +1,11 @@
+--- rtl/m_vlsit_apbcdc_mst.sv
++++ rtl/m_vlsit_apbcdc_mst.sv
+@@ -139,7 +139,7 @@
+   // Request bundle packed from the Setup cycle. Field order from bit 0: PADDR, PPROT, PWRITE,
+   // PSTRB, PWDATA, PAUSER, PWUSER; a field of width 0 has no bit.
+   assign w_req_payload[PARA_APBCDC_ADDR_W-1:0] = i_apb_paddr;
+-  assign w_req_payload[PARA_APBCDC_ADDR_W +: LPARA_PROT_W] = i_apb_pprot;
++  assign w_req_payload[PARA_APBCDC_ADDR_W +: LPARA_PROT_W] = '0;
+   assign w_req_payload[LPARA_OFF_WR] = i_apb_pwrite;
+   assign w_req_payload[LPARA_OFF_STRB +: LPARA_STRB_W] = i_apb_pstrb;
+   assign w_req_payload[LPARA_OFF_WDATA +: PARA_APBCDC_DATA_W] = i_apb_pwdata;

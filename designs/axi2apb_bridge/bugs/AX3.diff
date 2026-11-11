@@ -1,0 +1,11 @@
+--- rtl/m_axi2apb_rd_seq.sv
++++ rtl/m_axi2apb_rd_seq.sv
+@@ -355,7 +355,7 @@
+         reg_rd_size       <= i_axi_arsize;
+         reg_rd_burst      <= i_axi_arburst;
+         reg_rd_prot       <= i_axi_arprot;
+-        reg_rd_beats_left <= $bits(reg_rd_beats_left)'({1'b0, i_axi_arlen} + LPARA_COUNT_ONE);
++        reg_rd_beats_left <= $bits(reg_rd_beats_left)'({1'b0, i_axi_arlen});
+         reg_rd_data       <= 32'd0;
+         if (w_ar_valid)
+           reg_rd_resp <= LPARA_RESP_OKAY[1:0];

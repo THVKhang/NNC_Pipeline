@@ -5,7 +5,8 @@ Status of a check:
   FAIL      assertion failed at least once; test failed
   NOT_HIT   assertion never active (proves nothing, principle PR-4)
   NOT_RUN   no evidence (not built, test missing, simulation not run)
-  NOT_VERIFIABLE  the test declared (not_verifiable) that this run cannot verify it
+  NOT_VERIFIABLE  the test declared (not_verifiable) that this run cannot verify it (with a run set:
+                  every run declared it; one run that verified it is enough for PASS)
   NOT_SELECTED    left out of the test plan by the designer (`nnc plan --select`); never PASS
 Status of a rule: VERIFIED (all its checks PASS), FAILED (any FAIL), PARTIAL (some PASS, rest not
 proven), NOT_PROVEN (checks exist, none PASS), NOT_VERIFIED_BY_SIM (declared in the contract with a
@@ -57,7 +58,36 @@ def check_status(results: dict | None, contract: dict, test_map: dict[str, list[
                 out[c["id"]] = {"status": "NOT_VERIFIABLE", "tests": [t["name"] for t in mine], "reason": nv}
             else:
                 out[c["id"]] = {"status": "PASS", "tests": [t["name"] for t in mine]}
+            if ran and mine and (results or {}).get("run_set"):
+                out[c["id"]].update(_test_runs(c["id"], mine, results))
     return out
+
+
+def _test_runs(cid: str, mine: list[dict], results: dict) -> dict:
+    """Run set: the runs in which the check's tests passed without declaring it not verifiable, and the
+    runs in which one of them failed."""
+    nv = results.get("not_verifiable_by_run") or {}
+    labels = [r["label"] for r in results["run_set"]["runs"] if r["status"] == "ran"]
+    verified = [lb for lb in labels if all((t.get("runs") or {}).get(lb) == "pass" for t in mine)
+                and cid not in nv.get(lb, {})]
+    failed = [lb for lb in labels if any((t.get("runs") or {}).get(lb) == "fail" for t in mine)]
+    return {"verified_in": verified, "failed_in": failed}
+
+
+def _runs_text(d: dict, kind: str) -> str:
+    """Evidence suffix of a check under a run set."""
+    if kind == "assertion":
+        runs = d.get("runs") or {}
+        bad = [lb for lb, v in runs.items() if v["fails"] > 0]
+        hit = [lb for lb, v in runs.items() if v["hits"] > 0]
+        if not runs:
+            return ""
+        return f"; fails in {', '.join(bad)}" if bad else f"; hit in {len(hit)}/{len(runs)} runs"
+    if d.get("failed_in"):
+        return f"; failed in {', '.join(d['failed_in'])}"
+    if "verified_in" in d:
+        return f"; verified in {', '.join(d['verified_in'])}" if d["verified_in"] else "; verified in no run"
+    return ""
 
 
 def rtm(rules_doc: dict, contract: dict, statuses: dict[str, dict], mutation: dict | None = None) -> list[dict]:
@@ -111,7 +141,7 @@ def build(design_name: str, gates: list, rules_doc: dict, contract: dict, result
         "simulation": None if not results else {
             "status": results.get("status"), "seed": results.get("seed"), "params": results.get("params"),
             "tests": _count(results.get("tests", [])), "integration": results.get("integration"),
-            "coverage": results.get("coverage")},
+            "coverage": results.get("coverage"), "run_set": results.get("run_set")},
         "mutation": None if not mutation else {
             **{k: mutation[k] for k in ("count", "killed", "survived", "not_compiled", "score")},
             "threshold": mutation.get("threshold"),
@@ -167,6 +197,13 @@ def signoff_conditions(rep: dict) -> list[tuple[str, bool, str]]:
         ("Every planned check selected", "NOT_SELECTED" not in by,
          f"{by.get('NOT_SELECTED')} check(s) not selected in the test plan" if "NOT_SELECTED" in by else ""),
         ("Every rule in a check or declared not verifiable", unmapped == 0, f"{unmapped} unmapped" if unmapped else ""),
+    ]
+    rs = sim.get("run_set")
+    if rs:
+        failed = rs.get("failed_runs") or []
+        conds.append(("Every run of the run set built and ran", not failed,
+                      f"not run: {', '.join(failed)}" if failed else f"{len(rs['runs'])} runs"))
+    conds += [
         ("Mutation run", bool(mut), "" if mut else "nnc mutate <design>"),
     ]
     if mut and mut.get("threshold") is None:
@@ -192,22 +229,28 @@ def to_markdown(rep: dict, contract: dict, mutation: dict | None) -> str:
             f"| Rules | {rep['rules']['total']} — {rep['rules']['by_status']} |",
             f"| Checks | {rep['checks']['total']} — {rep['checks']['by_status']} |",
             f"| Tests | {sim.get('tests', 'not run')} |",
+            *_run_set_summary(sim.get("run_set")),
             f"| Integration | {'OK' if (sim.get('integration') or {}).get('ok') else sim.get('integration')} |",
             *_coverage_rows(cov),
             f"| Mutation score | {str(rep['mutation']['score']) + ' % (' + str(rep['mutation']['killed']) + ' killed / ' + str(rep['mutation']['survived']) + ' survived / ' + str(rep['mutation']['not_compiled']) + ' not compiled)' if rep['mutation'] else 'not run'} |",
             *_closure_rows(rep),
             f"| Triage | {'no failure to analyse' if not rep['triage'] or not rep['triage'].get('clusters') else str(rep['triage']['clusters']) + ' failure(s), ' + str(rep['triage'].get('analysed')) + ' analysed: work/triage.md'} |",
             f"| Agent cost | US${rep['agent_cost_usd']['total_usd']} in {rep['agent_cost_usd']['calls']} calls "
-            f"({', '.join(f'{k} {v}' for k, v in rep['agent_cost_usd']['by_agent'].items())}) |", "",
+            f"({', '.join(f'{k} {v}' for k, v in rep['agent_cost_usd']['by_agent'].items())})"
+            + (f"; of which US${rep['agent_cost_usd']['failed_usd']} in {rep['agent_cost_usd']['failed_calls']} "
+               "failed calls (usage limit, timeout, invalid answer)" if rep['agent_cost_usd'].get('failed_usd') else "")
+            + " |", "",
             "## Sign-off conditions", "", "| Condition | State |", "|---|---|"]
     out += [f"| {name} | {'met' if ok else '**not met**'}{' — ' + note if note else ''} |"
             for name, ok, note in signoff_conditions(rep)]
+    out += _run_set_section(sim.get("run_set"))
     out += ["", "## Gates", "", "| Gate | State | Detail |", "|---|---|---|"]
     out += [f"| {g['gate']} | {g['state']} | {g['detail']} |" for g in rep["gates"]]
     out += ["", "## Checks", "", "| Check | Kind | Title | Status | Evidence |", "|---|---|---|---|---|"]
     for c in contract["checks"]:
         d = rep["checks"]["detail"][c["id"]]
         ev = (f"hits {d.get('hits')}, fails {d.get('fails')}" if c["kind"] == "assertion" else ", ".join(d.get("tests", [])))
+        ev += _runs_text(d, c["kind"])
         out.append(f"| {c['id']} | {c['kind']} | {c['title']} | **{d['status']}** | {ev} |")
     out += ["", "## Requirement traceability (RTM)", "",
             "| Rule | Spec ref | Statement | Checks | Mutation | Status |", "|---|---|---|---|---|---|"]
@@ -230,8 +273,36 @@ def to_markdown(rep: dict, contract: dict, mutation: dict | None) -> str:
     out += ["", "## Not verified by this run", "",
             "- Formal proof, CDC/RDC, STA, synthesis and DFT checks are outside this flow.",
             "- Rules marked NOT_VERIFIED_BY_SIM carry the contract's reason (static, structural, not observable...).",
-            "- Only the default parameter configuration was simulated unless stated above."]
+            ("- Only the configurations of the run set above were simulated; code coverage is merged over its runs, "
+             f"mutation testing used the primary run {(sim.get('run_set') or {}).get('primary')}."
+             if sim.get("run_set") else "- Only the default parameter configuration was simulated (no run_set.json).")]
     return "\n".join(out) + "\n"
+
+
+def _run_set_summary(rs: dict | None) -> list[str]:
+    if not rs:
+        return []
+    cfgs = list(dict.fromkeys(r["config"] for r in rs["runs"]))
+    return [f"| Run set | {len(rs['runs'])} runs in {len(cfgs)} configurations ({', '.join(cfgs)}); primary "
+            f"{rs['primary']}{'; NOT RUN: ' + ', '.join(rs['failed_runs']) if rs.get('failed_runs') else ''} |"]
+
+
+def _run_set_section(rs: dict | None) -> list[str]:
+    """One row per run: what it changes from the default configuration and its result."""
+    if not rs:
+        return []
+    out = ["", "## Run set", "", "Every check is merged over these runs: PASS when one run verified it and no run "
+           "failed it; NOT_VERIFIABLE only when every run declared it so.", "",
+           "| Run | Parameters changed | Defines | Plusargs | Status | Tests | Failing assertions | Not verifiable here |",
+           "|---|---|---|---|---|---|---|---|"]
+    for r in rs["runs"]:
+        ov = ", ".join(f"{k}={v}" for k, v in (r.get("overrides") or {}).items()) or "defaults"
+        o = r.get("opts") or {}
+        out.append(f"| {r['label']}{' — ' + r['note'] if r.get('note') else ''} | {ov} | "
+                   f"{', '.join(o.get('defines') or []) or '—'} | {o.get('plusargs') or '—'} | {r['status']} | "
+                   f"{r.get('tests')} | {', '.join(r.get('assertions_failing') or []) or 'none'} | "
+                   f"{len(r.get('not_verifiable') or [])} |")
+    return out
 
 
 def write(rep: dict, contract: dict, mutation: dict | None, work: Path) -> list[Path]:

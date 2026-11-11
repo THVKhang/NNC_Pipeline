@@ -34,12 +34,12 @@
       "note": "Read contract.md: 32 checks (13 SVA, 19 tests), interface 18 ports from the two captioned top-level port tables, clock_relation async. Cross-domain checks use windows S..S+2 (REQ-VER-001). CHK-014 (metastability model off) and CHK-017 (VLSIT_SYNTHESIS build) need another run configuration than the one configured (model on, simulation branch); they are kept so the report shows them as not verified in this run rather than dropping them. A person should confirm."
     },
     "G3_verif_sources": {
-      "at": "2026-11-11T07:12:13+00:00",
+      "at": "2026-11-11T11:29:31+00:00",
       "by": "Claude (delegated by GabrielHCMUT)",
       "hashes": {
-        "verif": "71398f2f138b98619b5031a96e43a912f3bc9c804ad2bfab5b1f4e29ad507b72"
+        "verif": "ad98ca3c0179efc75a169c2109f603b8ee786eb77e278bbd182f76a595e6bf47"
       },
-      "note": "Testbench fixes after triage (all B, none weakens a check): TB.rec returned 'never sampled' for records more than 50 edges old (negative range) -> CHK-031 aborted; the scoreboard checked before the test's own reset (cascade into CHK-032 thr=0) -> enabled after init's reset; init changed the static thresholds while out of reset (REQ-FUNC-010) -> now driven with the reset assertion; nnc_chk_wr CHK-012 aligned with the contract text: o_full/o_full_thr may change between edges only when i_rst_n_sw or the static threshold changed, strict for o_overflow/o_sw_rst_busy. CHK-003/013 (triage C, metastability model) untouched. Generated versions kept for comparison. A person should confirm."
+      "note": "Run-set hand fixes after triage B (2026-11-11): nnc_chk_sb.sv discards pre-reset words at read edge S+3 with S from PARA_AFIFO_CELL_TYPE (was the literal 5, S=2 only); fill_tr and scn_021 wait LMAX+3 write edges so earlier reads cross before writing (o_full may stay 1 late, REQ-FUNC-008); CHK-024 fill target min(5, DEPTH-1); CHK-025 NOT_VERIFIABLE when DEPTH < LMAX. No check relaxed in the default configuration."
     }
   },
   "version": 1

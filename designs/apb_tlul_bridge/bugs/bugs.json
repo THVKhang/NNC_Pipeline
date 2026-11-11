@@ -1,0 +1,32 @@
+{
+ "note": "Hand-written realistic RTL faults for the bug benchmark (nnc bench). Each replaces one line of rtl/; the delivered RTL is never changed. 'expect' is the correct triage verdict.",
+ "bugs": [
+  {
+   "id": "TL1",
+   "title": "response source ID not checked",
+   "file": "m_tlul_if.sv",
+   "find": "(i_tlul_d_source != PARA_SRC_ID[PARA_SRC_W-1:0]);",
+   "replace": "1'b0;",
+   "spec": "a wrong d_source is an error",
+   "expect": "A_rtl_wrong"
+  },
+  {
+   "id": "TL2",
+   "title": "partial-strobe write accepted",
+   "file": "m_apb_if.sv",
+   "find": "assign w_legal = (i_apb_paddr[1:0] == 2'b00) & (~i_apb_pwrite | (i_apb_pstrb == 4'b1111));",
+   "replace": "assign w_legal = (i_apb_paddr[1:0] == 2'b00);",
+   "spec": "only full-word writes are legal",
+   "expect": "A_rtl_wrong"
+  },
+  {
+   "id": "TL3",
+   "title": "read data returned with an error response",
+   "file": "m_tlul_if.sv",
+   "find": "assign o_resp_rdata = (reg_a_rd & ~w_resp_err) ? i_tlul_d_data : '0;",
+   "replace": "assign o_resp_rdata = reg_a_rd ? i_tlul_d_data : '0;",
+   "spec": "PRDATA zero on error",
+   "expect": "A_rtl_wrong"
+  }
+ ]
+}

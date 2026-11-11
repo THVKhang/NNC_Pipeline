@@ -1,6 +1,6 @@
 # Verification report — sync_fifo
 
-Generated 2026-11-11T07:38:34+00:00 by NNC Pipeline.
+Generated 2026-11-11T12:49:11+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -18,7 +18,7 @@ Generated 2026-11-11T07:38:34+00:00 by NNC Pipeline.
 | Mutation score | 100.0 % (36 killed / 0 survived / 0 not compiled) |
 | Coverage target | not requested (`nnc cover <design> --target <n> --metric <m>`) |
 | Triage | no failure to analyse |
-| Agent cost | US$15.3406 in 63 calls (A1 0.9003, A12 1.3483, A2 0.6673, A3 0.4066, A4 1.8669, A5 0.4191, A6 0.243, A7 8.496, A9 0.9932) |
+| Agent cost | US$15.3406 in 63 calls (A1 0.9003, A12 1.3483, A2 0.6673, A3 0.4066, A4 1.8669, A5 0.4191, A6 0.243, A7 8.496, A9 0.9932); of which US$2.8472 in 1 failed calls (usage limit, timeout, invalid answer) |
 
 ## Sign-off conditions
 
@@ -393,4 +393,4 @@ Generated 2026-11-11T07:38:34+00:00 by NNC Pipeline.
 
 - Formal proof, CDC/RDC, STA, synthesis and DFT checks are outside this flow.
 - Rules marked NOT_VERIFIED_BY_SIM carry the contract's reason (static, structural, not observable...).
-- Only the default parameter configuration was simulated unless stated above.
+- Only the default parameter configuration was simulated (no run_set.json).

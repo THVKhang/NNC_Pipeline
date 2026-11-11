@@ -2,299 +2,6 @@
  "mutants": [
   {
    "id": "M01",
-   "file": "m_vlsit_afifo_wr.sv",
-   "line": 185,
-   "operator": "and_to_or",
-   "original": "if (!w_ack_s && (w_rgray_s == '0))",
-   "mutated": "        if (!w_ack_s || (w_rgray_s == '0))",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_017_synthesis_branch_regression",
-    "test_chk_025_srst_partial_fifo",
-    "test_chk_027_read_released_first",
-    "test_chk_028_srst_reassert_in_rel",
-    "test_chk_029_srst_random/pair=1",
-    "test_chk_029_srst_random/pair=3",
-    "test_regression_random"
-   ],
-   "killed_by_checks": [
-    "CHK-011",
-    "CHK-002"
-   ]
-  },
-  {
-   "id": "M02",
-   "file": "m_vlsit_afifo_rd.sv",
-   "line": 169,
-   "operator": "and_to_or",
-   "original": "if (!w_req_s && (w_wgray_s == '0))",
-   "mutated": "        if (!w_req_s || (w_wgray_s == '0))",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_017_synthesis_branch_regression",
-    "test_chk_025_srst_partial_fifo",
-    "test_chk_027_read_released_first",
-    "test_chk_028_srst_reassert_in_rel",
-    "test_chk_029_srst_random/pair=1",
-    "test_chk_029_srst_random/pair=3",
-    "test_regression_random"
-   ],
-   "killed_by_checks": [
-    "CHK-011",
-    "CHK-005",
-    "CHK-006",
-    "CHK-002"
-   ]
-  },
-  {
-   "id": "M03",
-   "file": "m_vlsit_afifo_rd.sv",
-   "line": 191,
-   "operator": "zero_to_one",
-   "original": "reg_ack_rd <= 1'b0;",
-   "mutated": "      reg_ack_rd <= 1'b1;",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_025_srst_partial_fifo"
-   ],
-   "killed_by_checks": []
-  },
-  {
-   "id": "M04",
-   "file": "m_vlsit_afifo_cell_sync.sv",
-   "line": 140,
-   "operator": "ne_to_eq",
-   "original": "sim_en = (sim_en_arg != 0);",
-   "mutated": "        sim_en = (sim_en_arg == 0);",
-   "status": "survived",
-   "killed_by_tests": [],
-   "killed_by_checks": []
-  },
-  {
-   "id": "M05",
-   "file": "m_vlsit_afifo_rd.sv",
-   "line": 190,
-   "operator": "negate_if",
-   "original": "if (!i_rst_n_rd)",
-   "mutated": "    if (!(!i_rst_n_rd))",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_017_synthesis_branch_regression",
-    "test_chk_025_srst_partial_fifo",
-    "test_chk_026_srst_pulse_full_overflow",
-    "test_chk_027_read_released_first",
-    "test_chk_028_srst_reassert_in_rel",
-    "test_chk_029_srst_random/pair=0",
-    "test_chk_029_srst_random/pair=1",
-    "test_chk_029_srst_random/pair=2",
-    "test_chk_029_srst_random/pair=3",
-    "test_chk_030_after_srst_like_hw_reset",
-    "test_chk_031_clock_stop_during_srst",
-    "test_regression_random"
-   ],
-   "killed_by_checks": []
-  },
-  {
-   "id": "M06",
-   "file": "m_vlsit_afifo_cell_sync.sv",
-   "line": 158,
-   "operator": "negate_if",
-   "original": "if (sim_din_last !== sim_last) begin",
-   "mutated": "        if (!(sim_din_last !== sim_last)) begin",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_014_nominal_latency/per=0",
-    "test_chk_014_nominal_latency/per=1",
-    "test_chk_015_latency_with_model",
-    "test_chk_016_random_ratios/pair=0",
-    "test_chk_016_random_ratios/pair=1",
-    "test_chk_016_random_ratios/pair=2",
-    "test_chk_016_random_ratios/pair=3",
-    "test_chk_016_random_ratios/pair=4",
-    "test_chk_016_random_ratios/pair=5",
-    "test_chk_017_synthesis_branch_regression",
-    "test_chk_018_write_n_read_n",
-    "test_chk_019_back_to_back_equal_clocks",
-    "test_chk_020_overflow",
-    "test_chk_021_underflow",
-    "test_chk_022_hw_reset_independent",
-    "test_chk_023_hw_reset_during_srst",
-    "test_chk_024_hw_reset_mid_traffic",
-    "test_chk_025_srst_partial_fifo",
-    "test_chk_026_srst_pulse_full_overflow",
-    "test_chk_027_read_released_first",
-    "test_chk_028_srst_reassert_in_rel",
-    "test_chk_029_srst_random/pair=0",
-    "test_chk_029_srst_random/pair=1",
-    "test_chk_029_srst_random/pair=2",
-    "test_chk_029_srst_random/pair=3",
-    "test_chk_030_after_srst_like_hw_reset",
-    "test_chk_031_clock_stop_during_srst",
-    "test_chk_032_threshold_flags/thr=0",
-    "test_chk_032_threshold_flags/thr=1",
-    "test_chk_032_threshold_flags/thr=2",
-    "test_chk_032_threshold_flags/thr=3",
-    "test_chk_032_threshold_flags/thr=4",
-    "test_chk_032_threshold_flags/thr=5",
-    "test_regression_random"
-   ],
-   "killed_by_checks": []
-  },
-  {
-   "id": "M07",
-   "file": "m_vlsit_afifo_cell_sync.sv",
-   "line": 162,
-   "operator": "eq_to_ne",
-   "original": "if (sim_extra == 0) begin",
-   "mutated": "          if (sim_extra != 0) begin",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_014_nominal_latency/per=0",
-    "test_chk_014_nominal_latency/per=1",
-    "test_chk_015_latency_with_model",
-    "test_chk_016_random_ratios/pair=0",
-    "test_chk_016_random_ratios/pair=1",
-    "test_chk_016_random_ratios/pair=2",
-    "test_chk_016_random_ratios/pair=3",
-    "test_chk_016_random_ratios/pair=4",
-    "test_chk_016_random_ratios/pair=5",
-    "test_chk_017_synthesis_branch_regression",
-    "test_chk_018_write_n_read_n",
-    "test_chk_019_back_to_back_equal_clocks",
-    "test_chk_020_overflow",
-    "test_chk_021_underflow",
-    "test_chk_023_hw_reset_during_srst",
-    "test_chk_024_hw_reset_mid_traffic",
-    "test_chk_025_srst_partial_fifo",
-    "test_chk_026_srst_pulse_full_overflow",
-    "test_chk_027_read_released_first",
-    "test_chk_028_srst_reassert_in_rel",
-    "test_chk_029_srst_random/pair=0",
-    "test_chk_029_srst_random/pair=1",
-    "test_chk_029_srst_random/pair=2",
-    "test_chk_029_srst_random/pair=3",
-    "test_chk_030_after_srst_like_hw_reset",
-    "test_chk_031_clock_stop_during_srst",
-    "test_chk_032_threshold_flags/thr=0",
-    "test_chk_032_threshold_flags/thr=1",
-    "test_chk_032_threshold_flags/thr=2",
-    "test_chk_032_threshold_flags/thr=3",
-    "test_chk_032_threshold_flags/thr=5",
-    "test_regression_random"
-   ],
-   "killed_by_checks": [
-    "CHK-005",
-    "CHK-006"
-   ]
-  },
-  {
-   "id": "M08",
-   "file": "m_vlsit_afifo_wr.sv",
-   "line": 185,
-   "operator": "eq_to_ne",
-   "original": "if (!w_ack_s && (w_rgray_s == '0))",
-   "mutated": "        if (!w_ack_s && (w_rgray_s != '0))",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_017_synthesis_branch_regression",
-    "test_chk_025_srst_partial_fifo",
-    "test_chk_026_srst_pulse_full_overflow",
-    "test_chk_027_read_released_first",
-    "test_chk_028_srst_reassert_in_rel",
-    "test_chk_029_srst_random/pair=0",
-    "test_chk_029_srst_random/pair=1",
-    "test_chk_029_srst_random/pair=2",
-    "test_chk_029_srst_random/pair=3",
-    "test_chk_030_after_srst_like_hw_reset",
-    "test_chk_031_clock_stop_during_srst",
-    "test_regression_random"
-   ],
-   "killed_by_checks": []
-  },
-  {
-   "id": "M09",
-   "file": "m_vlsit_afifo_wr.sv",
-   "line": 210,
-   "operator": "zero_to_one",
-   "original": "reg_sw_rst_busy <= 1'b0;",
-   "mutated": "      reg_sw_rst_busy <= 1'b1;",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_022_hw_reset_independent",
-    "test_chk_023_hw_reset_during_srst",
-    "test_chk_024_hw_reset_mid_traffic",
-    "test_regression_random"
-   ],
-   "killed_by_checks": [
-    "CHK-007",
-    "CHK-011"
-   ]
-  },
-  {
-   "id": "M10",
-   "file": "m_vlsit_afifo_rd.sv",
-   "line": 118,
-   "operator": "one_to_zero",
-   "original": "assign o_empty_thr = w_rd_blk ? 1'b1 : (w_occ <= i_empty_thr);",
-   "mutated": "  assign o_empty_thr = w_rd_blk ? 1'b0 : (w_occ <= i_empty_thr);",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_025_srst_partial_fifo"
-   ],
-   "killed_by_checks": []
-  },
-  {
-   "id": "M11",
-   "file": "m_vlsit_afifo_rd.sv",
-   "line": 93,
-   "operator": "ne_to_eq",
-   "original": "assign w_rd_blk = w_req_s | (reg_fsm_srst_current_state != ENUM_ST_RUN);",
-   "mutated": "  assign w_rd_blk = w_req_s | (reg_fsm_srst_current_state == ENUM_ST_RUN);",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_014_nominal_latency/per=0",
-    "test_chk_014_nominal_latency/per=1",
-    "test_chk_015_latency_with_model",
-    "test_chk_016_random_ratios/pair=0",
-    "test_chk_016_random_ratios/pair=1",
-    "test_chk_016_random_ratios/pair=2",
-    "test_chk_016_random_ratios/pair=3",
-    "test_chk_016_random_ratios/pair=4",
-    "test_chk_016_random_ratios/pair=5",
-    "test_chk_017_synthesis_branch_regression",
-    "test_chk_018_write_n_read_n",
-    "test_chk_019_back_to_back_equal_clocks",
-    "test_chk_020_overflow",
-    "test_chk_021_underflow",
-    "test_chk_022_hw_reset_independent",
-    "test_chk_023_hw_reset_during_srst",
-    "test_chk_024_hw_reset_mid_traffic",
-    "test_chk_025_srst_partial_fifo",
-    "test_chk_026_srst_pulse_full_overflow",
-    "test_chk_027_read_released_first",
-    "test_chk_028_srst_reassert_in_rel",
-    "test_chk_029_srst_random/pair=0",
-    "test_chk_029_srst_random/pair=1",
-    "test_chk_029_srst_random/pair=2",
-    "test_chk_029_srst_random/pair=3",
-    "test_chk_030_after_srst_like_hw_reset",
-    "test_chk_031_clock_stop_during_srst",
-    "test_chk_032_threshold_flags/thr=0",
-    "test_chk_032_threshold_flags/thr=1",
-    "test_chk_032_threshold_flags/thr=2",
-    "test_chk_032_threshold_flags/thr=3",
-    "test_chk_032_threshold_flags/thr=4",
-    "test_chk_032_threshold_flags/thr=5",
-    "test_regression_random"
-   ],
-   "killed_by_checks": [
-    "CHK-005",
-    "CHK-006",
-    "CHK-002"
-   ]
-  },
-  {
-   "id": "M12",
    "file": "m_vlsit_afifo_mem.sv",
    "line": 52,
    "operator": "negate_if",
@@ -338,166 +45,76 @@
    ],
    "killed_by_checks": [
     "CHK-005"
-   ]
-  },
-  {
-   "id": "M13",
-   "file": "m_vlsit_afifo_wr.sv",
-   "line": 134,
-   "operator": "one_to_zero",
-   "original": "w_wbin_nxt = reg_wbin + 1'b1;",
-   "mutated": "      w_wbin_nxt = reg_wbin + 1'b0;",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_014_nominal_latency/per=0",
-    "test_chk_014_nominal_latency/per=1",
-    "test_chk_015_latency_with_model",
-    "test_chk_016_random_ratios/pair=0",
-    "test_chk_016_random_ratios/pair=1",
-    "test_chk_016_random_ratios/pair=2",
-    "test_chk_016_random_ratios/pair=3",
-    "test_chk_016_random_ratios/pair=4",
-    "test_chk_016_random_ratios/pair=5",
-    "test_chk_017_synthesis_branch_regression",
-    "test_chk_018_write_n_read_n",
-    "test_chk_019_back_to_back_equal_clocks",
-    "test_chk_020_overflow",
-    "test_chk_021_underflow",
-    "test_chk_022_hw_reset_independent",
-    "test_chk_023_hw_reset_during_srst",
-    "test_chk_024_hw_reset_mid_traffic",
-    "test_chk_025_srst_partial_fifo",
-    "test_chk_026_srst_pulse_full_overflow",
-    "test_chk_028_srst_reassert_in_rel",
-    "test_chk_029_srst_random/pair=0",
-    "test_chk_029_srst_random/pair=1",
-    "test_chk_029_srst_random/pair=2",
-    "test_chk_029_srst_random/pair=3",
-    "test_chk_030_after_srst_like_hw_reset",
-    "test_chk_031_clock_stop_during_srst",
-    "test_chk_032_threshold_flags/thr=0",
-    "test_chk_032_threshold_flags/thr=1",
-    "test_chk_032_threshold_flags/thr=2",
-    "test_chk_032_threshold_flags/thr=3",
-    "test_chk_032_threshold_flags/thr=4",
-    "test_chk_032_threshold_flags/thr=5",
-    "test_regression_random"
    ],
-   "killed_by_checks": [
-    "CHK-006"
-   ]
+   "run": "base.s1"
   },
   {
-   "id": "M14",
-   "file": "m_vlsit_afifo_cell_sync.sv",
-   "line": 136,
-   "operator": "one_to_zero",
-   "original": "sim_en   = 1'b1;",
-   "mutated": "      sim_en   = 1'b0;",
-   "status": "survived",
-   "killed_by_tests": [],
-   "killed_by_checks": []
-  },
-  {
-   "id": "M15",
-   "file": "m_vlsit_afifo_cell_sync.sv",
-   "line": 154,
-   "operator": "zero_to_one",
-   "original": "sim_pend <= 1'b0;",
-   "mutated": "        sim_pend <= 1'b1;",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_014_nominal_latency/per=1",
-    "test_chk_015_latency_with_model",
-    "test_chk_016_random_ratios/pair=0",
-    "test_chk_016_random_ratios/pair=1",
-    "test_chk_016_random_ratios/pair=2",
-    "test_chk_016_random_ratios/pair=3",
-    "test_chk_016_random_ratios/pair=4",
-    "test_chk_016_random_ratios/pair=5",
-    "test_chk_017_synthesis_branch_regression",
-    "test_chk_018_write_n_read_n",
-    "test_chk_019_back_to_back_equal_clocks",
-    "test_chk_020_overflow",
-    "test_chk_021_underflow",
-    "test_chk_022_hw_reset_independent",
-    "test_chk_023_hw_reset_during_srst",
-    "test_chk_024_hw_reset_mid_traffic",
-    "test_chk_025_srst_partial_fifo",
-    "test_chk_026_srst_pulse_full_overflow",
-    "test_chk_027_read_released_first",
-    "test_chk_028_srst_reassert_in_rel",
-    "test_chk_029_srst_random/pair=0",
-    "test_chk_029_srst_random/pair=1",
-    "test_chk_029_srst_random/pair=3",
-    "test_chk_030_after_srst_like_hw_reset",
-    "test_chk_031_clock_stop_during_srst",
-    "test_chk_032_threshold_flags/thr=0",
-    "test_chk_032_threshold_flags/thr=1",
-    "test_chk_032_threshold_flags/thr=2",
-    "test_chk_032_threshold_flags/thr=3",
-    "test_chk_032_threshold_flags/thr=4",
-    "test_chk_032_threshold_flags/thr=5",
-    "test_regression_random"
-   ],
-   "killed_by_checks": [
-    "CHK-005",
-    "CHK-006",
-    "CHK-002"
-   ]
-  },
-  {
-   "id": "M16",
-   "file": "m_vlsit_afifo_wr.sv",
-   "line": 133,
+   "id": "M02",
+   "file": "m_vlsit_afifo_rd.sv",
+   "line": 151,
    "operator": "negate_if",
-   "original": "else if (w_wr_acc)",
-   "mutated": "    else if (!(w_wr_acc))",
+   "original": "if (!i_rst_n_rd)",
+   "mutated": "    if (!(!i_rst_n_rd))",
    "status": "killed",
    "killed_by_tests": [
-    "test_chk_014_nominal_latency/per=0",
-    "test_chk_014_nominal_latency/per=1",
-    "test_chk_015_latency_with_model",
     "test_chk_016_random_ratios/pair=0",
     "test_chk_016_random_ratios/pair=1",
     "test_chk_016_random_ratios/pair=2",
     "test_chk_016_random_ratios/pair=3",
     "test_chk_016_random_ratios/pair=4",
     "test_chk_016_random_ratios/pair=5",
-    "test_chk_017_synthesis_branch_regression",
-    "test_chk_018_write_n_read_n",
-    "test_chk_019_back_to_back_equal_clocks",
-    "test_chk_020_overflow",
     "test_chk_021_underflow",
-    "test_chk_022_hw_reset_independent",
-    "test_chk_023_hw_reset_during_srst",
-    "test_chk_024_hw_reset_mid_traffic",
     "test_chk_025_srst_partial_fifo",
-    "test_chk_026_srst_pulse_full_overflow",
     "test_chk_027_read_released_first",
     "test_chk_028_srst_reassert_in_rel",
-    "test_chk_029_srst_random/pair=0",
-    "test_chk_029_srst_random/pair=1",
-    "test_chk_029_srst_random/pair=2",
-    "test_chk_029_srst_random/pair=3",
     "test_chk_030_after_srst_like_hw_reset",
-    "test_chk_031_clock_stop_during_srst",
-    "test_chk_032_threshold_flags/thr=0",
-    "test_chk_032_threshold_flags/thr=1",
-    "test_chk_032_threshold_flags/thr=2",
-    "test_chk_032_threshold_flags/thr=3",
-    "test_chk_032_threshold_flags/thr=4",
-    "test_chk_032_threshold_flags/thr=5",
     "test_regression_random"
    ],
    "killed_by_checks": [
-    "CHK-011",
-    "CHK-005",
-    "CHK-006"
+    "CHK-002"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M03",
+   "file": "m_vlsit_afifo_cell_sync.sv",
+   "line": 171,
+   "operator": "eq_to_ne",
+   "original": "if (sim_cnt == 0) begin",
+   "mutated": "          if (sim_cnt != 0) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_015_latency_with_model"
+   ],
+   "killed_by_checks": [],
+   "run": "small.s1",
+   "also_run": [
+    "model_off.s1",
+    "cell1.s1",
+    "cell3.s1",
+    "cell4.s1",
+    "macro.s1",
+    "small.s1",
+    "wr_slow.s1",
+    "rd_slow.s1"
    ]
   },
   {
-   "id": "M17",
+   "id": "M04",
+   "file": "m_vlsit_afifo_rd.sv",
+   "line": 118,
+   "operator": "one_to_zero",
+   "original": "assign o_empty_thr = w_rd_blk ? 1'b1 : (w_occ <= i_empty_thr);",
+   "mutated": "  assign o_empty_thr = w_rd_blk ? 1'b0 : (w_occ <= i_empty_thr);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_025_srst_partial_fifo"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M05",
    "file": "m_vlsit_afifo_rd.sv",
    "line": 169,
    "operator": "eq_to_ne",
@@ -514,42 +131,91 @@
     "test_chk_029_srst_random/pair=1",
     "test_chk_029_srst_random/pair=2",
     "test_chk_029_srst_random/pair=3",
+    "test_chk_030_after_srst_like_hw_reset",
     "test_chk_031_clock_stop_during_srst",
     "test_regression_random"
    ],
-   "killed_by_checks": [
-    "CHK-005",
-    "CHK-006"
-   ]
+   "killed_by_checks": [],
+   "run": "base.s1"
   },
   {
-   "id": "M18",
-   "file": "m_vlsit_afifo_rd.sv",
-   "line": 152,
-   "operator": "zero_to_one",
-   "original": "reg_underflow <= 1'b0;",
-   "mutated": "      reg_underflow <= 1'b1;",
+   "id": "M06",
+   "file": "m_vlsit_afifo_cell_sync.sv",
+   "line": 140,
+   "operator": "ne_to_eq",
+   "original": "sim_en = (sim_en_arg != 0);",
+   "mutated": "        sim_en = (sim_en_arg == 0);",
    "status": "killed",
    "killed_by_tests": [
+    "test_chk_014_nominal_latency/per=0",
+    "test_chk_014_nominal_latency/per=1",
+    "test_chk_015_latency_with_model",
+    "test_chk_017_synthesis_branch_regression",
+    "test_chk_019_back_to_back_equal_clocks",
+    "test_chk_021_underflow",
     "test_chk_022_hw_reset_independent",
     "test_chk_023_hw_reset_during_srst",
-    "test_chk_024_hw_reset_mid_traffic",
-    "test_regression_random"
+    "test_chk_025_srst_partial_fifo",
+    "test_chk_026_srst_pulse_full_overflow",
+    "test_chk_027_read_released_first",
+    "test_chk_028_srst_reassert_in_rel",
+    "test_chk_030_after_srst_like_hw_reset",
+    "test_chk_031_clock_stop_during_srst",
+    "test_chk_032_threshold_flags/thr=1",
+    "test_chk_032_threshold_flags/thr=2",
+    "test_chk_032_threshold_flags/thr=4",
+    "test_chk_032_threshold_flags/thr=5"
    ],
    "killed_by_checks": [
-    "CHK-001"
+    "CHK-013",
+    "CHK-003"
+   ],
+   "run": "model_off.s1",
+   "also_run": [
+    "model_off.s1",
+    "cell1.s1",
+    "cell3.s1",
+    "cell4.s1",
+    "macro.s1",
+    "small.s1",
+    "wr_slow.s1",
+    "rd_slow.s1"
    ]
   },
   {
-   "id": "M19",
-   "file": "m_vlsit_afifo_rd.sv",
-   "line": 178,
-   "operator": "negate_if",
-   "original": "if (!i_rst_n_rd)",
-   "mutated": "    if (!(!i_rst_n_rd))",
+   "id": "M07",
+   "file": "m_vlsit_afifo_wr.sv",
+   "line": 185,
+   "operator": "and_to_or",
+   "original": "if (!w_ack_s && (w_rgray_s == '0))",
+   "mutated": "        if (!w_ack_s || (w_rgray_s == '0))",
    "status": "killed",
    "killed_by_tests": [
     "test_chk_017_synthesis_branch_regression",
+    "test_chk_025_srst_partial_fifo",
+    "test_chk_027_read_released_first",
+    "test_chk_028_srst_reassert_in_rel",
+    "test_chk_029_srst_random/pair=1",
+    "test_chk_029_srst_random/pair=3",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-011",
+    "CHK-002"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M08",
+   "file": "m_vlsit_afifo_wr.sv",
+   "line": 209,
+   "operator": "negate_if",
+   "original": "if (!i_rst_n_wr)",
+   "mutated": "    if (!(!i_rst_n_wr))",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_synthesis_branch_regression",
+    "test_chk_023_hw_reset_during_srst",
     "test_chk_025_srst_partial_fifo",
     "test_chk_026_srst_pulse_full_overflow",
     "test_chk_027_read_released_first",
@@ -562,194 +228,65 @@
     "test_chk_031_clock_stop_during_srst",
     "test_regression_random"
    ],
-   "killed_by_checks": []
-  },
-  {
-   "id": "M20",
-   "file": "m_vlsit_afifo_cell_sync.sv",
-   "line": 171,
-   "operator": "negate_if",
-   "original": "if (sim_cnt == 0) begin",
-   "mutated": "          if (!(sim_cnt == 0)) begin",
-   "status": "survived",
-   "killed_by_tests": [],
-   "killed_by_checks": []
-  },
-  {
-   "id": "M21",
-   "file": "m_vlsit_afifo_cell_sync.sv",
-   "line": 171,
-   "operator": "eq_to_ne",
-   "original": "if (sim_cnt == 0) begin",
-   "mutated": "          if (sim_cnt != 0) begin",
-   "status": "survived",
-   "killed_by_tests": [],
-   "killed_by_checks": []
-  },
-  {
-   "id": "M22",
-   "file": "m_vlsit_afifo_wr.sv",
-   "line": 131,
-   "operator": "eq_to_ne",
-   "original": "if (reg_fsm_srst_current_state == ENUM_ST_PTR)",
-   "mutated": "    if (reg_fsm_srst_current_state != ENUM_ST_PTR)",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_014_nominal_latency/per=0",
-    "test_chk_014_nominal_latency/per=1",
-    "test_chk_015_latency_with_model",
-    "test_chk_016_random_ratios/pair=0",
-    "test_chk_016_random_ratios/pair=1",
-    "test_chk_016_random_ratios/pair=2",
-    "test_chk_016_random_ratios/pair=3",
-    "test_chk_016_random_ratios/pair=4",
-    "test_chk_016_random_ratios/pair=5",
-    "test_chk_017_synthesis_branch_regression",
-    "test_chk_018_write_n_read_n",
-    "test_chk_019_back_to_back_equal_clocks",
-    "test_chk_020_overflow",
-    "test_chk_021_underflow",
-    "test_chk_022_hw_reset_independent",
-    "test_chk_023_hw_reset_during_srst",
-    "test_chk_024_hw_reset_mid_traffic",
-    "test_chk_025_srst_partial_fifo",
-    "test_chk_026_srst_pulse_full_overflow",
-    "test_chk_028_srst_reassert_in_rel",
-    "test_chk_029_srst_random/pair=0",
-    "test_chk_029_srst_random/pair=1",
-    "test_chk_029_srst_random/pair=2",
-    "test_chk_029_srst_random/pair=3",
-    "test_chk_030_after_srst_like_hw_reset",
-    "test_chk_031_clock_stop_during_srst",
-    "test_chk_032_threshold_flags/thr=0",
-    "test_chk_032_threshold_flags/thr=1",
-    "test_chk_032_threshold_flags/thr=2",
-    "test_chk_032_threshold_flags/thr=3",
-    "test_chk_032_threshold_flags/thr=4",
-    "test_chk_032_threshold_flags/thr=5",
-    "test_regression_random"
-   ],
    "killed_by_checks": [
-    "CHK-006"
-   ]
-  },
-  {
-   "id": "M23",
-   "file": "m_vlsit_afifo_wr.sv",
-   "line": 160,
-   "operator": "zero_to_one",
-   "original": "reg_overflow <= 1'b0;",
-   "mutated": "      reg_overflow <= 1'b1;",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_022_hw_reset_independent",
-    "test_chk_023_hw_reset_during_srst",
-    "test_chk_024_hw_reset_mid_traffic",
-    "test_regression_random"
-   ],
-   "killed_by_checks": [
-    "CHK-007"
-   ]
-  },
-  {
-   "id": "M24",
-   "file": "m_vlsit_afifo_rd.sv",
-   "line": 126,
-   "operator": "one_to_zero",
-   "original": "w_rbin_nxt = reg_rbin + 1'b1;",
-   "mutated": "      w_rbin_nxt = reg_rbin + 1'b0;",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_014_nominal_latency/per=0",
-    "test_chk_014_nominal_latency/per=1",
-    "test_chk_015_latency_with_model",
-    "test_chk_016_random_ratios/pair=0",
-    "test_chk_016_random_ratios/pair=1",
-    "test_chk_016_random_ratios/pair=2",
-    "test_chk_016_random_ratios/pair=3",
-    "test_chk_016_random_ratios/pair=4",
-    "test_chk_016_random_ratios/pair=5",
-    "test_chk_017_synthesis_branch_regression",
-    "test_chk_018_write_n_read_n",
-    "test_chk_019_back_to_back_equal_clocks",
-    "test_chk_020_overflow",
-    "test_chk_021_underflow",
-    "test_chk_022_hw_reset_independent",
-    "test_chk_023_hw_reset_during_srst",
-    "test_chk_024_hw_reset_mid_traffic",
-    "test_chk_025_srst_partial_fifo",
-    "test_chk_026_srst_pulse_full_overflow",
-    "test_chk_028_srst_reassert_in_rel",
-    "test_chk_029_srst_random/pair=0",
-    "test_chk_029_srst_random/pair=1",
-    "test_chk_029_srst_random/pair=2",
-    "test_chk_029_srst_random/pair=3",
-    "test_chk_030_after_srst_like_hw_reset",
-    "test_chk_031_clock_stop_during_srst",
-    "test_chk_032_threshold_flags/thr=0",
-    "test_chk_032_threshold_flags/thr=1",
-    "test_chk_032_threshold_flags/thr=2",
-    "test_chk_032_threshold_flags/thr=3",
-    "test_chk_032_threshold_flags/thr=4",
-    "test_chk_032_threshold_flags/thr=5",
-    "test_regression_random"
-   ],
-   "killed_by_checks": [
+    "CHK-007",
+    "CHK-010",
     "CHK-005",
-    "CHK-006"
-   ]
+    "CHK-006",
+    "CHK-002"
+   ],
+   "run": "base.s1"
   },
   {
-   "id": "M25",
-   "file": "m_vlsit_afifo_cell_sync.sv",
-   "line": 168,
-   "operator": "one_to_zero",
-   "original": "sim_pend <= 1'b1;",
-   "mutated": "            sim_pend <= 1'b0;",
+   "id": "M09",
+   "file": "m_vlsit_afifo_rd.sv",
+   "line": 169,
+   "operator": "and_to_or",
+   "original": "if (!w_req_s && (w_wgray_s == '0))",
+   "mutated": "        if (!w_req_s || (w_wgray_s == '0))",
    "status": "killed",
    "killed_by_tests": [
-    "test_chk_014_nominal_latency/per=0",
-    "test_chk_014_nominal_latency/per=1",
-    "test_chk_015_latency_with_model",
-    "test_chk_016_random_ratios/pair=0",
-    "test_chk_016_random_ratios/pair=1",
-    "test_chk_016_random_ratios/pair=2",
-    "test_chk_016_random_ratios/pair=3",
-    "test_chk_016_random_ratios/pair=4",
-    "test_chk_016_random_ratios/pair=5",
     "test_chk_017_synthesis_branch_regression",
-    "test_chk_018_write_n_read_n",
-    "test_chk_019_back_to_back_equal_clocks",
-    "test_chk_020_overflow",
-    "test_chk_021_underflow",
-    "test_chk_022_hw_reset_independent",
-    "test_chk_023_hw_reset_during_srst",
-    "test_chk_024_hw_reset_mid_traffic",
     "test_chk_025_srst_partial_fifo",
-    "test_chk_026_srst_pulse_full_overflow",
     "test_chk_027_read_released_first",
     "test_chk_028_srst_reassert_in_rel",
-    "test_chk_029_srst_random/pair=0",
     "test_chk_029_srst_random/pair=1",
-    "test_chk_029_srst_random/pair=2",
     "test_chk_029_srst_random/pair=3",
-    "test_chk_030_after_srst_like_hw_reset",
-    "test_chk_031_clock_stop_during_srst",
-    "test_chk_032_threshold_flags/thr=0",
-    "test_chk_032_threshold_flags/thr=1",
-    "test_chk_032_threshold_flags/thr=2",
-    "test_chk_032_threshold_flags/thr=3",
-    "test_chk_032_threshold_flags/thr=4",
-    "test_chk_032_threshold_flags/thr=5",
     "test_regression_random"
    ],
    "killed_by_checks": [
+    "CHK-011",
     "CHK-005",
-    "CHK-006"
+    "CHK-006",
+    "CHK-002"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M10",
+   "file": "m_vlsit_afifo_rd.sv",
+   "line": 191,
+   "operator": "zero_to_one",
+   "original": "reg_ack_rd <= 1'b0;",
+   "mutated": "      reg_ack_rd <= 1'b1;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "also_run": [
+    "model_off.s1",
+    "syn.s1",
+    "cell1.s1",
+    "cell3.s1",
+    "cell4.s1",
+    "macro.s1",
+    "small.s1",
+    "wr_slow.s1",
+    "rd_slow.s1"
    ]
   },
   {
-   "id": "M26",
+   "id": "M11",
    "file": "m_vlsit_afifo_cell_sync.sv",
    "line": 164,
    "operator": "zero_to_one",
@@ -794,18 +331,35 @@
     "CHK-005",
     "CHK-006",
     "CHK-002"
-   ]
+   ],
+   "run": "base.s1"
   },
   {
-   "id": "M27",
-   "file": "m_vlsit_afifo_wr.sv",
-   "line": 194,
+   "id": "M12",
+   "file": "VLSIT_CELL_SYNC_2FF_RN.sv",
+   "line": 36,
    "operator": "negate_if",
-   "original": "if (!i_rst_n_wr)",
-   "mutated": "    if (!(!i_rst_n_wr))",
+   "original": "if (!RN)",
+   "mutated": "    if (!(!RN))",
    "status": "killed",
    "killed_by_tests": [
+    "test_chk_014_nominal_latency/per=0",
+    "test_chk_014_nominal_latency/per=1",
+    "test_chk_015_latency_with_model",
+    "test_chk_016_random_ratios/pair=0",
+    "test_chk_016_random_ratios/pair=1",
+    "test_chk_016_random_ratios/pair=2",
+    "test_chk_016_random_ratios/pair=3",
+    "test_chk_016_random_ratios/pair=4",
+    "test_chk_016_random_ratios/pair=5",
     "test_chk_017_synthesis_branch_regression",
+    "test_chk_018_write_n_read_n",
+    "test_chk_019_back_to_back_equal_clocks",
+    "test_chk_020_overflow",
+    "test_chk_021_underflow",
+    "test_chk_022_hw_reset_independent",
+    "test_chk_023_hw_reset_during_srst",
+    "test_chk_024_hw_reset_mid_traffic",
     "test_chk_025_srst_partial_fifo",
     "test_chk_026_srst_pulse_full_overflow",
     "test_chk_027_read_released_first",
@@ -816,22 +370,26 @@
     "test_chk_029_srst_random/pair=3",
     "test_chk_030_after_srst_like_hw_reset",
     "test_chk_031_clock_stop_during_srst",
+    "test_chk_032_threshold_flags/thr=0",
+    "test_chk_032_threshold_flags/thr=1",
+    "test_chk_032_threshold_flags/thr=2",
+    "test_chk_032_threshold_flags/thr=3",
+    "test_chk_032_threshold_flags/thr=4",
+    "test_chk_032_threshold_flags/thr=5",
     "test_regression_random"
    ],
    "killed_by_checks": [
-    "CHK-011",
-    "CHK-005",
-    "CHK-006",
-    "CHK-002"
-   ]
+    "CHK-001"
+   ],
+   "run": "syn.s1"
   },
   {
-   "id": "M28",
-   "file": "m_vlsit_afifo_rd.sv",
-   "line": 123,
-   "operator": "eq_to_ne",
-   "original": "if (reg_fsm_srst_current_state == ENUM_ST_RST)",
-   "mutated": "    if (reg_fsm_srst_current_state != ENUM_ST_RST)",
+   "id": "M13",
+   "file": "VLSIT_CELL_SRAM_1W1R.sv",
+   "line": 65,
+   "operator": "negate_if",
+   "original": "if (!REB)",
+   "mutated": "    if (!(!REB))",
    "status": "killed",
    "killed_by_tests": [
     "test_chk_014_nominal_latency/per=0",
@@ -869,39 +427,109 @@
     "test_regression_random"
    ],
    "killed_by_checks": [
-    "CHK-005",
-    "CHK-006"
-   ]
+    "CHK-005"
+   ],
+   "run": "macro.s1"
   },
   {
-   "id": "M29",
-   "file": "m_vlsit_afifo_rd.sv",
-   "line": 151,
-   "operator": "negate_if",
-   "original": "if (!i_rst_n_rd)",
-   "mutated": "    if (!(!i_rst_n_rd))",
+   "id": "M14",
+   "file": "m_vlsit_afifo_wr.sv",
+   "line": 134,
+   "operator": "one_to_zero",
+   "original": "w_wbin_nxt = reg_wbin + 1'b1;",
+   "mutated": "      w_wbin_nxt = reg_wbin + 1'b0;",
    "status": "killed",
    "killed_by_tests": [
+    "test_chk_014_nominal_latency/per=0",
+    "test_chk_014_nominal_latency/per=1",
+    "test_chk_015_latency_with_model",
     "test_chk_016_random_ratios/pair=0",
     "test_chk_016_random_ratios/pair=1",
     "test_chk_016_random_ratios/pair=2",
     "test_chk_016_random_ratios/pair=3",
     "test_chk_016_random_ratios/pair=4",
     "test_chk_016_random_ratios/pair=5",
+    "test_chk_017_synthesis_branch_regression",
+    "test_chk_018_write_n_read_n",
+    "test_chk_019_back_to_back_equal_clocks",
+    "test_chk_020_overflow",
     "test_chk_021_underflow",
+    "test_chk_022_hw_reset_independent",
+    "test_chk_023_hw_reset_during_srst",
+    "test_chk_024_hw_reset_mid_traffic",
     "test_chk_025_srst_partial_fifo",
-    "test_chk_027_read_released_first",
+    "test_chk_026_srst_pulse_full_overflow",
     "test_chk_028_srst_reassert_in_rel",
+    "test_chk_029_srst_random/pair=0",
+    "test_chk_029_srst_random/pair=1",
+    "test_chk_029_srst_random/pair=2",
+    "test_chk_029_srst_random/pair=3",
     "test_chk_030_after_srst_like_hw_reset",
+    "test_chk_031_clock_stop_during_srst",
+    "test_chk_032_threshold_flags/thr=0",
+    "test_chk_032_threshold_flags/thr=1",
+    "test_chk_032_threshold_flags/thr=2",
+    "test_chk_032_threshold_flags/thr=3",
+    "test_chk_032_threshold_flags/thr=4",
+    "test_chk_032_threshold_flags/thr=5",
     "test_regression_random"
    ],
    "killed_by_checks": [
-    "CHK-001",
-    "CHK-002"
-   ]
+    "CHK-006"
+   ],
+   "run": "base.s1"
   },
   {
-   "id": "M30",
+   "id": "M15",
+   "file": "m_vlsit_afifo_wr.sv",
+   "line": 204,
+   "operator": "eq_to_ne",
+   "original": "(w_fsm_srst_nxt_state == ENUM_ST_PTR) |",
+   "mutated": "                               (w_fsm_srst_nxt_state != ENUM_ST_PTR) |",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_nominal_latency/per=0",
+    "test_chk_014_nominal_latency/per=1",
+    "test_chk_015_latency_with_model",
+    "test_chk_016_random_ratios/pair=0",
+    "test_chk_016_random_ratios/pair=1",
+    "test_chk_016_random_ratios/pair=2",
+    "test_chk_016_random_ratios/pair=3",
+    "test_chk_016_random_ratios/pair=4",
+    "test_chk_016_random_ratios/pair=5",
+    "test_chk_017_synthesis_branch_regression",
+    "test_chk_018_write_n_read_n",
+    "test_chk_019_back_to_back_equal_clocks",
+    "test_chk_020_overflow",
+    "test_chk_021_underflow",
+    "test_chk_022_hw_reset_independent",
+    "test_chk_023_hw_reset_during_srst",
+    "test_chk_024_hw_reset_mid_traffic",
+    "test_chk_025_srst_partial_fifo",
+    "test_chk_026_srst_pulse_full_overflow",
+    "test_chk_027_read_released_first",
+    "test_chk_028_srst_reassert_in_rel",
+    "test_chk_029_srst_random/pair=0",
+    "test_chk_029_srst_random/pair=1",
+    "test_chk_029_srst_random/pair=2",
+    "test_chk_029_srst_random/pair=3",
+    "test_chk_030_after_srst_like_hw_reset",
+    "test_chk_031_clock_stop_during_srst",
+    "test_chk_032_threshold_flags/thr=0",
+    "test_chk_032_threshold_flags/thr=1",
+    "test_chk_032_threshold_flags/thr=2",
+    "test_chk_032_threshold_flags/thr=3",
+    "test_chk_032_threshold_flags/thr=4",
+    "test_chk_032_threshold_flags/thr=5",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-002"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M16",
    "file": "m_vlsit_afifo_cell_sync.sv",
    "line": 170,
    "operator": "negate_if",
@@ -948,54 +576,16 @@
     "CHK-005",
     "CHK-006",
     "CHK-002"
-   ]
-  },
-  {
-   "id": "M31",
-   "file": "m_vlsit_afifo_wr.sv",
-   "line": 126,
-   "operator": "eq_to_ne",
-   "original": "assign o_full_thr = w_wr_blk ? (i_full_thr == '0) : (w_occ >= i_full_thr);",
-   "mutated": "  assign o_full_thr = w_wr_blk ? (i_full_thr != '0) : (w_occ >= i_full_thr);",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_025_srst_partial_fifo",
-    "test_chk_026_srst_pulse_full_overflow"
    ],
-   "killed_by_checks": [
-    "CHK-009",
-    "CHK-011"
-   ]
+   "run": "base.s1"
   },
   {
-   "id": "M32",
-   "file": "m_vlsit_afifo_wr.sv",
-   "line": 218,
-   "operator": "zero_to_one",
-   "original": "reg_req_wr <= 1'b0;",
-   "mutated": "      reg_req_wr <= 1'b1;",
-   "status": "survived",
-   "killed_by_tests": [],
-   "killed_by_checks": []
-  },
-  {
-   "id": "M33",
-   "file": "m_vlsit_afifo_cell_sync.sv",
-   "line": 173,
-   "operator": "zero_to_one",
-   "original": "sim_pend <= 1'b0;",
-   "mutated": "            sim_pend <= 1'b1;",
-   "status": "survived",
-   "killed_by_tests": [],
-   "killed_by_checks": []
-  },
-  {
-   "id": "M34",
-   "file": "m_vlsit_afifo_wr.sv",
-   "line": 172,
-   "operator": "negate_if",
-   "original": "if (!i_rst_n_sw)",
-   "mutated": "        if (!(!i_rst_n_sw))",
+   "id": "M17",
+   "file": "m_vlsit_afifo_rd.sv",
+   "line": 93,
+   "operator": "ne_to_eq",
+   "original": "assign w_rd_blk = w_req_s | (reg_fsm_srst_current_state != ENUM_ST_RUN);",
+   "mutated": "  assign w_rd_blk = w_req_s | (reg_fsm_srst_current_state == ENUM_ST_RUN);",
    "status": "killed",
    "killed_by_tests": [
     "test_chk_014_nominal_latency/per=0",
@@ -1009,6 +599,7 @@
     "test_chk_016_random_ratios/pair=5",
     "test_chk_017_synthesis_branch_regression",
     "test_chk_018_write_n_read_n",
+    "test_chk_019_back_to_back_equal_clocks",
     "test_chk_020_overflow",
     "test_chk_021_underflow",
     "test_chk_022_hw_reset_independent",
@@ -1033,11 +624,522 @@
     "test_regression_random"
    ],
    "killed_by_checks": [
-    "CHK-010"
+    "CHK-005",
+    "CHK-006",
+    "CHK-002"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M18",
+   "file": "m_vlsit_afifo_wr.sv",
+   "line": 210,
+   "operator": "zero_to_one",
+   "original": "reg_sw_rst_busy <= 1'b0;",
+   "mutated": "      reg_sw_rst_busy <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_022_hw_reset_independent",
+    "test_chk_023_hw_reset_during_srst",
+    "test_chk_024_hw_reset_mid_traffic",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-007",
+    "CHK-011"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M19",
+   "file": "m_vlsit_afifo_cell_sync.sv",
+   "line": 168,
+   "operator": "one_to_zero",
+   "original": "sim_pend <= 1'b1;",
+   "mutated": "            sim_pend <= 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_nominal_latency/per=0",
+    "test_chk_014_nominal_latency/per=1",
+    "test_chk_015_latency_with_model",
+    "test_chk_016_random_ratios/pair=0",
+    "test_chk_016_random_ratios/pair=1",
+    "test_chk_016_random_ratios/pair=2",
+    "test_chk_016_random_ratios/pair=3",
+    "test_chk_016_random_ratios/pair=4",
+    "test_chk_016_random_ratios/pair=5",
+    "test_chk_017_synthesis_branch_regression",
+    "test_chk_018_write_n_read_n",
+    "test_chk_019_back_to_back_equal_clocks",
+    "test_chk_020_overflow",
+    "test_chk_021_underflow",
+    "test_chk_022_hw_reset_independent",
+    "test_chk_023_hw_reset_during_srst",
+    "test_chk_024_hw_reset_mid_traffic",
+    "test_chk_025_srst_partial_fifo",
+    "test_chk_026_srst_pulse_full_overflow",
+    "test_chk_027_read_released_first",
+    "test_chk_028_srst_reassert_in_rel",
+    "test_chk_029_srst_random/pair=0",
+    "test_chk_029_srst_random/pair=1",
+    "test_chk_029_srst_random/pair=2",
+    "test_chk_029_srst_random/pair=3",
+    "test_chk_030_after_srst_like_hw_reset",
+    "test_chk_031_clock_stop_during_srst",
+    "test_chk_032_threshold_flags/thr=0",
+    "test_chk_032_threshold_flags/thr=1",
+    "test_chk_032_threshold_flags/thr=2",
+    "test_chk_032_threshold_flags/thr=3",
+    "test_chk_032_threshold_flags/thr=4",
+    "test_chk_032_threshold_flags/thr=5",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-005",
+    "CHK-006"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M20",
+   "file": "VLSIT_CELL_SYNC_2FF_RN.sv",
+   "line": 37,
+   "operator": "zero_to_one",
+   "original": "reg_chain <= {LPARA_CELL_STAGE{1'b0}};",
+   "mutated": "      reg_chain <= {LPARA_CELL_STAGE{1'b1}};",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_022_hw_reset_independent",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-007"
+   ],
+   "run": "syn.s1"
+  },
+  {
+   "id": "M21",
+   "file": "m_vlsit_afifo_rd.sv",
+   "line": 164,
+   "operator": "negate_if",
+   "original": "if (w_req_s)",
+   "mutated": "        if (!(w_req_s))",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_nominal_latency/per=0",
+    "test_chk_014_nominal_latency/per=1",
+    "test_chk_015_latency_with_model",
+    "test_chk_016_random_ratios/pair=0",
+    "test_chk_016_random_ratios/pair=1",
+    "test_chk_016_random_ratios/pair=2",
+    "test_chk_016_random_ratios/pair=3",
+    "test_chk_016_random_ratios/pair=4",
+    "test_chk_016_random_ratios/pair=5",
+    "test_chk_017_synthesis_branch_regression",
+    "test_chk_018_write_n_read_n",
+    "test_chk_019_back_to_back_equal_clocks",
+    "test_chk_020_overflow",
+    "test_chk_021_underflow",
+    "test_chk_022_hw_reset_independent",
+    "test_chk_023_hw_reset_during_srst",
+    "test_chk_024_hw_reset_mid_traffic",
+    "test_chk_025_srst_partial_fifo",
+    "test_chk_026_srst_pulse_full_overflow",
+    "test_chk_027_read_released_first",
+    "test_chk_028_srst_reassert_in_rel",
+    "test_chk_029_srst_random/pair=0",
+    "test_chk_029_srst_random/pair=1",
+    "test_chk_029_srst_random/pair=2",
+    "test_chk_029_srst_random/pair=3",
+    "test_chk_030_after_srst_like_hw_reset",
+    "test_chk_031_clock_stop_during_srst",
+    "test_chk_032_threshold_flags/thr=0",
+    "test_chk_032_threshold_flags/thr=1",
+    "test_chk_032_threshold_flags/thr=2",
+    "test_chk_032_threshold_flags/thr=3",
+    "test_chk_032_threshold_flags/thr=4",
+    "test_chk_032_threshold_flags/thr=5",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-011",
+    "CHK-006",
+    "CHK-002"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M22",
+   "file": "m_vlsit_afifo_cell_sync.sv",
+   "line": 162,
+   "operator": "eq_to_ne",
+   "original": "if (sim_extra == 0) begin",
+   "mutated": "          if (sim_extra != 0) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_nominal_latency/per=0",
+    "test_chk_014_nominal_latency/per=1",
+    "test_chk_015_latency_with_model",
+    "test_chk_016_random_ratios/pair=0",
+    "test_chk_016_random_ratios/pair=1",
+    "test_chk_016_random_ratios/pair=2",
+    "test_chk_016_random_ratios/pair=3",
+    "test_chk_016_random_ratios/pair=4",
+    "test_chk_016_random_ratios/pair=5",
+    "test_chk_017_synthesis_branch_regression",
+    "test_chk_018_write_n_read_n",
+    "test_chk_019_back_to_back_equal_clocks",
+    "test_chk_020_overflow",
+    "test_chk_021_underflow",
+    "test_chk_023_hw_reset_during_srst",
+    "test_chk_024_hw_reset_mid_traffic",
+    "test_chk_025_srst_partial_fifo",
+    "test_chk_026_srst_pulse_full_overflow",
+    "test_chk_027_read_released_first",
+    "test_chk_028_srst_reassert_in_rel",
+    "test_chk_029_srst_random/pair=0",
+    "test_chk_029_srst_random/pair=1",
+    "test_chk_029_srst_random/pair=2",
+    "test_chk_029_srst_random/pair=3",
+    "test_chk_030_after_srst_like_hw_reset",
+    "test_chk_031_clock_stop_during_srst",
+    "test_chk_032_threshold_flags/thr=0",
+    "test_chk_032_threshold_flags/thr=1",
+    "test_chk_032_threshold_flags/thr=2",
+    "test_chk_032_threshold_flags/thr=3",
+    "test_chk_032_threshold_flags/thr=5",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-005",
+    "CHK-006"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M23",
+   "file": "m_vlsit_afifo_rd.sv",
+   "line": 126,
+   "operator": "one_to_zero",
+   "original": "w_rbin_nxt = reg_rbin + 1'b1;",
+   "mutated": "      w_rbin_nxt = reg_rbin + 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_nominal_latency/per=0",
+    "test_chk_014_nominal_latency/per=1",
+    "test_chk_015_latency_with_model",
+    "test_chk_016_random_ratios/pair=0",
+    "test_chk_016_random_ratios/pair=1",
+    "test_chk_016_random_ratios/pair=2",
+    "test_chk_016_random_ratios/pair=3",
+    "test_chk_016_random_ratios/pair=4",
+    "test_chk_016_random_ratios/pair=5",
+    "test_chk_017_synthesis_branch_regression",
+    "test_chk_018_write_n_read_n",
+    "test_chk_019_back_to_back_equal_clocks",
+    "test_chk_020_overflow",
+    "test_chk_021_underflow",
+    "test_chk_022_hw_reset_independent",
+    "test_chk_023_hw_reset_during_srst",
+    "test_chk_024_hw_reset_mid_traffic",
+    "test_chk_025_srst_partial_fifo",
+    "test_chk_026_srst_pulse_full_overflow",
+    "test_chk_028_srst_reassert_in_rel",
+    "test_chk_029_srst_random/pair=0",
+    "test_chk_029_srst_random/pair=1",
+    "test_chk_029_srst_random/pair=2",
+    "test_chk_029_srst_random/pair=3",
+    "test_chk_030_after_srst_like_hw_reset",
+    "test_chk_031_clock_stop_during_srst",
+    "test_chk_032_threshold_flags/thr=0",
+    "test_chk_032_threshold_flags/thr=1",
+    "test_chk_032_threshold_flags/thr=2",
+    "test_chk_032_threshold_flags/thr=3",
+    "test_chk_032_threshold_flags/thr=4",
+    "test_chk_032_threshold_flags/thr=5",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-005",
+    "CHK-006"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M24",
+   "file": "m_vlsit_afifo_rd.sv",
+   "line": 123,
+   "operator": "eq_to_ne",
+   "original": "if (reg_fsm_srst_current_state == ENUM_ST_RST)",
+   "mutated": "    if (reg_fsm_srst_current_state != ENUM_ST_RST)",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_nominal_latency/per=0",
+    "test_chk_014_nominal_latency/per=1",
+    "test_chk_015_latency_with_model",
+    "test_chk_016_random_ratios/pair=0",
+    "test_chk_016_random_ratios/pair=1",
+    "test_chk_016_random_ratios/pair=2",
+    "test_chk_016_random_ratios/pair=3",
+    "test_chk_016_random_ratios/pair=4",
+    "test_chk_016_random_ratios/pair=5",
+    "test_chk_017_synthesis_branch_regression",
+    "test_chk_018_write_n_read_n",
+    "test_chk_019_back_to_back_equal_clocks",
+    "test_chk_020_overflow",
+    "test_chk_021_underflow",
+    "test_chk_022_hw_reset_independent",
+    "test_chk_023_hw_reset_during_srst",
+    "test_chk_024_hw_reset_mid_traffic",
+    "test_chk_025_srst_partial_fifo",
+    "test_chk_026_srst_pulse_full_overflow",
+    "test_chk_028_srst_reassert_in_rel",
+    "test_chk_029_srst_random/pair=0",
+    "test_chk_029_srst_random/pair=1",
+    "test_chk_029_srst_random/pair=2",
+    "test_chk_029_srst_random/pair=3",
+    "test_chk_030_after_srst_like_hw_reset",
+    "test_chk_031_clock_stop_during_srst",
+    "test_chk_032_threshold_flags/thr=0",
+    "test_chk_032_threshold_flags/thr=1",
+    "test_chk_032_threshold_flags/thr=2",
+    "test_chk_032_threshold_flags/thr=3",
+    "test_chk_032_threshold_flags/thr=4",
+    "test_chk_032_threshold_flags/thr=5",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-005",
+    "CHK-006"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M25",
+   "file": "m_vlsit_afifo_wr.sv",
+   "line": 185,
+   "operator": "negate_if",
+   "original": "if (!w_ack_s && (w_rgray_s == '0))",
+   "mutated": "        if (!(!w_ack_s && (w_rgray_s == '0)))",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_synthesis_branch_regression",
+    "test_chk_025_srst_partial_fifo",
+    "test_chk_027_read_released_first",
+    "test_chk_028_srst_reassert_in_rel",
+    "test_chk_029_srst_random/pair=0",
+    "test_chk_029_srst_random/pair=1",
+    "test_chk_029_srst_random/pair=2",
+    "test_chk_029_srst_random/pair=3",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-011",
+    "CHK-002"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M26",
+   "file": "m_vlsit_afifo_rd.sv",
+   "line": 152,
+   "operator": "zero_to_one",
+   "original": "reg_underflow <= 1'b0;",
+   "mutated": "      reg_underflow <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_022_hw_reset_independent",
+    "test_chk_023_hw_reset_during_srst",
+    "test_chk_024_hw_reset_mid_traffic",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-001"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M27",
+   "file": "m_vlsit_afifo_cell_sync.sv",
+   "line": 173,
+   "operator": "zero_to_one",
+   "original": "sim_pend <= 1'b0;",
+   "mutated": "            sim_pend <= 1'b1;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "also_run": [
+    "model_off.s1",
+    "cell1.s1",
+    "cell3.s1",
+    "cell4.s1",
+    "macro.s1",
+    "small.s1",
+    "wr_slow.s1",
+    "rd_slow.s1"
    ]
   },
   {
-   "id": "M35",
+   "id": "M28",
+   "file": "VLSIT_CELL_SRAM_1W1R.sv",
+   "line": 58,
+   "operator": "negate_if",
+   "original": "if (!WEB)",
+   "mutated": "    if (!(!WEB))",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_nominal_latency/per=0",
+    "test_chk_014_nominal_latency/per=1",
+    "test_chk_015_latency_with_model",
+    "test_chk_016_random_ratios/pair=0",
+    "test_chk_016_random_ratios/pair=1",
+    "test_chk_016_random_ratios/pair=2",
+    "test_chk_016_random_ratios/pair=3",
+    "test_chk_016_random_ratios/pair=4",
+    "test_chk_016_random_ratios/pair=5",
+    "test_chk_017_synthesis_branch_regression",
+    "test_chk_018_write_n_read_n",
+    "test_chk_019_back_to_back_equal_clocks",
+    "test_chk_020_overflow",
+    "test_chk_021_underflow",
+    "test_chk_022_hw_reset_independent",
+    "test_chk_023_hw_reset_during_srst",
+    "test_chk_024_hw_reset_mid_traffic",
+    "test_chk_025_srst_partial_fifo",
+    "test_chk_026_srst_pulse_full_overflow",
+    "test_chk_028_srst_reassert_in_rel",
+    "test_chk_029_srst_random/pair=0",
+    "test_chk_029_srst_random/pair=1",
+    "test_chk_029_srst_random/pair=2",
+    "test_chk_029_srst_random/pair=3",
+    "test_chk_030_after_srst_like_hw_reset",
+    "test_chk_031_clock_stop_during_srst",
+    "test_chk_032_threshold_flags/thr=0",
+    "test_chk_032_threshold_flags/thr=1",
+    "test_chk_032_threshold_flags/thr=2",
+    "test_chk_032_threshold_flags/thr=3",
+    "test_chk_032_threshold_flags/thr=4",
+    "test_chk_032_threshold_flags/thr=5",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-005"
+   ],
+   "run": "macro.s1"
+  },
+  {
+   "id": "M29",
+   "file": "m_vlsit_afifo_wr.sv",
+   "line": 185,
+   "operator": "eq_to_ne",
+   "original": "if (!w_ack_s && (w_rgray_s == '0))",
+   "mutated": "        if (!w_ack_s && (w_rgray_s != '0))",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_synthesis_branch_regression",
+    "test_chk_025_srst_partial_fifo",
+    "test_chk_026_srst_pulse_full_overflow",
+    "test_chk_027_read_released_first",
+    "test_chk_028_srst_reassert_in_rel",
+    "test_chk_029_srst_random/pair=0",
+    "test_chk_029_srst_random/pair=1",
+    "test_chk_029_srst_random/pair=2",
+    "test_chk_029_srst_random/pair=3",
+    "test_chk_030_after_srst_like_hw_reset",
+    "test_chk_031_clock_stop_during_srst",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M30",
+   "file": "m_vlsit_afifo_cell_sync.sv",
+   "line": 139,
+   "operator": "negate_if",
+   "original": "if ($value$plusargs(\"AFIFO_MSYNC_EN=%d\", sim_en_arg))",
+   "mutated": "      if (!($value$plusargs(\"AFIFO_MSYNC_EN=%d\", sim_en_arg)))",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_nominal_latency/per=0",
+    "test_chk_014_nominal_latency/per=1",
+    "test_chk_015_latency_with_model",
+    "test_chk_017_synthesis_branch_regression",
+    "test_chk_019_back_to_back_equal_clocks",
+    "test_chk_021_underflow",
+    "test_chk_022_hw_reset_independent",
+    "test_chk_023_hw_reset_during_srst",
+    "test_chk_025_srst_partial_fifo",
+    "test_chk_026_srst_pulse_full_overflow",
+    "test_chk_027_read_released_first",
+    "test_chk_028_srst_reassert_in_rel",
+    "test_chk_030_after_srst_like_hw_reset",
+    "test_chk_031_clock_stop_during_srst",
+    "test_chk_032_threshold_flags/thr=1",
+    "test_chk_032_threshold_flags/thr=2",
+    "test_chk_032_threshold_flags/thr=4",
+    "test_chk_032_threshold_flags/thr=5"
+   ],
+   "killed_by_checks": [
+    "CHK-013",
+    "CHK-003"
+   ],
+   "run": "model_off.s1",
+   "also_run": [
+    "model_off.s1",
+    "cell1.s1",
+    "cell3.s1",
+    "cell4.s1",
+    "macro.s1",
+    "small.s1",
+    "wr_slow.s1",
+    "rd_slow.s1"
+   ]
+  },
+  {
+   "id": "M31",
+   "file": "m_vlsit_afifo_wr.sv",
+   "line": 160,
+   "operator": "zero_to_one",
+   "original": "reg_overflow <= 1'b0;",
+   "mutated": "      reg_overflow <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_022_hw_reset_independent",
+    "test_chk_023_hw_reset_during_srst",
+    "test_chk_024_hw_reset_mid_traffic",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-007"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M32",
+   "file": "m_vlsit_afifo_cell_sync.sv",
+   "line": 136,
+   "operator": "one_to_zero",
+   "original": "sim_en   = 1'b1;",
+   "mutated": "      sim_en   = 1'b0;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "also_run": [
+    "model_off.s1",
+    "cell1.s1",
+    "cell3.s1",
+    "cell4.s1",
+    "macro.s1",
+    "small.s1",
+    "wr_slow.s1",
+    "rd_slow.s1"
+   ]
+  },
+  {
+   "id": "M33",
    "file": "m_vlsit_afifo_rd.sv",
    "line": 125,
    "operator": "negate_if",
@@ -1084,31 +1186,112 @@
     "CHK-011",
     "CHK-005",
     "CHK-006"
-   ]
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M34",
+   "file": "m_vlsit_afifo_wr.sv",
+   "line": 181,
+   "operator": "negate_if",
+   "original": "if (i_rst_n_sw)",
+   "mutated": "        if (!(i_rst_n_sw))",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_synthesis_branch_regression",
+    "test_chk_026_srst_pulse_full_overflow",
+    "test_chk_027_read_released_first",
+    "test_chk_028_srst_reassert_in_rel",
+    "test_chk_029_srst_random/pair=0",
+    "test_chk_029_srst_random/pair=1",
+    "test_chk_029_srst_random/pair=2",
+    "test_chk_029_srst_random/pair=3",
+    "test_chk_030_after_srst_like_hw_reset",
+    "test_chk_031_clock_stop_during_srst",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-011"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M35",
+   "file": "m_vlsit_afifo_cell_sync.sv",
+   "line": 154,
+   "operator": "zero_to_one",
+   "original": "sim_pend <= 1'b0;",
+   "mutated": "        sim_pend <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_nominal_latency/per=1",
+    "test_chk_015_latency_with_model",
+    "test_chk_016_random_ratios/pair=0",
+    "test_chk_016_random_ratios/pair=1",
+    "test_chk_016_random_ratios/pair=2",
+    "test_chk_016_random_ratios/pair=3",
+    "test_chk_016_random_ratios/pair=4",
+    "test_chk_016_random_ratios/pair=5",
+    "test_chk_017_synthesis_branch_regression",
+    "test_chk_018_write_n_read_n",
+    "test_chk_019_back_to_back_equal_clocks",
+    "test_chk_020_overflow",
+    "test_chk_021_underflow",
+    "test_chk_022_hw_reset_independent",
+    "test_chk_023_hw_reset_during_srst",
+    "test_chk_024_hw_reset_mid_traffic",
+    "test_chk_025_srst_partial_fifo",
+    "test_chk_026_srst_pulse_full_overflow",
+    "test_chk_027_read_released_first",
+    "test_chk_028_srst_reassert_in_rel",
+    "test_chk_029_srst_random/pair=0",
+    "test_chk_029_srst_random/pair=1",
+    "test_chk_029_srst_random/pair=3",
+    "test_chk_030_after_srst_like_hw_reset",
+    "test_chk_031_clock_stop_during_srst",
+    "test_chk_032_threshold_flags/thr=0",
+    "test_chk_032_threshold_flags/thr=1",
+    "test_chk_032_threshold_flags/thr=2",
+    "test_chk_032_threshold_flags/thr=3",
+    "test_chk_032_threshold_flags/thr=4",
+    "test_chk_032_threshold_flags/thr=5",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-005",
+    "CHK-006",
+    "CHK-002"
+   ],
+   "run": "base.s1"
   },
   {
    "id": "M36",
-   "file": "m_vlsit_afifo_cell_sync.sv",
-   "line": 139,
-   "operator": "negate_if",
-   "original": "if ($value$plusargs(\"AFIFO_MSYNC_EN=%d\", sim_en_arg))",
-   "mutated": "      if (!($value$plusargs(\"AFIFO_MSYNC_EN=%d\", sim_en_arg)))",
-   "status": "survived",
-   "killed_by_tests": [],
-   "killed_by_checks": []
+   "file": "m_vlsit_afifo_wr.sv",
+   "line": 126,
+   "operator": "eq_to_ne",
+   "original": "assign o_full_thr = w_wr_blk ? (i_full_thr == '0) : (w_occ >= i_full_thr);",
+   "mutated": "  assign o_full_thr = w_wr_blk ? (i_full_thr != '0) : (w_occ >= i_full_thr);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_025_srst_partial_fifo",
+    "test_chk_026_srst_pulse_full_overflow"
+   ],
+   "killed_by_checks": [
+    "CHK-009",
+    "CHK-011"
+   ],
+   "run": "base.s1"
   }
  ],
- "candidates": 54,
+ "candidates": 58,
  "count": 36,
- "killed": 29,
- "survived": 7,
+ "killed": 33,
+ "survived": 3,
  "not_compiled": 0,
- "score": 80.6,
+ "score": 91.7,
  "seed": 1,
  "excluded_uncovered": {
   "files": [
-   "VLSIT_CELL_SRAM_1W1R.sv",
-   "VLSIT_CELL_SYNC_2FF_RN.sv",
    "VLSIT_CELL_SYNC_2FF_SN.sv",
    "VLSIT_CELL_SYNC_3FF_RN.sv",
    "VLSIT_CELL_SYNC_3FF_SN.sv",
@@ -1118,7 +1301,7 @@
    "VLSIT_CELL_SYNC_DFF_SN.sv",
    "m_vlsit_afifo_ram_macro.sv"
   ],
-  "lines": 46
+  "lines": 42
  },
  "baseline_failing": {
   "tests": [],
@@ -1127,406 +1310,441 @@
    "CHK-013"
   ]
  },
+ "runs": {
+  "available": [
+   "base.s1",
+   "base.s2",
+   "base.s3",
+   "base.s4",
+   "base.s5",
+   "model_off.s1",
+   "syn.s1",
+   "cell1.s1",
+   "cell3.s1",
+   "cell4.s1",
+   "macro.s1",
+   "small.s1",
+   "wr_slow.s1",
+   "rd_slow.s1"
+  ],
+  "used": [
+   "base.s1",
+   "macro.s1",
+   "model_off.s1",
+   "small.s1",
+   "syn.s1"
+  ],
+  "second_chance_sims": 49
+ },
  "threshold": 85.0,
  "attribution": {
   "mutants": {
    "M01": {
     "rules": [
-     "AF-3-55",
-     "AF-3-53",
-     "AF-10.7.7-05",
-     "AF-10.7.7-07",
-     "AF-3-51"
+     "AF-3-04",
+     "AF-1.1-02",
+     "AF-1.1-01",
+     "AF-5.3-01",
+     "AF-3-05"
     ],
     "equivalent": false,
-    "reason": "Write FSM would leave REL when either the ack is low or the read pointer is 0, so busy could fall before the flush check completes."
+    "reason": "Storage write enable is inverted, so accepted words are not stored and rejected or idle cycles overwrite entries."
    },
    "M02": {
     "rules": [
-     "AF-10.7.1-08",
-     "AF-3-54",
-     "AF-10.7.4-17",
-     "AF-10.7.6-08",
-     "AF-10.7.7-06"
+     "AF-7.3-02",
+     "AF-3-35",
+     "AF-3-36",
+     "AF-12-06"
     ],
     "equivalent": false,
-    "reason": "Read FSM would leave ACK when the request is low or the write pointer is 0, so the read side is released at the wrong time and the underflow pulse train changes."
+    "reason": "The read-domain reset branch has inverted polarity, so the read pointer and underflow are reset while i_rst_n_rd=1 and run free while it is 0."
    },
    "M03": {
     "rules": [
-     "AF-7.3-02",
-     "AF-3-36",
-     "AF-3-35",
-     "AF-10.7.4-24",
-     "AF-10.7.4-25"
-    ],
-    "equivalent": false,
-    "reason": "The read-side ack flop would reset to 1, so a hardware reset of the read domain would fake an acknowledge to the write FSM."
-   },
-   "M04": {
-    "rules": [
-     "AF-15.2-08",
      "AF-10.6.4-01",
-     "AF-10.6.4-02",
-     "AF-14.4-09",
+     "AF-15.2-08",
+     "AF-10.3-02",
      "AF-6.2-27"
     ],
     "equivalent": false,
-    "reason": "The sense of +AFIFO_MSYNC_EN is inverted, so MSYNC_EN=0 would turn the random-latency model on and MSYNC_EN=1 would turn it off. Crossing latency changes."
+    "reason": "The pending-delay countdown completes on the wrong count, so the extra latency of the metastability model is wrong."
+   },
+   "M04": {
+    "rules": [
+     "AF-3-62",
+     "AF-10.7.2-04",
+     "AF-10.7.5-11",
+     "AF-3-15",
+     "AF-6.2-21"
+    ],
+    "equivalent": false,
+    "reason": "While the read side is blocked, o_empty_thr would be 0 instead of 1, which breaks o_empty=1 implying o_empty_thr=1."
    },
    "M05": {
     "rules": [
-     "AF-3-51",
-     "AF-3-53",
-     "AF-7.3-02",
-     "AF-10.7.7-05",
-     "AF-3-35"
+     "AF-3-54",
+     "AF-10.7.4-17",
+     "AF-10.7.1-08",
+     "AF-10.7.5-06",
+     "AF-10.7.4-11"
     ],
     "equivalent": false,
-    "reason": "The ack flop's async reset branch is inverted, so it is held at 0 while running and takes the reset path only when reset is released. The ack handshake to the write side breaks."
+    "reason": "The read FSM would leave ACK only when the synchronized write pointer is non-zero, so the flush check is inverted and the read release is wrong."
    },
    "M06": {
     "rules": [
-     "AF-15.2-08",
-     "AF-10.6.4-01",
-     "AF-10.6.4-02",
-     "AF-14.4-09",
-     "AF-10.3-02"
+     "AF-20.2-12",
+     "AF-20.2-13",
+     "AF-15.2-07",
+     "AF-14.4-07"
     ],
     "equivalent": false,
-    "reason": "The change-detect in the metastability model is inverted, so output updates happen when the input did not change and not when it did. Latency and flag values are wrong."
+    "reason": "With +AFIFO_MSYNC_EN given, the enable meaning is inverted, so EN=0 would leave the random-latency model on and EN=1 would give nominal latency."
    },
    "M07": {
     "rules": [
-     "AF-10.6.4-01",
-     "AF-10.6.4-02",
-     "AF-15.2-08",
-     "AF-20.2-12",
-     "AF-20.2-13"
+     "AF-10.7.4-14",
+     "AF-10.7.7-05",
+     "AF-3-53",
+     "AF-3-55",
+     "AF-15.3-12"
     ],
     "equivalent": false,
-    "reason": "The zero-extra-delay case is swapped with the delayed case, so the latency distribution is wrong: the plain-chain latency L=2 is not produced for extra 0, and delayed values are applied immediately."
+    "reason": "The write FSM would leave REL when either the ack is low or the read pointer is 0, so busy can fall before the full handshake and flush check complete."
    },
    "M08": {
     "rules": [
-     "AF-3-55",
-     "AF-3-53",
-     "AF-10.7.7-05",
-     "AF-10.7.7-07",
-     "AF-3-51"
+     "AF-7.3-01",
+     "AF-3-35",
+     "AF-3-36",
+     "AF-12-03",
+     "AF-10.7.7-09"
     ],
     "equivalent": false,
-    "reason": "The REL-to-RUN exit requires the synchronized read pointer to be non-zero, so after a flush (pointer 0) the write FSM never returns to RUN and busy never falls."
+    "reason": "The write-domain reset branch has inverted polarity, so write state is held in reset while i_rst_n_wr=1."
    },
    "M09": {
     "rules": [
+     "AF-3-54",
+     "AF-10.7.4-17",
+     "AF-10.7.1-08",
+     "AF-10.7.5-06",
+     "AF-10.7.4-11"
+    ],
+    "equivalent": false,
+    "reason": "The read FSM would leave ACK when the request is low or the write pointer is 0, so the read release happens too early (before the write side is flushed)."
+   },
+   "M10": {
+    "rules": [
+     "AF-7.3-02",
+     "AF-3-35",
+     "AF-10.7.4-25",
+     "AF-7.3-07"
+    ],
+    "equivalent": false,
+    "reason": "The ack flop would reset to 1, so a read-domain hardware reset (alone, or while the write side is already released) presents a false acknowledge. A write FSM in REQ would then move to PTR before the read side has taken the request. The base run does not exercise it."
+   },
+   "M11": {
+    "rules": [
+     "AF-7.3-02",
      "AF-7.3-01",
      "AF-3-35",
-     "AF-12-03",
+     "AF-8-11",
+     "AF-10.6.4-01"
+    ],
+    "equivalent": false,
+    "reason": "The model's pending flag would reset to 1, so after reset the output loads the uninitialized sim_nxt (X) instead of holding the reset value."
+   },
+   "M12": {
+    "rules": [
+     "AF-7.3-01",
+     "AF-7.3-02",
+     "AF-3-35",
+     "AF-15.2-19",
+     "AF-14.4-03"
+    ],
+    "equivalent": false,
+    "reason": "The synthesis 2FF cell would reset with inverted polarity, so the chain is cleared when RN=1 and shifts during reset."
+   },
+   "M13": {
+    "rules": [
+     "AF-1.1-02",
+     "AF-3-04",
+     "AF-6.2-19",
+     "AF-5.3-01",
+     "AF-8-09"
+    ],
+    "equivalent": false,
+    "reason": "The macro read register would only load when REB=1, but the wrapper drives REB=0, so o_rd_data never updates."
+   },
+   "M14": {
+    "rules": [
+     "AF-3-04",
+     "AF-1.1-02",
+     "AF-3-10",
+     "AF-3-12",
+     "AF-5.3-01"
+    ],
+    "equivalent": false,
+    "reason": "The write pointer would not advance on an accepted write, so every word overwrites entry 0 and full never rises."
+   },
+   "M15": {
+    "rules": [
+     "AF-3-42",
+     "AF-3-44",
+     "AF-10.7.1-03",
+     "AF-10.7.4-06",
+     "AF-10.7.4-07"
+    ],
+    "equivalent": false,
+    "reason": "The request flop would be 1 in every state except PTR, so the read side sees a software reset request even without one."
+   },
+   "M16": {
+    "rules": [
+     "AF-10.6.4-01",
+     "AF-15.2-08",
+     "AF-10.3-02",
+     "AF-10.6.4-03"
+    ],
+    "equivalent": false,
+    "reason": "The pending-delay branch runs only when nothing is pending, so delayed changes are never delivered, or are delivered at the wrong time."
+   },
+   "M17": {
+    "rules": [
+     "AF-3-62",
+     "AF-10.7.2-04",
+     "AF-10.7.5-11",
+     "AF-10.7.6-05",
+     "AF-10.7.4-08"
+    ],
+    "equivalent": false,
+    "reason": "The read block condition is wrong: reads are blocked in normal RUN and unblocked during the software reset."
+   },
+   "M18": {
+    "rules": [
+     "AF-7.3-01",
+     "AF-3-35",
+     "AF-3-36",
      "AF-10.7.7-09",
      "AF-3-64"
     ],
     "equivalent": false,
-    "reason": "o_sw_rst_busy would reset to 1 instead of 0, so busy and o_full would be high during and just after a hardware reset."
-   },
-   "M10": {
-    "rules": [
-     "AF-3-15",
-     "AF-6.2-21",
-     "AF-20.2-06",
-     "AF-10.7.5-11",
-     "AF-3-62"
-    ],
-    "equivalent": false,
-    "reason": "While the read side is blocked or reset, o_empty_thr would be 0 instead of 1, even though o_empty=1."
-   },
-   "M11": {
-    "rules": [
-     "AF-10.7.5-06",
-     "AF-10.7.5-11",
-     "AF-3-62",
-     "AF-10.7.6-05",
-     "AF-10.7.4-11"
-    ],
-    "equivalent": false,
-    "reason": "The read block would be active in RUN and released outside RUN, so reads and o_empty are inverted with respect to the software-reset block."
-   },
-   "M12": {
-    "rules": [
-     "AF-1.1-02",
-     "AF-3-04",
-     "AF-3-05",
-     "AF-5.3-01",
-     "AF-6.2-04"
-    ],
-    "equivalent": false,
-    "reason": "The storage would be written when the write enable is 0 and not written when it is 1, so the stored data is wrong."
-   },
-   "M13": {
-    "rules": [
-     "AF-3-04",
-     "AF-3-10",
-     "AF-3-12",
-     "AF-1.1-02",
-     "AF-5.3-01"
-    ],
-    "equivalent": false,
-    "reason": "The write pointer would not advance on an accepted write, so words are overwritten and the FIFO never fills or becomes non-empty."
-   },
-   "M14": {
-    "rules": [
-     "AF-15.2-08",
-     "AF-10.6.4-01",
-     "AF-10.6.4-02",
-     "AF-14.4-09",
-     "AF-6.2-27"
-    ],
-    "equivalent": false,
-    "reason": "The default for the metastability model becomes off instead of on, so with no plusarg the random extra latency is never applied and only the plain chain latency is seen."
-   },
-   "M15": {
-    "rules": [
-     "AF-3-35",
-     "AF-3-36",
-     "AF-7.2-01",
-     "AF-15.2-01",
-     "AF-14.4-05"
-    ],
-    "equivalent": false,
-    "reason": "sim_pend would reset to 1, so after reset the model loads the uninitialized sim_nxt into the output and gives a wrong or unknown synchronized value."
-   },
-   "M16": {
-    "rules": [
-     "AF-3-04",
-     "AF-3-10",
-     "AF-3-11",
-     "AF-3-40",
-     "AF-5.4-05"
-    ],
-    "equivalent": false,
-    "reason": "The write pointer would advance when no write is accepted and hold when one is, so data is lost, o_full is wrong and rejected writes move the pointer."
-   },
-   "M17": {
-    "rules": [
-     "AF-10.7.1-08",
-     "AF-3-54",
-     "AF-10.7.4-17",
-     "AF-10.7.6-08",
-     "AF-10.7.7-06"
-    ],
-    "equivalent": false,
-    "reason": "The read FSM would return to RUN only if the synchronized write pointer is non-zero, so it stays in ACK after a flush and the read side is not released."
-   },
-   "M18": {
-    "rules": [
-     "AF-7.3-02",
-     "AF-3-36",
-     "AF-3-35",
-     "AF-12-06",
-     "AF-3-41"
-    ],
-    "equivalent": false,
-    "reason": "o_underflow would reset to 1 instead of 0, so a spurious underflow shows during hardware reset."
+    "reason": "o_sw_rst_busy would reset to 1 instead of 0, so it is high during and after hardware reset."
    },
    "M19": {
     "rules": [
-     "AF-3-35",
-     "AF-7.3-02",
-     "AF-7.3-07",
-     "AF-10.7.4-25",
-     "AF-10.7.4-24"
+     "AF-10.6.4-01",
+     "AF-15.2-08",
+     "AF-10.3-02",
+     "AF-6.2-27"
     ],
     "equivalent": false,
-    "reason": "The read FSM's async reset branch is inverted, so a hardware reset does not return it to RUN and it is forced to RUN while reset is released."
+    "reason": "A delayed change would not be marked pending, so it is never delivered to the output and the flag never moves."
    },
    "M20": {
     "rules": [
-     "AF-15.2-08",
-     "AF-10.6.4-01",
-     "AF-10.6.4-02",
-     "AF-20.2-12",
-     "AF-20.2-13"
+     "AF-7.3-01",
+     "AF-7.3-02",
+     "AF-3-35",
+     "AF-8-11",
+     "AF-8-08"
     ],
     "equivalent": false,
-    "reason": "The pending-delay counter test is inverted, so the delayed value is applied too early for extra 2 and for extra 1 the counter underflows, so it is applied about 2^32 cycles late."
+    "reason": "The synthesis 2FF cell would reset its chain to 1 instead of 0, so the synchronized pointer reads non-zero after reset."
    },
    "M21": {
     "rules": [
-     "AF-15.2-08",
-     "AF-10.6.4-01",
-     "AF-10.6.4-02",
-     "AF-20.2-12",
-     "AF-20.2-13"
+     "AF-3-44",
+     "AF-3-45",
+     "AF-10.7.4-06",
+     "AF-10.7.1-04",
+     "AF-10.7.5-02"
     ],
     "equivalent": false,
-    "reason": "The pending-delay counter test is inverted (same as M20), so the delayed value is applied too early for extra 2 and for extra 1 the counter underflows, so it is applied about 2^32 cycles late."
+    "reason": "The read FSM would leave RUN when no request is present instead of when one arrives, so the software reset request is not taken and an unrequested reset is run."
    },
    "M22": {
     "rules": [
+     "AF-10.6.4-01",
+     "AF-10.6.4-02",
+     "AF-15.2-08",
+     "AF-10.3-02"
+    ],
+    "equivalent": false,
+    "reason": "The zero-extra-delay branch is chosen for the wrong cases, so the latency distribution of the model (S to S+2) is wrong."
+   },
+   "M23": {
+    "rules": [
+     "AF-3-05",
+     "AF-1.1-02",
+     "AF-3-26",
+     "AF-5.3-04",
+     "AF-6.3-01"
+    ],
+    "equivalent": false,
+    "reason": "The read pointer would not advance on an accepted read, so the same word is read repeatedly and empty never rises."
+   },
+   "M24": {
+    "rules": [
      "AF-10.7.4-09",
      "AF-10.7.4-12",
-     "AF-10.7.5-07",
-     "AF-3-50",
+     "AF-3-46",
+     "AF-7.3-03",
      "AF-3-56"
     ],
     "equivalent": false,
-    "reason": "The write pointer would be zeroed in every state except PTR, so it is not reset to 0 by the software reset and is held at 0 in normal operation."
+    "reason": "The read pointer would be cleared in every state except RST, so it is held at 0 in normal operation and not reset by the software reset."
    },
-   "M23": {
+   "M25": {
+    "rules": [
+     "AF-10.7.4-14",
+     "AF-10.7.7-05",
+     "AF-3-53",
+     "AF-3-55",
+     "AF-15.3-12"
+    ],
+    "equivalent": false,
+    "reason": "The write FSM would leave REL exactly when the flush check is not met, so busy falls too early or never."
+   },
+   "M26": {
+    "rules": [
+     "AF-7.3-02",
+     "AF-12-06",
+     "AF-3-35",
+     "AF-3-36",
+     "AF-3-41"
+    ],
+    "equivalent": false,
+    "reason": "o_underflow would reset to 1 instead of 0, so it is high during and after hardware reset."
+   },
+   "M27": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "After a pending change is delivered at sim_cnt==0, sim_nxt already equals sim_cur. A leftover pend=1 reloads that same value and sim_cnt stays 0. A new input change takes priority and rewrites pend, and reset clears it, so the output never differs."
+   },
+   "M28": {
+    "rules": [
+     "AF-1.1-01",
+     "AF-1.1-02",
+     "AF-3-04",
+     "AF-5.3-01",
+     "AF-8-09"
+    ],
+    "equivalent": false,
+    "reason": "The macro write would occur when WEB=1 instead of 0, so accepted words are not stored and idle cycles write."
+   },
+   "M29": {
+    "rules": [
+     "AF-10.7.4-14",
+     "AF-10.7.7-05",
+     "AF-3-53",
+     "AF-3-55",
+     "AF-15.3-12"
+    ],
+    "equivalent": false,
+    "reason": "The write FSM would leave REL only when the synchronized read pointer is non-zero, so the flush check is inverted and busy does not fall correctly."
+   },
+   "M30": {
+    "rules": [
+     "AF-20.2-12",
+     "AF-20.2-13",
+     "AF-15.2-07",
+     "AF-14.4-07"
+    ],
+    "equivalent": false,
+    "reason": "The plusarg-found test is negated, so +AFIFO_MSYNC_EN=0 leaves the model enabled and its absence would disable it."
+   },
+   "M31": {
     "rules": [
      "AF-7.3-01",
      "AF-12-03",
      "AF-3-35",
      "AF-3-36",
-     "AF-10.7.7-09"
+     "AF-3-40"
     ],
     "equivalent": false,
-    "reason": "o_overflow would reset to 1 instead of 0, so there is a spurious overflow pulse during hardware reset."
-   },
-   "M24": {
-    "rules": [
-     "AF-3-05",
-     "AF-3-06",
-     "AF-3-26",
-     "AF-1.1-02",
-     "AF-5.3-01"
-    ],
-    "equivalent": false,
-    "reason": "The read pointer would not advance on an accepted read, so the same word is returned again and o_empty never rises after the last word."
-   },
-   "M25": {
-    "rules": [
-     "AF-15.2-08",
-     "AF-10.6.4-01",
-     "AF-10.6.4-02",
-     "AF-20.2-12",
-     "AF-20.2-13"
-    ],
-    "equivalent": false,
-    "reason": "With a non-zero extra delay the pending flag would not be set, so the delayed pointer change is never applied and the output stays stale."
-   },
-   "M26": {
-    "rules": [
-     "AF-15.2-08",
-     "AF-10.6.4-01",
-     "AF-10.6.4-02",
-     "AF-3-13",
-     "AF-14.4-09"
-    ],
-    "equivalent": false,
-    "reason": "With zero extra delay the pending flag would be left at 1, so the next edge overwrites the output with the stale sim_nxt value."
-   },
-   "M27": {
-    "rules": [
-     "AF-3-35",
-     "AF-7.3-01",
-     "AF-7.3-07",
-     "AF-10.7.4-24",
-     "AF-3-58"
-    ],
-    "equivalent": false,
-    "reason": "The write FSM's async reset branch is inverted, so a hardware reset does not return it to RUN and it is forced to RUN while reset is released."
-   },
-   "M28": {
-    "rules": [
-     "AF-10.7.4-11",
-     "AF-10.7.5-06",
-     "AF-3-56",
-     "AF-3-57",
-     "AF-10.7.1-05"
-    ],
-    "equivalent": false,
-    "reason": "The read pointer would be zeroed in every state except RST, so it is not reset to 0 by the software reset and is stuck at 0 in normal operation."
-   },
-   "M29": {
-    "rules": [
-     "AF-7.3-02",
-     "AF-3-36",
-     "AF-12-06",
-     "AF-3-41",
-     "AF-10.1-01"
-    ],
-    "equivalent": false,
-    "reason": "The underflow flop's async reset branch is inverted, so it is not cleared by a hardware reset and is cleared while reset is released, which suppresses the underflow pulses."
-   },
-   "M30": {
-    "rules": [
-     "AF-15.2-08",
-     "AF-10.6.4-01",
-     "AF-10.6.4-02",
-     "AF-20.2-12",
-     "AF-20.2-13"
-    ],
-    "equivalent": false,
-    "reason": "The pending branch would run only when no delay is pending, so a delayed pointer change is never completed and the pointer stays stale."
-   },
-   "M31": {
-    "rules": [
-     "AF-3-62",
-     "AF-10.7.5-11",
-     "AF-20.2-25",
-     "AF-10.7.2-04",
-     "AF-10.7.6-04"
-    ],
-    "equivalent": false,
-    "reason": "While writes are blocked, o_full_thr would be (i_full_thr != 0) instead of (i_full_thr == 0), the opposite of the empty-FIFO value."
+    "reason": "o_overflow would reset to 1 instead of 0, so it is high during and after hardware reset."
    },
    "M32": {
     "rules": [
-     "AF-7.3-01",
-     "AF-10.7.4-24",
-     "AF-10.7.4-25",
-     "AF-3-35",
-     "AF-3-58"
+     "AF-20.2-12",
+     "AF-20.2-13",
+     "AF-10.6.4-01",
+     "AF-15.2-08"
     ],
     "equivalent": false,
-    "reason": "The request flop would reset to 1, so a hardware reset of the write domain alone raises a request to the read side. The read FSM then enters the block and flush handshake and blocks reads and o_underflow, and it can stay in ACK if a write follows quickly."
+    "reason": "The model's default enable would be 0, so without +AFIFO_MSYNC_EN the plain nominal-latency chain would be used instead of the random-latency model. The base run presumably passes the plusarg explicitly, which hides this."
    },
    "M33": {
-    "rules": [],
-    "equivalent": true,
-    "reason": "At that point sim_pend is only left at 1 while sim_nxt already equals sim_cur. Re-applying sim_nxt to sim_cur is a no-op, and any new input change overwrites sim_pend, sim_nxt and sim_cur in the change branch, which has priority. The output never differs."
+    "rules": [
+     "AF-3-05",
+     "AF-1.1-02",
+     "AF-3-26",
+     "AF-5.3-04",
+     "AF-6.3-01"
+    ],
+    "equivalent": false,
+    "reason": "The read pointer increments when no read is accepted and holds on an accepted read."
    },
    "M34": {
     "rules": [
-     "AF-3-42",
-     "AF-10.7.1-02",
-     "AF-3-63",
-     "AF-10.7.6-01",
-     "AF-10.7.7-02"
+     "AF-3-51",
+     "AF-10.7.4-14",
+     "AF-10.7.7-04",
+     "AF-3-50",
+     "AF-10.7.5-07"
     ],
     "equivalent": false,
-    "reason": "The write FSM would take the software-reset request when i_rst_n_sw=1 and not when it is 0, so busy rises in normal operation and a low i_rst_n_sw does not start the handshake."
+    "reason": "HOLD would move to REL while i_rst_n_sw is still 0 and would stay in HOLD after it is released, so the sequence is released at the wrong time."
    },
    "M35": {
     "rules": [
-     "AF-3-05",
-     "AF-3-06",
-     "AF-3-26",
-     "AF-1.1-02",
-     "AF-5.3-01"
+     "AF-7.3-02",
+     "AF-7.3-01",
+     "AF-3-35",
+     "AF-8-11",
+     "AF-10.6.4-01"
     ],
     "equivalent": false,
-    "reason": "The read pointer would advance when no read is accepted and hold when one is, so words are skipped or repeated and show-ahead data is wrong."
+    "reason": "The model's pending flag would reset to 1, so after reset the output loads the uninitialized sim_nxt (X) instead of holding the reset value."
    },
    "M36": {
     "rules": [
-     "AF-15.2-08",
-     "AF-10.6.4-01",
-     "AF-10.6.4-02",
-     "AF-14.4-09",
-     "AF-6.2-27"
+     "AF-3-62",
+     "AF-10.7.2-04",
+     "AF-10.7.5-11",
+     "AF-20.2-25",
+     "AF-15.3-17"
     ],
     "equivalent": false,
-    "reason": "The plusarg test is inverted, so +AFIFO_MSYNC_EN=<n> is ignored and sim_en stays 1. With no plusarg sim_en takes (0 != 0)=0 and the model is off. The metastability model setting is the opposite of the intended one."
+    "reason": "While writes are blocked, o_full_thr would be (i_full_thr != 0) instead of (i_full_thr == 0), so the empty-FIFO value is wrong during the software reset."
    }
   },
-  "unknown_ids": [],
+  "unknown_ids": [
+   "AF-3-70"
+  ],
   "model": "sonnet",
-  "cost_usd": 0.0
+  "cost_usd": 0.43722589999999995
  },
  "rule_scores": {
+  "AF-1.1-01": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
   "AF-1.1-02": {
+   "relevant": 6,
+   "killed": 6,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AF-10.3-02": {
    "relevant": 4,
    "killed": 4,
    "survived": [],
@@ -1534,51 +1752,17 @@
    "score": 100.0,
    "meets_threshold": true
   },
-  "AF-10.1-01": {
-   "relevant": 1,
-   "killed": 1,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "AF-10.3-02": {
-   "relevant": 1,
-   "killed": 1,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
   "AF-10.6.4-01": {
-   "relevant": 10,
-   "killed": 5,
+   "relevant": 7,
+   "killed": 6,
    "survived": [
-    "M04",
-    "M14",
-    "M20",
-    "M21",
-    "M36"
+    "M32"
    ],
    "claimed_equivalent": [],
-   "score": 50.0,
-   "meets_threshold": false
+   "score": 85.7,
+   "meets_threshold": true
   },
   "AF-10.6.4-02": {
-   "relevant": 10,
-   "killed": 5,
-   "survived": [
-    "M04",
-    "M14",
-    "M20",
-    "M21",
-    "M36"
-   ],
-   "claimed_equivalent": [],
-   "score": 50.0,
-   "meets_threshold": false
-  },
-  "AF-10.7.1-02": {
    "relevant": 1,
    "killed": 1,
    "survived": [],
@@ -1586,7 +1770,23 @@
    "score": 100.0,
    "meets_threshold": true
   },
-  "AF-10.7.1-05": {
+  "AF-10.6.4-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AF-10.7.1-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AF-10.7.1-04": {
    "relevant": 1,
    "killed": 1,
    "survived": [],
@@ -1603,6 +1803,30 @@
    "meets_threshold": true
   },
   "AF-10.7.2-04": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AF-10.7.4-06": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AF-10.7.4-07": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AF-10.7.4-08": {
    "relevant": 1,
    "killed": 1,
    "survived": [],
@@ -1634,6 +1858,14 @@
    "score": 100.0,
    "meets_threshold": true
   },
+  "AF-10.7.4-14": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
   "AF-10.7.4-17": {
    "relevant": 2,
    "killed": 2,
@@ -1642,25 +1874,23 @@
    "score": 100.0,
    "meets_threshold": true
   },
-  "AF-10.7.4-24": {
-   "relevant": 4,
-   "killed": 3,
+  "AF-10.7.4-25": {
+   "relevant": 1,
+   "killed": 0,
    "survived": [
-    "M32"
+    "M10"
    ],
    "claimed_equivalent": [],
-   "score": 75.0,
+   "score": 0.0,
    "meets_threshold": false
   },
-  "AF-10.7.4-25": {
-   "relevant": 3,
-   "killed": 2,
-   "survived": [
-    "M32"
-   ],
+  "AF-10.7.5-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
    "claimed_equivalent": [],
-   "score": 66.7,
-   "meets_threshold": false
+   "score": 100.0,
+   "meets_threshold": true
   },
   "AF-10.7.5-06": {
    "relevant": 2,
@@ -1686,22 +1916,6 @@
    "score": 100.0,
    "meets_threshold": true
   },
-  "AF-10.7.6-01": {
-   "relevant": 1,
-   "killed": 1,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "AF-10.7.6-04": {
-   "relevant": 1,
-   "killed": 1,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
   "AF-10.7.6-05": {
    "relevant": 1,
    "killed": 1,
@@ -1710,15 +1924,7 @@
    "score": 100.0,
    "meets_threshold": true
   },
-  "AF-10.7.6-08": {
-   "relevant": 2,
-   "killed": 2,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "AF-10.7.7-02": {
+  "AF-10.7.7-04": {
    "relevant": 1,
    "killed": 1,
    "survived": [],
@@ -1729,22 +1935,6 @@
   "AF-10.7.7-05": {
    "relevant": 3,
    "killed": 3,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "AF-10.7.7-06": {
-   "relevant": 2,
-   "killed": 2,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "AF-10.7.7-07": {
-   "relevant": 2,
-   "killed": 2,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1774,7 +1964,7 @@
    "score": 100.0,
    "meets_threshold": true
   },
-  "AF-14.4-05": {
+  "AF-14.4-03": {
    "relevant": 1,
    "killed": 1,
    "survived": [],
@@ -1782,41 +1972,49 @@
    "score": 100.0,
    "meets_threshold": true
   },
-  "AF-14.4-09": {
-   "relevant": 5,
+  "AF-14.4-07": {
+   "relevant": 2,
    "killed": 2,
-   "survived": [
-    "M04",
-    "M14",
-    "M36"
-   ],
+   "survived": [],
    "claimed_equivalent": [],
-   "score": 40.0,
-   "meets_threshold": false
+   "score": 100.0,
+   "meets_threshold": true
   },
-  "AF-15.2-01": {
-   "relevant": 1,
-   "killed": 1,
+  "AF-15.2-07": {
+   "relevant": 2,
+   "killed": 2,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "AF-15.2-08": {
-   "relevant": 10,
-   "killed": 5,
+   "relevant": 5,
+   "killed": 4,
    "survived": [
-    "M04",
-    "M14",
-    "M20",
-    "M21",
-    "M36"
+    "M32"
    ],
    "claimed_equivalent": [],
-   "score": 50.0,
+   "score": 80.0,
    "meets_threshold": false
   },
-  "AF-20.2-06": {
+  "AF-15.2-19": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AF-15.3-12": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AF-15.3-17": {
    "relevant": 1,
    "killed": 1,
    "survived": [],
@@ -1825,25 +2023,23 @@
    "meets_threshold": true
   },
   "AF-20.2-12": {
-   "relevant": 5,
-   "killed": 3,
+   "relevant": 3,
+   "killed": 2,
    "survived": [
-    "M20",
-    "M21"
+    "M32"
    ],
    "claimed_equivalent": [],
-   "score": 60.0,
+   "score": 66.7,
    "meets_threshold": false
   },
   "AF-20.2-13": {
-   "relevant": 5,
-   "killed": 3,
+   "relevant": 3,
+   "killed": 2,
    "survived": [
-    "M20",
-    "M21"
+    "M32"
    ],
    "claimed_equivalent": [],
-   "score": 60.0,
+   "score": 66.7,
    "meets_threshold": false
   },
   "AF-20.2-25": {
@@ -1855,8 +2051,8 @@
    "meets_threshold": true
   },
   "AF-3-04": {
-   "relevant": 3,
-   "killed": 3,
+   "relevant": 4,
+   "killed": 4,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1870,23 +2066,7 @@
    "score": 100.0,
    "meets_threshold": true
   },
-  "AF-3-06": {
-   "relevant": 2,
-   "killed": 2,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
   "AF-3-10": {
-   "relevant": 2,
-   "killed": 2,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "AF-3-11": {
    "relevant": 1,
    "killed": 1,
    "survived": [],
@@ -1895,14 +2075,6 @@
    "meets_threshold": true
   },
   "AF-3-12": {
-   "relevant": 1,
-   "killed": 1,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "AF-3-13": {
    "relevant": 1,
    "killed": 1,
    "survived": [],
@@ -1927,13 +2099,13 @@
    "meets_threshold": true
   },
   "AF-3-35": {
-   "relevant": 9,
-   "killed": 8,
+   "relevant": 10,
+   "killed": 9,
    "survived": [
-    "M32"
+    "M10"
    ],
    "claimed_equivalent": [],
-   "score": 88.9,
+   "score": 90.0,
    "meets_threshold": true
   },
   "AF-3-36": {
@@ -1953,6 +2125,22 @@
    "meets_threshold": true
   },
   "AF-3-41": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AF-3-42": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AF-3-44": {
    "relevant": 2,
    "killed": 2,
    "survived": [],
@@ -1960,7 +2148,15 @@
    "score": 100.0,
    "meets_threshold": true
   },
-  "AF-3-42": {
+  "AF-3-45": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AF-3-46": {
    "relevant": 1,
    "killed": 1,
    "survived": [],
@@ -1977,8 +2173,8 @@
    "meets_threshold": true
   },
   "AF-3-51": {
-   "relevant": 3,
-   "killed": 3,
+   "relevant": 1,
+   "killed": 1,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -2001,40 +2197,6 @@
    "meets_threshold": true
   },
   "AF-3-55": {
-   "relevant": 2,
-   "killed": 2,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "AF-3-56": {
-   "relevant": 2,
-   "killed": 2,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "AF-3-57": {
-   "relevant": 1,
-   "killed": 1,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "AF-3-58": {
-   "relevant": 2,
-   "killed": 1,
-   "survived": [
-    "M32"
-   ],
-   "claimed_equivalent": [],
-   "score": 50.0,
-   "meets_threshold": false
-  },
-  "AF-3-62": {
    "relevant": 3,
    "killed": 3,
    "survived": [],
@@ -2042,9 +2204,17 @@
    "score": 100.0,
    "meets_threshold": true
   },
-  "AF-3-63": {
+  "AF-3-56": {
    "relevant": 1,
    "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AF-3-62": {
+   "relevant": 3,
+   "killed": 3,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -2066,15 +2236,15 @@
    "score": 100.0,
    "meets_threshold": true
   },
-  "AF-5.4-05": {
-   "relevant": 1,
-   "killed": 1,
+  "AF-5.3-04": {
+   "relevant": 2,
+   "killed": 2,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
-  "AF-6.2-04": {
+  "AF-6.2-19": {
    "relevant": 1,
    "killed": 1,
    "survived": [],
@@ -2091,18 +2261,40 @@
    "meets_threshold": true
   },
   "AF-6.2-27": {
-   "relevant": 3,
-   "killed": 0,
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AF-6.3-01": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AF-7.3-01": {
+   "relevant": 7,
+   "killed": 7,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AF-7.3-02": {
+   "relevant": 7,
+   "killed": 6,
    "survived": [
-    "M04",
-    "M14",
-    "M36"
+    "M10"
    ],
    "claimed_equivalent": [],
-   "score": 0.0,
-   "meets_threshold": false
+   "score": 85.7,
+   "meets_threshold": true
   },
-  "AF-7.2-01": {
+  "AF-7.3-03": {
    "relevant": 1,
    "killed": 1,
    "survived": [],
@@ -2110,27 +2302,35 @@
    "score": 100.0,
    "meets_threshold": true
   },
-  "AF-7.3-01": {
-   "relevant": 4,
-   "killed": 3,
+  "AF-7.3-07": {
+   "relevant": 1,
+   "killed": 0,
    "survived": [
-    "M32"
+    "M10"
    ],
    "claimed_equivalent": [],
-   "score": 75.0,
+   "score": 0.0,
    "meets_threshold": false
   },
-  "AF-7.3-02": {
-   "relevant": 5,
-   "killed": 5,
+  "AF-8-08": {
+   "relevant": 1,
+   "killed": 1,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
-  "AF-7.3-07": {
+  "AF-8-09": {
    "relevant": 2,
    "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AF-8-11": {
+   "relevant": 3,
+   "killed": 3,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,

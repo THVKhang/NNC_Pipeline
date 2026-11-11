@@ -1,0 +1,1458 @@
+{
+ "date": "2026-11-11T12:38:35+00:00",
+ "seed": 1,
+ "rtl_files": [
+  "m_axi2apb_apb_ctrl.sv",
+  "m_axi2apb_rd_seq.sv",
+  "m_axi2apb_wr_seq.sv",
+  "m_axi2apb_bridge.sv"
+ ],
+ "integration": {
+  "ok": true,
+  "issues": []
+ },
+ "status": "ran",
+ "params": {
+  "PARA_AXI_ID_W": 4
+ },
+ "host": "wsl",
+ "tests": [
+  {
+   "name": "test_chk_018_long_apb_wait",
+   "status": "fail",
+   "sim_time_ns": "20230.0",
+   "message": "CHK-016: pprot = AxPROT 5, got 0x1 at cycle 2014",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 876, in test_chk_018_long_apb_wait\n                                                            await b.wait_done([wr, rd2], WAIT + 800, \"CHK-018: long-wait write and following read to complete\")\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 810, in wait_done\n                                                            await self.wait_for(lambda: all(t.done or t.aborted for t in txns), max_cycles, what)\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 796, in wait_for\n                                                            await self.tick()\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 790, in tick\n                                                            self.check()\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 785, in check\n                                                            assert not self.errors, f\"{self.errors[0] if self.errors else ''}  [{len(self.errors)} error(s) total]\"\n                                                        AssertionError: CHK-016: pprot = AxPROT 5, got 0x1 at cycle 2014\n                                                          assert 1 == 5  [1 error(s) total]\n                                                        assert not ['CHK-016: pprot = AxPROT 5, got 0x1 at cycle 2014\\nassert 1 == 5']\n                                                         +  where ['CHK-016: pprot = AxPROT 5, got 0x1 at cycle 2014\\nassert 1 == 5'] = <test_axi2apb_bridge.Bench object at 0x7d295f498d50>.errors\n 20230.00ns WARNING  cocotb.regression                  test_axi2apb_bridge.test_chk_018_long_apb_wait failed",
+   "checks": [
+    "CHK-016",
+    "CHK-018"
+   ]
+  },
+  {
+   "name": "test_chk_019_arbitration_round_robin",
+   "status": "pass",
+   "sim_time_ns": "1080.0"
+  },
+  {
+   "name": "test_chk_020_wvalid_before_aw",
+   "status": "pass",
+   "sim_time_ns": "470.0"
+  },
+  {
+   "name": "test_chk_021_response_backpressure",
+   "status": "fail",
+   "sim_time_ns": "6170.0",
+   "message": "CHK-016: pprot = AxPROT 5, got 0x6 at cycle 607",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 987, in test_chk_021_response_backpressure\n                                                            await b.wait_done(txns, what=\"CHK-021: backpressured traffic to complete\")\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 810, in wait_done\n                                                            await self.wait_for(lambda: all(t.done or t.aborted for t in txns), max_cycles, what)\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 796, in wait_for\n                                                            await self.tick()\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 790, in tick\n                                                            self.check()\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 785, in check\n                                                            assert not self.errors, f\"{self.errors[0] if self.errors else ''}  [{len(self.errors)} error(s) total]\"\n                                                        AssertionError: CHK-016: pprot = AxPROT 5, got 0x6 at cycle 607\n                                                          assert 6 == 5  [1 error(s) total]\n                                                        assert not ['CHK-016: pprot = AxPROT 5, got 0x6 at cycle 607\\nassert 6 == 5']\n                                                         +  where ['CHK-016: pprot = AxPROT 5, got 0x6 at cycle 607\\nassert 6 == 5'] = <test_axi2apb_bridge.Bench object at 0x7d295f4b8e50>.errors\n 27950.00ns WARNING  cocotb.regression                  test_axi2apb_bridge.test_chk_021_response_backpressure failed",
+   "checks": [
+    "CHK-016",
+    "CHK-021"
+   ]
+  },
+  {
+   "name": "test_chk_022_unsupported_reads",
+   "status": "pass",
+   "sim_time_ns": "10630.0"
+  },
+  {
+   "name": "test_chk_023_unsupported_writes",
+   "status": "fail",
+   "sim_time_ns": "620.0",
+   "message": "CHK-016: pprot = AxPROT 2, got 0x0 at cycle 52",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 1064, in test_chk_023_unsupported_writes\n                                                            await b.wait_done([bad, good], what=f\"CHK-023: unsupported write {cs} and legal write\")\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 810, in wait_done\n                                                            await self.wait_for(lambda: all(t.done or t.aborted for t in txns), max_cycles, what)\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 796, in wait_for\n                                                            await self.tick()\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 790, in tick\n                                                            self.check()\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 785, in check\n                                                            assert not self.errors, f\"{self.errors[0] if self.errors else ''}  [{len(self.errors)} error(s) total]\"\n                                                        AssertionError: CHK-016: pprot = AxPROT 2, got 0x0 at cycle 52\n                                                          assert 0 == 2  [1 error(s) total]\n                                                        assert not ['CHK-016: pprot = AxPROT 2, got 0x0 at cycle 52\\nassert 0 == 2']\n                                                         +  where ['CHK-016: pprot = AxPROT 2, got 0x0 at cycle 52\\nassert 0 == 2'] = <test_axi2apb_bridge.Bench object at 0x7d295f43fe10>.errors\n 39200.00ns WARNING  cocotb.regression                  test_axi2apb_bridge.test_chk_023_unsupported_writes failed",
+   "checks": [
+    "CHK-016",
+    "CHK-023"
+   ]
+  },
+  {
+   "name": "test_chk_024_read_pslverr",
+   "status": "pass",
+   "sim_time_ns": "760.0"
+  },
+  {
+   "name": "test_chk_025_write_pslverr",
+   "status": "pass",
+   "sim_time_ns": "1280.0"
+  },
+  {
+   "name": "test_chk_026_unmapped_default_completer",
+   "status": "pass",
+   "sim_time_ns": "510.0"
+  },
+  {
+   "name": "test_chk_027_random_legal_bursts",
+   "status": "fail",
+   "sim_time_ns": "18020.0",
+   "message": "CHK-016: pprot = AxPROT 7, got 0x1 at cycle 1792",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 1234, in test_chk_027_random_legal_bursts\n                                                            await b.wait_done([t], what=f\"CHK-027: corner {t}\")\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 810, in wait_done\n                                                            await self.wait_for(lambda: all(t.done or t.aborted for t in txns), max_cycles, what)\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 796, in wait_for\n                                                            await self.tick()\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 790, in tick\n                                                            self.check()\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 785, in check\n                                                            assert not self.errors, f\"{self.errors[0] if self.errors else ''}  [{len(self.errors)} error(s) total]\"\n                                                        AssertionError: CHK-016: pprot = AxPROT 7, got 0x1 at cycle 1792\n                                                          assert 1 == 7  [1 error(s) total]\n                                                        assert not ['CHK-016: pprot = AxPROT 7, got 0x1 at cycle 1792\\nassert 1 == 7']\n                                                         +  where ['CHK-016: pprot = AxPROT 7, got 0x1 at cycle 1792\\nassert 1 == 7'] = <test_axi2apb_bridge.Bench object at 0x7d295f60dcd0>.errors\n 59770.01ns WARNING  cocotb.regression                  test_axi2apb_bridge.test_chk_027_random_legal_bursts failed",
+   "checks": [
+    "CHK-016",
+    "CHK-027"
+   ]
+  },
+  {
+   "name": "test_chk_028_subword_unaligned",
+   "status": "pass",
+   "sim_time_ns": "1470.0"
+  },
+  {
+   "name": "test_chk_029_pprot_passthrough",
+   "status": "fail",
+   "sim_time_ns": "290.0",
+   "message": "CHK-016: pprot = AxPROT 5, got 0x0 at cycle 19",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 1313, in test_chk_029_pprot_passthrough\n                                                            await b.wait_done([t], what=f\"CHK-029: {t}\")\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 810, in wait_done\n                                                            await self.wait_for(lambda: all(t.done or t.aborted for t in txns), max_cycles, what)\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 796, in wait_for\n                                                            await self.tick()\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 790, in tick\n                                                            self.check()\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 785, in check\n                                                            assert not self.errors, f\"{self.errors[0] if self.errors else ''}  [{len(self.errors)} error(s) total]\"\n                                                        AssertionError: CHK-016: pprot = AxPROT 5, got 0x0 at cycle 19\n                                                          assert 0 == 5  [1 error(s) total]\n                                                        assert not ['CHK-016: pprot = AxPROT 5, got 0x0 at cycle 19\\nassert 0 == 5']\n                                                         +  where ['CHK-016: pprot = AxPROT 5, got 0x0 at cycle 19\\nassert 0 == 5'] = <test_axi2apb_bridge.Bench object at 0x7d295f588d90>.errors\n 61530.01ns WARNING  cocotb.regression                  test_axi2apb_bridge.test_chk_029_pprot_passthrough failed",
+   "checks": [
+    "CHK-016",
+    "CHK-029"
+   ]
+  },
+  {
+   "name": "test_chk_030_id_echo",
+   "status": "fail",
+   "sim_time_ns": "720.0",
+   "message": "CHK-016: pprot = AxPROT 1, got 0x0 at cycle 62",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 1354, in test_chk_030_id_echo\n                                                            await b.wait_done(grp, what=\"CHK-030: ID group\")\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 810, in wait_done\n                                                            await self.wait_for(lambda: all(t.done or t.aborted for t in txns), max_cycles, what)\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 796, in wait_for\n                                                            await self.tick()\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 790, in tick\n                                                            self.check()\n                                                          File \"/root/nnc_runs/sim_8b6b2ee5/test_axi2apb_bridge.py\", line 785, in check\n                                                            assert not self.errors, f\"{self.errors[0] if self.errors else ''}  [{len(self.errors)} error(s) total]\"\n                                                        AssertionError: CHK-016: pprot = AxPROT 1, got 0x0 at cycle 62\n                                                          assert 0 == 1  [1 error(s) total]\n                                                        assert not ['CHK-016: pprot = AxPROT 1, got 0x0 at cycle 62\\nassert 0 == 1']\n                                                         +  where ['CHK-016: pprot = AxPROT 1, got 0x0 at cycle 62\\nassert 0 == 1'] = <test_axi2apb_bridge.Bench object at 0x7d295f58a390>.errors\n 62250.01ns WARNING  cocotb.regression                  test_axi2apb_bridge.test_chk_030_id_echo failed",
+   "checks": [
+    "CHK-016",
+    "CHK-030"
+   ]
+  },
+  {
+   "name": "test_chk_031_reset_mid_transaction",
+   "status": "pass",
+   "sim_time_ns": "1950.0"
+  },
+  {
+   "name": "test_regression_random",
+   "status": "fail",
+   "sim_time_ns": "750.0",
+   "message": "CHK-016: pprot = AxPROT 0, got 0x7 at cycle 65",
+   "exception": "AssertionError",
+   "traceback": "33  **\n                                                        ** test_axi2apb_bridge.test_regression_random                    FAIL         750.00           0.02      44106.00  **\n                                                        *********************************************************************************************************************\n                                                        ** TESTS=15 PASS=8 FAIL=7 SKIP=0                                            64950.01           1.68      38624.87  **\n                                                        *********************************************************************************************************************\nNNC_FAIL CHK-016 @20230000\nNNC_FAIL CHK-016 @27950000\nNNC_FAIL CHK-016 @39200000\nNNC_FAIL CHK-016 @59770000\nNNC_FAIL CHK-016 @61530000\nNNC_FAIL CHK-016 @62250000\n- (null):0: Verilog $finish\nNNC_FAIL CHK-016 @64950000\nNNC_COVER COVP-001 hits=376\nNNC_COVER COVP-002 hits=8\nNNC_COVER COVP-003 hits=318\nNNC_COVER COVP-004 hits=18\nNNC_COVER COVP-005 hits=4\nNNC_COVER COVP-006 hits=2\nNNC_COVER COVP-007 hits=0\nNNC_COVER COVP-008 hits=0\nNNC_COVER COVP-009 hits=1\nNNC_COVER COVP-010 hits=0\nNNC_COVER COVP-011 hits=0\nNNC_COVER COVP-012 hits=0\nNNC_COVER COVP-013 hits=0\nNNC_COVER COVP-014 hits=31\nNNC_COVER COVP-015 hits=14\nNNC_COVER COVP-016 hits=1\nNNC_COVER COVP-017 hits=0\nNNC_COVER COVP-018 hits=30\nNNC_COVER COVP-019 hits=3\nNNC_COVER COVP-020 hits=12\nNNC_COVER COVP-021 hits=2\nNNC_COVER COVP-022 hits=14\nNNC_COVER COVP-023 hits=3\nNNC_COVER COVP-024 hits=0\nNNC_COVER COVP-025 hits=0\nNNC_COVER COVP-026 hits=509\nNNC_COVER COVP-027 hits=0\nNNC_COVER COVP-028 hits=3330\nNNC_COVER COVP-029 hits=58\nNNC_COVER COVP-030 hits=2074\nNNC_COVER COVP-031 hits=1936\nNNC_COVER COVP-032 hits=3\nNNC_COVER COVP-033 hits=2\nNNC_COVER COVP-034 hits=8\nNNC_COVER COVP-035 hits=7\nNNC_COVER COVP-036 hits=4\nNNC_COVER COVP-037 hits=2\nNNC_COVER COVP-038 hits=7\nNNC_COVER COVP-039 hits=15\nNNC_COVER COVP-040 hits=1\nNNC_CHECK CHK-017 hits=83 fails=0\nNNC_CHECK CHK-014 hits=5145 fails=0\nNNC_CHECK CHK-015 hits=563 fails=0\nNNC_CHECK CHK-016 hits=962 fails=7\nNNC_CHECK CHK-013 hits=78 fails=0\nNNC_CHECK CHK-009 hits=858 fails=0\nNNC_CHECK CHK-010 hits=1560 fails=0\nNNC_CHECK CHK-011 hits=1042 fails=0\nNNC_CHECK CHK-012 hits=518 fails=0\nNNC_CHECK CHK-007 hits=2 fails=0\nNNC_CHECK CHK-008 hits=26 fails=0\nNNC_CHECK CHK-001 hits=3890 fails=0\nNNC_CHECK CHK-002 hits=2549 fails=0\nNNC_CHECK CHK-003 hits=448 fails=0\nNNC_CHECK CHK-004 hits=6413 fails=0\nNNC_CHECK CHK-005 hits=2290 fails=0\nNNC_CHECK CHK-006 hits=2969 fails=0\nmake[1]: *** [/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb_tools/makefiles/simulators/Makefile.verilator:70: results.xml] Error 7\nmake[1]: Leaving directory '/root/nnc_runs/sim_8b6b2ee5'\nmake: *** [/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb_tools/makefiles/Makefile.inc:17: sim] Error 2\nNNC_MAKE_RC=2\n",
+   "checks": [
+    "CHK-016"
+   ]
+  }
+ ],
+ "assertions": {
+  "CHK-017": {
+   "hits": 83,
+   "fails": 0
+  },
+  "CHK-014": {
+   "hits": 5145,
+   "fails": 0
+  },
+  "CHK-015": {
+   "hits": 563,
+   "fails": 0
+  },
+  "CHK-016": {
+   "hits": 962,
+   "fails": 7,
+   "first_fail_time": 20230000
+  },
+  "CHK-013": {
+   "hits": 78,
+   "fails": 0
+  },
+  "CHK-009": {
+   "hits": 858,
+   "fails": 0
+  },
+  "CHK-010": {
+   "hits": 1560,
+   "fails": 0
+  },
+  "CHK-011": {
+   "hits": 1042,
+   "fails": 0
+  },
+  "CHK-012": {
+   "hits": 518,
+   "fails": 0
+  },
+  "CHK-007": {
+   "hits": 2,
+   "fails": 0
+  },
+  "CHK-008": {
+   "hits": 26,
+   "fails": 0
+  },
+  "CHK-001": {
+   "hits": 3890,
+   "fails": 0
+  },
+  "CHK-002": {
+   "hits": 2549,
+   "fails": 0
+  },
+  "CHK-003": {
+   "hits": 448,
+   "fails": 0
+  },
+  "CHK-004": {
+   "hits": 6413,
+   "fails": 0
+  },
+  "CHK-005": {
+   "hits": 2290,
+   "fails": 0
+  },
+  "CHK-006": {
+   "hits": 2969,
+   "fails": 0
+  }
+ },
+ "not_verifiable": {},
+ "coverage": {
+  "status": "measured",
+  "metric": "line",
+  "hit": 735,
+  "total": 746,
+  "percent": 98.5,
+  "files": {
+   "m_axi2apb_apb_ctrl.sv": {
+    "hit": 186,
+    "total": 190
+   },
+   "m_axi2apb_bridge.sv": {
+    "hit": 66,
+    "total": 66
+   },
+   "m_axi2apb_rd_seq.sv": {
+    "hit": 252,
+    "total": 254
+   },
+   "m_axi2apb_wr_seq.sv": {
+    "hit": 231,
+    "total": 236
+   }
+  },
+  "executed_lines": {
+   "m_axi2apb_apb_ctrl.sv": "13-14,17-24,27-33,36-43,46-55,75-89,92-100,102-106,110-112,114-116,118-120,122-124,133-138,140-141,143-145,154-170,172-177,181-183,186-193,195-202,204-211,217-226,231-247,249-262,265-272",
+   "m_axi2apb_bridge.sv": "18-19,22-30,33-41,44-52,55-60,63-72,76-85,88-98",
+   "m_axi2apb_rd_seq.sv": "38-39,42-44,47-55,58-63,66-69,72-74,87-119,122-136,138-141,143-145,147-149,151-153,155-157,161-164,166-172,174-177,179-182,184,186-189,193-196,198-200,202-204,208-217,219-221,223-224,226-227,229-230,232-233,237-240,242-244,246-247,249-251,253,255-256,262-268,270,273-275,277-279,281-284,286,289-292,294,304-315,317-319,321-326,328-330,332-333,337-361,363,365-371,374-381",
+   "m_axi2apb_wr_seq.sv": "39-40,43-45,48-56,59-66,69-74,77-78,92-125,128-142,144-147,149-151,153-155,157-159,161-163,167-170,172-175,177-178,180-183,185,187-188,192-198,200-202,206-215,217-220,222,225-228,230-236,245-251,253,256-258,260-262,264-267,269,272-274,276-278,287-299,301-303,305,307-313,317-340,342-345,347-352"
+  },
+  "metrics": {
+   "line": {
+    "hit": 735,
+    "total": 746,
+    "percent": 98.5,
+    "files": {
+     "m_axi2apb_apb_ctrl.sv": {
+      "hit": 186,
+      "total": 190
+     },
+     "m_axi2apb_bridge.sv": {
+      "hit": 66,
+      "total": 66
+     },
+     "m_axi2apb_rd_seq.sv": {
+      "hit": 252,
+      "total": 254
+     },
+     "m_axi2apb_wr_seq.sv": {
+      "hit": 231,
+      "total": 236
+     }
+    }
+   },
+   "block": {
+    "hit": 206,
+    "total": 218,
+    "percent": 94.5,
+    "files": {
+     "m_axi2apb_apb_ctrl.sv": {
+      "hit": 53,
+      "total": 57
+     },
+     "m_axi2apb_rd_seq.sv": {
+      "hit": 79,
+      "total": 81
+     },
+     "m_axi2apb_wr_seq.sv": {
+      "hit": 74,
+      "total": 80
+     }
+    }
+   },
+   "expression": {
+    "hit": 102,
+    "total": 106,
+    "percent": 96.2,
+    "files": {
+     "m_axi2apb_apb_ctrl.sv": {
+      "hit": 31,
+      "total": 35
+     },
+     "m_axi2apb_rd_seq.sv": {
+      "hit": 30,
+      "total": 30
+     },
+     "m_axi2apb_wr_seq.sv": {
+      "hit": 41,
+      "total": 41
+     }
+    }
+   },
+   "toggle": {
+    "hit": 3461,
+    "total": 4690,
+    "percent": 73.8,
+    "files": {
+     "m_axi2apb_apb_ctrl.sv": {
+      "hit": 630,
+      "total": 766
+     },
+     "m_axi2apb_bridge.sv": {
+      "hit": 826,
+      "total": 932
+     },
+     "m_axi2apb_rd_seq.sv": {
+      "hit": 1004,
+      "total": 1484
+     },
+     "m_axi2apb_wr_seq.sv": {
+      "hit": 1001,
+      "total": 1508
+     }
+    }
+   },
+   "functional": {
+    "hit": 30,
+    "total": 40,
+    "percent": 75.0,
+    "files": {
+     "nnc_cov.sv": {
+      "hit": 30,
+      "total": 40
+     }
+    }
+   }
+  },
+  "uncovered": [
+   {
+    "metric": "block",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 111,
+    "what": "else",
+    "points": 1,
+    "detail": [
+     "else"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 115,
+    "what": "else",
+    "points": 1,
+    "detail": [
+     "else"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 126,
+    "what": "case",
+    "points": 1,
+    "detail": [
+     "case"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 147,
+    "what": "case",
+    "points": 1,
+    "detail": [
+     "case"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 274,
+    "what": "else",
+    "points": 1,
+    "detail": [
+     "else"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 297,
+    "what": "case",
+    "points": 1,
+    "detail": [
+     "case"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 221,
+    "what": "case",
+    "points": 1,
+    "detail": [
+     "case"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 235,
+    "what": "else",
+    "points": 1,
+    "detail": [
+     "else"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 240,
+    "what": "case",
+    "points": 1,
+    "detail": [
+     "case"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 257,
+    "what": "else",
+    "points": 1,
+    "detail": [
+     "else"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 261,
+    "what": "else",
+    "points": 1,
+    "detail": [
+     "else"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 280,
+    "what": "case",
+    "points": 1,
+    "detail": [
+     "case"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 111,
+    "what": "(i_axi_arvalid==0) => 0",
+    "points": 1,
+    "detail": [
+     "(i_axi_arvalid==0) => 0"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 111,
+    "what": "(i_rd_ready==0) => 0",
+    "points": 1,
+    "detail": [
+     "(i_rd_ready==0) => 0"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 115,
+    "what": "(i_axi_awvalid==0) => 0",
+    "points": 1,
+    "detail": [
+     "(i_axi_awvalid==0) => 0"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 115,
+    "what": "(i_wr_ready==0) => 0",
+    "points": 1,
+    "detail": [
+     "(i_wr_ready==0) => 0"
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 126,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 127,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 147,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 148,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 297,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 298,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 221,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 238,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 240,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 280,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 281,
+    "what": "",
+    "points": 1,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 118,
+    "what": "w_wr_size_mask",
+    "points": 58,
+    "detail": [
+     "w_wr_size_mask[10]:0->1",
+     "w_wr_size_mask[10]:1->0",
+     "w_wr_size_mask[11]:0->1",
+     "w_wr_size_mask[11]:1->0",
+     "w_wr_size_mask[12]:0->1",
+     "w_wr_size_mask[12]:1->0",
+     "w_wr_size_mask[13]:0->1",
+     "w_wr_size_mask[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 117,
+    "what": "w_wr_size_bytes",
+    "points": 56,
+    "detail": [
+     "w_wr_size_bytes[10]:0->1",
+     "w_wr_size_bytes[10]:1->0",
+     "w_wr_size_bytes[11]:0->1",
+     "w_wr_size_bytes[11]:1->0",
+     "w_wr_size_bytes[12]:0->1",
+     "w_wr_size_bytes[12]:1->0",
+     "w_wr_size_bytes[13]:0->1",
+     "w_wr_size_bytes[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 121,
+    "what": "w_wr_wrap_bytes",
+    "points": 52,
+    "detail": [
+     "w_wr_wrap_bytes[10]:0->1",
+     "w_wr_wrap_bytes[10]:1->0",
+     "w_wr_wrap_bytes[11]:0->1",
+     "w_wr_wrap_bytes[11]:1->0",
+     "w_wr_wrap_bytes[12]:0->1",
+     "w_wr_wrap_bytes[12]:1->0",
+     "w_wr_wrap_bytes[13]:0->1",
+     "w_wr_wrap_bytes[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 112,
+    "what": "w_rd_size_mask",
+    "points": 50,
+    "detail": [
+     "w_rd_size_mask[10]:0->1",
+     "w_rd_size_mask[10]:1->0",
+     "w_rd_size_mask[11]:0->1",
+     "w_rd_size_mask[11]:1->0",
+     "w_rd_size_mask[12]:0->1",
+     "w_rd_size_mask[12]:1->0",
+     "w_rd_size_mask[13]:0->1",
+     "w_rd_size_mask[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 101,
+    "what": "w_ar_size_bytes",
+    "points": 48,
+    "detail": [
+     "w_ar_size_bytes[10]:0->1",
+     "w_ar_size_bytes[10]:1->0",
+     "w_ar_size_bytes[11]:0->1",
+     "w_ar_size_bytes[11]:1->0",
+     "w_ar_size_bytes[12]:0->1",
+     "w_ar_size_bytes[12]:1->0",
+     "w_ar_size_bytes[13]:0->1",
+     "w_ar_size_bytes[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 111,
+    "what": "w_rd_size_bytes",
+    "points": 48,
+    "detail": [
+     "w_rd_size_bytes[10]:0->1",
+     "w_rd_size_bytes[10]:1->0",
+     "w_rd_size_bytes[11]:0->1",
+     "w_rd_size_bytes[11]:1->0",
+     "w_rd_size_bytes[12]:0->1",
+     "w_rd_size_bytes[12]:1->0",
+     "w_rd_size_bytes[13]:0->1",
+     "w_rd_size_bytes[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 107,
+    "what": "w_aw_size_bytes",
+    "points": 48,
+    "detail": [
+     "w_aw_size_bytes[10]:0->1",
+     "w_aw_size_bytes[10]:1->0",
+     "w_aw_size_bytes[11]:0->1",
+     "w_aw_size_bytes[11]:1->0",
+     "w_aw_size_bytes[12]:0->1",
+     "w_aw_size_bytes[12]:1->0",
+     "w_aw_size_bytes[13]:0->1",
+     "w_aw_size_bytes[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 105,
+    "what": "w_ar_wrap_bytes",
+    "points": 44,
+    "detail": [
+     "w_ar_wrap_bytes[10]:0->1",
+     "w_ar_wrap_bytes[10]:1->0",
+     "w_ar_wrap_bytes[11]:0->1",
+     "w_ar_wrap_bytes[11]:1->0",
+     "w_ar_wrap_bytes[12]:0->1",
+     "w_ar_wrap_bytes[12]:1->0",
+     "w_ar_wrap_bytes[13]:0->1",
+     "w_ar_wrap_bytes[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 115,
+    "what": "w_rd_wrap_bytes",
+    "points": 44,
+    "detail": [
+     "w_rd_wrap_bytes[10]:0->1",
+     "w_rd_wrap_bytes[10]:1->0",
+     "w_rd_wrap_bytes[11]:0->1",
+     "w_rd_wrap_bytes[11]:1->0",
+     "w_rd_wrap_bytes[12]:0->1",
+     "w_rd_wrap_bytes[12]:1->0",
+     "w_rd_wrap_bytes[13]:0->1",
+     "w_rd_wrap_bytes[13]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 111,
+    "what": "w_aw_wrap_bytes",
+    "points": 40,
+    "detail": [
+     "w_aw_wrap_bytes[12]:0->1",
+     "w_aw_wrap_bytes[12]:1->0",
+     "w_aw_wrap_bytes[13]:0->1",
+     "w_aw_wrap_bytes[13]:1->0",
+     "w_aw_wrap_bytes[14]:0->1",
+     "w_aw_wrap_bytes[14]:1->0",
+     "w_aw_wrap_bytes[15]:0->1",
+     "w_aw_wrap_bytes[15]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 109,
+    "what": "w_ar_total_bytes",
+    "points": 36,
+    "detail": [
+     "w_ar_total_bytes[15]:0->1",
+     "w_ar_total_bytes[15]:1->0",
+     "w_ar_total_bytes[16]:0->1",
+     "w_ar_total_bytes[16]:1->0",
+     "w_ar_total_bytes[17]:0->1",
+     "w_ar_total_bytes[17]:1->0",
+     "w_ar_total_bytes[18]:0->1",
+     "w_ar_total_bytes[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 115,
+    "what": "w_aw_total_bytes",
+    "points": 36,
+    "detail": [
+     "w_aw_total_bytes[15]:0->1",
+     "w_aw_total_bytes[15]:1->0",
+     "w_aw_total_bytes[16]:0->1",
+     "w_aw_total_bytes[16]:1->0",
+     "w_aw_total_bytes[17]:0->1",
+     "w_aw_total_bytes[17]:1->0",
+     "w_aw_total_bytes[18]:0->1",
+     "w_aw_total_bytes[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 28,
+    "what": "i_rd_req_addr",
+    "points": 34,
+    "detail": [
+     "i_rd_req_addr[0]:0->1",
+     "i_rd_req_addr[0]:1->0",
+     "i_rd_req_addr[16]:0->1",
+     "i_rd_req_addr[16]:1->0",
+     "i_rd_req_addr[17]:0->1",
+     "i_rd_req_addr[17]:1->0",
+     "i_rd_req_addr[18]:0->1",
+     "i_rd_req_addr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 37,
+    "what": "i_wr_req_addr",
+    "points": 34,
+    "detail": [
+     "i_wr_req_addr[0]:0->1",
+     "i_wr_req_addr[0]:1->0",
+     "i_wr_req_addr[16]:0->1",
+     "i_wr_req_addr[16]:1->0",
+     "i_wr_req_addr[17]:0->1",
+     "i_wr_req_addr[17]:1->0",
+     "i_wr_req_addr[18]:0->1",
+     "i_wr_req_addr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 49,
+    "what": "o_apb_paddr",
+    "points": 34,
+    "detail": [
+     "o_apb_paddr[0]:0->1",
+     "o_apb_paddr[0]:1->0",
+     "o_apb_paddr[16]:0->1",
+     "o_apb_paddr[16]:1->0",
+     "o_apb_paddr[17]:0->1",
+     "o_apb_paddr[17]:1->0",
+     "o_apb_paddr[18]:0->1",
+     "o_apb_paddr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_apb_ctrl.sv",
+    "line": 80,
+    "what": "reg_apb_addr",
+    "points": 34,
+    "detail": [
+     "reg_apb_addr[0]:0->1",
+     "reg_apb_addr[0]:1->0",
+     "reg_apb_addr[16]:0->1",
+     "reg_apb_addr[16]:1->0",
+     "reg_apb_addr[17]:0->1",
+     "reg_apb_addr[17]:1->0",
+     "reg_apb_addr[18]:0->1",
+     "reg_apb_addr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_bridge.sv",
+    "line": 63,
+    "what": "o_apb_paddr",
+    "points": 34,
+    "detail": [
+     "o_apb_paddr[0]:0->1",
+     "o_apb_paddr[0]:1->0",
+     "o_apb_paddr[16]:0->1",
+     "o_apb_paddr[16]:1->0",
+     "o_apb_paddr[17]:0->1",
+     "o_apb_paddr[17]:1->0",
+     "o_apb_paddr[18]:0->1",
+     "o_apb_paddr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_bridge.sv",
+    "line": 80,
+    "what": "w_rd_req_addr",
+    "points": 34,
+    "detail": [
+     "w_rd_req_addr[0]:0->1",
+     "w_rd_req_addr[0]:1->0",
+     "w_rd_req_addr[16]:0->1",
+     "w_rd_req_addr[16]:1->0",
+     "w_rd_req_addr[17]:0->1",
+     "w_rd_req_addr[17]:1->0",
+     "w_rd_req_addr[18]:0->1",
+     "w_rd_req_addr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_bridge.sv",
+    "line": 92,
+    "what": "w_wr_req_addr",
+    "points": 34,
+    "detail": [
+     "w_wr_req_addr[0]:0->1",
+     "w_wr_req_addr[0]:1->0",
+     "w_wr_req_addr[16]:0->1",
+     "w_wr_req_addr[16]:1->0",
+     "w_wr_req_addr[17]:0->1",
+     "w_wr_req_addr[17]:1->0",
+     "w_wr_req_addr[18]:0->1",
+     "w_wr_req_addr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 67,
+    "what": "o_req_addr",
+    "points": 34,
+    "detail": [
+     "o_req_addr[0]:0->1",
+     "o_req_addr[0]:1->0",
+     "o_req_addr[16]:0->1",
+     "o_req_addr[16]:1->0",
+     "o_req_addr[17]:0->1",
+     "o_req_addr[17]:1->0",
+     "o_req_addr[18]:0->1",
+     "o_req_addr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 70,
+    "what": "o_req_addr",
+    "points": 34,
+    "detail": [
+     "o_req_addr[0]:0->1",
+     "o_req_addr[0]:1->0",
+     "o_req_addr[16]:0->1",
+     "o_req_addr[16]:1->0",
+     "o_req_addr[17]:0->1",
+     "o_req_addr[17]:1->0",
+     "o_req_addr[18]:0->1",
+     "o_req_addr[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 90,
+    "what": "reg_rd_addr",
+    "points": 30,
+    "detail": [
+     "reg_rd_addr[16]:0->1",
+     "reg_rd_addr[16]:1->0",
+     "reg_rd_addr[17]:0->1",
+     "reg_rd_addr[17]:1->0",
+     "reg_rd_addr[18]:0->1",
+     "reg_rd_addr[18]:1->0",
+     "reg_rd_addr[19]:0->1",
+     "reg_rd_addr[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 117,
+    "what": "w_rd_wrap_base",
+    "points": 30,
+    "detail": [
+     "w_rd_wrap_base[16]:0->1",
+     "w_rd_wrap_base[16]:1->0",
+     "w_rd_wrap_base[17]:0->1",
+     "w_rd_wrap_base[17]:1->0",
+     "w_rd_wrap_base[18]:0->1",
+     "w_rd_wrap_base[18]:1->0",
+     "w_rd_wrap_base[19]:0->1",
+     "w_rd_wrap_base[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 118,
+    "what": "w_rd_addr_plus_size",
+    "points": 30,
+    "detail": [
+     "w_rd_addr_plus_size[16]:0->1",
+     "w_rd_addr_plus_size[16]:1->0",
+     "w_rd_addr_plus_size[17]:0->1",
+     "w_rd_addr_plus_size[17]:1->0",
+     "w_rd_addr_plus_size[18]:0->1",
+     "w_rd_addr_plus_size[18]:1->0",
+     "w_rd_addr_plus_size[19]:0->1",
+     "w_rd_addr_plus_size[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 119,
+    "what": "w_rd_nxt_addr",
+    "points": 30,
+    "detail": [
+     "w_rd_nxt_addr[16]:0->1",
+     "w_rd_nxt_addr[16]:1->0",
+     "w_rd_nxt_addr[17]:0->1",
+     "w_rd_nxt_addr[17]:1->0",
+     "w_rd_nxt_addr[18]:0->1",
+     "w_rd_nxt_addr[18]:1->0",
+     "w_rd_nxt_addr[19]:0->1",
+     "w_rd_nxt_addr[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 95,
+    "what": "reg_wr_addr",
+    "points": 30,
+    "detail": [
+     "reg_wr_addr[16]:0->1",
+     "reg_wr_addr[16]:1->0",
+     "reg_wr_addr[17]:0->1",
+     "reg_wr_addr[17]:1->0",
+     "reg_wr_addr[18]:0->1",
+     "reg_wr_addr[18]:1->0",
+     "reg_wr_addr[19]:0->1",
+     "reg_wr_addr[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 123,
+    "what": "w_wr_wrap_base",
+    "points": 30,
+    "detail": [
+     "w_wr_wrap_base[16]:0->1",
+     "w_wr_wrap_base[16]:1->0",
+     "w_wr_wrap_base[17]:0->1",
+     "w_wr_wrap_base[17]:1->0",
+     "w_wr_wrap_base[18]:0->1",
+     "w_wr_wrap_base[18]:1->0",
+     "w_wr_wrap_base[19]:0->1",
+     "w_wr_wrap_base[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 124,
+    "what": "w_wr_addr_plus_size",
+    "points": 30,
+    "detail": [
+     "w_wr_addr_plus_size[16]:0->1",
+     "w_wr_addr_plus_size[16]:1->0",
+     "w_wr_addr_plus_size[17]:0->1",
+     "w_wr_addr_plus_size[17]:1->0",
+     "w_wr_addr_plus_size[18]:0->1",
+     "w_wr_addr_plus_size[18]:1->0",
+     "w_wr_addr_plus_size[19]:0->1",
+     "w_wr_addr_plus_size[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 125,
+    "what": "w_wr_nxt_addr",
+    "points": 30,
+    "detail": [
+     "w_wr_nxt_addr[16]:0->1",
+     "w_wr_nxt_addr[16]:1->0",
+     "w_wr_nxt_addr[17]:0->1",
+     "w_wr_nxt_addr[17]:1->0",
+     "w_wr_nxt_addr[18]:0->1",
+     "w_wr_nxt_addr[18]:1->0",
+     "w_wr_nxt_addr[19]:0->1",
+     "w_wr_nxt_addr[19]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 122,
+    "what": "w_wr_wrap_mask",
+    "points": 27,
+    "detail": [
+     "w_wr_wrap_mask[10]:1->0",
+     "w_wr_wrap_mask[11]:1->0",
+     "w_wr_wrap_mask[12]:1->0",
+     "w_wr_wrap_mask[13]:1->0",
+     "w_wr_wrap_mask[14]:1->0",
+     "w_wr_wrap_mask[15]:1->0",
+     "w_wr_wrap_mask[16]:1->0",
+     "w_wr_wrap_mask[17]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 106,
+    "what": "w_ar_wrap_mask",
+    "points": 23,
+    "detail": [
+     "w_ar_wrap_mask[10]:1->0",
+     "w_ar_wrap_mask[11]:1->0",
+     "w_ar_wrap_mask[12]:1->0",
+     "w_ar_wrap_mask[13]:1->0",
+     "w_ar_wrap_mask[14]:1->0",
+     "w_ar_wrap_mask[15]:1->0",
+     "w_ar_wrap_mask[16]:1->0",
+     "w_ar_wrap_mask[17]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 116,
+    "what": "w_rd_wrap_mask",
+    "points": 23,
+    "detail": [
+     "w_rd_wrap_mask[10]:1->0",
+     "w_rd_wrap_mask[11]:1->0",
+     "w_rd_wrap_mask[12]:1->0",
+     "w_rd_wrap_mask[13]:1->0",
+     "w_rd_wrap_mask[14]:1->0",
+     "w_rd_wrap_mask[15]:1->0",
+     "w_rd_wrap_mask[16]:1->0",
+     "w_rd_wrap_mask[17]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 112,
+    "what": "w_aw_wrap_mask",
+    "points": 21,
+    "detail": [
+     "w_aw_wrap_mask[11]:1->0",
+     "w_aw_wrap_mask[12]:1->0",
+     "w_aw_wrap_mask[13]:1->0",
+     "w_aw_wrap_mask[14]:1->0",
+     "w_aw_wrap_mask[15]:1->0",
+     "w_aw_wrap_mask[16]:1->0",
+     "w_aw_wrap_mask[17]:1->0",
+     "w_aw_wrap_mask[18]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 119,
+    "what": "w_wr_wrap_log2",
+    "points": 4,
+    "detail": [
+     "w_wr_wrap_log2[2]:0->1",
+     "w_wr_wrap_log2[2]:1->0",
+     "w_wr_wrap_log2[3]:0->1",
+     "w_wr_wrap_log2[3]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_bridge.sv",
+    "line": 39,
+    "what": "o_axi_bresp",
+    "points": 2,
+    "detail": [
+     "o_axi_bresp[0]:0->1",
+     "o_axi_bresp[0]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_bridge.sv",
+    "line": 57,
+    "what": "o_axi_rresp",
+    "points": 2,
+    "detail": [
+     "o_axi_rresp[0]:0->1",
+     "o_axi_rresp[0]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 61,
+    "what": "o_axi_rresp",
+    "points": 2,
+    "detail": [
+     "o_axi_rresp[0]:0->1",
+     "o_axi_rresp[0]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 97,
+    "what": "reg_rd_resp",
+    "points": 2,
+    "detail": [
+     "reg_rd_resp[0]:0->1",
+     "reg_rd_resp[0]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 103,
+    "what": "w_ar_wrap_log2",
+    "points": 2,
+    "detail": [
+     "w_ar_wrap_log2[3]:0->1",
+     "w_ar_wrap_log2[3]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 110,
+    "what": "w_ar_end_page",
+    "points": 2,
+    "detail": [
+     "w_ar_end_page[20]:0->1",
+     "w_ar_end_page[20]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_rd_seq.sv",
+    "line": 113,
+    "what": "w_rd_wrap_log2",
+    "points": 2,
+    "detail": [
+     "w_rd_wrap_log2[3]:0->1",
+     "w_rd_wrap_log2[3]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 64,
+    "what": "o_axi_bresp",
+    "points": 2,
+    "detail": [
+     "o_axi_bresp[0]:0->1",
+     "o_axi_bresp[0]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 97,
+    "what": "reg_wr_size",
+    "points": 2,
+    "detail": [
+     "reg_wr_size[2]:0->1",
+     "reg_wr_size[2]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 109,
+    "what": "w_aw_wrap_log2",
+    "points": 2,
+    "detail": [
+     "w_aw_wrap_log2[3]:0->1",
+     "w_aw_wrap_log2[3]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 116,
+    "what": "w_aw_end_page",
+    "points": 2,
+    "detail": [
+     "w_aw_end_page[20]:0->1",
+     "w_aw_end_page[20]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 120,
+    "what": "w_wr_wrap_shift",
+    "points": 2,
+    "detail": [
+     "w_wr_wrap_shift[3]:0->1",
+     "w_wr_wrap_shift[3]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_axi2apb_wr_seq.sv",
+    "line": 98,
+    "what": "reg_wr_burst",
+    "points": 1,
+    "detail": [
+     "reg_wr_burst[1]:1->0"
+    ]
+   },
+   {
+    "metric": "functional",
+    "file": "nnc_cov.sv",
+    "line": 0,
+    "what": "COVP-007",
+    "points": 1,
+    "detail": []
+   },
+   {
+    "metric": "functional",
+    "file": "nnc_cov.sv",
+    "line": 0,
+    "what": "COVP-008",
+    "points": 1,
+    "detail": []
+   },
+   {
+    "metric": "functional",
+    "file": "nnc_cov.sv",
+    "line": 0,
+    "what": "COVP-010",
+    "points": 1,
+    "detail": []
+   },
+   {
+    "metric": "functional",
+    "file": "nnc_cov.sv",
+    "line": 0,
+    "what": "COVP-011",
+    "points": 1,
+    "detail": []
+   },
+   {
+    "metric": "functional",
+    "file": "nnc_cov.sv",
+    "line": 0,
+    "what": "COVP-012",
+    "points": 1,
+    "detail": []
+   },
+   {
+    "metric": "functional",
+    "file": "nnc_cov.sv",
+    "line": 0,
+    "what": "COVP-013",
+    "points": 1,
+    "detail": []
+   },
+   {
+    "metric": "functional",
+    "file": "nnc_cov.sv",
+    "line": 0,
+    "what": "COVP-017",
+    "points": 1,
+    "detail": []
+   },
+   {
+    "metric": "functional",
+    "file": "nnc_cov.sv",
+    "line": 0,
+    "what": "COVP-024",
+    "points": 1,
+    "detail": []
+   },
+   {
+    "metric": "functional",
+    "file": "nnc_cov.sv",
+    "line": 0,
+    "what": "COVP-025",
+    "points": 1,
+    "detail": []
+   },
+   {
+    "metric": "functional",
+    "file": "nnc_cov.sv",
+    "line": 0,
+    "what": "COVP-027",
+    "points": 1,
+    "detail": []
+   }
+  ]
+ },
+ "functional": {
+  "COVP-001": 376,
+  "COVP-002": 8,
+  "COVP-003": 318,
+  "COVP-004": 18,
+  "COVP-005": 4,
+  "COVP-006": 2,
+  "COVP-007": 0,
+  "COVP-008": 0,
+  "COVP-009": 1,
+  "COVP-010": 0,
+  "COVP-011": 0,
+  "COVP-012": 0,
+  "COVP-013": 0,
+  "COVP-014": 31,
+  "COVP-015": 14,
+  "COVP-016": 1,
+  "COVP-017": 0,
+  "COVP-018": 30,
+  "COVP-019": 3,
+  "COVP-020": 12,
+  "COVP-021": 2,
+  "COVP-022": 14,
+  "COVP-023": 3,
+  "COVP-024": 0,
+  "COVP-025": 0,
+  "COVP-026": 509,
+  "COVP-027": 0,
+  "COVP-028": 3330,
+  "COVP-029": 58,
+  "COVP-030": 2074,
+  "COVP-031": 1936,
+  "COVP-032": 3,
+  "COVP-033": 2,
+  "COVP-034": 8,
+  "COVP-035": 7,
+  "COVP-036": 4,
+  "COVP-037": 2,
+  "COVP-038": 7,
+  "COVP-039": 15,
+  "COVP-040": 1
+ },
+ "make_rc": 2,
+ "built": true,
+ "build_errors": [],
+ "unreviewed_gates": []
+}

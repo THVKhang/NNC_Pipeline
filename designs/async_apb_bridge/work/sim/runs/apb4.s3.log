@@ -1,0 +1,256 @@
+rm -f results.xml
+"make" -f Makefile results.xml
+make[1]: Entering directory '/root/nnc_runs/runset_73570183/C01'
+make[1]: warning: -j3 forced in makefile: resetting jobserver mode.
+/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb_tools/makefiles/simulators/Makefile.verilator:69: Using PLUSARGS is deprecated, please use COCOTB_PLUSARGS instead.
+rm -f results.xml
+COCOTB_TEST_MODULES=test_async_apb_bridge COCOTB_TESTCASE= COCOTB_TEST_FILTER= COCOTB_TOPLEVEL=nnc_tb_top TOPLEVEL_LANG=verilog \
+         sim_build/Vtop  --assert --timing -Wno-fatal -Wno-WIDTH -Wno-UNOPTFLAT -GPARA_APBCDC_ADDR_W=32 -GPARA_APBCDC_DATA_W=32 -GPARA_APBCDC_APB5=0 -GPARA_APBCDC_USER_REQ_W=0 -GPARA_APBCDC_USER_DATA_W=0 -GPARA_APBCDC_USER_RESP_W=0 -GPARA_APBCDC_HS_TYPE=0 -GPARA_APBCDC_CELL_TYPE=2 --coverage-line --coverage-toggle --coverage-expr +APBCDC_MSYNC_SEED=3 +APBCDC_MSYNC_EN=1  
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:216  in gpi_load_users                  Running entry func 'initialize' from loaded library '/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/libs/libcocotb.so'
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:96   in initialize                      Using Python 3.11.6 interpreter at /opt/oss-cad-suite/bin/tabbypy3
+     0.00ns INFO     cocotb                             Running on Verilator version 5.055 devel
+     0.00ns INFO     cocotb                             Seeding Python random module with supplied seed 3
+     0.00ns INFO     cocotb                             Initialized cocotb v2.1.0.dev0+41564633 from /opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_019_apb5_user_signals (1/28)
+                                                            CHK-019: APB5 PAUSER/PWUSER travel with the request, PRUSER/PBUSER with the response.
+     0.00ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 1398, 'i_clk_slv': 15971}
+   246.40ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-019 needs PARA_APBCDC_APB5=1 with user widths above 0; this run is APB4
+   246.40ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_019_apb5_user_signals passed
+   246.40ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_020_apb5_wakeup (2/28)
+                                                            CHK-020: APB5 wake-up propagation, in-progress term, completer waiting for PWAKEUP.
+   246.40ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 8078, 'i_clk_slv': 7859}
+   489.48ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-020 needs PARA_APBCDC_APB5=1; this run is APB4
+   489.48ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_020_apb5_wakeup passed
+   489.48ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_021_apb4_ignores_apb5 (3/28)
+                                                            CHK-021: with APB5=0 the APB5 inputs have no effect and the APB5 outputs are 0.
+   489.48ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 9352, 'i_clk_slv': 12388}
+  4703.83ns WARNING  py.warnings                        /opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/types/_logic.py:147: RuntimeWarning: coroutine 'Requester.run' was never awaited
+                                                          return cls._singleton(_repr)
+  4703.83ns WARNING  py.warnings                        /opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/types/_logic.py:147: RuntimeWarning: coroutine 'Completer.run' was never awaited
+                                                          return cls._singleton(_repr)
+ 51973.83ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_021_apb4_ignores_apb5 passed
+ 51973.83ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_022_cfg_min (4/28)
+                                                            CHK-022: smallest configuration (1-bit address, 8-bit data) crosses bit for bit.
+ 51973.83ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 5779, 'i_clk_slv': 12993}
+156184.61ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-022 CFG-MIN needs ADDR_W=1, DATA_W=8; this run has 32/32 (the same stimulus was checked on these widths)
+156184.61ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_022_cfg_min passed
+156184.61ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_023_four_phase/periods=0 (5/28)
+                                                            CHK-023: four-phase handshake, same function, PREADY only after the handshake closes.
+156184.61ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 1638, 'i_clk_slv': 8124}
+156431.25ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-023 needs PARA_APBCDC_HS_TYPE=1; this run is two-phase
+156431.25ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_023_four_phase/periods=0 passed
+156431.25ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_023_four_phase/periods=1 (6/28)
+                                                            CHK-023: four-phase handshake, same function, PREADY only after the handshake closes.
+156431.25ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 1726, 'i_clk_slv': 3411}
+156682.98ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-023 needs PARA_APBCDC_HS_TYPE=1; this run is two-phase
+156682.98ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_023_four_phase/periods=1 passed
+156682.98ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_024_requester_violations (7/28)
+                                                            CHK-024: PENABLE without Setup ignored, Access-phase field changes and extended Setup use the first Setup.
+156682.98ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 1830, 'i_clk_slv': 18322}
+156939.81ns WARNING  py.warnings                        /opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/types/_logic_array.py:430: RuntimeWarning: coroutine 'Completer.run' was never awaited
+                                                          self._range = Range(len(value) - 1, "downto", 0)
+156939.81ns WARNING  py.warnings                        /opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/types/_logic_array.py:430: RuntimeWarning: coroutine 'Requester.run' was never awaited
+                                                          self._range = Range(len(value) - 1, "downto", 0)
+181859.81ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_024_requester_violations passed
+181859.81ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_025_two_phase_duration/periods=0 (8/28)
+                                                            CHK-025: two-phase transfer duration D <= (N+3)Tm + (N+3+w)Ts.
+181859.81ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 6910, 'i_clk_slv': 4269}
+217801.72ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-025 the synchronizer model adds extra latency in this run (crossing counts vary); the bound was checked with the modelled extra cycles allowed, the strict bound needs the extra latency forced to 0
+217801.72ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_025_two_phase_duration/periods=0 passed
+217801.72ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_025_two_phase_duration/periods=1 (9/28)
+                                                            CHK-025: two-phase transfer duration D <= (N+3)Tm + (N+3+w)Ts.
+217801.72ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 1884, 'i_clk_slv': 14520}
+272068.60ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-025 the synchronizer model adds extra latency in this run (crossing counts vary); the bound was checked with the modelled extra cycles allowed, the strict bound needs the extra latency forced to 0
+272068.60ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_025_two_phase_duration/periods=1 passed
+272068.60ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_025_two_phase_duration/periods=2 (10/28)
+                                                            CHK-025: two-phase transfer duration D <= (N+3)Tm + (N+3+w)Ts.
+272068.60ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 9277, 'i_clk_slv': 9149}
+325527.88ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-025 the synchronizer model adds extra latency in this run (crossing counts vary); the bound was checked with the modelled extra cycles allowed, the strict bound needs the extra latency forced to 0
+325527.88ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_025_two_phase_duration/periods=2 passed
+325527.88ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_025_two_phase_duration/periods=3 (11/28)
+                                                            CHK-025: two-phase transfer duration D <= (N+3)Tm + (N+3+w)Ts.
+325527.88ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 2049, 'i_clk_slv': 67869}
+506924.93ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-025 the synchronizer model adds extra latency in this run (crossing counts vary); the bound was checked with the modelled extra cycles allowed, the strict bound needs the extra latency forced to 0
+506924.93ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_025_two_phase_duration/periods=3 passed
+506924.93ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_025_two_phase_duration/periods=4 (12/28)
+                                                            CHK-025: two-phase transfer duration D <= (N+3)Tm + (N+3+w)Ts.
+506924.93ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 39783, 'i_clk_slv': 7034}
+676119.71ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-025 the synchronizer model adds extra latency in this run (crossing counts vary); the bound was checked with the modelled extra cycles allowed, the strict bound needs the extra latency forced to 0
+676119.71ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_025_two_phase_duration/periods=4 passed
+676119.71ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_026_four_phase_duration/periods=0 (13/28)
+                                                            CHK-026: four-phase transfer duration D <= (2N+4)Tm + (2N+4+w)Ts.
+676119.72ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 408, 'i_clk_slv': 2328}
+676245.12ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-026 needs PARA_APBCDC_HS_TYPE=1; this run has 0
+676245.12ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_026_four_phase_duration/periods=0 passed
+676245.12ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_026_four_phase_duration/periods=1 (14/28)
+                                                            CHK-026: four-phase transfer duration D <= (2N+4)Tm + (2N+4+w)Ts.
+676245.12ns WARNING  py.warnings                        /opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/_test.py:105: RuntimeWarning: coroutine 'Requester.run' was never awaited
+                                                          task._add_done_callback(self._task_done_callback)
+676245.12ns WARNING  py.warnings                        /opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/_test.py:105: RuntimeWarning: coroutine 'Completer.run' was never awaited
+                                                          task._add_done_callback(self._task_done_callback)
+676245.12ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 9394, 'i_clk_slv': 8559}
+676489.52ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-026 needs PARA_APBCDC_HS_TYPE=1; this run has 0
+676489.52ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_026_four_phase_duration/periods=1 passed
+676489.52ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_026_four_phase_duration/periods=2 (15/28)
+                                                            CHK-026: four-phase transfer duration D <= (2N+4)Tm + (2N+4+w)Ts.
+676489.52ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 7900, 'i_clk_slv': 6585}
+676747.42ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-026 needs PARA_APBCDC_HS_TYPE=1; this run has 0
+676747.42ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_026_four_phase_duration/periods=2 passed
+676747.42ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_026_four_phase_duration/periods=3 (16/28)
+                                                            CHK-026: four-phase transfer duration D <= (2N+4)Tm + (2N+4+w)Ts.
+676747.42ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 9524, 'i_clk_slv': 65731}
+677851.94ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-026 needs PARA_APBCDC_HS_TYPE=1; this run has 0
+677851.94ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_026_four_phase_duration/periods=3 passed
+677851.94ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_026_four_phase_duration/periods=4 (17/28)
+                                                            CHK-026: four-phase transfer duration D <= (2N+4)Tm + (2N+4+w)Ts.
+677851.95ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 76336, 'i_clk_slv': 1574}
+679053.28ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-026 needs PARA_APBCDC_HS_TYPE=1; this run has 0
+679053.28ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_026_four_phase_duration/periods=4 passed
+679053.28ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_027_reset_values (18/28)
+                                                            CHK-027: reset values, quiet idle after release, asynchronous reset assertion.
+679053.28ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 8934, 'i_clk_slv': 17929}
+679053.28ns WARNING  py.warnings                        /opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/types/_logic_array.py:544: RuntimeWarning: coroutine 'Requester.run' was never awaited
+                                                          return all(bit.is_resolvable for bit in self)
+679053.28ns WARNING  py.warnings                        /opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/types/_logic_array.py:544: RuntimeWarning: coroutine 'Completer.run' was never awaited
+                                                          return all(bit.is_resolvable for bit in self)
+684457.22ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_027_reset_values passed
+684457.22ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_028_reset_during_traffic (19/28)
+                                                            CHK-028: reset during random traffic, transfer lost, clean restart, staggered release.
+684457.22ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 7854, 'i_clk_slv': 14918}
+709530.07ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_028_reset_during_traffic passed
+709530.07ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_029_scoreboard_ratios (20/28)
+                                                            CHK-029: random traffic scoreboard with a noisy completer at one clock ratio per run.
+709530.07ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 803, 'i_clk_slv': 4454}
+1078515.88ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_029_scoreboard_ratios passed
+1078515.88ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_030_sync_depth (21/28)
+                                                            CHK-030: CELL_TYPE=4 gives N=4, crossing windows [5,7].
+1078515.88ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 7915, 'i_clk_slv': 18730}
+1100738.79ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-030 needs CELL_TYPE=4 and HS_TYPE=0; this run has 2/0 (windows checked for N=2)
+1100738.79ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_030_sync_depth passed
+1100738.79ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_031_single_write_read (22/28)
+                                                            CHK-031: single writes and reads without wait states, field/response transport and windows.
+1100738.79ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 1998, 'i_clk_slv': 3019}
+1120835.79ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_031_single_write_read passed
+1120835.79ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_032_wait_states (23/28)
+                                                            CHK-032: completer wait states extend the transfer without limit (one 10000-cycle wait).
+1120835.79ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 9101, 'i_clk_slv': 12472}
+1339689.89ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_032_wait_states passed
+1339689.89ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_033_error_response (24/28)
+                                                            CHK-033: PSLVERR forwarded with data, next transfer independent.
+1339689.89ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 4197, 'i_clk_slv': 2790}
+1363429.09ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_033_error_response passed
+1363429.09ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_034_back_to_back/periods=0 (25/28)
+                                                            CHK-034: back-to-back transfers accepted in the cycle after PREADY, one at a time.
+1363429.09ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 1427, 'i_clk_slv': 4766}
+1404205.52ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_034_back_to_back/periods=0 passed
+1404205.52ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_034_back_to_back/periods=1 (26/28)
+                                                            CHK-034: back-to-back transfers accepted in the cycle after PREADY, one at a time.
+1404205.52ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 15476, 'i_clk_slv': 6179}
+1443011.00ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_034_back_to_back/periods=1 passed
+1443011.00ns INFO     cocotb.regression                  running test_async_apb_bridge.test_chk_035_pprot_pstrb (27/28)
+                                                            CHK-035: PPROT and PSTRB forwarded unchanged, including nonzero PSTRB on a read.
+1443011.00ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 9361, 'i_clk_slv': 9467}
+1473605.36ns INFO     cocotb.regression                  test_async_apb_bridge.test_chk_035_pprot_pstrb passed
+1473605.36ns INFO     cocotb.regression                  running test_async_apb_bridge.test_regression_random (28/28)
+                                                            CHK-001..CHK-018 exercise: broad legal random traffic with a noisy completer and scoreboard.
+1473605.36ns INFO     cocotb.nnc_tb_top                  NNC async clock start delays (ps): {'i_clk_mst': 2466, 'i_clk_slv': 11538}
+1957992.82ns INFO     cocotb.regression                  test_async_apb_bridge.test_regression_random passed
+1957992.82ns INFO     cocotb.regression                  **************************************************************************************************************************
+                                                        ** TEST                                                              STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        **************************************************************************************************************************
+                                                        ** test_async_apb_bridge.test_chk_019_apb5_user_signals               PASS         246.40           0.00     197151.49  **
+                                                        ** test_async_apb_bridge.test_chk_020_apb5_wakeup                     PASS         243.08           0.00     201132.97  **
+                                                        ** test_async_apb_bridge.test_chk_021_apb4_ignores_apb5               PASS       51484.35           0.65      79281.77  **
+                                                        ** test_async_apb_bridge.test_chk_022_cfg_min                         PASS      104210.78           1.38      75751.61  **
+                                                        ** test_async_apb_bridge.test_chk_023_four_phase/periods=0            PASS         246.64           0.00     352221.57  **
+                                                        ** test_async_apb_bridge.test_chk_023_four_phase/periods=1            PASS         251.73           0.00     341466.81  **
+                                                        ** test_async_apb_bridge.test_chk_024_requester_violations            PASS       25176.83           0.36      69932.09  **
+                                                        ** test_async_apb_bridge.test_chk_025_two_phase_duration/periods=0    PASS       35941.91           0.65      55716.68  **
+                                                        ** test_async_apb_bridge.test_chk_025_two_phase_duration/periods=1    PASS       54266.88           0.67      81067.03  **
+                                                        ** test_async_apb_bridge.test_chk_025_two_phase_duration/periods=2    PASS       53459.28           0.71      75377.14  **
+                                                        ** test_async_apb_bridge.test_chk_025_two_phase_duration/periods=3    PASS      181397.05           1.66     109175.03  **
+                                                        ** test_async_apb_bridge.test_chk_025_two_phase_duration/periods=4    PASS      169194.78           1.85      91419.74  **
+                                                        ** test_async_apb_bridge.test_chk_026_four_phase_duration/periods=0   PASS         125.41           0.00     217534.85  **
+                                                        ** test_async_apb_bridge.test_chk_026_four_phase_duration/periods=1   PASS         244.39           0.02      12287.97  **
+                                                        ** test_async_apb_bridge.test_chk_026_four_phase_duration/periods=2   PASS         257.90           0.00     229467.76  **
+                                                        ** test_async_apb_bridge.test_chk_026_four_phase_duration/periods=3   PASS        1104.52           0.00     667441.21  **
+                                                        ** test_async_apb_bridge.test_chk_026_four_phase_duration/periods=4   PASS        1201.34           0.00     656089.63  **
+                                                        ** test_async_apb_bridge.test_chk_027_reset_values                    PASS        5403.93           0.08      71516.10  **
+                                                        ** test_async_apb_bridge.test_chk_028_reset_during_traffic            PASS       25072.85           0.39      64346.43  **
+                                                        ** test_async_apb_bridge.test_chk_029_scoreboard_ratios               PASS      368985.80           7.76      47560.35  **
+                                                        ** test_async_apb_bridge.test_chk_030_sync_depth                      PASS       22222.91           0.34      64883.03  **
+                                                        ** test_async_apb_bridge.test_chk_031_single_write_read               PASS       20097.00           0.35      57688.84  **
+                                                        ** test_async_apb_bridge.test_chk_032_wait_states                     PASS      218854.10           3.86      56655.43  **
+                                                        ** test_async_apb_bridge.test_chk_033_error_response                  PASS       23739.20           0.33      71680.63  **
+                                                        ** test_async_apb_bridge.test_chk_034_back_to_back/periods=0          PASS       40776.43           0.59      69100.14  **
+                                                        ** test_async_apb_bridge.test_chk_034_back_to_back/periods=1          PASS       38805.48           0.69      55920.70  **
+                                                        ** test_async_apb_bridge.test_chk_035_pprot_pstrb                     PASS       30594.36           0.56      54266.30  **
+                                                        ** test_async_apb_bridge.test_regression_random                       PASS      484387.47           7.51      64471.71  **
+                                                        **************************************************************************************************************************
+                                                        ** TESTS=28 PASS=28 FAIL=0 SKIP=0                                              1957992.82          30.45      64308.84  **
+                                                        **************************************************************************************************************************
+APBCDC_MSYNC: nnc_tb_top.u_dut.u_vlsit_apbcdc_slv.u_sync_wk.gen_bit_cell[0].u_vlsit_apbcdc_cell_sync.gen_sim_msync seed=3 enable=1 stages=2
+APBCDC_MSYNC: nnc_tb_top.u_dut.u_vlsit_apbcdc_slv.u_sync_req.gen_bit_cell[0].u_vlsit_apbcdc_cell_sync.gen_sim_msync seed=3 enable=1 stages=2
+APBCDC_MSYNC: nnc_tb_top.u_dut.u_vlsit_apbcdc_mst.u_sync_ack.gen_bit_cell[0].u_vlsit_apbcdc_cell_sync.gen_sim_msync seed=3 enable=1 stages=2
+- (null):0: Verilog $finish
+NNC_COVER COVP-001 hits=2331
+NNC_COVER COVP-002 hits=2268
+NNC_COVER COVP-003 hits=839
+NNC_COVER COVP-004 hits=833
+NNC_COVER COVP-005 hits=1502
+NNC_COVER COVP-006 hits=804
+NNC_COVER COVP-007 hits=1710
+NNC_COVER COVP-008 hits=45
+NNC_COVER COVP-009 hits=5836
+NNC_COVER COVP-010 hits=792
+NNC_COVER COVP-011 hits=574
+NNC_COVER COVP-012 hits=2003
+NNC_COVER COVP-013 hits=601
+NNC_COVER COVP-014 hits=22
+NNC_COVER COVP-015 hits=798
+NNC_COVER COVP-016 hits=756
+NNC_COVER COVP-017 hits=4752
+NNC_COVER COVP-018 hits=1054
+NNC_COVER COVP-019 hits=1037
+NNC_COVER COVP-020 hits=4242
+NNC_COVER COVP-021 hits=478
+NNC_COVER COVP-022 hits=522
+NNC_COVER COVP-023 hits=691
+NNC_COVER COVP-024 hits=1207
+NNC_COVER COVP-025 hits=918
+NNC_COVER COVP-026 hits=25
+NNC_COVER COVP-027 hits=208
+NNC_COVER COVP-028 hits=0
+NNC_COVER COVP-029 hits=0
+NNC_COVER COVP-030 hits=0
+NNC_COVER COVP-031 hits=0
+NNC_COVER COVP-032 hits=0
+NNC_COVER COVP-033 hits=0
+NNC_COVER COVP-034 hits=3170
+NNC_COVER COVP-035 hits=3116
+NNC_COVER COVP-036 hits=933
+NNC_COVER COVP-037 hits=20850
+NNC_COVER COVP-038 hits=16
+NNC_COVER COVP-039 hits=1672
+NNC_COVER COVP-040 hits=0
+NNC_CHECK CHK-018 hits=0 fails=0
+NNC_CHECK CHK-011 hits=119042 fails=0
+NNC_CHECK CHK-012 hits=47013 fails=0
+NNC_CHECK CHK-013 hits=6286 fails=0
+NNC_CHECK CHK-014 hits=34446 fails=0
+NNC_CHECK CHK-015 hits=6281 fails=0
+NNC_CHECK CHK-016 hits=40732 fails=0
+NNC_CHECK CHK-017 hits=6285 fails=0
+NNC_CHECK CHK-009 hits=1349 fails=0
+NNC_CHECK CHK-010 hits=847 fails=0
+NNC_CHECK CHK-003 hits=6271 fails=0
+NNC_CHECK CHK-004 hits=6271 fails=0
+NNC_CHECK CHK-005 hits=1672 fails=0
+NNC_CHECK CHK-006 hits=12577 fails=0
+NNC_CHECK CHK-007 hits=168244 fails=0
+NNC_CHECK CHK-008 hits=174515 fails=0
+NNC_CHECK CHK-002 hits=293765 fails=0
+NNC_CHECK CHK-001 hits=293765 fails=0
+make[1]: Leaving directory '/root/nnc_runs/runset_73570183/C01'
+NNC_MAKE_RC=0

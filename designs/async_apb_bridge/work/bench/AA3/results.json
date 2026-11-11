@@ -1,0 +1,4120 @@
+{
+ "date": "2026-11-11T12:47:22+00:00",
+ "seed": 1,
+ "rtl_files": [
+  "VLSIT_CELL_SYNC_DFF_RN.sv",
+  "VLSIT_CELL_SYNC_DFF_SN.sv",
+  "VLSIT_CELL_SYNC_2FF_RN.sv",
+  "VLSIT_CELL_SYNC_2FF_SN.sv",
+  "VLSIT_CELL_SYNC_3FF_RN.sv",
+  "VLSIT_CELL_SYNC_3FF_SN.sv",
+  "VLSIT_CELL_SYNC_4FF_RN.sv",
+  "VLSIT_CELL_SYNC_4FF_SN.sv",
+  "m_vlsit_apbcdc_cell_sync.sv",
+  "m_vlsit_apbcdc_sync.sv",
+  "m_vlsit_apbcdc_mst.sv",
+  "m_vlsit_apbcdc_slv.sv",
+  "m_vlsit_apbcdc_top.sv"
+ ],
+ "integration": {
+  "ok": true,
+  "issues": []
+ },
+ "status": "ran",
+ "params": {
+  "PARA_APBCDC_ADDR_W": 32,
+  "PARA_APBCDC_DATA_W": 32,
+  "PARA_APBCDC_APB5": 0,
+  "PARA_APBCDC_USER_REQ_W": 0,
+  "PARA_APBCDC_USER_DATA_W": 0,
+  "PARA_APBCDC_USER_RESP_W": 0,
+  "PARA_APBCDC_HS_TYPE": 0,
+  "PARA_APBCDC_CELL_TYPE": 2
+ },
+ "tests": [
+  {
+   "name": "test_chk_019_apb5_user_signals",
+   "runs": {
+    "apb4.s1": "pass",
+    "apb4.s2": "pass",
+    "apb4.s3": "pass",
+    "model_off.s1": "pass",
+    "syn.s1": "pass",
+    "4ph.s1": "pass",
+    "4ph_off.s1": "pass",
+    "apb5.s1": "fail",
+    "user.s1": "fail",
+    "sync3.s1": "pass",
+    "sync4.s1": "pass",
+    "min.s1": "pass",
+    "slv_fast.s1": "pass",
+    "slv_slow.s1": "pass"
+   },
+   "sim_time_ns": "1383.4",
+   "message": "[failed in apb5.s1, user.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C06/test_async_apb_bridge.py\", line 220, in _guard\n                                                            await coro\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C06/test_async_apb_bridge.py\", line 355, in run\n                                                            self.step(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C06/test_async_apb_bridge.py\", line 494, in step\n                                                            self._complete(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C06/test_async_apb_bridge.py\", line 460, in _complete\n                                                            assert out[k] == v, \\\n                                                        AssertionError: CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0\n                                                        assert 0 == 1\n  1383.40ns WARNING  cocotb.regression                  test_async_apb_bridge.test_chk_019_apb5_user_signals failed",
+   "checks": [
+    "CHK-019",
+    "CHK-033"
+   ],
+   "failed_in": [
+    "apb5.s1",
+    "user.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_020_apb5_wakeup",
+   "runs": {
+    "apb4.s1": "pass",
+    "apb4.s2": "pass",
+    "apb4.s3": "pass",
+    "model_off.s1": "pass",
+    "syn.s1": "pass",
+    "4ph.s1": "pass",
+    "4ph_off.s1": "pass",
+    "apb5.s1": "fail",
+    "user.s1": "fail",
+    "sync3.s1": "pass",
+    "sync4.s1": "pass",
+    "min.s1": "pass",
+    "slv_fast.s1": "pass",
+    "slv_slow.s1": "pass"
+   },
+   "sim_time_ns": "1172.271",
+   "message": "[failed in apb5.s1, user.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C06/test_async_apb_bridge.py\", line 220, in _guard\n                                                            await coro\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C06/test_async_apb_bridge.py\", line 355, in run\n                                                            self.step(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C06/test_async_apb_bridge.py\", line 494, in step\n                                                            self._complete(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C06/test_async_apb_bridge.py\", line 460, in _complete\n                                                            assert out[k] == v, \\\n                                                        AssertionError: CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0\n                                                        assert 0 == 1\n  2555.67ns WARNING  cocotb.regression                  test_async_apb_bridge.test_chk_020_apb5_wakeup failed",
+   "checks": [
+    "CHK-020",
+    "CHK-033"
+   ],
+   "failed_in": [
+    "apb5.s1",
+    "user.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_021_apb4_ignores_apb5",
+   "runs": {
+    "apb4.s1": "fail",
+    "apb4.s2": "fail",
+    "apb4.s3": "fail",
+    "model_off.s1": "fail",
+    "syn.s1": "fail",
+    "4ph.s1": "fail",
+    "4ph_off.s1": "fail",
+    "apb5.s1": "pass",
+    "user.s1": "pass",
+    "sync3.s1": "fail",
+    "sync4.s1": "fail",
+    "min.s1": "fail",
+    "slv_fast.s1": "fail",
+    "slv_slow.s1": "fail"
+   },
+   "sim_time_ns": "834.29",
+   "message": "[failed in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 220, in _guard\n                                                            await coro\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 355, in run\n                                                            self.step(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 494, in step\n                                                            self._complete(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 460, in _complete\n                                                            assert out[k] == v, \\\n                                                        AssertionError: CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0\n                                                        assert 0 == 1\n  1329.96ns WARNING  cocotb.regression                  test_async_apb_bridge.test_chk_021_apb4_ignores_apb5 failed",
+   "checks": [
+    "CHK-021",
+    "CHK-033"
+   ],
+   "failed_in": [
+    "apb4.s1",
+    "apb4.s2",
+    "apb4.s3",
+    "model_off.s1",
+    "syn.s1",
+    "4ph.s1",
+    "4ph_off.s1",
+    "sync3.s1",
+    "sync4.s1",
+    "min.s1",
+    "slv_fast.s1",
+    "slv_slow.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_022_cfg_min",
+   "runs": {
+    "apb4.s1": "fail",
+    "apb4.s2": "fail",
+    "apb4.s3": "fail",
+    "model_off.s1": "fail",
+    "syn.s1": "fail",
+    "4ph.s1": "fail",
+    "4ph_off.s1": "fail",
+    "apb5.s1": "fail",
+    "user.s1": "fail",
+    "sync3.s1": "fail",
+    "sync4.s1": "fail",
+    "min.s1": "fail",
+    "slv_fast.s1": "fail",
+    "slv_slow.s1": "fail"
+   },
+   "sim_time_ns": "938.011",
+   "message": "[failed in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 220, in _guard\n                                                            await coro\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 355, in run\n                                                            self.step(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 494, in step\n                                                            self._complete(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 460, in _complete\n                                                            assert out[k] == v, \\\n                                                        AssertionError: CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0\n                                                        assert 0 == 1\n  2267.97ns WARNING  cocotb.regression                  test_async_apb_bridge.test_chk_022_cfg_min failed",
+   "checks": [
+    "CHK-022",
+    "CHK-033"
+   ],
+   "failed_in": [
+    "apb4.s1",
+    "apb4.s2",
+    "apb4.s3",
+    "model_off.s1",
+    "syn.s1",
+    "4ph.s1",
+    "4ph_off.s1",
+    "apb5.s1",
+    "user.s1",
+    "sync3.s1",
+    "sync4.s1",
+    "min.s1",
+    "slv_fast.s1",
+    "slv_slow.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_023_four_phase/periods=0",
+   "runs": {
+    "apb4.s1": "pass",
+    "apb4.s2": "pass",
+    "apb4.s3": "pass",
+    "model_off.s1": "pass",
+    "syn.s1": "pass",
+    "4ph.s1": "fail",
+    "4ph_off.s1": "fail",
+    "apb5.s1": "pass",
+    "user.s1": "pass",
+    "sync3.s1": "pass",
+    "sync4.s1": "pass",
+    "min.s1": "pass",
+    "slv_fast.s1": "pass",
+    "slv_slow.s1": "pass"
+   },
+   "sim_time_ns": "3859.0989999999997",
+   "message": "[failed in 4ph.s1, 4ph_off.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 220, in _guard\n                                                            await coro\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 355, in run\n                                                            self.step(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 494, in step\n                                                            self._complete(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 460, in _complete\n                                                            assert out[k] == v, \\\n                                                        AssertionError: CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0\n                                                        assert 0 == 1\n  6577.07ns WARNING  cocotb.regression                  test_async_apb_bridge.test_chk_023_four_phase/periods=0 failed",
+   "checks": [
+    "CHK-023",
+    "CHK-033"
+   ],
+   "failed_in": [
+    "4ph.s1",
+    "4ph_off.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_023_four_phase/periods=1",
+   "runs": {
+    "apb4.s1": "pass",
+    "apb4.s2": "pass",
+    "apb4.s3": "pass",
+    "model_off.s1": "pass",
+    "syn.s1": "pass",
+    "4ph.s1": "fail",
+    "4ph_off.s1": "fail",
+    "apb5.s1": "pass",
+    "user.s1": "pass",
+    "sync3.s1": "pass",
+    "sync4.s1": "pass",
+    "min.s1": "pass",
+    "slv_fast.s1": "pass",
+    "slv_slow.s1": "pass"
+   },
+   "sim_time_ns": "608.3770000000004",
+   "message": "[failed in 4ph.s1, 4ph_off.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 220, in _guard\n                                                            await coro\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 355, in run\n                                                            self.step(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 494, in step\n                                                            self._complete(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 460, in _complete\n                                                            assert out[k] == v, \\\n                                                        AssertionError: CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0\n                                                        assert 0 == 1\n  7185.45ns WARNING  cocotb.regression                  test_async_apb_bridge.test_chk_023_four_phase/periods=1 failed",
+   "checks": [
+    "CHK-023",
+    "CHK-033"
+   ],
+   "failed_in": [
+    "4ph.s1",
+    "4ph_off.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_024_requester_violations",
+   "runs": {
+    "apb4.s1": "fail",
+    "apb4.s2": "fail",
+    "apb4.s3": "fail",
+    "model_off.s1": "fail",
+    "syn.s1": "fail",
+    "4ph.s1": "fail",
+    "4ph_off.s1": "fail",
+    "apb5.s1": "fail",
+    "user.s1": "fail",
+    "sync3.s1": "fail",
+    "sync4.s1": "fail",
+    "min.s1": "fail",
+    "slv_fast.s1": "fail",
+    "slv_slow.s1": "fail"
+   },
+   "sim_time_ns": "1523.8219999999997",
+   "message": "[failed in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 220, in _guard\n                                                            await coro\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 355, in run\n                                                            self.step(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 494, in step\n                                                            self._complete(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 460, in _complete\n                                                            assert out[k] == v, \\\n                                                        AssertionError: CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0\n                                                        assert 0 == 1\n  4299.28ns WARNING  cocotb.regression                  test_async_apb_bridge.test_chk_024_requester_violations failed",
+   "checks": [
+    "CHK-024",
+    "CHK-033"
+   ],
+   "failed_in": [
+    "apb4.s1",
+    "apb4.s2",
+    "apb4.s3",
+    "model_off.s1",
+    "syn.s1",
+    "4ph.s1",
+    "4ph_off.s1",
+    "apb5.s1",
+    "user.s1",
+    "sync3.s1",
+    "sync4.s1",
+    "min.s1",
+    "slv_fast.s1",
+    "slv_slow.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_025_two_phase_duration/periods=0",
+   "runs": {
+    "apb4.s1": "fail",
+    "apb4.s2": "fail",
+    "apb4.s3": "fail",
+    "model_off.s1": "fail",
+    "syn.s1": "fail",
+    "4ph.s1": "pass",
+    "4ph_off.s1": "pass",
+    "apb5.s1": "fail",
+    "user.s1": "fail",
+    "sync3.s1": "fail",
+    "sync4.s1": "fail",
+    "min.s1": "fail",
+    "slv_fast.s1": "fail",
+    "slv_slow.s1": "fail"
+   },
+   "sim_time_ns": "610.5169999999998",
+   "message": "[failed in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 220, in _guard\n                                                            await coro\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 355, in run\n                                                            self.step(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 494, in step\n                                                            self._complete(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 460, in _complete\n                                                            assert out[k] == v, \\\n                                                        AssertionError: CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0\n                                                        assert 0 == 1\n  4909.79ns WARNING  cocotb.regression                  test_async_apb_bridge.test_chk_025_two_phase_duration/periods=0 failed",
+   "checks": [
+    "CHK-025",
+    "CHK-033"
+   ],
+   "failed_in": [
+    "apb4.s1",
+    "apb4.s2",
+    "apb4.s3",
+    "model_off.s1",
+    "syn.s1",
+    "apb5.s1",
+    "user.s1",
+    "sync3.s1",
+    "sync4.s1",
+    "min.s1",
+    "slv_fast.s1",
+    "slv_slow.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_025_two_phase_duration/periods=1",
+   "runs": {
+    "apb4.s1": "fail",
+    "apb4.s2": "fail",
+    "apb4.s3": "fail",
+    "model_off.s1": "fail",
+    "syn.s1": "fail",
+    "4ph.s1": "pass",
+    "4ph_off.s1": "pass",
+    "apb5.s1": "fail",
+    "user.s1": "fail",
+    "sync3.s1": "fail",
+    "sync4.s1": "fail",
+    "min.s1": "fail",
+    "slv_fast.s1": "fail",
+    "slv_slow.s1": "fail"
+   },
+   "sim_time_ns": "2125.999",
+   "message": "[failed in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 220, in _guard\n                                                            await coro\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 355, in run\n                                                            self.step(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 494, in step\n                                                            self._complete(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 460, in _complete\n                                                            assert out[k] == v, \\\n                                                        AssertionError: CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0\n                                                        assert 0 == 1\n  7035.79ns WARNING  cocotb.regression                  test_async_apb_bridge.test_chk_025_two_phase_duration/periods=1 failed",
+   "checks": [
+    "CHK-025",
+    "CHK-033"
+   ],
+   "failed_in": [
+    "apb4.s1",
+    "apb4.s2",
+    "apb4.s3",
+    "model_off.s1",
+    "syn.s1",
+    "apb5.s1",
+    "user.s1",
+    "sync3.s1",
+    "sync4.s1",
+    "min.s1",
+    "slv_fast.s1",
+    "slv_slow.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_025_two_phase_duration/periods=2",
+   "runs": {
+    "apb4.s1": "fail",
+    "apb4.s2": "fail",
+    "apb4.s3": "fail",
+    "model_off.s1": "fail",
+    "syn.s1": "fail",
+    "4ph.s1": "pass",
+    "4ph_off.s1": "pass",
+    "apb5.s1": "fail",
+    "user.s1": "fail",
+    "sync3.s1": "fail",
+    "sync4.s1": "fail",
+    "min.s1": "fail",
+    "slv_fast.s1": "fail",
+    "slv_slow.s1": "fail"
+   },
+   "sim_time_ns": "773.9369999999999",
+   "message": "[failed in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 220, in _guard\n                                                            await coro\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 355, in run\n                                                            self.step(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 494, in step\n                                                            self._complete(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 460, in _complete\n                                                            assert out[k] == v, \\\n                                                        AssertionError: CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0\n                                                        assert 0 == 1\n  7809.73ns WARNING  cocotb.regression                  test_async_apb_bridge.test_chk_025_two_phase_duration/periods=2 failed",
+   "checks": [
+    "CHK-025",
+    "CHK-033"
+   ],
+   "failed_in": [
+    "apb4.s1",
+    "apb4.s2",
+    "apb4.s3",
+    "model_off.s1",
+    "syn.s1",
+    "apb5.s1",
+    "user.s1",
+    "sync3.s1",
+    "sync4.s1",
+    "min.s1",
+    "slv_fast.s1",
+    "slv_slow.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_025_two_phase_duration/periods=3",
+   "runs": {
+    "apb4.s1": "fail",
+    "apb4.s2": "fail",
+    "apb4.s3": "fail",
+    "model_off.s1": "fail",
+    "syn.s1": "fail",
+    "4ph.s1": "pass",
+    "4ph_off.s1": "pass",
+    "apb5.s1": "fail",
+    "user.s1": "fail",
+    "sync3.s1": "fail",
+    "sync4.s1": "fail",
+    "min.s1": "fail",
+    "slv_fast.s1": "fail",
+    "slv_slow.s1": "fail"
+   },
+   "sim_time_ns": "3483.635",
+   "message": "[failed in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 220, in _guard\n                                                            await coro\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 355, in run\n                                                            self.step(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 494, in step\n                                                            self._complete(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 460, in _complete\n                                                            assert out[k] == v, \\\n                                                        AssertionError: CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0\n                                                        assert 0 == 1\n 11293.37ns WARNING  cocotb.regression                  test_async_apb_bridge.test_chk_025_two_phase_duration/periods=3 failed",
+   "checks": [
+    "CHK-025",
+    "CHK-033"
+   ],
+   "failed_in": [
+    "apb4.s1",
+    "apb4.s2",
+    "apb4.s3",
+    "model_off.s1",
+    "syn.s1",
+    "apb5.s1",
+    "user.s1",
+    "sync3.s1",
+    "sync4.s1",
+    "min.s1",
+    "slv_fast.s1",
+    "slv_slow.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_025_two_phase_duration/periods=4",
+   "runs": {
+    "apb4.s1": "fail",
+    "apb4.s2": "fail",
+    "apb4.s3": "fail",
+    "model_off.s1": "fail",
+    "syn.s1": "fail",
+    "4ph.s1": "pass",
+    "4ph_off.s1": "pass",
+    "apb5.s1": "fail",
+    "user.s1": "fail",
+    "sync3.s1": "fail",
+    "sync4.s1": "fail",
+    "min.s1": "fail",
+    "slv_fast.s1": "fail",
+    "slv_slow.s1": "fail"
+   },
+   "sim_time_ns": "3139.244999999999",
+   "message": "[failed in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 220, in _guard\n                                                            await coro\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 355, in run\n                                                            self.step(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 494, in step\n                                                            self._complete(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 460, in _complete\n                                                            assert out[k] == v, \\\n                                                        AssertionError: CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0\n                                                        assert 0 == 1\n 14432.61ns WARNING  cocotb.regression                  test_async_apb_bridge.test_chk_025_two_phase_duration/periods=4 failed",
+   "checks": [
+    "CHK-025",
+    "CHK-033"
+   ],
+   "failed_in": [
+    "apb4.s1",
+    "apb4.s2",
+    "apb4.s3",
+    "model_off.s1",
+    "syn.s1",
+    "apb5.s1",
+    "user.s1",
+    "sync3.s1",
+    "sync4.s1",
+    "min.s1",
+    "slv_fast.s1",
+    "slv_slow.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_026_four_phase_duration/periods=0",
+   "runs": {
+    "apb4.s1": "pass",
+    "apb4.s2": "pass",
+    "apb4.s3": "pass",
+    "model_off.s1": "pass",
+    "syn.s1": "pass",
+    "4ph.s1": "fail",
+    "4ph_off.s1": "fail",
+    "apb5.s1": "pass",
+    "user.s1": "pass",
+    "sync3.s1": "pass",
+    "sync4.s1": "pass",
+    "min.s1": "pass",
+    "slv_fast.s1": "pass",
+    "slv_slow.s1": "pass"
+   },
+   "sim_time_ns": "371.14700000000084",
+   "message": "[failed in 4ph.s1, 4ph_off.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 220, in _guard\n                                                            await coro\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 355, in run\n                                                            self.step(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 494, in step\n                                                            self._complete(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 460, in _complete\n                                                            assert out[k] == v, \\\n                                                        AssertionError: CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0\n                                                        assert 0 == 1\n 12273.76ns WARNING  cocotb.regression                  test_async_apb_bridge.test_chk_026_four_phase_duration/periods=0 failed",
+   "checks": [
+    "CHK-026",
+    "CHK-033"
+   ],
+   "failed_in": [
+    "4ph.s1",
+    "4ph_off.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_026_four_phase_duration/periods=1",
+   "runs": {
+    "apb4.s1": "pass",
+    "apb4.s2": "pass",
+    "apb4.s3": "pass",
+    "model_off.s1": "pass",
+    "syn.s1": "pass",
+    "4ph.s1": "fail",
+    "4ph_off.s1": "fail",
+    "apb5.s1": "pass",
+    "user.s1": "pass",
+    "sync3.s1": "pass",
+    "sync4.s1": "pass",
+    "min.s1": "pass",
+    "slv_fast.s1": "pass",
+    "slv_slow.s1": "pass"
+   },
+   "sim_time_ns": "1614.3449999999993",
+   "message": "[failed in 4ph.s1, 4ph_off.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 220, in _guard\n                                                            await coro\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 355, in run\n                                                            self.step(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 494, in step\n                                                            self._complete(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 460, in _complete\n                                                            assert out[k] == v, \\\n                                                        AssertionError: CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0\n                                                        assert 0 == 1\n 13888.11ns WARNING  cocotb.regression                  test_async_apb_bridge.test_chk_026_four_phase_duration/periods=1 failed",
+   "checks": [
+    "CHK-026",
+    "CHK-033"
+   ],
+   "failed_in": [
+    "4ph.s1",
+    "4ph_off.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_026_four_phase_duration/periods=2",
+   "runs": {
+    "apb4.s1": "pass",
+    "apb4.s2": "pass",
+    "apb4.s3": "pass",
+    "model_off.s1": "pass",
+    "syn.s1": "pass",
+    "4ph.s1": "fail",
+    "4ph_off.s1": "fail",
+    "apb5.s1": "pass",
+    "user.s1": "pass",
+    "sync3.s1": "pass",
+    "sync4.s1": "pass",
+    "min.s1": "pass",
+    "slv_fast.s1": "pass",
+    "slv_slow.s1": "pass"
+   },
+   "sim_time_ns": "558.0439999999999",
+   "message": "[failed in 4ph.s1, 4ph_off.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 220, in _guard\n                                                            await coro\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 355, in run\n                                                            self.step(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 494, in step\n                                                            self._complete(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 460, in _complete\n                                                            assert out[k] == v, \\\n                                                        AssertionError: CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0\n                                                        assert 0 == 1\n 14446.15ns WARNING  cocotb.regression                  test_async_apb_bridge.test_chk_026_four_phase_duration/periods=2 failed",
+   "checks": [
+    "CHK-026",
+    "CHK-033"
+   ],
+   "failed_in": [
+    "4ph.s1",
+    "4ph_off.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_026_four_phase_duration/periods=3",
+   "runs": {
+    "apb4.s1": "pass",
+    "apb4.s2": "pass",
+    "apb4.s3": "pass",
+    "model_off.s1": "pass",
+    "syn.s1": "pass",
+    "4ph.s1": "fail",
+    "4ph_off.s1": "fail",
+    "apb5.s1": "pass",
+    "user.s1": "pass",
+    "sync3.s1": "pass",
+    "sync4.s1": "pass",
+    "min.s1": "pass",
+    "slv_fast.s1": "pass",
+    "slv_slow.s1": "pass"
+   },
+   "sim_time_ns": "3475.4119999999984",
+   "message": "[failed in 4ph.s1, 4ph_off.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 220, in _guard\n                                                            await coro\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 355, in run\n                                                            self.step(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 494, in step\n                                                            self._complete(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 460, in _complete\n                                                            assert out[k] == v, \\\n                                                        AssertionError: CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0\n                                                        assert 0 == 1\n 17921.57ns WARNING  cocotb.regression                  test_async_apb_bridge.test_chk_026_four_phase_duration/periods=3 failed",
+   "checks": [
+    "CHK-026",
+    "CHK-033"
+   ],
+   "failed_in": [
+    "4ph.s1",
+    "4ph_off.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_026_four_phase_duration/periods=4",
+   "runs": {
+    "apb4.s1": "pass",
+    "apb4.s2": "pass",
+    "apb4.s3": "pass",
+    "model_off.s1": "pass",
+    "syn.s1": "pass",
+    "4ph.s1": "fail",
+    "4ph_off.s1": "fail",
+    "apb5.s1": "pass",
+    "user.s1": "pass",
+    "sync3.s1": "pass",
+    "sync4.s1": "pass",
+    "min.s1": "pass",
+    "slv_fast.s1": "pass",
+    "slv_slow.s1": "pass"
+   },
+   "sim_time_ns": "4808.380000000001",
+   "message": "[failed in 4ph.s1, 4ph_off.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 220, in _guard\n                                                            await coro\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 355, in run\n                                                            self.step(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 494, in step\n                                                            self._complete(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C04/test_async_apb_bridge.py\", line 460, in _complete\n                                                            assert out[k] == v, \\\n                                                        AssertionError: CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0\n                                                        assert 0 == 1\n 22729.95ns WARNING  cocotb.regression                  test_async_apb_bridge.test_chk_026_four_phase_duration/periods=4 failed",
+   "checks": [
+    "CHK-026",
+    "CHK-033"
+   ],
+   "failed_in": [
+    "4ph.s1",
+    "4ph_off.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_027_reset_values",
+   "runs": {
+    "apb4.s1": "pass",
+    "apb4.s2": "pass",
+    "apb4.s3": "pass",
+    "model_off.s1": "pass",
+    "syn.s1": "pass",
+    "4ph.s1": "pass",
+    "4ph_off.s1": "pass",
+    "apb5.s1": "pass",
+    "user.s1": "pass",
+    "sync3.s1": "pass",
+    "sync4.s1": "pass",
+    "min.s1": "pass",
+    "slv_fast.s1": "pass",
+    "slv_slow.s1": "pass"
+   },
+   "status": "pass"
+  },
+  {
+   "name": "test_chk_028_reset_during_traffic",
+   "runs": {
+    "apb4.s1": "fail",
+    "apb4.s2": "fail",
+    "apb4.s3": "fail",
+    "model_off.s1": "fail",
+    "syn.s1": "fail",
+    "4ph.s1": "fail",
+    "4ph_off.s1": "fail",
+    "apb5.s1": "fail",
+    "user.s1": "fail",
+    "sync3.s1": "fail",
+    "sync4.s1": "fail",
+    "min.s1": "fail",
+    "slv_fast.s1": "fail",
+    "slv_slow.s1": "fail"
+   },
+   "sim_time_ns": "13609.910000000003",
+   "message": "[failed in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 220, in _guard\n                                                            await coro\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 355, in run\n                                                            self.step(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 494, in step\n                                                            self._complete(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 460, in _complete\n                                                            assert out[k] == v, \\\n                                                        AssertionError: CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0\n                                                        assert 0 == 1\n 36220.84ns WARNING  cocotb.regression                  test_async_apb_bridge.test_chk_028_reset_during_traffic failed",
+   "checks": [
+    "CHK-028",
+    "CHK-033"
+   ],
+   "failed_in": [
+    "apb4.s1",
+    "apb4.s2",
+    "apb4.s3",
+    "model_off.s1",
+    "syn.s1",
+    "4ph.s1",
+    "4ph_off.s1",
+    "apb5.s1",
+    "user.s1",
+    "sync3.s1",
+    "sync4.s1",
+    "min.s1",
+    "slv_fast.s1",
+    "slv_slow.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_029_scoreboard_ratios",
+   "runs": {
+    "apb4.s1": "fail",
+    "apb4.s2": "fail",
+    "apb4.s3": "fail",
+    "model_off.s1": "fail",
+    "syn.s1": "fail",
+    "4ph.s1": "fail",
+    "4ph_off.s1": "fail",
+    "apb5.s1": "fail",
+    "user.s1": "fail",
+    "sync3.s1": "fail",
+    "sync4.s1": "fail",
+    "min.s1": "fail",
+    "slv_fast.s1": "fail",
+    "slv_slow.s1": "fail"
+   },
+   "sim_time_ns": "4592.455000000002",
+   "message": "[failed in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 220, in _guard\n                                                            await coro\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 355, in run\n                                                            self.step(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 494, in step\n                                                            self._complete(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 460, in _complete\n                                                            assert out[k] == v, \\\n                                                        AssertionError: CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0\n                                                        assert 0 == 1\n 40813.29ns WARNING  cocotb.regression                  test_async_apb_bridge.test_chk_029_scoreboard_ratios failed",
+   "checks": [
+    "CHK-029",
+    "CHK-033"
+   ],
+   "failed_in": [
+    "apb4.s1",
+    "apb4.s2",
+    "apb4.s3",
+    "model_off.s1",
+    "syn.s1",
+    "4ph.s1",
+    "4ph_off.s1",
+    "apb5.s1",
+    "user.s1",
+    "sync3.s1",
+    "sync4.s1",
+    "min.s1",
+    "slv_fast.s1",
+    "slv_slow.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_030_sync_depth",
+   "runs": {
+    "apb4.s1": "fail",
+    "apb4.s2": "fail",
+    "apb4.s3": "fail",
+    "model_off.s1": "fail",
+    "syn.s1": "fail",
+    "4ph.s1": "fail",
+    "4ph_off.s1": "fail",
+    "apb5.s1": "fail",
+    "user.s1": "fail",
+    "sync3.s1": "fail",
+    "sync4.s1": "fail",
+    "min.s1": "fail",
+    "slv_fast.s1": "fail",
+    "slv_slow.s1": "fail"
+   },
+   "sim_time_ns": "636.6820000000007",
+   "message": "[failed in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 220, in _guard\n                                                            await coro\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 355, in run\n                                                            self.step(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 494, in step\n                                                            self._complete(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 460, in _complete\n                                                            assert out[k] == v, \\\n                                                        AssertionError: CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0\n                                                        assert 0 == 1\n 41449.97ns WARNING  cocotb.regression                  test_async_apb_bridge.test_chk_030_sync_depth failed",
+   "checks": [
+    "CHK-030",
+    "CHK-033"
+   ],
+   "failed_in": [
+    "apb4.s1",
+    "apb4.s2",
+    "apb4.s3",
+    "model_off.s1",
+    "syn.s1",
+    "4ph.s1",
+    "4ph_off.s1",
+    "apb5.s1",
+    "user.s1",
+    "sync3.s1",
+    "sync4.s1",
+    "min.s1",
+    "slv_fast.s1",
+    "slv_slow.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_031_single_write_read",
+   "runs": {
+    "apb4.s1": "pass",
+    "apb4.s2": "pass",
+    "apb4.s3": "pass",
+    "model_off.s1": "pass",
+    "syn.s1": "pass",
+    "4ph.s1": "pass",
+    "4ph_off.s1": "pass",
+    "apb5.s1": "pass",
+    "user.s1": "pass",
+    "sync3.s1": "pass",
+    "sync4.s1": "pass",
+    "min.s1": "pass",
+    "slv_fast.s1": "pass",
+    "slv_slow.s1": "pass"
+   },
+   "status": "pass"
+  },
+  {
+   "name": "test_chk_032_wait_states",
+   "runs": {
+    "apb4.s1": "fail",
+    "apb4.s2": "fail",
+    "apb4.s3": "fail",
+    "model_off.s1": "fail",
+    "syn.s1": "fail",
+    "4ph.s1": "fail",
+    "4ph_off.s1": "fail",
+    "apb5.s1": "fail",
+    "user.s1": "fail",
+    "sync3.s1": "fail",
+    "sync4.s1": "fail",
+    "min.s1": "fail",
+    "slv_fast.s1": "fail",
+    "slv_slow.s1": "fail"
+   },
+   "sim_time_ns": "413.31299999999464",
+   "message": "[failed in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 220, in _guard\n                                                            await coro\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 355, in run\n                                                            self.step(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 494, in step\n                                                            self._complete(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 460, in _complete\n                                                            assert out[k] == v, \\\n                                                        AssertionError: CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0\n                                                        assert 0 == 1\n 61958.57ns WARNING  cocotb.regression                  test_async_apb_bridge.test_chk_032_wait_states failed",
+   "checks": [
+    "CHK-032",
+    "CHK-033"
+   ],
+   "failed_in": [
+    "apb4.s1",
+    "apb4.s2",
+    "apb4.s3",
+    "model_off.s1",
+    "syn.s1",
+    "4ph.s1",
+    "4ph_off.s1",
+    "apb5.s1",
+    "user.s1",
+    "sync3.s1",
+    "sync4.s1",
+    "min.s1",
+    "slv_fast.s1",
+    "slv_slow.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_033_error_response",
+   "runs": {
+    "apb4.s1": "fail",
+    "apb4.s2": "fail",
+    "apb4.s3": "fail",
+    "model_off.s1": "fail",
+    "syn.s1": "fail",
+    "4ph.s1": "fail",
+    "4ph_off.s1": "fail",
+    "apb5.s1": "fail",
+    "user.s1": "fail",
+    "sync3.s1": "fail",
+    "sync4.s1": "fail",
+    "min.s1": "fail",
+    "slv_fast.s1": "fail",
+    "slv_slow.s1": "fail"
+   },
+   "sim_time_ns": "1180.0329999999958",
+   "message": "[failed in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 220, in _guard\n                                                            await coro\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 355, in run\n                                                            self.step(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 494, in step\n                                                            self._complete(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 460, in _complete\n                                                            assert out[k] == v, \\\n                                                        AssertionError: CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0\n                                                        assert 0 == 1\n 63138.61ns WARNING  cocotb.regression                  test_async_apb_bridge.test_chk_033_error_response failed",
+   "checks": [
+    "CHK-033"
+   ],
+   "failed_in": [
+    "apb4.s1",
+    "apb4.s2",
+    "apb4.s3",
+    "model_off.s1",
+    "syn.s1",
+    "4ph.s1",
+    "4ph_off.s1",
+    "apb5.s1",
+    "user.s1",
+    "sync3.s1",
+    "sync4.s1",
+    "min.s1",
+    "slv_fast.s1",
+    "slv_slow.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_034_back_to_back/periods=0",
+   "runs": {
+    "apb4.s1": "fail",
+    "apb4.s2": "fail",
+    "apb4.s3": "fail",
+    "model_off.s1": "fail",
+    "syn.s1": "fail",
+    "4ph.s1": "fail",
+    "4ph_off.s1": "fail",
+    "apb5.s1": "fail",
+    "user.s1": "fail",
+    "sync3.s1": "fail",
+    "sync4.s1": "fail",
+    "min.s1": "fail",
+    "slv_fast.s1": "fail",
+    "slv_slow.s1": "fail"
+   },
+   "sim_time_ns": "3651.9809999999998",
+   "message": "[failed in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 220, in _guard\n                                                            await coro\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 355, in run\n                                                            self.step(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 494, in step\n                                                            self._complete(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 460, in _complete\n                                                            assert out[k] == v, \\\n                                                        AssertionError: CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0\n                                                        assert 0 == 1\n 66790.59ns WARNING  cocotb.regression                  test_async_apb_bridge.test_chk_034_back_to_back/periods=0 failed",
+   "checks": [
+    "CHK-033",
+    "CHK-034"
+   ],
+   "failed_in": [
+    "apb4.s1",
+    "apb4.s2",
+    "apb4.s3",
+    "model_off.s1",
+    "syn.s1",
+    "4ph.s1",
+    "4ph_off.s1",
+    "apb5.s1",
+    "user.s1",
+    "sync3.s1",
+    "sync4.s1",
+    "min.s1",
+    "slv_fast.s1",
+    "slv_slow.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_034_back_to_back/periods=1",
+   "runs": {
+    "apb4.s1": "fail",
+    "apb4.s2": "fail",
+    "apb4.s3": "fail",
+    "model_off.s1": "fail",
+    "syn.s1": "fail",
+    "4ph.s1": "fail",
+    "4ph_off.s1": "fail",
+    "apb5.s1": "fail",
+    "user.s1": "fail",
+    "sync3.s1": "fail",
+    "sync4.s1": "fail",
+    "min.s1": "fail",
+    "slv_fast.s1": "fail",
+    "slv_slow.s1": "fail"
+   },
+   "sim_time_ns": "2745.7369999999937",
+   "message": "[failed in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 220, in _guard\n                                                            await coro\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 355, in run\n                                                            self.step(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 494, in step\n                                                            self._complete(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 460, in _complete\n                                                            assert out[k] == v, \\\n                                                        AssertionError: CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0\n                                                        assert 0 == 1\n 69536.33ns WARNING  cocotb.regression                  test_async_apb_bridge.test_chk_034_back_to_back/periods=1 failed",
+   "checks": [
+    "CHK-033",
+    "CHK-034"
+   ],
+   "failed_in": [
+    "apb4.s1",
+    "apb4.s2",
+    "apb4.s3",
+    "model_off.s1",
+    "syn.s1",
+    "4ph.s1",
+    "4ph_off.s1",
+    "apb5.s1",
+    "user.s1",
+    "sync3.s1",
+    "sync4.s1",
+    "min.s1",
+    "slv_fast.s1",
+    "slv_slow.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_035_pprot_pstrb",
+   "runs": {
+    "apb4.s1": "fail",
+    "apb4.s2": "fail",
+    "apb4.s3": "fail",
+    "model_off.s1": "fail",
+    "syn.s1": "fail",
+    "4ph.s1": "fail",
+    "4ph_off.s1": "fail",
+    "apb5.s1": "fail",
+    "user.s1": "fail",
+    "sync3.s1": "fail",
+    "sync4.s1": "fail",
+    "min.s1": "fail",
+    "slv_fast.s1": "fail",
+    "slv_slow.s1": "fail"
+   },
+   "sim_time_ns": "628.9459999999963",
+   "message": "[failed in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 220, in _guard\n                                                            await coro\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 355, in run\n                                                            self.step(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 494, in step\n                                                            self._complete(out, idx)\n                                                          File \"/root/nnc_runs/runset_c5472ba3/C01/test_async_apb_bridge.py\", line 460, in _complete\n                                                            assert out[k] == v, \\\n                                                        AssertionError: CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0\n                                                        assert 0 == 1\n 70165.28ns WARNING  cocotb.regression                  test_async_apb_bridge.test_chk_035_pprot_pstrb failed",
+   "checks": [
+    "CHK-033",
+    "CHK-035"
+   ],
+   "failed_in": [
+    "apb4.s1",
+    "apb4.s2",
+    "apb4.s3",
+    "model_off.s1",
+    "syn.s1",
+    "4ph.s1",
+    "4ph_off.s1",
+    "apb5.s1",
+    "user.s1",
+    "sync3.s1",
+    "sync4.s1",
+    "min.s1",
+    "slv_fast.s1",
+    "slv_slow.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_regression_random",
+   "runs": {
+    "apb4.s1": "fail",
+    "apb4.s2": "fail",
+    "apb4.s3": "fail",
+    "model_off.s1": "fail",
+    "syn.s1": "fail",
+    "4ph.s1": "fail",
+    "4ph_off.s1": "fail",
+    "apb5.s1": "fail",
+    "user.s1": "fail",
+    "sync3.s1": "fail",
+    "sync4.s1": "fail",
+    "min.s1": "fail",
+    "slv_fast.s1": "fail",
+    "slv_slow.s1": "fail"
+   },
+   "sim_time_ns": "1244.5380000000005",
+   "message": "[failed in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1] CHK-033/031: o_apb_pslverr in the PREADY cycle equals the completer value at C 0x1, got 0x0",
+   "exception": "AssertionError",
+   "traceback": "************************************************************\n                                                        ** TESTS=28 PASS=11 FAIL=17 SKIP=0                                               71409.82           0.72      99626.55  **\n                                                        **************************************************************************************************************************\nAPBCDC_MSYNC: nnc_tb_top.u_dut.u_vlsit_apbcdc_slv.u_sync_wk.gen_bit_cell[0].u_vlsit_apbcdc_cell_sync.gen_sim_msync seed=1 enable=1 stages=2\nAPBCDC_MSYNC: nnc_tb_top.u_dut.u_vlsit_apbcdc_slv.u_sync_req.gen_bit_cell[0].u_vlsit_apbcdc_cell_sync.gen_sim_msync seed=1 enable=1 stages=2\nAPBCDC_MSYNC: nnc_tb_top.u_dut.u_vlsit_apbcdc_mst.u_sync_ack.gen_bit_cell[0].u_vlsit_apbcdc_cell_sync.gen_sim_msync seed=1 enable=1 stages=2\n- (null):0: Verilog $finish\nNNC_COVER COVP-001 hits=95\nNNC_COVER COVP-002 hits=84\nNNC_COVER COVP-003 hits=0\nNNC_COVER COVP-004 hits=0\nNNC_COVER COVP-005 hits=21\nNNC_COVER COVP-006 hits=11\nNNC_COVER COVP-007 hits=94\nNNC_COVER COVP-008 hits=45\nNNC_COVER COVP-009 hits=163\nNNC_COVER COVP-010 hits=3\nNNC_COVER COVP-011 hits=22\nNNC_COVER COVP-012 hits=83\nNNC_COVER COVP-013 hits=15\nNNC_COVER COVP-014 hits=0\nNNC_COVER COVP-015 hits=33\nNNC_COVER COVP-016 hits=49\nNNC_COVER COVP-017 hits=123\nNNC_COVER COVP-018 hits=34\nNNC_COVER COVP-019 hits=27\nNNC_COVER COVP-020 hits=147\nNNC_COVER COVP-021 hits=14\nNNC_COVER COVP-022 hits=12\nNNC_COVER COVP-023 hits=0\nNNC_COVER COVP-024 hits=0\nNNC_COVER COVP-025 hits=53\nNNC_COVER COVP-026 hits=25\nNNC_COVER COVP-027 hits=270\nNNC_COVER COVP-028 hits=0\nNNC_COVER COVP-029 hits=0\nNNC_COVER COVP-030 hits=0\nNNC_COVER COVP-031 hits=0\nNNC_COVER COVP-032 hits=0\nNNC_COVER COVP-033 hits=0\nNNC_COVER COVP-034 hits=110\nNNC_COVER COVP-035 hits=85\nNNC_COVER COVP-036 hits=115\nNNC_COVER COVP-037 hits=75\nNNC_COVER COVP-038 hits=0\nNNC_COVER COVP-039 hits=19\nNNC_COVER COVP-040 hits=0\nNNC_CHECK CHK-018 hits=0 fails=0\nNNC_CHECK CHK-011 hits=3122 fails=0\nNNC_CHECK CHK-012 hits=639 fails=0\nNNC_CHECK CHK-013 hits=195 fails=0\nNNC_CHECK CHK-014 hits=254 fails=0\nNNC_CHECK CHK-015 hits=190 fails=0\nNNC_CHECK CHK-016 hits=449 fails=0\nNNC_CHECK CHK-017 hits=195 fails=0\nNNC_CHECK CHK-009 hits=1330 fails=0\nNNC_CHECK CHK-010 hits=896 fails=0\nNNC_CHECK CHK-003 hits=179 fails=0\nNNC_CHECK CHK-004 hits=179 fails=0\nNNC_CHECK CHK-005 hits=0 fails=0\nNNC_CHECK CHK-006 hits=384 fails=0\nNNC_CHECK CHK-007 hits=4523 fails=0\nNNC_CHECK CHK-008 hits=4701 fails=0\nNNC_CHECK CHK-002 hits=8094 fails=0\nNNC_CHECK CHK-001 hits=8094 fails=0\nmake[1]: *** [/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb_tools/makefiles/simulators/Makefile.verilator:70: results.xml] Error 17\nmake[1]: Leaving directory '/root/nnc_runs/runset_c5472ba3/C01'\nmake: *** [/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb_tools/makefiles/Makefile.inc:17: sim] Error 2\nNNC_MAKE_RC=2\n",
+   "checks": [
+    "CHK-033"
+   ],
+   "failed_in": [
+    "apb4.s1",
+    "apb4.s2",
+    "apb4.s3",
+    "model_off.s1",
+    "syn.s1",
+    "4ph.s1",
+    "4ph_off.s1",
+    "apb5.s1",
+    "user.s1",
+    "sync3.s1",
+    "sync4.s1",
+    "min.s1",
+    "slv_fast.s1",
+    "slv_slow.s1"
+   ],
+   "status": "fail"
+  }
+ ],
+ "assertions": {
+  "CHK-001": {
+   "hits": 112832,
+   "fails": 0,
+   "runs": {
+    "apb4.s1": {
+     "hits": 8094,
+     "fails": 0
+    },
+    "apb4.s2": {
+     "hits": 7461,
+     "fails": 0
+    },
+    "apb4.s3": {
+     "hits": 8733,
+     "fails": 0
+    },
+    "model_off.s1": {
+     "hits": 6114,
+     "fails": 0
+    },
+    "syn.s1": {
+     "hits": 6114,
+     "fails": 0
+    },
+    "4ph.s1": {
+     "hits": 10527,
+     "fails": 0
+    },
+    "4ph_off.s1": {
+     "hits": 8510,
+     "fails": 0
+    },
+    "apb5.s1": {
+     "hits": 7705,
+     "fails": 0
+    },
+    "user.s1": {
+     "hits": 7705,
+     "fails": 0
+    },
+    "sync3.s1": {
+     "hits": 8500,
+     "fails": 0
+    },
+    "sync4.s1": {
+     "hits": 9021,
+     "fails": 0
+    },
+    "min.s1": {
+     "hits": 8180,
+     "fails": 0
+    },
+    "slv_fast.s1": {
+     "hits": 7179,
+     "fails": 0
+    },
+    "slv_slow.s1": {
+     "hits": 8989,
+     "fails": 0
+    }
+   }
+  },
+  "CHK-002": {
+   "hits": 112832,
+   "fails": 0,
+   "runs": {
+    "apb4.s1": {
+     "hits": 8094,
+     "fails": 0
+    },
+    "apb4.s2": {
+     "hits": 7461,
+     "fails": 0
+    },
+    "apb4.s3": {
+     "hits": 8733,
+     "fails": 0
+    },
+    "model_off.s1": {
+     "hits": 6114,
+     "fails": 0
+    },
+    "syn.s1": {
+     "hits": 6114,
+     "fails": 0
+    },
+    "4ph.s1": {
+     "hits": 10527,
+     "fails": 0
+    },
+    "4ph_off.s1": {
+     "hits": 8510,
+     "fails": 0
+    },
+    "apb5.s1": {
+     "hits": 7705,
+     "fails": 0
+    },
+    "user.s1": {
+     "hits": 7705,
+     "fails": 0
+    },
+    "sync3.s1": {
+     "hits": 8500,
+     "fails": 0
+    },
+    "sync4.s1": {
+     "hits": 9021,
+     "fails": 0
+    },
+    "min.s1": {
+     "hits": 8180,
+     "fails": 0
+    },
+    "slv_fast.s1": {
+     "hits": 7179,
+     "fails": 0
+    },
+    "slv_slow.s1": {
+     "hits": 8989,
+     "fails": 0
+    }
+   }
+  },
+  "CHK-003": {
+   "hits": 2491,
+   "fails": 0,
+   "runs": {
+    "apb4.s1": {
+     "hits": 179,
+     "fails": 0
+    },
+    "apb4.s2": {
+     "hits": 173,
+     "fails": 0
+    },
+    "apb4.s3": {
+     "hits": 196,
+     "fails": 0
+    },
+    "model_off.s1": {
+     "hits": 171,
+     "fails": 0
+    },
+    "syn.s1": {
+     "hits": 171,
+     "fails": 0
+    },
+    "4ph.s1": {
+     "hits": 174,
+     "fails": 0
+    },
+    "4ph_off.s1": {
+     "hits": 179,
+     "fails": 0
+    },
+    "apb5.s1": {
+     "hits": 178,
+     "fails": 0
+    },
+    "user.s1": {
+     "hits": 178,
+     "fails": 0
+    },
+    "sync3.s1": {
+     "hits": 183,
+     "fails": 0
+    },
+    "sync4.s1": {
+     "hits": 170,
+     "fails": 0
+    },
+    "min.s1": {
+     "hits": 182,
+     "fails": 0
+    },
+    "slv_fast.s1": {
+     "hits": 173,
+     "fails": 0
+    },
+    "slv_slow.s1": {
+     "hits": 184,
+     "fails": 0
+    }
+   }
+  },
+  "CHK-004": {
+   "hits": 2491,
+   "fails": 0,
+   "runs": {
+    "apb4.s1": {
+     "hits": 179,
+     "fails": 0
+    },
+    "apb4.s2": {
+     "hits": 173,
+     "fails": 0
+    },
+    "apb4.s3": {
+     "hits": 196,
+     "fails": 0
+    },
+    "model_off.s1": {
+     "hits": 171,
+     "fails": 0
+    },
+    "syn.s1": {
+     "hits": 171,
+     "fails": 0
+    },
+    "4ph.s1": {
+     "hits": 174,
+     "fails": 0
+    },
+    "4ph_off.s1": {
+     "hits": 179,
+     "fails": 0
+    },
+    "apb5.s1": {
+     "hits": 178,
+     "fails": 0
+    },
+    "user.s1": {
+     "hits": 178,
+     "fails": 0
+    },
+    "sync3.s1": {
+     "hits": 183,
+     "fails": 0
+    },
+    "sync4.s1": {
+     "hits": 170,
+     "fails": 0
+    },
+    "min.s1": {
+     "hits": 182,
+     "fails": 0
+    },
+    "slv_fast.s1": {
+     "hits": 173,
+     "fails": 0
+    },
+    "slv_slow.s1": {
+     "hits": 184,
+     "fails": 0
+    }
+   }
+  },
+  "CHK-005": {
+   "hits": 0,
+   "fails": 0,
+   "runs": {
+    "apb4.s1": {
+     "hits": 0,
+     "fails": 0
+    },
+    "apb4.s2": {
+     "hits": 0,
+     "fails": 0
+    },
+    "apb4.s3": {
+     "hits": 0,
+     "fails": 0
+    },
+    "model_off.s1": {
+     "hits": 0,
+     "fails": 0
+    },
+    "syn.s1": {
+     "hits": 0,
+     "fails": 0
+    },
+    "4ph.s1": {
+     "hits": 0,
+     "fails": 0
+    },
+    "4ph_off.s1": {
+     "hits": 0,
+     "fails": 0
+    },
+    "apb5.s1": {
+     "hits": 0,
+     "fails": 0
+    },
+    "user.s1": {
+     "hits": 0,
+     "fails": 0
+    },
+    "sync3.s1": {
+     "hits": 0,
+     "fails": 0
+    },
+    "sync4.s1": {
+     "hits": 0,
+     "fails": 0
+    },
+    "min.s1": {
+     "hits": 0,
+     "fails": 0
+    },
+    "slv_fast.s1": {
+     "hits": 0,
+     "fails": 0
+    },
+    "slv_slow.s1": {
+     "hits": 0,
+     "fails": 0
+    }
+   }
+  },
+  "CHK-006": {
+   "hits": 5191,
+   "fails": 0,
+   "runs": {
+    "apb4.s1": {
+     "hits": 384,
+     "fails": 0
+    },
+    "apb4.s2": {
+     "hits": 356,
+     "fails": 0
+    },
+    "apb4.s3": {
+     "hits": 418,
+     "fails": 0
+    },
+    "model_off.s1": {
+     "hits": 347,
+     "fails": 0
+    },
+    "syn.s1": {
+     "hits": 347,
+     "fails": 0
+    },
+    "4ph.s1": {
+     "hits": 374,
+     "fails": 0
+    },
+    "4ph_off.s1": {
+     "hits": 364,
+     "fails": 0
+    },
+    "apb5.s1": {
+     "hits": 364,
+     "fails": 0
+    },
+    "user.s1": {
+     "hits": 364,
+     "fails": 0
+    },
+    "sync3.s1": {
+     "hits": 379,
+     "fails": 0
+    },
+    "sync4.s1": {
+     "hits": 360,
+     "fails": 0
+    },
+    "min.s1": {
+     "hits": 390,
+     "fails": 0
+    },
+    "slv_fast.s1": {
+     "hits": 361,
+     "fails": 0
+    },
+    "slv_slow.s1": {
+     "hits": 383,
+     "fails": 0
+    }
+   }
+  },
+  "CHK-007": {
+   "hits": 65632,
+   "fails": 0,
+   "runs": {
+    "apb4.s1": {
+     "hits": 4523,
+     "fails": 0
+    },
+    "apb4.s2": {
+     "hits": 4096,
+     "fails": 0
+    },
+    "apb4.s3": {
+     "hits": 5223,
+     "fails": 0
+    },
+    "model_off.s1": {
+     "hits": 3572,
+     "fails": 0
+    },
+    "syn.s1": {
+     "hits": 3572,
+     "fails": 0
+    },
+    "4ph.s1": {
+     "hits": 6234,
+     "fails": 0
+    },
+    "4ph_off.s1": {
+     "hits": 5002,
+     "fails": 0
+    },
+    "apb5.s1": {
+     "hits": 4439,
+     "fails": 0
+    },
+    "user.s1": {
+     "hits": 4439,
+     "fails": 0
+    },
+    "sync3.s1": {
+     "hits": 4985,
+     "fails": 0
+    },
+    "sync4.s1": {
+     "hits": 5376,
+     "fails": 0
+    },
+    "min.s1": {
+     "hits": 4576,
+     "fails": 0
+    },
+    "slv_fast.s1": {
+     "hits": 4004,
+     "fails": 0
+    },
+    "slv_slow.s1": {
+     "hits": 5591,
+     "fails": 0
+    }
+   }
+  },
+  "CHK-008": {
+   "hits": 68111,
+   "fails": 0,
+   "runs": {
+    "apb4.s1": {
+     "hits": 4701,
+     "fails": 0
+    },
+    "apb4.s2": {
+     "hits": 4269,
+     "fails": 0
+    },
+    "apb4.s3": {
+     "hits": 5419,
+     "fails": 0
+    },
+    "model_off.s1": {
+     "hits": 3742,
+     "fails": 0
+    },
+    "syn.s1": {
+     "hits": 3742,
+     "fails": 0
+    },
+    "4ph.s1": {
+     "hits": 6407,
+     "fails": 0
+    },
+    "4ph_off.s1": {
+     "hits": 5180,
+     "fails": 0
+    },
+    "apb5.s1": {
+     "hits": 4616,
+     "fails": 0
+    },
+    "user.s1": {
+     "hits": 4616,
+     "fails": 0
+    },
+    "sync3.s1": {
+     "hits": 5167,
+     "fails": 0
+    },
+    "sync4.s1": {
+     "hits": 5545,
+     "fails": 0
+    },
+    "min.s1": {
+     "hits": 4757,
+     "fails": 0
+    },
+    "slv_fast.s1": {
+     "hits": 4176,
+     "fails": 0
+    },
+    "slv_slow.s1": {
+     "hits": 5774,
+     "fails": 0
+    }
+   }
+  },
+  "CHK-009": {
+   "hits": 15413,
+   "fails": 0,
+   "runs": {
+    "apb4.s1": {
+     "hits": 1330,
+     "fails": 0
+    },
+    "apb4.s2": {
+     "hits": 925,
+     "fails": 0
+    },
+    "apb4.s3": {
+     "hits": 1380,
+     "fails": 0
+    },
+    "model_off.s1": {
+     "hits": 763,
+     "fails": 0
+    },
+    "syn.s1": {
+     "hits": 763,
+     "fails": 0
+    },
+    "4ph.s1": {
+     "hits": 1359,
+     "fails": 0
+    },
+    "4ph_off.s1": {
+     "hits": 763,
+     "fails": 0
+    },
+    "apb5.s1": {
+     "hits": 891,
+     "fails": 0
+    },
+    "user.s1": {
+     "hits": 891,
+     "fails": 0
+    },
+    "sync3.s1": {
+     "hits": 980,
+     "fails": 0
+    },
+    "sync4.s1": {
+     "hits": 1208,
+     "fails": 0
+    },
+    "min.s1": {
+     "hits": 1330,
+     "fails": 0
+    },
+    "slv_fast.s1": {
+     "hits": 770,
+     "fails": 0
+    },
+    "slv_slow.s1": {
+     "hits": 2060,
+     "fails": 0
+    }
+   }
+  },
+  "CHK-010": {
+   "hits": 10510,
+   "fails": 0,
+   "runs": {
+    "apb4.s1": {
+     "hits": 896,
+     "fails": 0
+    },
+    "apb4.s2": {
+     "hits": 665,
+     "fails": 0
+    },
+    "apb4.s3": {
+     "hits": 868,
+     "fails": 0
+    },
+    "model_off.s1": {
+     "hits": 606,
+     "fails": 0
+    },
+    "syn.s1": {
+     "hits": 606,
+     "fails": 0
+    },
+    "4ph.s1": {
+     "hits": 839,
+     "fails": 0
+    },
+    "4ph_off.s1": {
+     "hits": 606,
+     "fails": 0
+    },
+    "apb5.s1": {
+     "hits": 650,
+     "fails": 0
+    },
+    "user.s1": {
+     "hits": 650,
+     "fails": 0
+    },
+    "sync3.s1": {
+     "hits": 713,
+     "fails": 0
+    },
+    "sync4.s1": {
+     "hits": 782,
+     "fails": 0
+    },
+    "min.s1": {
+     "hits": 896,
+     "fails": 0
+    },
+    "slv_fast.s1": {
+     "hits": 1005,
+     "fails": 0
+    },
+    "slv_slow.s1": {
+     "hits": 728,
+     "fails": 0
+    }
+   }
+  },
+  "CHK-011": {
+   "hits": 42575,
+   "fails": 0,
+   "runs": {
+    "apb4.s1": {
+     "hits": 3122,
+     "fails": 0
+    },
+    "apb4.s2": {
+     "hits": 3084,
+     "fails": 0
+    },
+    "apb4.s3": {
+     "hits": 3118,
+     "fails": 0
+    },
+    "model_off.s1": {
+     "hits": 2301,
+     "fails": 0
+    },
+    "syn.s1": {
+     "hits": 2301,
+     "fails": 0
+    },
+    "4ph.s1": {
+     "hits": 3936,
+     "fails": 0
+    },
+    "4ph_off.s1": {
+     "hits": 3259,
+     "fails": 0
+    },
+    "apb5.s1": {
+     "hits": 3007,
+     "fails": 0
+    },
+    "user.s1": {
+     "hits": 3007,
+     "fails": 0
+    },
+    "sync3.s1": {
+     "hits": 3201,
+     "fails": 0
+    },
+    "sync4.s1": {
+     "hits": 3344,
+     "fails": 0
+    },
+    "min.s1": {
+     "hits": 3152,
+     "fails": 0
+    },
+    "slv_fast.s1": {
+     "hits": 2959,
+     "fails": 0
+    },
+    "slv_slow.s1": {
+     "hits": 2784,
+     "fails": 0
+    }
+   }
+  },
+  "CHK-012": {
+   "hits": 8082,
+   "fails": 0,
+   "runs": {
+    "apb4.s1": {
+     "hits": 639,
+     "fails": 0
+    },
+    "apb4.s2": {
+     "hits": 560,
+     "fails": 0
+    },
+    "apb4.s3": {
+     "hits": 706,
+     "fails": 0
+    },
+    "model_off.s1": {
+     "hits": 511,
+     "fails": 0
+    },
+    "syn.s1": {
+     "hits": 511,
+     "fails": 0
+    },
+    "4ph.s1": {
+     "hits": 565,
+     "fails": 0
+    },
+    "4ph_off.s1": {
+     "hits": 538,
+     "fails": 0
+    },
+    "apb5.s1": {
+     "hits": 570,
+     "fails": 0
+    },
+    "user.s1": {
+     "hits": 570,
+     "fails": 0
+    },
+    "sync3.s1": {
+     "hits": 586,
+     "fails": 0
+    },
+    "sync4.s1": {
+     "hits": 552,
+     "fails": 0
+    },
+    "min.s1": {
+     "hits": 649,
+     "fails": 0
+    },
+    "slv_fast.s1": {
+     "hits": 535,
+     "fails": 0
+    },
+    "slv_slow.s1": {
+     "hits": 590,
+     "fails": 0
+    }
+   }
+  },
+  "CHK-013": {
+   "hits": 2616,
+   "fails": 0,
+   "runs": {
+    "apb4.s1": {
+     "hits": 195,
+     "fails": 0
+    },
+    "apb4.s2": {
+     "hits": 179,
+     "fails": 0
+    },
+    "apb4.s3": {
+     "hits": 212,
+     "fails": 0
+    },
+    "model_off.s1": {
+     "hits": 174,
+     "fails": 0
+    },
+    "syn.s1": {
+     "hits": 174,
+     "fails": 0
+    },
+    "4ph.s1": {
+     "hits": 190,
+     "fails": 0
+    },
+    "4ph_off.s1": {
+     "hits": 183,
+     "fails": 0
+    },
+    "apb5.s1": {
+     "hits": 182,
+     "fails": 0
+    },
+    "user.s1": {
+     "hits": 182,
+     "fails": 0
+    },
+    "sync3.s1": {
+     "hits": 190,
+     "fails": 0
+    },
+    "sync4.s1": {
+     "hits": 182,
+     "fails": 0
+    },
+    "min.s1": {
+     "hits": 198,
+     "fails": 0
+    },
+    "slv_fast.s1": {
+     "hits": 182,
+     "fails": 0
+    },
+    "slv_slow.s1": {
+     "hits": 193,
+     "fails": 0
+    }
+   }
+  },
+  "CHK-014": {
+   "hits": 2889,
+   "fails": 0,
+   "runs": {
+    "apb4.s1": {
+     "hits": 254,
+     "fails": 0
+    },
+    "apb4.s2": {
+     "hits": 204,
+     "fails": 0
+    },
+    "apb4.s3": {
+     "hits": 287,
+     "fails": 0
+    },
+    "model_off.s1": {
+     "hits": 164,
+     "fails": 0
+    },
+    "syn.s1": {
+     "hits": 164,
+     "fails": 0
+    },
+    "4ph.s1": {
+     "hits": 190,
+     "fails": 0
+    },
+    "4ph_off.s1": {
+     "hits": 173,
+     "fails": 0
+    },
+    "apb5.s1": {
+     "hits": 207,
+     "fails": 0
+    },
+    "user.s1": {
+     "hits": 207,
+     "fails": 0
+    },
+    "sync3.s1": {
+     "hits": 208,
+     "fails": 0
+    },
+    "sync4.s1": {
+     "hits": 192,
+     "fails": 0
+    },
+    "min.s1": {
+     "hits": 258,
+     "fails": 0
+    },
+    "slv_fast.s1": {
+     "hits": 174,
+     "fails": 0
+    },
+    "slv_slow.s1": {
+     "hits": 207,
+     "fails": 0
+    }
+   }
+  },
+  "CHK-015": {
+   "hits": 2577,
+   "fails": 0,
+   "runs": {
+    "apb4.s1": {
+     "hits": 190,
+     "fails": 0
+    },
+    "apb4.s2": {
+     "hits": 177,
+     "fails": 0
+    },
+    "apb4.s3": {
+     "hits": 207,
+     "fails": 0
+    },
+    "model_off.s1": {
+     "hits": 173,
+     "fails": 0
+    },
+    "syn.s1": {
+     "hits": 173,
+     "fails": 0
+    },
+    "4ph.s1": {
+     "hits": 185,
+     "fails": 0
+    },
+    "4ph_off.s1": {
+     "hits": 182,
+     "fails": 0
+    },
+    "apb5.s1": {
+     "hits": 181,
+     "fails": 0
+    },
+    "user.s1": {
+     "hits": 181,
+     "fails": 0
+    },
+    "sync3.s1": {
+     "hits": 188,
+     "fails": 0
+    },
+    "sync4.s1": {
+     "hits": 178,
+     "fails": 0
+    },
+    "min.s1": {
+     "hits": 193,
+     "fails": 0
+    },
+    "slv_fast.s1": {
+     "hits": 179,
+     "fails": 0
+    },
+    "slv_slow.s1": {
+     "hits": 190,
+     "fails": 0
+    }
+   }
+  },
+  "CHK-016": {
+   "hits": 5505,
+   "fails": 0,
+   "runs": {
+    "apb4.s1": {
+     "hits": 449,
+     "fails": 0
+    },
+    "apb4.s2": {
+     "hits": 383,
+     "fails": 0
+    },
+    "apb4.s3": {
+     "hits": 499,
+     "fails": 0
+    },
+    "model_off.s1": {
+     "hits": 338,
+     "fails": 0
+    },
+    "syn.s1": {
+     "hits": 338,
+     "fails": 0
+    },
+    "4ph.s1": {
+     "hits": 380,
+     "fails": 0
+    },
+    "4ph_off.s1": {
+     "hits": 356,
+     "fails": 0
+    },
+    "apb5.s1": {
+     "hits": 389,
+     "fails": 0
+    },
+    "user.s1": {
+     "hits": 389,
+     "fails": 0
+    },
+    "sync3.s1": {
+     "hits": 398,
+     "fails": 0
+    },
+    "sync4.s1": {
+     "hits": 374,
+     "fails": 0
+    },
+    "min.s1": {
+     "hits": 456,
+     "fails": 0
+    },
+    "slv_fast.s1": {
+     "hits": 356,
+     "fails": 0
+    },
+    "slv_slow.s1": {
+     "hits": 400,
+     "fails": 0
+    }
+   }
+  },
+  "CHK-017": {
+   "hits": 2614,
+   "fails": 0,
+   "runs": {
+    "apb4.s1": {
+     "hits": 195,
+     "fails": 0
+    },
+    "apb4.s2": {
+     "hits": 178,
+     "fails": 0
+    },
+    "apb4.s3": {
+     "hits": 211,
+     "fails": 0
+    },
+    "model_off.s1": {
+     "hits": 174,
+     "fails": 0
+    },
+    "syn.s1": {
+     "hits": 174,
+     "fails": 0
+    },
+    "4ph.s1": {
+     "hits": 190,
+     "fails": 0
+    },
+    "4ph_off.s1": {
+     "hits": 183,
+     "fails": 0
+    },
+    "apb5.s1": {
+     "hits": 182,
+     "fails": 0
+    },
+    "user.s1": {
+     "hits": 182,
+     "fails": 0
+    },
+    "sync3.s1": {
+     "hits": 190,
+     "fails": 0
+    },
+    "sync4.s1": {
+     "hits": 182,
+     "fails": 0
+    },
+    "min.s1": {
+     "hits": 198,
+     "fails": 0
+    },
+    "slv_fast.s1": {
+     "hits": 182,
+     "fails": 0
+    },
+    "slv_slow.s1": {
+     "hits": 193,
+     "fails": 0
+    }
+   }
+  },
+  "CHK-018": {
+   "hits": 1140,
+   "fails": 0,
+   "runs": {
+    "apb4.s1": {
+     "hits": 0,
+     "fails": 0
+    },
+    "apb4.s2": {
+     "hits": 0,
+     "fails": 0
+    },
+    "apb4.s3": {
+     "hits": 0,
+     "fails": 0
+    },
+    "model_off.s1": {
+     "hits": 0,
+     "fails": 0
+    },
+    "syn.s1": {
+     "hits": 0,
+     "fails": 0
+    },
+    "4ph.s1": {
+     "hits": 0,
+     "fails": 0
+    },
+    "4ph_off.s1": {
+     "hits": 0,
+     "fails": 0
+    },
+    "apb5.s1": {
+     "hits": 570,
+     "fails": 0
+    },
+    "user.s1": {
+     "hits": 570,
+     "fails": 0
+    },
+    "sync3.s1": {
+     "hits": 0,
+     "fails": 0
+    },
+    "sync4.s1": {
+     "hits": 0,
+     "fails": 0
+    },
+    "min.s1": {
+     "hits": 0,
+     "fails": 0
+    },
+    "slv_fast.s1": {
+     "hits": 0,
+     "fails": 0
+    },
+    "slv_slow.s1": {
+     "hits": 0,
+     "fails": 0
+    }
+   }
+  }
+ },
+ "not_verifiable": {},
+ "not_verifiable_by_run": {
+  "apb4.s1": {
+   "CHK-019": "needs PARA_APBCDC_APB5=1 with user widths above 0; this run is APB4",
+   "CHK-020": "needs PARA_APBCDC_APB5=1; this run is APB4",
+   "CHK-023": "needs PARA_APBCDC_HS_TYPE=1; this run is two-phase",
+   "CHK-026": "needs PARA_APBCDC_HS_TYPE=1; this run has 0"
+  },
+  "apb4.s2": {
+   "CHK-019": "needs PARA_APBCDC_APB5=1 with user widths above 0; this run is APB4",
+   "CHK-020": "needs PARA_APBCDC_APB5=1; this run is APB4",
+   "CHK-023": "needs PARA_APBCDC_HS_TYPE=1; this run is two-phase",
+   "CHK-026": "needs PARA_APBCDC_HS_TYPE=1; this run has 0"
+  },
+  "apb4.s3": {
+   "CHK-019": "needs PARA_APBCDC_APB5=1 with user widths above 0; this run is APB4",
+   "CHK-020": "needs PARA_APBCDC_APB5=1; this run is APB4",
+   "CHK-023": "needs PARA_APBCDC_HS_TYPE=1; this run is two-phase",
+   "CHK-026": "needs PARA_APBCDC_HS_TYPE=1; this run has 0"
+  },
+  "model_off.s1": {
+   "CHK-019": "needs PARA_APBCDC_APB5=1 with user widths above 0; this run is APB4",
+   "CHK-020": "needs PARA_APBCDC_APB5=1; this run is APB4",
+   "CHK-023": "needs PARA_APBCDC_HS_TYPE=1; this run is two-phase",
+   "CHK-026": "needs PARA_APBCDC_HS_TYPE=1; this run has 0"
+  },
+  "syn.s1": {
+   "CHK-019": "needs PARA_APBCDC_APB5=1 with user widths above 0; this run is APB4",
+   "CHK-020": "needs PARA_APBCDC_APB5=1; this run is APB4",
+   "CHK-023": "needs PARA_APBCDC_HS_TYPE=1; this run is two-phase",
+   "CHK-026": "needs PARA_APBCDC_HS_TYPE=1; this run has 0"
+  },
+  "4ph.s1": {
+   "CHK-019": "needs PARA_APBCDC_APB5=1 with user widths above 0; this run is APB4",
+   "CHK-020": "needs PARA_APBCDC_APB5=1; this run is APB4",
+   "CHK-025": "needs PARA_APBCDC_HS_TYPE=0; this run has 1",
+   "CHK-031": "the two-phase PREADY window needs HS_TYPE=0; this run is four-phase"
+  },
+  "4ph_off.s1": {
+   "CHK-019": "needs PARA_APBCDC_APB5=1 with user widths above 0; this run is APB4",
+   "CHK-020": "needs PARA_APBCDC_APB5=1; this run is APB4",
+   "CHK-025": "needs PARA_APBCDC_HS_TYPE=0; this run has 1",
+   "CHK-031": "the two-phase PREADY window needs HS_TYPE=0; this run is four-phase"
+  },
+  "apb5.s1": {
+   "CHK-021": "needs PARA_APBCDC_APB5=0; this run is APB5",
+   "CHK-023": "needs PARA_APBCDC_HS_TYPE=1; this run is two-phase",
+   "CHK-026": "needs PARA_APBCDC_HS_TYPE=1; this run has 0"
+  },
+  "user.s1": {
+   "CHK-021": "needs PARA_APBCDC_APB5=0; this run is APB5",
+   "CHK-023": "needs PARA_APBCDC_HS_TYPE=1; this run is two-phase",
+   "CHK-026": "needs PARA_APBCDC_HS_TYPE=1; this run has 0"
+  },
+  "sync3.s1": {
+   "CHK-019": "needs PARA_APBCDC_APB5=1 with user widths above 0; this run is APB4",
+   "CHK-020": "needs PARA_APBCDC_APB5=1; this run is APB4",
+   "CHK-023": "needs PARA_APBCDC_HS_TYPE=1; this run is two-phase",
+   "CHK-026": "needs PARA_APBCDC_HS_TYPE=1; this run has 0"
+  },
+  "sync4.s1": {
+   "CHK-019": "needs PARA_APBCDC_APB5=1 with user widths above 0; this run is APB4",
+   "CHK-020": "needs PARA_APBCDC_APB5=1; this run is APB4",
+   "CHK-023": "needs PARA_APBCDC_HS_TYPE=1; this run is two-phase",
+   "CHK-026": "needs PARA_APBCDC_HS_TYPE=1; this run has 0"
+  },
+  "min.s1": {
+   "CHK-019": "needs PARA_APBCDC_APB5=1 with user widths above 0; this run is APB4",
+   "CHK-020": "needs PARA_APBCDC_APB5=1; this run is APB4",
+   "CHK-023": "needs PARA_APBCDC_HS_TYPE=1; this run is two-phase",
+   "CHK-026": "needs PARA_APBCDC_HS_TYPE=1; this run has 0"
+  },
+  "slv_fast.s1": {
+   "CHK-019": "needs PARA_APBCDC_APB5=1 with user widths above 0; this run is APB4",
+   "CHK-020": "needs PARA_APBCDC_APB5=1; this run is APB4",
+   "CHK-023": "needs PARA_APBCDC_HS_TYPE=1; this run is two-phase",
+   "CHK-026": "needs PARA_APBCDC_HS_TYPE=1; this run has 0"
+  },
+  "slv_slow.s1": {
+   "CHK-019": "needs PARA_APBCDC_APB5=1 with user widths above 0; this run is APB4",
+   "CHK-020": "needs PARA_APBCDC_APB5=1; this run is APB4",
+   "CHK-023": "needs PARA_APBCDC_HS_TYPE=1; this run is two-phase",
+   "CHK-026": "needs PARA_APBCDC_HS_TYPE=1; this run has 0"
+  }
+ },
+ "coverage": {
+  "status": "measured",
+  "metric": "line",
+  "hit": 2924,
+  "total": 3208,
+  "percent": 91.1,
+  "files": {
+   "m_vlsit_apbcdc_cell_sync.sv": {
+    "hit": 629,
+    "total": 631
+   },
+   "m_vlsit_apbcdc_mst.sv": {
+    "hit": 928,
+    "total": 1032
+   },
+   "m_vlsit_apbcdc_slv.sv": {
+    "hit": 918,
+    "total": 1020
+   },
+   "m_vlsit_apbcdc_sync.sv": {
+    "hit": 48,
+    "total": 48
+   },
+   "m_vlsit_apbcdc_top.sv": {
+    "hit": 392,
+    "total": 468
+   },
+   "VLSIT_CELL_SYNC_2FF_RN.sv": {
+    "hit": 9,
+    "total": 9
+   }
+  },
+  "executed_lines": {
+   "VLSIT_CELL_SYNC_2FF_RN.sv": "23-24,27-28,31,35-37,39",
+   "m_vlsit_apbcdc_cell_sync.sv": "39-40,43-44,102-103,105-106,112-119,124-129,134-137,139-142,149-168,170-175,182",
+   "m_vlsit_apbcdc_mst.sv": "73-74,77-86,89-90,92-93,96-100,114-115,117-123,125-130,133,137,158-163,165-167,169-171,173,180-181,185,189-194,199-201,203,207-215,221-225,230-236",
+   "m_vlsit_apbcdc_slv.sv": "73-74,77-86,89-93,96-100,114-115,117-124,126-130,134,138-139,155-160,162-165,167-169,176-181,186-188,190,197-208,215-219,224-228",
+   "m_vlsit_apbcdc_sync.sv": "35-36,39-40",
+   "m_vlsit_apbcdc_top.sv": "69-70,73-82,85-86,88-89,92-93,96-105,108-112,116-120"
+  },
+  "metrics": {
+   "line": {
+    "hit": 2924,
+    "total": 3208,
+    "percent": 91.1,
+    "files": {
+     "m_vlsit_apbcdc_cell_sync.sv": {
+      "hit": 629,
+      "total": 631
+     },
+     "m_vlsit_apbcdc_mst.sv": {
+      "hit": 928,
+      "total": 1032
+     },
+     "m_vlsit_apbcdc_slv.sv": {
+      "hit": 918,
+      "total": 1020
+     },
+     "m_vlsit_apbcdc_sync.sv": {
+      "hit": 48,
+      "total": 48
+     },
+     "m_vlsit_apbcdc_top.sv": {
+      "hit": 392,
+      "total": 468
+     },
+     "VLSIT_CELL_SYNC_2FF_RN.sv": {
+      "hit": 9,
+      "total": 9
+     }
+    }
+   },
+   "block": {
+    "hit": 807,
+    "total": 909,
+    "percent": 88.8,
+    "files": {
+     "VLSIT_CELL_SYNC_2FF_RN.sv": {
+      "hit": 3,
+      "total": 3
+     },
+     "m_vlsit_apbcdc_cell_sync.sv": {
+      "hit": 176,
+      "total": 198
+     },
+     "m_vlsit_apbcdc_mst.sv": {
+      "hit": 320,
+      "total": 360
+     },
+     "m_vlsit_apbcdc_slv.sv": {
+      "hit": 308,
+      "total": 348
+     }
+    }
+   },
+   "expression": {
+    "hit": 663,
+    "total": 886,
+    "percent": 74.8,
+    "files": {
+     "VLSIT_CELL_SYNC_2FF_RN.sv": {
+      "hit": 2,
+      "total": 2
+     },
+     "m_vlsit_apbcdc_cell_sync.sv": {
+      "hit": 33,
+      "total": 44
+     },
+     "m_vlsit_apbcdc_mst.sv": {
+      "hit": 330,
+      "total": 444
+     },
+     "m_vlsit_apbcdc_slv.sv": {
+      "hit": 298,
+      "total": 396
+     }
+    }
+   },
+   "toggle": {
+    "hit": 26529,
+    "total": 26946,
+    "percent": 98.5,
+    "files": {
+     "VLSIT_CELL_SYNC_2FF_RN.sv": {
+      "hit": 12,
+      "total": 12
+     },
+     "m_vlsit_apbcdc_cell_sync.sv": {
+      "hit": 969,
+      "total": 982
+     },
+     "m_vlsit_apbcdc_mst.sv": {
+      "hit": 9360,
+      "total": 9488
+     },
+     "m_vlsit_apbcdc_slv.sv": {
+      "hit": 8496,
+      "total": 8620
+     },
+     "m_vlsit_apbcdc_sync.sv": {
+      "hit": 96,
+      "total": 96
+     },
+     "m_vlsit_apbcdc_top.sv": {
+      "hit": 7596,
+      "total": 7748
+     }
+    }
+   },
+   "functional": {
+    "hit": 34,
+    "total": 40,
+    "percent": 85.0,
+    "files": {
+     "nnc_cov.sv": {
+      "hit": 34,
+      "total": 40
+     }
+    }
+   }
+  },
+  "uncovered": [
+   {
+    "metric": "block",
+    "file": "m_vlsit_apbcdc_cell_sync.sv",
+    "line": 137,
+    "what": "else",
+    "points": 11,
+    "detail": [
+     "else"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_vlsit_apbcdc_cell_sync.sv",
+    "line": 139,
+    "what": "else",
+    "points": 11,
+    "detail": [
+     "else"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 169,
+    "what": "case",
+    "points": 10,
+    "detail": [
+     "case"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 170,
+    "what": "else",
+    "points": 10,
+    "detail": [
+     "else"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 170,
+    "what": "if",
+    "points": 10,
+    "detail": [
+     "if"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 193,
+    "what": "if",
+    "points": 10,
+    "detail": [
+     "if"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 167,
+    "what": "case",
+    "points": 10,
+    "detail": [
+     "case"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 168,
+    "what": "else",
+    "points": 10,
+    "detail": [
+     "else"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 168,
+    "what": "if",
+    "points": 10,
+    "detail": [
+     "if"
+    ]
+   },
+   {
+    "metric": "block",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 180,
+    "what": "if",
+    "points": 10,
+    "detail": [
+     "if"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 137,
+    "what": "((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0",
+    "points": 10,
+    "detail": [
+     "((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 167,
+    "what": "((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0",
+    "points": 10,
+    "detail": [
+     "((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 170,
+    "what": "(w_ack_s==0) => 1",
+    "points": 10,
+    "detail": [
+     "(w_ack_s==0) => 1"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 170,
+    "what": "(w_ack_s==1) => 0",
+    "points": 10,
+    "detail": [
+     "(w_ack_s==1) => 0"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 181,
+    "what": "((reg_fsm_hs_current_state == ENUM_ST_WAIT)==1 && w_ack_event==1 && (PARA_APBCDC_HS_TYPE != 32'h0)==1) => 1",
+    "points": 10,
+    "detail": [
+     "((reg_fsm_hs_current_state == ENUM_ST_WAIT)==1 && w_ack_event==1 && (PARA_APBCDC_HS_TYPE != 32'h0)==1) => 1"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 185,
+    "what": "((PARA_APBCDC_HS_TYPE == 32'h0)==0 && (reg_fsm_hs_current_state == ENUM_ST_CLOSE)==0) => 0",
+    "points": 10,
+    "detail": [
+     "((PARA_APBCDC_HS_TYPE == 32'h0)==0 && (reg_fsm_hs_current_state == ENUM_ST_CLOSE)==0) => 0"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 185,
+    "what": "((PARA_APBCDC_HS_TYPE == 32'h0)==0 && w_ack_s==1) => 0",
+    "points": 10,
+    "detail": [
+     "((PARA_APBCDC_HS_TYPE == 32'h0)==0 && w_ack_s==1) => 0"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 185,
+    "what": "((reg_fsm_hs_current_state == ENUM_ST_CLOSE)==1 && w_ack_s==0) => 1",
+    "points": 10,
+    "detail": [
+     "((reg_fsm_hs_current_state == ENUM_ST_CLOSE)==1 && w_ack_s==0) => 1"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 192,
+    "what": "((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0",
+    "points": 10,
+    "detail": [
+     "((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 214,
+    "what": "((PARA_APBCDC_APB5 != 32'h0)==1 && i_apb_pwakeup==1) => 1",
+    "points": 10,
+    "detail": [
+     "((PARA_APBCDC_APB5 != 32'h0)==1 && i_apb_pwakeup==1) => 1"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 134,
+    "what": "((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0",
+    "points": 10,
+    "detail": [
+     "((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 165,
+    "what": "((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0",
+    "points": 10,
+    "detail": [
+     "((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 168,
+    "what": "(w_req_s==0) => 1",
+    "points": 10,
+    "detail": [
+     "(w_req_s==0) => 1"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 168,
+    "what": "(w_req_s==1) => 0",
+    "points": 10,
+    "detail": [
+     "(w_req_s==1) => 0"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 179,
+    "what": "((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0",
+    "points": 10,
+    "detail": [
+     "((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 180,
+    "what": "((reg_fsm_hs_current_state == ENUM_ST_REQ0)==1 && w_req_s==0) => 1",
+    "points": 10,
+    "detail": [
+     "((reg_fsm_hs_current_state == ENUM_ST_REQ0)==1 && w_req_s==0) => 1"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 207,
+    "what": "((PARA_APBCDC_APB5 != 32'h0)==1 && (reg_fsm_hs_current_state != ENUM_ST_IDLE)==1) => 1",
+    "points": 10,
+    "detail": [
+     "((PARA_APBCDC_APB5 != 32'h0)==1 && (reg_fsm_hs_current_state != ENUM_ST_IDLE)==1) => 1"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 207,
+    "what": "((PARA_APBCDC_APB5 != 32'h0)==1 && w_load_req==1) => 1",
+    "points": 10,
+    "detail": [
+     "((PARA_APBCDC_APB5 != 32'h0)==1 && w_load_req==1) => 1"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 207,
+    "what": "((PARA_APBCDC_APB5 != 32'h0)==1 && w_wk_s==1) => 1",
+    "points": 10,
+    "detail": [
+     "((PARA_APBCDC_APB5 != 32'h0)==1 && w_wk_s==1) => 1"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_cell_sync.sv",
+    "line": 182,
+    "what": "(sim_en==0) => 0",
+    "points": 9,
+    "detail": [
+     "(sim_en==0) => 0"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_cell_sync.sv",
+    "line": 182,
+    "what": "(sim_en==1) => 1",
+    "points": 2,
+    "detail": [
+     "(sim_en==1) => 1"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 137,
+    "what": "((PARA_APBCDC_HS_TYPE == 32'h0)==1) => 1",
+    "points": 2,
+    "detail": [
+     "((PARA_APBCDC_HS_TYPE == 32'h0)==1) => 1"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 167,
+    "what": "((PARA_APBCDC_HS_TYPE == 32'h0)==1) => 1",
+    "points": 2,
+    "detail": [
+     "((PARA_APBCDC_HS_TYPE == 32'h0)==1) => 1"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 181,
+    "what": "((PARA_APBCDC_HS_TYPE != 32'h0)==0) => 0",
+    "points": 2,
+    "detail": [
+     "((PARA_APBCDC_HS_TYPE != 32'h0)==0) => 0"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 185,
+    "what": "((reg_fsm_hs_current_state == ENUM_ST_WAIT)==1 && w_ack_event==1 && (PARA_APBCDC_HS_TYPE == 32'h0)==1) => 1",
+    "points": 2,
+    "detail": [
+     "((reg_fsm_hs_current_state == ENUM_ST_WAIT)==1 && w_ack_event==1 && (PARA_APBCDC_HS_TYPE == 32'h0)==1) => 1"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 185,
+    "what": "(w_ack_event==0 && w_ack_s==1) => 0",
+    "points": 2,
+    "detail": [
+     "(w_ack_event==0 && w_ack_s==1) => 0"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 192,
+    "what": "((PARA_APBCDC_HS_TYPE == 32'h0)==1) => 1",
+    "points": 2,
+    "detail": [
+     "((PARA_APBCDC_HS_TYPE == 32'h0)==1) => 1"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 214,
+    "what": "((PARA_APBCDC_APB5 != 32'h0)==0) => 0",
+    "points": 2,
+    "detail": [
+     "((PARA_APBCDC_APB5 != 32'h0)==0) => 0"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 134,
+    "what": "((PARA_APBCDC_HS_TYPE == 32'h0)==1) => 1",
+    "points": 2,
+    "detail": [
+     "((PARA_APBCDC_HS_TYPE == 32'h0)==1) => 1"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 165,
+    "what": "((PARA_APBCDC_HS_TYPE == 32'h0)==1) => 1",
+    "points": 2,
+    "detail": [
+     "((PARA_APBCDC_HS_TYPE == 32'h0)==1) => 1"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 179,
+    "what": "((PARA_APBCDC_HS_TYPE == 32'h0)==1) => 1",
+    "points": 2,
+    "detail": [
+     "((PARA_APBCDC_HS_TYPE == 32'h0)==1) => 1"
+    ]
+   },
+   {
+    "metric": "expression",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 207,
+    "what": "((PARA_APBCDC_APB5 != 32'h0)==0) => 0",
+    "points": 2,
+    "detail": [
+     "((PARA_APBCDC_APB5 != 32'h0)==0) => 0"
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 91,
+    "what": "",
+    "points": 12,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_top.sv",
+    "line": 87,
+    "what": "",
+    "points": 12,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 92,
+    "what": "",
+    "points": 11,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 93,
+    "what": "",
+    "points": 11,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 85,
+    "what": "",
+    "points": 11,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 86,
+    "what": "",
+    "points": 11,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_top.sv",
+    "line": 88,
+    "what": "",
+    "points": 11,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_top.sv",
+    "line": 89,
+    "what": "",
+    "points": 11,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_top.sv",
+    "line": 104,
+    "what": "",
+    "points": 11,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_top.sv",
+    "line": 105,
+    "what": "",
+    "points": 11,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 98,
+    "what": "",
+    "points": 10,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 119,
+    "what": "",
+    "points": 10,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 129,
+    "what": "",
+    "points": 10,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 169,
+    "what": "",
+    "points": 10,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 170,
+    "what": "",
+    "points": 10,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 171,
+    "what": "",
+    "points": 10,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 194,
+    "what": "",
+    "points": 10,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 84,
+    "what": "",
+    "points": 10,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 98,
+    "what": "",
+    "points": 10,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 121,
+    "what": "",
+    "points": 10,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 127,
+    "what": "",
+    "points": 10,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 167,
+    "what": "",
+    "points": 10,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 168,
+    "what": "",
+    "points": 10,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 169,
+    "what": "",
+    "points": 10,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 181,
+    "what": "",
+    "points": 10,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_top.sv",
+    "line": 103,
+    "what": "",
+    "points": 10,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_top.sv",
+    "line": 118,
+    "what": "",
+    "points": 10,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "line",
+    "file": "m_vlsit_apbcdc_cell_sync.sv",
+    "line": 106,
+    "what": "",
+    "points": 2,
+    "detail": [
+     ""
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 91,
+    "what": "o_apb_pslverr",
+    "points": 24,
+    "detail": [
+     "o_apb_pslverr:0->1",
+     "o_apb_pslverr:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_vlsit_apbcdc_top.sv",
+    "line": 87,
+    "what": "o_apb_pslverr",
+    "points": 24,
+    "detail": [
+     "o_apb_pslverr:0->1",
+     "o_apb_pslverr:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 92,
+    "what": "o_apb_pruser",
+    "points": 22,
+    "detail": [
+     "o_apb_pruser[0]:0->1",
+     "o_apb_pruser[0]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 93,
+    "what": "o_apb_pbuser",
+    "points": 22,
+    "detail": [
+     "o_apb_pbuser[0]:0->1",
+     "o_apb_pbuser[0]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 85,
+    "what": "o_apb_pauser",
+    "points": 22,
+    "detail": [
+     "o_apb_pauser[0]:0->1",
+     "o_apb_pauser[0]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 86,
+    "what": "o_apb_pwuser",
+    "points": 22,
+    "detail": [
+     "o_apb_pwuser[0]:0->1",
+     "o_apb_pwuser[0]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_vlsit_apbcdc_top.sv",
+    "line": 88,
+    "what": "o_apb_pruser",
+    "points": 22,
+    "detail": [
+     "o_apb_pruser[0]:0->1",
+     "o_apb_pruser[0]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_vlsit_apbcdc_top.sv",
+    "line": 89,
+    "what": "o_apb_pbuser",
+    "points": 22,
+    "detail": [
+     "o_apb_pbuser[0]:0->1",
+     "o_apb_pbuser[0]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_vlsit_apbcdc_top.sv",
+    "line": 104,
+    "what": "o_apb_pauser",
+    "points": 22,
+    "detail": [
+     "o_apb_pauser[0]:0->1",
+     "o_apb_pauser[0]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_vlsit_apbcdc_top.sv",
+    "line": 105,
+    "what": "o_apb_pwuser",
+    "points": 22,
+    "detail": [
+     "o_apb_pwuser[0]:0->1",
+     "o_apb_pwuser[0]:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 98,
+    "what": "o_wakeup",
+    "points": 20,
+    "detail": [
+     "o_wakeup:0->1",
+     "o_wakeup:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 119,
+    "what": "reg_wakeup",
+    "points": 20,
+    "detail": [
+     "reg_wakeup:0->1",
+     "reg_wakeup:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_vlsit_apbcdc_mst.sv",
+    "line": 129,
+    "what": "w_clr_req",
+    "points": 20,
+    "detail": [
+     "w_clr_req:0->1",
+     "w_clr_req:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 84,
+    "what": "o_apb_pwakeup",
+    "points": 20,
+    "detail": [
+     "o_apb_pwakeup:0->1",
+     "o_apb_pwakeup:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 98,
+    "what": "i_wakeup",
+    "points": 20,
+    "detail": [
+     "i_wakeup:0->1",
+     "i_wakeup:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 121,
+    "what": "reg_pwakeup",
+    "points": 20,
+    "detail": [
+     "reg_pwakeup:0->1",
+     "reg_pwakeup:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_vlsit_apbcdc_slv.sv",
+    "line": 127,
+    "what": "w_wk_s",
+    "points": 20,
+    "detail": [
+     "w_wk_s:0->1",
+     "w_wk_s:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_vlsit_apbcdc_top.sv",
+    "line": 103,
+    "what": "o_apb_pwakeup",
+    "points": 20,
+    "detail": [
+     "o_apb_pwakeup:0->1",
+     "o_apb_pwakeup:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_vlsit_apbcdc_top.sv",
+    "line": 118,
+    "what": "w_wakeup",
+    "points": 20,
+    "detail": [
+     "w_wakeup:0->1",
+     "w_wakeup:1->0"
+    ]
+   },
+   {
+    "metric": "toggle",
+    "file": "m_vlsit_apbcdc_cell_sync.sv",
+    "line": 106,
+    "what": "gen_sim_msync.sim_en",
+    "points": 13,
+    "detail": [
+     "gen_sim_msync.sim_en:0->1",
+     "gen_sim_msync.sim_en:1->0"
+    ]
+   },
+   {
+    "metric": "functional",
+    "file": "nnc_cov.sv",
+    "line": 0,
+    "what": "COVP-003",
+    "points": 1,
+    "detail": []
+   },
+   {
+    "metric": "functional",
+    "file": "nnc_cov.sv",
+    "line": 0,
+    "what": "COVP-004",
+    "points": 1,
+    "detail": []
+   },
+   {
+    "metric": "functional",
+    "file": "nnc_cov.sv",
+    "line": 0,
+    "what": "COVP-023",
+    "points": 1,
+    "detail": []
+   },
+   {
+    "metric": "functional",
+    "file": "nnc_cov.sv",
+    "line": 0,
+    "what": "COVP-024",
+    "points": 1,
+    "detail": []
+   },
+   {
+    "metric": "functional",
+    "file": "nnc_cov.sv",
+    "line": 0,
+    "what": "COVP-038",
+    "points": 1,
+    "detail": []
+   },
+   {
+    "metric": "functional",
+    "file": "nnc_cov.sv",
+    "line": 0,
+    "what": "COVP-040",
+    "points": 1,
+    "detail": []
+   }
+  ],
+  "scope": "merged over 14 run(s) of the run set"
+ },
+ "functional": {
+  "COVP-001": 1305,
+  "COVP-002": 1186,
+  "COVP-003": 0,
+  "COVP-004": 0,
+  "COVP-005": 275,
+  "COVP-006": 147,
+  "COVP-007": 1186,
+  "COVP-008": 479,
+  "COVP-009": 2319,
+  "COVP-010": 94,
+  "COVP-011": 305,
+  "COVP-012": 913,
+  "COVP-013": 274,
+  "COVP-014": 1,
+  "COVP-015": 422,
+  "COVP-016": 482,
+  "COVP-017": 1796,
+  "COVP-018": 533,
+  "COVP-019": 432,
+  "COVP-020": 1791,
+  "COVP-021": 198,
+  "COVP-022": 159,
+  "COVP-023": 0,
+  "COVP-024": 0,
+  "COVP-025": 1057,
+  "COVP-026": 195,
+  "COVP-027": 2134,
+  "COVP-028": 134,
+  "COVP-029": 238,
+  "COVP-030": 255,
+  "COVP-031": 141,
+  "COVP-032": 70,
+  "COVP-033": 142,
+  "COVP-034": 1410,
+  "COVP-035": 1206,
+  "COVP-036": 1613,
+  "COVP-037": 714,
+  "COVP-038": 0,
+  "COVP-039": 258,
+  "COVP-040": 0
+ },
+ "built": true,
+ "build_errors": [],
+ "run_set": {
+  "primary": "apb4.s1",
+  "failed_runs": [],
+  "runs": [
+   {
+    "label": "apb4.s1",
+    "config": "apb4",
+    "seed": 1,
+    "note": "CFG-APB4, metastability model on",
+    "overrides": {},
+    "params": {
+     "PARA_APBCDC_ADDR_W": 32,
+     "PARA_APBCDC_DATA_W": 32,
+     "PARA_APBCDC_APB5": 0,
+     "PARA_APBCDC_USER_REQ_W": 0,
+     "PARA_APBCDC_USER_DATA_W": 0,
+     "PARA_APBCDC_USER_RESP_W": 0,
+     "PARA_APBCDC_HS_TYPE": 0,
+     "PARA_APBCDC_CELL_TYPE": 2
+    },
+    "opts": {
+     "defines": [],
+     "plusargs": "+APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1"
+    },
+    "clock_periods": {
+     "i_clk_mst": 10,
+     "i_clk_slv": 23.7
+    },
+    "status": "ran",
+    "tests": {
+     "fail": 17,
+     "pass": 11
+    },
+    "assertions_failing": [],
+    "not_verifiable": [
+     "CHK-019",
+     "CHK-020",
+     "CHK-023",
+     "CHK-026"
+    ],
+    "coverage_percent": {
+     "line": 90.0,
+     "block": 87.0,
+     "expression": 73.0,
+     "toggle": 98.3,
+     "functional": 67.5
+    }
+   },
+   {
+    "label": "apb4.s2",
+    "config": "apb4",
+    "seed": 2,
+    "note": "CFG-APB4, metastability model on",
+    "overrides": {},
+    "params": {
+     "PARA_APBCDC_ADDR_W": 32,
+     "PARA_APBCDC_DATA_W": 32,
+     "PARA_APBCDC_APB5": 0,
+     "PARA_APBCDC_USER_REQ_W": 0,
+     "PARA_APBCDC_USER_DATA_W": 0,
+     "PARA_APBCDC_USER_RESP_W": 0,
+     "PARA_APBCDC_HS_TYPE": 0,
+     "PARA_APBCDC_CELL_TYPE": 2
+    },
+    "opts": {
+     "defines": [],
+     "plusargs": "+APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1"
+    },
+    "clock_periods": {
+     "i_clk_mst": 10,
+     "i_clk_slv": 23.7
+    },
+    "status": "ran",
+    "tests": {
+     "fail": 17,
+     "pass": 11
+    },
+    "assertions_failing": [],
+    "not_verifiable": [
+     "CHK-019",
+     "CHK-020",
+     "CHK-023",
+     "CHK-026"
+    ],
+    "coverage_percent": {
+     "line": 90.0,
+     "block": 87.0,
+     "expression": 73.0,
+     "toggle": 98.3,
+     "functional": 67.5
+    }
+   },
+   {
+    "label": "apb4.s3",
+    "config": "apb4",
+    "seed": 3,
+    "note": "CFG-APB4, metastability model on",
+    "overrides": {},
+    "params": {
+     "PARA_APBCDC_ADDR_W": 32,
+     "PARA_APBCDC_DATA_W": 32,
+     "PARA_APBCDC_APB5": 0,
+     "PARA_APBCDC_USER_REQ_W": 0,
+     "PARA_APBCDC_USER_DATA_W": 0,
+     "PARA_APBCDC_USER_RESP_W": 0,
+     "PARA_APBCDC_HS_TYPE": 0,
+     "PARA_APBCDC_CELL_TYPE": 2
+    },
+    "opts": {
+     "defines": [],
+     "plusargs": "+APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1"
+    },
+    "clock_periods": {
+     "i_clk_mst": 10,
+     "i_clk_slv": 23.7
+    },
+    "status": "ran",
+    "tests": {
+     "fail": 17,
+     "pass": 11
+    },
+    "assertions_failing": [],
+    "not_verifiable": [
+     "CHK-019",
+     "CHK-020",
+     "CHK-023",
+     "CHK-026"
+    ],
+    "coverage_percent": {
+     "line": 90.0,
+     "block": 87.0,
+     "expression": 73.0,
+     "toggle": 98.3,
+     "functional": 67.5
+    }
+   },
+   {
+    "label": "model_off.s1",
+    "config": "model_off",
+    "seed": 1,
+    "note": "CFG-APB4, model at nominal latency",
+    "overrides": {},
+    "params": {
+     "PARA_APBCDC_ADDR_W": 32,
+     "PARA_APBCDC_DATA_W": 32,
+     "PARA_APBCDC_APB5": 0,
+     "PARA_APBCDC_USER_REQ_W": 0,
+     "PARA_APBCDC_USER_DATA_W": 0,
+     "PARA_APBCDC_USER_RESP_W": 0,
+     "PARA_APBCDC_HS_TYPE": 0,
+     "PARA_APBCDC_CELL_TYPE": 2
+    },
+    "opts": {
+     "defines": [],
+     "plusargs": "+APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=0"
+    },
+    "clock_periods": {
+     "i_clk_mst": 10,
+     "i_clk_slv": 23.7
+    },
+    "status": "ran",
+    "tests": {
+     "fail": 17,
+     "pass": 11
+    },
+    "assertions_failing": [],
+    "not_verifiable": [
+     "CHK-019",
+     "CHK-020",
+     "CHK-023",
+     "CHK-026"
+    ],
+    "coverage_percent": {
+     "line": 89.7,
+     "block": 87.0,
+     "expression": 73.0,
+     "toggle": 98.3,
+     "functional": 67.5
+    }
+   },
+   {
+    "label": "syn.s1",
+    "config": "syn",
+    "seed": 1,
+    "note": "synthesis branch of the cell wrapper",
+    "overrides": {},
+    "params": {
+     "PARA_APBCDC_ADDR_W": 32,
+     "PARA_APBCDC_DATA_W": 32,
+     "PARA_APBCDC_APB5": 0,
+     "PARA_APBCDC_USER_REQ_W": 0,
+     "PARA_APBCDC_USER_DATA_W": 0,
+     "PARA_APBCDC_USER_RESP_W": 0,
+     "PARA_APBCDC_HS_TYPE": 0,
+     "PARA_APBCDC_CELL_TYPE": 2
+    },
+    "opts": {
+     "defines": [
+      "VLSIT_SYNTHESIS"
+     ],
+     "plusargs": "+APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1"
+    },
+    "clock_periods": {
+     "i_clk_mst": 10,
+     "i_clk_slv": 23.7
+    },
+    "status": "ran",
+    "tests": {
+     "fail": 17,
+     "pass": 11
+    },
+    "assertions_failing": [],
+    "not_verifiable": [
+     "CHK-019",
+     "CHK-020",
+     "CHK-023",
+     "CHK-026"
+    ],
+    "coverage_percent": {
+     "line": 88.1,
+     "block": 87.1,
+     "expression": 73.6,
+     "toggle": 98.3,
+     "functional": 67.5
+    }
+   },
+   {
+    "label": "4ph.s1",
+    "config": "4ph",
+    "seed": 1,
+    "note": "CFG-4PH",
+    "overrides": {
+     "PARA_APBCDC_HS_TYPE": 1
+    },
+    "params": {
+     "PARA_APBCDC_ADDR_W": 32,
+     "PARA_APBCDC_DATA_W": 32,
+     "PARA_APBCDC_APB5": 0,
+     "PARA_APBCDC_USER_REQ_W": 0,
+     "PARA_APBCDC_USER_DATA_W": 0,
+     "PARA_APBCDC_USER_RESP_W": 0,
+     "PARA_APBCDC_HS_TYPE": 1,
+     "PARA_APBCDC_CELL_TYPE": 2
+    },
+    "opts": {
+     "defines": [],
+     "plusargs": "+APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1"
+    },
+    "clock_periods": {
+     "i_clk_mst": 10,
+     "i_clk_slv": 23.7
+    },
+    "status": "ran",
+    "tests": {
+     "fail": 19,
+     "pass": 9
+    },
+    "assertions_failing": [],
+    "not_verifiable": [
+     "CHK-019",
+     "CHK-020",
+     "CHK-025",
+     "CHK-031"
+    ],
+    "coverage_percent": {
+     "line": 93.4,
+     "block": 97.4,
+     "expression": 81.1,
+     "toggle": 98.4,
+     "functional": 67.5
+    }
+   },
+   {
+    "label": "4ph_off.s1",
+    "config": "4ph_off",
+    "seed": 1,
+    "note": "CFG-4PH, model at nominal latency",
+    "overrides": {
+     "PARA_APBCDC_HS_TYPE": 1
+    },
+    "params": {
+     "PARA_APBCDC_ADDR_W": 32,
+     "PARA_APBCDC_DATA_W": 32,
+     "PARA_APBCDC_APB5": 0,
+     "PARA_APBCDC_USER_REQ_W": 0,
+     "PARA_APBCDC_USER_DATA_W": 0,
+     "PARA_APBCDC_USER_RESP_W": 0,
+     "PARA_APBCDC_HS_TYPE": 1,
+     "PARA_APBCDC_CELL_TYPE": 2
+    },
+    "opts": {
+     "defines": [],
+     "plusargs": "+APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=0"
+    },
+    "clock_periods": {
+     "i_clk_mst": 10,
+     "i_clk_slv": 23.7
+    },
+    "status": "ran",
+    "tests": {
+     "fail": 19,
+     "pass": 9
+    },
+    "assertions_failing": [],
+    "not_verifiable": [
+     "CHK-019",
+     "CHK-020",
+     "CHK-025",
+     "CHK-031"
+    ],
+    "coverage_percent": {
+     "line": 93.0,
+     "block": 97.4,
+     "expression": 81.1,
+     "toggle": 98.4,
+     "functional": 67.5
+    }
+   },
+   {
+    "label": "apb5.s1",
+    "config": "apb5",
+    "seed": 1,
+    "note": "CFG-APB5",
+    "overrides": {
+     "PARA_APBCDC_APB5": 1
+    },
+    "params": {
+     "PARA_APBCDC_ADDR_W": 32,
+     "PARA_APBCDC_DATA_W": 32,
+     "PARA_APBCDC_APB5": 1,
+     "PARA_APBCDC_USER_REQ_W": 0,
+     "PARA_APBCDC_USER_DATA_W": 0,
+     "PARA_APBCDC_USER_RESP_W": 0,
+     "PARA_APBCDC_HS_TYPE": 0,
+     "PARA_APBCDC_CELL_TYPE": 2
+    },
+    "opts": {
+     "defines": [],
+     "plusargs": "+APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1"
+    },
+    "clock_periods": {
+     "i_clk_mst": 10,
+     "i_clk_slv": 23.7
+    },
+    "status": "ran",
+    "tests": {
+     "fail": 18,
+     "pass": 10
+    },
+    "assertions_failing": [],
+    "not_verifiable": [
+     "CHK-021",
+     "CHK-023",
+     "CHK-026"
+    ],
+    "coverage_percent": {
+     "line": 93.0,
+     "block": 87.0,
+     "expression": 75.7,
+     "toggle": 99.0,
+     "functional": 77.5
+    }
+   },
+   {
+    "label": "user.s1",
+    "config": "user",
+    "seed": 1,
+    "note": "CFG-USER",
+    "overrides": {
+     "PARA_APBCDC_APB5": 1,
+     "PARA_APBCDC_USER_REQ_W": 4,
+     "PARA_APBCDC_USER_DATA_W": 8,
+     "PARA_APBCDC_USER_RESP_W": 4
+    },
+    "params": {
+     "PARA_APBCDC_ADDR_W": 32,
+     "PARA_APBCDC_DATA_W": 32,
+     "PARA_APBCDC_APB5": 1,
+     "PARA_APBCDC_USER_REQ_W": 4,
+     "PARA_APBCDC_USER_DATA_W": 8,
+     "PARA_APBCDC_USER_RESP_W": 4,
+     "PARA_APBCDC_HS_TYPE": 0,
+     "PARA_APBCDC_CELL_TYPE": 2
+    },
+    "opts": {
+     "defines": [],
+     "plusargs": "+APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1"
+    },
+    "clock_periods": {
+     "i_clk_mst": 10,
+     "i_clk_slv": 23.7
+    },
+    "status": "ran",
+    "tests": {
+     "fail": 18,
+     "pass": 10
+    },
+    "assertions_failing": [],
+    "not_verifiable": [
+     "CHK-021",
+     "CHK-023",
+     "CHK-026"
+    ],
+    "coverage_percent": {
+     "line": 95.9,
+     "block": 87.0,
+     "expression": 75.7,
+     "toggle": 99.7,
+     "functional": 82.5
+    }
+   },
+   {
+    "label": "sync3.s1",
+    "config": "sync3",
+    "seed": 1,
+    "note": "CFG-SYNC3, 3-FF cell",
+    "overrides": {
+     "PARA_APBCDC_CELL_TYPE": 3
+    },
+    "params": {
+     "PARA_APBCDC_ADDR_W": 32,
+     "PARA_APBCDC_DATA_W": 32,
+     "PARA_APBCDC_APB5": 0,
+     "PARA_APBCDC_USER_REQ_W": 0,
+     "PARA_APBCDC_USER_DATA_W": 0,
+     "PARA_APBCDC_USER_RESP_W": 0,
+     "PARA_APBCDC_HS_TYPE": 0,
+     "PARA_APBCDC_CELL_TYPE": 3
+    },
+    "opts": {
+     "defines": [],
+     "plusargs": "+APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1"
+    },
+    "clock_periods": {
+     "i_clk_mst": 10,
+     "i_clk_slv": 23.7
+    },
+    "status": "ran",
+    "tests": {
+     "fail": 17,
+     "pass": 11
+    },
+    "assertions_failing": [],
+    "not_verifiable": [
+     "CHK-019",
+     "CHK-020",
+     "CHK-023",
+     "CHK-026"
+    ],
+    "coverage_percent": {
+     "line": 90.0,
+     "block": 87.0,
+     "expression": 73.0,
+     "toggle": 98.3,
+     "functional": 67.5
+    }
+   },
+   {
+    "label": "sync4.s1",
+    "config": "sync4",
+    "seed": 1,
+    "note": "CFG-SYNC3, 4-FF cell",
+    "overrides": {
+     "PARA_APBCDC_CELL_TYPE": 4
+    },
+    "params": {
+     "PARA_APBCDC_ADDR_W": 32,
+     "PARA_APBCDC_DATA_W": 32,
+     "PARA_APBCDC_APB5": 0,
+     "PARA_APBCDC_USER_REQ_W": 0,
+     "PARA_APBCDC_USER_DATA_W": 0,
+     "PARA_APBCDC_USER_RESP_W": 0,
+     "PARA_APBCDC_HS_TYPE": 0,
+     "PARA_APBCDC_CELL_TYPE": 4
+    },
+    "opts": {
+     "defines": [],
+     "plusargs": "+APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1"
+    },
+    "clock_periods": {
+     "i_clk_mst": 10,
+     "i_clk_slv": 23.7
+    },
+    "status": "ran",
+    "tests": {
+     "fail": 17,
+     "pass": 11
+    },
+    "assertions_failing": [],
+    "not_verifiable": [
+     "CHK-019",
+     "CHK-020",
+     "CHK-023",
+     "CHK-026"
+    ],
+    "coverage_percent": {
+     "line": 90.0,
+     "block": 87.0,
+     "expression": 73.0,
+     "toggle": 98.3,
+     "functional": 67.5
+    }
+   },
+   {
+    "label": "min.s1",
+    "config": "min",
+    "seed": 1,
+    "note": "CFG-MIN",
+    "overrides": {
+     "PARA_APBCDC_ADDR_W": 1,
+     "PARA_APBCDC_DATA_W": 8
+    },
+    "params": {
+     "PARA_APBCDC_ADDR_W": 1,
+     "PARA_APBCDC_DATA_W": 8,
+     "PARA_APBCDC_APB5": 0,
+     "PARA_APBCDC_USER_REQ_W": 0,
+     "PARA_APBCDC_USER_DATA_W": 0,
+     "PARA_APBCDC_USER_RESP_W": 0,
+     "PARA_APBCDC_HS_TYPE": 0,
+     "PARA_APBCDC_CELL_TYPE": 2
+    },
+    "opts": {
+     "defines": [],
+     "plusargs": "+APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1"
+    },
+    "clock_periods": {
+     "i_clk_mst": 10,
+     "i_clk_slv": 23.7
+    },
+    "status": "ran",
+    "tests": {
+     "fail": 17,
+     "pass": 11
+    },
+    "assertions_failing": [],
+    "not_verifiable": [
+     "CHK-019",
+     "CHK-020",
+     "CHK-023",
+     "CHK-026"
+    ],
+    "coverage_percent": {
+     "line": 90.0,
+     "block": 87.0,
+     "expression": 73.0,
+     "toggle": 94.5,
+     "functional": 67.5
+    }
+   },
+   {
+    "label": "slv_fast.s1",
+    "config": "slv_fast",
+    "seed": 1,
+    "note": "completer clock 3x faster",
+    "overrides": {},
+    "params": {
+     "PARA_APBCDC_ADDR_W": 32,
+     "PARA_APBCDC_DATA_W": 32,
+     "PARA_APBCDC_APB5": 0,
+     "PARA_APBCDC_USER_REQ_W": 0,
+     "PARA_APBCDC_USER_DATA_W": 0,
+     "PARA_APBCDC_USER_RESP_W": 0,
+     "PARA_APBCDC_HS_TYPE": 0,
+     "PARA_APBCDC_CELL_TYPE": 2
+    },
+    "opts": {
+     "defines": [],
+     "plusargs": "+APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1"
+    },
+    "clock_periods": {
+     "i_clk_mst": 30,
+     "i_clk_slv": 10
+    },
+    "status": "ran",
+    "tests": {
+     "fail": 17,
+     "pass": 11
+    },
+    "assertions_failing": [],
+    "not_verifiable": [
+     "CHK-019",
+     "CHK-020",
+     "CHK-023",
+     "CHK-026"
+    ],
+    "coverage_percent": {
+     "line": 90.0,
+     "block": 87.0,
+     "expression": 73.0,
+     "toggle": 98.3,
+     "functional": 67.5
+    }
+   },
+   {
+    "label": "slv_slow.s1",
+    "config": "slv_slow",
+    "seed": 1,
+    "note": "completer clock 9x slower",
+    "overrides": {},
+    "params": {
+     "PARA_APBCDC_ADDR_W": 32,
+     "PARA_APBCDC_DATA_W": 32,
+     "PARA_APBCDC_APB5": 0,
+     "PARA_APBCDC_USER_REQ_W": 0,
+     "PARA_APBCDC_USER_DATA_W": 0,
+     "PARA_APBCDC_USER_RESP_W": 0,
+     "PARA_APBCDC_HS_TYPE": 0,
+     "PARA_APBCDC_CELL_TYPE": 2
+    },
+    "opts": {
+     "defines": [],
+     "plusargs": "+APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1"
+    },
+    "clock_periods": {
+     "i_clk_mst": 10,
+     "i_clk_slv": 90
+    },
+    "status": "ran",
+    "tests": {
+     "fail": 17,
+     "pass": 11
+    },
+    "assertions_failing": [],
+    "not_verifiable": [
+     "CHK-019",
+     "CHK-020",
+     "CHK-023",
+     "CHK-026"
+    ],
+    "coverage_percent": {
+     "line": 90.0,
+     "block": 87.0,
+     "expression": 73.0,
+     "toggle": 98.3,
+     "functional": 67.5
+    }
+   }
+  ]
+ },
+ "host": "wsl",
+ "unreviewed_gates": []
+}

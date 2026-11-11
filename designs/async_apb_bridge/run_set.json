@@ -1,0 +1,18 @@
+{
+ "note": "Configurations named by the specification (Sections 4 and 8): CFG-APB4, CFG-4PH, CFG-APB5, CFG-USER (user widths 4, 8, 4), CFG-SYNC3 (CELL_TYPE 3 and 4), CFG-MIN; the metastability model on with seeds 1-3 and off, and the synthesis branch (TEST-019); slower and faster completer clocks (the 3:1 and 9:1 ratios of the delivered regression). Every run starts from the design configuration (clocks 10 / 23.7 ns, model on).",
+ "seeds": [1],
+ "configs": [
+  {"name": "apb4", "note": "CFG-APB4, metastability model on", "seeds": [1, 2, 3]},
+  {"name": "model_off", "note": "CFG-APB4, model at nominal latency", "plusargs": "+APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=0"},
+  {"name": "syn", "note": "synthesis branch of the cell wrapper", "defines": "VLSIT_SYNTHESIS"},
+  {"name": "4ph", "note": "CFG-4PH", "params": {"PARA_APBCDC_HS_TYPE": 1}},
+  {"name": "4ph_off", "note": "CFG-4PH, model at nominal latency", "params": {"PARA_APBCDC_HS_TYPE": 1}, "plusargs": "+APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=0"},
+  {"name": "apb5", "note": "CFG-APB5", "params": {"PARA_APBCDC_APB5": 1}},
+  {"name": "user", "note": "CFG-USER", "params": {"PARA_APBCDC_APB5": 1, "PARA_APBCDC_USER_REQ_W": 4, "PARA_APBCDC_USER_DATA_W": 8, "PARA_APBCDC_USER_RESP_W": 4}},
+  {"name": "sync3", "note": "CFG-SYNC3, 3-FF cell", "params": {"PARA_APBCDC_CELL_TYPE": 3}},
+  {"name": "sync4", "note": "CFG-SYNC3, 4-FF cell", "params": {"PARA_APBCDC_CELL_TYPE": 4}},
+  {"name": "min", "note": "CFG-MIN", "params": {"PARA_APBCDC_ADDR_W": 1, "PARA_APBCDC_DATA_W": 8}},
+  {"name": "slv_fast", "note": "completer clock 3x faster", "clock_periods": "i_clk_mst=30,i_clk_slv=10"},
+  {"name": "slv_slow", "note": "completer clock 9x slower", "clock_periods": "i_clk_mst=10,i_clk_slv=90"}
+ ]
+}

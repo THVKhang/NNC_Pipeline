@@ -1,0 +1,11 @@
+--- rtl/m_vlsit_apbcdc_mst.sv
++++ rtl/m_vlsit_apbcdc_mst.sv
+@@ -241,7 +241,7 @@
+   // PSLVERR, PRUSER, PBUSER; an absent user field is 0.
+   assign o_apb_pready  = reg_pready;
+   assign o_apb_prdata  = reg_resp_payload[PARA_APBCDC_DATA_W-1:0];
+-  assign o_apb_pslverr = reg_resp_payload[PARA_APBCDC_DATA_W];
++  assign o_apb_pslverr = 1'b0;
+   if (LPARA_UDAT_W != 32'd0) begin : gen_pruser
+     // Response output sliced from the response output registers.
+     assign o_apb_pruser = {{(LPARA_PUDAT_W - LPARA_UDAT_W){1'b0}},

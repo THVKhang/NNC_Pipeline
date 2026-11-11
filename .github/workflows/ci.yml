@@ -1,0 +1,73 @@
+# CI of NNC Pipeline: no LLM call, no secret.
+#   unit  the unit tests of every stage (deterministic parts, no simulator)
+#   kit   the reproduction kit designs/<ip>/sim of each design, run with make only (no NNC), and its
+#         outcome compared with the committed results (nnc kit-check): same tests, same failing tests,
+#         same failing and never-hit assertions, same NOT_VERIFIABLE checks.
+# Simulator versions are pinned to the ones the committed results were produced with.
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  OSS_CAD_SUITE: "2026-11-07"     # Verilator 5.055
+  COCOTB: "2.1.0"
+
+jobs:
+  unit:
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        python: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+
+  kit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        design: [sync_fifo, apb_tlul_bridge, axi2apb_bridge, async_gray_fifo, async_apb_bridge]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Verilator (OSS CAD Suite) and cocotb
+        run: |
+          tag="${OSS_CAD_SUITE}"
+          curl -fsSL -o "$RUNNER_TEMP/ocs.tgz" \
+            "https://github.com/YosysHQ/oss-cad-suite-build/releases/download/${tag}/oss-cad-suite-linux-x64-${tag//-/}.tgz"
+          tar -xzf "$RUNNER_TEMP/ocs.tgz" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/oss-cad-suite/bin" >> "$GITHUB_PATH"
+          python -m pip install "cocotb==${COCOTB}"
+      - name: Tool versions
+        run: |
+          verilator --version
+          cocotb-config --version
+          python --version
+      - name: Run the reproduction kit (make only)
+        working-directory: designs/${{ matrix.design }}/sim
+        run: make regression SEED=1 > sim.log 2>&1 || echo "make returned $?"
+      - name: Compare with the committed results
+        run: python -m nnc kit-check ${{ matrix.design }}
+      - name: Keep the simulation log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sim-${{ matrix.design }}
+          path: |
+            designs/${{ matrix.design }}/sim/sim.log
+            designs/${{ matrix.design }}/sim/results.xml
+          if-no-files-found: ignore

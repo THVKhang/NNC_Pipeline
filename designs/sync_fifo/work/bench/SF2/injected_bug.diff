@@ -1,0 +1,11 @@
+--- rtl/m_vlsit_sfifo_wr.sv
++++ rtl/m_vlsit_sfifo_wr.sv
+@@ -155,7 +155,7 @@
+       reg_full     <= (w_occ_nxt >= PARA_SFIFO_DEPTH);
+       reg_full_thr <= (w_occ_nxt >= w_full_thr_ext);
+       // A write that is blocked by the software reset is not an error and raises no pulse.
+-      reg_overflow <= i_wr_en & ~w_wr_blk & reg_full;
++      reg_overflow <= i_wr_en & reg_full;
+       reg_rptr_s   <= i_rd_ptr;
+       reg_ack_s    <= i_ack_rd;
+     end

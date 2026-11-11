@@ -1,0 +1,85 @@
+{
+ "design": "axi2apb_bridge",
+ "summary": {
+  "bugs": 3,
+  "caught": 3,
+  "detection_rate": 100.0,
+  "triaged": 0,
+  "triage_correct": 0,
+  "triage_accuracy": null,
+  "triage_cost_usd": 0
+ },
+ "bugs": [
+  {
+   "id": "AX1",
+   "title": "write PPROT taken from the read channel",
+   "file": "m_axi2apb_apb_ctrl.sv",
+   "spec": "PPROT = AWPROT for writes",
+   "expect": "A_rtl_wrong",
+   "caught": true,
+   "new_failing": [
+    "test_chk_018_long_apb_wait",
+    "test_chk_021_response_backpressure",
+    "test_chk_023_unsupported_writes",
+    "test_chk_027_random_legal_bursts",
+    "test_chk_029_pprot_passthrough",
+    "test_chk_030_id_echo",
+    "test_regression_random",
+    "CHK-016"
+   ],
+   "status": "ran",
+   "triage_most_likely": [],
+   "triage_verdict": null,
+   "triage_correct": null,
+   "triage_cost_usd": null
+  },
+  {
+   "id": "AX2",
+   "title": "PSLVERR of a read dropped",
+   "file": "m_axi2apb_apb_ctrl.sv",
+   "spec": "PSLVERR -> SLVERR on R",
+   "expect": "A_rtl_wrong",
+   "caught": true,
+   "new_failing": [
+    "test_chk_024_read_pslverr",
+    "test_chk_026_unmapped_default_completer",
+    "test_regression_random",
+    "CHK-011"
+   ],
+   "status": "ran",
+   "triage_most_likely": [],
+   "triage_verdict": null,
+   "triage_correct": null,
+   "triage_cost_usd": null
+  },
+  {
+   "id": "AX3",
+   "title": "read burst one beat short",
+   "file": "m_axi2apb_rd_seq.sv",
+   "spec": "ARLEN+1 beats",
+   "expect": "A_rtl_wrong",
+   "caught": true,
+   "new_failing": [
+    "test_chk_018_long_apb_wait",
+    "test_chk_019_arbitration_round_robin",
+    "test_chk_021_response_backpressure",
+    "test_chk_022_unsupported_reads",
+    "test_chk_024_read_pslverr",
+    "test_chk_026_unmapped_default_completer",
+    "test_chk_027_random_legal_bursts",
+    "test_chk_028_subword_unaligned",
+    "test_chk_029_pprot_passthrough",
+    "test_chk_030_id_echo",
+    "test_chk_031_reset_mid_transaction",
+    "test_regression_random",
+    "CHK-016",
+    "CHK-010"
+   ],
+   "status": "ran",
+   "triage_most_likely": [],
+   "triage_verdict": null,
+   "triage_correct": null,
+   "triage_cost_usd": null
+  }
+ ]
+}

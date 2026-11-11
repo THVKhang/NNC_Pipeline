@@ -1,0 +1,11 @@
+--- rtl/m_vlsit_apbcdc_mst.sv
++++ rtl/m_vlsit_apbcdc_mst.sv
+@@ -134,7 +134,7 @@
+ 
+   // Acknowledge event. Two-phase: the synchronized acknowledge equals the request bit again.
+   // Four-phase: the synchronized acknowledge is high.
+-  assign w_ack_event = (PARA_APBCDC_HS_TYPE == 32'd0) ? (w_ack_s == reg_req) : w_ack_s;
++  assign w_ack_event = (PARA_APBCDC_HS_TYPE == 32'd0) ? (w_ack_s != reg_req) : w_ack_s;
+ 
+   // Request bundle packed from the Setup cycle. Field order from bit 0: PADDR, PPROT, PWRITE,
+   // PSTRB, PWDATA, PAUSER, PWUSER; a field of width 0 has no bit.
