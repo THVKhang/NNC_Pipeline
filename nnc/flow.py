@@ -125,7 +125,9 @@ def stage_contract(d: Design, o: Options) -> None:
     top = d.config().get("top")
     if not top:
         raise ProjectError("set the DUT top module: nnc config <design> top=<module>")
-    iface = contract_mod.extract_interface(_read(index_path(d, ip)))
+    iface = contract_mod.extract_interface(_read(index_path(d, ip)), top=top)
+    if _clock_relation(d) == "async":
+        iface["clock_relation"] = "async"
     c = contract_mod.plan(_read(d.work / "rules.json"), iface, top, _backend(d, o), _logs(d), model=o.contract_model,
                           unreviewed_gates=bypass)
     contract_mod.write_outputs(c, d.work)
@@ -168,7 +170,7 @@ def test_map(d: Design) -> dict[str, list[str]]:
 def stage_gen_tests(d: Design, o: Options) -> None:
     _gate(d, "gen-tests", o)
     rep = gen_tests.generate(contract_mod.selected(_read(d.work / "contract.json")), _read(d.work / "rules.json"), _backend(d, o), _logs(d),
-                             test_file(d), model=o.tests_model)
+                             test_file(d), model=o.tests_model, run_opts=sim.sim_options(d.config()))
     _write(d.work / "gen_tests.json", rep)
     o.say(f"[gen-tests] {rep['file']}: {rep['status']} after {rep['attempts']} attempt(s)"
           + (f" PROBLEMS {rep['problems'][:4]}" if rep["problems"] else ""))
@@ -185,9 +187,26 @@ def _summ_sim(r: dict) -> str:
             f"{sum(v['hits'] == 0 for v in a.values())}; line coverage {r['coverage'].get('percent')} %")
 
 
-def _periods(d: Design) -> dict[str, int]:
-    """Design configuration clock_periods ("i_clk_rd=20,i_clk_wr=10"; ns, default 10 each)."""
+def _periods(d: Design) -> dict[str, float]:
+    """Design configuration clock_periods ("i_clk_rd=13.7,i_clk_wr=10"; ns, default 10 each)."""
     return sim.parse_periods(d.config().get("clock_periods"))
+
+
+def _simkw(d: Design) -> dict:
+    """Clock periods and run options (defines, plusargs) of the design configuration, for every run."""
+    return {"clock_periods": _periods(d), "opts": sim.sim_options(d.config())}
+
+
+CLOCK_RELATIONS = ("sync", "async")
+
+
+def _clock_relation(d: Design) -> str | None:
+    """Design configuration clock_relation: "async" when the clocks of the specification are mutually
+    asynchronous (written into the contract interface, so every generator and the simulation see it)."""
+    rel = (d.config().get("clock_relation") or "").strip().lower()
+    if rel and rel not in CLOCK_RELATIONS:
+        raise ProjectError(f"clock_relation must be one of {CLOCK_RELATIONS}, got {rel!r}")
+    return rel or None
 
 
 def stage_sim(d: Design, o: Options) -> None:
@@ -195,7 +214,7 @@ def stage_sim(d: Design, o: Options) -> None:
     contract = _read(d.work / "contract.json")
     host = default_host()
     res = sim.run(host, contract, d.root / "rtl", d.root / "verif" / "sva", test_files(d), seed=o.seed,
-                  clock_periods=_periods(d))
+                  **_simkw(d))
     o.say("[sim] " + _summ_sim(res))
     for rnd in range(1, o.repair_rounds + 1):
         lib = gen_tests.library_errors(res) if res.get("status") == "ran" else []
@@ -209,10 +228,10 @@ def stage_sim(d: Design, o: Options) -> None:
             break
         o.say(f"[sim] {len(errs)} test(s) raised Python errors in the test code; repair round {rnd} (no RTL, no failed checks sent)")
         rep = gen_tests.repair(contract_mod.selected(contract), _read(d.work / "rules.json"), _backend(d, o), _logs(d), test_file(d), errs,
-                               model=o.tests_model, round_no=rnd)
+                               model=o.tests_model, round_no=rnd, run_opts=sim.sim_options(d.config()))
         o.say(f"[sim] repair: {rep['status']}")
         res = sim.run(host, contract, d.root / "rtl", d.root / "verif" / "sva", test_files(d), seed=o.seed,
-                      clock_periods=_periods(d))
+                      **_simkw(d))
         o.say("[sim] " + _summ_sim(res))
     _save_sim(d, res)
 
@@ -220,7 +239,8 @@ def stage_sim(d: Design, o: Options) -> None:
 def _write_kit(d: Design, contract: dict, params: dict | None) -> None:
     """designs/<ip>/sim/: Makefile and inputs that reproduce the regression without NNC."""
     kit = sim.kit_files(contract, sim.rtl_files(d.root / "rtl"), sim.checker_files(d.root / "verif" / "sva"),
-                        test_files(d), params if params is not None else sim.param_values(contract), _periods(d))
+                        test_files(d), params if params is not None else sim.param_values(contract), _periods(d),
+                        sim.sim_options(d.config()))
     for rel, text in kit.items():
         p = d.root / rel
         p.parent.mkdir(parents=True, exist_ok=True)
@@ -330,7 +350,7 @@ def stage_cover(d: Design, o: Options) -> None:
             o.say(f"[cover] round {rnd}: no usable scenario ({len(an['output']['unreachable'])} unreachable claims)")
             break
         code, problems = closure.write_tests(contract, rules_doc, keep, test_file(d), backend, _logs(d), rnd,
-                                             o.tests_model, usage)
+                                             o.tests_model, usage, run_opts=sim.sim_options(d.config()))
         if problems:
             entry["note"] = f"closure module invalid: {problems[:3]}"
             o.say(f"[cover] round {rnd}: {entry['note']}")
@@ -339,7 +359,7 @@ def stage_cover(d: Design, o: Options) -> None:
         mod.write_text(code, encoding="utf-8")
         entry["tests"] = sorted(n for n in gen_tests.test_check_map(code))
         res = sim.run(default_host(), contract, d.root / "rtl", d.root / "verif" / "sva", test_files(d),
-                      seed=o.seed, clock_periods=_periods(d))
+                      seed=o.seed, **_simkw(d))
         o.say(f"[cover] round {rnd}: {len(keep)} scenarios, {len(entry['tests'])} tests -> {_summ_sim(res)}")
         new = closure.baseline(res, metric) if res.get("status") == "ran" else None
         entry.update({k: (new or {}).get(k) for k in ("percent", "hit", "total")})
@@ -372,7 +392,7 @@ def run_inject(d: Design, o: Options, patch: Path, out: Path, do_triage: bool = 
     changed = inject.make_copy(d.root / "rtl", patch.read_text(encoding="utf-8"), out / "rtl")
     (out / "injected_bug.diff").write_bytes(patch.read_bytes())
     res = sim.run(default_host(), contract, out / "rtl", d.root / "verif" / "sva", test_files(d), seed=o.seed,
-                  clock_periods=_periods(d))
+                  **_simkw(d))
     o.say(f"[inject] patched {changed} -> {_summ_sim(res)}")
     log = Path(res.pop("out_dir", "")) if res.get("out_dir") else None
     res["unreviewed_gates"] = d.require_gate("G3_verif_sources", True)
@@ -432,7 +452,7 @@ def stage_mutate(d: Design, o: Options) -> None:
     _gate(d, "mutate", o)
     baseline = _read(d.work / "results.json") if (d.work / "results.json").is_file() else None
     res = mutate.run(default_host(), _read(d.work / "contract.json"), d.root / "rtl", d.root / "verif" / "sva",
-                     test_files(d), count=o.mutants, seed=o.seed, clock_periods=_periods(d), baseline=baseline)
+                     test_files(d), count=o.mutants, seed=o.seed, **_simkw(d), baseline=baseline)
     ex = res.get("excluded_uncovered") or {}
     o.say(f"[mutate] {res['count']} mutants: killed {res['killed']}, survived {res['survived']}, "
           f"not compiled {res['not_compiled']}; score {res['score']} % (candidates on executed lines only; "

@@ -2,132 +2,6 @@
  "mutants": [
   {
    "id": "M01",
-   "file": "m_tlul_if.sv",
-   "line": 100,
-   "operator": "ne_to_eq",
-   "original": "assign w_resp_err   = i_tlul_d_error | (i_tlul_d_opcode != w_exp_opcode) |",
-   "mutated": "  assign w_resp_err   = i_tlul_d_error | (i_tlul_d_opcode == w_exp_opcode) |",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_local_error",
-    "test_chk_019_device_error",
-    "test_chk_020_wrong_opcode_source",
-    "test_chk_021_orphan_responses",
-    "test_chk_022_no_response_no_timeout",
-    "test_chk_023_prompt_write",
-    "test_chk_024_prompt_read",
-    "test_chk_025_ignored_inputs",
-    "test_chk_026_backpressure_delay",
-    "test_chk_027_same_cycle_response",
-    "test_chk_028_back_to_back",
-    "test_chk_029_random_scoreboard",
-    "test_chk_030_reset",
-    "test_chk_031_reset_abandons_transfer",
-    "test_regression_random",
-    "test_cov_101_long_response_delay",
-    "test_cov_102_stale_response_at_reset_release"
-   ],
-   "killed_by_checks": [
-    "CHK-010"
-   ]
-  },
-  {
-   "id": "M02",
-   "file": "m_apb_if.sv",
-   "line": 62,
-   "operator": "eq_to_ne",
-   "original": "assign w_setup = (reg_fsm_apb_current_state == ENUM_ST_IDLE) & i_apb_psel & ~i_apb_penable;",
-   "mutated": "  assign w_setup = (reg_fsm_apb_current_state != ENUM_ST_IDLE) & i_apb_psel & ~i_apb_penable;",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_local_error",
-    "test_chk_019_device_error",
-    "test_chk_020_wrong_opcode_source",
-    "test_chk_021_orphan_responses",
-    "test_chk_022_no_response_no_timeout",
-    "test_chk_023_prompt_write",
-    "test_chk_024_prompt_read",
-    "test_chk_025_ignored_inputs",
-    "test_chk_026_backpressure_delay",
-    "test_chk_027_same_cycle_response",
-    "test_chk_028_back_to_back",
-    "test_chk_029_random_scoreboard",
-    "test_chk_030_reset",
-    "test_chk_031_reset_abandons_transfer",
-    "test_regression_random",
-    "test_cov_101_long_response_delay",
-    "test_cov_102_stale_response_at_reset_release"
-   ],
-   "killed_by_checks": [
-    "CHK-006",
-    "CHK-007"
-   ]
-  },
-  {
-   "id": "M03",
-   "file": "m_tlul_if.sv",
-   "line": 134,
-   "operator": "negate_if",
-   "original": "if (i_tlul_a_ready) begin",
-   "mutated": "        if (!(i_tlul_a_ready)) begin",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_local_error",
-    "test_chk_019_device_error",
-    "test_chk_020_wrong_opcode_source",
-    "test_chk_021_orphan_responses",
-    "test_chk_022_no_response_no_timeout",
-    "test_chk_023_prompt_write",
-    "test_chk_024_prompt_read",
-    "test_chk_025_ignored_inputs",
-    "test_chk_026_backpressure_delay",
-    "test_chk_027_same_cycle_response",
-    "test_chk_028_back_to_back",
-    "test_chk_029_random_scoreboard",
-    "test_chk_030_reset",
-    "test_chk_031_reset_abandons_transfer",
-    "test_regression_random",
-    "test_cov_101_long_response_delay",
-    "test_cov_102_stale_response_at_reset_release"
-   ],
-   "killed_by_checks": [
-    "CHK-015",
-    "CHK-016",
-    "CHK-008"
-   ]
-  },
-  {
-   "id": "M04",
-   "file": "m_tlul_if.sv",
-   "line": 95,
-   "operator": "eq_to_ne",
-   "original": "(reg_fsm_tlul_current_state == ENUM_ST_WAIT));",
-   "mutated": "                       (reg_fsm_tlul_current_state != ENUM_ST_WAIT));",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_local_error",
-    "test_chk_019_device_error",
-    "test_chk_020_wrong_opcode_source",
-    "test_chk_021_orphan_responses",
-    "test_chk_022_no_response_no_timeout",
-    "test_chk_023_prompt_write",
-    "test_chk_024_prompt_read",
-    "test_chk_025_ignored_inputs",
-    "test_chk_026_backpressure_delay",
-    "test_chk_028_back_to_back",
-    "test_chk_029_random_scoreboard",
-    "test_chk_030_reset",
-    "test_chk_031_reset_abandons_transfer",
-    "test_regression_random",
-    "test_cov_101_long_response_delay",
-    "test_cov_102_stale_response_at_reset_release"
-   ],
-   "killed_by_checks": [
-    "CHK-010"
-   ]
-  },
-  {
-   "id": "M05",
    "file": "m_apb_if.sv",
    "line": 116,
    "operator": "one_to_zero",
@@ -160,12 +34,72 @@
    ]
   },
   {
-   "id": "M06",
+   "id": "M02",
    "file": "m_apb_if.sv",
-   "line": 135,
+   "line": 108,
    "operator": "zero_to_one",
-   "original": "reg_pready  <= 1'b0;",
-   "mutated": "      reg_pready  <= 1'b1;",
+   "original": "w_pready_nxt  = 1'b0;",
+   "mutated": "    w_pready_nxt  = 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M03",
+   "file": "m_tlul_if.sv",
+   "line": 100,
+   "operator": "ne_to_eq",
+   "original": "assign w_resp_err   = i_tlul_d_error | (i_tlul_d_opcode != w_exp_opcode) |",
+   "mutated": "  assign w_resp_err   = i_tlul_d_error | (i_tlul_d_opcode == w_exp_opcode) |",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M04",
+   "file": "m_tlul_if.sv",
+   "line": 189,
+   "operator": "zero_to_one",
+   "original": "reg_a_rd   <= 1'b0;",
+   "mutated": "      reg_a_rd   <= 1'b1;",
    "status": "killed",
    "killed_by_tests": [
     "test_chk_018_local_error",
@@ -191,7 +125,134 @@
    ]
   },
   {
+   "id": "M05",
+   "file": "m_apb_if.sv",
+   "line": 111,
+   "operator": "negate_if",
+   "original": "if (w_local_err) begin",
+   "mutated": "    if (!(w_local_err)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M06",
+   "file": "m_tlul_if.sv",
+   "line": 153,
+   "operator": "eq_to_ne",
+   "original": "w_a_valid_nxt   = (w_fsm_tlul_nxt_state == ENUM_ST_REQ);",
+   "mutated": "    w_a_valid_nxt   = (w_fsm_tlul_nxt_state != ENUM_ST_REQ);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-014",
+    "CHK-006",
+    "CHK-009"
+   ]
+  },
+  {
    "id": "M07",
+   "file": "m_tlul_if.sv",
+   "line": 130,
+   "operator": "negate_if",
+   "original": "if (w_load)",
+   "mutated": "        if (!(w_load))",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-014",
+    "CHK-006",
+    "CHK-009"
+   ]
+  },
+  {
+   "id": "M08",
+   "file": "m_apb_if.sv",
+   "line": 62,
+   "operator": "eq_to_ne",
+   "original": "assign w_setup = (reg_fsm_apb_current_state == ENUM_ST_IDLE) & i_apb_psel & ~i_apb_penable;",
+   "mutated": "  assign w_setup = (reg_fsm_apb_current_state != ENUM_ST_IDLE) & i_apb_psel & ~i_apb_penable;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-006",
+    "CHK-007"
+   ]
+  },
+  {
+   "id": "M09",
    "file": "m_tlul_if.sv",
    "line": 181,
    "operator": "one_to_zero",
@@ -223,12 +284,32 @@
    ]
   },
   {
-   "id": "M08",
+   "id": "M10",
    "file": "m_apb_if.sv",
-   "line": 111,
-   "operator": "negate_if",
-   "original": "if (w_local_err) begin",
-   "mutated": "    if (!(w_local_err)) begin",
+   "line": 112,
+   "operator": "one_to_zero",
+   "original": "w_pready_nxt  = 1'b1;",
+   "mutated": "      w_pready_nxt  = 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_025_ignored_inputs",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard"
+   ],
+   "killed_by_checks": [
+    "CHK-007",
+    "CHK-003",
+    "CHK-004"
+   ]
+  },
+  {
+   "id": "M11",
+   "file": "m_apb_if.sv",
+   "line": 135,
+   "operator": "zero_to_one",
+   "original": "reg_pready  <= 1'b0;",
+   "mutated": "      reg_pready  <= 1'b1;",
    "status": "killed",
    "killed_by_tests": [
     "test_chk_018_local_error",
@@ -249,10 +330,12 @@
     "test_cov_101_long_response_delay",
     "test_cov_102_stale_response_at_reset_release"
    ],
-   "killed_by_checks": []
+   "killed_by_checks": [
+    "CHK-012"
+   ]
   },
   {
-   "id": "M09",
+   "id": "M12",
    "file": "m_tlul_if.sv",
    "line": 177,
    "operator": "zero_to_one",
@@ -283,12 +366,105 @@
    ]
   },
   {
-   "id": "M10",
+   "id": "M13",
+   "file": "m_apb_if.sv",
+   "line": 92,
+   "operator": "negate_if",
+   "original": "else if (w_local_err)",
+   "mutated": "        else if (!(w_local_err))",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-006",
+    "CHK-007"
+   ]
+  },
+  {
+   "id": "M14",
    "file": "m_tlul_if.sv",
-   "line": 101,
-   "operator": "ne_to_eq",
-   "original": "(i_tlul_d_source != PARA_SRC_ID[PARA_SRC_W-1:0]);",
-   "mutated": "                        (i_tlul_d_source == PARA_SRC_ID[PARA_SRC_W-1:0]);",
+   "line": 89,
+   "operator": "eq_to_ne",
+   "original": "assign w_load = i_req_launch & (reg_fsm_tlul_current_state == ENUM_ST_IDLE);",
+   "mutated": "  assign w_load = i_req_launch & (reg_fsm_tlul_current_state != ENUM_ST_IDLE);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-006"
+   ]
+  },
+  {
+   "id": "M15",
+   "file": "m_tlul_if.sv",
+   "line": 157,
+   "operator": "negate_if",
+   "original": "if (w_load) begin",
+   "mutated": "    if (!(w_load)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-006"
+   ]
+  },
+  {
+   "id": "M16",
+   "file": "m_apb_if.sv",
+   "line": 115,
+   "operator": "eq_to_ne",
+   "original": "end else if ((reg_fsm_apb_current_state == ENUM_ST_BUSY) & i_resp_valid) begin",
+   "mutated": "    end else if ((reg_fsm_apb_current_state != ENUM_ST_BUSY) & i_resp_valid) begin",
    "status": "killed",
    "killed_by_tests": [
     "test_chk_018_local_error",
@@ -314,7 +490,139 @@
    ]
   },
   {
-   "id": "M11",
+   "id": "M17",
+   "file": "m_apb_if.sv",
+   "line": 113,
+   "operator": "one_to_zero",
+   "original": "w_pslverr_nxt = 1'b1;",
+   "mutated": "      w_pslverr_nxt = 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_025_ignored_inputs",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard"
+   ],
+   "killed_by_checks": [
+    "CHK-007"
+   ]
+  },
+  {
+   "id": "M18",
+   "file": "m_apb_if.sv",
+   "line": 109,
+   "operator": "zero_to_one",
+   "original": "w_pslverr_nxt = 1'b0;",
+   "mutated": "    w_pslverr_nxt = 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-003"
+   ]
+  },
+  {
+   "id": "M19",
+   "file": "m_tlul_if.sv",
+   "line": 178,
+   "operator": "zero_to_one",
+   "original": "reg_d_ready <= 1'b0;",
+   "mutated": "      reg_d_ready <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-012"
+   ]
+  },
+  {
+   "id": "M20",
+   "file": "m_apb_if.sv",
+   "line": 90,
+   "operator": "negate_if",
+   "original": "if (w_req_launch)",
+   "mutated": "        if (!(w_req_launch))",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-006",
+    "CHK-007",
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M21",
+   "file": "m_tlul_if.sv",
+   "line": 142,
+   "operator": "negate_if",
+   "original": "if (w_resp_hit)",
+   "mutated": "        if (!(w_resp_hit))",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_029_random_scoreboard",
+    "test_regression_random",
+    "test_cov_101_long_response_delay"
+   ],
+   "killed_by_checks": [
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M22",
    "file": "m_apb_if.sv",
    "line": 66,
    "operator": "eq_to_ne",
@@ -348,95 +656,12 @@
    ]
   },
   {
-   "id": "M12",
-   "file": "m_tlul_if.sv",
-   "line": 135,
-   "operator": "negate_if",
-   "original": "if (w_resp_hit)",
-   "mutated": "          if (!(w_resp_hit))",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_local_error",
-    "test_chk_019_device_error",
-    "test_chk_020_wrong_opcode_source",
-    "test_chk_021_orphan_responses",
-    "test_chk_022_no_response_no_timeout",
-    "test_chk_023_prompt_write",
-    "test_chk_024_prompt_read",
-    "test_chk_025_ignored_inputs",
-    "test_chk_026_backpressure_delay",
-    "test_chk_027_same_cycle_response",
-    "test_chk_028_back_to_back",
-    "test_chk_029_random_scoreboard",
-    "test_chk_030_reset",
-    "test_chk_031_reset_abandons_transfer",
-    "test_regression_random",
-    "test_cov_101_long_response_delay",
-    "test_cov_102_stale_response_at_reset_release"
-   ],
-   "killed_by_checks": [
-    "CHK-006",
-    "CHK-010"
-   ]
-  },
-  {
-   "id": "M13",
-   "file": "m_tlul_if.sv",
-   "line": 89,
-   "operator": "eq_to_ne",
-   "original": "assign w_load = i_req_launch & (reg_fsm_tlul_current_state == ENUM_ST_IDLE);",
-   "mutated": "  assign w_load = i_req_launch & (reg_fsm_tlul_current_state != ENUM_ST_IDLE);",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_local_error",
-    "test_chk_019_device_error",
-    "test_chk_020_wrong_opcode_source",
-    "test_chk_021_orphan_responses",
-    "test_chk_022_no_response_no_timeout",
-    "test_chk_023_prompt_write",
-    "test_chk_024_prompt_read",
-    "test_chk_025_ignored_inputs",
-    "test_chk_026_backpressure_delay",
-    "test_chk_027_same_cycle_response",
-    "test_chk_028_back_to_back",
-    "test_chk_029_random_scoreboard",
-    "test_chk_030_reset",
-    "test_chk_031_reset_abandons_transfer",
-    "test_regression_random",
-    "test_cov_101_long_response_delay",
-    "test_cov_102_stale_response_at_reset_release"
-   ],
-   "killed_by_checks": [
-    "CHK-006"
-   ]
-  },
-  {
-   "id": "M14",
+   "id": "M23",
    "file": "m_apb_if.sv",
-   "line": 112,
-   "operator": "one_to_zero",
-   "original": "w_pready_nxt  = 1'b1;",
-   "mutated": "      w_pready_nxt  = 1'b0;",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_local_error",
-    "test_chk_025_ignored_inputs",
-    "test_chk_028_back_to_back",
-    "test_chk_029_random_scoreboard"
-   ],
-   "killed_by_checks": [
-    "CHK-007",
-    "CHK-003",
-    "CHK-004"
-   ]
-  },
-  {
-   "id": "M15",
-   "file": "m_apb_if.sv",
-   "line": 109,
+   "line": 136,
    "operator": "zero_to_one",
-   "original": "w_pslverr_nxt = 1'b0;",
-   "mutated": "    w_pslverr_nxt = 1'b1;",
+   "original": "reg_pslverr <= 1'b0;",
+   "mutated": "      reg_pslverr <= 1'b1;",
    "status": "killed",
    "killed_by_tests": [
     "test_chk_018_local_error",
@@ -458,47 +683,17 @@
     "test_cov_102_stale_response_at_reset_release"
    ],
    "killed_by_checks": [
+    "CHK-012",
     "CHK-003"
    ]
   },
   {
-   "id": "M16",
+   "id": "M24",
    "file": "m_apb_if.sv",
-   "line": 92,
+   "line": 134,
    "operator": "negate_if",
-   "original": "else if (w_local_err)",
-   "mutated": "        else if (!(w_local_err))",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_local_error",
-    "test_chk_019_device_error",
-    "test_chk_020_wrong_opcode_source",
-    "test_chk_021_orphan_responses",
-    "test_chk_022_no_response_no_timeout",
-    "test_chk_023_prompt_write",
-    "test_chk_024_prompt_read",
-    "test_chk_025_ignored_inputs",
-    "test_chk_026_backpressure_delay",
-    "test_chk_027_same_cycle_response",
-    "test_chk_028_back_to_back",
-    "test_chk_029_random_scoreboard",
-    "test_chk_030_reset",
-    "test_chk_031_reset_abandons_transfer",
-    "test_regression_random",
-    "test_cov_102_stale_response_at_reset_release"
-   ],
-   "killed_by_checks": [
-    "CHK-006",
-    "CHK-007"
-   ]
-  },
-  {
-   "id": "M17",
-   "file": "m_tlul_if.sv",
-   "line": 189,
-   "operator": "zero_to_one",
-   "original": "reg_a_rd   <= 1'b0;",
-   "mutated": "      reg_a_rd   <= 1'b1;",
+   "original": "if (!i_rst_n_core) begin",
+   "mutated": "    if (!(!i_rst_n_core)) begin",
    "status": "killed",
    "killed_by_tests": [
     "test_chk_018_local_error",
@@ -520,155 +715,14 @@
     "test_cov_102_stale_response_at_reset_release"
    ],
    "killed_by_checks": [
-    "CHK-012"
-   ]
-  },
-  {
-   "id": "M18",
-   "file": "m_apb_if.sv",
-   "line": 115,
-   "operator": "eq_to_ne",
-   "original": "end else if ((reg_fsm_apb_current_state == ENUM_ST_BUSY) & i_resp_valid) begin",
-   "mutated": "    end else if ((reg_fsm_apb_current_state != ENUM_ST_BUSY) & i_resp_valid) begin",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_local_error",
-    "test_chk_019_device_error",
-    "test_chk_020_wrong_opcode_source",
-    "test_chk_021_orphan_responses",
-    "test_chk_022_no_response_no_timeout",
-    "test_chk_023_prompt_write",
-    "test_chk_024_prompt_read",
-    "test_chk_025_ignored_inputs",
-    "test_chk_026_backpressure_delay",
-    "test_chk_027_same_cycle_response",
-    "test_chk_028_back_to_back",
-    "test_chk_029_random_scoreboard",
-    "test_chk_030_reset",
-    "test_chk_031_reset_abandons_transfer",
-    "test_regression_random",
-    "test_cov_101_long_response_delay",
-    "test_cov_102_stale_response_at_reset_release"
-   ],
-   "killed_by_checks": [
+    "CHK-007",
     "CHK-010"
    ]
   },
   {
-   "id": "M19",
+   "id": "M25",
    "file": "m_tlul_if.sv",
-   "line": 157,
-   "operator": "negate_if",
-   "original": "if (w_load) begin",
-   "mutated": "    if (!(w_load)) begin",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_local_error",
-    "test_chk_019_device_error",
-    "test_chk_020_wrong_opcode_source",
-    "test_chk_021_orphan_responses",
-    "test_chk_022_no_response_no_timeout",
-    "test_chk_023_prompt_write",
-    "test_chk_024_prompt_read",
-    "test_chk_025_ignored_inputs",
-    "test_chk_026_backpressure_delay",
-    "test_chk_027_same_cycle_response",
-    "test_chk_028_back_to_back",
-    "test_chk_029_random_scoreboard",
-    "test_chk_030_reset",
-    "test_chk_031_reset_abandons_transfer",
-    "test_regression_random",
-    "test_cov_101_long_response_delay",
-    "test_cov_102_stale_response_at_reset_release"
-   ],
-   "killed_by_checks": [
-    "CHK-006"
-   ]
-  },
-  {
-   "id": "M20",
-   "file": "m_tlul_if.sv",
-   "line": 153,
-   "operator": "eq_to_ne",
-   "original": "w_a_valid_nxt   = (w_fsm_tlul_nxt_state == ENUM_ST_REQ);",
-   "mutated": "    w_a_valid_nxt   = (w_fsm_tlul_nxt_state != ENUM_ST_REQ);",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_local_error",
-    "test_chk_019_device_error",
-    "test_chk_020_wrong_opcode_source",
-    "test_chk_021_orphan_responses",
-    "test_chk_022_no_response_no_timeout",
-    "test_chk_023_prompt_write",
-    "test_chk_024_prompt_read",
-    "test_chk_025_ignored_inputs",
-    "test_chk_026_backpressure_delay",
-    "test_chk_027_same_cycle_response",
-    "test_chk_028_back_to_back",
-    "test_chk_029_random_scoreboard",
-    "test_chk_030_reset",
-    "test_chk_031_reset_abandons_transfer",
-    "test_regression_random",
-    "test_cov_101_long_response_delay",
-    "test_cov_102_stale_response_at_reset_release"
-   ],
-   "killed_by_checks": [
-    "CHK-014",
-    "CHK-006",
-    "CHK-009"
-   ]
-  },
-  {
-   "id": "M21",
-   "file": "m_apb_if.sv",
-   "line": 113,
-   "operator": "one_to_zero",
-   "original": "w_pslverr_nxt = 1'b1;",
-   "mutated": "      w_pslverr_nxt = 1'b0;",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_local_error",
-    "test_chk_025_ignored_inputs",
-    "test_chk_028_back_to_back",
-    "test_chk_029_random_scoreboard"
-   ],
-   "killed_by_checks": [
-    "CHK-007"
-   ]
-  },
-  {
-   "id": "M22",
-   "file": "m_apb_if.sv",
-   "line": 108,
-   "operator": "zero_to_one",
-   "original": "w_pready_nxt  = 1'b0;",
-   "mutated": "    w_pready_nxt  = 1'b1;",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_local_error",
-    "test_chk_019_device_error",
-    "test_chk_020_wrong_opcode_source",
-    "test_chk_021_orphan_responses",
-    "test_chk_022_no_response_no_timeout",
-    "test_chk_023_prompt_write",
-    "test_chk_024_prompt_read",
-    "test_chk_025_ignored_inputs",
-    "test_chk_026_backpressure_delay",
-    "test_chk_027_same_cycle_response",
-    "test_chk_028_back_to_back",
-    "test_chk_029_random_scoreboard",
-    "test_chk_030_reset",
-    "test_chk_031_reset_abandons_transfer",
-    "test_regression_random",
-    "test_cov_101_long_response_delay",
-    "test_cov_102_stale_response_at_reset_release"
-   ],
-   "killed_by_checks": []
-  },
-  {
-   "id": "M23",
-   "file": "m_apb_if.sv",
-   "line": 125,
+   "line": 167,
    "operator": "negate_if",
    "original": "if (!i_rst_n_core)",
    "mutated": "    if (!(!i_rst_n_core))",
@@ -693,42 +747,12 @@
     "test_cov_102_stale_response_at_reset_release"
    ],
    "killed_by_checks": [
+    "CHK-015",
     "CHK-010"
    ]
   },
   {
-   "id": "M24",
-   "file": "m_tlul_if.sv",
-   "line": 178,
-   "operator": "zero_to_one",
-   "original": "reg_d_ready <= 1'b0;",
-   "mutated": "      reg_d_ready <= 1'b1;",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_local_error",
-    "test_chk_019_device_error",
-    "test_chk_020_wrong_opcode_source",
-    "test_chk_021_orphan_responses",
-    "test_chk_022_no_response_no_timeout",
-    "test_chk_023_prompt_write",
-    "test_chk_024_prompt_read",
-    "test_chk_025_ignored_inputs",
-    "test_chk_026_backpressure_delay",
-    "test_chk_027_same_cycle_response",
-    "test_chk_028_back_to_back",
-    "test_chk_029_random_scoreboard",
-    "test_chk_030_reset",
-    "test_chk_031_reset_abandons_transfer",
-    "test_regression_random",
-    "test_cov_101_long_response_delay",
-    "test_cov_102_stale_response_at_reset_release"
-   ],
-   "killed_by_checks": [
-    "CHK-012"
-   ]
-  },
-  {
-   "id": "M25",
+   "id": "M26",
    "file": "m_apb_if.sv",
    "line": 66,
    "operator": "eq_to_ne",
@@ -761,111 +785,9 @@
    ]
   },
   {
-   "id": "M26",
-   "file": "m_tlul_if.sv",
-   "line": 142,
-   "operator": "negate_if",
-   "original": "if (w_resp_hit)",
-   "mutated": "        if (!(w_resp_hit))",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_025_ignored_inputs",
-    "test_chk_026_backpressure_delay",
-    "test_chk_029_random_scoreboard",
-    "test_regression_random",
-    "test_cov_101_long_response_delay"
-   ],
-   "killed_by_checks": [
-    "CHK-010"
-   ]
-  },
-  {
    "id": "M27",
-   "file": "m_tlul_if.sv",
-   "line": 94,
-   "operator": "eq_to_ne",
-   "original": "(((reg_fsm_tlul_current_state == ENUM_ST_REQ) & i_tlul_a_ready) |",
-   "mutated": "                      (((reg_fsm_tlul_current_state != ENUM_ST_REQ) & i_tlul_a_ready) |",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_025_ignored_inputs",
-    "test_chk_027_same_cycle_response",
-    "test_chk_028_back_to_back",
-    "test_chk_029_random_scoreboard",
-    "test_regression_random"
-   ],
-   "killed_by_checks": [
-    "CHK-010"
-   ]
-  },
-  {
-   "id": "M28",
    "file": "m_apb_if.sv",
-   "line": 136,
-   "operator": "zero_to_one",
-   "original": "reg_pslverr <= 1'b0;",
-   "mutated": "      reg_pslverr <= 1'b1;",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_local_error",
-    "test_chk_019_device_error",
-    "test_chk_020_wrong_opcode_source",
-    "test_chk_021_orphan_responses",
-    "test_chk_022_no_response_no_timeout",
-    "test_chk_023_prompt_write",
-    "test_chk_024_prompt_read",
-    "test_chk_025_ignored_inputs",
-    "test_chk_026_backpressure_delay",
-    "test_chk_027_same_cycle_response",
-    "test_chk_028_back_to_back",
-    "test_chk_029_random_scoreboard",
-    "test_chk_030_reset",
-    "test_chk_031_reset_abandons_transfer",
-    "test_regression_random",
-    "test_cov_101_long_response_delay",
-    "test_cov_102_stale_response_at_reset_release"
-   ],
-   "killed_by_checks": [
-    "CHK-012",
-    "CHK-003"
-   ]
-  },
-  {
-   "id": "M29",
-   "file": "m_apb_if.sv",
-   "line": 134,
-   "operator": "negate_if",
-   "original": "if (!i_rst_n_core) begin",
-   "mutated": "    if (!(!i_rst_n_core)) begin",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_local_error",
-    "test_chk_019_device_error",
-    "test_chk_020_wrong_opcode_source",
-    "test_chk_021_orphan_responses",
-    "test_chk_022_no_response_no_timeout",
-    "test_chk_023_prompt_write",
-    "test_chk_024_prompt_read",
-    "test_chk_025_ignored_inputs",
-    "test_chk_026_backpressure_delay",
-    "test_chk_027_same_cycle_response",
-    "test_chk_028_back_to_back",
-    "test_chk_029_random_scoreboard",
-    "test_chk_030_reset",
-    "test_chk_031_reset_abandons_transfer",
-    "test_regression_random",
-    "test_cov_101_long_response_delay",
-    "test_cov_102_stale_response_at_reset_release"
-   ],
-   "killed_by_checks": [
-    "CHK-007",
-    "CHK-010"
-   ]
-  },
-  {
-   "id": "M30",
-   "file": "m_tlul_if.sv",
-   "line": 167,
+   "line": 125,
    "operator": "negate_if",
    "original": "if (!i_rst_n_core)",
    "mutated": "    if (!(!i_rst_n_core))",
@@ -890,12 +812,42 @@
     "test_cov_102_stale_response_at_reset_release"
    ],
    "killed_by_checks": [
-    "CHK-015",
     "CHK-010"
    ]
   },
   {
-   "id": "M31",
+   "id": "M28",
+   "file": "m_tlul_if.sv",
+   "line": 188,
+   "operator": "negate_if",
+   "original": "if (!i_rst_n_core) begin",
+   "mutated": "    if (!(!i_rst_n_core)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-006"
+   ]
+  },
+  {
+   "id": "M29",
    "file": "m_apb_if.sv",
    "line": 115,
    "operator": "negate_if",
@@ -924,12 +876,12 @@
    "killed_by_checks": []
   },
   {
-   "id": "M32",
+   "id": "M30",
    "file": "m_tlul_if.sv",
-   "line": 130,
+   "line": 134,
    "operator": "negate_if",
-   "original": "if (w_load)",
-   "mutated": "        if (!(w_load))",
+   "original": "if (i_tlul_a_ready) begin",
+   "mutated": "        if (!(i_tlul_a_ready)) begin",
    "status": "killed",
    "killed_by_tests": [
     "test_chk_018_local_error",
@@ -951,77 +903,13 @@
     "test_cov_102_stale_response_at_reset_release"
    ],
    "killed_by_checks": [
-    "CHK-014",
-    "CHK-006",
-    "CHK-009"
+    "CHK-015",
+    "CHK-016",
+    "CHK-008"
    ]
   },
   {
-   "id": "M33",
-   "file": "m_apb_if.sv",
-   "line": 90,
-   "operator": "negate_if",
-   "original": "if (w_req_launch)",
-   "mutated": "        if (!(w_req_launch))",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_local_error",
-    "test_chk_019_device_error",
-    "test_chk_020_wrong_opcode_source",
-    "test_chk_021_orphan_responses",
-    "test_chk_022_no_response_no_timeout",
-    "test_chk_023_prompt_write",
-    "test_chk_024_prompt_read",
-    "test_chk_025_ignored_inputs",
-    "test_chk_026_backpressure_delay",
-    "test_chk_027_same_cycle_response",
-    "test_chk_028_back_to_back",
-    "test_chk_029_random_scoreboard",
-    "test_chk_030_reset",
-    "test_chk_031_reset_abandons_transfer",
-    "test_regression_random",
-    "test_cov_101_long_response_delay",
-    "test_cov_102_stale_response_at_reset_release"
-   ],
-   "killed_by_checks": [
-    "CHK-006",
-    "CHK-007",
-    "CHK-010"
-   ]
-  },
-  {
-   "id": "M34",
-   "file": "m_tlul_if.sv",
-   "line": 176,
-   "operator": "negate_if",
-   "original": "if (!i_rst_n_core) begin",
-   "mutated": "    if (!(!i_rst_n_core)) begin",
-   "status": "killed",
-   "killed_by_tests": [
-    "test_chk_018_local_error",
-    "test_chk_019_device_error",
-    "test_chk_020_wrong_opcode_source",
-    "test_chk_021_orphan_responses",
-    "test_chk_022_no_response_no_timeout",
-    "test_chk_023_prompt_write",
-    "test_chk_024_prompt_read",
-    "test_chk_025_ignored_inputs",
-    "test_chk_026_backpressure_delay",
-    "test_chk_027_same_cycle_response",
-    "test_chk_028_back_to_back",
-    "test_chk_029_random_scoreboard",
-    "test_chk_030_reset",
-    "test_chk_031_reset_abandons_transfer",
-    "test_regression_random",
-    "test_cov_101_long_response_delay",
-    "test_cov_102_stale_response_at_reset_release"
-   ],
-   "killed_by_checks": [
-    "CHK-012"
-   ]
-  },
-  {
-   "id": "M35",
+   "id": "M31",
    "file": "m_apb_if.sv",
    "line": 96,
    "operator": "negate_if",
@@ -1053,9 +941,41 @@
    ]
   },
   {
-   "id": "M36",
+   "id": "M32",
    "file": "m_tlul_if.sv",
-   "line": 188,
+   "line": 135,
+   "operator": "negate_if",
+   "original": "if (w_resp_hit)",
+   "mutated": "          if (!(w_resp_hit))",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-006",
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M33",
+   "file": "m_tlul_if.sv",
+   "line": 176,
    "operator": "negate_if",
    "original": "if (!i_rst_n_core) begin",
    "mutated": "    if (!(!i_rst_n_core)) begin",
@@ -1080,91 +1000,117 @@
     "test_cov_102_stale_response_at_reset_release"
    ],
    "killed_by_checks": [
-    "CHK-006"
+    "CHK-012"
    ]
   }
  ],
- "candidates": 36,
- "count": 36,
- "killed": 36,
+ "candidates": 33,
+ "count": 33,
+ "killed": 33,
  "survived": 0,
  "not_compiled": 0,
  "score": 100.0,
  "seed": 1,
  "excluded_uncovered": {
   "files": [],
-  "lines": 0
+  "lines": 3
+ },
+ "baseline_failing": {
+  "tests": [],
+  "checks": []
  },
  "threshold": 85.0,
  "attribution": {
   "mutants": {
    "M01": {
     "rules": [
+     "BR-5.3-08",
+     "BR-3-09",
+     "BR-10.1-05",
+     "BR-1.1-01",
+     "BR-3-26"
+    ],
+    "equivalent": false,
+    "reason": "A TL-UL response would no longer raise PREADY, so the transfer never completes."
+   },
+   "M02": {
+    "rules": [
+     "BR-3-18",
+     "BR-6.2-03",
+     "BR-15.3-01",
+     "BR-5.4-04",
+     "BR-3-11"
+    ],
+    "equivalent": false,
+    "reason": "PREADY would be 1 in every cycle that is not a local error or a response, breaking the one-cycle pulse and Access-only rule."
+   },
+   "M03": {
+    "rules": [
      "BR-3-27",
      "BR-9-09",
      "BR-6.3-15",
      "BR-12-07",
-     "BR-1.3-04"
+     "BR-8-04"
     ],
     "equivalent": false,
-    "reason": "Opcode check inverted: a correct AccessAck/AckData response gives PSLVERR=1 and PRDATA=0, and a wrong opcode is not flagged."
-   },
-   "M02": {
-    "rules": [
-     "BR-3-12",
-     "BR-1.3-05",
-     "BR-3-01",
-     "BR-3-02",
-     "BR-5.3-01"
-    ],
-    "equivalent": false,
-    "reason": "Setup is detected in non-IDLE states instead of IDLE, so a legal Setup never launches a request or completes a local error."
-   },
-   "M03": {
-    "rules": [
-     "BR-3-08",
-     "BR-5.4-03",
-     "BR-6.3-07",
-     "BR-10.1-04",
-     "BR-15.3-02"
-    ],
-    "equivalent": false,
-    "reason": "REQ leaves on a_ready=0 instead of 1, so channel A drops before acceptance and is held after the handshake."
+    "reason": "The opcode check is inverted, so a correct opcode gives PSLVERR=1 and a wrong opcode gives none."
    },
    "M04": {
     "rules": [
-     "BR-3-11",
-     "BR-6.3-08",
-     "BR-10.1-06",
-     "BR-3-09",
-     "BR-10.1-03"
-    ],
-    "equivalent": false,
-    "reason": "The WAIT term is inverted: a response in WAIT is not counted, so the transfer hangs, and orphan d_valid in IDLE is counted."
-   },
-   "M05": {
-    "rules": [
-     "BR-3-09",
-     "BR-5.3-06",
-     "BR-10.1-03",
-     "BR-1.1-01",
-     "BR-5.3-07"
-    ],
-    "equivalent": false,
-    "reason": "A counted response no longer raises PREADY, so the APB transfer never completes."
-   },
-   "M06": {
-    "rules": [
      "BR-3-31",
-     "BR-6.2-03",
+     "BR-6.2-15",
      "BR-3-21",
      "BR-7.3-03",
      "BR-15.3-06"
     ],
     "equivalent": false,
-    "reason": "PREADY resets to 1 instead of 0, so it is high while reset is asserted."
+    "reason": "o_tlul_a_opcode would be 3'b100 while in reset instead of 0 (and reg_a_rd also differs for the expected-opcode check until the first load)."
+   },
+   "M05": {
+    "rules": [
+     "BR-3-24",
+     "BR-3-25",
+     "BR-T1-03",
+     "BR-T1-04",
+     "BR-12-04"
+    ],
+    "equivalent": false,
+    "reason": "The local-error branch is inverted: an illegal Setup gives no local PREADY/PSLVERR, and other cycles take the error values."
+   },
+   "M06": {
+    "rules": [
+     "BR-6.2-06",
+     "BR-3-08",
+     "BR-5.4-02",
+     "BR-3-02",
+     "BR-10.1-04"
+    ],
+    "equivalent": false,
+    "reason": "a_valid is high when the FSM is not in REQ and low during REQ, so the request is not presented or held until accepted."
    },
    "M07": {
+    "rules": [
+     "BR-3-01",
+     "BR-3-02",
+     "BR-5.4-05",
+     "BR-15.3-07",
+     "BR-1.1-02"
+    ],
+    "equivalent": false,
+    "reason": "The IDLE state goes to REQ without a launch and ignores a legal launch, so requests start without a legal Setup or are lost."
+   },
+   "M08": {
+    "rules": [
+     "BR-3-12",
+     "BR-1.3-05",
+     "BR-3-01",
+     "BR-3-14",
+     "BR-5.3-01"
+    ],
+    "equivalent": false,
+    "reason": "Setup is detected only when the FSM is not IDLE, so no Setup is seen from idle and no transfer starts."
+   },
+   "M09": {
     "rules": [
      "BR-3-22",
      "BR-5.3-04",
@@ -1173,350 +1119,287 @@
      "BR-20-11"
     ],
     "equivalent": false,
-    "reason": "d_ready is driven to 0 after reset release instead of staying 1, so it never goes high and responses are not accepted."
-   },
-   "M08": {
-    "rules": [
-     "BR-3-24",
-     "BR-3-25",
-     "BR-12-01",
-     "BR-T1-03",
-     "BR-2.3-01"
-    ],
-    "equivalent": false,
-    "reason": "Local-error branch is inverted: an illegal Setup gets no PREADY/PSLVERR, and other cycles get a spurious local error."
-   },
-   "M09": {
-    "rules": [
-     "BR-3-31",
-     "BR-3-21",
-     "BR-7.3-03",
-     "BR-15.3-06",
-     "BR-6.2-06"
-    ],
-    "equivalent": false,
-    "reason": "a_valid resets to 1, so o_tlul_a_valid is high during reset."
+    "reason": "d_ready stays 0 after reset release, so no response is accepted and d_ready is not constant 1."
    },
    "M10": {
     "rules": [
-     "BR-3-28",
-     "BR-9-09",
-     "BR-6.3-15",
-     "BR-12-07",
-     "BR-8-08"
+     "BR-3-24",
+     "BR-12-01",
+     "BR-2.3-01",
+     "BR-10.3-01",
+     "BR-T1-03"
     ],
     "equivalent": false,
-    "reason": "Source check inverted: a correct d_source gives PSLVERR and a wrong source is accepted as good."
+    "reason": "An illegal Setup would not raise PREADY, so the local error is not completed in the first Access cycle."
    },
    "M11": {
     "rules": [
-     "BR-2.3-02",
-     "BR-T1-04",
-     "BR-T1-05",
-     "BR-3-25",
-     "BR-1.3-03"
+     "BR-3-31",
+     "BR-6.2-03",
+     "BR-3-21",
+     "BR-15.3-06",
+     "BR-3-18"
     ],
     "equivalent": false,
-    "reason": "Alignment test is inverted: aligned accesses are treated as illegal and misaligned ones launch a TL-UL request."
+    "reason": "o_apb_pready would be 1 during reset instead of 0."
    },
    "M12": {
     "rules": [
-     "BR-3-35",
-     "BR-6.3-09",
-     "BR-10.1-05",
-     "BR-5.3-08",
-     "BR-13-02"
+     "BR-3-31",
+     "BR-6.2-06",
+     "BR-3-21",
+     "BR-15.3-06",
+     "BR-20-11"
     ],
     "equivalent": false,
-    "reason": "In REQ with a_ready the next state is inverted: a same-cycle response goes to WAIT (and then never arrives), and no response sends it to IDLE."
+    "reason": "o_tlul_a_valid would be 1 during reset instead of 0."
    },
    "M13": {
     "rules": [
-     "BR-3-06",
-     "BR-3-07",
-     "BR-5.4-01",
-     "BR-3-01",
-     "BR-1.1-01"
+     "BR-3-25",
+     "BR-12-02",
+     "BR-T1-04",
+     "BR-3-11",
+     "BR-3-12"
     ],
     "equivalent": false,
-    "reason": "The load is qualified by a non-IDLE state, so a launch in IDLE never loads or starts a request."
+    "reason": "The IDLE FSM goes to DONE when there is no launch and no local error, and an illegal Setup stays in IDLE, so the FSM state diverges from the PREADY completion."
    },
    "M14": {
     "rules": [
-     "BR-3-24",
-     "BR-12-01",
-     "BR-12-02",
-     "BR-T1-03",
-     "BR-T1-04"
+     "BR-3-01",
+     "BR-3-02",
+     "BR-1.1-02",
+     "BR-5.3-01",
+     "BR-3-03"
     ],
     "equivalent": false,
-    "reason": "A local error no longer raises PREADY, so the illegal transfer does not complete in the first Access cycle."
+    "reason": "The TL-UL load happens only when not IDLE, so the legal request is never launched from IDLE."
    },
    "M15": {
-    "rules": [
-     "BR-3-19",
-     "BR-6.2-05",
-     "BR-15.3-01",
-     "BR-3-18",
-     "BR-6.2-03"
-    ],
-    "equivalent": false,
-    "reason": "The default PSLVERR next value is 1, so PSLVERR is high without PREADY and on good completions."
-   },
-   "M16": {
-    "rules": [
-     "BR-3-24",
-     "BR-3-25",
-     "BR-12-01",
-     "BR-3-12",
-     "BR-12-02"
-    ],
-    "equivalent": false,
-    "reason": "The local-error test in the IDLE branch is inverted: the FSM goes to DONE on a non-Setup idle cycle (blocking the next Setup), and an illegal Setup stays in IDLE."
-   },
-   "M17": {
-    "rules": [
-     "BR-3-31",
-     "BR-6.2-15",
-     "BR-3-21",
-     "BR-7.3-03",
-     "BR-15.3-06"
-    ],
-    "equivalent": false,
-    "reason": "reg_a_rd resets to 1, so o_tlul_a_opcode is 3'b100 in reset instead of 0."
-   },
-   "M18": {
-    "rules": [
-     "BR-3-09",
-     "BR-5.3-06",
-     "BR-10.1-03",
-     "BR-3-11",
-     "BR-1.1-01"
-    ],
-    "equivalent": false,
-    "reason": "The response completion is qualified by a non-BUSY state, so a response in BUSY gives no PREADY, and a response in other states gives a spurious one."
-   },
-   "M19": {
     "rules": [
      "BR-3-03",
      "BR-3-04",
      "BR-3-05",
-     "BR-5.3-02",
-     "BR-1.1-02"
+     "BR-9-03",
+     "BR-6.2-13"
     ],
     "equivalent": false,
-    "reason": "Request payload (opcode, address, data) loads when there is no launch instead of on it, so channel A carries wrong or stale values."
+    "reason": "Opcode, address and data would load when there is no launch and hold otherwise, so channel A carries wrong values."
    },
-   "M20": {
+   "M16": {
     "rules": [
-     "BR-5.4-02",
-     "BR-5.4-06",
-     "BR-3-08",
-     "BR-6.3-07",
-     "BR-10.1-04"
+     "BR-3-09",
+     "BR-3-11",
+     "BR-6.3-08",
+     "BR-10.1-06",
+     "BR-1.1-01"
     ],
     "equivalent": false,
-    "reason": "a_valid next value is inverted: it is low when a request is presented and high when idle."
+    "reason": "A response completes only when the APB FSM is not BUSY, so orphans give PREADY and real responses are ignored."
    },
-   "M21": {
+   "M17": {
     "rules": [
      "BR-3-25",
-     "BR-12-01",
      "BR-T1-03",
      "BR-T1-04",
-     "BR-3-36"
+     "BR-12-01",
+     "BR-2.3-02"
     ],
     "equivalent": false,
-    "reason": "A local error completes with PSLVERR=0 instead of 1."
+    "reason": "An illegal Setup completes with PSLVERR=0 instead of 1."
    },
-   "M22": {
+   "M18": {
     "rules": [
-     "BR-3-18",
-     "BR-6.2-03",
+     "BR-3-19",
+     "BR-6.2-05",
      "BR-15.3-01",
-     "BR-3-11",
-     "BR-5.4-04"
+     "BR-3-10",
+     "BR-9-10"
     ],
     "equivalent": false,
-    "reason": "The default PREADY next value is 1, so PREADY is high on every cycle without a completion."
+    "reason": "The default PSLVERR is 1, so PSLVERR is high without PREADY and on successful completions."
    },
-   "M23": {
-    "rules": [
-     "BR-3-30",
-     "BR-7.3-02",
-     "BR-3-32",
-     "BR-7.3-05",
-     "BR-15.3-06"
-    ],
-    "equivalent": false,
-    "reason": "APB FSM reset polarity is inverted: the FSM is held in IDLE while running and takes the next state while in reset, so transfers are not processed and reset does not clear state."
-   },
-   "M24": {
+   "M19": {
     "rules": [
      "BR-3-31",
      "BR-3-21",
      "BR-6.2-15",
-     "BR-7.3-03",
+     "BR-15.3-06",
+     "BR-20-11"
+    ],
+    "equivalent": false,
+    "reason": "o_tlul_d_ready would be 1 during reset instead of 0."
+   },
+   "M20": {
+    "rules": [
+     "BR-3-01",
+     "BR-1.1-01",
+     "BR-3-02",
+     "BR-5.4-05",
+     "BR-3-11"
+    ],
+    "equivalent": false,
+    "reason": "The IDLE state goes to BUSY when there is no launch and stays idle on a real launch, so the APB FSM and the TL-UL request disagree."
+   },
+   "M21": {
+    "rules": [
+     "BR-3-09",
+     "BR-3-06",
+     "BR-5.4-01",
+     "BR-3-07",
+     "BR-6.3-06"
+    ],
+    "equivalent": false,
+    "reason": "The TL-UL FSM in WAIT leaves IDLE only without a response hit, so it stays in WAIT after a response or leaves early, breaking one-request-at-a-time."
+   },
+   "M22": {
+    "rules": [
+     "BR-T1-04",
+     "BR-2.3-01",
+     "BR-3-25",
+     "BR-3-36",
+     "BR-9-04"
+    ],
+    "equivalent": false,
+    "reason": "The alignment check is inverted, so aligned accesses are treated as errors and misaligned ones are forwarded."
+   },
+   "M23": {
+    "rules": [
+     "BR-3-19",
+     "BR-6.2-05",
+     "BR-3-31",
+     "BR-3-21",
      "BR-15.3-06"
     ],
     "equivalent": false,
-    "reason": "d_ready resets to 1, so o_tlul_d_ready is high during reset."
+    "reason": "o_apb_pslverr would be 1 during reset without PREADY."
+   },
+   "M24": {
+    "rules": [
+     "BR-3-31",
+     "BR-3-30",
+     "BR-7.3-03",
+     "BR-3-21",
+     "BR-6.2-04"
+    ],
+    "equivalent": false,
+    "reason": "The completion flops are reset when reset is deasserted and operate in reset, so outputs are wrong in both states."
    },
    "M25": {
     "rules": [
-     "BR-2.3-01",
-     "BR-T1-03",
-     "BR-T1-05",
-     "BR-3-24",
-     "BR-1.3-03"
+     "BR-3-32",
+     "BR-7.3-05",
+     "BR-15.2-11",
+     "BR-7.3-02",
+     "BR-3-30"
     ],
     "equivalent": false,
-    "reason": "The strobe test is inverted: full-strobe writes are rejected and partial-strobe writes launch a request."
+    "reason": "The TL-UL FSM is held in reset when reset is released and runs while reset is asserted, so it is not cleared and transfers do not work."
    },
    "M26": {
     "rules": [
-     "BR-3-09",
-     "BR-10.1-03",
-     "BR-5.3-06",
-     "BR-1.1-01",
-     "BR-3-06"
+     "BR-T1-03",
+     "BR-3-24",
+     "BR-3-03",
+     "BR-1.1-04",
+     "BR-9-04"
     ],
     "equivalent": false,
-    "reason": "In WAIT the response branch is inverted: the FSM returns to IDLE with no response, and stays in WAIT after the response."
+    "reason": "The strobe check is inverted, so full-strobe writes are errors and partial-strobe writes are forwarded."
    },
    "M27": {
     "rules": [
-     "BR-3-35",
-     "BR-6.3-09",
-     "BR-10.1-05",
-     "BR-3-11",
-     "BR-6.3-08"
+     "BR-3-32",
+     "BR-7.3-05",
+     "BR-7.3-02",
+     "BR-15.2-11",
+     "BR-3-30"
     ],
     "equivalent": false,
-    "reason": "The REQ-state term is inverted: a same-cycle response during acceptance is not counted, and a response outside REQ is counted."
+    "reason": "The APB FSM is held in reset after release and not cleared in reset, so a transfer in progress is not abandoned."
    },
    "M28": {
     "rules": [
      "BR-3-31",
-     "BR-3-19",
-     "BR-6.2-05",
      "BR-3-21",
-     "BR-15.3-01"
+     "BR-7.3-03",
+     "BR-6.2-15",
+     "BR-15.3-06"
     ],
     "equivalent": false,
-    "reason": "PSLVERR resets to 1, so it is high without PREADY during reset."
+    "reason": "The payload flops (opcode, address, data) are not cleared in reset and are cleared when running, so channel A values are wrong."
    },
    "M29": {
     "rules": [
-     "BR-3-31",
-     "BR-3-21",
-     "BR-6.2-04",
-     "BR-7.3-03",
-     "BR-15.3-06"
+     "BR-3-11",
+     "BR-3-09",
+     "BR-6.3-08",
+     "BR-10.1-06",
+     "BR-3-18"
     ],
     "equivalent": false,
-    "reason": "Completion-register reset polarity is inverted: outputs are not cleared in reset and are held at 0 while running, so no completion appears."
+    "reason": "The response condition is negated, so PREADY and the response data are produced when there is no BUSY response and not for a real one."
    },
    "M30": {
     "rules": [
-     "BR-3-30",
-     "BR-7.3-02",
-     "BR-3-32",
-     "BR-7.3-05",
-     "BR-15.3-06"
+     "BR-3-08",
+     "BR-5.4-03",
+     "BR-6.3-07",
+     "BR-15.3-02",
+     "BR-10.1-04"
     ],
     "equivalent": false,
-    "reason": "TL-UL FSM reset polarity is inverted: it is held in IDLE during normal operation, so no request is ever presented, and reset does not clear it."
+    "reason": "The REQ state advances when a_ready is low and holds when it is high, so a_valid drops without acceptance and stays after the handshake."
    },
    "M31": {
     "rules": [
      "BR-3-09",
-     "BR-5.3-06",
-     "BR-10.1-03",
+     "BR-5.3-08",
      "BR-3-11",
+     "BR-1.1-01",
      "BR-3-18"
     ],
     "equivalent": false,
-    "reason": "The completion condition is negated, so a normal response gives no completion and PREADY/PSLVERR/PRDATA are loaded with garbage on other cycles."
+    "reason": "The BUSY state goes to DONE when there is no response and stays on a response, so the FSM disagrees with PREADY."
    },
    "M32": {
     "rules": [
-     "BR-3-06",
-     "BR-3-07",
-     "BR-5.4-01",
-     "BR-3-01",
-     "BR-1.1-01"
+     "BR-3-35",
+     "BR-13-02",
+     "BR-5.3-08",
+     "BR-6.3-09",
+     "BR-10.1-05"
     ],
     "equivalent": false,
-    "reason": "The IDLE branch moves to REQ when there is no launch instead of on a launch, so spurious requests start and legal ones do not."
+    "reason": "In REQ a same-cycle response goes to WAIT, and without a response the FSM goes to IDLE, so the same-cycle response case is broken."
    },
    "M33": {
-    "rules": [
-     "BR-3-12",
-     "BR-3-01",
-     "BR-3-06",
-     "BR-1.1-01",
-     "BR-5.4-05"
-    ],
-    "equivalent": false,
-    "reason": "The APB IDLE branch goes to BUSY when there is no launch instead of on a legal launch, so legal transfers stay in IDLE and idle cycles enter BUSY."
-   },
-   "M34": {
     "rules": [
      "BR-3-31",
      "BR-3-21",
      "BR-3-22",
-     "BR-7.3-03",
+     "BR-6.2-15",
      "BR-15.3-06"
     ],
     "equivalent": false,
-    "reason": "Reset polarity of a_valid/d_ready is inverted: they are cleared while running and set in reset, so there is no request and d_ready is 0 in operation."
-   },
-   "M35": {
-    "rules": [
-     "BR-3-09",
-     "BR-5.3-06",
-     "BR-3-11",
-     "BR-6.3-08",
-     "BR-10.1-06"
-    ],
-    "equivalent": false,
-    "reason": "BUSY goes to DONE when there is no response instead of on one, so the APB FSM leaves BUSY early and misses the real completion."
-   },
-   "M36": {
-    "rules": [
-     "BR-3-31",
-     "BR-3-21",
-     "BR-7.3-03",
-     "BR-15.3-06",
-     "BR-6.2-15"
-    ],
-    "equivalent": false,
-    "reason": "Payload-register reset polarity is inverted: opcode, address and data are not cleared in reset and are held at 0 while running, so requests have wrong content."
+    "reason": "a_valid and d_ready are held at 0 after reset release and take run values in reset, so d_ready and a_valid are wrong."
    }
   },
   "unknown_ids": [],
   "model": "sonnet",
-  "cost_usd": 0.0
+  "cost_usd": 0.234939
  },
  "rule_scores": {
   "BR-1.1-01": {
-   "relevant": 6,
-   "killed": 6,
+   "relevant": 4,
+   "killed": 4,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "BR-1.1-02": {
-   "relevant": 1,
-   "killed": 1,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "BR-1.3-03": {
    "relevant": 2,
    "killed": 2,
    "survived": [],
@@ -1524,7 +1407,7 @@
    "score": 100.0,
    "meets_threshold": true
   },
-  "BR-1.3-04": {
+  "BR-1.1-04": {
    "relevant": 1,
    "killed": 1,
    "survived": [],
@@ -1535,14 +1418,6 @@
   "BR-1.3-05": {
    "relevant": 1,
    "killed": 1,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "BR-10.1-03": {
-   "relevant": 5,
-   "killed": 5,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1572,25 +1447,41 @@
    "score": 100.0,
    "meets_threshold": true
   },
+  "BR-10.3-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
   "BR-12-01": {
-   "relevant": 4,
-   "killed": 4,
+   "relevant": 2,
+   "killed": 2,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "BR-12-02": {
-   "relevant": 2,
-   "killed": 2,
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-12-04": {
+   "relevant": 1,
+   "killed": 1,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "BR-12-07": {
-   "relevant": 2,
-   "killed": 2,
+   "relevant": 1,
+   "killed": 1,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1604,9 +1495,17 @@
    "score": 100.0,
    "meets_threshold": true
   },
+  "BR-15.2-11": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
   "BR-15.3-01": {
-   "relevant": 3,
-   "killed": 3,
+   "relevant": 2,
+   "killed": 2,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1621,8 +1520,16 @@
    "meets_threshold": true
   },
   "BR-15.3-06": {
-   "relevant": 10,
-   "killed": 10,
+   "relevant": 8,
+   "killed": 8,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-15.3-07": {
+   "relevant": 1,
+   "killed": 1,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1645,8 +1552,8 @@
    "meets_threshold": true
   },
   "BR-20-11": {
-   "relevant": 1,
-   "killed": 1,
+   "relevant": 3,
+   "killed": 3,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1661,16 +1568,16 @@
    "meets_threshold": true
   },
   "BR-3-02": {
-   "relevant": 1,
-   "killed": 1,
+   "relevant": 4,
+   "killed": 4,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "BR-3-03": {
-   "relevant": 1,
-   "killed": 1,
+   "relevant": 3,
+   "killed": 3,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1693,16 +1600,16 @@
    "meets_threshold": true
   },
   "BR-3-06": {
-   "relevant": 4,
-   "killed": 4,
+   "relevant": 1,
+   "killed": 1,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "BR-3-07": {
-   "relevant": 2,
-   "killed": 2,
+   "relevant": 1,
+   "killed": 1,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1717,8 +1624,16 @@
    "meets_threshold": true
   },
   "BR-3-09": {
-   "relevant": 6,
-   "killed": 6,
+   "relevant": 5,
+   "killed": 5,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-3-10": {
+   "relevant": 1,
+   "killed": 1,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1733,16 +1648,24 @@
    "meets_threshold": true
   },
   "BR-3-12": {
-   "relevant": 3,
-   "killed": 3,
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-3-14": {
+   "relevant": 1,
+   "killed": 1,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "BR-3-18": {
-   "relevant": 3,
-   "killed": 3,
+   "relevant": 4,
+   "killed": 4,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1773,8 +1696,8 @@
    "meets_threshold": true
   },
   "BR-3-24": {
-   "relevant": 4,
-   "killed": 4,
+   "relevant": 3,
+   "killed": 3,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1788,6 +1711,14 @@
    "score": 100.0,
    "meets_threshold": true
   },
+  "BR-3-26": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
   "BR-3-27": {
    "relevant": 1,
    "killed": 1,
@@ -1796,17 +1727,9 @@
    "score": 100.0,
    "meets_threshold": true
   },
-  "BR-3-28": {
-   "relevant": 1,
-   "killed": 1,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
   "BR-3-30": {
-   "relevant": 2,
-   "killed": 2,
+   "relevant": 3,
+   "killed": 3,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1829,8 +1752,8 @@
    "meets_threshold": true
   },
   "BR-3-35": {
-   "relevant": 2,
-   "killed": 2,
+   "relevant": 1,
+   "killed": 1,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1845,16 +1768,8 @@
    "meets_threshold": true
   },
   "BR-5.3-01": {
-   "relevant": 1,
-   "killed": 1,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "BR-5.3-02": {
-   "relevant": 1,
-   "killed": 1,
+   "relevant": 2,
+   "killed": 2,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1868,33 +1783,17 @@
    "score": 100.0,
    "meets_threshold": true
   },
-  "BR-5.3-06": {
-   "relevant": 5,
-   "killed": 5,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "BR-5.3-07": {
-   "relevant": 1,
-   "killed": 1,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
   "BR-5.3-08": {
-   "relevant": 1,
-   "killed": 1,
+   "relevant": 3,
+   "killed": 3,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "BR-5.4-01": {
-   "relevant": 2,
-   "killed": 2,
+   "relevant": 1,
+   "killed": 1,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1925,24 +1824,16 @@
    "meets_threshold": true
   },
   "BR-5.4-05": {
-   "relevant": 1,
-   "killed": 1,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "BR-5.4-06": {
-   "relevant": 1,
-   "killed": 1,
+   "relevant": 2,
+   "killed": 2,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "BR-6.2-03": {
-   "relevant": 3,
-   "killed": 3,
+   "relevant": 2,
+   "killed": 2,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -1965,6 +1856,14 @@
    "meets_threshold": true
   },
   "BR-6.2-06": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-6.2-13": {
    "relevant": 1,
    "killed": 1,
    "survived": [],
@@ -1973,40 +1872,48 @@
    "meets_threshold": true
   },
   "BR-6.2-15": {
-   "relevant": 4,
-   "killed": 4,
+   "relevant": 5,
+   "killed": 5,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-6.3-06": {
+   "relevant": 1,
+   "killed": 1,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "BR-6.3-07": {
-   "relevant": 2,
-   "killed": 2,
+   "relevant": 1,
+   "killed": 1,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "BR-6.3-08": {
-   "relevant": 3,
-   "killed": 3,
+   "relevant": 2,
+   "killed": 2,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "BR-6.3-09": {
-   "relevant": 2,
-   "killed": 2,
+   "relevant": 1,
+   "killed": 1,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
    "meets_threshold": true
   },
   "BR-6.3-15": {
-   "relevant": 2,
-   "killed": 2,
+   "relevant": 1,
+   "killed": 1,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -2021,8 +1928,8 @@
    "meets_threshold": true
   },
   "BR-7.3-03": {
-   "relevant": 7,
-   "killed": 7,
+   "relevant": 3,
+   "killed": 3,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -2036,7 +1943,7 @@
    "score": 100.0,
    "meets_threshold": true
   },
-  "BR-8-08": {
+  "BR-8-04": {
    "relevant": 1,
    "killed": 1,
    "survived": [],
@@ -2044,9 +1951,33 @@
    "score": 100.0,
    "meets_threshold": true
   },
-  "BR-9-09": {
+  "BR-9-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-9-04": {
    "relevant": 2,
    "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-9-09": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-9-10": {
+   "relevant": 1,
+   "killed": 1,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,
@@ -2061,16 +1992,8 @@
    "meets_threshold": true
   },
   "BR-T1-04": {
-   "relevant": 3,
-   "killed": 3,
-   "survived": [],
-   "claimed_equivalent": [],
-   "score": 100.0,
-   "meets_threshold": true
-  },
-  "BR-T1-05": {
-   "relevant": 2,
-   "killed": 2,
+   "relevant": 4,
+   "killed": 4,
    "survived": [],
    "claimed_equivalent": [],
    "score": 100.0,

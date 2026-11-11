@@ -412,6 +412,14 @@ def _build_markdown(path: Path) -> tuple[list[Section], list[str], int, list[dic
                 i += 1
             sec = current()
             tables.append({"section": sec.id, "header": header, "rows": rows, "line": lno, "units": []})
+            # Caption: the text line just above the table (blank lines skipped), e.g.
+            # "**`m_top`**: write side (CLK-WR)". A heading or another table is not a caption.
+            k = lno - 2
+            while k >= 0 and not lines[k].strip():
+                k -= 1
+            above = lines[k].strip() if k >= 0 else ""
+            if above and not above.startswith(("|", "#")):
+                tables[-1]["caption"] = md_inline(above)
             for rl, row in zip(row_lines, rows):
                 cells = [f"{h}: {v}" for h, v in zip(header, row) if v and h]
                 if cells:

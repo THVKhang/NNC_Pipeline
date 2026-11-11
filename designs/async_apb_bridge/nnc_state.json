@@ -1,0 +1,46 @@
+{
+  "config": {
+    "clock_periods": "i_clk_mst=10,i_clk_slv=23.7",
+    "clock_relation": "async",
+    "documents": [
+      {
+        "file": "spec/AsyncAPBBridge_Design_Specification.md",
+        "role": "ip_spec",
+        "sections": [],
+        "skip": [],
+        "tag": "AB2"
+      }
+    ],
+    "plusargs": "+APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1",
+    "top": "m_vlsit_apbcdc_top"
+  },
+  "created": "2026-11-10T18:55:23+00:00",
+  "design": "async_apb_bridge",
+  "gates": {
+    "G1_rules": {
+      "at": "2026-11-10T19:01:14+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "work/rules.json": "aa7787b6dca43dea667adba070c9dc87ec72235d042748097ff2518e215d138e"
+      },
+      "note": "Read rules.md: 260 rules kept, 12 merged, 32 rejected (descriptions, scope exclusions, structure, STA/physical items; checked). The 7 open questions were decided on delegation with the cited spec text (formula of LPARA_REQ_W binding; SVA-016 per reset domain, SVA-007 ordinary assertion; DEC-019/DEC-020 binding for verification; DEC-021 ports accepted, APB4 inputs ignored and outputs 0). A person should confirm, especially questions 2 and 6."
+    },
+    "G2_contract": {
+      "at": "2026-11-10T19:51:49+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "work/contract.json": "2f02d0bf253a30374e96619d0feba878f0de58c6bea27415c47f2f62722e0b9c"
+      },
+      "note": "Re-approval after a flow fix: only the interface parameters changed (checks, rules and plan unchanged). LPARA_STRB_W is now the localparam PARA_APBCDC_DATA_W / 8 (formula read from the Effect column; it was the literal 'Derived', which broke every SVA lint); LPARA_REQ_W and LPARA_RESP_W (internal bundle widths, no port uses them, formula conditional on APB5) are left out of the interface. Earlier note still applies: 35 checks, CHK-019/020/022/023/026/030 expected NOT_VERIFIABLE with the default parameters. A person should confirm."
+    },
+    "G3_verif_sources": {
+      "at": "2026-11-11T05:55:34+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "verif": "1aa95c450604da1d32649e9e543be3f0173d70a6af04ad8ef1e1b6b617662350"
+      },
+      "note": "7 SVA modules lint clean after derived-parameter fix (LPARA_STRB_W = DATA_W/8); every property clocked in one domain; 18 cocotb tests reviewed: cross-domain checks use order + edge windows, NOT_VERIFIABLE for checks needing other parameters. A person should confirm."
+    }
+  },
+  "version": 1
+}

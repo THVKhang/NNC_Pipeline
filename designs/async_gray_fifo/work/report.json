@@ -1,0 +1,635 @@
+{
+ "design": "async_gray_fifo",
+ "date": "2026-11-11T07:24:06+00:00",
+ "gates": [
+  {
+   "gate": "G1_rules",
+   "state": "APPROVED",
+   "detail": "by Claude (delegated by GabrielHCMUT) at 2026-11-10T04:01:18+00:00"
+  },
+  {
+   "gate": "G2_contract",
+   "state": "APPROVED",
+   "detail": "by Claude (delegated by GabrielHCMUT) at 2026-11-10T04:18:03+00:00"
+  },
+  {
+   "gate": "G3_verif_sources",
+   "state": "APPROVED",
+   "detail": "by Claude (delegated by GabrielHCMUT) at 2026-11-11T07:12:13+00:00"
+  },
+  {
+   "gate": "G4_signoff",
+   "state": "PENDING",
+   "detail": "artifacts ready for review"
+  }
+ ],
+ "unreviewed_gates": [],
+ "rules": {
+  "total": 416,
+  "by_status": {
+   "FAILED": 12,
+   "NOT_PROVEN": 151,
+   "NOT_VERIFIED_BY_SIM": 142,
+   "PARTIAL": 50,
+   "VERIFIED": 61
+  }
+ },
+ "checks": {
+  "total": 32,
+  "by_status": {
+   "FAIL": 2,
+   "NOT_VERIFIABLE": 17,
+   "PASS": 13
+  },
+  "detail": {
+   "CHK-001": {
+    "status": "PASS",
+    "hits": 326,
+    "fails": 0
+   },
+   "CHK-002": {
+    "status": "PASS",
+    "hits": 13559,
+    "fails": 0
+   },
+   "CHK-003": {
+    "status": "FAIL",
+    "hits": 100200,
+    "fails": 34,
+    "first_fail_time": 231868000
+   },
+   "CHK-004": {
+    "status": "PASS",
+    "hits": 99915,
+    "fails": 0
+   },
+   "CHK-005": {
+    "status": "PASS",
+    "hits": 55542,
+    "fails": 0
+   },
+   "CHK-006": {
+    "status": "PASS",
+    "hits": 113376,
+    "fails": 0
+   },
+   "CHK-007": {
+    "status": "PASS",
+    "hits": 371,
+    "fails": 0
+   },
+   "CHK-008": {
+    "status": "PASS",
+    "hits": 113425,
+    "fails": 0
+   },
+   "CHK-009": {
+    "status": "PASS",
+    "hits": 5819,
+    "fails": 0
+   },
+   "CHK-010": {
+    "status": "PASS",
+    "hits": 107851,
+    "fails": 0
+   },
+   "CHK-011": {
+    "status": "PASS",
+    "hits": 5574,
+    "fails": 0
+   },
+   "CHK-012": {
+    "status": "PASS",
+    "hits": 113384,
+    "fails": 0
+   },
+   "CHK-013": {
+    "status": "FAIL",
+    "hits": 113425,
+    "fails": 61,
+    "first_fail_time": 8648000
+   },
+   "CHK-014": {
+    "status": "NOT_VERIFIABLE",
+    "tests": [
+     "test_chk_014_nominal_latency/per=0",
+     "test_chk_014_nominal_latency/per=1"
+    ],
+    "reason": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here"
+   },
+   "CHK-015": {
+    "status": "NOT_VERIFIABLE",
+    "tests": [
+     "test_chk_015_latency_with_model"
+    ],
+    "reason": "seeing L=2,3,4 in both directions over the 5-seed run set needs the other seeds; this run covers seed 1 only"
+   },
+   "CHK-016": {
+    "status": "NOT_VERIFIABLE",
+    "tests": [
+     "test_chk_016_random_ratios/pair=0",
+     "test_chk_016_random_ratios/pair=1",
+     "test_chk_016_random_ratios/pair=2",
+     "test_chk_016_random_ratios/pair=3",
+     "test_chk_016_random_ratios/pair=4",
+     "test_chk_016_random_ratios/pair=5"
+    ],
+    "reason": "the model-off run of the run set is another configuration; this run has the model on"
+   },
+   "CHK-017": {
+    "status": "NOT_VERIFIABLE",
+    "tests": [
+     "test_chk_017_synthesis_branch_regression"
+    ],
+    "reason": "this run is built without VLSIT_SYNTHESIS: the synthesizable cell branch is not elaborated; the same traffic and latency checks run on the simulation branch"
+   },
+   "CHK-018": {
+    "status": "NOT_VERIFIABLE",
+    "tests": [
+     "test_chk_018_write_n_read_n",
+     "test_chk_030_after_srst_like_hw_reset"
+    ],
+    "reason": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here"
+   },
+   "CHK-019": {
+    "status": "NOT_VERIFIABLE",
+    "tests": [
+     "test_chk_019_back_to_back_equal_clocks"
+    ],
+    "reason": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here"
+   },
+   "CHK-020": {
+    "status": "NOT_VERIFIABLE",
+    "tests": [
+     "test_chk_020_overflow"
+    ],
+    "reason": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here"
+   },
+   "CHK-021": {
+    "status": "NOT_VERIFIABLE",
+    "tests": [
+     "test_chk_021_underflow"
+    ],
+    "reason": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here"
+   },
+   "CHK-022": {
+    "status": "NOT_VERIFIABLE",
+    "tests": [
+     "test_chk_022_hw_reset_independent"
+    ],
+    "reason": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here"
+   },
+   "CHK-023": {
+    "status": "NOT_VERIFIABLE",
+    "tests": [
+     "test_chk_023_hw_reset_during_srst"
+    ],
+    "reason": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here"
+   },
+   "CHK-024": {
+    "status": "PASS",
+    "tests": [
+     "test_chk_024_hw_reset_mid_traffic"
+    ]
+   },
+   "CHK-025": {
+    "status": "NOT_VERIFIABLE",
+    "tests": [
+     "test_chk_025_srst_partial_fifo"
+    ],
+    "reason": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here"
+   },
+   "CHK-026": {
+    "status": "NOT_VERIFIABLE",
+    "tests": [
+     "test_chk_026_srst_pulse_full_overflow"
+    ],
+    "reason": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here"
+   },
+   "CHK-027": {
+    "status": "NOT_VERIFIABLE",
+    "tests": [
+     "test_chk_027_read_released_first"
+    ],
+    "reason": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here"
+   },
+   "CHK-028": {
+    "status": "NOT_VERIFIABLE",
+    "tests": [
+     "test_chk_028_srst_reassert_in_rel"
+    ],
+    "reason": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here"
+   },
+   "CHK-029": {
+    "status": "NOT_VERIFIABLE",
+    "tests": [
+     "test_chk_029_srst_random/pair=0",
+     "test_chk_029_srst_random/pair=1",
+     "test_chk_029_srst_random/pair=2",
+     "test_chk_029_srst_random/pair=3"
+    ],
+    "reason": "the other model settings / seeds of the run set are other runs (this run: model on, seed 1)"
+   },
+   "CHK-030": {
+    "status": "NOT_VERIFIABLE",
+    "tests": [
+     "test_chk_030_after_srst_like_hw_reset"
+    ],
+    "reason": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here"
+   },
+   "CHK-031": {
+    "status": "PASS",
+    "tests": [
+     "test_chk_031_clock_stop_during_srst"
+    ]
+   },
+   "CHK-032": {
+    "status": "NOT_VERIFIABLE",
+    "tests": [
+     "test_chk_032_threshold_flags/thr=0",
+     "test_chk_032_threshold_flags/thr=1",
+     "test_chk_032_threshold_flags/thr=2",
+     "test_chk_032_threshold_flags/thr=3",
+     "test_chk_032_threshold_flags/thr=4",
+     "test_chk_032_threshold_flags/thr=5"
+    ],
+    "reason": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here"
+   }
+  }
+ },
+ "simulation": {
+  "status": "ran",
+  "seed": 1,
+  "params": {
+   "PARA_AFIFO_DEPTH": 8,
+   "PARA_AFIFO_DATA_W": 32,
+   "PARA_AFIFO_CELL_TYPE": 2,
+   "PARA_AFIFO_MEM_USE_MACRO": 0
+  },
+  "tests": {
+   "pass": 34
+  },
+  "integration": {
+   "ok": true,
+   "issues": []
+  },
+  "coverage": {
+   "status": "measured",
+   "metric": "line",
+   "hit": 266,
+   "total": 268,
+   "percent": 99.3,
+   "files": {
+    "m_vlsit_afifo_cell_sync.sv": {
+     "hit": 57,
+     "total": 57
+    },
+    "m_vlsit_afifo_mem.sv": {
+     "hit": 14,
+     "total": 14
+    },
+    "m_vlsit_afifo_rd.sv": {
+     "hit": 74,
+     "total": 75
+    },
+    "m_vlsit_afifo_sync.sv": {
+     "hit": 4,
+     "total": 4
+    },
+    "m_vlsit_afifo_top.sv": {
+     "hit": 27,
+     "total": 27
+    },
+    "m_vlsit_afifo_wr.sv": {
+     "hit": 90,
+     "total": 91
+    }
+   },
+   "executed_lines": {
+    "m_vlsit_afifo_cell_sync.sv": "39-40,43-44,102-103,105-106,112-119,124-129,134-137,139-142,149-168,170-175,182",
+    "m_vlsit_afifo_mem.sv": "33-36,39-41,47-48,51-53,59-60",
+    "m_vlsit_afifo_rd.sv": "37-38,41-46,49-50,53-54,57-58,71-72,74-76,78-81,83-89,93,100,104-107,117-118,121-126,133-135,137,141-143,145,150-152,154,160-165,167-170,177-179,181,189-191,193",
+    "m_vlsit_afifo_sync.sv": "35-36,39-40",
+    "m_vlsit_afifo_top.sv": "41-42,45-50,53-54,57-58,61-66,70-78",
+    "m_vlsit_afifo_wr.sv": "38-39,42-47,50-53,56-57,60-62,78-79,81-85,87-90,92-98,102,109,112-115,125-126,129-134,141-143,145,149-151,153,158-160,162,168-173,175-177,179-182,184-186,193-195,197,204,208-210,212,216-218,220"
+   },
+   "metrics": {
+    "line": {
+     "hit": 266,
+     "total": 268,
+     "percent": 99.3,
+     "files": {
+      "m_vlsit_afifo_cell_sync.sv": {
+       "hit": 57,
+       "total": 57
+      },
+      "m_vlsit_afifo_mem.sv": {
+       "hit": 14,
+       "total": 14
+      },
+      "m_vlsit_afifo_rd.sv": {
+       "hit": 74,
+       "total": 75
+      },
+      "m_vlsit_afifo_sync.sv": {
+       "hit": 4,
+       "total": 4
+      },
+      "m_vlsit_afifo_top.sv": {
+       "hit": 27,
+       "total": 27
+      },
+      "m_vlsit_afifo_wr.sv": {
+       "hit": 90,
+       "total": 91
+      }
+     }
+    },
+    "block": {
+     "hit": 87,
+     "total": 91,
+     "percent": 95.6,
+     "files": {
+      "m_vlsit_afifo_cell_sync.sv": {
+       "hit": 16,
+       "total": 18
+      },
+      "m_vlsit_afifo_mem.sv": {
+       "hit": 4,
+       "total": 4
+      },
+      "m_vlsit_afifo_rd.sv": {
+       "hit": 29,
+       "total": 30
+      },
+      "m_vlsit_afifo_wr.sv": {
+       "hit": 38,
+       "total": 39
+      }
+     }
+    },
+    "expression": {
+     "hit": 100,
+     "total": 102,
+     "percent": 98.0,
+     "files": {
+      "m_vlsit_afifo_cell_sync.sv": {
+       "hit": 3,
+       "total": 4
+      },
+      "m_vlsit_afifo_rd.sv": {
+       "hit": 45,
+       "total": 45
+      },
+      "m_vlsit_afifo_wr.sv": {
+       "hit": 52,
+       "total": 53
+      }
+     }
+    },
+    "toggle": {
+     "hit": 1689,
+     "total": 1690,
+     "percent": 99.9,
+     "files": {
+      "m_vlsit_afifo_cell_sync.sv": {
+       "hit": 87,
+       "total": 88
+      },
+      "m_vlsit_afifo_mem.sv": {
+       "hit": 722,
+       "total": 722
+      },
+      "m_vlsit_afifo_rd.sv": {
+       "hit": 252,
+       "total": 252
+      },
+      "m_vlsit_afifo_sync.sv": {
+       "hit": 28,
+       "total": 28
+      },
+      "m_vlsit_afifo_top.sv": {
+       "hit": 334,
+       "total": 334
+      },
+      "m_vlsit_afifo_wr.sv": {
+       "hit": 266,
+       "total": 266
+      }
+     }
+    },
+    "functional": {
+     "hit": 40,
+     "total": 40,
+     "percent": 100.0,
+     "files": {
+      "nnc_cov.sv": {
+       "hit": 40,
+       "total": 40
+      }
+     }
+    }
+   },
+   "uncovered": [
+    {
+     "metric": "block",
+     "file": "m_vlsit_afifo_cell_sync.sv",
+     "line": 137,
+     "what": "else",
+     "points": 1,
+     "detail": [
+      "else"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_vlsit_afifo_cell_sync.sv",
+     "line": 139,
+     "what": "else",
+     "points": 1,
+     "detail": [
+      "else"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_vlsit_afifo_rd.sv",
+     "line": 172,
+     "what": "case",
+     "points": 1,
+     "detail": [
+      "case"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_vlsit_afifo_wr.sv",
+     "line": 188,
+     "what": "case",
+     "points": 1,
+     "detail": [
+      "case"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_afifo_cell_sync.sv",
+     "line": 182,
+     "what": "(sim_en==0) => 0",
+     "points": 1,
+     "detail": [
+      "(sim_en==0) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_afifo_wr.sv",
+     "line": 185,
+     "what": "((w_rgray_s == 4'h0)==0) => 0",
+     "points": 1,
+     "detail": [
+      "((w_rgray_s == 4'h0)==0) => 0"
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_vlsit_afifo_rd.sv",
+     "line": 172,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_vlsit_afifo_wr.sv",
+     "line": 188,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_afifo_cell_sync.sv",
+     "line": 106,
+     "what": "gen_sim_msync.sim_en",
+     "points": 1,
+     "detail": [
+      "gen_sim_msync.sim_en:1->0"
+     ]
+    }
+   ]
+  }
+ },
+ "mutation": {
+  "count": 36,
+  "killed": 29,
+  "survived": 7,
+  "not_compiled": 0,
+  "score": 80.6,
+  "threshold": 85.0,
+  "rules_attributed": 71,
+  "rules_below_threshold": [
+   "AF-10.6.4-01",
+   "AF-10.6.4-02",
+   "AF-10.7.4-24",
+   "AF-10.7.4-25",
+   "AF-14.4-09",
+   "AF-15.2-08",
+   "AF-20.2-12",
+   "AF-20.2-13",
+   "AF-3-58",
+   "AF-6.2-27",
+   "AF-7.3-01"
+  ]
+ },
+ "coverage_closure": {
+  "metric": "line",
+  "target": null,
+  "status": "not_requested",
+  "baseline": {
+   "hit": 266,
+   "total": 268,
+   "percent": 99.3,
+   "files": {
+    "m_vlsit_afifo_cell_sync.sv": {
+     "hit": 57,
+     "total": 57
+    },
+    "m_vlsit_afifo_mem.sv": {
+     "hit": 14,
+     "total": 14
+    },
+    "m_vlsit_afifo_rd.sv": {
+     "hit": 74,
+     "total": 75
+    },
+    "m_vlsit_afifo_sync.sv": {
+     "hit": 4,
+     "total": 4
+    },
+    "m_vlsit_afifo_top.sv": {
+     "hit": 27,
+     "total": 27
+    },
+    "m_vlsit_afifo_wr.sv": {
+     "hit": 90,
+     "total": 91
+    }
+   }
+  },
+  "final": {
+   "hit": 266,
+   "total": 268,
+   "percent": 99.3,
+   "files": {
+    "m_vlsit_afifo_cell_sync.sv": {
+     "hit": 57,
+     "total": 57
+    },
+    "m_vlsit_afifo_mem.sv": {
+     "hit": 14,
+     "total": 14
+    },
+    "m_vlsit_afifo_rd.sv": {
+     "hit": 74,
+     "total": 75
+    },
+    "m_vlsit_afifo_sync.sv": {
+     "hit": 4,
+     "total": 4
+    },
+    "m_vlsit_afifo_top.sv": {
+     "hit": 27,
+     "total": 27
+    },
+    "m_vlsit_afifo_wr.sv": {
+     "hit": 90,
+     "total": 91
+    }
+   }
+  }
+ },
+ "triage": {
+  "clusters": 2,
+  "analysed": 2
+ },
+ "agent_cost_usd": {
+  "total_usd": 32.85,
+  "calls": 76,
+  "by_agent": {
+   "A1": 1.3607,
+   "A12": 0.3355,
+   "A2": 1.1421,
+   "A3": 0.556,
+   "A4": 2.88,
+   "A5": 0.4355,
+   "A6": 0.463,
+   "A7": 21.1682,
+   "A9": 4.509
+  }
+ }
+}

@@ -1,0 +1,1510 @@
+{
+ "top": "m_vlsit_apbcdc_top",
+ "interface": {
+  "ports": [
+   {
+    "name": "i_clk_mst",
+    "direction": "input",
+    "width": "1",
+    "type": "Clock (free running, rising edge)",
+    "reset_value": "Not applicable",
+    "meaning": "Clock of the requester-side interface",
+    "domain": "CLK-MST"
+   },
+   {
+    "name": "i_rst_n_mst",
+    "direction": "input",
+    "width": "1",
+    "type": "Reset (active-low level, asynchronous assertion, release synchronous to i_clk_mst outside the IP)",
+    "reset_value": "Not applicable",
+    "meaning": "Hardware reset of all state of the mst domain",
+    "domain": "CLK-MST"
+   },
+   {
+    "name": "i_apb_psel",
+    "direction": "input",
+    "width": "1",
+    "type": "Level (high for the whole transfer)",
+    "reset_value": "0",
+    "meaning": "APB select of the requester",
+    "domain": "CLK-MST"
+   },
+   {
+    "name": "i_apb_penable",
+    "direction": "input",
+    "width": "1",
+    "type": "Level (high from the cycle after the Setup phase until the transfer completes)",
+    "reset_value": "0",
+    "meaning": "APB enable, Access phase",
+    "domain": "CLK-MST"
+   },
+   {
+    "name": "i_apb_pwrite",
+    "direction": "input",
+    "width": "1",
+    "type": "Data (valid with i_apb_psel)",
+    "reset_value": "Not applicable",
+    "meaning": "1 = write transfer, 0 = read transfer",
+    "domain": "CLK-MST"
+   },
+   {
+    "name": "i_apb_paddr",
+    "direction": "input",
+    "width": "PARA_APBCDC_ADDR_W",
+    "type": "Data (valid with i_apb_psel)",
+    "reset_value": "Not applicable",
+    "meaning": "Byte address",
+    "domain": "CLK-MST"
+   },
+   {
+    "name": "i_apb_pprot",
+    "direction": "input",
+    "width": "3",
+    "type": "Data (valid with i_apb_psel)",
+    "reset_value": "Not applicable",
+    "meaning": "Protection type, forwarded unchanged",
+    "domain": "CLK-MST"
+   },
+   {
+    "name": "i_apb_pstrb",
+    "direction": "input",
+    "width": "LPARA_STRB_W",
+    "type": "Data (valid with i_apb_psel; low for a read)",
+    "reset_value": "Not applicable",
+    "meaning": "Write strobes, one bit per byte lane",
+    "domain": "CLK-MST"
+   },
+   {
+    "name": "i_apb_pwdata",
+    "direction": "input",
+    "width": "PARA_APBCDC_DATA_W",
+    "type": "Data (valid with i_apb_psel and i_apb_pwrite, active lanes only)",
+    "reset_value": "Not applicable",
+    "meaning": "Write data",
+    "domain": "CLK-MST"
+   },
+   {
+    "name": "i_apb_pwakeup",
+    "direction": "input",
+    "width": "1",
+    "type": "Level (flop output of the requester, active-high)",
+    "reset_value": "0",
+    "meaning": "APB5 wake-up of the requester; asserted before or with i_apb_psel, glitch-free",
+    "domain": "CLK-MST"
+   },
+   {
+    "name": "i_apb_pauser",
+    "direction": "input",
+    "width": "PARA_APBCDC_USER_REQ_W",
+    "type": "Data (valid with i_apb_psel)",
+    "reset_value": "Not applicable",
+    "meaning": "APB5 user request attribute",
+    "domain": "CLK-MST"
+   },
+   {
+    "name": "i_apb_pwuser",
+    "direction": "input",
+    "width": "PARA_APBCDC_USER_DATA_W",
+    "type": "Data (valid with i_apb_psel and i_apb_pwrite)",
+    "reset_value": "Not applicable",
+    "meaning": "APB5 user write-data attribute",
+    "domain": "CLK-MST"
+   },
+   {
+    "name": "o_apb_pready",
+    "direction": "output",
+    "width": "1",
+    "type": "Pulse (1 cycle of i_clk_mst per transfer, flop output)",
+    "reset_value": "0",
+    "meaning": "Transfer ready for the requester",
+    "domain": "CLK-MST"
+   },
+   {
+    "name": "o_apb_prdata",
+    "direction": "output",
+    "width": "PARA_APBCDC_DATA_W",
+    "type": "Data (valid with o_apb_pready of a read)",
+    "reset_value": "0",
+    "meaning": "Read data",
+    "domain": "CLK-MST"
+   },
+   {
+    "name": "o_apb_pslverr",
+    "direction": "output",
+    "width": "1",
+    "type": "Level (high only in the o_apb_pready cycle, flop output)",
+    "reset_value": "0",
+    "meaning": "Transfer error",
+    "domain": "CLK-MST"
+   },
+   {
+    "name": "o_apb_pruser",
+    "direction": "output",
+    "width": "PARA_APBCDC_USER_DATA_W",
+    "type": "Data (valid with o_apb_pready of a read)",
+    "reset_value": "0",
+    "meaning": "APB5 user read-data attribute",
+    "domain": "CLK-MST"
+   },
+   {
+    "name": "o_apb_pbuser",
+    "direction": "output",
+    "width": "PARA_APBCDC_USER_RESP_W",
+    "type": "Data (valid with o_apb_pready)",
+    "reset_value": "0",
+    "meaning": "APB5 user response attribute",
+    "domain": "CLK-MST"
+   },
+   {
+    "name": "i_clk_slv",
+    "direction": "input",
+    "width": "1",
+    "type": "Clock (free running, rising edge)",
+    "reset_value": "Not applicable",
+    "meaning": "Clock of the completer-side interface",
+    "domain": "CLK-SLV"
+   },
+   {
+    "name": "i_rst_n_slv",
+    "direction": "input",
+    "width": "1",
+    "type": "Reset (active-low level, asynchronous assertion, release synchronous to i_clk_slv outside the IP)",
+    "reset_value": "Not applicable",
+    "meaning": "Hardware reset of all state of the slv domain",
+    "domain": "CLK-SLV"
+   },
+   {
+    "name": "o_apb_psel",
+    "direction": "output",
+    "width": "1",
+    "type": "Level (flop output, high from the Setup phase to the end of the transfer)",
+    "reset_value": "0",
+    "meaning": "APB select toward the completer",
+    "domain": "CLK-SLV"
+   },
+   {
+    "name": "o_apb_penable",
+    "direction": "output",
+    "width": "1",
+    "type": "Level (flop output, high from the cycle after o_apb_psel until the transfer completes)",
+    "reset_value": "0",
+    "meaning": "APB enable toward the completer",
+    "domain": "CLK-SLV"
+   },
+   {
+    "name": "o_apb_pwrite",
+    "direction": "output",
+    "width": "1",
+    "type": "Data (valid with o_apb_psel, stable until the transfer completes)",
+    "reset_value": "0",
+    "meaning": "Write flag toward the completer",
+    "domain": "CLK-SLV"
+   },
+   {
+    "name": "o_apb_paddr",
+    "direction": "output",
+    "width": "PARA_APBCDC_ADDR_W",
+    "type": "Data (valid with o_apb_psel, stable until the transfer completes)",
+    "reset_value": "0",
+    "meaning": "Byte address toward the completer",
+    "domain": "CLK-SLV"
+   },
+   {
+    "name": "o_apb_pprot",
+    "direction": "output",
+    "width": "3",
+    "type": "Data (valid with o_apb_psel, stable until the transfer completes)",
+    "reset_value": "0",
+    "meaning": "Protection type toward the completer",
+    "domain": "CLK-SLV"
+   },
+   {
+    "name": "o_apb_pstrb",
+    "direction": "output",
+    "width": "LPARA_STRB_W",
+    "type": "Data (valid with o_apb_psel, stable until the transfer completes)",
+    "reset_value": "0",
+    "meaning": "Write strobes toward the completer",
+    "domain": "CLK-SLV"
+   },
+   {
+    "name": "o_apb_pwdata",
+    "direction": "output",
+    "width": "PARA_APBCDC_DATA_W",
+    "type": "Data (valid with o_apb_psel and o_apb_pwrite, stable until the transfer completes)",
+    "reset_value": "0",
+    "meaning": "Write data toward the completer",
+    "domain": "CLK-SLV"
+   },
+   {
+    "name": "o_apb_pwakeup",
+    "direction": "output",
+    "width": "1",
+    "type": "Level (flop output, glitch-free, active-high)",
+    "reset_value": "0",
+    "meaning": "APB5 wake-up toward the completer: synchronized i_apb_pwakeup or transfer in progress",
+    "domain": "CLK-SLV"
+   },
+   {
+    "name": "o_apb_pauser",
+    "direction": "output",
+    "width": "PARA_APBCDC_USER_REQ_W",
+    "type": "Data (valid with o_apb_psel, stable until the transfer completes)",
+    "reset_value": "0",
+    "meaning": "APB5 user request attribute toward the completer",
+    "domain": "CLK-SLV"
+   },
+   {
+    "name": "o_apb_pwuser",
+    "direction": "output",
+    "width": "PARA_APBCDC_USER_DATA_W",
+    "type": "Data (valid with o_apb_psel and o_apb_pwrite, stable until the transfer completes)",
+    "reset_value": "0",
+    "meaning": "APB5 user write-data attribute toward the completer",
+    "domain": "CLK-SLV"
+   },
+   {
+    "name": "i_apb_pready",
+    "direction": "input",
+    "width": "1",
+    "type": "Level (extends the Access phase while low)",
+    "reset_value": "Not applicable",
+    "meaning": "Ready of the completer",
+    "domain": "CLK-SLV"
+   },
+   {
+    "name": "i_apb_prdata",
+    "direction": "input",
+    "width": "PARA_APBCDC_DATA_W",
+    "type": "Data (valid with i_apb_pready of a read)",
+    "reset_value": "Not applicable",
+    "meaning": "Read data of the completer",
+    "domain": "CLK-SLV"
+   },
+   {
+    "name": "i_apb_pslverr",
+    "direction": "input",
+    "width": "1",
+    "type": "Level (valid with i_apb_pready)",
+    "reset_value": "Not applicable",
+    "meaning": "Error of the completer",
+    "domain": "CLK-SLV"
+   },
+   {
+    "name": "i_apb_pruser",
+    "direction": "input",
+    "width": "PARA_APBCDC_USER_DATA_W",
+    "type": "Data (valid with i_apb_pready of a read)",
+    "reset_value": "Not applicable",
+    "meaning": "APB5 user read-data attribute of the completer",
+    "domain": "CLK-SLV"
+   },
+   {
+    "name": "i_apb_pbuser",
+    "direction": "input",
+    "width": "PARA_APBCDC_USER_RESP_W",
+    "type": "Data (valid with i_apb_pready)",
+    "reset_value": "Not applicable",
+    "meaning": "APB5 user response attribute of the completer",
+    "domain": "CLK-SLV"
+   }
+  ],
+  "parameters": [
+   {
+    "name": "PARA_APBCDC_ADDR_W",
+    "default": "32",
+    "legal": "1 to 32"
+   },
+   {
+    "name": "PARA_APBCDC_DATA_W",
+    "default": "32",
+    "legal": "8, 16 or 32"
+   },
+   {
+    "name": "PARA_APBCDC_APB5",
+    "default": "0",
+    "legal": "0 or 1"
+   },
+   {
+    "name": "PARA_APBCDC_USER_REQ_W",
+    "default": "0",
+    "legal": "0 to 128"
+   },
+   {
+    "name": "PARA_APBCDC_USER_DATA_W",
+    "default": "0",
+    "legal": "0 to PARA_APBCDC_DATA_W; an integer multiple of 8 is recommended (REF-001 3.7.3)"
+   },
+   {
+    "name": "PARA_APBCDC_USER_RESP_W",
+    "default": "0",
+    "legal": "0 to 16"
+   },
+   {
+    "name": "PARA_APBCDC_HS_TYPE",
+    "default": "0",
+    "legal": "0 or 1"
+   },
+   {
+    "name": "PARA_APBCDC_CELL_TYPE",
+    "default": "2",
+    "legal": "0 to 4"
+   },
+   {
+    "name": "LPARA_STRB_W",
+    "default": "Derived",
+    "legal": "1, 2 or 4",
+    "derived": "PARA_APBCDC_DATA_W / 8"
+   }
+  ],
+  "clock": "i_clk_mst",
+  "reset": {
+   "name": "i_rst_n_mst",
+   "active_low": true
+  },
+  "clocks": [
+   {
+    "name": "i_clk_mst",
+    "domain": "CLK-MST"
+   },
+   {
+    "name": "i_clk_slv",
+    "domain": "CLK-SLV"
+   }
+  ],
+  "resets": [
+   {
+    "name": "i_rst_n_mst",
+    "active_low": true,
+    "clock": "i_clk_mst"
+   },
+   {
+    "name": "i_rst_n_slv",
+    "active_low": true,
+    "clock": "i_clk_slv"
+   }
+  ],
+  "source_table": {
+   "section": "6.2",
+   "line": 231
+  },
+  "clock_relation": "async"
+ },
+ "checks": [
+  {
+   "id": "CHK-001",
+   "kind": "assertion",
+   "group": "apb5off",
+   "title": "Absent APB5 signals drive zero",
+   "rules": [
+    "AB2-3-45",
+    "AB2-20.2-08",
+    "AB2-3-44",
+    "AB2-8-04",
+    "AB2-8-05",
+    "AB2-8-06",
+    "AB2-8-08"
+   ],
+   "behavior": "If PARA_APBCDC_APB5=0: at every rising edge of i_clk_slv, o_apb_pwakeup=0, o_apb_pauser=0 and o_apb_pwuser=0; at every rising edge of i_clk_mst, o_apb_pruser=0 and o_apb_pbuser=0. If PARA_APBCDC_APB5=1: o_apb_pauser=0 when PARA_APBCDC_USER_REQ_W=0; o_apb_pwuser=0 (on i_clk_slv) and o_apb_pruser=0 (on i_clk_mst) when PARA_APBCDC_USER_DATA_W=0; o_apb_pbuser=0 when PARA_APBCDC_USER_RESP_W=0. These hold for any value on i_apb_pwakeup, i_apb_pauser, i_apb_pwuser, i_apb_pruser and i_apb_pbuser.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-002",
+   "kind": "assertion",
+   "group": "glitch",
+   "title": "Outputs change only at their own clock edge or on reset assertion",
+   "rules": [
+    "AB2-3-21",
+    "AB2-20.2-06"
+   ],
+   "behavior": "Event monitor. Each of o_apb_pready, o_apb_pslverr, o_apb_prdata, o_apb_pruser and o_apb_pbuser changes value only in the time step of a rising edge of i_clk_mst or of a falling edge of i_rst_n_mst. Each of o_apb_psel, o_apb_penable, o_apb_pwrite, o_apb_paddr, o_apb_pprot, o_apb_pstrb, o_apb_pwdata, o_apb_pwakeup, o_apb_pauser and o_apb_pwuser changes value only in the time step of a rising edge of i_clk_slv or of a falling edge of i_rst_n_slv. No output changes more than once within one time step (no zero-width glitch). The asynchronous inputs i_apb_pwakeup, i_apb_pready, i_apb_psel and the other inputs, changing between clock edges, never cause an output change on their own.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-003",
+   "kind": "assertion",
+   "group": "mstif",
+   "title": "Requester-side PREADY only in an Access cycle",
+   "rules": [
+    "AB2-15.3-02",
+    "AB2-3-08",
+    "AB2-6.3-04",
+    "AB2-20.2-06",
+    "AB2-2.3-01"
+   ],
+   "behavior": "At every rising edge of i_clk_mst with i_rst_n_mst=1 and i_rst_n_slv=1: if o_apb_pready=1, then i_apb_psel=1 and i_apb_penable=1 at the same edge. This assumes a legal APB requester that holds i_apb_psel and i_apb_penable high until it samples PREADY.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-004",
+   "kind": "assertion",
+   "group": "mstif",
+   "title": "Requester-side PREADY is a one-cycle pulse",
+   "rules": [
+    "AB2-3-08",
+    "AB2-15.3-03",
+    "AB2-10.1-04",
+    "AB2-5.4-04"
+   ],
+   "behavior": "At every rising edge of i_clk_mst with both resets high: if o_apb_pready=1, then at the next rising edge of i_clk_mst o_apb_pready=0 and o_apb_pslverr=0.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-005",
+   "kind": "assertion",
+   "group": "mstif",
+   "title": "PSLVERR only in the PREADY cycle (no sticky error)",
+   "rules": [
+    "AB2-3-11",
+    "AB2-3-23",
+    "AB2-15.3-04",
+    "AB2-6.2-01",
+    "AB2-6.3-09",
+    "AB2-12-08",
+    "AB2-10.1-04"
+   ],
+   "behavior": "At every rising edge of i_clk_mst with both resets high: if o_apb_pslverr=1, then o_apb_pready=1 at the same edge. Equivalently, o_apb_pready=0 implies o_apb_pslverr=0.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-006",
+   "kind": "assertion",
+   "group": "mstif",
+   "title": "At most one PREADY per accepted Setup phase",
+   "rules": [
+    "AB2-3-07",
+    "AB2-15.3-03",
+    "AB2-5.4-04",
+    "AB2-10.1-02"
+   ],
+   "behavior": "On i_clk_mst with both resets high: between any two rising edges at which o_apb_pready=1, there is at least one rising edge at which i_apb_psel=1 and i_apb_penable=0 (a Setup cycle), sampled at or after the edge after the first PREADY. After reset release, o_apb_pready=1 is never sampled before the first Setup cycle. Also, if i_apb_psel=1 and i_apb_penable=0 at a rising edge, then o_apb_pready=0 at that edge and at the next rising edge of i_clk_mst.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-007",
+   "kind": "assertion",
+   "group": "mstif",
+   "title": "Response outputs stable outside the PREADY cycle",
+   "rules": [
+    "AB2-3-22"
+   ],
+   "behavior": "At every rising edge of i_clk_mst with both resets high: if o_apb_pready=0, then o_apb_prdata, o_apb_pruser and o_apb_pbuser equal their values at the previous rising edge of i_clk_mst. They change only at the edge that raises o_apb_pready.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-008",
+   "kind": "assertion",
+   "group": "mstif",
+   "title": "No unknown requester-side outputs after reset",
+   "rules": [
+    "AB2-15.3-18",
+    "AB2-6.3-05"
+   ],
+   "behavior": "At every rising edge of i_clk_mst after the first release of i_rst_n_mst: o_apb_pready, o_apb_pslverr, o_apb_prdata, o_apb_pruser and o_apb_pbuser have no X or Z bit. Also, if o_apb_pready=1 in the response to a read (i_apb_pwrite=0 sampled at its Setup cycle), then o_apb_prdata has no X or Z bit.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-009",
+   "kind": "assertion",
+   "group": "rst",
+   "title": "Requester-side outputs at reset value while i_rst_n_mst is low",
+   "rules": [
+    "AB2-15.3-17",
+    "AB2-3-37",
+    "AB2-3-38",
+    "AB2-7.3-01",
+    "AB2-5.4-06"
+   ],
+   "behavior": "Stays enabled during reset. At every rising edge of i_clk_mst where i_rst_n_mst=0, and also one simulation time step after every falling edge of i_rst_n_mst (asynchronous assertion, without waiting for a clock edge): o_apb_pready=0, o_apb_pslverr=0, o_apb_prdata=0, o_apb_pruser=0 and o_apb_pbuser=0.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-010",
+   "kind": "assertion",
+   "group": "rst",
+   "title": "Completer-side outputs at reset value while i_rst_n_slv is low",
+   "rules": [
+    "AB2-15.3-17",
+    "AB2-3-38",
+    "AB2-7.3-02",
+    "AB2-15.3-08",
+    "AB2-5.4-06"
+   ],
+   "behavior": "Stays enabled during reset. At every rising edge of i_clk_slv where i_rst_n_slv=0, and also one simulation time step after every falling edge of i_rst_n_slv: o_apb_psel=0, o_apb_penable=0, o_apb_pwrite=0, o_apb_paddr=0, o_apb_pprot=0, o_apb_pstrb=0, o_apb_pwdata=0, o_apb_pwakeup=0, o_apb_pauser=0 and o_apb_pwuser=0.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-011",
+   "kind": "assertion",
+   "group": "slvif",
+   "title": "No unknown completer-side outputs after reset",
+   "rules": [
+    "AB2-15.3-18"
+   ],
+   "behavior": "At every rising edge of i_clk_slv after the first release of i_rst_n_slv: o_apb_psel, o_apb_penable, o_apb_pwrite, o_apb_paddr, o_apb_pprot, o_apb_pstrb, o_apb_pwdata, o_apb_pwakeup, o_apb_pauser and o_apb_pwuser have no X or Z bit.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-012",
+   "kind": "assertion",
+   "group": "slvif",
+   "title": "Completer-side PENABLE implies PSEL; PSEL rises in a Setup cycle",
+   "rules": [
+    "AB2-15.3-06",
+    "AB2-3-14",
+    "AB2-3-15",
+    "AB2-5.4-05",
+    "AB2-6.3-01"
+   ],
+   "behavior": "At every rising edge of i_clk_slv with both resets high: (a) if o_apb_penable=1, then o_apb_psel=1. (b) If o_apb_psel=0 at the previous rising edge and o_apb_psel=1 at this edge, then o_apb_penable=0 at this edge.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-013",
+   "kind": "assertion",
+   "group": "slvif",
+   "title": "Completer-side Setup phase lasts exactly one cycle",
+   "rules": [
+    "AB2-3-15",
+    "AB2-5.3-05",
+    "AB2-10.1-06",
+    "AB2-15.3-06",
+    "AB2-6.3-01"
+   ],
+   "behavior": "At every rising edge of i_clk_slv with both resets high: if o_apb_psel=1 and o_apb_penable=0, then at the next rising edge of i_clk_slv o_apb_psel=1 and o_apb_penable=1. This holds whatever the value of i_apb_pready in the Setup cycle.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-014",
+   "kind": "assertion",
+   "group": "slvif",
+   "title": "Access phase held while the completer is not ready (no timeout)",
+   "rules": [
+    "AB2-3-14",
+    "AB2-3-10",
+    "AB2-5.3-06"
+   ],
+   "behavior": "At every rising edge of i_clk_slv with both resets high: if o_apb_psel=1, o_apb_penable=1 and i_apb_pready=0, then at the next rising edge of i_clk_slv o_apb_psel=1 and o_apb_penable=1. There is no limit on the number of repetitions.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-015",
+   "kind": "assertion",
+   "group": "slvif",
+   "title": "Completer-side transfer ends at the PREADY edge",
+   "rules": [
+    "AB2-3-17",
+    "AB2-10.3-03",
+    "AB2-10.1-07",
+    "AB2-5.3-07",
+    "AB2-15.3-08"
+   ],
+   "behavior": "At every rising edge of i_clk_slv with both resets high: if o_apb_psel=1, o_apb_penable=1 and i_apb_pready=1, then at the next rising edge of i_clk_slv o_apb_psel=0 and o_apb_penable=0.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-016",
+   "kind": "assertion",
+   "group": "slvif",
+   "title": "Completer-side request fields stable during a transfer",
+   "rules": [
+    "AB2-3-16",
+    "AB2-15.3-07",
+    "AB2-6.2-02",
+    "AB2-6.2-03",
+    "AB2-6.2-04",
+    "AB2-6.2-05",
+    "AB2-6.2-06",
+    "AB2-6.2-07",
+    "AB2-6.2-08",
+    "AB2-6.3-06",
+    "AB2-6.3-17"
+   ],
+   "behavior": "At every rising edge of i_clk_slv with both resets high: if o_apb_psel=1 and not (o_apb_penable=1 and i_apb_pready=1), then at the next rising edge of i_clk_slv the values of o_apb_pwrite, o_apb_paddr, o_apb_pprot, o_apb_pstrb, o_apb_pwdata, o_apb_pauser and o_apb_pwuser are unchanged.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-017",
+   "kind": "assertion",
+   "group": "slvif",
+   "title": "Completer-side request fields loaded only at Setup entry",
+   "rules": [
+    "AB2-3-22",
+    "AB2-6.3-07",
+    "AB2-10.1-05",
+    "AB2-7.2-03"
+   ],
+   "behavior": "At every rising edge of i_clk_slv with both resets high: if any of o_apb_pwrite, o_apb_paddr, o_apb_pprot, o_apb_pstrb, o_apb_pwdata, o_apb_pauser or o_apb_pwuser differs from its value at the previous rising edge, then o_apb_psel=1 and o_apb_penable=0 at this edge, and o_apb_psel=0 at the previous edge. The fields are loaded only at the edge that starts the Setup phase and hold their value otherwise.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-018",
+   "kind": "assertion",
+   "group": "wake",
+   "title": "APB5 o_apb_pwakeup high no later than o_apb_psel and until completion",
+   "rules": [
+    "AB2-3-43",
+    "AB2-15.3-15",
+    "AB2-15.3-16",
+    "AB2-6.3-13",
+    "AB2-10.2-06"
+   ],
+   "behavior": "Enabled only when PARA_APBCDC_APB5=1. At every rising edge of i_clk_slv with both resets high: if o_apb_psel=1, then o_apb_pwakeup=1. This includes the Setup cycle and the completing Access cycle where i_apb_pready=1, so o_apb_pwakeup stays high until i_apb_pready is sampled.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-019",
+   "kind": "test",
+   "group": "apb5",
+   "title": "APB5 user signals transported unchanged",
+   "rules": [
+    "AB2-1.3-07",
+    "AB2-3-02",
+    "AB2-3-04",
+    "AB2-3-44",
+    "AB2-6.2-07",
+    "AB2-6.2-08",
+    "AB2-6.3-17",
+    "AB2-6.3-18",
+    "AB2-8-05",
+    "AB2-8-06",
+    "AB2-8-08",
+    "AB2-10.2-07",
+    "AB2-20.2-04"
+   ],
+   "behavior": "PAUSER and PWUSER travel with the request, and PRUSER and PBUSER with the response, with the same timing as the other fields.",
+   "stimulus": "Configuration PARA_APBCDC_APB5=1, PARA_APBCDC_DATA_W=32, PARA_APBCDC_USER_REQ_W=128, PARA_APBCDC_USER_DATA_W=32, PARA_APBCDC_USER_RESP_W=16, HS_TYPE=0, CELL_TYPE=2. T_mst=10 ns, T_slv=20 ns. 300 random reads and writes with random i_apb_pauser and i_apb_pwuser, including all-ones and all-zero values, and i_apb_pwakeup=1 one cycle before i_apb_psel. The completer returns random i_apb_pruser and i_apb_pbuser with wait states from 0 to 4.",
+   "expected": "At the o_apb_psel rise edge and for the whole completer transfer, o_apb_pauser equals i_apb_pauser at S0, and for writes o_apb_pwuser equals i_apb_pwuser at S0. In the requester PREADY cycle, o_apb_pbuser equals i_apb_pbuser sampled at C, and for reads o_apb_pruser equals i_apb_pruser sampled at C. The windows are those of CHK-031."
+  },
+  {
+   "id": "CHK-020",
+   "kind": "test",
+   "group": "apb5",
+   "title": "APB5 wake-up propagation and in-progress term",
+   "rules": [
+    "AB2-1.3-06",
+    "AB2-3-42",
+    "AB2-5.3-12",
+    "AB2-7.2-09",
+    "AB2-10.2-06",
+    "AB2-6.3-13",
+    "AB2-6.3-14",
+    "AB2-6.3-15",
+    "AB2-6.3-16",
+    "AB2-15.1-03"
+   ],
+   "behavior": "o_apb_pwakeup is the OR of the synchronized i_apb_pwakeup and a completer-side transfer in progress. It is high no later than o_apb_psel.",
+   "stimulus": "Configuration PARA_APBCDC_APB5=1, PARA_APBCDC_CELL_TYPE=2 (N=2), HS_TYPE=0, T_mst=10 ns, T_slv=20 ns. (a) While idle, the requester drives i_apb_pwakeup=1 for 20 mst cycles with no transfer, then 0. Name W1 and W0 the i_clk_mst edges that first sample i_apb_pwakeup=1 and 0. (b) 50 transfers with i_apb_pwakeup asserted one cycle before i_apb_psel and held until PREADY. (c) 50 transfers with i_apb_pwakeup never driven (always 0). (d) 20 transfers with i_apb_pwakeup asserted after i_apb_psel, during Access. (e) A completer that waits for o_apb_pwakeup=1 before driving i_apb_pready.",
+   "expected": "(a) o_apb_pwakeup becomes 1 at the k-th i_clk_slv edge after W1 and returns to 0 at the k-th i_clk_slv edge after W0, with k in [N+1, N+3] in both cases. o_apb_psel stays 0 throughout. (b) to (d) o_apb_pwakeup=1 at every i_clk_slv edge where o_apb_psel=1. In (c) it is 1 at the edge that raises o_apb_psel, and it is 0 again within N+3 i_clk_slv edges after the completion edge C, then stays 0 while idle. (e) All transfers complete. Fields and responses are correct in all phases."
+  },
+  {
+   "id": "CHK-021",
+   "kind": "test",
+   "group": "apb5",
+   "title": "APB4 configuration ignores APB5 inputs",
+   "rules": [
+    "AB2-3-45",
+    "AB2-8-04",
+    "AB2-20.2-04",
+    "AB2-20.2-08"
+   ],
+   "behavior": "With PARA_APBCDC_APB5=0 the APB5 inputs have no effect, and the APB5 outputs are 0.",
+   "stimulus": "Configuration PARA_APBCDC_APB5=0 (default). 200 random transfers. The requester toggles i_apb_pwakeup randomly and drives random i_apb_pauser and i_apb_pwuser. The completer drives random i_apb_pruser and i_apb_pbuser. Also hold i_apb_pwakeup=1 for 50 idle cycles.",
+   "expected": "o_apb_pwakeup, o_apb_pauser, o_apb_pwuser, o_apb_pruser and o_apb_pbuser are 0 at every edge of their domain (CHK-001). With i_apb_pwakeup=1 while idle, no output changes. The scoreboard for all APB4 fields and responses passes as in CHK-029."
+  },
+  {
+   "id": "CHK-022",
+   "kind": "test",
+   "group": "cfgmin",
+   "title": "Smallest legal configuration CFG-MIN end to end",
+   "rules": [
+    "AB2-4-01",
+    "AB2-8-02",
+    "AB2-8-03",
+    "AB2-8-12",
+    "AB2-9-02",
+    "AB2-9-03"
+   ],
+   "behavior": "With 1-bit address and 8-bit data, the fields cross without extension or truncation. PSTRB has 1 bit.",
+   "stimulus": "Configuration PARA_APBCDC_ADDR_W=1, PARA_APBCDC_DATA_W=8 (LPARA_STRB_W=1), PARA_APBCDC_APB5=0, HS_TYPE=0, CELL_TYPE=2. 500 random transfers covering both i_apb_paddr values, i_apb_pwdata and i_apb_prdata values 0x00, 0xFF and random values, both i_apb_pstrb values on writes, all i_apb_pprot values, and random wait states and errors.",
+   "expected": "The CHK-029 scoreboard passes. o_apb_paddr, o_apb_pstrb, o_apb_pwdata and o_apb_prdata equal the corresponding requester and completer values bit for bit. All assertions pass."
+  },
+  {
+   "id": "CHK-023",
+   "kind": "test",
+   "group": "hs4",
+   "title": "Four-phase handshake: same function, PREADY only after the handshake closes",
+   "rules": [
+    "AB2-1.3-04",
+    "AB2-3-25",
+    "AB2-3-26",
+    "AB2-3-31",
+    "AB2-5.3-09",
+    "AB2-5.3-10",
+    "AB2-8-09",
+    "AB2-9-09",
+    "AB2-10.1-03",
+    "AB2-10.1-08",
+    "AB2-10.2-09",
+    "AB2-15.3-14",
+    "AB2-20.2-07"
+   ],
+   "behavior": "With PARA_APBCDC_HS_TYPE=1 the interface results are identical to the two-phase handshake. Requester PREADY comes only after the full request-high, ack-high, request-low, ack-low sequence, so a back-to-back Setup is always accepted.",
+   "stimulus": "Configuration PARA_APBCDC_HS_TYPE=1, PARA_APBCDC_CELL_TYPE=2 (N=2), PARA_APBCDC_APB5=0. Clock ratios T_mst:T_slv of 10:20 ns in one run and 20:10 ns in another. The same traffic as CHK-031 and CHK-034: 200 reads and writes, half of them back-to-back, wait states from 0 to 5, random PSLVERR. C is the completion edge as in CHK-031.",
+   "expected": "All field, response and count checks of CHK-031, CHK-033 and CHK-034 pass. For each transfer, o_apb_psel rises at the k-th i_clk_slv edge after S0 with k in [N+1, N+3]. o_apb_pready becomes 1 no earlier than the (2N+2)-th rising edge of i_clk_mst after C, so a requester PREADY within the two-phase window is a failure. For a back-to-back transfer, the next o_apb_psel rises at the k-th i_clk_slv edge after the next S0, with k in [N+1, N+3]."
+  },
+  {
+   "id": "CHK-024",
+   "kind": "test",
+   "group": "illegal",
+   "title": "Requester protocol violations: PENABLE without Setup, field changes during Access, extended Setup",
+   "rules": [
+    "AB2-6.3-24",
+    "AB2-6.3-25",
+    "AB2-12-06",
+    "AB2-15.1-03",
+    "AB2-1.1-02",
+    "AB2-21-01",
+    "AB2-3-27",
+    "AB2-6.3-07"
+   ],
+   "behavior": "The bridge ignores PENABLE without a Setup cycle. It uses only the values of the first Setup cycle and does not detect later field changes.",
+   "stimulus": "Configuration PARA_APBCDC_APB5=1, USER_REQ_W=8, USER_DATA_W=8, USER_RESP_W=4, HS_TYPE=0, CELL_TYPE=2. (a) From idle, the requester raises i_apb_psel=1 and i_apb_penable=1 in the same cycle (no Setup), holds them for 20 mst cycles, then drives both low. (b) 50 legal Setups. In every following cycle until PREADY, the requester changes i_apb_paddr, i_apb_pprot, i_apb_pwrite, i_apb_pstrb, i_apb_pwdata, i_apb_pauser and i_apb_pwuser to new random values. (c) 10 transfers with a Setup cycle repeated for 2 mst cycles with different field values before i_apb_penable=1. (d) Then 50 legal transfers.",
+   "expected": "(a) o_apb_psel=0 at every i_clk_slv edge during the 20 cycles and for at least N+13 i_clk_slv edges after. o_apb_pready=0 throughout. (b) The completer-side fields equal the values sampled at S0 for the whole transfer. (c) Exactly one completer transfer each, with the values of the first Setup cycle. (b) and (c) complete with one PREADY each, with correct response. (d) The scoreboard passes, so there is no lasting effect."
+  },
+  {
+   "id": "CHK-025",
+   "kind": "test",
+   "group": "perf",
+   "title": "Two-phase transfer duration bound",
+   "rules": [
+    "AB2-3-48",
+    "AB2-10.4-03",
+    "AB2-13-01",
+    "AB2-15.3-19",
+    "AB2-1.3-03"
+   ],
+   "behavior": "D, measured from the start of the first Setup cycle to the end of the requester PREADY cycle, is at most (N+3) x T_mst + (N+3+w) x T_slv.",
+   "stimulus": "Configuration PARA_APBCDC_HS_TYPE=0, PARA_APBCDC_CELL_TYPE=2 (N=2), extra-latency synchronizer model set to 0. One run per clock setting: equal clocks of 10 ns with a random phase, and T_mst:T_slv equal to 10:20, 20:10, 10:90 and 90:10 ns. 200 transfers per run with idle gaps, completer wait states w random from 0 to 8. D = (time of the i_clk_mst edge that samples o_apb_pready=1) - (time of the i_clk_mst edge at which i_apb_psel=1 with i_apb_penable=0 was first driven, i.e. the edge one T_mst before S0).",
+   "expected": "For every transfer D <= (N+3) x T_mst + (N+3+w) x T_slv. With equal clocks D <= (2N+6+w) clock cycles, that is 10+w for N=2."
+  },
+  {
+   "id": "CHK-026",
+   "kind": "test",
+   "group": "perf",
+   "title": "Four-phase transfer duration bound",
+   "rules": [
+    "AB2-3-49",
+    "AB2-10.4-04",
+    "AB2-13-02",
+    "AB2-15.3-19"
+   ],
+   "behavior": "D is at most (2N+4) x T_mst + (2N+4+w) x T_slv.",
+   "stimulus": "Configuration PARA_APBCDC_HS_TYPE=1, PARA_APBCDC_CELL_TYPE=2 (N=2), extra-latency synchronizer model set to 0. The same clock settings, traffic and measurement of D as CHK-025.",
+   "expected": "For every transfer D <= (2N+4) x T_mst + (2N+4+w) x T_slv. With equal clocks D <= (4N+8+w) cycles, that is 16+w for N=2."
+  },
+  {
+   "id": "CHK-027",
+   "kind": "test",
+   "group": "rst",
+   "title": "Reset values, quiet idle after release, asynchronous reset assertion",
+   "rules": [
+    "AB2-3-37",
+    "AB2-3-38",
+    "AB2-5.4-03",
+    "AB2-5.4-06",
+    "AB2-7.2-04",
+    "AB2-7.2-08",
+    "AB2-7.3-01",
+    "AB2-7.3-02",
+    "AB2-14.1-07",
+    "AB2-3-17",
+    "AB2-7.3-04",
+    "AB2-10.2-08"
+   ],
+   "behavior": "Both domains reset to all-zero outputs. With no Setup phase, no completer-side transfer and no PREADY ever appear, which shows that the request and acknowledge state reset consistently. Reset assertion takes effect asynchronously.",
+   "stimulus": "Default configuration (PARA_APBCDC_APB5=0, PARA_APBCDC_HS_TYPE=0, PARA_APBCDC_CELL_TYPE=2), T_mst=10 ns, T_slv=20 ns, free-running clocks. Start with i_rst_n_mst=0 and i_rst_n_slv=0 for at least 10 cycles of each clock, with i_apb_psel=0 and i_apb_penable=0. Release i_rst_n_mst at an i_clk_mst edge, then i_rst_n_slv at an i_clk_slv edge 3 slv cycles later. The requester keeps i_apb_psel low until both resets are released. Idle for 100 i_clk_slv cycles while the completer toggles i_apb_pready and drives random i_apb_prdata. Then run one write (nonzero PADDR and PWDATA) and one read (the completer returns nonzero PRDATA). In the idle time after that, assert both resets together at a time that falls between clock edges (not aligned to either clock). Hold them for 5 slv cycles and release as before. Repeat the transfer pair.",
+   "expected": "While each reset is low, all outputs of its domain are 0 (CHK-009, CHK-010). In the time step of the asynchronous assertion, before the next clock edge, o_apb_prdata, o_apb_paddr, o_apb_pwdata and o_apb_pwrite go from their nonzero values to 0. During the 100-cycle idle after each release: o_apb_psel=0, o_apb_penable=0 and o_apb_pready=0 at every edge, and no output changes. The transfers after each release complete with correct fields and response, as in CHK-031. No X appears on any output after release."
+  },
+  {
+   "id": "CHK-028",
+   "kind": "test",
+   "group": "rst",
+   "title": "Reset during random traffic: transfer lost, clean restart, staggered release",
+   "rules": [
+    "AB2-3-39",
+    "AB2-3-40",
+    "AB2-6.3-27",
+    "AB2-12-05",
+    "AB2-10.2-08",
+    "AB2-15.1-01",
+    "AB2-7.2-11",
+    "AB2-7.3-04"
+   ],
+   "behavior": "Both resets asserted together during a transfer clear both domains. The transfer in flight never completes, and there is no spurious transfer after release, including when one domain is released while the other is still in reset.",
+   "stimulus": "Default configuration, then HS_TYPE=1 in a second run. Random traffic as in CHK-029. 30 times per run, assert i_rst_n_mst=0 and i_rst_n_slv=0 at the same time step, at random points: during the requester Setup, while waiting for the request crossing, in completer Setup, in Access with wait states, while the acknowledge crosses back, and in the PREADY cycle. Hold for 3 to 10 cycles of the slower clock. Release each synchronously to its own clock: in half of the cases i_rst_n_mst first and i_rst_n_slv up to 10 slv cycles later, in the other half the reverse order. The requester keeps i_apb_psel=0 until both resets are released, then repeats the lost transfer. The scoreboard is flushed at each reset.",
+   "expected": "In the time step of assertion, all outputs go to 0 (CHK-009, CHK-010). While either domain is still in reset, and after both releases until the requester's next Setup, o_apb_psel=0 and o_apb_pready=0 at every edge. The interrupted transfer never produces o_apb_pready. Each repeated transfer and all later traffic pass the CHK-029 scoreboard. All assertions pass after release."
+  },
+  {
+   "id": "CHK-029",
+   "kind": "test",
+   "group": "scoreboard",
+   "title": "Random traffic scoreboard across clock ratios with a noisy completer",
+   "rules": [
+    "AB2-3-01",
+    "AB2-3-05",
+    "AB2-3-06",
+    "AB2-3-24",
+    "AB2-3-27",
+    "AB2-3-28",
+    "AB2-3-32",
+    "AB2-5.4-01",
+    "AB2-5.4-02",
+    "AB2-7.2-02",
+    "AB2-9-01",
+    "AB2-9-08",
+    "AB2-15.3-05",
+    "AB2-15.3-09",
+    "AB2-15.3-10",
+    "AB2-15.3-11",
+    "AB2-15.3-12",
+    "AB2-15.3-13",
+    "AB2-1.1-02",
+    "AB2-21-01",
+    "AB2-15.1-01",
+    "AB2-20.2-01",
+    "AB2-10.4-02",
+    "AB2-6.3-11"
+   ],
+   "behavior": "End-to-end ordering, completeness and data integrity for any clock ratio. Request and response bundles stay stable through the handshake: the completer side never sees a value other than the Setup value, and the requester never sees a response other than the one sampled at completion.",
+   "stimulus": "Default configuration (also run in every regression configuration). One clock ratio per run, chosen from: equal 10 ns with a random phase, 10:20, 20:10, 10:30, 30:10, 10:90, 90:10, 10:14, 14:10 and 13.7:10 ns (T_mst:T_slv). Extra-latency synchronizer model enabled. At least 2000 transfers. The legal requester follows APB: one Setup then Access until PREADY, fields stable, i_apb_pstrb=0 on reads, no new Setup before PREADY, idle 0 to 5 cycles. The noisy completer uses wait states from 0 to 10 and random i_apb_pslverr at completion. In every slv cycle that is not a completion edge it drives random i_apb_prdata, i_apb_pslverr, i_apb_pruser and i_apb_pbuser. It also drives random i_apb_pready while o_apb_psel=0 or in the Setup cycle, and changes response values in the cycle right after completion.",
+   "expected": "Transfer n on the completer side has o_apb_pwrite, o_apb_paddr, o_apb_pprot, o_apb_pstrb and o_apb_pwdata equal to the values of requester Setup n. The values of PREADY n (o_apb_prdata for a read, o_apb_pslverr) equal the completer inputs sampled at the completion edge of transfer n. The number of completer transfers equals the number of requester transfers, with no loss and no duplicate. The o_apb_psel rise of transfer n+1 comes after the o_apb_pready cycle of transfer n. No o_apb_psel rise occurs without an outstanding Setup. All assertions CHK-001 to CHK-018 pass for the whole run."
+  },
+  {
+   "id": "CHK-030",
+   "kind": "test",
+   "group": "sync",
+   "title": "Synchronizer depth seen in crossing latency (CELL_TYPE 4)",
+   "rules": [
+    "AB2-1.3-05",
+    "AB2-8-10"
+   ],
+   "behavior": "PARA_APBCDC_CELL_TYPE=4 gives N=4 stages, visible in the minimum crossing latency.",
+   "stimulus": "Configuration PARA_APBCDC_CELL_TYPE=4, HS_TYPE=0, APB5=0, T_mst=10 ns, T_slv=20 ns. 100 random transfers with wait states from 0 to 3.",
+   "expected": "o_apb_psel rises at the k-th i_clk_slv edge after S0, and o_apb_pready rises at the j-th i_clk_mst edge after C, with k and j in [5, 7], never fewer than 5. The scoreboard passes."
+  },
+  {
+   "id": "CHK-031",
+   "kind": "test",
+   "group": "xfer",
+   "title": "Single write and read without wait states, two-phase, field and response transport with crossing windows",
+   "rules": [
+    "AB2-1.3-01",
+    "AB2-1.3-03",
+    "AB2-2.3-01",
+    "AB2-3-01",
+    "AB2-3-03",
+    "AB2-6.3-20",
+    "AB2-6.3-03",
+    "AB2-6.3-05",
+    "AB2-10.2-01",
+    "AB2-10.2-02",
+    "AB2-5.3-02",
+    "AB2-5.3-04",
+    "AB2-5.3-07",
+    "AB2-5.3-08",
+    "AB2-10.1-01",
+    "AB2-10.1-02",
+    "AB2-10.1-05",
+    "AB2-10.1-07",
+    "AB2-10.3-02",
+    "AB2-10.3-04",
+    "AB2-7.2-03",
+    "AB2-7.2-07",
+    "AB2-9-01",
+    "AB2-9-02",
+    "AB2-9-03"
+   ],
+   "behavior": "Each requester transfer becomes one completer-side transfer with the Setup-cycle fields. The completer response comes back unchanged in a one-cycle PREADY. The crossing latencies are within the synchronizer windows.",
+   "stimulus": "Default configuration (PARA_APBCDC_HS_TYPE=0, PARA_APBCDC_CELL_TYPE=2, so N=2), T_mst=10 ns, T_slv=20 ns, random phase offset. The legal APB requester issues 50 writes and 50 reads with random i_apb_paddr, i_apb_pprot, i_apb_pstrb (0 for reads), i_apb_pwdata, including all-zero and all-one values, with 2 to 5 idle cycles between transfers. The completer drives i_apb_pready=1 in the first Access cycle, random i_apb_prdata, and i_apb_pslverr=0. Name S0 the i_clk_mst edge where i_apb_psel=1 and i_apb_penable=0 are sampled. Name C the i_clk_slv edge where o_apb_psel=1, o_apb_penable=1 and i_apb_pready=1 are sampled.",
+   "expected": "For each transfer: o_apb_psel becomes 1 at the k-th rising edge of i_clk_slv after S0, with k in [N+1, N+3]. At that edge o_apb_penable=0, and o_apb_pwrite, o_apb_paddr, o_apb_pprot, o_apb_pstrb and o_apb_pwdata equal the values sampled at S0 bit for bit. At the next i_clk_slv edge o_apb_penable=1. At C+1 slv edge o_apb_psel=0 and o_apb_penable=0. o_apb_pready=0 at every i_clk_mst edge from S0 until it becomes 1 at the j-th rising edge of i_clk_mst after C, with j in [N+1, N+3]. In that PREADY cycle, for a read o_apb_prdata equals i_apb_prdata sampled at C, and o_apb_pslverr=0. o_apb_pready=0 again at the next edge. Exactly one completer-side transfer per requester transfer, and 100 in total on each side."
+  },
+  {
+   "id": "CHK-032",
+   "kind": "test",
+   "group": "xfer",
+   "title": "Completer wait states extend the transfer without limit",
+   "rules": [
+    "AB2-1.3-02",
+    "AB2-3-09",
+    "AB2-3-10",
+    "AB2-6.3-21",
+    "AB2-6.3-26",
+    "AB2-12-03",
+    "AB2-10.2-03",
+    "AB2-5.3-06"
+   ],
+   "behavior": "Requester-side PREADY is raised only after the completer-side PREADY is seen. The Access phase lasts w+1 cycles, and there is no timeout.",
+   "stimulus": "Default configuration, T_mst=10 ns, T_slv=20 ns. Requester issues 60 mixed reads and writes. The completer holds i_apb_pready=0 for w Access cycles, with w taken from {0, 1, 2, 5, 17} and random 0 to 30, then drives i_apb_pready=1. One transfer uses w=10000 slv cycles. Name C the slv edge that samples i_apb_pready=1 in Access.",
+   "expected": "For each transfer, o_apb_psel=1 and o_apb_penable=1 are sampled at exactly w+1 consecutive i_clk_slv edges, the last one being C. o_apb_pready=0 at every i_clk_mst edge from the Setup edge until it becomes 1 at the j-th i_clk_mst edge after C, with j in [N+1, N+3]. This also holds during the 10000-cycle wait: no o_apb_pready, no o_apb_pslverr, and no change of the completer-side fields. Responses equal the completer values sampled at C."
+  },
+  {
+   "id": "CHK-033",
+   "kind": "test",
+   "group": "xfer",
+   "title": "Error response forwarded with data, next transfer independent",
+   "rules": [
+    "AB2-1.3-02",
+    "AB2-3-03",
+    "AB2-3-12",
+    "AB2-6.3-10",
+    "AB2-6.3-22",
+    "AB2-10.2-04",
+    "AB2-12-01",
+    "AB2-12-02",
+    "AB2-12-08"
+   ],
+   "behavior": "o_apb_pslverr in the PREADY cycle equals the completer PSLVERR at the end of the completer-side transfer. Read data is forwarded without masking. The error has no effect on later transfers.",
+   "stimulus": "Default configuration. 100 random reads and writes with wait states w from 0 to 5. The completer drives i_apb_pslverr=1 with i_apb_pready=1 on about 50% of transfers, with random nonzero i_apb_prdata on erroneous reads. On some transfers it drives i_apb_pslverr=1 during wait cycles (i_apb_pready=0) but i_apb_pslverr=0 at the completion edge C. Each transfer with an error is followed by a transfer without one.",
+   "expected": "In each requester PREADY cycle, o_apb_pslverr equals i_apb_pslverr sampled at C, and for a read o_apb_prdata equals i_apb_prdata sampled at C, including when o_apb_pslverr=1. o_apb_pslverr=0 at every i_clk_mst edge where o_apb_pready=0. A transfer whose completer gives i_apb_pslverr=0 at C returns o_apb_pslverr=0, even right after an error."
+  },
+  {
+   "id": "CHK-034",
+   "kind": "test",
+   "group": "xfer",
+   "title": "Back-to-back transfers, one at a time",
+   "rules": [
+    "AB2-3-13",
+    "AB2-3-50",
+    "AB2-6.3-23",
+    "AB2-6.3-02",
+    "AB2-10.2-05",
+    "AB2-13-03",
+    "AB2-5.3-11",
+    "AB2-10.4-05"
+   ],
+   "behavior": "The Setup phase that the requester drives in the cycle after the PREADY cycle is accepted. Only one transfer is in flight at a time.",
+   "stimulus": "Default configuration, T_mst=10 ns, T_slv=20 ns, then a second run with T_mst=20 ns and T_slv=10 ns. 200 transfers. 150 of them are back-to-back: in the i_clk_mst cycle right after the cycle with o_apb_pready=1, the requester drives i_apb_psel=1 and i_apb_penable=0 with new fields. The other 50 have 1 to 5 idle cycles with i_apb_psel=0. The completer uses random wait states from 0 to 3.",
+   "expected": "Every Setup phase, including each back-to-back one, produces exactly one completer transfer. Its o_apb_psel rises at the k-th i_clk_slv edge after its S0 edge, with k in [N+1, N+3], and carries its own Setup values. Between two completer transfers, o_apb_psel is 0 for at least one i_clk_slv edge. The o_apb_psel rise of transfer n+1 never comes before the o_apb_pready cycle of transfer n. 200 completer transfers and 200 PREADY pulses in start order."
+  },
+  {
+   "id": "CHK-035",
+   "kind": "test",
+   "group": "xfer",
+   "title": "PPROT and PSTRB forwarded unchanged, including PSTRB of a read",
+   "rules": [
+    "AB2-3-18",
+    "AB2-3-19",
+    "AB2-6.3-12",
+    "AB2-9-04",
+    "AB2-9-05"
+   ],
+   "behavior": "PPROT and PSTRB are copied unchanged. PWDATA is copied in full whatever the strobes. A nonzero PSTRB on a read is not checked and is forwarded.",
+   "stimulus": "Default configuration (LPARA_STRB_W=4). Writes cover all 8 i_apb_pprot values crossed with all 16 i_apb_pstrb patterns, with random i_apb_pwdata. Reads cover all 8 i_apb_pprot values, and 16 reads deliberately drive nonzero i_apb_pstrb (allowed by the DUT rule that it does not check PSTRB in a read).",
+   "expected": "For every transfer, o_apb_pprot and o_apb_pstrb equal the values sampled at S0 (also for reads with nonzero strobes), and o_apb_pwdata equals i_apb_pwdata sampled at S0 on all bits. Every transfer completes normally, with one PREADY and o_apb_pslverr matching the completer."
+  }
+ ],
+ "not_verified": [
+  {
+   "rule": "AB2-1.1-01",
+   "reason": "static_or_structural",
+   "note": "Whether bundle bits pass through a synchronizer is a structural/CDC property (TEST-015)."
+  },
+  {
+   "rule": "AB2-1.1-03",
+   "reason": "not_observable_at_interface",
+   "note": "Loading the bundle before the control bit arrives behaves the same in zero-delay simulation; it is a timing property (TEST-015/016)."
+  },
+  {
+   "rule": "AB2-1.1-04",
+   "reason": "static_or_structural",
+   "note": "SDC set_max_delay constraints."
+  },
+  {
+   "rule": "AB2-1.3-08",
+   "reason": "static_or_structural",
+   "note": "SDC deliverable."
+  },
+  {
+   "rule": "AB2-2.2-01",
+   "reason": "static_or_structural",
+   "note": "RTL coding baseline."
+  },
+  {
+   "rule": "AB2-3-20",
+   "reason": "static_or_structural",
+   "note": "Port-list review."
+  },
+  {
+   "rule": "AB2-3-29",
+   "reason": "static_or_structural",
+   "note": "Same-edge launch of the internal bit and bundle; structural check TEST-015."
+  },
+  {
+   "rule": "AB2-3-30",
+   "reason": "static_or_structural",
+   "note": "No logic before the synchronizer; structural."
+  },
+  {
+   "rule": "AB2-3-33",
+   "reason": "static_or_structural",
+   "note": "Crossing count; CDC tool."
+  },
+  {
+   "rule": "AB2-3-34",
+   "reason": "static_or_structural",
+   "note": "Synchronizer placement; CDC tool."
+  },
+  {
+   "rule": "AB2-3-35",
+   "reason": "static_or_structural",
+   "note": "Stage count is structural. The interface latency effect for CELL_TYPE=4 is covered by CHK-030."
+  },
+  {
+   "rule": "AB2-3-36",
+   "reason": "static_or_structural",
+   "note": "Netlist/SDC rejection of CELL_TYPE=0."
+  },
+  {
+   "rule": "AB2-3-41",
+   "reason": "not_applicable_to_dut",
+   "note": "Integration restriction; the stimulus never asserts a single reset."
+  },
+  {
+   "rule": "AB2-3-46",
+   "reason": "static_or_structural",
+   "note": "Elaboration of legal parameter values is a parameter sweep. Individual configurations are simulated in CHK-019, CHK-022 and CHK-030."
+  },
+  {
+   "rule": "AB2-3-51",
+   "reason": "static_or_structural",
+   "note": "SDC file."
+  },
+  {
+   "rule": "AB2-3-52",
+   "reason": "static_or_structural",
+   "note": "SDC."
+  },
+  {
+   "rule": "AB2-3-53",
+   "reason": "static_or_structural",
+   "note": "SDC."
+  },
+  {
+   "rule": "AB2-3-54",
+   "reason": "static_or_structural",
+   "note": "Post-CTS report."
+  },
+  {
+   "rule": "AB2-3-55",
+   "reason": "static_or_structural",
+   "note": "Lint/hierarchy."
+  },
+  {
+   "rule": "AB2-3-56",
+   "reason": "static_or_structural",
+   "note": "Wrapper naming and simulation model of the synchronizer cells. The model's extra latency is accounted for in the windows of the tests."
+  },
+  {
+   "rule": "AB2-3-57",
+   "reason": "static_or_structural",
+   "note": "Waveform deliverable files."
+  },
+  {
+   "rule": "AB2-3-58",
+   "reason": "static_or_structural",
+   "note": "Regression composition across configurations and ratios; realized by running CHK-029 in multiple configurations, not a single simulation."
+  },
+  {
+   "rule": "AB2-4-02",
+   "reason": "static_or_structural",
+   "note": "Features selected at elaboration; there is no run-time control port."
+  },
+  {
+   "rule": "AB2-5.3-03",
+   "reason": "not_observable_at_interface",
+   "note": "Same-edge internal load and launch."
+  },
+  {
+   "rule": "AB2-6.1-01",
+   "reason": "static_or_structural",
+   "note": "Interface existence."
+  },
+  {
+   "rule": "AB2-6.1-02",
+   "reason": "static_or_structural",
+   "note": "Interface existence."
+  },
+  {
+   "rule": "AB2-6.1-03",
+   "reason": "static_or_structural",
+   "note": "Clock/reset inputs exist."
+  },
+  {
+   "rule": "AB2-6.3-19",
+   "reason": "design_guideline",
+   "note": "Should provide all user signals; the port list is fixed by DEC-021."
+  },
+  {
+   "rule": "AB2-6.4-01",
+   "reason": "static_or_structural",
+   "note": "No interrupt port."
+  },
+  {
+   "rule": "AB2-7.2-01",
+   "reason": "static_or_structural",
+   "note": "Only five crossings; CDC tool."
+  },
+  {
+   "rule": "AB2-7.2-05",
+   "reason": "static_or_structural",
+   "note": "Synchronizer structure. A consistent reset is functionally covered by CHK-027."
+  },
+  {
+   "rule": "AB2-7.2-06",
+   "reason": "static_or_structural",
+   "note": "Synchronizer structure. Functionally covered by CHK-027."
+  },
+  {
+   "rule": "AB2-8-11",
+   "reason": "static_or_structural",
+   "note": "SDC rejects CELL_TYPE=0."
+  },
+  {
+   "rule": "AB2-8-13",
+   "reason": "not_observable_at_interface",
+   "note": "Internal width LPARA_REQ_W; no check per designer decision."
+  },
+  {
+   "rule": "AB2-8-14",
+   "reason": "not_observable_at_interface",
+   "note": "Internal width LPARA_RESP_W; no check per designer decision."
+  },
+  {
+   "rule": "AB2-8-15",
+   "reason": "not_applicable_to_dut",
+   "note": "Illegal configurations are not used; behavior is unspecified."
+  },
+  {
+   "rule": "AB2-9-06",
+   "reason": "not_observable_at_interface",
+   "note": "Internal bundle bit order. End-to-end field equality is checked by CHK-031 and CHK-029."
+  },
+  {
+   "rule": "AB2-9-07",
+   "reason": "not_observable_at_interface",
+   "note": "Internal bundle bit order. Response equality is checked by CHK-033 and CHK-029."
+  },
+  {
+   "rule": "AB2-14.1-01",
+   "reason": "static_or_structural",
+   "note": "Coding rules."
+  },
+  {
+   "rule": "AB2-14.1-02",
+   "reason": "static_or_structural",
+   "note": "Coding rules."
+  },
+  {
+   "rule": "AB2-14.1-03",
+   "reason": "static_or_structural",
+   "note": "Naming/file rules."
+  },
+  {
+   "rule": "AB2-14.1-08",
+   "reason": "static_or_structural",
+   "note": "File list."
+  },
+  {
+   "rule": "AB2-14.1-09",
+   "reason": "static_or_structural",
+   "note": "Instance names."
+  },
+  {
+   "rule": "AB2-14.2-05",
+   "reason": "static_or_structural",
+   "note": "Hierarchy content."
+  },
+  {
+   "rule": "AB2-14.2.1-02",
+   "reason": "not_observable_at_interface",
+   "note": "Sub-block port o_req. Its function is covered end to end by CHK-031 and CHK-029."
+  },
+  {
+   "rule": "AB2-14.2.1-03",
+   "reason": "not_observable_at_interface",
+   "note": "Sub-block hold register. Its interface consequence is covered by CHK-024."
+  },
+  {
+   "rule": "AB2-14.2.1-04",
+   "reason": "not_observable_at_interface",
+   "note": "Internal registered copy of the wake-up. Its latency is included in the CHK-020 window."
+  },
+  {
+   "rule": "AB2-14.2.1-06",
+   "reason": "not_observable_at_interface",
+   "note": "Sub-block input. Response integrity is checked by CHK-029."
+  },
+  {
+   "rule": "AB2-14.2.1-08",
+   "reason": "not_observable_at_interface",
+   "note": "Sub-block input. Request integrity is checked by CHK-029."
+  },
+  {
+   "rule": "AB2-14.2.1-10",
+   "reason": "not_observable_at_interface",
+   "note": "Sub-block port o_ack."
+  },
+  {
+   "rule": "AB2-14.2.1-11",
+   "reason": "not_observable_at_interface",
+   "note": "Sub-block hold register. The noisy completer in CHK-029 covers its effect."
+  },
+  {
+   "rule": "AB2-14.2.1-12",
+   "reason": "not_observable_at_interface",
+   "note": "Internal synchronizer module ports."
+  },
+  {
+   "rule": "AB2-14.2.1-14",
+   "reason": "static_or_structural",
+   "note": "Naming exemption."
+  },
+  {
+   "rule": "AB2-15.1-04",
+   "reason": "static_or_structural",
+   "note": "Waveform-comparison deliverable with internal rows."
+  },
+  {
+   "rule": "AB2-15.1-05",
+   "reason": "static_or_structural",
+   "note": "Shown by TEST-015/016. CHK-017 may also catch reloading at the interface."
+  },
+  {
+   "rule": "AB2-15.2-02",
+   "reason": "static_or_structural",
+   "note": "Elaboration/lint of the parameter extremes is a sweep."
+  },
+  {
+   "rule": "AB2-15.3-01",
+   "reason": "design_guideline",
+   "note": "Applied to all assertions: disabled while either reset is low, except CHK-009 and CHK-010."
+  },
+  {
+   "rule": "AB2-15.4-02",
+   "reason": "static_or_structural",
+   "note": "CDC/structural analysis."
+  },
+  {
+   "rule": "AB2-16-01",
+   "reason": "static_or_structural",
+   "note": "DFT structure."
+  },
+  {
+   "rule": "AB2-16-02",
+   "reason": "static_or_structural",
+   "note": "No DFT ports."
+  },
+  {
+   "rule": "AB2-17.1.2-01",
+   "reason": "static_or_structural",
+   "note": "SDC EXC-001."
+  },
+  {
+   "rule": "AB2-17.1.2-02",
+   "reason": "static_or_structural",
+   "note": "SDC EXC-002."
+  },
+  {
+   "rule": "AB2-17.1.2-03",
+   "reason": "static_or_structural",
+   "note": "SDC EXC-003."
+  },
+  {
+   "rule": "AB2-17.1.2-04",
+   "reason": "static_or_structural",
+   "note": "SDC EXC-004."
+  },
+  {
+   "rule": "AB2-17.1.2-05",
+   "reason": "static_or_structural",
+   "note": "SDC EXC-005."
+  },
+  {
+   "rule": "AB2-17.1.2-06",
+   "reason": "static_or_structural",
+   "note": "Design rule constraints."
+  },
+  {
+   "rule": "AB2-17.1.3-01",
+   "reason": "static_or_structural",
+   "note": "Forbidden SDC commands."
+  },
+  {
+   "rule": "AB2-17.1.4-02",
+   "reason": "not_observable_at_interface",
+   "note": "Physical timing ordering; zero-delay simulation cannot show it."
+  },
+  {
+   "rule": "AB2-17.1.4-04",
+   "reason": "static_or_structural",
+   "note": "Post-CTS latency."
+  },
+  {
+   "rule": "AB2-17.2-01",
+   "reason": "static_or_structural",
+   "note": "Placement; per designer decision, not verifiable in this flow."
+  },
+  {
+   "rule": "AB2-17.2-02",
+   "reason": "static_or_structural",
+   "note": "Placement."
+  },
+  {
+   "rule": "AB2-20.1-01",
+   "reason": "not_applicable_to_dut",
+   "note": "System clock controller, ASM-005."
+  },
+  {
+   "rule": "AB2-20.2-02",
+   "reason": "not_applicable_to_dut",
+   "note": "Clock controller assumption; clocks run free in simulation."
+  },
+  {
+   "rule": "AB2-20.2-05",
+   "reason": "static_or_structural",
+   "note": "Parameter defaults."
+  },
+  {
+   "rule": "AB2-21-02",
+   "reason": "not_observable_at_interface",
+   "note": "Load-after-arrival is equivalent in zero-delay simulation; it is a timing property."
+  }
+ ],
+ "assumptions": [
+  "N (synchronizer stages) = 2 for PARA_APBCDC_CELL_TYPE 1 or 2, 3 for 3, 4 for 4, and 0 for 0 (bypass, simulation only).",
+  "The synchronizer simulation model adds 0, 1 or 2 extra destination cycles. Crossing windows are therefore [N+1, N+3] destination edges, counted from the first destination rising edge after the source edge; at coincident edges the destination samples the value from before the edge.",
+  "The latency-bound tests (CHK-025, CHK-026) run with the model's extra latency forced to 0, because the specified bound counts only N stages.",
+  "o_apb_prdata, o_apb_pruser and o_apb_pbuser keep their value after the PREADY cycle (only o_apb_pready and o_apb_pslverr are cleared at the RESP exit edge, per section 10.1).",
+  "All assertions except CHK-009 and CHK-010 are disabled while i_rst_n_mst=0 or i_rst_n_slv=0.",
+  "The requester and completer models follow APB (Issue D) except where a test explicitly breaks a rule (CHK-035 PSTRB in a read, CHK-024).",
+  "The time at which the in-progress term of o_apb_pwakeup deasserts after a transfer is not specified; CHK-020 uses a loose bound of N+3 slv edges."
+ ],
+ "decisions": [
+  {
+   "rules": [
+    "AB2-8-13",
+    "AB2-8-14"
+   ],
+   "question": "LPARA_REQ_W has 'at least 7' minimum, but the formula ADDR_W + 3 + 1 + STRB_W + DATA_W gives a minimum of 1+3+1+1+8 = 14; is the stated minimum correct? Similarly, LPARA_RESP_W minimum 9 equals DATA_W+1 at DATA_W=8 and is consistent.",
+   "answer": "The formula is binding: LPARA_REQ_W = ADDR_W + 3 + 1 + STRB_W + DATA_W (+ USER_REQ_W + USER_DATA_W in APB5) and LPARA_RESP_W = DATA_W + 1 (+ USER_DATA_W + USER_RESP_W in APB5), as in the parameter table and section 9. 'At least 7' is a loose lower bound that every legal configuration satisfies (the formula gives at least 14), not a separate requirement; no check is made on it. Both widths are internal and not visible at the ports.",
+   "by": "Claude (delegated by GabrielHCMUT)",
+   "at": "2026-11-10T19:01:03+00:00"
+  },
+  {
+   "rules": [
+    "AB2-15.3-01",
+    "AB2-15.3-17",
+    "AB2-15.3-08"
+   ],
+   "question": "Assertions are disabled while either reset is asserted, yet SVA-016 must hold in reset and SVA-007 must hold 'in reset'. Which reset (requester or completer, or both) enables SVA-016 and SVA-007?",
+   "answer": "SVA-016 (REQ-RESET-001: 'while one is asserted, every flip-flop of its domain shall be at its reset value') is checked per domain: while i_rst_n_mst = 0 the mst-domain outputs (o_apb_pready, o_apb_prdata, o_apb_pslverr, o_apb_pruser, o_apb_pbuser) are at their reset values; while i_rst_n_slv = 0 the slv-domain outputs (o_apb_psel, o_apb_penable, o_apb_pwrite, o_apb_paddr, o_apb_pprot, o_apb_pstrb, o_apb_pwdata, o_apb_pwakeup, o_apb_pauser, o_apb_pwuser) are at their reset values, sampled on the clock of that domain. SVA-007 is an ordinary assertion (disabled while either reset is asserted, section 15.3); its 'in reset' part is the slv-domain part of SVA-016 (o_apb_psel and o_apb_penable are 0 in reset).",
+   "by": "Claude (delegated by GabrielHCMUT)",
+   "at": "2026-11-10T19:01:03+00:00"
+  },
+  {
+   "rules": [
+    "AB2-17.1.2-07",
+    "AB2-17.2-01"
+   ],
+   "question": "Placement adjacency is 'should' in 17.1.2 but 'shall' in 17.2. Which strength applies?",
+   "answer": "Treated as 'shall' (17.2 is the normative placement requirement; 17.1.2 explains the budget). It is a physical-design rule, not verifiable by RTL simulation: reported as not verifiable in this flow.",
+   "by": "Claude (delegated by GabrielHCMUT)",
+   "at": "2026-11-10T19:01:03+00:00"
+  },
+  {
+   "rules": [
+    "AB2-17.1.2-01",
+    "AB2-17.1.2-04"
+   ],
+   "question": "EXC-001 gives (N-1) x T_slv, but 'the same two commands' are used for EXC-002 to EXC-005. Does hold check really get disabled with set_false_path -hold, and what are the values of N and T for the 20 ns and 10 ns examples?",
+   "answer": "Values accepted as computed by the specification for N = 2, T_mst = 10 ns, T_slv = 20 ns (EXC-001 20 ns, EXC-002 20 ns, EXC-003 10 ns, EXC-004 10 ns, EXC-005 20 ns; set_max_delay -ignore_clock_latency plus set_false_path -hold). Whether a sign-off tool disables the hold check is OI-004, a static timing item not verifiable by RTL simulation; no simulation check depends on it.",
+   "by": "Claude (delegated by GabrielHCMUT)",
+   "at": "2026-11-10T19:01:03+00:00"
+  },
+  {
+   "rules": [
+    "AB2-20.1-01",
+    "AB2-20.2-02"
+   ],
+   "question": "OI-002/ASM-005: Which party guarantees the slv clock is running when a request arrives with a gated clock enabled only by PWAKEUP? It is an open item for the designer to clarify.",
+   "answer": "Integration assumption (ASM-005), outside the IP: the system clock controller guarantees i_clk_slv is running when a request arrives. The simulation keeps both clocks free running during transfers (except tests that stop a clock on purpose while the bridge is idle); no check is made on a gated completer clock.",
+   "by": "Claude (delegated by GabrielHCMUT)",
+   "at": "2026-11-10T19:01:03+00:00"
+  },
+  {
+   "rules": [
+    "AB2-20.2-06",
+    "AB2-20.2-07"
+   ],
+   "question": "DEC-019 and DEC-020 are the author's choices and not confirmed by the designer. Should PREADY-only-in-RESP and response-after-handshake-closed be treated as binding for verification?",
+   "answer": "Binding for verification. The RTL was written with DEC-019 and DEC-020, and REQ-FUNC-004 (PREADY high for exactly one i_clk_mst cycle, in a cycle with PSEL and PENABLE high) and REQ-HS-004 (four-phase: PREADY only after the acknowledge returned to 0) are 'shall' requirements. A failure of these checks goes to triage for the designer; it is not waived.",
+   "by": "Claude (delegated by GabrielHCMUT)",
+   "at": "2026-11-10T19:01:03+00:00"
+  },
+  {
+   "rules": [
+    "AB2-20.2-08",
+    "AB2-20.2-04"
+   ],
+   "question": "DEC-021 deviates from PRT-03 by declaring APB5 ports in all configurations. Does the designer accept this deviation, and does it conflict with the APB4 configuration in DEC-003?",
+   "answer": "Accepted for verification as written (DEC-021): the APB5 ports exist in every configuration (width at least 1 for an absent user signal); with PARA_APBCDC_APB5 = 0 the APB5 inputs are ignored and the APB5 outputs are 0 (REQ-APB5-003). This does not conflict with DEC-003: the parameter still selects APB4 or APB5 behavior; only the port list is fixed. The PRT-03 deviation itself (OI-005) is a coding-rule item for the designer, not checked by simulation.",
+   "by": "Claude (delegated by GabrielHCMUT)",
+   "at": "2026-11-10T19:01:03+00:00"
+  }
+ ],
+ "coverage": {
+  "rules": 260,
+  "in_checks": 185,
+  "not_verified": 75,
+  "uncovered_after_first_pass": 0,
+  "uncovered": [],
+  "unknown_ids": []
+ },
+ "contract": {
+  "prompt_version": "contract-v1",
+  "model": "opus",
+  "date": "2026-11-10T19:09:07+00:00",
+  "usage": {
+   "calls": 1,
+   "cached": 0,
+   "cost_usd": 1.6549,
+   "input_tokens": 2,
+   "output_tokens": 55235,
+   "cache_creation_input_tokens": 67931,
+   "cache_read_input_tokens": 0
+  },
+  "rules_sha_source": [
+   "rules_AsyncAPBBridge_Design_Specification.json"
+  ],
+  "unreviewed_gates": []
+ }
+}

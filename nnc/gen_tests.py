@@ -15,9 +15,9 @@ from pathlib import Path
 
 from nnc.agents.backend import AgentTask
 from nnc.agents.runtime import Usage
-from nnc.contract import multi_clock
+from nnc.contract import is_async, multi_clock
 
-PROMPT_VERSION = "tests-v1"
+PROMPT_VERSION = "tests-v2"
 SYSTEM_PROMPT = (
     "You are an expert verification engineer writing cocotb 2.1 testbenches in Python. You derive every "
     "stimulus and expected value from the specification text and the plan you are given; you never assume "
@@ -32,12 +32,14 @@ SCHEMA = {
 HELPERS_DOC = '''HELPER LIBRARY (import it: `from nnc_cocotb import *`)
   CLOCK, RESET, PORTS, PARAMS           interface names; PARAMS = parameter values of this run (dict of int)
   start_clock(dut)                      start the clock; call it at the start of EVERY test
+  stop_clock("<name>") / resume_clock("<name>")  stop a running clock (it holds its value) and restart it
   await reset_dut(dut, cycles=5, idle={})  drive inputs idle (0 by default), pulse reset, return mid-cycle
   await next_cycle(dut, n=1)            advance n cycles, returning at a falling edge (mid-cycle)
   val(sig) -> int | None                integer value, None if X/Z
   await wait_until(dut, cond, max_cycles, what)  poll each cycle; raises AssertionError on timeout
   rng(salt) -> random.Random            deterministic per test (salt: int or str) and run (env NNC_SEED)
   not_verifiable(dut, "CHK-nnn", reason)  declare that this run cannot verify the check (see rules)
+  plusarg("NAME") -> str | None, DEFINES  simulator plusargs and Verilog defines of this run
   cocotb: `import cocotb`; `@cocotb.test()`; `cocotb.start_soon(coro)`; `dut.<port>.value = int`
 '''
 
@@ -87,10 +89,43 @@ def _multi_clock_text(iface: dict) -> str:
         sig = [p["name"] for p in iface["ports"] if p.get("domain") == c["domain"]
                and p["name"] not in {c["name"], *rs}]
         lines.append(f"  {c['name']} ({c['domain']}): reset {', '.join(rs) or 'none'}; signals {', '.join(sig)}")
-    return "\n".join(lines) + "\n" + MULTI_CLOCK_DOC
+    return "\n".join(lines) + "\n" + (ASYNC_CLOCK_DOC if is_async(iface) else MULTI_CLOCK_DOC)
 
 
-def build_prompt(contract: dict, rules_doc: dict) -> str:
+ASYNC_CLOCK_DOC = """SEVERAL ASYNCHRONOUS CLOCKS: CLOCKS = {name: period_ns} (a period may be a fraction such as 13.7).
+  start_clock(dut) starts every clock after its own random delay below one period (seeded: it differs per
+  test and per seed), so there is NO fixed phase and NO fixed ratio between the domains. Compute absolute
+  times in integer ps from get_sim_time(unit="ps"), or count edges of one named clock.
+  reset_dut asserts every hardware reset together and releases each at a falling edge of its own clock.
+  next_cycle(dut, n, clock="<name>"), wait_until(..., clock="<name>") and clk(dut, "<name>") work on the
+  named clock. Drive and sample the signals of a domain ONLY at falling edges of that domain's clock; run
+  the two sides as separate coroutines (cocotb.start_soon), one per domain, that communicate through
+  Python queues or counters, never by assuming which clock edge comes first.
+  A cross-domain effect (data written in one domain, flag or count seen in the other) is checked as order
+  plus a bounded window in edges of the destination clock: wait_until(..., max_cycles=<upper bound from
+  the specification, with margin for synchronizer stages and any modelled extra latency>,
+  clock="<destination>"). Never assert an exact cross-domain cycle count unless the specification gives
+  one for asynchronous clocks. Exercise several ratios: the run's CLOCKS, and in some tests
+  start_clock(dut, periods={...}) with the faster and the slower side swapped and a non-integer ratio.
+"""
+
+
+def run_config_text(run_opts: dict | None) -> str:
+    """The build and simulator options of this run (Verilog defines, plusargs), so that a test knows which
+    configuration it runs in instead of guessing plusarg names."""
+    run_opts = run_opts or {}
+    defines, plus = run_opts.get("defines") or [], (run_opts.get("plusargs") or "").strip()
+    if not defines and not plus:
+        return ""
+    return ("RUN CONFIGURATION (this run only; the same for every test of the run):\n"
+            f"  Verilog defines of the DUT build: {', '.join(defines) or 'none'}  (helper: DEFINES, a list)\n"
+            f"  simulator plusargs: {plus or 'none'}  ({{seed}} is the run seed)\n"
+            "  Read them with plusarg(\"NAME\") (the value as a string, None when absent) and DEFINES; use the exact\n"
+            "  names above, never guess a name. A check whose expected behavior depends on these options uses the\n"
+            "  values of this run; a check that needs other options calls not_verifiable for that part.\n")
+
+
+def build_prompt(contract: dict, rules_doc: dict, run_opts: dict | None = None) -> str:
     iface = contract["interface"]
     rules_by_id = {r["id"]: r for r in rules_doc["rules"]}
     ports = "\n".join(f"  {p['name']} | {p['direction']} | width {p['width']} | {p['type']} | reset {p['reset_value']} | {p['meaning']}"
@@ -112,7 +147,8 @@ def build_prompt(contract: dict, rules_doc: dict) -> str:
     return (f"DUT top: {contract['top']}  clock: {iface['clock']}  reset: {reset.get('name')} "
             f"({'active low' if reset.get('active_low') else 'active high'})\n" + _multi_clock_text(iface) +
             f"PARAMETERS: {params}\n"
-            f"PORTS (name | direction | width | type | reset value | meaning)\n{ports}\n\n"
+            f"PORTS (name | direction | width | type | reset value | meaning)\n{ports}\n\n" +
+            (run_config_text(run_opts) + "\n" if run_config_text(run_opts) else "") +
             f"TEST CHECKS TO IMPLEMENT ({len(tests)})\n" + "\n".join(tests) +
             f"\n\nASSERTION CHECKS (checked by SVA during every test; your traffic must exercise them)\n" +
             "\n".join(asserts) + f"\n\nASSUMPTIONS OF THE PLAN\n" + "\n".join(f"- {a}" for a in contract.get("assumptions", [])) +
@@ -158,9 +194,9 @@ def _run(prompt: str, name: str, backend, log_dir: Path, model: str, contract: d
 
 
 def generate(contract: dict, rules_doc: dict, backend, log_dir: Path, out_file: Path, *, model: str = "opus",
-             rounds: int = 2) -> dict:
+             rounds: int = 2, run_opts: dict | None = None) -> dict:
     usage = Usage()
-    code, problems, attempts = _run(build_prompt(contract, rules_doc), "A7_tests", backend, log_dir, model,
+    code, problems, attempts = _run(build_prompt(contract, rules_doc, run_opts), "A7_tests", backend, log_dir, model,
                                     contract, usage, rounds)
     out_file.parent.mkdir(parents=True, exist_ok=True)
     out_file.write_text(code, encoding="utf-8")
@@ -203,11 +239,11 @@ def library_errors(results: dict) -> list[str]:
 
 
 def repair(contract: dict, rules_doc: dict, backend, log_dir: Path, out_file: Path, errors: list[str], *,
-           model: str = "opus", round_no: int = 1) -> dict:
+           model: str = "opus", round_no: int = 1, run_opts: dict | None = None) -> dict:
     """Fix test-infrastructure errors (exceptions in the test code). Functional failures are never sent."""
     usage = Usage()
     current = out_file.read_text(encoding="utf-8")
-    prompt = (build_prompt(contract, rules_doc) + "\n\nTHE MODULE BELOW RAISED PYTHON ERRORS IN SIMULATION "
+    prompt = (build_prompt(contract, rules_doc, run_opts) + "\n\nTHE MODULE BELOW RAISED PYTHON ERRORS IN SIMULATION "
               "(errors of the test code itself, not failed checks). Fix the test code only; do not weaken any "
               "check or change any expected value.\n```python\n" + current + "\n```\nERRORS:\n" + "\n\n".join(errors[:8]))
     code, problems, attempts = _run(prompt, f"A7_tests_repair{round_no}", backend, log_dir, model, contract, usage, 1)

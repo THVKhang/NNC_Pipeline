@@ -10,8 +10,9 @@ import random
 import zlib
 from pathlib import Path
 
+import cocotb
 from cocotb.clock import Clock
-from cocotb.triggers import ClockCycles, FallingEdge, RisingEdge
+from cocotb.triggers import ClockCycles, FallingEdge, RisingEdge, Timer
 
 _CFG = json.loads((Path(__file__).with_name("nnc_interface.json")).read_text(encoding="utf-8"))
 CLOCK = _CFG["clock"]
@@ -22,9 +23,31 @@ CLOCK_PERIOD_NS = 10
 FLUSH_CYCLES = 2   # edges allowed before a reset so that pending assertions of the previous test complete
 # Several clocks (synchronous, all started at time 0) and several hardware resets, each tied to the
 # clock of its domain. A single-clock design has CLOCKS = {CLOCK: 10} and RESETS = [RESET + clock].
-CLOCKS = {k: int(v) for k, v in (_CFG.get("clocks") or {CLOCK: CLOCK_PERIOD_NS}).items()}
+def _num(v):
+    """A period in ns: an int when whole (as before), else a float (for example 13.7)."""
+    f = float(v)
+    return int(f) if f == int(f) else f
+
+
+CLOCKS = {k: _num(v) for k, v in (_CFG.get("clocks") or {CLOCK: CLOCK_PERIOD_NS}).items()}
 RESETS = _CFG.get("resets") or ([{**RESET, "clock": CLOCK}] if RESET else [])
 _NOT_DATA = set(CLOCKS) | {r["name"] for r in RESETS} | ({RESET["name"]} if RESET else set())
+# "sync": every clock starts at the same instant (fixed phase). "async": every clock starts after its own
+# random delay below one period (seeded), so the phase between the domains differs from test to test
+# and from seed to seed; nothing may assume an edge of one clock coincides with an edge of another.
+CLOCK_RELATION = _CFG.get("clock_relation", "sync")
+PHASES_PS: dict = {}     # start delay of each clock in the current test (async only), for the log
+# Build and simulator options of this run (nnc config: defines, plusargs).
+DEFINES = list((_CFG.get("run_options") or {}).get("defines") or [])
+
+
+def plusarg(name: str, default=None):
+    """Value of the simulator plusarg +NAME=value of this run as a string ("" for a bare +NAME), else default."""
+    args = getattr(cocotb, "plusargs", None) or {}
+    if name in args:
+        v = args[name]
+        return "" if v is True else str(v)
+    return default
 
 
 def seed() -> int:
@@ -46,23 +69,72 @@ def clk(dut, clock: str | None = None):
 _ACTIVE = dict(CLOCKS)   # periods of the clocks started by the current test
 
 
-def start_clock(dut, period_ns: int | None = None, periods: dict | None = None):
+_STARTS = 0              # start_clock calls in this simulation (one per test): varies the async phases
+
+
+def _period_ps(ns) -> int:
+    """Period in integer ps, even so that both half periods are whole ps."""
+    ps = max(2, int(round(float(ns) * 1000)))
+    return ps + (ps & 1)
+
+
+_CLOCK_OBJS: dict = {}   # name -> cocotb Clock of the current test (for stop_clock / resume_clock)
+
+
+async def _start_after(name: str, sig, period_ps: int, delay_ps: int):
+    await Timer(delay_ps, unit="ps")
+    _CLOCK_OBJS[name] = Clock(sig, period_ps, unit="ps")
+    _CLOCK_OBJS[name].start()
+
+
+def stop_clock(name: str | None = None):
+    """Stop driving a clock (the first one by default); it keeps its last value. resume_clock restarts it."""
+    c = _CLOCK_OBJS.get(name or CLOCK)
+    if c is None:
+        raise RuntimeError(f"clock {name or CLOCK} is not running (call start_clock first)")
+    c.stop()
+
+
+def resume_clock(name: str | None = None):
+    """Restart a clock stopped by stop_clock, with the same period."""
+    c = _CLOCK_OBJS.get(name or CLOCK)
+    if c is None:
+        raise RuntimeError(f"clock {name or CLOCK} was never started")
+    c.start()
+
+
+def start_clock(dut, period_ns: float | None = None, periods: dict | None = None):
     """Start the clock(s). cocotb ends every task of a test when the test ends: call this in each test.
-    With several clocks all start together at the same instant, so they stay synchronous; `periods`
-    ({name: ns}) sets another ratio for this test only (default: the periods of the run configuration).
+    Synchronous clocks all start at the same instant; asynchronous clocks (CLOCK_RELATION "async") each
+    start after a random delay below one period, so their phase differs per test and per seed. `periods`
+    ({name: ns}) sets other periods for this test only (default: the periods of the run configuration).
     Returns None: in cocotb 2 Clock.start() gives a Task that never ends, and a test that awaited it
     (e.g. `if inspect.isawaitable(res): await res`) would wait forever while the clock runs."""
-    global _ACTIVE
+    global _ACTIVE, _STARTS
+    _STARTS += 1
     if len(CLOCKS) == 1 and not periods:
         _ACTIVE = {CLOCK: period_ns or CLOCKS[CLOCK]}
-        Clock(clk(dut), _ACTIVE[CLOCK], unit="ns").start()
+        _CLOCK_OBJS[CLOCK] = Clock(clk(dut), _period_ps(_ACTIVE[CLOCK]), unit="ps")
+        _CLOCK_OBJS[CLOCK].start()
         return None
-    _ACTIVE = {**CLOCKS, **{k: int(v) for k, v in (periods or {}).items()}}
+    _ACTIVE = {**CLOCKS, **{k: _num(v) for k, v in (periods or {}).items()}}
     unknown = set(_ACTIVE) - set(CLOCKS)
     if unknown:
         raise ValueError(f"unknown clocks {sorted(unknown)}; the clocks are {sorted(CLOCKS)}")
+    PHASES_PS.clear()
+    _CLOCK_OBJS.clear()
     for name, per in _ACTIVE.items():
-        Clock(getattr(dut, name), per, unit="ns").start()
+        sig, pps = getattr(dut, name), _period_ps(per)
+        delay = rng(f"clock-phase:{name}:{_STARTS}").randrange(0, pps) if CLOCK_RELATION == "async" else 0
+        if delay:
+            PHASES_PS[name] = delay
+            sig.value = 0
+            cocotb.start_soon(_start_after(name, sig, pps, delay))
+        else:
+            _CLOCK_OBJS[name] = Clock(sig, pps, unit="ps")
+            _CLOCK_OBJS[name].start()
+    if PHASES_PS:
+        dut._log.info("NNC async clock start delays (ps): %s", PHASES_PS)
     return None
 
 
@@ -122,4 +194,4 @@ async def wait_until(dut, cond, max_cycles: int, what: str, clock: str | None = 
 
 __all__ = ["CLOCK", "RESET", "CLOCKS", "RESETS", "PORTS", "PARAMS", "seed", "rng", "clk", "start_clock",
            "reset_dut", "next_cycle", "val", "wait_until", "not_verifiable", "RisingEdge", "FallingEdge",
-           "ClockCycles"]
+           "ClockCycles", "CLOCK_RELATION", "PHASES_PS", "stop_clock", "resume_clock", "DEFINES", "plusarg"]

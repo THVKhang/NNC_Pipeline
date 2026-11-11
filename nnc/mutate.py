@@ -102,7 +102,7 @@ def select(cands: list[Mutant], count: int, seed: int = 1) -> list[Mutant]:
 
 def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: Path | list[Path], *, count: int = 12,
         seed: int = 1, parallel: int = 4, timeout_s: int = 7200, clock_periods: dict | None = None,
-        baseline: dict | None = None) -> dict:
+        baseline: dict | None = None, opts: dict | None = None) -> dict:
     """Mutants are drawn from lines the baseline regression executed: a line never reached (uncovered),
     or a file this configuration does not elaborate (for example a memory macro of another branch),
     would only give survivors that measure coverage, not checking."""
@@ -113,15 +113,17 @@ def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: 
         cov = baseline["coverage"]
         elab = coverage_mod.elaborated_files(cov)
         dead = coverage_mod.uncovered_lines(cov)
+        ran = coverage_mod.executed_lines(cov)
         if elab is not None:
             excluded["files"] = sorted({m.file for m in pool if m.file not in elab})
         before = len(pool)
-        pool = [m for m in pool if m.file not in excluded["files"] and (m.file, m.line) not in dead]
+        pool = [m for m in pool if m.file not in excluded["files"] and (m.file, m.line) not in dead
+                and (ran is None or m.line in ran.get(m.file, ()))]
         excluded["lines"] = before - len(pool)
     mutants = select(pool, count, seed)
     sva = checker_files(sva_dir)
     pv = param_values(contract)
-    base = build_inputs(contract, rtl, sva, test_file, pv, coverage=False, clock_periods=clock_periods)
+    base = build_inputs(contract, rtl, sva, test_file, pv, coverage=False, clock_periods=clock_periods, opts=opts)
     files: dict[str, object] = {}
     for m in mutants:
         for rel, src in base.items():

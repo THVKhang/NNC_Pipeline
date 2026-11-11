@@ -1,0 +1,46 @@
+{
+  "config": {
+    "clock_periods": "i_clk_wr=10,i_clk_rd=13.7",
+    "clock_relation": "async",
+    "documents": [
+      {
+        "file": "spec/AsyncGrayFIFO_Design_Specification.md",
+        "role": "ip_spec",
+        "sections": [],
+        "skip": [],
+        "tag": "AF"
+      }
+    ],
+    "plusargs": "+AFIFO_MSYNC_SEED={seed} +AFIFO_MSYNC_EN=1",
+    "top": "m_vlsit_afifo_top"
+  },
+  "created": "2026-11-10T03:53:08+00:00",
+  "design": "async_gray_fifo",
+  "gates": {
+    "G1_rules": {
+      "at": "2026-11-10T04:01:18+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "work/rules.json": "0c004415316043161c39510351c6ee6d1524094421158b6c48956e895b11ad52"
+      },
+      "note": "Read rules.md: 416 rules kept. The 9 open questions were decided on delegation with the cited spec text (flags as occupancy behavior; INV-002 exempt only during a software-reset sequence per REQ-SRST-004/017; CELL_TYPE 1..4 legal, 0 not verified; SVA-014 bound 8 x (S+2) edges of the slower clock). A person should confirm, especially questions 3 and 9."
+    },
+    "G2_contract": {
+      "at": "2026-11-10T04:18:03+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "work/contract.json": "cea21a49f2bc60b2fdc68e64dfc037ae0e06b30d0108c4161afc8adc68b01e1b"
+      },
+      "note": "Read contract.md: 32 checks (13 SVA, 19 tests), interface 18 ports from the two captioned top-level port tables, clock_relation async. Cross-domain checks use windows S..S+2 (REQ-VER-001). CHK-014 (metastability model off) and CHK-017 (VLSIT_SYNTHESIS build) need another run configuration than the one configured (model on, simulation branch); they are kept so the report shows them as not verified in this run rather than dropping them. A person should confirm."
+    },
+    "G3_verif_sources": {
+      "at": "2026-11-11T07:12:13+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "verif": "71398f2f138b98619b5031a96e43a912f3bc9c804ad2bfab5b1f4e29ad507b72"
+      },
+      "note": "Testbench fixes after triage (all B, none weakens a check): TB.rec returned 'never sampled' for records more than 50 edges old (negative range) -> CHK-031 aborted; the scoreboard checked before the test's own reset (cascade into CHK-032 thr=0) -> enabled after init's reset; init changed the static thresholds while out of reset (REQ-FUNC-010) -> now driven with the reset assertion; nnc_chk_wr CHK-012 aligned with the contract text: o_full/o_full_thr may change between edges only when i_rst_n_sw or the static threshold changed, strict for o_overflow/o_sw_rst_busy. CHK-003/013 (triage C, metastability model) untouched. Generated versions kept for comparison. A person should confirm."
+    }
+  },
+  "version": 1
+}

@@ -146,7 +146,8 @@ def validate_module(code: str, contract: dict, scenarios: list[dict]) -> list[st
 
 
 def write_tests(contract: dict, rules_doc: dict, scenarios: list[dict], base_module: Path, backend, log_dir: Path,
-                round_no: int, model: str, usage: Usage, attempts: int = 2) -> tuple[str, list[str]]:
+                round_no: int, model: str, usage: Usage, attempts: int = 2,
+                run_opts: dict | None = None) -> tuple[str, list[str]]:
     rules_by_id = {r["id"]: r for r in rules_doc["rules"]}
     checks = {c["id"]: c for c in contract["checks"]}
     blocks = []
@@ -157,7 +158,7 @@ def write_tests(contract: dict, rules_doc: dict, scenarios: list[dict], base_mod
         quotes = "\n".join(f"      {r}: {rules_by_id[r]['quote'][:400]}" for r in s["rules"] if r in rules_by_id)
         blocks.append(f"[{s['id']}] STIMULUS: {s['stimulus']}\n  CHECKS (the oracle):\n{chk}\n  SOURCES:\n{quotes}")
     base_code = base_module.read_text(encoding="utf-8")
-    prompt = (gen_tests.build_prompt(contract, rules_doc).split("TEST CHECKS TO IMPLEMENT")[0] +
+    prompt = (gen_tests.build_prompt(contract, rules_doc, run_opts).split("TEST CHECKS TO IMPLEMENT")[0] +
               f"COVERAGE-CLOSURE SCENARIOS ({len(scenarios)}): write one @cocotb.test() per scenario, named "
               "test_cov_<nnn>_<short_name>, docstring starting with the COV ID and the CHK IDs it checks. Drive the "
               "stimulus and assert the expected behaviour of the named checks, computed from the contract and the "

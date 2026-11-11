@@ -15,7 +15,7 @@ from pathlib import Path
 
 from nnc.agents.backend import AgentTask
 from nnc.agents.runtime import Usage
-from nnc.contract import module_header, multi_clock
+from nnc.contract import is_async, module_header, multi_clock
 from nnc.gen_sva import _reset_off
 from nnc.simhost import SimHost, lint_sv
 
@@ -92,6 +92,9 @@ def build_prompt(contract: dict, rules_doc: dict) -> str:
             doms.append(f"  @(posedge {c['name']}) with reset-off ({off})")
         rules_text += ("- SEVERAL CLOCKS: count each point on the clock of the domain of its signals:\n" +
                        "\n".join(doms) + "\n")
+        if is_async(iface):
+            rules_text += ("- ASYNCHRONOUS CLOCKS: a point never combines signals of two domains in one cycle "
+                           "condition, except a level of the other domain that is stable by protocol.\n")
     return (f"INTERFACE (all are inputs of the module; directions as seen by the DUT)\n{ports}\n\n"
             f"PARAMETERS: {', '.join(p['name'] for p in iface['parameters'])}\n\n"
             f"CONTRACT CHECKS\n{checks}\n\nRULES\n{rtext}\n\n{TASK_TEXT}\n{rules_text}")

@@ -4,6 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from nnc import contract as contract_mod
 from nnc import gen_sva, gen_tests, mutate, report, review, sim
 from nnc.agents.backend import AgentResult
 from nnc.contract import contract_shell, extract_interface, module_header, width_decl
@@ -99,6 +100,52 @@ class MarkdownIngestTest(Workspace):
         self.assertEqual(self.iface["parameters"][0]["name"], "PARA_ADDR_W")
         self.assertEqual(self.iface["ports"][3]["direction"], "output")
 
+    def test_interface_split_over_captioned_tables(self):
+        md = ("# 1. Ports\n\n**`m_top`**: write side (CLK-WR)\n\n| Port | Dir | Width | Type | Function |\n|---|---|---|---|---|\n"
+              "| `i_clk_wr` | Input | 1 | CLK | Write clock |\n| `i_rst_n_wr` | Input | 1 | RST-L | Write reset |\n"
+              "| `i_wr_data` | Input | `PARA_DATA_W` | LVL-DATA | Data |\n\n**`m_top`**: read side (CLK-RD)\n\n"
+              "| Port | Dir | Width | Type | Function |\n|---|---|---|---|---|\n| `i_clk_rd` | Input | 1 | CLK | Read clock |\n"
+              "| `i_rst_n_rd` | Input | 1 | RST-L | Read reset |\n| `i_rst_n_sw` | Input | 1 | LVL-CTL | Software reset |\n\n"
+              "**`m_mem`** (instantiated in `m_top`)\n\n| Port | Dir | Width | Type | Function |\n|---|---|---|---|---|\n"
+              "| `i_addr` | Input | `LPARA_ADDR_W` | INT | Address |\n\n# 2. Parameters\n\n"
+              "| Parameter | Purpose | Default |\n|---|---|---|\n| `PARA_DEPTH` | Entries | 8 |\n"
+              "| `PARA_DATA_W` | Width | 32 |\n| `LPARA_ADDR_W` | log2 of the depth | Derived |\n"
+              "| `LPARA_PTR_W` | `LPARA_ADDR_W` + 1 | Derived |\n")
+        spec = self.tmp / "split.md"
+        spec.write_text(md, encoding="utf-8")
+        iface = extract_interface(build_index(spec), top="m_top")
+        self.assertEqual([p["name"] for p in iface["ports"]],
+                         ["i_clk_wr", "i_rst_n_wr", "i_wr_data", "i_clk_rd", "i_rst_n_rd", "i_rst_n_sw"])
+        self.assertEqual(iface["ports"][2]["width"], "PARA_DATA_W")
+        self.assertEqual(iface["clocks"], [{"name": "i_clk_wr", "domain": "CLK-WR"}, {"name": "i_clk_rd", "domain": "CLK-RD"}])
+        self.assertEqual([(r["name"], r["clock"]) for r in iface["resets"]],
+                         [("i_rst_n_wr", "i_clk_wr"), ("i_rst_n_rd", "i_clk_rd")])      # software reset excluded
+        derived = {p["name"]: p.get("derived") for p in iface["parameters"]}
+        self.assertEqual(derived["LPARA_ADDR_W"], "$clog2(PARA_DEPTH)")
+        self.assertEqual(derived["LPARA_PTR_W"], "LPARA_ADDR_W + 1")
+        self.assertEqual(len(extract_interface(build_index(spec))["ports"]), 3)      # no top: first table only
+
+    def test_derived_parameter_formula_in_other_column(self):
+        def iface_of(width: str):
+            md = ("# 1. Ports\n\n| Port | Direction | Width | Type | Meaning |\n|---|---|---|---|---|\n"
+                  "| i_clk | Input | 1 | Clock | Clock |\n| i_rst_n | Input | 1 | Reset | Reset |\n"
+                  f"| i_strb | Input | {width} | Data | Strobes |\n\n# 2. Parameters\n\n"
+                  "| Parameter | Purpose | Default | Legal | Dependencies | Effect |\n|---|---|---|---|---|---|\n"
+                  "| PARA_X_DATA_W | Data width | 32 | 8 to 32 | None | Width of data |\n"
+                  "| PARA_X_USER_DATA_W | User width | 0 | 0 to 8 | None | Width of user |\n"
+                  "| LPARA_STRB_W | Width of PSTRB | Derived | 1 to 4 | `PARA_X_DATA_W` | DATA_W / 8 |\n"
+                  "| LPARA_REQ_W | Bundle width | Derived | At least 7 | Parameters above | DATA_W + 1, plus USER_DATA_W in APB5 |\n")
+            spec = self.tmp / "derived.md"
+            spec.write_text(md, encoding="utf-8")
+            return extract_interface(build_index(spec))
+        iface = iface_of("LPARA_STRB_W")
+        derived = {p["name"]: p.get("derived") for p in iface["parameters"]}
+        self.assertEqual(derived["LPARA_STRB_W"], "PARA_X_DATA_W / 8")    # Effect column, shortest-name match
+        self.assertNotIn("LPARA_REQ_W", derived)                          # internal, formula not readable
+        self.assertNotIn("Derived", module_header("chk", iface, all_inputs=True))
+        with self.assertRaises(ValueError):                               # a port needs an unreadable value
+            iface_of("LPARA_REQ_W")
+
     def test_widths_and_headers(self):
         self.assertEqual(width_decl("1"), "")
         self.assertEqual(width_decl("32"), "[31:0]")
@@ -133,6 +180,36 @@ class SimIntegrationTest(Workspace):
         files = sim.build_inputs(self.contract, [self.rtl], [], self.tmp / "test_x.py", {"PARA_ADDR_W": 16})
         self.assertIn("-GPARA_ADDR_W=16", files["Makefile"])
         self.assertEqual(json.loads(files["nnc_interface.json"])["parameters"], {"PARA_ADDR_W": 16})
+        self.assertNotIn("PLUSARGS", files["Makefile"])          # nothing added without options
+
+    def test_async_clocks_and_run_options(self):
+        self.assertEqual(sim.parse_periods("i_clk_rd=13.7, i_clk_wr=10"), {"i_clk_rd": 13.7, "i_clk_wr": 10})
+        with self.assertRaises(ValueError):
+            sim.parse_periods("i_clk_wr=0")
+        opts = sim.sim_options({"defines": "VLSIT_SYNTHESIS, X=1", "plusargs": "+MSYNC_SEED={seed} +MSYNC_EN=1"})
+        self.assertEqual(opts["defines"], ["VLSIT_SYNTHESIS", "X=1"])
+        iface = {**self.contract["interface"], "clock_relation": "async",
+                 "clocks": [{"name": "i_clk_wr", "domain": "WR"}, {"name": "i_clk_rd", "domain": "RD"}]}
+        contract = {**self.contract, "interface": iface}
+        files = sim.build_inputs(contract, [self.rtl], [], self.tmp / "test_x.py", {"PARA_ADDR_W": 16},
+                                 clock_periods={"i_clk_rd": 13.7}, opts=opts)
+        self.assertIn("EXTRA_ARGS += +define+VLSIT_SYNTHESIS +define+X=1", files["Makefile"])
+        self.assertIn("PLUSARGS += +MSYNC_SEED=$(SEED) +MSYNC_EN=1", files["Makefile"])
+        cfg = json.loads(files["nnc_interface.json"])
+        self.assertEqual(cfg["clock_relation"], "async")
+        self.assertEqual(cfg["clocks"], {"i_clk_wr": 10, "i_clk_rd": 13.7})
+        self.assertTrue(contract_mod.is_async(iface))
+        self.assertIn("MUTUALLY ASYNCHRONOUS", "\n".join(contract_mod._domains_text(iface)))
+        self.assertFalse(contract_mod.is_async({**iface, "clock_relation": "sync"}))
+        # the tests see the run options (no guessing of plusarg names), and so does the test agent
+        self.assertEqual(cfg["run_options"], {"defines": ["VLSIT_SYNTHESIS", "X=1"],
+                                              "plusargs": "+MSYNC_SEED={seed} +MSYNC_EN=1"})
+        text = gen_tests.run_config_text(opts)
+        self.assertIn("+MSYNC_EN=1", text)
+        self.assertIn("VLSIT_SYNTHESIS", text)
+        self.assertEqual(gen_tests.run_config_text(sim.sim_options({})), "")
+        plain = sim.build_inputs(self.contract, [self.rtl], [], self.tmp / "test_x.py", {"PARA_ADDR_W": 16})
+        self.assertNotIn("run_options", json.loads(plain["nnc_interface.json"]))
 
     def test_parse_results(self):
         out = self.tmp / "out"
@@ -153,6 +230,7 @@ class SimIntegrationTest(Workspace):
         self.assertEqual(r["tests"][1]["exception"], "AttributeError")
         self.assertEqual(r["assertions"]["CHK-010"], {"hits": 4, "fails": 1, "first_fail_time": 120})
         self.assertEqual(r["coverage"]["percent"], 50.0)                 # testbench lines excluded
+        self.assertEqual(r["coverage"]["executed_lines"], {"m_demo.sv": "1"})
         self.assertEqual(gen_tests.infrastructure_errors(r)[0].split(":")[0], "test_chk_002_b")
         lib = dict(r["tests"][1], traceback='File "/x/test.py", line 3\nFile "/x/nnc_cocotb.py", line 29\n')
         self.assertEqual(gen_tests.infrastructure_errors({"tests": [lib]}), [])   # helper fault: not the test's
@@ -168,6 +246,12 @@ class SimIntegrationTest(Workspace):
         picked = mutate.select(cands, 3, seed=7)
         self.assertEqual([m.id for m in picked], ["M01", "M02", "M03"])
         self.assertEqual([m.line for m in picked], [m.line for m in mutate.select(mutate.candidates([self.rtl]), 3, seed=7)])
+
+    def test_executed_lines_ranges(self):
+        from nnc import coverage as coverage_mod
+        self.assertEqual(coverage_mod.line_ranges([9, 3, 4, 5, 4, 12, 13]), "3-5,9,12-13")
+        self.assertEqual(coverage_mod.executed_lines({"executed_lines": {"a.sv": "3-5,9"}}), {"a.sv": {3, 4, 5, 9}})
+        self.assertIsNone(coverage_mod.executed_lines({}))      # older results: fall back to uncovered lines
 
     def test_mutation_ignores_baseline_failures(self):
         base = mutate.baseline_failures({"tests": [{"name": "t_a", "status": "fail"}, {"name": "t_b", "status": "pass"}],

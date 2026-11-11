@@ -88,5 +88,34 @@ def elaborated_files(cov: dict) -> set[str] | None:
     return files or None
 
 
+def line_ranges(lines) -> str:
+    """Sorted line numbers as compact ranges: [3, 4, 5, 9] -> "3-5,9"."""
+    out, nums = [], sorted(set(lines))
+    i = 0
+    while i < len(nums):
+        j = i
+        while j + 1 < len(nums) and nums[j + 1] == nums[j] + 1:
+            j += 1
+        out.append(str(nums[i]) if i == j else f"{nums[i]}-{nums[j]}")
+        i = j + 1
+    return ",".join(out)
+
+
+def executed_lines(cov: dict) -> dict[str, set[int]] | None:
+    """{file: lines the regression executed (lcov count > 0)}, or None when not recorded. A line absent
+    from lcov is not part of the elaborated design: an inactive `ifdef branch or an unselected generate
+    branch."""
+    raw = cov.get("executed_lines")
+    if not isinstance(raw, dict):
+        return None
+    out: dict[str, set[int]] = {}
+    for name, text in raw.items():
+        lines = out.setdefault(name, set())
+        for part in filter(None, str(text).split(",")):
+            a, _, b = part.partition("-")
+            lines.update(range(int(a), int(b or a) + 1))
+    return out
+
+
 def uncovered_lines(cov: dict) -> set[tuple[str, int]]:
     return {(u["file"], u["line"]) for u in cov.get("uncovered", []) if u["metric"] == "line"}

@@ -31,7 +31,7 @@ def _open(args) -> Design:
 def _options(args) -> flow.Options:
     o = flow.Options(backend=getattr(args, "backend", "claude"), unreviewed=getattr(args, "unreviewed", False),
                      workers=getattr(args, "workers", 4), seed=getattr(args, "seed", 1),
-                     mutants=getattr(args, "mutants", 12))
+                     mutants=getattr(args, "mutants", 12), timeout_s=getattr(args, "agent_timeout", 1800))
     for stage in ("extract", "review", "contract", "sva", "tests", "triage"):
         v = getattr(args, f"{stage}_model", None)
         if v:
@@ -269,6 +269,8 @@ def cmd_flow(args) -> int:
 def _agent_args(p) -> None:
     p.add_argument("--backend", choices=("claude", "manual"), default="claude")
     p.add_argument("--workers", type=int, default=4, help="parallel agent calls (default 4)")
+    p.add_argument("--agent-timeout", type=int, default=1800,
+                   help="seconds one agent call may take (default 1800; a large test plan may need more)")
     for stage, default in (("extract", "sonnet"), ("review", "sonnet"), ("contract", "opus"), ("sva", "sonnet"),
                            ("tests", "opus"), ("triage", "opus")):
         p.add_argument(f"--{stage}-model", help=f"model alias for {stage} (default {default})")

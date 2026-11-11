@@ -8,6 +8,7 @@ SVA       := $(TOP_DIR)/verif/sva/nnc_chk_clk.sv $(TOP_DIR)/verif/sva/nnc_chk_in
 TESTS     := test_sync_fifo
 TOP       := m_vlsit_sfifo_top
 PARAMS    := -GPARA_SFIFO_DEPTH=8 -GPARA_SFIFO_DATA_W=32 -GPARA_SFIFO_PTR_RETIME=0 -GPARA_SFIFO_MEM_USE_MACRO=0
+DEFINES   := 
 SEED      ?= 1
 TC        ?=
 COVERAGE  := --coverage-line --coverage-toggle --coverage-expr
@@ -24,7 +25,7 @@ help:            ## list the targets and their inputs/outputs
 	@echo "  test TC=<regex>  only the cocotb tests whose name matches, e.g. TC=test_chk_003"
 	@echo "  coverage-report  coverage.dat -> coverage.info (lcov) and annotated sources in coverage_annotated/"
 	@echo "  clean"
-	@echo "Variables: SEED=$(SEED) (random seed), PARAMS=$(PARAMS)"
+	@echo "Variables: SEED=$(SEED) (random seed), PARAMS=$(PARAMS), DEFINES=$(DEFINES)"
 
 tool-check:
 	$(VERILATOR) --version
@@ -32,7 +33,7 @@ tool-check:
 	python3 --version
 
 lint:
-	$(VERILATOR) --lint-only -Wno-fatal --top-module $(TOP) $(PARAMS) $(RTL)
+	$(VERILATOR) --lint-only -Wno-fatal --top-module $(TOP) $(PARAMS) $(DEFINES) $(RTL)
 
 sva-compile:
 	$(VERILATOR) --lint-only --timing -Wno-fatal --top-module nnc_tb_top $(PARAMS) contract_shell.sv $(SVA) nnc_tb_top.sv

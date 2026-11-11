@@ -1,0 +1,488 @@
+{
+ "module": "nnc_cov",
+ "file": "nnc_cov.sv",
+ "points": [
+  {
+   "id": "COVP-001",
+   "title": "write transfer completed without error",
+   "rules": [
+    "AB2-3-01",
+    "AB2-10.2-01"
+   ],
+   "checks": [
+    "CHK-031"
+   ],
+   "condition": "o_apb_pready high for a transfer whose Setup had pwrite=1 and o_apb_pslverr low"
+  },
+  {
+   "id": "COVP-002",
+   "title": "read transfer completed without error",
+   "rules": [
+    "AB2-3-03",
+    "AB2-10.2-02"
+   ],
+   "checks": [
+    "CHK-031"
+   ],
+   "condition": "o_apb_pready high for a read transfer with o_apb_pslverr low"
+  },
+  {
+   "id": "COVP-003",
+   "title": "write transfer completed with error",
+   "rules": [
+    "AB2-12-01",
+    "AB2-3-12"
+   ],
+   "checks": [
+    "CHK-033"
+   ],
+   "condition": "o_apb_pready high for a write with o_apb_pslverr high"
+  },
+  {
+   "id": "COVP-004",
+   "title": "read transfer completed with error",
+   "rules": [
+    "AB2-12-01",
+    "AB2-6.3-10"
+   ],
+   "checks": [
+    "CHK-033"
+   ],
+   "condition": "o_apb_pready high for a read with o_apb_pslverr high"
+  },
+  {
+   "id": "COVP-005",
+   "title": "back-to-back Setup in the cycle after PREADY",
+   "rules": [
+    "AB2-3-13",
+    "AB2-6.3-23",
+    "AB2-13-03"
+   ],
+   "checks": [
+    "CHK-034"
+   ],
+   "condition": "Setup cycle (psel high, penable low) right after a cycle with o_apb_pready high"
+  },
+  {
+   "id": "COVP-006",
+   "title": "back-to-back Setup with different operation type",
+   "rules": [
+    "AB2-10.2-05"
+   ],
+   "checks": [
+    "CHK-034"
+   ],
+   "condition": "Back-to-back Setup whose pwrite differs from the previous transfer"
+  },
+  {
+   "id": "COVP-007",
+   "title": "Setup after an idle gap of at least 4 cycles",
+   "rules": [
+    "AB2-3-17",
+    "AB2-6.3-02"
+   ],
+   "checks": [
+    "CHK-027"
+   ],
+   "condition": "Setup cycle after at least 4 idle cycles with no transfer"
+  },
+  {
+   "id": "COVP-008",
+   "title": "first Setup after reset release",
+   "rules": [
+    "AB2-7.3-04",
+    "AB2-7.2-11"
+   ],
+   "checks": [
+    "CHK-027",
+    "CHK-028"
+   ],
+   "condition": "first Setup cycle since the mst reset was released"
+  },
+  {
+   "id": "COVP-009",
+   "title": "requester Access with at least 8 wait cycles",
+   "rules": [
+    "AB2-3-09",
+    "AB2-10.2-03"
+   ],
+   "checks": [
+    "CHK-032"
+   ],
+   "condition": "o_apb_pready high after at least 8 Access cycles with PREADY low"
+  },
+  {
+   "id": "COVP-010",
+   "title": "requester Access with at least 32 wait cycles",
+   "rules": [
+    "AB2-3-10",
+    "AB2-12-03"
+   ],
+   "checks": [
+    "CHK-032"
+   ],
+   "condition": "o_apb_pready high after at least 32 Access cycles with PREADY low"
+  },
+  {
+   "id": "COVP-011",
+   "title": "write Setup with all strobes set",
+   "rules": [
+    "AB2-9-04",
+    "AB2-3-18"
+   ],
+   "checks": [
+    "CHK-035"
+   ],
+   "condition": "write Setup with every pstrb bit high"
+  },
+  {
+   "id": "COVP-012",
+   "title": "write Setup with partial strobes",
+   "rules": [
+    "AB2-9-04",
+    "AB2-3-18"
+   ],
+   "checks": [
+    "CHK-035"
+   ],
+   "condition": "write Setup with pstrb nonzero and not all ones"
+  },
+  {
+   "id": "COVP-013",
+   "title": "write Setup with all strobes zero",
+   "rules": [
+    "AB2-9-04"
+   ],
+   "checks": [
+    "CHK-035"
+   ],
+   "condition": "write Setup with pstrb all zero"
+  },
+  {
+   "id": "COVP-014",
+   "title": "read Setup with nonzero PSTRB forwarded",
+   "rules": [
+    "AB2-3-19",
+    "AB2-6.3-12"
+   ],
+   "checks": [
+    "CHK-035"
+   ],
+   "condition": "read Setup with pstrb nonzero"
+  },
+  {
+   "id": "COVP-015",
+   "title": "Setup with PPROT 0",
+   "rules": [
+    "AB2-9-05"
+   ],
+   "checks": [
+    "CHK-035"
+   ],
+   "condition": "Setup with pprot equal 0"
+  },
+  {
+   "id": "COVP-016",
+   "title": "Setup with PPROT 7",
+   "rules": [
+    "AB2-9-05"
+   ],
+   "checks": [
+    "CHK-035"
+   ],
+   "condition": "Setup with pprot equal 7"
+  },
+  {
+   "id": "COVP-017",
+   "title": "Setup with mixed PPROT",
+   "rules": [
+    "AB2-9-05"
+   ],
+   "checks": [
+    "CHK-035"
+   ],
+   "condition": "Setup with pprot neither 0 nor 7"
+  },
+  {
+   "id": "COVP-018",
+   "title": "Setup with address zero",
+   "rules": [
+    "AB2-9-02"
+   ],
+   "checks": [
+    "CHK-022"
+   ],
+   "condition": "Setup with paddr all zero"
+  },
+  {
+   "id": "COVP-019",
+   "title": "Setup with address all ones",
+   "rules": [
+    "AB2-9-02",
+    "AB2-8-02"
+   ],
+   "checks": [
+    "CHK-022"
+   ],
+   "condition": "Setup with paddr all ones"
+  },
+  {
+   "id": "COVP-020",
+   "title": "Setup with non word-aligned address",
+   "rules": [
+    "AB2-9-02"
+   ],
+   "checks": [
+    "CHK-031"
+   ],
+   "condition": "Setup with the two low address bits not zero"
+  },
+  {
+   "id": "COVP-021",
+   "title": "write Setup with all-ones write data",
+   "rules": [
+    "AB2-9-03"
+   ],
+   "checks": [
+    "CHK-035"
+   ],
+   "condition": "write Setup with pwdata all ones"
+  },
+  {
+   "id": "COVP-022",
+   "title": "read completed with all-ones read data",
+   "rules": [
+    "AB2-3-03"
+   ],
+   "checks": [
+    "CHK-031"
+   ],
+   "condition": "read completion with o_apb_prdata all ones"
+  },
+  {
+   "id": "COVP-023",
+   "title": "read with error and nonzero data forwarded",
+   "rules": [
+    "AB2-6.3-10"
+   ],
+   "checks": [
+    "CHK-033"
+   ],
+   "condition": "read completion with pslverr high and prdata nonzero"
+  },
+  {
+   "id": "COVP-024",
+   "title": "successful transfer right after an errored transfer",
+   "rules": [
+    "AB2-12-02",
+    "AB2-12-08"
+   ],
+   "checks": [
+    "CHK-033"
+   ],
+   "condition": "completion without error when the previous completion had an error"
+  },
+  {
+   "id": "COVP-025",
+   "title": "requester changes fields during Access",
+   "rules": [
+    "AB2-6.3-25",
+    "AB2-12-06",
+    "AB2-15.1-03"
+   ],
+   "checks": [
+    "CHK-024"
+   ],
+   "condition": "during Access with PREADY low, paddr or pwdata differs from the previous cycle"
+  },
+  {
+   "id": "COVP-026",
+   "title": "mst restart after reset during a transfer",
+   "rules": [
+    "AB2-3-40",
+    "AB2-12-05"
+   ],
+   "checks": [
+    "CHK-028"
+   ],
+   "condition": "first active cycle of mst after a reset that hit while a transfer was in flight"
+  },
+  {
+   "id": "COVP-027",
+   "title": "mst domain running while slv reset still held low",
+   "rules": [
+    "AB2-7.2-11"
+   ],
+   "checks": [
+    "CHK-028"
+   ],
+   "condition": "mst active cycle while i_rst_n_slv is low (staggered release)"
+  },
+  {
+   "id": "COVP-028",
+   "title": "APB5 Setup with wake-up raised before PSEL",
+   "rules": [
+    "AB2-6.3-15",
+    "AB2-3-43"
+   ],
+   "checks": [
+    "CHK-020"
+   ],
+   "condition": "APB5, Setup cycle where pwakeup was high in the previous cycle while psel was low"
+  },
+  {
+   "id": "COVP-029",
+   "title": "APB5 Setup with wake-up low",
+   "rules": [
+    "AB2-15.1-03",
+    "AB2-3-42"
+   ],
+   "checks": [
+    "CHK-018"
+   ],
+   "condition": "APB5, Setup with pwakeup low"
+  },
+  {
+   "id": "COVP-030",
+   "title": "APB5 Setup with nonzero PAUSER",
+   "rules": [
+    "AB2-3-02",
+    "AB2-10.2-07"
+   ],
+   "checks": [
+    "CHK-019"
+   ],
+   "condition": "APB5 Setup with pauser nonzero"
+  },
+  {
+   "id": "COVP-031",
+   "title": "APB5 write Setup with nonzero PWUSER",
+   "rules": [
+    "AB2-3-02"
+   ],
+   "checks": [
+    "CHK-019"
+   ],
+   "condition": "APB5 write Setup with pwuser nonzero"
+  },
+  {
+   "id": "COVP-032",
+   "title": "APB5 read completed with nonzero PRUSER",
+   "rules": [
+    "AB2-3-04"
+   ],
+   "checks": [
+    "CHK-019"
+   ],
+   "condition": "APB5 read completion with o_apb_pruser nonzero"
+  },
+  {
+   "id": "COVP-033",
+   "title": "APB5 completion with nonzero PBUSER",
+   "rules": [
+    "AB2-3-04"
+   ],
+   "checks": [
+    "CHK-019"
+   ],
+   "condition": "APB5 completion with o_apb_pbuser nonzero"
+  },
+  {
+   "id": "COVP-034",
+   "title": "completer-side write Setup",
+   "rules": [
+    "AB2-3-01",
+    "AB2-3-15"
+   ],
+   "checks": [
+    "CHK-013"
+   ],
+   "condition": "slv clock: o_apb_psel high, o_apb_penable low, o_apb_pwrite high"
+  },
+  {
+   "id": "COVP-035",
+   "title": "completer-side read Setup",
+   "rules": [
+    "AB2-3-01",
+    "AB2-3-15"
+   ],
+   "checks": [
+    "CHK-013"
+   ],
+   "condition": "slv clock: Setup cycle with o_apb_pwrite low"
+  },
+  {
+   "id": "COVP-036",
+   "title": "completer transfer with zero wait states",
+   "rules": [
+    "AB2-10.2-03"
+   ],
+   "checks": [
+    "CHK-015"
+   ],
+   "condition": "slv clock: first Access cycle with i_apb_pready high"
+  },
+  {
+   "id": "COVP-037",
+   "title": "completer back-pressure of at least 4 wait cycles",
+   "rules": [
+    "AB2-3-10",
+    "AB2-6.3-26"
+   ],
+   "checks": [
+    "CHK-014"
+   ],
+   "condition": "slv clock: Access with i_apb_pready low after at least 3 previous wait cycles"
+  },
+  {
+   "id": "COVP-038",
+   "title": "completer transfer completed after at least 16 wait cycles",
+   "rules": [
+    "AB2-12-03"
+   ],
+   "checks": [
+    "CHK-014",
+    "CHK-032"
+   ],
+   "condition": "slv clock: Access with i_apb_pready high after at least 16 wait cycles"
+  },
+  {
+   "id": "COVP-039",
+   "title": "completer-side completion with PSLVERR",
+   "rules": [
+    "AB2-3-12",
+    "AB2-12-01"
+   ],
+   "checks": [
+    "CHK-033"
+   ],
+   "condition": "slv clock: Access with i_apb_pready and i_apb_pslverr high"
+  },
+  {
+   "id": "COVP-040",
+   "title": "slv restart after reset during a transfer",
+   "rules": [
+    "AB2-3-40",
+    "AB2-7.3-02"
+   ],
+   "checks": [
+    "CHK-028"
+   ],
+   "condition": "first active slv cycle after a reset that hit while o_apb_psel was high"
+  }
+ ],
+ "status": "lint_clean",
+ "attempts": 2,
+ "problems": [],
+ "lint_errors": "",
+ "usage": {
+  "calls": 2,
+  "cached": 0,
+  "cost_usd": 0.4325,
+  "input_tokens": 4,
+  "output_tokens": 25760,
+  "cache_creation_input_tokens": 42656,
+  "cache_read_input_tokens": 718
+ },
+ "prompt_version": "cov-v1"
+}

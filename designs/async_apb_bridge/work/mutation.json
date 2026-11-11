@@ -1,0 +1,1864 @@
+{
+ "mutants": [
+  {
+   "id": "M01",
+   "file": "m_vlsit_apbcdc_mst.sv",
+   "line": 192,
+   "operator": "one_to_zero",
+   "original": "w_req_nxt = (PARA_APBCDC_HS_TYPE == 32'd0) ? ~reg_req : 1'b1;",
+   "mutated": "      w_req_nxt = (PARA_APBCDC_HS_TYPE == 32'd0) ? ~reg_req : 1'b0;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M02",
+   "file": "m_vlsit_apbcdc_mst.sv",
+   "line": 214,
+   "operator": "ne_to_eq",
+   "original": "reg_wakeup <= (PARA_APBCDC_APB5 != 32'd0) & i_apb_pwakeup;",
+   "mutated": "      reg_wakeup <= (PARA_APBCDC_APB5 == 32'd0) & i_apb_pwakeup;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M03",
+   "file": "m_vlsit_apbcdc_slv.sv",
+   "line": 179,
+   "operator": "one_to_zero",
+   "original": "w_ack_nxt = (PARA_APBCDC_HS_TYPE == 32'd0) ? ~reg_ack : 1'b1;",
+   "mutated": "      w_ack_nxt = (PARA_APBCDC_HS_TYPE == 32'd0) ? ~reg_ack : 1'b0;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M04",
+   "file": "m_vlsit_apbcdc_slv.sv",
+   "line": 179,
+   "operator": "eq_to_ne",
+   "original": "w_ack_nxt = (PARA_APBCDC_HS_TYPE == 32'd0) ? ~reg_ack : 1'b1;",
+   "mutated": "      w_ack_nxt = (PARA_APBCDC_HS_TYPE != 32'd0) ? ~reg_ack : 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_021_apb4_ignores_apb5",
+    "test_chk_022_cfg_min",
+    "test_chk_024_requester_violations",
+    "test_chk_025_two_phase_duration/periods=0",
+    "test_chk_025_two_phase_duration/periods=1",
+    "test_chk_025_two_phase_duration/periods=2",
+    "test_chk_025_two_phase_duration/periods=3",
+    "test_chk_025_two_phase_duration/periods=4",
+    "test_chk_027_reset_values",
+    "test_chk_028_reset_during_traffic",
+    "test_chk_029_scoreboard_ratios",
+    "test_chk_030_sync_depth",
+    "test_chk_031_single_write_read",
+    "test_chk_032_wait_states",
+    "test_chk_033_error_response",
+    "test_chk_034_back_to_back/periods=0",
+    "test_chk_034_back_to_back/periods=1",
+    "test_chk_035_pprot_pstrb",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M05",
+   "file": "m_vlsit_apbcdc_mst.sv",
+   "line": 137,
+   "operator": "eq_to_ne",
+   "original": "assign w_ack_event = (PARA_APBCDC_HS_TYPE == 32'd0) ? (w_ack_s == reg_req) : w_ack_s;",
+   "mutated": "  assign w_ack_event = (PARA_APBCDC_HS_TYPE != 32'd0) ? (w_ack_s == reg_req) : w_ack_s;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_021_apb4_ignores_apb5",
+    "test_chk_022_cfg_min",
+    "test_chk_024_requester_violations",
+    "test_chk_025_two_phase_duration/periods=0",
+    "test_chk_025_two_phase_duration/periods=1",
+    "test_chk_025_two_phase_duration/periods=2",
+    "test_chk_025_two_phase_duration/periods=3",
+    "test_chk_025_two_phase_duration/periods=4",
+    "test_chk_027_reset_values",
+    "test_chk_028_reset_during_traffic",
+    "test_chk_029_scoreboard_ratios",
+    "test_chk_030_sync_depth",
+    "test_chk_031_single_write_read",
+    "test_chk_032_wait_states",
+    "test_chk_033_error_response",
+    "test_chk_034_back_to_back/periods=0",
+    "test_chk_034_back_to_back/periods=1",
+    "test_chk_035_pprot_pstrb",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M06",
+   "file": "m_vlsit_apbcdc_slv.sv",
+   "line": 134,
+   "operator": "ne_to_eq",
+   "original": "assign w_req_event = (PARA_APBCDC_HS_TYPE == 32'd0) ? (w_req_s != reg_ack) : w_req_s;",
+   "mutated": "  assign w_req_event = (PARA_APBCDC_HS_TYPE == 32'd0) ? (w_req_s == reg_ack) : w_req_s;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_021_apb4_ignores_apb5",
+    "test_chk_022_cfg_min",
+    "test_chk_024_requester_violations",
+    "test_chk_025_two_phase_duration/periods=0",
+    "test_chk_025_two_phase_duration/periods=1",
+    "test_chk_025_two_phase_duration/periods=2",
+    "test_chk_025_two_phase_duration/periods=3",
+    "test_chk_025_two_phase_duration/periods=4",
+    "test_chk_027_reset_values",
+    "test_chk_028_reset_during_traffic",
+    "test_chk_029_scoreboard_ratios",
+    "test_chk_030_sync_depth",
+    "test_chk_031_single_write_read",
+    "test_chk_032_wait_states",
+    "test_chk_033_error_response",
+    "test_chk_034_back_to_back/periods=0",
+    "test_chk_034_back_to_back/periods=1",
+    "test_chk_035_pprot_pstrb",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M07",
+   "file": "m_vlsit_apbcdc_slv.sv",
+   "line": 202,
+   "operator": "zero_to_one",
+   "original": "reg_pwakeup     <= 1'b0;",
+   "mutated": "      reg_pwakeup     <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_027_reset_values",
+    "test_chk_028_reset_during_traffic"
+   ],
+   "killed_by_checks": [
+    "CHK-010",
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M08",
+   "file": "m_vlsit_apbcdc_cell_sync.sv",
+   "line": 173,
+   "operator": "zero_to_one",
+   "original": "sim_pend <= 1'b0;",
+   "mutated": "            sim_pend <= 1'b1;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M09",
+   "file": "m_vlsit_apbcdc_cell_sync.sv",
+   "line": 140,
+   "operator": "ne_to_eq",
+   "original": "sim_en = (sim_en_arg != 0);",
+   "mutated": "        sim_en = (sim_en_arg == 0);",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M10",
+   "file": "m_vlsit_apbcdc_mst.sv",
+   "line": 162,
+   "operator": "negate_if",
+   "original": "if (w_setup)",
+   "mutated": "        if (!(w_setup))",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_021_apb4_ignores_apb5",
+    "test_chk_022_cfg_min",
+    "test_chk_024_requester_violations",
+    "test_chk_025_two_phase_duration/periods=0",
+    "test_chk_025_two_phase_duration/periods=1",
+    "test_chk_025_two_phase_duration/periods=2",
+    "test_chk_025_two_phase_duration/periods=3",
+    "test_chk_025_two_phase_duration/periods=4",
+    "test_chk_027_reset_values",
+    "test_chk_028_reset_during_traffic",
+    "test_chk_029_scoreboard_ratios",
+    "test_chk_030_sync_depth",
+    "test_chk_031_single_write_read",
+    "test_chk_032_wait_states",
+    "test_chk_033_error_response",
+    "test_chk_034_back_to_back/periods=0",
+    "test_chk_034_back_to_back/periods=1",
+    "test_chk_035_pprot_pstrb",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-003",
+    "CHK-006"
+   ]
+  },
+  {
+   "id": "M11",
+   "file": "m_vlsit_apbcdc_cell_sync.sv",
+   "line": 162,
+   "operator": "eq_to_ne",
+   "original": "if (sim_extra == 0) begin",
+   "mutated": "          if (sim_extra != 0) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_021_apb4_ignores_apb5",
+    "test_chk_022_cfg_min",
+    "test_chk_024_requester_violations",
+    "test_chk_025_two_phase_duration/periods=0",
+    "test_chk_025_two_phase_duration/periods=1",
+    "test_chk_025_two_phase_duration/periods=2",
+    "test_chk_025_two_phase_duration/periods=3",
+    "test_chk_025_two_phase_duration/periods=4",
+    "test_chk_027_reset_values",
+    "test_chk_028_reset_during_traffic",
+    "test_chk_029_scoreboard_ratios",
+    "test_chk_030_sync_depth",
+    "test_chk_031_single_write_read",
+    "test_chk_032_wait_states",
+    "test_chk_033_error_response",
+    "test_chk_034_back_to_back/periods=0",
+    "test_chk_034_back_to_back/periods=1",
+    "test_chk_035_pprot_pstrb",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M12",
+   "file": "m_vlsit_apbcdc_cell_sync.sv",
+   "line": 136,
+   "operator": "one_to_zero",
+   "original": "sim_en   = 1'b1;",
+   "mutated": "      sim_en   = 1'b0;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M13",
+   "file": "m_vlsit_apbcdc_cell_sync.sv",
+   "line": 162,
+   "operator": "negate_if",
+   "original": "if (sim_extra == 0) begin",
+   "mutated": "          if (!(sim_extra == 0)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_021_apb4_ignores_apb5",
+    "test_chk_022_cfg_min",
+    "test_chk_024_requester_violations",
+    "test_chk_025_two_phase_duration/periods=0",
+    "test_chk_025_two_phase_duration/periods=1",
+    "test_chk_025_two_phase_duration/periods=2",
+    "test_chk_025_two_phase_duration/periods=3",
+    "test_chk_025_two_phase_duration/periods=4",
+    "test_chk_027_reset_values",
+    "test_chk_028_reset_during_traffic",
+    "test_chk_029_scoreboard_ratios",
+    "test_chk_030_sync_depth",
+    "test_chk_031_single_write_read",
+    "test_chk_032_wait_states",
+    "test_chk_033_error_response",
+    "test_chk_034_back_to_back/periods=0",
+    "test_chk_034_back_to_back/periods=1",
+    "test_chk_035_pprot_pstrb",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M14",
+   "file": "m_vlsit_apbcdc_slv.sv",
+   "line": 159,
+   "operator": "negate_if",
+   "original": "if (w_req_event)",
+   "mutated": "        if (!(w_req_event))",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_021_apb4_ignores_apb5",
+    "test_chk_022_cfg_min",
+    "test_chk_024_requester_violations",
+    "test_chk_025_two_phase_duration/periods=0",
+    "test_chk_025_two_phase_duration/periods=1",
+    "test_chk_025_two_phase_duration/periods=2",
+    "test_chk_025_two_phase_duration/periods=3",
+    "test_chk_025_two_phase_duration/periods=4",
+    "test_chk_027_reset_values",
+    "test_chk_028_reset_during_traffic",
+    "test_chk_029_scoreboard_ratios",
+    "test_chk_030_sync_depth",
+    "test_chk_031_single_write_read",
+    "test_chk_032_wait_states",
+    "test_chk_033_error_response",
+    "test_chk_034_back_to_back/periods=0",
+    "test_chk_034_back_to_back/periods=1",
+    "test_chk_035_pprot_pstrb",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-017",
+    "CHK-003",
+    "CHK-006"
+   ]
+  },
+  {
+   "id": "M15",
+   "file": "m_vlsit_apbcdc_mst.sv",
+   "line": 211,
+   "operator": "zero_to_one",
+   "original": "reg_pready <= 1'b0;",
+   "mutated": "      reg_pready <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_027_reset_values",
+    "test_chk_028_reset_during_traffic"
+   ],
+   "killed_by_checks": [
+    "CHK-009",
+    "CHK-003",
+    "CHK-006"
+   ]
+  },
+  {
+   "id": "M16",
+   "file": "m_vlsit_apbcdc_slv.sv",
+   "line": 180,
+   "operator": "eq_to_ne",
+   "original": "else if ((reg_fsm_hs_current_state == ENUM_ST_REQ0) & ~w_req_s)",
+   "mutated": "    else if ((reg_fsm_hs_current_state != ENUM_ST_REQ0) & ~w_req_s)",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_021_apb4_ignores_apb5",
+    "test_chk_022_cfg_min",
+    "test_chk_024_requester_violations",
+    "test_chk_025_two_phase_duration/periods=0",
+    "test_chk_025_two_phase_duration/periods=1",
+    "test_chk_025_two_phase_duration/periods=2",
+    "test_chk_025_two_phase_duration/periods=3",
+    "test_chk_025_two_phase_duration/periods=4",
+    "test_chk_027_reset_values",
+    "test_chk_028_reset_during_traffic",
+    "test_chk_029_scoreboard_ratios",
+    "test_chk_030_sync_depth",
+    "test_chk_031_single_write_read",
+    "test_chk_032_wait_states",
+    "test_chk_033_error_response",
+    "test_chk_034_back_to_back/periods=0",
+    "test_chk_034_back_to_back/periods=1",
+    "test_chk_035_pprot_pstrb",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M17",
+   "file": "m_vlsit_apbcdc_mst.sv",
+   "line": 192,
+   "operator": "eq_to_ne",
+   "original": "w_req_nxt = (PARA_APBCDC_HS_TYPE == 32'd0) ? ~reg_req : 1'b1;",
+   "mutated": "      w_req_nxt = (PARA_APBCDC_HS_TYPE != 32'd0) ? ~reg_req : 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_021_apb4_ignores_apb5",
+    "test_chk_022_cfg_min",
+    "test_chk_024_requester_violations",
+    "test_chk_025_two_phase_duration/periods=0",
+    "test_chk_025_two_phase_duration/periods=1",
+    "test_chk_025_two_phase_duration/periods=2",
+    "test_chk_025_two_phase_duration/periods=3",
+    "test_chk_025_two_phase_duration/periods=4",
+    "test_chk_027_reset_values",
+    "test_chk_028_reset_during_traffic",
+    "test_chk_029_scoreboard_ratios",
+    "test_chk_030_sync_depth",
+    "test_chk_031_single_write_read",
+    "test_chk_032_wait_states",
+    "test_chk_033_error_response",
+    "test_chk_034_back_to_back/periods=0",
+    "test_chk_034_back_to_back/periods=1",
+    "test_chk_035_pprot_pstrb",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M18",
+   "file": "m_vlsit_apbcdc_slv.sv",
+   "line": 208,
+   "operator": "ne_to_eq",
+   "original": "(w_wk_s | w_load_req | (reg_fsm_hs_current_state != ENUM_ST_IDLE));",
+   "mutated": "                         (w_wk_s | w_load_req | (reg_fsm_hs_current_state == ENUM_ST_IDLE));",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M19",
+   "file": "m_vlsit_apbcdc_slv.sv",
+   "line": 199,
+   "operator": "zero_to_one",
+   "original": "reg_ack         <= 1'b0;",
+   "mutated": "      reg_ack         <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_021_apb4_ignores_apb5",
+    "test_chk_022_cfg_min",
+    "test_chk_024_requester_violations",
+    "test_chk_025_two_phase_duration/periods=0",
+    "test_chk_025_two_phase_duration/periods=1",
+    "test_chk_025_two_phase_duration/periods=3",
+    "test_chk_027_reset_values",
+    "test_chk_028_reset_during_traffic",
+    "test_chk_030_sync_depth",
+    "test_chk_031_single_write_read",
+    "test_chk_032_wait_states",
+    "test_chk_033_error_response",
+    "test_chk_034_back_to_back/periods=0",
+    "test_chk_035_pprot_pstrb",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-003",
+    "CHK-006"
+   ]
+  },
+  {
+   "id": "M20",
+   "file": "m_vlsit_apbcdc_cell_sync.sv",
+   "line": 164,
+   "operator": "zero_to_one",
+   "original": "sim_pend <= 1'b0;",
+   "mutated": "            sim_pend <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_021_apb4_ignores_apb5",
+    "test_chk_022_cfg_min",
+    "test_chk_024_requester_violations",
+    "test_chk_025_two_phase_duration/periods=0",
+    "test_chk_025_two_phase_duration/periods=1",
+    "test_chk_025_two_phase_duration/periods=2",
+    "test_chk_025_two_phase_duration/periods=3",
+    "test_chk_025_two_phase_duration/periods=4",
+    "test_chk_027_reset_values",
+    "test_chk_028_reset_during_traffic",
+    "test_chk_029_scoreboard_ratios",
+    "test_chk_030_sync_depth",
+    "test_chk_031_single_write_read",
+    "test_chk_032_wait_states",
+    "test_chk_033_error_response",
+    "test_chk_034_back_to_back/periods=0",
+    "test_chk_034_back_to_back/periods=1",
+    "test_chk_035_pprot_pstrb",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M21",
+   "file": "m_vlsit_apbcdc_mst.sv",
+   "line": 208,
+   "operator": "negate_if",
+   "original": "if (!i_rst_n_mst) begin",
+   "mutated": "    if (!(!i_rst_n_mst)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_021_apb4_ignores_apb5",
+    "test_chk_022_cfg_min",
+    "test_chk_024_requester_violations",
+    "test_chk_025_two_phase_duration/periods=0",
+    "test_chk_025_two_phase_duration/periods=1",
+    "test_chk_025_two_phase_duration/periods=2",
+    "test_chk_025_two_phase_duration/periods=3",
+    "test_chk_025_two_phase_duration/periods=4",
+    "test_chk_027_reset_values",
+    "test_chk_028_reset_during_traffic",
+    "test_chk_029_scoreboard_ratios",
+    "test_chk_030_sync_depth",
+    "test_chk_031_single_write_read",
+    "test_chk_032_wait_states",
+    "test_chk_033_error_response",
+    "test_chk_034_back_to_back/periods=0",
+    "test_chk_034_back_to_back/periods=1",
+    "test_chk_035_pprot_pstrb",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-009"
+   ]
+  },
+  {
+   "id": "M22",
+   "file": "m_vlsit_apbcdc_cell_sync.sv",
+   "line": 171,
+   "operator": "eq_to_ne",
+   "original": "if (sim_cnt == 0) begin",
+   "mutated": "          if (sim_cnt != 0) begin",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M23",
+   "file": "m_vlsit_apbcdc_cell_sync.sv",
+   "line": 168,
+   "operator": "one_to_zero",
+   "original": "sim_pend <= 1'b1;",
+   "mutated": "            sim_pend <= 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_021_apb4_ignores_apb5",
+    "test_chk_022_cfg_min",
+    "test_chk_024_requester_violations",
+    "test_chk_025_two_phase_duration/periods=0",
+    "test_chk_025_two_phase_duration/periods=1",
+    "test_chk_025_two_phase_duration/periods=2",
+    "test_chk_025_two_phase_duration/periods=3",
+    "test_chk_025_two_phase_duration/periods=4",
+    "test_chk_027_reset_values",
+    "test_chk_028_reset_during_traffic",
+    "test_chk_029_scoreboard_ratios",
+    "test_chk_030_sync_depth",
+    "test_chk_031_single_write_read",
+    "test_chk_032_wait_states",
+    "test_chk_033_error_response",
+    "test_chk_034_back_to_back/periods=0",
+    "test_chk_034_back_to_back/periods=1",
+    "test_chk_035_pprot_pstrb",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M24",
+   "file": "m_vlsit_apbcdc_cell_sync.sv",
+   "line": 171,
+   "operator": "negate_if",
+   "original": "if (sim_cnt == 0) begin",
+   "mutated": "          if (!(sim_cnt == 0)) begin",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M25",
+   "file": "m_vlsit_apbcdc_slv.sv",
+   "line": 227,
+   "operator": "negate_if",
+   "original": "else if (w_done)",
+   "mutated": "    else if (!(w_done))",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_021_apb4_ignores_apb5",
+    "test_chk_022_cfg_min",
+    "test_chk_024_requester_violations",
+    "test_chk_025_two_phase_duration/periods=0",
+    "test_chk_025_two_phase_duration/periods=1",
+    "test_chk_025_two_phase_duration/periods=2",
+    "test_chk_025_two_phase_duration/periods=3",
+    "test_chk_025_two_phase_duration/periods=4",
+    "test_chk_028_reset_during_traffic",
+    "test_chk_029_scoreboard_ratios",
+    "test_chk_030_sync_depth",
+    "test_chk_032_wait_states",
+    "test_chk_033_error_response",
+    "test_chk_034_back_to_back/periods=0",
+    "test_chk_034_back_to_back/periods=1",
+    "test_chk_035_pprot_pstrb",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M26",
+   "file": "m_vlsit_apbcdc_mst.sv",
+   "line": 210,
+   "operator": "zero_to_one",
+   "original": "reg_wakeup <= 1'b0;",
+   "mutated": "      reg_wakeup <= 1'b1;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M27",
+   "file": "m_vlsit_apbcdc_slv.sv",
+   "line": 206,
+   "operator": "eq_to_ne",
+   "original": "reg_apb_penable <= (w_fsm_hs_nxt_state == ENUM_ST_ACCESS);",
+   "mutated": "      reg_apb_penable <= (w_fsm_hs_nxt_state != ENUM_ST_ACCESS);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_021_apb4_ignores_apb5",
+    "test_chk_022_cfg_min",
+    "test_chk_024_requester_violations",
+    "test_chk_025_two_phase_duration/periods=0",
+    "test_chk_025_two_phase_duration/periods=1",
+    "test_chk_025_two_phase_duration/periods=2",
+    "test_chk_025_two_phase_duration/periods=3",
+    "test_chk_025_two_phase_duration/periods=4",
+    "test_chk_027_reset_values",
+    "test_chk_028_reset_during_traffic",
+    "test_chk_029_scoreboard_ratios",
+    "test_chk_030_sync_depth",
+    "test_chk_031_single_write_read",
+    "test_chk_032_wait_states",
+    "test_chk_033_error_response",
+    "test_chk_034_back_to_back/periods=0",
+    "test_chk_034_back_to_back/periods=1",
+    "test_chk_035_pprot_pstrb",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-012",
+    "CHK-013",
+    "CHK-014",
+    "CHK-017"
+   ]
+  },
+  {
+   "id": "M28",
+   "file": "m_vlsit_apbcdc_mst.sv",
+   "line": 235,
+   "operator": "eq_to_ne",
+   "original": "end else if (reg_fsm_hs_current_state == ENUM_ST_RESP) begin",
+   "mutated": "    end else if (reg_fsm_hs_current_state != ENUM_ST_RESP) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_021_apb4_ignores_apb5",
+    "test_chk_022_cfg_min",
+    "test_chk_024_requester_violations",
+    "test_chk_025_two_phase_duration/periods=0",
+    "test_chk_025_two_phase_duration/periods=1",
+    "test_chk_025_two_phase_duration/periods=2",
+    "test_chk_025_two_phase_duration/periods=3",
+    "test_chk_025_two_phase_duration/periods=4",
+    "test_chk_028_reset_during_traffic",
+    "test_chk_029_scoreboard_ratios",
+    "test_chk_030_sync_depth",
+    "test_chk_032_wait_states",
+    "test_chk_033_error_response",
+    "test_chk_034_back_to_back/periods=0",
+    "test_chk_034_back_to_back/periods=1",
+    "test_chk_035_pprot_pstrb",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-004",
+    "CHK-005"
+   ]
+  },
+  {
+   "id": "M29",
+   "file": "m_vlsit_apbcdc_slv.sv",
+   "line": 207,
+   "operator": "ne_to_eq",
+   "original": "reg_pwakeup     <= (PARA_APBCDC_APB5 != 32'd0) &",
+   "mutated": "      reg_pwakeup     <= (PARA_APBCDC_APB5 == 32'd0) &",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_021_apb4_ignores_apb5",
+    "test_chk_022_cfg_min",
+    "test_chk_024_requester_violations",
+    "test_chk_025_two_phase_duration/periods=0",
+    "test_chk_025_two_phase_duration/periods=1",
+    "test_chk_025_two_phase_duration/periods=2",
+    "test_chk_025_two_phase_duration/periods=3",
+    "test_chk_025_two_phase_duration/periods=4",
+    "test_chk_027_reset_values",
+    "test_chk_028_reset_during_traffic",
+    "test_chk_029_scoreboard_ratios",
+    "test_chk_030_sync_depth",
+    "test_chk_031_single_write_read",
+    "test_chk_032_wait_states",
+    "test_chk_033_error_response",
+    "test_chk_034_back_to_back/periods=0",
+    "test_chk_034_back_to_back/periods=1",
+    "test_chk_035_pprot_pstrb",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M30",
+   "file": "m_vlsit_apbcdc_slv.sv",
+   "line": 200,
+   "operator": "zero_to_one",
+   "original": "reg_apb_psel    <= 1'b0;",
+   "mutated": "      reg_apb_psel    <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_021_apb4_ignores_apb5",
+    "test_chk_022_cfg_min",
+    "test_chk_024_requester_violations",
+    "test_chk_025_two_phase_duration/periods=0",
+    "test_chk_025_two_phase_duration/periods=1",
+    "test_chk_025_two_phase_duration/periods=3",
+    "test_chk_027_reset_values",
+    "test_chk_028_reset_during_traffic",
+    "test_chk_030_sync_depth",
+    "test_chk_031_single_write_read",
+    "test_chk_032_wait_states",
+    "test_chk_033_error_response",
+    "test_chk_034_back_to_back/periods=0",
+    "test_chk_035_pprot_pstrb",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-013",
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M31",
+   "file": "m_vlsit_apbcdc_cell_sync.sv",
+   "line": 154,
+   "operator": "zero_to_one",
+   "original": "sim_pend <= 1'b0;",
+   "mutated": "        sim_pend <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_022_cfg_min",
+    "test_chk_024_requester_violations",
+    "test_chk_025_two_phase_duration/periods=0",
+    "test_chk_025_two_phase_duration/periods=1",
+    "test_chk_025_two_phase_duration/periods=2",
+    "test_chk_025_two_phase_duration/periods=3",
+    "test_chk_025_two_phase_duration/periods=4",
+    "test_chk_027_reset_values",
+    "test_chk_028_reset_during_traffic",
+    "test_chk_029_scoreboard_ratios",
+    "test_chk_030_sync_depth",
+    "test_chk_031_single_write_read",
+    "test_chk_032_wait_states",
+    "test_chk_033_error_response",
+    "test_chk_034_back_to_back/periods=0",
+    "test_chk_034_back_to_back/periods=1",
+    "test_chk_035_pprot_pstrb",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-003",
+    "CHK-006"
+   ]
+  },
+  {
+   "id": "M32",
+   "file": "m_vlsit_apbcdc_mst.sv",
+   "line": 200,
+   "operator": "negate_if",
+   "original": "if (!i_rst_n_mst)",
+   "mutated": "    if (!(!i_rst_n_mst))",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_021_apb4_ignores_apb5",
+    "test_chk_022_cfg_min",
+    "test_chk_024_requester_violations",
+    "test_chk_025_two_phase_duration/periods=0",
+    "test_chk_025_two_phase_duration/periods=1",
+    "test_chk_025_two_phase_duration/periods=2",
+    "test_chk_025_two_phase_duration/periods=3",
+    "test_chk_025_two_phase_duration/periods=4",
+    "test_chk_027_reset_values",
+    "test_chk_028_reset_during_traffic",
+    "test_chk_029_scoreboard_ratios",
+    "test_chk_030_sync_depth",
+    "test_chk_031_single_write_read",
+    "test_chk_032_wait_states",
+    "test_chk_033_error_response",
+    "test_chk_034_back_to_back/periods=0",
+    "test_chk_034_back_to_back/periods=1",
+    "test_chk_035_pprot_pstrb",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M33",
+   "file": "m_vlsit_apbcdc_cell_sync.sv",
+   "line": 158,
+   "operator": "negate_if",
+   "original": "if (sim_din_last !== sim_last) begin",
+   "mutated": "        if (!(sim_din_last !== sim_last)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_021_apb4_ignores_apb5",
+    "test_chk_022_cfg_min",
+    "test_chk_024_requester_violations",
+    "test_chk_025_two_phase_duration/periods=0",
+    "test_chk_025_two_phase_duration/periods=1",
+    "test_chk_025_two_phase_duration/periods=2",
+    "test_chk_025_two_phase_duration/periods=3",
+    "test_chk_025_two_phase_duration/periods=4",
+    "test_chk_027_reset_values",
+    "test_chk_028_reset_during_traffic",
+    "test_chk_029_scoreboard_ratios",
+    "test_chk_030_sync_depth",
+    "test_chk_031_single_write_read",
+    "test_chk_032_wait_states",
+    "test_chk_033_error_response",
+    "test_chk_034_back_to_back/periods=0",
+    "test_chk_034_back_to_back/periods=1",
+    "test_chk_035_pprot_pstrb",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M34",
+   "file": "m_vlsit_apbcdc_slv.sv",
+   "line": 187,
+   "operator": "negate_if",
+   "original": "if (!i_rst_n_slv)",
+   "mutated": "    if (!(!i_rst_n_slv))",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_021_apb4_ignores_apb5",
+    "test_chk_022_cfg_min",
+    "test_chk_024_requester_violations",
+    "test_chk_025_two_phase_duration/periods=0",
+    "test_chk_025_two_phase_duration/periods=1",
+    "test_chk_025_two_phase_duration/periods=2",
+    "test_chk_025_two_phase_duration/periods=3",
+    "test_chk_025_two_phase_duration/periods=4",
+    "test_chk_027_reset_values",
+    "test_chk_028_reset_during_traffic",
+    "test_chk_029_scoreboard_ratios",
+    "test_chk_030_sync_depth",
+    "test_chk_031_single_write_read",
+    "test_chk_032_wait_states",
+    "test_chk_033_error_response",
+    "test_chk_034_back_to_back/periods=0",
+    "test_chk_034_back_to_back/periods=1",
+    "test_chk_035_pprot_pstrb",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-012",
+    "CHK-013",
+    "CHK-014"
+   ]
+  },
+  {
+   "id": "M35",
+   "file": "m_vlsit_apbcdc_mst.sv",
+   "line": 236,
+   "operator": "zero_to_one",
+   "original": "reg_resp_payload[PARA_APBCDC_DATA_W] <= 1'b0;",
+   "mutated": "      reg_resp_payload[PARA_APBCDC_DATA_W] <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_021_apb4_ignores_apb5",
+    "test_chk_022_cfg_min",
+    "test_chk_024_requester_violations",
+    "test_chk_025_two_phase_duration/periods=0",
+    "test_chk_025_two_phase_duration/periods=1",
+    "test_chk_025_two_phase_duration/periods=2",
+    "test_chk_025_two_phase_duration/periods=3",
+    "test_chk_025_two_phase_duration/periods=4",
+    "test_chk_027_reset_values",
+    "test_chk_028_reset_during_traffic",
+    "test_chk_029_scoreboard_ratios",
+    "test_chk_030_sync_depth",
+    "test_chk_031_single_write_read",
+    "test_chk_032_wait_states",
+    "test_chk_033_error_response",
+    "test_chk_034_back_to_back/periods=0",
+    "test_chk_034_back_to_back/periods=1",
+    "test_chk_035_pprot_pstrb",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-004",
+    "CHK-005"
+   ]
+  },
+  {
+   "id": "M36",
+   "file": "m_vlsit_apbcdc_slv.sv",
+   "line": 138,
+   "operator": "eq_to_ne",
+   "original": "assign w_load_req = (reg_fsm_hs_current_state == ENUM_ST_IDLE) & w_req_event;",
+   "mutated": "  assign w_load_req = (reg_fsm_hs_current_state != ENUM_ST_IDLE) & w_req_event;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_021_apb4_ignores_apb5",
+    "test_chk_022_cfg_min",
+    "test_chk_024_requester_violations",
+    "test_chk_025_two_phase_duration/periods=0",
+    "test_chk_025_two_phase_duration/periods=1",
+    "test_chk_025_two_phase_duration/periods=2",
+    "test_chk_025_two_phase_duration/periods=3",
+    "test_chk_025_two_phase_duration/periods=4",
+    "test_chk_027_reset_values",
+    "test_chk_028_reset_during_traffic",
+    "test_chk_029_scoreboard_ratios",
+    "test_chk_030_sync_depth",
+    "test_chk_031_single_write_read",
+    "test_chk_032_wait_states",
+    "test_chk_033_error_response",
+    "test_chk_034_back_to_back/periods=0",
+    "test_chk_034_back_to_back/periods=1",
+    "test_chk_035_pprot_pstrb",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-016",
+    "CHK-017"
+   ]
+  }
+ ],
+ "candidates": 67,
+ "count": 36,
+ "killed": 26,
+ "survived": 10,
+ "not_compiled": 0,
+ "score": 72.2,
+ "seed": 1,
+ "excluded_uncovered": {
+  "files": [
+   "VLSIT_CELL_SYNC_2FF_RN.sv",
+   "VLSIT_CELL_SYNC_2FF_SN.sv",
+   "VLSIT_CELL_SYNC_3FF_RN.sv",
+   "VLSIT_CELL_SYNC_3FF_SN.sv",
+   "VLSIT_CELL_SYNC_4FF_RN.sv",
+   "VLSIT_CELL_SYNC_4FF_SN.sv",
+   "VLSIT_CELL_SYNC_DFF_RN.sv",
+   "VLSIT_CELL_SYNC_DFF_SN.sv"
+  ],
+  "lines": 61
+ },
+ "baseline_failing": {
+  "tests": [],
+  "checks": []
+ },
+ "threshold": 85.0,
+ "attribution": {
+  "mutants": {
+   "M01": {
+    "rules": [
+     "AB2-3-25",
+     "AB2-3-26",
+     "AB2-1.3-04",
+     "AB2-5.3-09",
+     "AB2-10.1-03"
+    ],
+    "equivalent": false,
+    "reason": "With HS_TYPE=1 the four-phase launch would drive the request bit to 0 instead of 1, so the request never rises and the transfer hangs. Default two-phase runs do not see it."
+   },
+   "M02": {
+    "rules": [
+     "AB2-3-42",
+     "AB2-1.3-06",
+     "AB2-5.3-12",
+     "AB2-7.2-09",
+     "AB2-10.2-06"
+    ],
+    "equivalent": false,
+    "reason": "With APB5=1 the requester wake-up flop is held at 0 when the gate is inverted (and passes the input when APB5=0). o_apb_pwakeup then no longer follows a synchronized i_apb_pwakeup while idle. With APB5=0 the slv-side gate hides the change."
+   },
+   "M03": {
+    "rules": [
+     "AB2-3-25",
+     "AB2-3-26",
+     "AB2-1.3-04",
+     "AB2-5.3-10",
+     "AB2-10.1-08"
+    ],
+    "equivalent": false,
+    "reason": "With HS_TYPE=1 the acknowledge would be set to 0 instead of 1 at transfer end, so the requester never sees the ack and no PREADY returns."
+   },
+   "M04": {
+    "rules": [
+     "AB2-1.3-03",
+     "AB2-10.2-02",
+     "AB2-3-01",
+     "AB2-3-25",
+     "AB2-3-08"
+    ],
+    "equivalent": false,
+    "reason": "HS_TYPE is swapped here, so the two-phase ack set to 1 rather than toggled, and the four-phase ack toggles. The handshake breaks."
+   },
+   "M05": {
+    "rules": [
+     "AB2-1.3-03",
+     "AB2-10.2-02",
+     "AB2-3-01",
+     "AB2-6.3-20",
+     "AB2-3-08"
+    ],
+    "equivalent": false,
+    "reason": "The ack-event decode is swapped between the two handshake types, so the two-phase requester no longer detects the toggled ack and never raises PREADY."
+   },
+   "M06": {
+    "rules": [
+     "AB2-1.3-01",
+     "AB2-3-01",
+     "AB2-10.2-01",
+     "AB2-5.3-02",
+     "AB2-6.3-20"
+    ],
+    "equivalent": false,
+    "reason": "The two-phase request event is inverted, so a request is seen when none exists and missed when one arrives. This gives a spurious or lost completer transfer."
+   },
+   "M07": {
+    "rules": [
+     "AB2-7.3-02",
+     "AB2-15.3-17",
+     "AB2-3-38",
+     "AB2-5.4-06",
+     "AB2-15.3-08"
+    ],
+    "equivalent": false,
+    "reason": "The reset value of o_apb_pwakeup would be 1 instead of 0. This is visible whenever i_rst_n_slv is low, with APB5 on or off."
+   },
+   "M08": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "The sim_pend flag stays set after the delayed value has been copied. On later cycles the pending branch only re-copies sim_nxt, which equals the current value, so sim_cur is unchanged. A new input change takes the change branch, which rewrites sim_pend. Reset clears it, so nothing at the ports changes."
+   },
+   "M09": {
+    "rules": [],
+    "equivalent": false,
+    "reason": "If the +APBCDC_MSYNC_EN plusarg is given, the enable is inverted. The random extra synchronizer latency is then on when asked off and off when asked on, so crossing latency changes. It stays within the N+1..N+3 windows, so no rule is broken."
+   },
+   "M10": {
+    "rules": [
+     "AB2-6.3-24",
+     "AB2-5.4-01",
+     "AB2-10.2-01",
+     "AB2-3-01",
+     "AB2-1.3-01"
+    ],
+    "equivalent": false,
+    "reason": "The IDLE-state launch condition is inverted. A Setup phase would not start a request, and a non-Setup cycle such as PENABLE without Setup would start one."
+   },
+   "M11": {
+    "rules": [
+     "AB2-3-01",
+     "AB2-10.2-01",
+     "AB2-10.2-02",
+     "AB2-1.3-01",
+     "AB2-3-27"
+    ],
+    "equivalent": false,
+    "reason": "The immediate and delayed branches of the latency model are swapped, so the delayed branch uses the wrong pending state. The crossed control bit can be stale or lost."
+   },
+   "M12": {
+    "rules": [],
+    "equivalent": false,
+    "reason": "The default for sim_en is 0 when no plusarg is given, so the random extra latency is off by default. Latency becomes the minimum chain delay, which is still inside the windows, so no rule is broken."
+   },
+   "M13": {
+    "rules": [
+     "AB2-3-01",
+     "AB2-10.2-01",
+     "AB2-10.2-02",
+     "AB2-1.3-01",
+     "AB2-3-27"
+    ],
+    "equivalent": false,
+    "reason": "The extra==0 test is inverted, which has the same effect as M11. The delay branches are swapped and the crossing value is wrong or stale."
+   },
+   "M14": {
+    "rules": [
+     "AB2-10.2-01",
+     "AB2-5.3-02",
+     "AB2-3-01",
+     "AB2-1.3-01",
+     "AB2-3-15"
+    ],
+    "equivalent": false,
+    "reason": "The IDLE-state transition to SETUP is inverted. The completer would leave IDLE with no request and would not start a Setup phase when a request arrives."
+   },
+   "M15": {
+    "rules": [
+     "AB2-7.3-01",
+     "AB2-15.3-17",
+     "AB2-3-37",
+     "AB2-5.4-06",
+     "AB2-7.2-04"
+    ],
+    "equivalent": false,
+    "reason": "The reset value of o_apb_pready would be 1 instead of 0. This gives a PREADY during reset and a spurious one after release."
+   },
+   "M16": {
+    "rules": [
+     "AB2-3-26",
+     "AB2-3-25",
+     "AB2-10.1-08",
+     "AB2-5.3-10",
+     "AB2-1.3-04"
+    ],
+    "equivalent": false,
+    "reason": "In four-phase, the ack would be cleared when the state is not REQ0 and the request is low. It is then cleared at the wrong time, and it is not cleared when the request falls in REQ0."
+   },
+   "M17": {
+    "rules": [
+     "AB2-3-25",
+     "AB2-3-26",
+     "AB2-1.3-04",
+     "AB2-5.3-09",
+     "AB2-10.1-03"
+    ],
+    "equivalent": false,
+    "reason": "The HS_TYPE condition is swapped for the request bit. The two-phase launch would set the request instead of toggling it, and the four-phase launch would toggle it."
+   },
+   "M18": {
+    "rules": [
+     "AB2-15.3-16",
+     "AB2-3-43",
+     "AB2-15.3-15",
+     "AB2-6.3-13",
+     "AB2-10.2-06",
+     "AB2-3-42"
+    ],
+    "equivalent": false,
+    "reason": "With APB5=1 the in-progress term is inverted. o_apb_pwakeup goes high in idle and drops during Setup and Access unless the synchronized wake-up is set, so it is not high while psel is."
+   },
+   "M19": {
+    "rules": [
+     "AB2-7.2-04",
+     "AB2-7.2-08",
+     "AB2-3-17",
+     "AB2-5.4-03",
+     "AB2-10.2-08"
+    ],
+    "equivalent": false,
+    "reason": "The ack resets to 1 while the request resets to 0. After release the request event is seen as active, which starts a spurious completer transfer."
+   },
+   "M20": {
+    "rules": [
+     "AB2-3-01",
+     "AB2-10.2-01",
+     "AB2-10.2-02",
+     "AB2-1.3-01",
+     "AB2-3-27"
+    ],
+    "equivalent": false,
+    "reason": "The pending flag stays set after an immediate update. A later pending step copies a stale sim_nxt into sim_cur, so the synchronized control bit can glitch to a wrong value."
+   },
+   "M21": {
+    "rules": [
+     "AB2-7.3-01",
+     "AB2-3-37",
+     "AB2-3-38",
+     "AB2-5.4-06",
+     "AB2-15.3-17"
+    ],
+    "equivalent": false,
+    "reason": "The reset condition of the request, wake-up and PREADY flops is inverted. They would be forced to 0 while the clock runs normally and would run during reset."
+   },
+   "M22": {
+    "rules": [],
+    "equivalent": false,
+    "reason": "The pending countdown test is inverted. A one-cycle extra delay becomes two cycles and a two-cycle delay becomes one. The crossing latency changes for the same seed but stays in the N+1..N+3 window, so no rule is broken."
+   },
+   "M23": {
+    "rules": [
+     "AB2-3-01",
+     "AB2-10.2-01",
+     "AB2-10.2-02",
+     "AB2-1.3-01",
+     "AB2-3-27"
+    ],
+    "equivalent": false,
+    "reason": "The pending flag is not set when a delayed update is queued. The delayed value is never copied into sim_cur, so the control change is lost and the handshake hangs."
+   },
+   "M24": {
+    "rules": [],
+    "equivalent": false,
+    "reason": "The condition is the same as M22. The extra delay of 1 and 2 cycles are swapped, which changes cycle timing for a given seed but stays within the legal latency window."
+   },
+   "M25": {
+    "rules": [
+     "AB2-6.3-22",
+     "AB2-12-01",
+     "AB2-12-02",
+     "AB2-6.3-10",
+     "AB2-3-03"
+    ],
+    "equivalent": false,
+    "reason": "The response hold register would load when the transfer is not done. It does not capture the completer response at the completion edge, so PRDATA and PSLVERR would be wrong."
+   },
+   "M26": {
+    "rules": [
+     "AB2-7.3-04",
+     "AB2-10.2-08",
+     "AB2-3-38",
+     "AB2-7.2-11",
+     "AB2-5.4-06"
+    ],
+    "equivalent": false,
+    "reason": "The wake-up flop resets to 1. With APB5=1, if the slv domain is released while the mst domain is still in reset, o_apb_pwakeup rises spuriously after release."
+   },
+   "M27": {
+    "rules": [
+     "AB2-3-14",
+     "AB2-3-15",
+     "AB2-6.3-01",
+     "AB2-15.3-06",
+     "AB2-5.3-05"
+    ],
+    "equivalent": false,
+    "reason": "PENABLE would be high in all states except Access. It would be high in Setup and low in Access."
+   },
+   "M28": {
+    "rules": [
+     "AB2-3-11",
+     "AB2-3-23",
+     "AB2-15.3-04",
+     "AB2-6.2-01",
+     "AB2-6.3-09",
+     "AB2-10.1-04"
+    ],
+    "equivalent": false,
+    "reason": "PSLVERR would be cleared in every state except RESP. It is not cleared at the end of the PREADY cycle, so an error stays high one cycle past PREADY."
+   },
+   "M29": {
+    "rules": [
+     "AB2-20.2-08",
+     "AB2-3-45",
+     "AB2-8-04",
+     "AB2-3-43",
+     "AB2-15.3-15"
+    ],
+    "equivalent": false,
+    "reason": "The APB5 gate is inverted. In an APB4 configuration o_apb_pwakeup can go high. In APB5 it stays 0, so wake-up is never asserted."
+   },
+   "M30": {
+    "rules": [
+     "AB2-7.3-02",
+     "AB2-15.3-17",
+     "AB2-3-38",
+     "AB2-5.4-06",
+     "AB2-15.3-08"
+    ],
+    "equivalent": false,
+    "reason": "The reset value of o_apb_psel would be 1 instead of 0. This is visible whenever i_rst_n_slv is low."
+   },
+   "M31": {
+    "rules": [
+     "AB2-5.4-03",
+     "AB2-7.2-04",
+     "AB2-3-38",
+     "AB2-3-37",
+     "AB2-15.3-18"
+    ],
+    "equivalent": false,
+    "reason": "The pending flag resets to 1. After reset release the model copies an uninitialised sim_nxt into the synchronized bit, so a spurious or X control change appears."
+   },
+   "M32": {
+    "rules": [
+     "AB2-7.3-01",
+     "AB2-3-37",
+     "AB2-5.4-06",
+     "AB2-7.2-04",
+     "AB2-15.3-17"
+    ],
+    "equivalent": false,
+    "reason": "The reset condition of the requester FSM state is inverted. The FSM is held in IDLE during normal operation and runs during reset."
+   },
+   "M33": {
+    "rules": [
+     "AB2-3-01",
+     "AB2-10.2-01",
+     "AB2-10.2-02",
+     "AB2-1.3-01",
+     "AB2-3-27"
+    ],
+    "equivalent": false,
+    "reason": "The change-detect test is inverted. The model reacts when the input is unchanged and ignores real changes, so the control bit crossing is wrong."
+   },
+   "M34": {
+    "rules": [
+     "AB2-7.3-02",
+     "AB2-3-38",
+     "AB2-15.3-17",
+     "AB2-5.4-06",
+     "AB2-7.2-04"
+    ],
+    "equivalent": false,
+    "reason": "The reset condition of the completer FSM is inverted. The FSM is held in IDLE during normal operation and runs during reset."
+   },
+   "M35": {
+    "rules": [
+     "AB2-3-11",
+     "AB2-3-23",
+     "AB2-15.3-04",
+     "AB2-6.2-01",
+     "AB2-6.3-09",
+     "AB2-10.1-04"
+    ],
+    "equivalent": false,
+    "reason": "After the PREADY cycle PSLVERR would be set to 1 instead of being cleared. It is a sticky error outside the PREADY cycle."
+   },
+   "M36": {
+    "rules": [
+     "AB2-10.2-01",
+     "AB2-5.3-02",
+     "AB2-3-01",
+     "AB2-1.3-01",
+     "AB2-3-22"
+    ],
+    "equivalent": false,
+    "reason": "The request payload would load in states other than IDLE, so the fields are not loaded at Setup entry. The Setup-phase fields are wrong or change during the transfer."
+   }
+  },
+  "unknown_ids": [],
+  "model": "sonnet",
+  "cost_usd": 0.3258104
+ },
+ "rule_scores": {
+  "AB2-1.3-01": {
+   "relevant": 9,
+   "killed": 9,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-1.3-03": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-1.3-04": {
+   "relevant": 4,
+   "killed": 2,
+   "survived": [
+    "M01",
+    "M03"
+   ],
+   "claimed_equivalent": [],
+   "score": 50.0,
+   "meets_threshold": false
+  },
+  "AB2-1.3-06": {
+   "relevant": 1,
+   "killed": 0,
+   "survived": [
+    "M02"
+   ],
+   "claimed_equivalent": [],
+   "score": 0.0,
+   "meets_threshold": false
+  },
+  "AB2-10.1-03": {
+   "relevant": 2,
+   "killed": 1,
+   "survived": [
+    "M01"
+   ],
+   "claimed_equivalent": [],
+   "score": 50.0,
+   "meets_threshold": false
+  },
+  "AB2-10.1-04": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-10.1-08": {
+   "relevant": 2,
+   "killed": 1,
+   "survived": [
+    "M03"
+   ],
+   "claimed_equivalent": [],
+   "score": 50.0,
+   "meets_threshold": false
+  },
+  "AB2-10.2-01": {
+   "relevant": 9,
+   "killed": 9,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-10.2-02": {
+   "relevant": 7,
+   "killed": 7,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-10.2-06": {
+   "relevant": 2,
+   "killed": 0,
+   "survived": [
+    "M02",
+    "M18"
+   ],
+   "claimed_equivalent": [],
+   "score": 0.0,
+   "meets_threshold": false
+  },
+  "AB2-10.2-08": {
+   "relevant": 2,
+   "killed": 1,
+   "survived": [
+    "M26"
+   ],
+   "claimed_equivalent": [],
+   "score": 50.0,
+   "meets_threshold": false
+  },
+  "AB2-12-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-12-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-15.3-04": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-15.3-06": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-15.3-08": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-15.3-15": {
+   "relevant": 2,
+   "killed": 1,
+   "survived": [
+    "M18"
+   ],
+   "claimed_equivalent": [],
+   "score": 50.0,
+   "meets_threshold": false
+  },
+  "AB2-15.3-16": {
+   "relevant": 1,
+   "killed": 0,
+   "survived": [
+    "M18"
+   ],
+   "claimed_equivalent": [],
+   "score": 0.0,
+   "meets_threshold": false
+  },
+  "AB2-15.3-17": {
+   "relevant": 6,
+   "killed": 6,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-15.3-18": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-20.2-08": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-3-01": {
+   "relevant": 11,
+   "killed": 11,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-3-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-3-08": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-3-11": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-3-14": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-3-15": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-3-17": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-3-22": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-3-23": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-3-25": {
+   "relevant": 5,
+   "killed": 3,
+   "survived": [
+    "M01",
+    "M03"
+   ],
+   "claimed_equivalent": [],
+   "score": 60.0,
+   "meets_threshold": false
+  },
+  "AB2-3-26": {
+   "relevant": 4,
+   "killed": 2,
+   "survived": [
+    "M01",
+    "M03"
+   ],
+   "claimed_equivalent": [],
+   "score": 50.0,
+   "meets_threshold": false
+  },
+  "AB2-3-27": {
+   "relevant": 5,
+   "killed": 5,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-3-37": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-3-38": {
+   "relevant": 6,
+   "killed": 5,
+   "survived": [
+    "M26"
+   ],
+   "claimed_equivalent": [],
+   "score": 83.3,
+   "meets_threshold": false
+  },
+  "AB2-3-42": {
+   "relevant": 2,
+   "killed": 0,
+   "survived": [
+    "M02",
+    "M18"
+   ],
+   "claimed_equivalent": [],
+   "score": 0.0,
+   "meets_threshold": false
+  },
+  "AB2-3-43": {
+   "relevant": 2,
+   "killed": 1,
+   "survived": [
+    "M18"
+   ],
+   "claimed_equivalent": [],
+   "score": 50.0,
+   "meets_threshold": false
+  },
+  "AB2-3-45": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-5.3-02": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-5.3-05": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-5.3-09": {
+   "relevant": 2,
+   "killed": 1,
+   "survived": [
+    "M01"
+   ],
+   "claimed_equivalent": [],
+   "score": 50.0,
+   "meets_threshold": false
+  },
+  "AB2-5.3-10": {
+   "relevant": 2,
+   "killed": 1,
+   "survived": [
+    "M03"
+   ],
+   "claimed_equivalent": [],
+   "score": 50.0,
+   "meets_threshold": false
+  },
+  "AB2-5.3-12": {
+   "relevant": 1,
+   "killed": 0,
+   "survived": [
+    "M02"
+   ],
+   "claimed_equivalent": [],
+   "score": 0.0,
+   "meets_threshold": false
+  },
+  "AB2-5.4-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-5.4-03": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-5.4-06": {
+   "relevant": 7,
+   "killed": 6,
+   "survived": [
+    "M26"
+   ],
+   "claimed_equivalent": [],
+   "score": 85.7,
+   "meets_threshold": true
+  },
+  "AB2-6.2-01": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-6.3-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-6.3-09": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-6.3-10": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-6.3-13": {
+   "relevant": 1,
+   "killed": 0,
+   "survived": [
+    "M18"
+   ],
+   "claimed_equivalent": [],
+   "score": 0.0,
+   "meets_threshold": false
+  },
+  "AB2-6.3-20": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-6.3-22": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-6.3-24": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-7.2-04": {
+   "relevant": 5,
+   "killed": 5,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-7.2-08": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-7.2-09": {
+   "relevant": 1,
+   "killed": 0,
+   "survived": [
+    "M02"
+   ],
+   "claimed_equivalent": [],
+   "score": 0.0,
+   "meets_threshold": false
+  },
+  "AB2-7.2-11": {
+   "relevant": 1,
+   "killed": 0,
+   "survived": [
+    "M26"
+   ],
+   "claimed_equivalent": [],
+   "score": 0.0,
+   "meets_threshold": false
+  },
+  "AB2-7.3-01": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-7.3-02": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "AB2-7.3-04": {
+   "relevant": 1,
+   "killed": 0,
+   "survived": [
+    "M26"
+   ],
+   "claimed_equivalent": [],
+   "score": 0.0,
+   "meets_threshold": false
+  },
+  "AB2-8-04": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ }
+}

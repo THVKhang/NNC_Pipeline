@@ -57,9 +57,9 @@ cd designs/my_ip/sim && make help        # reproduce the regression without the 
 
 In Claude Code: `/nnc-flow my_ip` runs the same steps and presents each gate. Full walk-through: [docs/GUIDE.md](docs/GUIDE.md). Design and measurements: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-## Results on three designs | Kết quả trên ba thiết kế
+## Results on five designs | Kết quả trên năm thiết kế
 
-Specifications and RTL from [VLSIT_ASIC_SOC_AI_SKILLS](https://github.com/nguyenquanicd/VLSIT_ASIC_SOC_AI_SKILLS) `common_rtl/` (Apache-2.0; copies unchanged except one line fixed in axi2apb's `m_axi2apb_wr_seq.sv`, see each design's NOTICE). Everything under `work/`, `verif/` and `sim/` was produced by the flow. Gates G1–G3 were approved by Claude **on the user's delegation** (recorded as such, with reasons); **G4 sign-off is left to a person**.
+Specifications and RTL from [VLSIT_ASIC_SOC_AI_SKILLS](https://github.com/nguyenquanicd/VLSIT_ASIC_SOC_AI_SKILLS) `common_rtl/` (Apache-2.0; copies unchanged except one line fixed in axi2apb's `m_axi2apb_wr_seq.sv`, see each design's NOTICE). Everything under `work/`, `verif/` and `sim/` was produced by the flow, except the test-bench fixes described below (each recorded at a G3 re-approval). Gates G1–G3 were approved by Claude **on the user's delegation** (recorded as such, with reasons); **G4 sign-off is left to a person**.
 
 | | [apb_tlul_bridge](designs/apb_tlul_bridge) | [axi2apb_bridge](designs/axi2apb_bridge) | [sync_fifo](designs/sync_fifo) |
 |---|---|---|---|
@@ -70,15 +70,32 @@ Specifications and RTL from [VLSIT_ASIC_SOC_AI_SKILLS](https://github.com/nguyen
 | Triage verdict | — | **real RTL bug** | **checker wrong**, RTL right |
 | After the fixes | — | **15/15 tests, 17/17 assertions, 0 fails** | **25/25 tests, 11/11 assertions, 0 fails** |
 | Line / block / expr. / toggle / functional | 96.0 / 95.6 / 100 / 95.9 % / 38 → **40 of 40** after one closure round | 98.9 / 95.9 / 96.2 / 74.8 % / 39 of 40 | 99.2 / 97.3 / 92.8 / 70.6 % / 40 of 40 |
-| Mutation (36 mutants) | 100 %, 0 rules below 85 % | 86.1 % (5 survivors), 0 rules below 85 % | 100 %, 0 rules below 85 % |
+| Mutation (36 mutants, executed lines only) | 100 % (33/33, every candidate), 0 rules below 85 % | 88.9 % (4 survivors), 0 rules below 85 % | 100 %, 0 rules below 85 % |
 | Rules VERIFIED / FAILED | 169 / 0 | 114 / 0 | 174 / 0 |
 | Agent cost | ≈ US$6–7 for a clean run | US$11.9 | US$15.0 |
 
-A mutant counts as killed only by a test or check that passes on the unmutated RTL. Before this rule the failing first run of axi2apb_bridge reported a meaningless 100 %; on the fixed RTL the 5 survivors point at checks still worth adding (or at equivalent mutants).
+A mutant counts as killed only by a test or check that passes on the unmutated RTL. Before this rule the failing first run of axi2apb_bridge reported a meaningless 100 %; on the fixed RTL the 4 survivors point at checks still worth adding (or at equivalent mutants). Mutants are drawn only from lines the regression executed (lcov count > 0): a line inside an inactive `` `ifdef`` or an unselected generate branch is not part of the simulated design.
 
 - **axi2apb_bridge — a bug in the delivered RTL, found and fixed.** Every AXI write issued its first APB transfer at AWADDR + size; the last beat landed outside the burst. Found by an SVA checker and 12 tests that never saw the RTL, traced by triage to `m_axi2apb_wr_seq.sv:344`, and confirmed by the specification's own waveform WF-005 (upstream `rtl_v2/` has the same line). The one-line fix was checked on a copy with `nnc inject`, then applied. The remaining failure exposed an ambiguous arbitration sentence; the decision is round-robin (what the RTL does), so the contract and test were regenerated, not the RTL. A last failure was the test bench's reference model ignoring APB writes that a reset cut short (triage: *test wrong*); fixed without relaxing the check. → [fix_candidate/README.md](designs/axi2apb_bridge/fix_candidate/README.md)
 - **sync_fifo — a wrong checker, caught and fixed.** All tests passed; one generated SVA scoreboard cleared its queue one clock edge late after a software reset. Triage said *B: checker wrong* with evidence (the RTL matches the specification and three other checks). The scoreboard now clears in the same cycle; CHK-007 has 0 fails and mutation stays at 100 %. → [work/triage.md](designs/sync_fifo/work/triage.md)
 - **apb_tlul_bridge — clean, and an injected bug is caught.** → [work/report.md](designs/apb_tlul_bridge/work/report.md), [bug_demo](designs/apb_tlul_bridge/bug_demo)
+
+### Asynchronous clock domains | Clock bất đồng bộ
+
+`nnc config <ip> clock_relation=async` starts every clock after its own seeded random delay, and the agents write cross-domain checks as order plus a window counted in destination edges. Build defines and simulator plusargs (`defines`, `plusargs`) reach the tests through `plusarg()` and `DEFINES`. Two clock-domain-crossing designs from the same repository, run with their metastability models on:
+
+| | [async_gray_fifo](designs/async_gray_fifo) | [async_apb_bridge](designs/async_apb_bridge) |
+|---|---|---|
+| Design | Gray-pointer FIFO, write 10 ns / read 13.7 ns, independent resets + software reset handshake | APB → APB bridge across domains, two-phase handshake |
+| Rules kept / open questions | 416 / 9 | 260 / 7 |
+| Checks (assertions + tests) | 32 (13 + 19), 17 need another configuration | 35 (18 + 17), 7 need another configuration |
+| Result | **34/34 tests**; CHK-003, CHK-013 fail → triage **C: the specification contradicts itself** | **28/28 tests, 0 assertion fails** |
+| Line / toggle / functional | 99.3 / 99.9 % / 40 of 40 | 90.8 / 98.5 % / 33 of 40 |
+| Mutation (36) | 80.6 % (6 of 7 survivors in the simulation-only model) | 72.2 % (9 of 10 survivors cannot change a port in this configuration) |
+| Agent cost | US$32.9 (three test generations) | US$11.8 |
+
+- **async_gray_fifo — a contradiction in the specification.** REQ-VER-001 makes the metastability model delay *each bit independently*. When the source Gray pointer steps twice inside that delay, the synchronized value can be a code that never existed, the occupancy estimate leaves 0..DEPTH and the threshold flags break REQ-FUNC-010 ("never optimistic"). Real synchronizers cannot do this. With the model off the same run gives 34/34 tests and 13/13 assertions with 0 fails. The RTL follows the specification, so the decision (a coherent model, or constrained stimulus) is the designer's; the checks were not relaxed. Three test-bench bugs found on the way (triage B) were fixed. → [work/triage.md](designs/async_gray_fifo/work/triage.md)
+- **async_apb_bridge — clean** for the default parameters; APB5, the four-phase handshake and other synchronizer depths need other configurations.
 
 Coverage targets are the designer's choice: `cover` shows every baseline, the functional points never hit and the uncovered code items, and runs closure only when a target is set. On apb_tlul_bridge a demonstration target (functional 100 %, set on delegation) was closed in one round: the analyst turned the two missed points (response delayed ≥ 8 cycles, response pending at reset release) into two specification-level scenarios, a writer without RTL access produced `test_apb_tlul_bridge_cov1.py`, and both tests pass (US$1.77).
 
@@ -104,8 +121,8 @@ docs/                ARCHITECTURE.md, GUIDE.md
 
 ## Limits | Giới hạn
 
-- **EN:** Simulation only: no formal proof, CDC/RDC, STA, synthesis or DFT checks; rules of that kind are listed as not verifiable by simulation. Several clocks are supported only as synchronous clocks started together (any ratio); asynchronous clock domains are not modelled. One parameter configuration and one seed per run. Generated tests and checkers can be wrong (sync_fifo shows one): that is what the gates, the hit counters, triage and the mutation score are for. Model outputs vary between runs; the cache makes a re-run reproducible.
-- **VI:** Chỉ mô phỏng: không có formal, CDC/RDC, STA, synthesis hay DFT; các luật loại đó được liệt kê là không kiểm được bằng mô phỏng. Nhiều clock chỉ hỗ trợ dạng đồng bộ, khởi động cùng lúc (tỉ lệ bất kỳ); chưa mô hình clock bất đồng bộ. Mỗi lần chạy một cấu hình tham số và một seed. Test và checker do agent sinh có thể sai (sync_fifo là một ví dụ): đó là lý do có gate, bộ đếm hit, triage và mutation score. Kết quả của model có thể khác giữa các lần; cache giúp chạy lại cho cùng kết quả.
+- **EN:** Simulation only: no formal proof, CDC/RDC, STA, synthesis or DFT checks; rules of that kind are listed as not verifiable by simulation. Several clocks may be synchronous (started together) or asynchronous (seeded random phase per clock); metastability itself is modelled only if the RTL has a model. One parameter configuration and one seed per run: checks that need another configuration are reported NOT_VERIFIABLE. Generated tests and checkers can be wrong (sync_fifo shows one): that is what the gates, the hit counters, triage and the mutation score are for. Model outputs vary between runs; the cache makes a re-run reproducible.
+- **VI:** Chỉ mô phỏng: không có formal, CDC/RDC, STA, synthesis hay DFT; các luật loại đó được liệt kê là không kiểm được bằng mô phỏng. Nhiều clock có thể đồng bộ (khởi động cùng lúc) hoặc bất đồng bộ (pha ngẫu nhiên theo seed cho từng clock); metastability chỉ được mô hình nếu RTL có mô hình. Mỗi lần chạy một cấu hình tham số và một seed: check cần cấu hình khác được báo NOT_VERIFIABLE. Test và checker do agent sinh có thể sai (sync_fifo là một ví dụ): đó là lý do có gate, bộ đếm hit, triage và mutation score. Kết quả của model có thể khác giữa các lần; cache giúp chạy lại cho cùng kết quả.
 
 ## Licence | Giấy phép
 

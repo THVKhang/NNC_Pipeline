@@ -69,9 +69,22 @@ python -m nnc plan my_ip --exclude CHK-012,CHK-019 --by "Your Name" --reason "ra
 
 **VI:** Lựa chọn test plan là một phần của contract: đổi nó làm G2 thành STALE. Check bị bỏ ra không được sinh, báo cáo là `NOT_SELECTED` (không bao giờ PASS) và bảng sign-off liệt kê chúng.
 
-**EN — several clocks:** every port of type *Clock* and *Reset* in the port table is used, each reset with the clock of its *Clock domain*. The clocks are synchronous and start together; set their periods with `nnc config my_ip clock_periods="i_clk_wr=10,i_clk_rd=15"` (ns, default 10). Derived parameters (`LPARA_X = clog2(...)` in the parameter table) are computed, never set.
+**EN — several clocks:** every port of type *Clock* and *Reset* in the port table is used, each reset with the clock of its *Clock domain*. By default (`clock_relation=sync`) the clocks are synchronous and start together; set their periods with `nnc config my_ip clock_periods="i_clk_wr=10,i_clk_rd=15"` (ns, default 10). Derived parameters (`LPARA_X = clog2(...)` in the parameter table) are computed, never set.
 
-**VI — nhiều clock:** mọi port loại *Clock* và *Reset* trong bảng port đều được dùng, mỗi reset theo clock của *Clock domain* của nó. Các clock đồng bộ, khởi động cùng lúc; đặt chu kỳ bằng `nnc config my_ip clock_periods="i_clk_wr=10,i_clk_rd=15"` (ns, mặc định 10). Tham số dẫn xuất (`LPARA_X = clog2(...)` trong bảng tham số) được tính, không bao giờ được đặt.
+**VI — nhiều clock:** mọi port loại *Clock* và *Reset* trong bảng port đều được dùng, mỗi reset theo clock của *Clock domain* của nó. Mặc định (`clock_relation=sync`) các clock đồng bộ, khởi động cùng lúc; đặt chu kỳ bằng `nnc config my_ip clock_periods="i_clk_wr=10,i_clk_rd=15"` (ns, mặc định 10). Tham số dẫn xuất (`LPARA_X = clog2(...)` trong bảng tham số) được tính, không bao giờ được đặt.
+
+**EN — asynchronous clocks and run options:** for an IP whose clock domains are unrelated (CDC: asynchronous FIFO, bridge between two clocks), set the relation **before the contract stage**:
+
+```bash
+python -m nnc config my_ip clock_relation=async clock_periods="i_clk_wr=10,i_clk_rd=13.7"
+python -m nnc config my_ip plusargs="+MSYNC_SEED={seed} +MSYNC_EN=1"   # simulator plusargs, {seed} = run seed
+python -m nnc config my_ip defines=VLSIT_SYNTHESIS                     # Verilog macros of the DUT build
+python -m nnc flow my_ip --from gen-tests --agent-timeout 3600         # a large spec needs more agent time
+```
+
+With `async` each clock starts after its own seeded random delay below one period, so the phase between the domains changes from test to test and from seed to seed; periods may be fractional (13.7 ns) so that the ratio is not an integer. The contract, SVA and test agents are told that no edge of one clock may be assumed to coincide with an edge of another: a cross-domain check states an order and a bounded window counted in edges of the destination clock, never an exact cycle. Tests can stop and restart a clock (`stop_clock`, `resume_clock`). The test agent is given the defines and plusargs of the run, and tests read them with `plusarg("NAME")` and `DEFINES` (set them before `gen-tests`; changing them later needs new tests). One run has one configuration (defines, plusargs, parameters): a check that needs another one (synthesis branch, metastability model off) is reported `NOT_VERIFIABLE`, never PASS.
+
+**VI — clock bất đồng bộ và tuỳ chọn chạy:** với IP có các miền clock không liên quan (CDC: FIFO bất đồng bộ, bridge giữa hai clock), đặt quan hệ **trước bước contract** (lệnh như trên). Với `async`, mỗi clock khởi động sau một khoảng trễ ngẫu nhiên riêng (nhỏ hơn một chu kỳ, theo seed), nên lệch pha giữa các miền thay đổi theo test và theo seed; chu kỳ có thể lẻ (13.7 ns) để tỉ lệ không nguyên. Agent contract, SVA và test được dặn: không được giả sử cạnh của hai clock trùng nhau; check qua hai miền phải nói thứ tự và một cửa sổ giới hạn tính bằng cạnh của clock đích, không bao giờ là một chu kỳ chính xác. Test có thể dừng và chạy lại một clock (`stop_clock`, `resume_clock`). `plusargs` truyền cho simulator (`{seed}` thay bằng seed của lần chạy), `defines` là macro Verilog khi build DUT; agent test được cho biết hai giá trị này và test đọc chúng bằng `plusarg("NAME")`, `DEFINES` (đặt trước `gen-tests`; đổi sau đó thì cần sinh lại test); `--agent-timeout` (giây, mặc định 1800) cho agent nhiều thời gian hơn với spec lớn. Mỗi lần chạy chỉ có một cấu hình: check cần cấu hình khác (nhánh synthesis, tắt mô hình metastability) được báo `NOT_VERIFIABLE`, không bao giờ PASS.
 
 ## 4. Verification sources — Gate 3 | Mã kiểm chứng — Gate 3
 

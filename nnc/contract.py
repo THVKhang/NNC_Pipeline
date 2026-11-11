@@ -101,33 +101,67 @@ def _col(header: list[str], *names: str) -> int | None:
     return None
 
 
-def extract_interface(index: dict) -> dict:
+def _is_port_table(t: dict) -> bool:
+    head = [h.lower().strip() for h in t["header"]]
+    return (any("port" in h for h in head) and any("width" in h for h in head)
+            and any("direction" in h or h == "dir" for h in head))
+
+
+def _port_tables(index: dict, top: str | None) -> list[dict]:
+    """The port table of the top module. A specification may split it over several tables, each with a
+    caption starting with the module name (e.g. "**`m_top`**: write side (CLK-WR)") and followed by the
+    tables of submodules: with `top`, every port table whose caption starts with it is taken (a caption
+    such as "m_mem (instantiated in m_top)" belongs to a submodule); otherwise the first."""
+    cands = [t for t in index.get("tables", []) if _is_port_table(t)]
+    if top:
+        named = [t for t in cands if re.match(rf"\s*{re.escape(top)}\b", t.get("caption") or "")]
+        if named:
+            return named
+    return cands[:1]
+
+
+def _caption_domain(caption: str) -> str:
+    """'m_top: write side (CLK-WR)' -> 'CLK-WR' (a clock domain named at the end of a table caption)."""
+    m = re.search(r"\(([^()]+)\)\s*:?\s*$", caption or "")
+    return m.group(1).strip() if m else ""
+
+
+def _plain(cell: str) -> str:
+    return cell.replace("`", "").strip()
+
+
+def extract_interface(index: dict, top: str | None = None) -> dict:
     """Ports and parameters from the tables of an IP specification index."""
-    pt = _find_table(index, "port", "direction", "width")
-    if pt is None:
-        raise ValueError("no port table (columns Port, Direction, Width) found in the IP specification")
-    h = pt["header"]
-    c_name, c_dir, c_w = _col(h, "port"), _col(h, "direction"), _col(h, "width")
-    c_type, c_reset, c_mean = _col(h, "signal type", "type"), _col(h, "reset"), _col(h, "meaning", "description")
-    c_dom = _col(h, "clock domain", "domain")
+    tables = _port_tables(index, top)
+    if not tables:
+        raise ValueError("no port table (columns Port, Direction or Dir, Width) found in the IP specification")
+    pt = tables[0]
     ports = []
-    for row in pt["rows"]:
-        if len(row) <= max(c_name, c_dir, c_w):
-            continue
-        name = row[c_name].strip()
-        if not re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", name):
-            continue
-        d = row[c_dir].lower()
-        direction = "inout" if "inout" in d else "input" if d.startswith("in") else "output" if d.startswith("out") else None
-        if direction is None:
-            continue
-        ports.append({
-            "name": name, "direction": direction, "width": row[c_w].strip(),
-            "type": row[c_type] if c_type is not None and c_type < len(row) else "",
-            "reset_value": row[c_reset] if c_reset is not None and c_reset < len(row) else "",
-            "meaning": row[c_mean] if c_mean is not None and c_mean < len(row) else "",
-            "domain": row[c_dom].strip() if c_dom is not None and c_dom < len(row) else "",
-        })
+    for tbl in tables:
+        h = tbl["header"]
+        c_name, c_w = _col(h, "port"), _col(h, "width")
+        c_dir = next((i for i, x in enumerate(h) if "direction" in x.lower() or x.lower().strip() == "dir"), None)
+        c_type, c_reset = _col(h, "signal type", "type"), _col(h, "reset")
+        c_mean = _col(h, "meaning", "description", "function")
+        c_dom = _col(h, "clock domain", "domain")
+        cap_dom = _caption_domain(tbl.get("caption", ""))
+        for row in tbl["rows"]:
+            if len(row) <= max(c_name, c_dir, c_w):
+                continue
+            name = _plain(row[c_name])
+            if not re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", name):
+                continue
+            d = row[c_dir].lower()
+            direction = "inout" if "inout" in d else "input" if d.startswith("in") else "output" if d.startswith("out") else None
+            if direction is None or any(p["name"] == name for p in ports):
+                continue
+            ports.append({
+                "name": name, "direction": direction, "width": _plain(row[c_w]),
+                "type": row[c_type] if c_type is not None and c_type < len(row) else "",
+                "reset_value": row[c_reset] if c_reset is not None and c_reset < len(row) else "",
+                "meaning": row[c_mean] if c_mean is not None and c_mean < len(row) else "",
+                "domain": _plain(row[c_dom]) if c_dom is not None and c_dom < len(row) else cap_dom,
+            })
     params = []
     tt = _find_table(index, "parameter", "default")
     if tt is not None:
@@ -140,9 +174,27 @@ def extract_interface(index: dict) -> dict:
                 params.append({"name": name, "default": row[cd].strip() if cd is not None else "",
                                "legal": row[cr].strip() if cr is not None and cr < len(row) else ""})
                 purpose = row[cp] if cp is not None and cp < len(row) else ""
-                expr = derived_expr(params[-1]["default"], purpose, [q["name"] for q in params[:-1]])
+                earlier = [q["name"] for q in params[:-1]]
+                expr = derived_expr(params[-1]["default"], purpose, earlier)
+                if not expr and not _is_number(params[-1]["default"]):
+                    # the formula may sit in another column (Effect): the first that parses as a formula (an
+                    # operator or clog2; a bare name, as in a Dependencies column, only says what it depends on)
+                    others = [c for i, c in enumerate(row) if i not in (cn, cd, cr, cp)]
+                    expr = next((e for e in (derived_expr(params[-1]["default"], c, earlier) for c in others)
+                                 if e and re.search(r"[-+*/]|clog2", e)), None)
+                    if not expr:
+                        params[-1]["unresolved"] = True
                 if expr:
                     params[-1]["derived"] = expr
+    # A derived constant without a formula the flow can read: harmless when no port width uses it (an
+    # internal width such as a bundle size; left out of the interface), fatal when a port needs its value.
+    used = " ".join(p["width"] for p in ports)
+    for p in [q for q in params if q.get("unresolved")]:
+        if re.search(rf"\b{re.escape(p['name'])}\b", used):
+            raise ValueError(f"derived parameter {p['name']} sets a port width but its formula is not readable "
+                             f"(default {p['default']!r}); write it as an expression of the other parameters "
+                             f"in the parameter table")
+    params = [q for q in params if not q.get("unresolved")]
 
     def pick(kind: str, names: tuple[str, ...]) -> dict | None:
         for p in ports:
@@ -159,13 +211,13 @@ def extract_interface(index: dict) -> dict:
         reset = {"name": rst["name"], "active_low": active_low(rst)}
     # Every clock and every hardware reset (by the signal-type column when the table has one), each
     # reset tied to the clock of its domain. A request such as a software reset is not of type reset.
-    typed = c_type is not None
+    typed = any(_col(t["header"], "signal type", "type") is not None for t in tables)
     clocks = [p for p in ports if p["direction"] == "input" and p["width"] in ("", "1") and
-              (re.match(r"\s*clock\b", p["type"], re.I) if typed else re.search(r"clk|clock", p["name"], re.I))]
+              (re.match(r"\s*(clock|clk)\b", p["type"], re.I) if typed else re.search(r"clk|clock", p["name"], re.I))]
     if clk is not None and clk not in clocks:
         clocks.insert(0, clk)
     resets = [p for p in ports if p["direction"] == "input" and p["width"] in ("", "1") and
-              (re.match(r"\s*reset\b", p["type"], re.I) if typed else re.search(r"rst|reset", p["name"], re.I))]
+              (re.match(r"\s*(reset|rst)\b", p["type"], re.I) if typed else re.search(r"rst|reset", p["name"], re.I))]
     if rst is not None and rst not in resets:
         resets.insert(0, rst)
 
@@ -190,6 +242,11 @@ def width_decl(width: str) -> str:
     return f"[({w})-1:0]"
 
 
+def _is_number(text: str) -> bool:
+    d = text.strip()
+    return bool(re.match(r"^\d+$", d) or re.match(r"^\d+'[bdh][0-9a-fA-F_]+$", d) or d in ("", "'0"))
+
+
 def _param_default(p: dict) -> str:
     d = p["default"].strip()
     if re.match(r"^\d+$", d):
@@ -205,15 +262,30 @@ def derived_expr(default: str, purpose: str, earlier: list[str]) -> str | None:
     if re.match(r"^\d+$", d) or re.match(r"^\d+'[bdh][0-9a-fA-F_]+$", d):
         return None
     text = d if re.search(r"clog2|[-+*/]", d) else purpose
-    m = re.search(r"\$?clog2\s*\(([^()]*(?:\([^()]*\)[^()]*)*)\)", text)
-    if not m:
-        return None
-    inner = re.sub(r"\s[x×]\s", " * ", m.group(1))
 
     def resolve(w: re.Match) -> str:
         word = w.group(0)
-        hits = [n for n in earlier if n == word or n.endswith("_" + word)]
-        return hits[0] if len(hits) == 1 else word
+        if word in earlier:
+            return word
+        hits = [n for n in earlier if n.upper().endswith("_" + word.upper())]
+        # "DATA_W" -> PARA_X_DATA_W rather than PARA_X_USER_DATA_W: the shortest name, when it is unique
+        best = [n for n in hits if len(n) == min(map(len, hits))] if hits else []
+        return best[0] if len(best) == 1 else word
+
+    m = re.search(r"\$?clog2\s*\(([^()]*(?:\([^()]*\)[^()]*)*)\)", text)
+    if not m:
+        plain = text.replace("`", "").strip().rstrip(".")
+        w = re.fullmatch(r"(?:ceil(?:ing)?\s+of\s+)?log2\s+of\s+(?:the\s+)?([A-Za-z_][A-Za-z0-9_]*)", plain, re.I)
+        if w:                                       # "log2 of the depth" -> $clog2(PARA_..._DEPTH)
+            name = resolve(re.match(r".*", w.group(1)))
+            return f"$clog2({name})" if name in earlier else None
+        if re.fullmatch(r"[A-Za-z0-9_\s()+\-*/]+", plain) and re.search(r"[A-Za-z_]", plain):
+            plain = re.sub(r"[A-Za-z_][A-Za-z0-9_]*", resolve, plain)   # "DATA_W / 8" -> PARA_X_DATA_W / 8
+            names = re.findall(r"[A-Za-z_][A-Za-z0-9_]*", plain)
+            if all(n in earlier for n in names):    # "LPARA_ADDR_W + 1"
+                return re.sub(r"\s+", " ", plain)
+        return None
+    inner = re.sub(r"\s[x×]\s", " * ", m.group(1))
     inner = re.sub(r"[A-Za-z_][A-Za-z0-9_]*", resolve, inner)
     if any(re.match(r"[A-Za-z_]", t) and t not in earlier for t in re.findall(r"[A-Za-z_][A-Za-z0-9_]*", inner)):
         return None
@@ -283,7 +355,20 @@ def _domains_text(iface: dict) -> list[str]:
         rs = [f"{r['name']} ({'active low' if r['active_low'] else 'active high'})" for r in iface["resets"]
               if r["clock"] == c["name"]]
         rows.append(f"  {c['name']} domain {c['domain'] or '?'}: reset {', '.join(rs) or 'none'}")
+    if is_async(iface):
+        rows.append("  " + ASYNC_NOTE)
     return rows
+
+
+ASYNC_NOTE = ("The clocks are MUTUALLY ASYNCHRONOUS: no fixed period ratio and no fixed phase. A behavior that "
+              "crosses domains (a value or event of one domain becoming visible in the other) has no exact cycle "
+              "count: state it as order and a bounded window counted in edges of the destination clock, from "
+              "the minimum to the maximum latency the specification allows (synchronizer stages plus any "
+              "modelled extra latency), never as 'in the next cycle' of the other clock.")
+
+
+def is_async(iface: dict) -> bool:
+    return iface.get("clock_relation") == "async" and len(iface.get("clocks") or []) > 1
 
 
 def _iface_text(iface: dict, top: str) -> str:

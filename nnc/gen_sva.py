@@ -14,7 +14,7 @@ from pathlib import Path
 
 from nnc.agents.backend import AgentTask
 from nnc.agents.runtime import Usage
-from nnc.contract import module_header, multi_clock
+from nnc.contract import is_async, module_header, multi_clock
 from nnc.simhost import SimHost, lint_sv
 
 PROMPT_VERSION = "sva-v1"
@@ -102,6 +102,13 @@ def build_prompt(group: str, iface: dict, checks: list[dict], rules_by_id: dict)
                   "that domain's reset:\n" + "\n".join(doms) + "\n  A check that relates signals of two "
                   "domains samples on the clock of the domain of its consequent and uses only $past/$stable of "
                   "that clock.\n")
+        if is_async(iface):
+            rules += ("- ASYNCHRONOUS CLOCKS: the clocks have no fixed ratio or phase. Never write a property whose "
+                      "antecedent and consequent are timed on different clocks, and never use ##N or $past to "
+                      "bridge two domains. A signal of the other domain may only be sampled as a level that is "
+                      "stable by protocol. A cross-domain latency is checked as a bounded window on the "
+                      "destination clock (##[min:max] with the bounds of the specification), or left to the "
+                      "tests. Same-domain properties are written as usual.\n")
     return (f"INTERFACE (all are inputs of the checker; directions are as seen by the DUT)\n{ports}\n\n"
             f"EXISTING CODE (header and counters)\n```systemverilog\n{head}\n```\n"
             f"EXISTING CODE (end)\n```systemverilog\n{tail}\n```\n\n"

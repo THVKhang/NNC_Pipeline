@@ -139,6 +139,8 @@ Ghi chú: A8 "Reviewer" riêng cho mã sinh ra chưa làm — vai trò kiểm tr
 | Coverage closure | `nnc cover --target --metric` | Hiện baseline trước; tối đa 5 vòng, dừng khi đạt, 2 vòng không tăng, hoặc lỗi chức năng đầu tiên (lỗi → triage). Điểm "không thể đạt" chỉ là đề xuất cho người duyệt, không bị trừ khỏi mẫu số. |
 | Mutation | bộ sinh mutant Python trên **bản copy** RTL | Chỉ đột biến dòng đã chạy và file đã elaborate (dòng chưa phủ chỉ đo coverage); mutant không compile không tính; A12 gán mutant cho luật → điểm từng luật, ngưỡng `mutation_threshold` (mặc định 85 %). |
 | Nhiều clock | `clocks`/`resets` đọc từ bảng port (cột Signal type, Clock domain) | Các clock đồng bộ khởi động cùng lúc; chu kỳ theo `clock_periods`; một test có thể đặt tỉ lệ khác (`start_clock(dut, periods=...)`); SVA mỗi check theo clock của miền tín hiệu. |
+| Clock bất đồng bộ | `clock_relation=async` (config) → `contract.json` interface | Mỗi clock khởi động sau một trễ ngẫu nhiên < 1 chu kỳ (seed + số thứ tự test), chu kỳ tính bằng ps nguyên (cho phép 13.7 ns); prompt contract/SVA/test thêm luật CDC: không giả sử cạnh trùng nhau, check qua miền = thứ tự + cửa sổ tính bằng cạnh clock đích; `stop_clock`/`resume_clock` cho test. |
+| Tuỳ chọn chạy | `defines`, `plusargs` (config) | `+define+` khi lint/build DUT, plusargs cho simulator (`{seed}` → seed); cùng vào Makefile tái lập. Test đọc được qua `plusarg("NAME")` và `DEFINES` (`nnc_interface.json` → `run_options`); prompt A7 có mục RUN CONFIGURATION ghi đúng tên, cấm đoán. Một lần chạy = một cấu hình; check cần cấu hình khác → `NOT_VERIFIABLE`. |
 | Tham số dẫn xuất | `LPARA_* = clog2(...)` trong bảng tham số | Thành `localparam` trong checker/tb, không truyền vào DUT, giá trị tính sẵn cho test (`PARAMS`). |
 | Bộ tái lập | `designs/<ip>/sim/Makefile` | `help`, `tool-check`, `lint`, `sva-compile`, `regression`, `test TC=<regex>`, `coverage-report`; mọi lệnh EDA hiện trong recipe (`make -n`). |
 | Simulator khác | `SIM=questa` / `SIM=icarus` qua cocotb | Questa: SVA + covergroup đầy đủ nếu có license; Icarus: không có SVA concurrent. |
@@ -253,7 +255,7 @@ Ba thiết kế từ VLSIT_ASIC_SOC_AI_SKILLS (Apache-2.0), RTL và spec chép n
 | Sau khi sửa | — | **15/15 test, 17/17 assertion, 0 fail** | **25/25 test, 11/11 assertion, 0 fail** |
 | Line / block / expression / toggle | 96,0 / 95,6 / 100 / 95,9 % | 98,9 / 95,9 / 96,2 / 74,8 % | 99,2 / 97,3 / 92,8 / 70,6 % |
 | Functional (điểm từ spec) | 38/40 → **40/40** sau 1 vòng closure (mục tiêu minh hoạ) | 39/40 | 40/40 |
-| Mutation | 36/36; 72 luật có mutant, 0 dưới 85 % | 31/36 = 86,1 % (5 sống sót); 65 luật, 0 dưới 85 % | 36/36 (loại 2 file không elaborate, 3 dòng chưa chạy); 82 luật, 0 dưới 85 % |
+| Mutation (chạy lại 2026-11-11, chỉ dòng đã chạy) | 33/33 (toàn bộ ứng viên); 76 luật có mutant, 0 dưới 85 % | 32/36 = 88,9 % (4 sống sót); 69 luật, 0 dưới 85 % | 36/36 (loại 2 file không elaborate, 14 dòng không chạy); 60 luật, 0 dưới 85 % |
 | Luật VERIFIED / FAILED | 169 / 0 | 114 / 0 | 174 / 0 |
 | Chi phí agent | US$2,97 cho lần sinh lại từ gen-sva (contract trong cache) | US$11,90 toàn bộ (gồm sinh lại test sau quyết định phân xử) | US$15,04 toàn bộ (gồm triage lại; + US$2,85 một lần gọi hỏng, xem mục 5) |
 
@@ -273,3 +275,37 @@ Ba thiết kế từ VLSIT_ASIC_SOC_AI_SKILLS (Apache-2.0), RTL và spec chép n
 5. Mutation tính mutant là "bị giết" khi có bất kỳ test nào fail, kể cả test đã fail sẵn trên RTL gốc → regression đang fail cho 100 % vô nghĩa (axi2apb lần đầu). Nay chỉ test/check **pass trên RTL gốc** mới giết được mutant; `mutation.json` ghi `baseline_failing`.
 6. `start_clock()` trả về task clock của cocotb 2 (không bao giờ kết thúc); test sinh ra `await` nó thì treo tới timeout → nay trả về `None`.
 7. Khi WSL không chạy được hoặc bị dừng giữa chừng, log rỗng bị ghi thành `build_failed` không lý do → nay giữ thông báo và mã thoát của `wsl.exe` (`NNC_HOST_ERROR`).
+
+## 15. Clock bất đồng bộ: 2 IP CDC (2026-11-11)
+
+Hai thiết kế CDC từ cùng repo VLSIT (Apache-2.0, RTL và spec chép nguyên vẹn, NOTICE trong từng thư mục). Cấu hình: `clock_relation=async`, mô hình metastability của RTL bật bằng plusarg (`+..._MSYNC_EN=1`, seed theo seed của lần chạy), 1 seed, tham số mặc định, 36 mutant. G1–G3 duyệt theo ủy quyền như mục 14, **G4 để lại cho người**.
+
+| | async_gray_fifo | async_apb_bridge |
+|---|---|---|
+| Đầu vào | spec 1 542 dòng; RTL 17 file (SRAM macro, 8 cell đồng bộ của thư viện không elaborate) | spec 900 dòng; RTL 14 file |
+| Đặc điểm | FIFO con trỏ Gray, clock ghi 10 ns / đọc 13,7 ns, 2 reset cứng độc lập + reset mềm có bắt tay qua miền | Cầu APB → APB qua miền, bắt tay 2 pha (4 pha là tham số), APB5 tắt |
+| Luật (giữ / vào) | 416 / 517 | 260 / 304 |
+| Câu hỏi: tài liệu trả lời / mở | 51 / 9 | 34 / 7 |
+| Check (assertion + test) | 32 (13 + 19) | 35 (18 + 17) |
+| Luật không kiểm được bằng mô phỏng | 142 | 75 |
+| Mô phỏng | **34/34 test pass**; CHK-003 và CHK-013 fail (34 và 61 lần trên ~100 000 lần kiểm) | **28/28 test pass, 0 assertion fail** (CHK-018 của APB5 không hit) |
+| Kết luận triage | **C: spec mâu thuẫn** (xem dưới); trước đó 3 lỗi testbench (B), đã sửa | — |
+| NOT_VERIFIABLE (cần cấu hình khác) | 17 | 7 |
+| Line / block / expression / toggle / functional | 99,3 / 95,6 / 98,0 / 99,9 % / 40 of 40 | 90,8 / 87,0 / 73,0 / 98,5 % / 33 of 40 |
+| Mutation | 80,6 % (29/36); 6 trong 7 mutant sống nằm trong mô hình mô phỏng | 72,2 % (26/36); 9 trong 10 mutant sống tương đương dưới cấu hình này |
+| Luật VERIFIED / FAILED | 61 / 12 | 130 / 0 |
+| Chi phí agent | US$32,85 (A7 US$21,17 gồm 3 lần sinh test: 2 lần dừng vì hết quota, 1 lần sau khi sửa flow) | US$11,83 |
+
+**async_gray_fifo — spec mâu thuẫn, không phải bug RTL.** REQ-VER-001 bắt mô hình metastability trễ **từng bit độc lập** 0–2 chu kỳ. Khi con trỏ Gray nguồn đổi hai lần trong cửa sổ trễ đó (miền nguồn nhanh hơn), bit đổi sau có thể hiện ra trước bit đổi trước, nên giá trị đã đồng bộ là một mã chưa từng tồn tại ở nguồn; ước lượng số phần tử vượt 0..DEPTH và cờ ngưỡng sai (trái REQ-FUNC-010, INV-001, TEST-008 "flags never optimistic"). Phần cứng thật không làm được như vậy: chỉ bit đang đổi đúng lúc lấy mẫu mới bất định. Triage A9 kết luận C với dẫn chứng (fail chỉ ở tỉ lệ clock mà miền nguồn nhanh hơn); **chạy lại với mô hình tắt (`+AFIFO_MSYNC_EN=0`): 34/34 test, 13/13 assertion, 0 fail**, xác nhận giả thuyết. RTL làm đúng spec nên không sửa; người thiết kế quyết định: (1) mô hình phải giữ mã Gray nhất quán (bit đổi sau không được vượt bit đang chờ, hoặc một trễ cho cả vector), hoặc (2) giữ độc lập từng bit và giới hạn kích thích. CHK-003/013 giữ nguyên, không nới.
+
+Trước đó lần mô phỏng đầu lộ 3 lỗi **testbench** (triage B, đã sửa, không check nào bị nới): helper `TB.rec` trả "never sampled" cho bản ghi cũ hơn 50 cạnh (range âm) làm CHK-031 dừng giữa chừng; scoreboard kiểm trước khi test reset (lan sang CHK-032); `init` đổi ngưỡng tĩnh khi FIFO không ở reset, và checker CHK-012 không miễn cho thay đổi của `i_rst_n_sw`/ngưỡng mà contract cho phép (vẫn kiểm chặt `o_overflow`, `o_sw_rst_busy`). Bản sinh ra được giữ để so sánh; G3 duyệt lại. Một mutant sống đáng thêm kích thích: `reg_req_wr` reset về 1 — cần một test reset cứng **riêng miền ghi** khi FIFO còn dữ liệu và không có reset mềm.
+
+**async_apb_bridge — sạch.** 7 check NOT_VERIFIABLE đều cần tham số khác (APB5=1, HS_TYPE=1, CELL_TYPE=4, cấu hình nhỏ nhất) hoặc cận thời gian chặt khi mô hình metastability bật. Trong 10 mutant sống: 9 không thể đổi port nào dưới cấu hình này (nhánh HS_TYPE≠0, đường wake-up bị chặn bởi APB5=0, gán lặp lại cùng giá trị, trễ của mô hình vẫn trong khoảng 0–2 spec cho phép); 1 là khoảng trống nhỏ: test không kiểm rằng mô hình metastability thật sự bật.
+
+**Lỗi của flow lộ ra, đã sửa:**
+1. A7 **đoán tên plusarg** (`meta_on()` thử nhiều tên) vì prompt không có cấu hình chạy → `nnc_interface.json` mang `run_options`, thư viện có `plusarg()`/`DEFINES`, prompt có mục RUN CONFIGURATION (PROMPT_VERSION `tests-v2`); test FIFO sinh lại và dùng đúng `AFIFO_MSYNC_EN`.
+2. Tham số dẫn xuất `LPARA_*` có công thức nằm ở cột khác cột default → SVA nhận `= Derived` và mọi checker lint fail → contract đọc công thức ở các cột khác (phải có toán tử hoặc `clog2`); tham số không đọc được mà port dùng → lỗi rõ ràng, không dùng → bỏ.
+3. Mutation lấy cả dòng **không thuộc thiết kế đã elaborate** (nhánh `` `ifdef VLSIT_SYNTHESIS`` không biên dịch, nhánh generate không chọn): chỉ loại dòng có điểm coverage = 0, còn dòng không có điểm nào thì giữ → mutant tương đương giả (APB bridge 58,8 %, 6 mutant như vậy). Nay `results.json` ghi `executed_lines` (lcov count > 0, dạng khoảng) và mutation chỉ lấy dòng đã chạy; 3 IP cũ chạy lại theo luật mới.
+4. Hết quota 5 giờ giữa lần sinh: agent báo lỗi rõ ("resets 6:50am"), chạy lại sau khi reset là đủ; không cần sửa.
+
+**Giới hạn còn lại — một cấu hình mỗi lần chạy.** 17 + 7 check NOT_VERIFIABLE và luật NOT_PROVEN tương ứng cần tham số, define hoặc plusarg khác. Bước tiếp theo đề xuất: **chạy nhiều cấu hình** (ma trận tham số/plusarg trong config, mỗi check gộp kết quả theo cấu hình, NOT_VERIFIABLE chỉ khi không cấu hình nào kiểm được).
