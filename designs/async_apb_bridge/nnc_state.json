@@ -11,6 +11,8 @@
         "tag": "AB2"
       }
     ],
+    "formal": "on",
+    "formal_defines": "VLSIT_SYNTHESIS",
     "plusargs": "+APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1",
     "top": "m_vlsit_apbcdc_top"
   },
@@ -34,12 +36,12 @@
       "note": "Re-approval after a flow fix: only the interface parameters changed (checks, rules and plan unchanged). LPARA_STRB_W is now the localparam PARA_APBCDC_DATA_W / 8 (formula read from the Effect column; it was the literal 'Derived', which broke every SVA lint); LPARA_REQ_W and LPARA_RESP_W (internal bundle widths, no port uses them, formula conditional on APB5) are left out of the interface. Earlier note still applies: 35 checks, CHK-019/020/022/023/026/030 expected NOT_VERIFIABLE with the default parameters. A person should confirm."
     },
     "G3_verif_sources": {
-      "at": "2026-11-11T05:55:34+00:00",
+      "at": "2026-11-12T07:11:23+00:00",
       "by": "Claude (delegated by GabrielHCMUT)",
       "hashes": {
-        "verif": "1aa95c450604da1d32649e9e543be3f0173d70a6af04ad8ef1e1b6b617662350"
+        "verif": "94b4c30c944b33ac97943a541678afe2bd3e706d07ed59d7b7ffa55de6006729"
       },
-      "note": "7 SVA modules lint clean after derived-parameter fix (LPARA_STRB_W = DATA_W/8); every property clocked in one domain; 18 cocotb tests reviewed: cross-domain checks use order + edge windows, NOT_VERIFIABLE for checks needing other parameters. A person should confirm."
+      "note": "verif/formal/nnc_env.sv extended after formal triage (6 counterexamples, all E): the two resets asserted in the same step and each released only at a rising edge of its own clock (AB2-3-39, AB2-3-41), written on the formal global clock; APB sequencing and PWAKEUP as before; address/data changes in Access stay free (ERR-004). Read one by one. A person should confirm."
     }
   },
   "version": 1

@@ -9,6 +9,7 @@
         "tag": "AB"
       }
     ],
+    "formal": "on",
     "top": "m_axi2apb_bridge"
   },
   "created": "2026-11-08T05:01:41+00:00",
@@ -31,12 +32,12 @@
       "note": "Edited at review to follow revised decision 2 (round-robin): CHK-019 title/behavior/expected (phase D: the tie after a lone write is won by R4), CHK-031 stimulus (d) 'complete one read', decision 2 text. No other check changed; both are tests, so SVA checkers are unaffected and only the cocotb module is regenerated."
     },
     "G3_verif_sources": {
-      "at": "2026-11-10T03:29:09+00:00",
+      "at": "2026-11-12T06:32:01+00:00",
       "by": "Claude (delegated by GabrielHCMUT)",
       "hashes": {
-        "verif": "4d5836d705550a283068370a98780f97a3535c7e7baf7afc185a47fc6988697f"
+        "verif": "08db1e810491c96047e899edde0b10a4d1eafd48b9673deccf0ba222e5bc7ada"
       },
-      "note": "Re-approved after a triage-driven test fix (2026-11-10): triage judged B_test_wrong for test_chk_031 (fix_candidate/triage_chk031_reset.md). The reference model now records APB writes that completed before a reset cut the burst (spec:163/333/584: per-beat writes, no rollback), with the same pwdata/pstrb = W beat check as at B. The final memory comparison stays byte-exact; no check removed or relaxed."
+      "note": "Formal counterexamples (CHK-011, CHK-012) traced to the generated read checker nnc_chk_axi_r.sv, triage B, hand fix of its support classification only: FIXED bursts are 1..16 beats (AB-3-07), the 4-KiB range starts at the size-aligned address (AXI A3.4, as nnc_chk_cross.sv already does), a WRAP burst must start size-aligned (AXI A3.4, rejected defensively, AB-1.1-03). The RTL matched the specification in all three cases. Plus verif/formal/nnc_env.sv as approved before. A person should confirm."
     }
   },
   "version": 1

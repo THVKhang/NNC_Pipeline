@@ -176,6 +176,35 @@ python -m nnc bench my_ip --triage AF1,AF3      # also triage the new failures o
 - **Bắt được:** chỉ tính khi có test/check fail mà trên RTL gốc vẫn pass. Lỗi đã có sẵn ở baseline không được tính.
 - **Triage đúng:** kết luận phổ biến nhất của triage trùng với kết luận mong đợi (A = RTL sai).
 
+### Formal check | Kiểm chứng formal
+
+```bash
+python -m nnc config my_ip formal=on                     # opt in (formal_defines=VLSIT_SYNTHESIS for simulation-only models)
+python -m nnc gen-env my_ip                              # agent A13: environment assumptions -> verif/formal/nnc_env.sv
+python -m nnc gate approve my_ip G3_verif_sources --by "Your Name"    # after reading every ENV-nn assumption
+python -m nnc formal my_ip                               # SymbiYosys per assertion -> work/formal.md (+ formal_triage.md)
+```
+
+The open-source Yosys frontends do not accept clocked concurrent SVA, so `nnc/formal.py` **translates** the subset the checker generator emits (`A |-> B`, `A |=> B`, `##N`, `disable iff`, `$past`, `$stable`) into immediate assertions with a shift register per attempt, by code; anything else is reported UNSUPPORTED, never approximated. A failure counter incremented in procedural checker code becomes an assertion at that point. Checkers that only make sense in simulation (event timing with `$time`, scoreboard queues) are left out and listed. Checker variables start at 0 as in simulation; DUT flops keep a free initial value. Each check runs alone: **bmc** (counterexample up to `formal_depth`, default 20), **prove** (k-induction), **cover** (its antecedent can happen under the assumptions: otherwise **VACUOUS**), each limited to `formal_timeout` seconds (default 600). Synchronous designs use one global clock; `clock_relation=async` uses free clocks (every ratio and phase).
+
+The environment: resets are asserted in the initial state (code), and `verif/formal/nnc_env.sv` holds the obligations the specification places on the blocks driving the inputs (A13 writes them from the specification only; they are part of G3 because an assumption the specification does not require hides bugs). A counterexample (CEX, trace in `work/formal/<CHK>.vcd`) goes to agent A14, which classifies it like triage plus **E: environment obligation missing**. The report gets a formal row and a sign-off condition; the reviewer packet lists every assumption.
+
+**VI:** bật bằng `formal=on`. Yosys mã nguồn mở không đọc được SVA đồng thời có clock, nên `nnc/formal.py` **dịch bằng code** tập con mà generator sinh ra sang assertion tức thời. Phần nằm ngoài tập con báo UNSUPPORTED, không đoán. Mỗi check chạy riêng ba việc:
+- **bmc:** tìm phản ví dụ trong N chu kỳ.
+- **prove:** chứng minh cho mọi chu kỳ.
+- **cover:** điều kiện kích hoạt có xảy ra được không; nếu không thì check là **VACUOUS** (rỗng).
+
+Giả định môi trường (`nnc_env.sv`) do A13 viết từ spec và **phải được người duyệt G3 đọc**, vì một giả định spec không đòi hỏi sẽ che bug. Mỗi phản ví dụ được agent A14 phân loại: A (RTL sai), B (checker sai), C (spec không rõ) hoặc **E (môi trường thiếu giả định)**.
+
+### Split test generation (experimental) | Sinh test chia nhỏ (thử nghiệm)
+
+`nnc config my_ip tests_mode=split`: one call writes the shared test-bench library `tb_<ip>.py`, then one call per group of at most 5 test checks writes `test_<ip>_g<n>.py` on it, in parallel; a repair touches only the failing module (or the library). Measured on sync_fifo: US$7.2 without retries (library US$2.5 + four groups US$4.6) against US$4.5 for the single call, because every group reads the 1,300-line library; 12/15 tests passed on the first run (three failed in one library helper), against 25/25. Its only gain is that a call cut by the usage limit or a timeout loses one group, not the whole module. The single call stays the default. — **VI:** chế độ chia nhỏ: một lời gọi viết thư viện testbench chung, rồi mỗi nhóm tối đa 5 check viết một module test, chạy song song. Kết quả đo trên sync_fifo:
+- Chi phí US$7.2 so với US$4.5 của cách một khối, vì nhóm nào cũng phải đọc lại thư viện.
+- 12/15 test pass ở lần chạy đầu, so với 25/25.
+- Lợi ích duy nhất: khi một lời gọi bị ngắt, chỉ mất một nhóm.
+
+Vì vậy mặc định vẫn là một khối.
+
 ### Continuous integration | CI
 
 `.github/workflows/ci.yml` runs on every push: the unit tests (Python 3.11 and 3.12), then for each design the reproduction kit `designs/<ip>/sim` with `make` only and `nnc kit-check <ip>`, which compares the outcome with the committed results (same tests, same failing tests, same failing and never-hit assertions, same NOT_VERIFIABLE checks; counts may differ). Verilator (OSS CAD Suite 2026-11-07) and cocotb 2.1.0 are pinned. No agent runs in CI. — **VI:** mỗi lần push, CI chạy hai phần, đều không gọi agent nào.

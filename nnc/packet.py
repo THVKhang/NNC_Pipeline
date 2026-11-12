@@ -14,6 +14,7 @@ It ends with a checklist; the reviewer's answers are the basis of `nnc gate appr
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 CATEGORY = {"A_rtl_wrong": "the RTL is likely wrong", "B_test_wrong": "the test or checker is likely wrong",
@@ -177,6 +178,31 @@ def build(d) -> str:
         out += [f"- {u['metric']} {u['file']}:{u['line']} {u.get('what', '')}".rstrip() for u in unc[:10]]
         out.append("")
         q.append("The unreached code and cover points are unreachable by design or accepted.")
+
+    # ------------------------------------------------------------------ 6b. formal
+    fv = _load(w / "formal.json") if rep.get("formal") else None
+    if fv:
+        ftri = {a["check"]: a for a in (_load(w / "formal_triage.json") or {}).get("analyses", [])}
+        out += ["### Formal check (SymbiYosys)", "",
+                f"Every input sequence of up to {fv['depth']} cycles was searched ({fv['clocks']}); result "
+                f"{fv['by_status']}. PROVEN holds for every cycle; BOUNDED found no counterexample within the depth. "
+                "Details: `work/formal.md`.", ""]
+        for cid, v in fv["checks"].items():
+            if v["status"] in ("CEX", "VACUOUS", "ERROR"):
+                a = ftri.get(cid)
+                out.append(f"- **{cid} {v['status']}**" + (f" — triage: {a['most_likely']}: {_cut(a['what_happens'], 300)}"
+                                                           if a else "") + (f" (trace {v['traces'][0]})" if v.get("traces") else ""))
+        env = d.root / "verif" / "formal" / "nnc_env.sv"
+        if env.is_file():
+            labels = re.findall(r"//\s*(ENV-\d+:[^\n]*)", env.read_text(encoding="utf-8"))
+            out += ["", "Environment assumptions (the formal results hold only for inputs that respect them; an "
+                    "assumption the specification does not require would hide bugs):", ""]
+            out += [f"- {_cut(x, 260)}" for x in labels]
+            q.append("Each formal environment assumption (verif/formal/nnc_env.sv) is an obligation the specification "
+                     "really places on the environment.")
+        if any(v["status"] in ("CEX", "VACUOUS") for v in fv["checks"].values()):
+            q.append("Each formal counterexample or vacuous check is resolved (RTL, checker or environment) or accepted.")
+        out.append("")
 
     # ------------------------------------------------------------------ 7. reproduce
     out += ["## 7. Reproduce without NNC", "",

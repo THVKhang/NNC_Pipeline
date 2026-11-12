@@ -1,0 +1,61 @@
+{
+ "file": "C:\\Users\\Admin\\OneDrive\\ドキュメント\\GitHub\\NNC_Pipeline\\designs\\apb_tlul_bridge\\verif\\formal\\nnc_env.sv",
+ "status": "lint_clean",
+ "attempts": 1,
+ "problems": [],
+ "lint_errors": "NNC_RC=0",
+ "assumptions": [
+  {
+   "id": "ENV-01",
+   "obligation": "The APB Requester is reset together with the bridge. While i_rst_n_core is low, i_apb_psel and i_apb_penable are 0.",
+   "rules": [
+    "BR-7.3-05",
+    "BR-3-32"
+   ]
+  },
+  {
+   "id": "ENV-02",
+   "obligation": "A Setup phase (PSEL=1, PENABLE=0) is followed in the next cycle by an Access phase (PSEL=1, PENABLE=1). The Access phase holds PSEL and PENABLE high until o_apb_pready is 1.",
+   "rules": [
+    "BR-6.3-01",
+    "BR-20-01"
+   ]
+  },
+  {
+   "id": "ENV-03",
+   "obligation": "PENABLE is high only in an Access phase that follows a Setup phase or continues an Access phase that is not complete. After PREADY the next cycle is idle or a new Setup phase (back-to-back with PSEL held high is allowed), and it is never a direct Access phase.",
+   "rules": [
+    "BR-6.3-01",
+    "BR-20-01",
+    "BR-20-02",
+    "BR-3-37"
+   ]
+  },
+  {
+   "id": "ENV-04",
+   "obligation": "i_apb_paddr, i_apb_pwrite, i_apb_pwdata and i_apb_pstrb stay unchanged from the Setup phase until PREADY.",
+   "rules": [
+    "BR-6.3-02",
+    "BR-20-01"
+   ]
+  },
+  {
+   "id": "ENV-05",
+   "obligation": "TL-UL D-channel handshake (REF-005 protocol checked at the ports). When d_valid=1 is not accepted (o_tlul_d_ready=0), the device keeps d_valid high and every D-channel payload field stable in the next cycle.",
+   "rules": [
+    "BR-15.1-02",
+    "BR-3-40"
+   ]
+  }
+ ],
+ "usage": {
+  "calls": 1,
+  "cached": 0,
+  "cost_usd": 0.2732,
+  "input_tokens": 2,
+  "output_tokens": 7359,
+  "cache_creation_input_tokens": 15570,
+  "cache_read_input_tokens": 0
+ },
+ "prompt_version": "env-v1"
+}

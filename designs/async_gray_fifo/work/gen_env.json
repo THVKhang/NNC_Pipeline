@@ -1,0 +1,105 @@
+{
+ "file": "C:\\Users\\Admin\\OneDrive\\ドキュメント\\GitHub\\NNC_Pipeline\\designs\\async_gray_fifo\\verif\\formal\\nnc_env.sv",
+ "status": "lint_clean",
+ "attempts": 1,
+ "problems": [],
+ "lint_errors": "NNC_RC=0",
+ "assumptions": [
+  {
+   "id": "ENV-01",
+   "obligation": "i_full_thr is static. It is written once before use and stays stable (on the global clock) from the first time both hardware resets are released until the end of the trace.",
+   "rules": [
+    "AF-3-17",
+    "AF-6.2-10",
+    "AF-7.2-04",
+    "AF-17.1.3-04",
+    "AF-20.2-07"
+   ]
+  },
+  {
+   "id": "ENV-02",
+   "obligation": "i_empty_thr is static. It is written once before use and stays stable (on the global clock) from the first time both hardware resets are released until the end of the trace.",
+   "rules": [
+    "AF-3-17",
+    "AF-6.2-10",
+    "AF-7.2-04",
+    "AF-17.1.3-04",
+    "AF-20.2-07"
+   ]
+  },
+  {
+   "id": "ENV-03",
+   "obligation": "No write (i_wr_en=0) while either hardware reset is asserted.",
+   "rules": [
+    "AF-20.1-05",
+    "AF-10.7.4-23",
+    "AF-12-07"
+   ]
+  },
+  {
+   "id": "ENV-04",
+   "obligation": "No read (i_rd_en=0) while either hardware reset is asserted.",
+   "rules": [
+    "AF-20.1-05",
+    "AF-10.7.4-23",
+    "AF-12-07"
+   ]
+  },
+  {
+   "id": "ENV-05",
+   "obligation": "i_rst_n_wr is released only at a rising edge of i_clk_wr (synchronized release, low for at least one write edge). Assertion is asynchronous and free.",
+   "rules": [
+    "AF-6.2-03",
+    "AF-3-34",
+    "AF-7.3-01",
+    "AF-20.1-01"
+   ]
+  },
+  {
+   "id": "ENV-06",
+   "obligation": "i_rst_n_rd is released only at a rising edge of i_clk_rd (synchronized release, low for at least one read edge). Assertion is asynchronous and free.",
+   "rules": [
+    "AF-6.2-03",
+    "AF-3-34",
+    "AF-7.3-02",
+    "AF-20.1-01"
+   ]
+  },
+  {
+   "id": "ENV-07",
+   "obligation": "After a hardware reset of only one domain, no write until both domains have been reset with overlapping reset windows and both are released. Assertion and release times can differ.",
+   "rules": [
+    "AF-12-07",
+    "AF-7.2-12",
+    "AF-10.7.4-24",
+    "AF-20.1-05",
+    "AF-20.2-27",
+    "AF-3-36",
+    "AF-7.2-11"
+   ]
+  },
+  {
+   "id": "ENV-08",
+   "obligation": "After a hardware reset of only one domain, no read until both domains have been reset with overlapping reset windows and both are released. Assertion and release times can differ.",
+   "rules": [
+    "AF-12-07",
+    "AF-7.2-12",
+    "AF-10.7.4-24",
+    "AF-20.1-05",
+    "AF-20.2-27",
+    "AF-3-36",
+    "AF-7.2-11"
+   ]
+  }
+ ],
+ "usage": {
+  "calls": 1,
+  "cached": 0,
+  "cost_usd": 0.4178,
+  "input_tokens": 2,
+  "output_tokens": 8695,
+  "cache_creation_input_tokens": 30090,
+  "cache_read_input_tokens": 707
+ },
+ "prompt_version": "env-v1"
+}

@@ -1,0 +1,76 @@
+{
+ "file": "C:\\Users\\Admin\\OneDrive\\ドキュメント\\GitHub\\NNC_Pipeline\\designs\\async_apb_bridge\\verif\\formal\\nnc_env.sv",
+ "status": "lint_clean",
+ "attempts": 1,
+ "problems": [],
+ "lint_errors": "NNC_RC=0",
+ "assumptions": [
+  {
+   "id": "ENV-01",
+   "obligation": "Resets are asserted together: when i_rst_n_mst falls (global clock), i_rst_n_slv is low in the same step; mst reset is never asserted alone",
+   "rules": [
+    "AB2-3-39",
+    "AB2-3-41",
+    "AB2-6.3-27"
+   ]
+  },
+  {
+   "id": "ENV-02",
+   "obligation": "Resets are asserted together: when i_rst_n_slv falls (global clock), i_rst_n_mst is low in the same step; slv reset is never asserted alone",
+   "rules": [
+    "AB2-3-39",
+    "AB2-3-41",
+    "AB2-6.3-27"
+   ]
+  },
+  {
+   "id": "ENV-06",
+   "obligation": "i_rst_n_mst is released synchronously to i_clk_mst: it rises only in the same global step as a rising edge of i_clk_mst",
+   "rules": [
+    "AB2-3-39"
+   ]
+  },
+  {
+   "id": "ENV-07",
+   "obligation": "i_rst_n_slv is released synchronously to i_clk_slv: it rises only in the same global step as a rising edge of i_clk_slv",
+   "rules": [
+    "AB2-3-39"
+   ]
+  },
+  {
+   "id": "ENV-03",
+   "obligation": "The requester keeps i_apb_psel low while either reset is asserted; no transfer starts before both resets are released",
+   "rules": [
+    "AB2-7.3-04"
+   ]
+  },
+  {
+   "id": "ENV-04",
+   "obligation": "After the one-cycle Setup phase the requester holds PSEL and PENABLE high until the PREADY cycle; no new Setup before PREADY",
+   "rules": [
+    "AB2-6.3-01",
+    "AB2-10.4-02",
+    "AB2-20.2-01",
+    "AB2-15.3-02"
+   ]
+  },
+  {
+   "id": "ENV-05",
+   "obligation": "APB5 only: once i_apb_pwakeup is high in a cycle with i_apb_psel, it stays high until o_apb_pready",
+   "rules": [
+    "AB2-6.3-13",
+    "AB2-8-04"
+   ]
+  }
+ ],
+ "usage": {
+  "calls": 1,
+  "cached": 0,
+  "cost_usd": 0.3193,
+  "input_tokens": 2,
+  "output_tokens": 5958,
+  "cache_creation_input_tokens": 24693,
+  "cache_read_input_tokens": 707
+ },
+ "prompt_version": "env-v1"
+}

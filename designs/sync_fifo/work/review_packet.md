@@ -17,7 +17,7 @@ These gates were approved by an AI agent on delegation, not by a qualified perso
 
 - **G1_rules** (2026-11-08T05:14:15+00:00): Delegated: 272 rules reviewed; 7 open questions decided from the specification text (Section 10.7, REQ-PERF-002, 15.2) and recorded in rules.md.
 - **G2_contract** (2026-11-08T10:37:14+00:00): Range references fixed: CHK-013 now names all 11 assertions (CHK-001..CHK-011); two notes now name the renumbered checks. Checks, kinds, stimulus and rule coverage unchanged. The approved G3 tests were generated from the earlier wording; every test runs with all checkers bound, so behaviour does not depend on this sentence.
-- **G3_verif_sources** (2026-11-08T15:30:04+00:00): Checker fix in verif/sva/nnc_chk_sb.sv following triage.md option 1: the reference queue is now empty from the i_clk_wr edge after which o_sw_rst_busy falls (contract CHK-006/CHK-010), not one edge later. Derived from the contract text only; no check removed or relaxed. The designer GabrielHCMUT asked Claude to judge whether to fix it.
+- **G3_verif_sources** (2026-11-12T06:00:14+00:00): Added verif/formal/nnc_env.sv (agent A13, spec only), read: both hardware resets asserted together (SF-3-32, SF-7.3-04), no write/read while the other domain is in reset (same rules), thresholds static while in use. Overflow, underflow, software reset at any time stay free. Tests and checkers unchanged. A person should confirm.
 
 ## 3. Failures and what they mean
 
@@ -56,6 +56,18 @@ Code or cover points never reached (first ones):
 - line m_vlsit_sfifo_rd.sv:183
 - line m_vlsit_sfifo_wr.sv:195
 
+### Formal check (SymbiYosys)
+
+Every input sequence of up to 20 cycles was searched (one global clock); result {'BOUNDED': 5, 'PROVEN': 4, 'TIMEOUT': 1, 'UNSUPPORTED': 1}. PROVEN holds for every cycle; BOUNDED found no counterexample within the depth. Details: `work/formal.md`.
+
+
+Environment assumptions (the formal results hold only for inputs that respect them; an assumption the specification does not require would hide bugs):
+
+- ENV-01: The two hardware resets are asserted together. Once both domains are up,
+- ENV-02: No write request until both hardware resets are released. The write domain
+- ENV-03: No read request until both hardware resets are released. The read domain
+- ENV-04: The static thresholds i_full_thr and i_empty_thr do not change while the
+
 ## 7. Reproduce without NNC
 
 `designs/sync_fifo/sim/` holds a Makefile that runs the same regression with Verilator and cocotb only (Linux or WSL):
@@ -75,6 +87,7 @@ Answer every item. Sign only if each one is true, or record why not in the appro
 - [ ] I have read the delegated decisions of G3_verif_sources and agree with them (or I have corrected them).
 - [ ] The requirements that simulation cannot check are assigned to another verification method.
 - [ ] The unreached code and cover points are unreachable by design or accepted.
+- [ ] Each formal environment assumption (verif/formal/nnc_env.sv) is an obligation the specification really places on the environment.
 - [ ] I reproduced the regression (or CI did) and the outcome matches the report.
 
 Then: `nnc gate approve sync_fifo G4_signoff --by "<your name>" --note "<waivers, open items>"`. The approval is bound to the current results.json: a later run makes it STALE.

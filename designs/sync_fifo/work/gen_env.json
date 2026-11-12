@@ -1,0 +1,52 @@
+{
+ "file": "C:\\Users\\Admin\\OneDrive\\ドキュメント\\GitHub\\NNC_Pipeline\\designs\\sync_fifo\\verif\\formal\\nnc_env.sv",
+ "status": "lint_clean",
+ "attempts": 1,
+ "problems": [],
+ "lint_errors": "NNC_RC=0",
+ "assumptions": [
+  {
+   "id": "ENV-01",
+   "obligation": "The hardware resets i_rst_n_wr and i_rst_n_rd are asserted together. Once both domains have been released, one reset may not go low without the other. Each reset may still be released at an edge of its own clock.",
+   "rules": [
+    "SF-3-32",
+    "SF-7.3-04"
+   ]
+  },
+  {
+   "id": "ENV-02",
+   "obligation": "The writer does not request a write (i_wr_en = 0) while the read-domain hardware reset is still asserted. No operation starts before both resets are released.",
+   "rules": [
+    "SF-3-32",
+    "SF-7.3-04"
+   ]
+  },
+  {
+   "id": "ENV-03",
+   "obligation": "The reader does not request a read (i_rd_en = 0) while the write-domain hardware reset is still asserted. No operation starts before both resets are released.",
+   "rules": [
+    "SF-3-32",
+    "SF-7.3-04"
+   ]
+  },
+  {
+   "id": "ENV-04",
+   "obligation": "i_full_thr and i_empty_thr are static: they stay stable at every write-clock and read-clock edge while both resets are released. Any value is legal, including values above DEPTH, and they may change during reset.",
+   "rules": [
+    "SF-3-16",
+    "SF-6.2-08",
+    "SF-1.3-03"
+   ]
+  }
+ ],
+ "usage": {
+  "calls": 1,
+  "cached": 0,
+  "cost_usd": 0.2986,
+  "input_tokens": 2,
+  "output_tokens": 8056,
+  "cache_creation_input_tokens": 16976,
+  "cache_read_input_tokens": 0
+ },
+ "prompt_version": "env-v1"
+}

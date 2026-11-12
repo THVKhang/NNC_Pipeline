@@ -1,6 +1,6 @@
 # Verification report — sync_fifo
 
-Generated 2026-11-11T12:49:11+00:00 by NNC Pipeline.
+Generated 2026-11-12T07:27:22+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -17,8 +17,9 @@ Generated 2026-11-11T12:49:11+00:00 by NNC Pipeline.
 | Code coverage (RTL), functional | 100.0 % (40/40 cover points of the specification) |
 | Mutation score | 100.0 % (36 killed / 0 survived / 0 not compiled) |
 | Coverage target | not requested (`nnc cover <design> --target <n> --metric <m>`) |
+| Formal (SymbiYosys, depth 20) | {'BOUNDED': 5, 'PROVEN': 4, 'TIMEOUT': 1, 'UNSUPPORTED': 1} — reset assumptions + verif/formal/nnc_env.sv, work/formal.md |
 | Triage | no failure to analyse |
-| Agent cost | US$15.3406 in 63 calls (A1 0.9003, A12 1.3483, A2 0.6673, A3 0.4066, A4 1.8669, A5 0.4191, A6 0.243, A7 8.496, A9 0.9932); of which US$2.8472 in 1 failed calls (usage limit, timeout, invalid answer) |
+| Agent cost | US$18.1564 in 67 calls (A1 0.9003, A12 1.3483, A13 0.2986, A2 0.6673, A3 0.4066, A4 1.8669, A5 0.4191, A6 0.243, A7 8.496, A9 3.5105); of which US$2.8472 in 1 failed calls (usage limit, timeout, invalid answer) |
 
 ## Sign-off conditions
 
@@ -31,6 +32,7 @@ Generated 2026-11-11T12:49:11+00:00 by NNC Pipeline.
 | Every rule in a check or declared not verifiable | met |
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | met — 60 rules with attributed mutants |
+| Formal: no counterexample, no vacuous or failed proof | met — {'BOUNDED': 5, 'PROVEN': 4, 'TIMEOUT': 1, 'UNSUPPORTED': 1} (work/formal.md) |
 
 ## Gates
 
@@ -38,24 +40,24 @@ Generated 2026-11-11T12:49:11+00:00 by NNC Pipeline.
 |---|---|---|
 | G1_rules | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-08T05:14:15+00:00 |
 | G2_contract | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-08T10:37:14+00:00 |
-| G3_verif_sources | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-08T15:30:04+00:00 |
+| G3_verif_sources | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-12T06:00:14+00:00 |
 | G4_signoff | PENDING | artifacts ready for review |
 
 ## Checks
 
 | Check | Kind | Title | Status | Evidence |
 |---|---|---|---|---|
-| CHK-001 | assertion | Outputs change only at their own clock edge | **PASS** | hits 18976, fails 0 |
-| CHK-002 | assertion | No unknown input when a request is sampled | **PASS** | hits 28418, fails 0 |
-| CHK-003 | assertion | Reads blocked while software reset busy | **PASS** | hits 2554, fails 0 |
-| CHK-004 | assertion | Read-view occupancy model for o_empty and o_empty_thr | **PASS** | hits 18787, fails 0 |
-| CHK-005 | assertion | o_underflow one-cycle pulse | **PASS** | hits 5871, fails 0 |
-| CHK-006 | assertion | Scoreboard: order, no loss, no duplication, show-ahead data | **PASS** | hits 11709, fails 0 |
-| CHK-007 | assertion | Occupancy bounds and safe-direction flag lag | **PASS** | hits 18962, fails 0 |
-| CHK-008 | assertion | o_sw_rst_busy start and idle behavior | **PASS** | hits 16887, fails 0 |
-| CHK-009 | assertion | Write block term forces o_full and o_full_thr | **PASS** | hits 2333, fails 0 |
-| CHK-010 | assertion | Write-view occupancy model for o_full and o_full_thr | **PASS** | hits 16629, fails 0 |
-| CHK-011 | assertion | o_overflow exact one-cycle pulse | **PASS** | hits 18976, fails 0 |
+| CHK-001 | assertion | Outputs change only at their own clock edge | **PASS** | hits 18976, fails 0; formal UNSUPPORTED |
+| CHK-002 | assertion | No unknown input when a request is sampled | **PASS** | hits 28418, fails 0; formal PROVEN |
+| CHK-003 | assertion | Reads blocked while software reset busy | **PASS** | hits 2554, fails 0; formal BOUNDED |
+| CHK-004 | assertion | Read-view occupancy model for o_empty and o_empty_thr | **PASS** | hits 18787, fails 0; formal BOUNDED |
+| CHK-005 | assertion | o_underflow one-cycle pulse | **PASS** | hits 5871, fails 0; formal BOUNDED |
+| CHK-006 | assertion | Scoreboard: order, no loss, no duplication, show-ahead data | **PASS** | hits 11709, fails 0; formal TIMEOUT |
+| CHK-007 | assertion | Occupancy bounds and safe-direction flag lag | **PASS** | hits 18962, fails 0; formal BOUNDED |
+| CHK-008 | assertion | o_sw_rst_busy start and idle behavior | **PASS** | hits 16887, fails 0; formal PROVEN |
+| CHK-009 | assertion | Write block term forces o_full and o_full_thr | **PASS** | hits 2333, fails 0; formal PROVEN |
+| CHK-010 | assertion | Write-view occupancy model for o_full and o_full_thr | **PASS** | hits 16629, fails 0; formal BOUNDED |
+| CHK-011 | assertion | o_overflow exact one-cycle pulse | **PASS** | hits 18976, fails 0; formal PROVEN |
 | CHK-012 | test | Strictly-later edge latency of o_empty and o_full fall at 3:2 ratio | **PASS** | test_chk_012_strict_later_latency_3_2 |
 | CHK-013 | test | Constrained-random scoreboard traffic over clock ratios and reset release phases | **PASS** | test_chk_013_random_ratios/ratio=0, test_chk_013_random_ratios/ratio=1, test_chk_013_random_ratios/ratio=2, test_chk_013_random_ratios/ratio=3, test_chk_013_random_ratios/ratio=4, test_chk_013_random_ratios/ratio=5, test_chk_013_random_ratios/ratio=6, test_chk_013_random_ratios/ratio=7 |
 | CHK-014 | test | First word latency, show-ahead and back-to-back reads with equal clocks | **PASS** | test_chk_014_first_word_show_ahead |
@@ -391,6 +393,6 @@ Generated 2026-11-11T12:49:11+00:00 by NNC Pipeline.
 
 ## Not verified by this run
 
-- Formal proof, CDC/RDC, STA, synthesis and DFT checks are outside this flow.
+- Formal: the assertions were checked by SymbiYosys under the environment assumptions (work/formal.md); a BOUNDED result holds only up to its depth. CDC/RDC, STA, synthesis and DFT checks are outside this flow.
 - Rules marked NOT_VERIFIED_BY_SIM carry the contract's reason (static, structural, not observable...).
 - Only the default parameter configuration was simulated (no run_set.json).

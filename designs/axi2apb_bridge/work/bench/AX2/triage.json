@@ -1,0 +1,117 @@
+{
+ "analyses": [
+  {
+   "failure": "test_chk_024_read_pslverr — CHK-011: beat 1 with PSLVERR returns SLVERR and rdata=0, got rresp=0 rdata=0xdeadbeef at cycle 14",
+   "spec_says": "spec/AXI2APB_Bridge_Design_Specification.md:122 REQ-ERR-002 \"The bridge shall map read PSLVERR to that R beat SLVERR\"; :126 REQ-ERR-006 \"completed APB transfer with PSLVERR=1 causes associated AXI response SLVERR\"; :333 \"Read PSLVERR marks its beat.\"; :386 ERR-003 \"APB read PSLVERR | RRESP=SLVERR; RDATA=0 | ... | Continue remaining beats\"; :391 \"An APB failure shall never be reported as AXI OKAY.\"; :594 ASM-011 (Resolved) \"Drive RDATA as zero when RRESP=SLVERR.\" The same text appears in rules.json AB-3-33 (l.1080), AB-3-41 (l.1301), AB-6.3-09 (l.2422), AB-10.2-05 (l.3345), AB-12-06 (l.3636) and AB-12-11 (l.3780). contract.json:860-861 (CHK-024) expects \"Beat 1 has o_axi_rresp=2'b10 and o_axi_rdata=32'h0\".",
+   "rtl_does": "rtl/m_axi2apb_apb_ctrl.sv:265-274: at the ACCESS edge with i_apb_pready=1, the write branch latches the error (l.268 `reg_wr_rsp_err <= i_apb_pslverr;`). The read branch latches the data (l.271 `reg_rd_rsp_data <= i_apb_prdata;`) but hard-codes l.272 `reg_rd_rsp_err <= 1'b0;`, so i_apb_pslverr is dropped on reads. This reaches the read sequencer through o_rd_rsp_err (l.160) -> w_rd_rsp_err (bridge.sv:187/130). rd_seq.sv:365-372 handles the error correctly when i_rsp_err=1 (it sets reg_rd_data<=0 and reg_rd_resp<=SLVERR), but i_rsp_err is always 0. So it takes the else branch (l.370-371: reg_rd_data<=i_rsp_data=0xDEADBEEF, reg_rd_resp<=OKAY), and in ST_RESP that value drives o_axi_rdata/o_axi_rresp (rd_seq.sv:309-310). The SVA fails at 76330000, 76340000 and 76350000 (sim.log:173-175). That is the same beat held for 3 cycles under random RREADY backpressure, and CHK-009 hold-stability still passes.",
+   "test_does": "verif/tests/test_axi2apb_bridge.py:1077-1111: an INCR read with ARLEN=3 at 0x2000. resp_fn (l.1084-1094) returns (0xDEADBEEF, PSLVERR=1) for PADDR 0x2004 (k==1) and (k, 0) for the others. The ApbCompleter drives these values only at the ACCESS edge with pready=1 (l.439-442). The tracker records pslverr from the bus at the completion edge (l.582-586) and checks R beat k against APB completion k (l.606-619). Since pslverr=1, it expects rresp==SLVERR and rdata==0 (l.617). The expected value comes straight from the PSLVERR sampled on the APB bus. The SVA a_CHK_011 (nnc_chk_axi_r.sv:144-148) checks the same thing independently, using comp_err captured at apb_comp (l.107-110).",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "apb_ctrl.sv:272 hard-codes reg_rd_rsp_err to 1'b0 and ignores i_apb_pslverr, unlike the write path at l.268. Every downstream piece (rd_seq.sv:366-368 maps i_rsp_err to SLVERR/0) is already there and only needs the correct input. The observed rresp=0 with rdata=0xDEADBEEF (the exact PRDATA the completer drove with the error) matches the else branch at rd_seq.sv:370-371. The write-side error checks pass (sim.log:229 CHK-008 fails=0; CHK-025 is not in the failure list), which is consistent with only the read path being broken.",
+     "evidence_against": "None found. No spec text allows a read PSLVERR to be reported as OKAY."
+    },
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "The completer drives random noise on pslverr when pready=0 (test l.445-447), so a mis-sampling checker could in principle see a false PSLVERR.",
+     "evidence_against": "Both the Python tracker (l.582-586) and the SVA (nnc_chk_axi_r.sv:86-87, 107-110) sample pslverr only when psel&penable&pready. The stimulus deliberately sets PSLVERR=1 for 0x2004 (l.1089), so the error is real. The expected SLVERR/0 matches spec:386 and contract.json:861."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "APB says PRDATA is invalid on error, so one could argue about which RDATA value to return.",
+     "evidence_against": "ASM-011 (spec:594) settles RDATA=0, and in any case the failure is rresp=OKAY, which spec:391 explicitly forbids (\"An APB failure shall never be reported as AXI OKAY\"). The spec is unambiguous."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Fix RTL (recommended by the evidence): in rtl/m_axi2apb_apb_ctrl.sv:272 change `reg_rd_rsp_err <= 1'b0;` to `reg_rd_rsp_err <= i_apb_pslverr;`. No change is needed in rd_seq.sv, since l.366-368 already zeroes the data and sets SLVERR. Then rerun CHK-024, CHK-026 and the regression. Fix test: none indicated; the stimulus and expectation follow contract.json:860-861. Clarify spec: none needed; spec:122/126/333/386/391/594 are consistent."
+  },
+  {
+   "failure": "test_chk_026_unmapped_default_completer — CHK-011: beat 0 with PSLVERR returns SLVERR and rdata=0, got rresp=0 rdata=0x5a5a5a5a at cycle 8",
+   "spec_says": "spec/AXI2APB_Bridge_Design_Specification.md:124 REQ-ERR-004 \"external APB fabric provides default unmapped Completer with PREADY=1 and PSLVERR=1\"; :242 \"Unmapped address | External default error Completer responds | ... | PREADY=1/PSLVERR=1, then AXI SLVERR\"; :389 ERR-006 \"Default Completer PREADY=1/PSLVERR=1; AXI SLVERR\"; :386 ERR-003 \"RRESP=SLVERR; RDATA=0\"; :391 \"An APB failure shall never be reported as AXI OKAY.\" rules.json:5184-5185 clarification: \"The bridge does no address decode... The bridge then handles it as an ordinary PSLVERR, giving SLVERR on a read beat\". contract.json:893 (CHK-026) expects \"2 R beats, both with o_axi_rresp=2'b10, o_axi_rdata=0\".",
+   "rtl_does": "Same root cause as the CHK-024 failure. rtl/m_axi2apb_apb_ctrl.sv:270-272 latches PRDATA (0x5A5A5A5A) on the read completion but forces reg_rd_rsp_err to 1'b0, discarding i_apb_pslverr=1. rd_seq.sv:369-371 then stores the data with RESP_OKAY, and rd_seq.sv:309-310 drives o_axi_rdata=0x5A5A5A5A, o_axi_rresp=2'b00 in ST_RESP on beat 0. SVA failure at 77790000 (sim.log:176).",
+   "test_does": "verif/tests/test_axi2apb_bridge.py:1146-1169: unmapped_default=True. A read at 0x8000_0000 with ARLEN=1 hits the default completer (l.424-429), which returns (0x5A5A5A5A, PSLVERR=1) with zero waits (l.472-473). The tracker records pslverr=1 at the completion edge (l.586), and l.617 expects SLVERR/rdata=0 on beat 0. The final check l.1164 expects [(SLVERR,0,0),(SLVERR,0,1)].",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "The read error flag is hard-coded to 0 at apb_ctrl.sv:272. The observed rdata is exactly the default completer's PRDATA 0x5A5A5A5A with rresp=OKAY, so the error bit was lost while the data passed through. The write half of the same test (wr.b SLVERR) uses apb_ctrl.sv:268, which does forward pslverr.",
+     "evidence_against": "None found."
+    },
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "The unmapped default completer is a testbench model (contract.json:1049 \"A default completer is modelled in the testbench for CHK-026\"), so a modelling error could in principle be involved.",
+     "evidence_against": "The model drives PREADY=1/PSLVERR=1 exactly as spec:124/389 require, and the failure message shows the checker saw the PSLVERR completion. The bridge, not the model, turned it into OKAY."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "Unmapped-address handling depends on an external integration assumption (spec ASM-005 l.588 is TBD).",
+     "evidence_against": "ASM-005 concerns the existence of the default responder, not the bridge's response. rules.json:5185 states the bridge treats it as an ordinary PSLVERR, giving read-beat SLVERR, and spec:391 forbids OKAY."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Fix RTL: the same single-line change as the CHK-024 failure, at rtl/m_axi2apb_apb_ctrl.sv:272: `reg_rd_rsp_err <= i_apb_pslverr;`. This fixes both CHK-024 and CHK-026. Fix test: none indicated. Clarify spec: optionally close ASM-005 (spec:588), but it does not affect this failure."
+  },
+  {
+   "failure": "test_regression_random — CHK-011: beat 7 with PSLVERR returns SLVERR and rdata=0, got rresp=0 rdata=0xe62b6fb3 at cycle 253",
+   "spec_says": "spec/AXI2APB_Bridge_Design_Specification.md:122 REQ-ERR-002 \"map read PSLVERR to that R beat SLVERR\"; :333 \"Read PSLVERR marks its beat.\"; :386 ERR-003 \"RRESP=SLVERR; RDATA=0 ... Continue remaining beats\"; :391 \"An APB failure shall never be reported as AXI OKAY.\" (rules.json AB-3-33 l.1080, AB-10.2-05 l.3345, AB-12-06 l.3636, AB-12-11 l.3780).",
+   "rtl_does": "Same root cause. On a random read burst whose beat 7 APB completion had i_apb_pslverr=1, rtl/m_axi2apb_apb_ctrl.sv:272 drives reg_rd_rsp_err=0. rd_seq.sv:370-371 latches the returned PRDATA 0xE62B6FB3 with OKAY and presents it on R beat 7. SVA failure at 2495260000 (sim.log:178). Over the whole run CHK-011 shows hits=33960 fails=5 (sim.log:226). All 5 fails are PSLVERR read beats: 3 from CHK-024 (one beat held under backpressure), 1 from CHK-026 and 1 here.",
+   "test_does": "verif/tests/test_axi2apb_bridge.py:1451-1468: 600 random legal transactions with b.apb.err_prob=0.03 (l.1454). default_resp (l.434) sets PSLVERR=1 at random on a completion. The tracker checks per beat against the sampled completion (l.606-619), and the end check (l.1460-1465) expects SLVERR exactly on beats whose APB transfer had pslverr=1. The expected value comes from the bus-sampled PSLVERR, not from a model.",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "The read error is never forwarded (apb_ctrl.sv:272). The random write errors in the same regression produce the correct BRESP (sim.log:229 CHK-008 fails=0) via apb_ctrl.sv:268. Every CHK-011 failure in the log involves a PSLVERR=1 read beat being returned as OKAY with the raw PRDATA.",
+     "evidence_against": "None found."
+    },
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "Random noise on pslverr outside completion edges (test l.445-447) could confuse a badly written checker.",
+     "evidence_against": "Sampling is gated on psel&penable&pready in both the Python tracker (l.572, 582-586) and the SVA (nnc_chk_axi_r.sv:86-87). Beat indexing comes from the order of APB completions. CHK-010 (beat counting) shows 0 fails (sim.log)."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "None specific.",
+     "evidence_against": "The spec is explicit at :122, :333, :386 and :391."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Fix RTL: change rtl/m_axi2apb_apb_ctrl.sv:272 to `reg_rd_rsp_err <= i_apb_pslverr;` and rerun the regression with the same seed to confirm CHK-011 fails=0. Fix test: none indicated. Clarify spec: none needed."
+  },
+  {
+   "failure": "assertion CHK-011 (a_CHK_011) — fails=5, hits=33960, first_fail_time=76330000",
+   "spec_says": "contract.json:601-617 CHK-011: \"(c) If i_apb_pslverr_k=1, then o_axi_rresp == 2'b10 (SLVERR) and o_axi_rdata == 32'h0. So a beat with pslverr_k=1 is never returned as OKAY.\" This comes from spec:122 (REQ-ERR-002), :126 (REQ-ERR-006), :333, :386 (ERR-003 RRESP=SLVERR; RDATA=0), :391 (\"An APB failure shall never be reported as AXI OKAY\") and :594 (ASM-011 RDATA=0 on SLVERR).",
+   "rtl_does": "rtl/m_axi2apb_apb_ctrl.sv:269-273: the read-completion branch sets reg_rd_rsp_valid=1 and reg_rd_rsp_data=i_apb_prdata but `reg_rd_rsp_err <= 1'b0;` (l.272), so the error is never passed on (compare l.268 for writes). Through bridge.sv:187 -> rd_seq.sv i_rsp_err, the error branch at rd_seq.sv:366-368 can never run for a supported read. The else branch (l.370-371) returns the raw PRDATA with OKAY via rd_seq.sv:309-310. Fail times are in sim.log:173-178: 76330000/76340000/76350000 (CHK-024 beat 1 held under backpressure), 77790000 (CHK-026 beat 0), 2495260000 (regression beat 7).",
+   "test_does": "verif/sva/nnc_chk_axi_r.sv:84-126 records each APB read completion (psel&penable&pready&!pwrite, l.86-87) into comp_data/comp_err at index comp_cnt (l.107-110). It selects completion rbeat_k, or the same-edge completion through cur_is_k (l.124-126). a_CHK_011 (l.144-148) requires that SLVERR and rdata=0 when k_err=1, and OKAY with rdata=k_data otherwise. The expectation comes only from interface signals sampled at the APB completion edge.",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "apb_ctrl.sv:272 discards i_apb_pslverr for reads. The SVA and the independent Python scoreboard (test l.606-619) fail at the same beats with the same values. Only the PSLVERR=1 case fails (5 of 33960 hits), and the OKAY path passes everywhere else, including data integrity. The write path, which does forward pslverr (l.268), passes CHK-008.",
+     "evidence_against": "None found."
+    },
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "The checker uses a 256-entry comp_err array indexed by comp_cnt[7:0], and cur_is_k bypass logic. An indexing bug there could in theory flag a wrong beat.",
+     "evidence_against": "The 5 fails match exactly the beats where the stimulus deliberately injected PSLVERR (CHK-024 0x2004, the CHK-026 unmapped address, a random err_prob hit). The Python tracker, written separately, reports the same mismatches. The observed rdata equals the PRDATA driven with the error, which shows the beat/completion pairing is correct."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "None material.",
+     "evidence_against": "The spec states the read PSLVERR -> SLVERR/RDATA=0 mapping in several places (:122, :126, :333, :386, :391, :594) and is consistent with contract.json CHK-011."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Fix RTL: in rtl/m_axi2apb_apb_ctrl.sv:272 replace `reg_rd_rsp_err <= 1'b0;` with `reg_rd_rsp_err <= i_apb_pslverr;`. This one change should clear all 5 CHK-011 fails and the three failing tests. Fix test/checker: none indicated; the checker matches contract.json:616. Clarify spec: not required."
+  }
+ ],
+ "clusters": 4,
+ "analysed": 4,
+ "usage": {
+  "calls": 1,
+  "cached": 0,
+  "cost_usd": 0.6284,
+  "input_tokens": 20,
+  "output_tokens": 9343,
+  "cache_creation_input_tokens": 47877,
+  "cache_read_input_tokens": 291568
+ },
+ "prompt_version": "triage-v1",
+ "denials": []
+}

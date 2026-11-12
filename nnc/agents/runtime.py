@@ -58,6 +58,13 @@ class Usage:
         for k in USAGE_KEYS:
             self.tokens[k] += int(res.usage.get(k) or 0)
 
+    def merge(self, other: "Usage") -> None:
+        self.calls += other.calls
+        self.cached += other.cached
+        self.cost_usd += other.cost_usd
+        for k in USAGE_KEYS:
+            self.tokens[k] += other.tokens.get(k, 0)
+
     def as_dict(self) -> dict:
         return {"calls": self.calls, "cached": self.cached, "cost_usd": round(self.cost_usd, 4), **self.tokens}
 

@@ -1,6 +1,6 @@
 # Verification report — async_apb_bridge
 
-Generated 2026-11-11T12:49:12+00:00 by NNC Pipeline.
+Generated 2026-11-12T07:27:25+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -18,8 +18,9 @@ Generated 2026-11-11T12:49:12+00:00 by NNC Pipeline.
 | Code coverage (RTL), functional | 97.5 % (39/40 cover points of the specification) |
 | Mutation score | 83.3 % (30 killed / 6 survived / 0 not compiled) |
 | Coverage target | not requested (`nnc cover <design> --target <n> --metric <m>`) |
+| Formal (SymbiYosys, depth 20) | {'BOUNDED': 12, 'PROVEN': 2, 'UNSUPPORTED': 3, 'VACUOUS': 1} — reset assumptions + verif/formal/nnc_env.sv, work/formal.md |
 | Triage | no failure to analyse |
-| Agent cost | US$12.4694 in 93 calls (A1 0.9876, A12 1.4006, A2 0.7731, A3 0.4261, A4 1.6549, A5 1.783, A6 1.2864, A7 4.1576) |
+| Agent cost | US$17.3001 in 99 calls (A1 0.9876, A12 1.4006, A13 0.7526, A14 1.5197, A2 0.7731, A3 0.4261, A4 1.6549, A5 1.783, A6 1.2864, A7 4.1576, A9 2.5583) |
 
 ## Sign-off conditions
 
@@ -33,6 +34,7 @@ Generated 2026-11-11T12:49:12+00:00 by NNC Pipeline.
 | Every run of the run set built and ran | met — 14 runs |
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | **not met** — 3 rule(s) below: AB2-1.3-01, AB2-10.2-01, AB2-10.2-02 |
+| Formal: no counterexample, no vacuous or failed proof | **not met** — VACUOUS 1 |
 
 ## Run set
 
@@ -61,31 +63,31 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 |---|---|---|
 | G1_rules | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-10T19:01:14+00:00 |
 | G2_contract | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-10T19:51:49+00:00 |
-| G3_verif_sources | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-11T05:55:34+00:00 |
+| G3_verif_sources | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-12T07:11:23+00:00 |
 | G4_signoff | PENDING | artifacts ready for review |
 
 ## Checks
 
 | Check | Kind | Title | Status | Evidence |
 |---|---|---|---|---|
-| CHK-001 | assertion | Absent APB5 signals drive zero | **PASS** | hits 4724149, fails 0; hit in 14/14 runs |
-| CHK-002 | assertion | Outputs change only at their own clock edge or on reset assertion | **PASS** | hits 4724149, fails 0; hit in 14/14 runs |
-| CHK-003 | assertion | Requester-side PREADY only in an Access cycle | **PASS** | hits 88959, fails 0; hit in 14/14 runs |
-| CHK-004 | assertion | Requester-side PREADY is a one-cycle pulse | **PASS** | hits 88959, fails 0; hit in 14/14 runs |
-| CHK-005 | assertion | PSLVERR only in the PREADY cycle (no sticky error) | **PASS** | hits 24553, fails 0; hit in 14/14 runs |
-| CHK-006 | assertion | At most one PREADY per accepted Setup phase | **PASS** | hits 178408, fails 0; hit in 14/14 runs |
-| CHK-007 | assertion | Response outputs stable outside the PREADY cycle | **PASS** | hits 2406162, fails 0; hit in 14/14 runs |
-| CHK-008 | assertion | No unknown requester-side outputs after reset | **PASS** | hits 2495109, fails 0; hit in 14/14 runs |
-| CHK-009 | assertion | Requester-side outputs at reset value while i_rst_n_mst is low | **PASS** | hits 20712, fails 0; hit in 14/14 runs |
-| CHK-010 | assertion | Completer-side outputs at reset value while i_rst_n_slv is low | **PASS** | hits 12538, fails 0; hit in 14/14 runs |
-| CHK-011 | assertion | No unknown completer-side outputs after reset | **PASS** | hits 2225884, fails 0; hit in 14/14 runs |
-| CHK-012 | assertion | Completer-side PENABLE implies PSEL; PSEL rises in a Setup cycle | **PASS** | hits 665096, fails 0; hit in 14/14 runs |
-| CHK-013 | assertion | Completer-side Setup phase lasts exactly one cycle | **PASS** | hits 89169, fails 0; hit in 14/14 runs |
-| CHK-014 | assertion | Access phase held while the completer is not ready (no timeout) | **PASS** | hits 486828, fails 0; hit in 14/14 runs |
-| CHK-015 | assertion | Completer-side transfer ends at the PREADY edge | **PASS** | hits 89099, fails 0; hit in 14/14 runs |
-| CHK-016 | assertion | Completer-side request fields stable during a transfer | **PASS** | hits 575997, fails 0; hit in 14/14 runs |
-| CHK-017 | assertion | Completer-side request fields loaded only at Setup entry | **PASS** | hits 89160, fails 0; hit in 14/14 runs |
-| CHK-018 | assertion | APB5 o_apb_pwakeup high no later than o_apb_psel and until completion | **PASS** | hits 96138, fails 0; hit in 2/14 runs |
+| CHK-001 | assertion | Absent APB5 signals drive zero | **PASS** | hits 4724149, fails 0; hit in 14/14 runs; formal BOUNDED |
+| CHK-002 | assertion | Outputs change only at their own clock edge or on reset assertion | **PASS** | hits 4724149, fails 0; hit in 14/14 runs; formal UNSUPPORTED |
+| CHK-003 | assertion | Requester-side PREADY only in an Access cycle | **PASS** | hits 88959, fails 0; hit in 14/14 runs; formal BOUNDED |
+| CHK-004 | assertion | Requester-side PREADY is a one-cycle pulse | **PASS** | hits 88959, fails 0; hit in 14/14 runs; formal BOUNDED |
+| CHK-005 | assertion | PSLVERR only in the PREADY cycle (no sticky error) | **PASS** | hits 24553, fails 0; hit in 14/14 runs; formal BOUNDED |
+| CHK-006 | assertion | At most one PREADY per accepted Setup phase | **PASS** | hits 178408, fails 0; hit in 14/14 runs; formal BOUNDED |
+| CHK-007 | assertion | Response outputs stable outside the PREADY cycle | **PASS** | hits 2406162, fails 0; hit in 14/14 runs; formal BOUNDED |
+| CHK-008 | assertion | No unknown requester-side outputs after reset | **PASS** | hits 2495109, fails 0; hit in 14/14 runs; formal PROVEN |
+| CHK-009 | assertion | Requester-side outputs at reset value while i_rst_n_mst is low | **PASS** | hits 20712, fails 0; hit in 14/14 runs; formal UNSUPPORTED |
+| CHK-010 | assertion | Completer-side outputs at reset value while i_rst_n_slv is low | **PASS** | hits 12538, fails 0; hit in 14/14 runs; formal UNSUPPORTED |
+| CHK-011 | assertion | No unknown completer-side outputs after reset | **PASS** | hits 2225884, fails 0; hit in 14/14 runs; formal PROVEN |
+| CHK-012 | assertion | Completer-side PENABLE implies PSEL; PSEL rises in a Setup cycle | **PASS** | hits 665096, fails 0; hit in 14/14 runs; formal BOUNDED |
+| CHK-013 | assertion | Completer-side Setup phase lasts exactly one cycle | **PASS** | hits 89169, fails 0; hit in 14/14 runs; formal BOUNDED |
+| CHK-014 | assertion | Access phase held while the completer is not ready (no timeout) | **PASS** | hits 486828, fails 0; hit in 14/14 runs; formal BOUNDED |
+| CHK-015 | assertion | Completer-side transfer ends at the PREADY edge | **PASS** | hits 89099, fails 0; hit in 14/14 runs; formal BOUNDED |
+| CHK-016 | assertion | Completer-side request fields stable during a transfer | **PASS** | hits 575997, fails 0; hit in 14/14 runs; formal BOUNDED |
+| CHK-017 | assertion | Completer-side request fields loaded only at Setup entry | **PASS** | hits 89160, fails 0; hit in 14/14 runs; formal BOUNDED |
+| CHK-018 | assertion | APB5 o_apb_pwakeup high no later than o_apb_psel and until completion | **PASS** | hits 96138, fails 0; hit in 2/14 runs; formal VACUOUS |
 | CHK-019 | test | APB5 user signals transported unchanged | **PASS** | test_chk_019_apb5_user_signals; verified in user.s1 |
 | CHK-020 | test | APB5 wake-up propagation and in-progress term | **PASS** | test_chk_020_apb5_wakeup; verified in apb5.s1, user.s1 |
 | CHK-021 | test | APB4 configuration ignores APB5 inputs | **PASS** | test_chk_021_apb4_ignores_apb5; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1 |
@@ -412,6 +414,6 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 
 ## Not verified by this run
 
-- Formal proof, CDC/RDC, STA, synthesis and DFT checks are outside this flow.
+- Formal: the assertions were checked by SymbiYosys under the environment assumptions (work/formal.md); a BOUNDED result holds only up to its depth. CDC/RDC, STA, synthesis and DFT checks are outside this flow.
 - Rules marked NOT_VERIFIED_BY_SIM carry the contract's reason (static, structural, not observable...).
 - Only the configurations of the run set above were simulated; code coverage is merged over its runs, mutation testing used the primary run apb4.s1.

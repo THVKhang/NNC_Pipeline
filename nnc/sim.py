@@ -327,6 +327,9 @@ def build_inputs(contract: dict, rtl: list[Path], sva: list[Path], test_file: Pa
     tests = list(test_file) if isinstance(test_file, (list, tuple)) else [test_file]
     for t in tests:                        # the generated module, then coverage-closure modules if any
         files[t.name] = t
+    for t in tests:                        # shared test-bench libraries next to them (split mode)
+        for lib in Path(t).parent.glob("tb_*.py"):
+            files.setdefault(lib.name, lib)
     files["nnc_cocotb.py"] = SIMLIB
     iface = contract["interface"]
     cfg = {"clock": iface["clock"], "reset": iface["reset"], "parameters": derived_values(iface, params),

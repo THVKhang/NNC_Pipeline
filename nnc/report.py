@@ -129,8 +129,12 @@ def _count(items, key="status") -> dict:
 
 def build(design_name: str, gates: list, rules_doc: dict, contract: dict, results: dict | None,
           mutation: dict | None, triage: dict | None, costs: dict, unreviewed: list[str],
-          test_map: dict[str, list[str]] | None = None, closure: dict | None = None) -> dict:
+          test_map: dict[str, list[str]] | None = None, closure: dict | None = None,
+          formal: dict | None = None) -> dict:
     statuses = check_status(results, contract, test_map)
+    for cid, v in ((formal or {}).get("checks") or {}).items():
+        if cid in statuses:
+            statuses[cid]["formal"] = v["status"]
     rows = rtm(rules_doc, contract, statuses, mutation)
     return {
         "design": design_name, "date": datetime.now(timezone.utc).isoformat(timespec="seconds"),
@@ -151,6 +155,8 @@ def build(design_name: str, gates: list, rules_doc: dict, contract: dict, result
         "coverage_closure": None if not closure else {k: closure.get(k) for k in
                                                       ("metric", "target", "status", "baseline", "final")},
         "triage": None if not triage else {"clusters": triage.get("clusters"), "analysed": triage.get("analysed")},
+        "formal": None if not formal else {k: formal.get(k) for k in ("depth", "clocks", "environment", "defines",
+                                                                       "by_status")},
         "agent_cost_usd": costs,
         "rtm": rows,
     }
@@ -215,6 +221,11 @@ def signoff_conditions(rep: dict) -> list[tuple[str, bool, str]]:
                        f"{mut.get('rules_attributed')} rules with attributed mutants")))
     if clo and clo.get("status") not in (None, "not_requested"):
         conds.append((f"Coverage target {clo['metric']} {clo.get('target')} %", clo["status"] == "target_met", clo["status"]))
+    fv = rep.get("formal")
+    if fv:
+        bad = {k: v for k, v in (fv.get("by_status") or {}).items() if k in ("CEX", "VACUOUS", "ERROR")}
+        conds.append(("Formal: no counterexample, no vacuous or failed proof", not bad,
+                      ", ".join(f"{k} {v}" for k, v in bad.items()) or f"{fv.get('by_status')} (work/formal.md)"))
     return conds
 
 
@@ -234,6 +245,8 @@ def to_markdown(rep: dict, contract: dict, mutation: dict | None) -> str:
             *_coverage_rows(cov),
             f"| Mutation score | {str(rep['mutation']['score']) + ' % (' + str(rep['mutation']['killed']) + ' killed / ' + str(rep['mutation']['survived']) + ' survived / ' + str(rep['mutation']['not_compiled']) + ' not compiled)' if rep['mutation'] else 'not run'} |",
             *_closure_rows(rep),
+            *([f"| Formal (SymbiYosys, depth {rep['formal']['depth']}) | {rep['formal']['by_status']} — "
+               f"{rep['formal']['environment']}, work/formal.md |"] if rep.get("formal") else []),
             f"| Triage | {'no failure to analyse' if not rep['triage'] or not rep['triage'].get('clusters') else str(rep['triage']['clusters']) + ' failure(s), ' + str(rep['triage'].get('analysed')) + ' analysed: work/triage.md'} |",
             f"| Agent cost | US${rep['agent_cost_usd']['total_usd']} in {rep['agent_cost_usd']['calls']} calls "
             f"({', '.join(f'{k} {v}' for k, v in rep['agent_cost_usd']['by_agent'].items())})"
@@ -251,6 +264,8 @@ def to_markdown(rep: dict, contract: dict, mutation: dict | None) -> str:
         d = rep["checks"]["detail"][c["id"]]
         ev = (f"hits {d.get('hits')}, fails {d.get('fails')}" if c["kind"] == "assertion" else ", ".join(d.get("tests", [])))
         ev += _runs_text(d, c["kind"])
+        if d.get("formal"):
+            ev += f"; formal {d['formal']}"
         out.append(f"| {c['id']} | {c['kind']} | {c['title']} | **{d['status']}** | {ev} |")
     out += ["", "## Requirement traceability (RTM)", "",
             "| Rule | Spec ref | Statement | Checks | Mutation | Status |", "|---|---|---|---|---|---|"]
@@ -271,7 +286,10 @@ def to_markdown(rep: dict, contract: dict, mutation: dict | None) -> str:
             out.append(f"| {m['id']} | {m['file']}:{m['line']} | {m['operator']} | {m['status']} | "
                        f"{', '.join(m['killed_by_checks'] + m['killed_by_tests'])[:120]} | {', '.join(a.get('rules', []))} | {eq} |")
     out += ["", "## Not verified by this run", "",
-            "- Formal proof, CDC/RDC, STA, synthesis and DFT checks are outside this flow.",
+            ("- Formal: the assertions were checked by SymbiYosys under the environment assumptions (work/formal.md); "
+             "a BOUNDED result holds only up to its depth. CDC/RDC, STA, synthesis and DFT checks are outside this flow."
+             if rep.get("formal") else
+             "- Formal proof (`nnc config <ip> formal=on`), CDC/RDC, STA, synthesis and DFT checks were not run."),
             "- Rules marked NOT_VERIFIED_BY_SIM carry the contract's reason (static, structural, not observable...).",
             ("- Only the configurations of the run set above were simulated; code coverage is merged over its runs, "
              f"mutation testing used the primary run {(sim.get('run_set') or {}).get('primary')}."

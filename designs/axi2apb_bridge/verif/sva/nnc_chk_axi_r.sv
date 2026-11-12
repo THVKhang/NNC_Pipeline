@@ -63,10 +63,16 @@ module nnc_chk_axi_r #(
   logic        ar_sup;
   logic        ar_acc;
   assign ar_bytes = ({5'b0, i_axi_arlen} + 13'd1) << i_axi_arsize;
-  assign ar_end   = {1'b0, i_axi_araddr[11:0]} + ar_bytes;
+  // Hand fix 2026-11-12 (formal counterexamples, triage B): the burst range starts at the address aligned
+  // to the transfer size (AXI A3.4), FIXED bursts are 1..16 beats (AB-3-07), and a WRAP burst must start
+  // at an address aligned to the transfer size (AXI A3.4; rejected defensively, AB-1.1-03).
+  assign ar_end   = {1'b0, i_axi_araddr[11:0] & ~((12'd1 << i_axi_arsize) - 12'd1)} + ar_bytes;
   assign ar_sup   = (i_axi_arburst != 2'b11) &&
                     (i_axi_arsize <= 3'd2) &&
                     (i_axi_arcache == 4'b0000 || i_axi_arcache == 4'b0001) &&
+                    !((i_axi_arburst == 2'b00) && (i_axi_arlen > 8'd15)) &&
+                    !((i_axi_arburst == 2'b10) &&
+                      ((i_axi_araddr[11:0] & ((12'd1 << i_axi_arsize) - 12'd1)) != 12'd0)) &&
                     !((i_axi_arburst == 2'b01) && (ar_end > 13'd4096)) &&
                     !((i_axi_arburst == 2'b10) &&
                       !(i_axi_arlen == 8'd1 || i_axi_arlen == 8'd3 ||

@@ -1,0 +1,65 @@
+{
+ "file": "C:\\Users\\Admin\\OneDrive\\ドキュメント\\GitHub\\NNC_Pipeline\\designs\\axi2apb_bridge\\verif\\formal\\nnc_env.sv",
+ "status": "lint_clean",
+ "attempts": 1,
+ "problems": [],
+ "lint_errors": "NNC_RC=0",
+ "assumptions": [
+  {
+   "id": "ENV-01",
+   "obligation": "The AXI Manager drives AWVALID, WVALID and ARVALID low while i_rst_n_axi is active (AXI4 Manager reset rule, with reset of the Manager coordinated by the SoC).",
+   "rules": [
+    "AB-6.1-01",
+    "AB-2.2-01",
+    "AB-7.3-03"
+   ]
+  },
+  {
+   "id": "ENV-02",
+   "obligation": "Once AWVALID is high it stays high, and AWID/AWADDR/AWLEN/AWSIZE/AWBURST/AWCACHE/AWPROT stay stable, until AWREADY is high (AXI4 VALID/READY handshake).",
+   "rules": [
+    "AB-6.1-01",
+    "AB-2.2-01",
+    "AB-3-06"
+   ]
+  },
+  {
+   "id": "ENV-03",
+   "obligation": "Once WVALID is high it stays high, and WDATA/WSTRB/WLAST stay stable, until WREADY is high; W may be presented before AW.",
+   "rules": [
+    "AB-6.1-01",
+    "AB-2.2-01",
+    "AB-3-06",
+    "AB-5.3-03"
+   ]
+  },
+  {
+   "id": "ENV-04",
+   "obligation": "Once ARVALID is high it stays high, and ARID/ARADDR/ARLEN/ARSIZE/ARBURST/ARCACHE/ARPROT stay stable, until ARREADY is high.",
+   "rules": [
+    "AB-6.1-01",
+    "AB-2.2-01",
+    "AB-3-06"
+   ]
+  },
+  {
+   "id": "ENV-05",
+   "obligation": "The AXI Manager asserts WLAST exactly on W beat AWLEN+1 of the corresponding accepted write. Beats sent before AW are counted. Constrained only while an accepted AW has outstanding W data and the count has not overshot.",
+   "rules": [
+    "AB-20-05",
+    "AB-5.4-05",
+    "AB-6.3-03"
+   ]
+  }
+ ],
+ "usage": {
+  "calls": 1,
+  "cached": 0,
+  "cost_usd": 0.2963,
+  "input_tokens": 2,
+  "output_tokens": 10394,
+  "cache_creation_input_tokens": 10897,
+  "cache_read_input_tokens": 707
+ },
+ "prompt_version": "env-v1"
+}

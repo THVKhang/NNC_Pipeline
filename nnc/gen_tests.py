@@ -251,3 +251,219 @@ def repair(contract: dict, rules_doc: dict, backend, log_dir: Path, out_file: Pa
         out_file.write_text(code, encoding="utf-8")
     return {"status": "repaired" if not problems else "invalid", "problems": problems, "attempts": attempts,
             "usage": usage.as_dict()}
+
+
+# ------------------------------------------------------------------------------------------- split mode
+# One deep call writing a 1500-line module is expensive to lose (a usage limit or a timeout after 20 minutes
+# costs the whole answer) and expensive to repair. In split mode (config tests_mode=split) one call writes
+# the shared test-bench library tb_<ip>.py (models, drivers, reference model, scoreboard), then one call
+# per group of at most GROUP_SIZE test checks writes test_<ip>_g<n>.py on top of it, in parallel. A lost
+# or invalid group costs one small call; a repair touches one group (or the library).
+GROUP_SIZE = 5
+
+LIB_RULES = """LIBRARY TASK
+- Write ONLY the shared test-bench library module `{lib}` for the tests below. NO @cocotb.test() function.
+- It contains everything the tests need: protocol drivers and responder models as classes, monitors, the
+  reference model / scoreboard computed from the specification text only, reset/initialisation helpers,
+  and helper coroutines that run common sequences (for example "write N words", "full transfer").
+- Its module docstring is the API: one line per public class/function with its signature and meaning, so
+  that test writers who see only this module can use it correctly.
+- It starts with `from nnc_cocotb import *` (and may import cocotb, random, the standard library).
+- Every wait is bounded; every check helper raises `AssertionError("CHK-nnn: ...")` with the check ID.
+"""
+
+GROUP_RULES = """TEST TASK
+- Write the test module for the TEST CHECKS listed above only, on top of the library below (already
+  written and fixed: do not copy or redefine its classes; import it with `from {mod} import *`).
+- One @cocotb.test() per check (a function may cover several closely related checks), named
+  test_chk_<nnn>_<short_name>, docstring starting with the check ID(s).{regression}
+- Small local helpers are allowed. Same coding rules as below.
+"""
+
+
+def group_rules(regression: bool) -> str:
+    """RULES_TEXT for one group module: the regression test is asked only of the first module."""
+    if regression:
+        return RULES_TEXT
+    a = RULES_TEXT.index("- Add one more test named test_regression_random")
+    b = RULES_TEXT.index("- Write protocol models")
+    return RULES_TEXT[:a] + RULES_TEXT[b:]
+
+
+def _check_block(c: dict, rules_by_id: dict) -> str:
+    quotes = "\n".join(f"      {r}: {rules_by_id[r]['quote'][:500]}" for r in c["rules"] if r in rules_by_id)
+    extra = f"\n    STIMULUS: {c['stimulus']}\n    EXPECTED: {c['expected']}" if c["kind"] == "test" else ""
+    return f"[{c['id']}] ({c['group']}) {c['title']}\n    BEHAVIOR: {c['behavior']}{extra}\n    SOURCES:\n{quotes}"
+
+
+def groups(contract: dict, size: int = GROUP_SIZE) -> list[list[dict]]:
+    """Test checks in chunks of at most `size`, keeping the contract groups together where possible."""
+    tests = [c for c in contract["checks"] if c["kind"] == "test"]
+    tests.sort(key=lambda c: (c["group"], c["id"]))
+    out: list[list[dict]] = []
+    for c in tests:
+        if not out or len(out[-1]) >= size or (out[-1][-1]["group"] != c["group"] and len(out[-1]) >= size - 1):
+            out.append([])
+        out[-1].append(c)
+    return out
+
+
+def validate_library(code: str) -> list[str]:
+    try:
+        tree = ast.parse(code)
+    except SyntaxError as e:
+        return [f"syntax error line {e.lineno}: {e.msg}"]
+    problems = []
+    if any(isinstance(n, ast.AsyncFunctionDef) and any("cocotb.test" in ast.unparse(d) for d in n.decorator_list)
+           for n in ast.walk(tree)):
+        problems.append("the library must not contain @cocotb.test() functions")
+    if not ast.get_docstring(tree):
+        problems.append("the module docstring (the API of the library) is missing")
+    if "nnc_cocotb" not in code:
+        problems.append("use the helper library: from nnc_cocotb import *")
+    if re.search(r"\bdut\.u_\w+", code) or "._sub_handles" in code:
+        problems.append("hierarchical access into the DUT is not allowed")
+    return problems
+
+
+def validate_group(code: str, checks: list[dict], lib_module: str, regression: bool) -> list[str]:
+    try:
+        tree = ast.parse(code)
+    except SyntaxError as e:
+        return [f"syntax error line {e.lineno}: {e.msg}"]
+    tests = [n for n in ast.walk(tree) if isinstance(n, ast.AsyncFunctionDef) and any(
+        "cocotb.test" in ast.unparse(d) for d in n.decorator_list)]
+    docs = " ".join((ast.get_docstring(t) or "") + " " + t.name for t in tests)
+    problems = [f"no @cocotb.test() covers {c['id']} (put the ID in the docstring)" for c in checks if c["id"] not in docs]
+    if regression and not any(t.name == "test_regression_random" for t in tests):
+        problems.append("missing test_regression_random")
+    if not regression and any(t.name == "test_regression_random" for t in tests):
+        problems.append("test_regression_random belongs to another module")
+    if f"from {lib_module} import" not in code:
+        problems.append(f"import the library: from {lib_module} import *")
+    if re.search(r"\bdut\.u_\w+", code) or "._sub_handles" in code:
+        problems.append("hierarchical access into the DUT is not allowed")
+    return problems
+
+
+def _run_checked(prompt: str, name: str, backend, log_dir: Path, model: str, usage: Usage, rounds: int,
+                 check) -> tuple[str, list[str], int]:
+    history, code, problems = "", "", []
+    for attempt in range(rounds + 1):
+        res = backend.run(AgentTask(f"{name}_r{attempt}", prompt + history, SCHEMA, system_prompt=SYSTEM_PROMPT,
+                                    model=model, max_turns=4), log_dir)
+        usage.add(res)
+        code = res.output["code"]
+        problems = check(code)
+        if not problems:
+            return code, [], attempt + 1
+        history = ("\n\nYOUR PREVIOUS MODULE FAILED VALIDATION:\n" + "\n".join(problems) +
+                   f"\n```python\n{code}\n```\nReturn the corrected complete module.")
+    return code, problems, rounds + 1
+
+
+def _context(contract: dict, run_opts: dict | None) -> str:
+    """Interface part of the prompt (no checks)."""
+    full = build_prompt({**contract, "checks": []}, {"rules": []}, run_opts)
+    return full.split("TEST CHECKS TO IMPLEMENT")[0]
+
+
+def generate_split(contract: dict, rules_doc: dict, backend, log_dir: Path, tests_dir: Path, design: str, *,
+                   model: str = "opus", rounds: int = 2, run_opts: dict | None = None, workers: int = 4) -> dict:
+    """Library call, then one call per group of test checks (in parallel)."""
+    from concurrent.futures import ThreadPoolExecutor
+    lib_mod = f"tb_{design}"
+    usage = Usage()
+    lib_prompt = (build_prompt(contract, rules_doc, run_opts).replace(
+        "Return the complete Python module in `code`.", "") + "\n" + LIB_RULES.format(lib=lib_mod) +
+        f"\nReturn the complete library module `{lib_mod}.py` in `code`.")
+    lib, lib_problems, lib_attempts = _run_checked(lib_prompt, "A7_tests_lib", backend, log_dir, model, usage, rounds,
+                                                   validate_library)
+    tests_dir.mkdir(parents=True, exist_ok=True)
+    (tests_dir / f"{lib_mod}.py").write_text(lib, encoding="utf-8")
+    report = {"mode": "split", "library": {"file": f"{lib_mod}.py", "status": "valid" if not lib_problems else "invalid",
+                                           "problems": lib_problems, "attempts": lib_attempts}, "groups": []}
+    if lib_problems:
+        report.update({"status": "invalid", "problems": lib_problems, "usage": usage.as_dict(),
+                       "prompt_version": PROMPT_VERSION})
+        return report
+    rules_by_id = {r["id"]: r for r in rules_doc["rules"]}
+    asserts = "\n".join(f"[{c['id']}] {c['title']}" for c in contract["checks"] if c["kind"] == "assertion")
+    ctx = _context(contract, run_opts)
+    gs = groups(contract)
+    for old in tests_dir.glob(f"test_{design}_g*.py"):
+        old.unlink()
+
+    def one(i: int, checks: list[dict]) -> dict:
+        regression = i == 0
+        name = f"test_{design}_g{i + 1}"
+        prompt = (ctx + f"TEST CHECKS OF THIS MODULE ({len(checks)})\n" +
+                  "\n".join(_check_block(c, rules_by_id) for c in checks) +
+                  f"\n\nASSERTION CHECKS (SVA, checked during every test)\n{asserts}\n\n" +
+                  GROUP_RULES.format(mod=lib_mod, regression=(
+                      "\n- Also write test_regression_random: broad legal random traffic for many transactions that "
+                      "exercises every assertion check, verified with the library's reference model."
+                      if regression else "")) +
+                  f"\nLIBRARY `{lib_mod}.py`\n```python\n{lib}\n```\n\n{HELPERS_DOC}\n{group_rules(regression)}\n"
+                  f"Return the complete test module `{name}.py` in `code`.")
+        u = Usage()
+        code, probs, att = _run_checked(prompt, f"A7_tests_g{i + 1}", backend, log_dir, model, u, rounds,
+                                        lambda c: validate_group(c, checks, lib_mod, regression))
+        (tests_dir / f"{name}.py").write_text(code, encoding="utf-8")
+        return {"file": f"{name}.py", "checks": [c["id"] for c in checks], "status": "valid" if not probs else "invalid",
+                "problems": probs, "attempts": att, "usage": u}
+
+    with ThreadPoolExecutor(max_workers=max(1, workers)) as ex:
+        results = list(ex.map(lambda a: one(*a), enumerate(gs)))
+    for r in results:
+        usage.merge(r.pop("usage"))
+        report["groups"].append(r)
+    bad = [p for r in report["groups"] for p in r["problems"]]
+    report.update({"status": "valid" if not bad else "invalid", "problems": bad, "usage": usage.as_dict(),
+                   "prompt_version": PROMPT_VERSION, "file": f"{lib_mod}.py + {len(gs)} test modules"})
+    return report
+
+
+def repair_split(contract: dict, rules_doc: dict, backend, log_dir: Path, tests_dir: Path, design: str,
+                 errors: list[tuple[str, str]], *, model: str = "opus", round_no: int = 1,
+                 run_opts: dict | None = None) -> dict:
+    """Repair infrastructure errors in split mode. errors: (module file name, error text); the library is
+    repaired when the failing frame is in it. Functional failures are never sent."""
+    lib_mod = f"tb_{design}"
+    lib_path = tests_dir / f"{lib_mod}.py"
+    by_file: dict[str, list[str]] = {}
+    for f, e in errors:
+        by_file.setdefault(f, []).append(e)
+    usage, out = Usage(), {}
+    for f, errs in sorted(by_file.items()):
+        path = tests_dir / f
+        is_lib = f == lib_path.name
+        if is_lib:
+            check = validate_library
+        else:
+            cur = path.read_text(encoding="utf-8")
+            ids = {i for v in test_check_map(cur).values() for i in v}
+            mine = [x for x in contract["checks"] if x["kind"] == "test" and x["id"] in ids]
+            reg = "test_regression_random" in cur
+            check = (lambda c, _m=mine, _r=reg: validate_group(c, _m, lib_mod, _r))
+        ctx = (_context(contract, run_opts) + ("" if is_lib else
+               f"LIBRARY `{lib_mod}.py` (fixed)\n```python\n{lib_path.read_text(encoding='utf-8')}\n```\n"))
+        prompt = (ctx + f"\nTHE MODULE `{f}` BELOW RAISED PYTHON ERRORS IN SIMULATION (errors of the test code itself, "
+                  "not failed checks). Fix the code only; do not weaken any check or change any expected value; keep "
+                  "every function name.\n```python\n" + path.read_text(encoding="utf-8") + "\n```\nERRORS:\n" +
+                  "\n\n".join(errs[:8]) + f"\n\n{HELPERS_DOC}\n{RULES_TEXT}\nReturn the complete module in `code`.")
+        code, probs, att = _run_checked(prompt, f"A7_tests_repair{round_no}_{Path(f).stem}", backend, log_dir, model,
+                                        usage, 1, check)
+        if not probs:
+            path.write_text(code, encoding="utf-8")
+        out[f] = {"status": "repaired" if not probs else "invalid", "problems": probs, "attempts": att}
+    return {"status": "repaired" if all(v["status"] == "repaired" for v in out.values()) else "invalid",
+            "modules": out, "usage": usage.as_dict()}
+
+
+def error_module(t: dict, test_modules: dict[str, str], lib_name: str) -> str:
+    """Module to repair for a failed test: the library when the deepest frame is in it, else the test's own."""
+    frames = [Path(f).name for f in re.findall(r'File "([^"]+)"', t.get("traceback", ""))]
+    if frames and frames[-1] == lib_name:
+        return lib_name
+    return test_modules.get(t["name"].split("/")[0], next(iter(test_modules.values()), lib_name))

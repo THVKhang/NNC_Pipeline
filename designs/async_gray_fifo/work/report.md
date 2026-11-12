@@ -1,6 +1,6 @@
 # Verification report — async_gray_fifo
 
-Generated 2026-11-11T12:49:12+00:00 by NNC Pipeline.
+Generated 2026-11-12T07:27:24+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -18,8 +18,9 @@ Generated 2026-11-11T12:49:12+00:00 by NNC Pipeline.
 | Code coverage (RTL), functional | 100.0 % (40/40 cover points of the specification) |
 | Mutation score | 91.7 % (33 killed / 3 survived / 0 not compiled) |
 | Coverage target | not requested (`nnc cover <design> --target <n> --metric <m>`) |
+| Formal (SymbiYosys, depth 20) | {'BOUNDED': 8, 'CEX': 2, 'PROVEN': 1, 'UNSUPPORTED': 2} — reset assumptions + verif/formal/nnc_env.sv, work/formal.md |
 | Triage | 3 failure(s), 3 analysed: work/triage.md |
-| Agent cost | US$39.545 in 80 calls (A1 1.3607, A12 1.1381, A2 1.1421, A3 0.556, A4 2.88, A5 0.4355, A6 0.463, A7 21.1682, A9 10.4014); of which US$5.5388 in 3 failed calls (usage limit, timeout, invalid answer) |
+| Agent cost | US$48.7894 in 89 calls (A1 1.3607, A12 1.1381, A13 1.2791, A14 4.4505, A2 1.1421, A3 0.556, A4 2.88, A5 0.4355, A6 0.463, A7 21.1682, A9 13.9162); of which US$5.5388 in 3 failed calls (usage limit, timeout, invalid answer) |
 
 ## Sign-off conditions
 
@@ -33,6 +34,7 @@ Generated 2026-11-11T12:49:12+00:00 by NNC Pipeline.
 | Every run of the run set built and ran | met — 14 runs |
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | **not met** — 5 rule(s) below: AF-10.7.4-25, AF-15.2-08, AF-20.2-12, AF-20.2-13, AF-7.3-07 |
+| Formal: no counterexample, no vacuous or failed proof | **not met** — CEX 2 |
 
 ## Run set
 
@@ -61,26 +63,26 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 |---|---|---|
 | G1_rules | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-10T04:01:18+00:00 |
 | G2_contract | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-10T04:18:03+00:00 |
-| G3_verif_sources | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-11T11:29:31+00:00 |
+| G3_verif_sources | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-12T07:22:40+00:00 |
 | G4_signoff | PENDING | artifacts ready for review |
 
 ## Checks
 
 | Check | Kind | Title | Status | Evidence |
 |---|---|---|---|---|
-| CHK-001 | assertion | Read-domain hardware reset values | **PASS** | hits 4594, fails 0; hit in 14/14 runs |
-| CHK-002 | assertion | o_underflow is the registered one-cycle pulse of a non-blocked read while empty | **PASS** | hits 233290, fails 0; hit in 14/14 runs |
-| CHK-003 | assertion | o_empty_thr consistency for every 4-bit i_empty_thr | **FAIL** | hits 1523017, fails 534; fails in base.s1, base.s2, base.s3, base.s4, base.s5, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1 |
-| CHK-004 | assertion | Read-domain outputs change only at i_clk_rd edges | **PASS** | hits 1518997, fails 0; hit in 14/14 runs |
-| CHK-005 | assertion | Scoreboard: show-ahead data, write order, exactly-once, software-reset discard | **PASS** | hits 817932, fails 0; hit in 14/14 runs |
-| CHK-006 | assertion | Flags are never optimistic; occupancy is within 0..PARA_AFIFO_DEPTH | **PASS** | hits 1680955, fails 0; hit in 14/14 runs |
-| CHK-007 | assertion | Write-domain hardware reset values | **PASS** | hits 5221, fails 0; hit in 14/14 runs |
-| CHK-008 | assertion | o_overflow is the registered one-cycle pulse of a non-blocked write while full | **PASS** | hits 1681616, fails 0; hit in 14/14 runs |
-| CHK-009 | assertion | Write block forces o_full=1 and the empty-FIFO o_full_thr with zero latency | **PASS** | hits 88788, fails 0; hit in 14/14 runs |
-| CHK-010 | assertion | o_sw_rst_busy rises exactly at the first edge sampling i_rst_n_sw=0 | **PASS** | hits 1596416, fails 0; hit in 14/14 runs |
-| CHK-011 | assertion | o_sw_rst_busy falls only after i_rst_n_sw=1 plus a crossing round trip; write side is clean at the release | **PASS** | hits 85200, fails 0; hit in 14/14 runs |
-| CHK-012 | assertion | Write-domain outputs change only at i_clk_wr edges | **PASS** | hits 1681042, fails 0; hit in 14/14 runs |
-| CHK-013 | assertion | o_full_thr consistency for every 4-bit i_full_thr | **FAIL** | hits 1681616, fails 721; fails in base.s1, base.s2, base.s3, base.s4, base.s5, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1 |
+| CHK-001 | assertion | Read-domain hardware reset values | **PASS** | hits 4594, fails 0; hit in 14/14 runs; formal BOUNDED |
+| CHK-002 | assertion | o_underflow is the registered one-cycle pulse of a non-blocked read while empty | **PASS** | hits 233290, fails 0; hit in 14/14 runs; formal BOUNDED |
+| CHK-003 | assertion | o_empty_thr consistency for every 4-bit i_empty_thr | **FAIL** | hits 1523017, fails 534; fails in base.s1, base.s2, base.s3, base.s4, base.s5, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1; formal CEX |
+| CHK-004 | assertion | Read-domain outputs change only at i_clk_rd edges | **PASS** | hits 1518997, fails 0; hit in 14/14 runs; formal BOUNDED |
+| CHK-005 | assertion | Scoreboard: show-ahead data, write order, exactly-once, software-reset discard | **PASS** | hits 817932, fails 0; hit in 14/14 runs; formal UNSUPPORTED |
+| CHK-006 | assertion | Flags are never optimistic; occupancy is within 0..PARA_AFIFO_DEPTH | **PASS** | hits 1680955, fails 0; hit in 14/14 runs; formal UNSUPPORTED |
+| CHK-007 | assertion | Write-domain hardware reset values | **PASS** | hits 5221, fails 0; hit in 14/14 runs; formal BOUNDED |
+| CHK-008 | assertion | o_overflow is the registered one-cycle pulse of a non-blocked write while full | **PASS** | hits 1681616, fails 0; hit in 14/14 runs; formal BOUNDED |
+| CHK-009 | assertion | Write block forces o_full=1 and the empty-FIFO o_full_thr with zero latency | **PASS** | hits 88788, fails 0; hit in 14/14 runs; formal PROVEN |
+| CHK-010 | assertion | o_sw_rst_busy rises exactly at the first edge sampling i_rst_n_sw=0 | **PASS** | hits 1596416, fails 0; hit in 14/14 runs; formal BOUNDED |
+| CHK-011 | assertion | o_sw_rst_busy falls only after i_rst_n_sw=1 plus a crossing round trip; write side is clean at the release | **PASS** | hits 85200, fails 0; hit in 14/14 runs; formal BOUNDED |
+| CHK-012 | assertion | Write-domain outputs change only at i_clk_wr edges | **PASS** | hits 1681042, fails 0; hit in 14/14 runs; formal BOUNDED |
+| CHK-013 | assertion | o_full_thr consistency for every 4-bit i_full_thr | **FAIL** | hits 1681616, fails 721; fails in base.s1, base.s2, base.s3, base.s4, base.s5, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1; formal CEX |
 | CHK-014 | test | Nominal crossing latency is exactly S=2 destination edges | **PASS** | test_chk_014_nominal_latency/per=0, test_chk_014_nominal_latency/per=1; verified in model_off.s1, syn.s1 |
 | CHK-015 | test | Crossing latency S..S+2 with the metastability model | **NOT_VERIFIABLE** | test_chk_015_latency_with_model; verified in no run |
 | CHK-016 | test | Random traffic, random clock ratios, pointer wrap-around | **NOT_VERIFIABLE** | test_chk_016_random_ratios/pair=0, test_chk_016_random_ratios/pair=1, test_chk_016_random_ratios/pair=2, test_chk_016_random_ratios/pair=3, test_chk_016_random_ratios/pair=4, test_chk_016_random_ratios/pair=5; verified in no run |
@@ -565,6 +567,6 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 
 ## Not verified by this run
 
-- Formal proof, CDC/RDC, STA, synthesis and DFT checks are outside this flow.
+- Formal: the assertions were checked by SymbiYosys under the environment assumptions (work/formal.md); a BOUNDED result holds only up to its depth. CDC/RDC, STA, synthesis and DFT checks are outside this flow.
 - Rules marked NOT_VERIFIED_BY_SIM carry the contract's reason (static, structural, not observable...).
 - Only the configurations of the run set above were simulated; code coverage is merged over its runs, mutation testing used the primary run base.s1.

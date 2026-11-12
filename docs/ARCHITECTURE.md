@@ -377,3 +377,56 @@ Cuối tài liệu là danh sách câu hỏi phải trả lời trước `G4_sig
 - Lời gọi agent bị chặn vì hết quota sẽ tự đợi tới giờ reset ghi trong thông báo, rồi gọi lại (`NNC_LIMIT_WAIT`, mặc định 6 giờ).
 - Report tách riêng tiền của các lần gọi thất bại. Tổng là US$8,4 trên 5 thiết kế: ba lần sinh test (A7) bị cắt giữa chừng sau khoảng 20 phút, cộng một lần timeout.
 - Đề xuất còn để ngỏ: tách A7 thành một module testbench chung cộng các lời gọi nhỏ theo nhóm check, để một lần ngắt chỉ mất một nhóm. Việc này thay đổi bố cục test và cần sinh lại, duyệt lại test của mọi thiết kế.
+
+## 17. Formal, đo triage, sinh test chia nhỏ (2026-11-12)
+
+**Formal (`nnc/formal.py`, `nnc/gen_env.py`, bật bằng `formal=on`).**
+- **Vì sao phải dịch:** Yosys mã nguồn mở không đọc được SVA đồng thời có clock. Cả `read_verilog -formal` và yosys-slang đều báo "unsupported" ngay cả với `a |-> b`. Code dịch tập con mà A5 sinh ra (`|->`, `|=>`, `##N`, `disable iff`, `$past`/`$stable`; đã đếm trên cả 5 thiết kế: chỉ dùng những phép này) sang assertion tức thời, kèm một thanh ghi dịch cho mỗi lần thử. Bộ đếm lỗi trong code thủ tục cũng trở thành `assert(1'b0)` tại đúng chỗ đó.
+- **Checker chỉ dùng được khi mô phỏng** (`$time`, hàng đợi): bị loại khỏi top formal và được báo rõ.
+- **Ngữ nghĩa giá trị đầu:** biến của checker bắt đầu bằng 0 như trong mô phỏng; flop của DUT để giá trị tự do.
+- **Mỗi check ba task:** `bmc` (độ sâu 20), `prove` (k-induction) và `cover` (tiền đề xảy ra được không; nếu không thì VACUOUS), mỗi task tối đa 600 giây. Một lần chạy đầu không có giới hạn này đã treo gần 1 giờ ở một check.
+- **Clock:** thiết kế đồng bộ dùng một clock chung; `async` dùng clock tự do (`multiclock on`).
+
+**Môi trường formal.**
+- A13 viết nghĩa vụ của phía bên ngoài chỉ từ spec, US$0,27 mỗi thiết kế. Người duyệt G3 phải đọc vì giả định thừa sẽ che bug; trong gói G4 có danh sách để xác nhận.
+- A14 phân loại phản ví dụ: A (RTL sai), B (checker sai), C (spec không rõ), E (thiếu nghĩa vụ môi trường).
+- Phân tích loại E được đưa lại cho A13 ở lần `gen-env` sau; A13 chỉ thêm giả định khi spec thật sự đòi hỏi.
+
+**Kết quả** (giới hạn 20 chu kỳ):
+
+| | PROVEN | BOUNDED | CEX còn lại |
+|---|---|---|---|
+| apb_tlul | 10 | 7 | 0 |
+| axi2apb | 9 | 7 | 0 |
+| sync_fifo | 4 | 5 | 0 |
+| async_apb | 2 | 12 | 0 |
+| async_gray_fifo | 1 | 8 | 2 |
+
+**Những gì formal tìm ra:**
+- **apb_tlul:** khi chưa có môi trường thì có 5 CEX, tất cả do phía yêu cầu bỏ PSEL giữa giao dịch. Với 5 giả định APB/TL-UL thì không còn CEX. Ba bug benchmark TL1–TL3 đều cho CEX đúng check.
+- **axi2apb:** 2 CEX dẫn tới 3 lỗi trong checker đọc `nnc_chk_axi_r.sv`:
+  - burst FIXED dài hơn 16 beat (AB-3-07);
+  - vùng 4 KiB tính từ địa chỉ chưa căn thẳng hàng (AXI A3.4);
+  - WRAP bắt đầu ở địa chỉ không thẳng hàng.
+
+  RTL đúng ở cả ba trường hợp. Mô phỏng không lộ ra vì không test nào tạo các yêu cầu đó. Đã sửa tay phần phân loại, duyệt lại G3, mô phỏng lại 15/15.
+- **async_apb:** 7 CEX → 0 sau một vòng E (hai reset kích cùng lúc, mỗi reset nhả đồng bộ với clock của nó, viết trên `$global_clock`). CHK-018 VACUOUS vì đây là check APB5 mà formal chạy APB4 mặc định.
+- **async_gray_fifo:** 7 → 4 → 2 CEX qua hai vòng E:
+  - reset nhả đồng bộ với clock của nó;
+  - ngưỡng chỉ "written once";
+  - sau khi reset một miền, không truyền dữ liệu cho tới khi hai cửa sổ reset chồng nhau. Đây là cách đọc ASM-005, ghi rõ để người duyệt xác nhận.
+
+  Hai CEX còn lại (CHK-003/013) nằm trong trạng thái spec gọi là "không nhất quán, IP không phát hiện". Việc checker có nên loại trừ khoảng đó hay không là câu hỏi cho spec, nên không sửa.
+
+**Đo triage (`nnc bench --triage all`).**
+- 15/15 bug được kết luận A. Cả 141 phân tích của từng lỗi riêng lẻ đều ra A.
+- Chi phí US$12,7 (≈ US$0,84 mỗi bug).
+- Một lần gọi đã chạm quota, tự chờ 19 phút rồi chạy tiếp.
+
+**Sinh test chia nhỏ (`tests_mode=split`, thử nghiệm).**
+- Thư viện testbench chung, cộng mỗi nhóm ≤ 5 check một module, chạy song song. Sửa lỗi chỉ đụng module hỏng.
+- Đo trên sync_fifo:
+  - US$7,2 (thư viện 2,5 + bốn nhóm 4,6), so với US$4,5 của cách một khối, vì nhóm nào cũng đọc lại thư viện 1.300 dòng;
+  - 12/15 test pass, ba test hỏng ở một hàm của thư viện.
+- Lần đầu còn tốn thêm vì prompt nhóm vẫn chứa dòng "thêm `test_regression_random`" (mâu thuẫn, đã sửa).
+- Kết luận: không rẻ hơn; lợi ích duy nhất là khi bị ngắt chỉ mất một nhóm. Mặc định vẫn một khối.

@@ -367,6 +367,8 @@ def build_parser() -> argparse.ArgumentParser:
                            ("contract", "interface + check plan -> contract.json (G2)"),
                            ("gen-sva", "generate and lint the SVA checkers"),
                            ("gen-tests", "generate the cocotb tests"),
+                           ("gen-env", "formal environment assumptions from the spec (agent A13; config formal=on)"),
+                           ("formal", "SymbiYosys on the assertions -> formal.md (config formal=on)"),
                            ("sim", "integrate the DUT and simulate -> results.json"),
                            ("triage", "analyse failures for the designer -> triage.md"),
                            ("mutate", "mutation testing on a copy of the RTL -> mutation.json"),

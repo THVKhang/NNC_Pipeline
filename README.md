@@ -102,7 +102,21 @@ A mutant counts as killed only by a test or check that passes on the unmutated R
 
 ### Bug benchmark and CI | Đo bằng bug cài sẵn và CI
 
-`nnc bench <ip>` runs the hand-written realistic faults of `designs/<ip>/bugs/bugs.json` (one-line changes: a full flag one entry early, an overflow raised for a blocked write, PPROT taken from the wrong channel, a dropped PSLVERR, a burst one beat short, an unchecked source ID, a binary instead of Gray pointer across the clock domains, a two-phase acknowledge detected on the wrong level…) against the approved verification. A bug counts as caught only when a test or check fails that passes on the unmodified RTL. **15 of 15 were caught**, 3 per design ([work/bench.md](designs/async_gray_fifo/work/bench.md)). `--triage` adds the triage verdict per bug (an agent call each).
+`nnc bench <ip>` runs the hand-written realistic faults of `designs/<ip>/bugs/bugs.json` (one-line changes: a full flag one entry early, an overflow raised for a blocked write, PPROT taken from the wrong channel, a dropped PSLVERR, a burst one beat short, an unchecked source ID, a binary instead of Gray pointer across the clock domains, a two-phase acknowledge detected on the wrong level…) against the approved verification. A bug counts as caught only when a test or check fails that passes on the unmodified RTL. **15 of 15 were caught**, 3 per design, and the triage agent named the RTL as the cause for **15 of 15** (all 141 per-failure analyses said *RTL wrong*; US$12.7 in total, about US$0.84 per bug) ([work/bench.md](designs/async_gray_fifo/work/bench.md)).
+
+### Formal check | Kiểm chứng formal
+
+`nnc config <ip> formal=on`, then `gen-env` and `formal`: SymbiYosys checks every generated assertion, alone, by bounded model checking (depth 20), k-induction and a cover of its antecedent (vacuity). Open-source Yosys does not read clocked concurrent SVA, so the subset the generator emits is translated to immediate assertions by code; the rest is reported, never approximated. The environment (`verif/formal/nnc_env.sv`) holds the obligations of the specification on the input side, written by agent A13 from the specification only and approved at G3; counterexamples are classified by agent A14 (RTL, checker, specification, or a missing environment obligation).
+
+| | apb_tlul | axi2apb | sync_fifo | async_apb | async_gray_fifo |
+|---|---|---|---|---|---|
+| PROVEN / BOUNDED (depth 20) | 10 / 7 | 9 / 7 | 4 / 5 | 2 / 12 | 1 / 8 |
+| Counterexamples left | 0 | 0 | 0 | 0 | 2 (CHK-003, CHK-013) |
+| Not checked | — | 1 timeout | 1 timeout, 1 simulation-only checker | 3 simulation-only, 1 vacuous (APB5 check, default APB4 parameters) | 2 simulation-only |
+
+- **The three injected apb_tlul bugs** each gave a counterexample on the right checks.
+- **axi2apb: a generated checker was wrong three times**, invisible to simulation because no test drove those requests: a FIXED burst above 16 beats, a 4-KiB range taken from an unaligned start, an unaligned WRAP start. The RTL rejected all three as the specification requires; the checker's classification was fixed (G3, NOTICE).
+- **The CDC designs needed environment rounds:** 13 counterexamples came from free clocks and resets (a reset pulse between two clock edges, a reset of one domain only). A14 named the rules; A13 added them (reset released on its own clock, resets asserted together, no traffic after a one-domain reset until both are reset). The two FIFO counterexamples left are in the state the specification calls *inconsistent and not detected* after a one-domain reset: whether the threshold checks should exclude it is a specification question, left to the reviewer.
 
 CI (`.github/workflows/ci.yml`) runs the unit tests, then each design's reproduction kit with `make` only, and `nnc kit-check` compares its outcome with the committed results. No agent runs in CI.
 
@@ -121,7 +135,7 @@ NNC Pipeline đảm nhiệm **nửa verification** của một flow từ spec t�
 ```
 nnc/                 orchestrator: ingest, extract, review, contract, gen_sva, gen_cov, gen_tests, sim, coverage,
                      closure, triage, mutate, report, inject, flow, runset (run sets), bench (bug benchmark),
-                     kitcheck (CI comparison), packet (G4 reviewer packet)
+                     kitcheck (CI comparison), packet (G4 reviewer packet), formal + gen_env (SymbiYosys)
 nnc/agents/          Claude Code backend (inline worker / sandboxed deep agent), manual backend, cache, schema validator
 nnc/simlib/          helper library copied next to generated cocotb tests (clocks, resets, multi-clock helpers)
 .claude/commands/    /nnc-flow, /nnc-gate
@@ -134,8 +148,8 @@ docs/                ARCHITECTURE.md, GUIDE.md
 
 ## Limits | Giới hạn
 
-- **EN:** Simulation only: no formal proof, CDC/RDC, STA, synthesis or DFT checks; rules of that kind are listed as not verifiable by simulation. Several clocks may be synchronous (started together) or asynchronous (seeded random phase per clock); metastability itself is modelled only if the RTL has a model. One run is one configuration and one seed; a run set (`run_set.json`) runs several and merges them, and a check that no run can verify is reported NOT_VERIFIABLE. Generated tests and checkers can be wrong (sync_fifo shows one): that is what the gates, the hit counters, triage and the mutation score are for. Model outputs vary between runs; the cache makes a re-run reproducible.
-- **VI:** Chỉ mô phỏng: không có formal, CDC/RDC, STA, synthesis hay DFT; các luật loại đó được liệt kê là không kiểm được bằng mô phỏng. Nhiều clock có thể đồng bộ (khởi động cùng lúc) hoặc bất đồng bộ (pha ngẫu nhiên theo seed cho từng clock); metastability chỉ được mô hình nếu RTL có mô hình. Mỗi lần chạy là một cấu hình và một seed; run set (`run_set.json`) chạy nhiều cấu hình rồi gộp kết quả, check nào không lần chạy nào kiểm được thì báo NOT_VERIFIABLE. Test và checker do agent sinh có thể sai (sync_fifo là một ví dụ): đó là lý do có gate, bộ đếm hit, triage và mutation score. Kết quả của model có thể khác giữa các lần; cache giúp chạy lại cho cùng kết quả.
+- **EN:** Simulation, plus an optional formal check of the generated assertions (bounded or k-induction, default parameters only, assertions in the translated SVA subset); no CDC/RDC, STA, synthesis or DFT checks; rules of that kind are listed as not verifiable by simulation. Several clocks may be synchronous (started together) or asynchronous (seeded random phase per clock); metastability itself is modelled only if the RTL has a model. One run is one configuration and one seed; a run set (`run_set.json`) runs several and merges them, and a check that no run can verify is reported NOT_VERIFIABLE. Generated tests and checkers can be wrong (sync_fifo shows one): that is what the gates, the hit counters, triage and the mutation score are for. Model outputs vary between runs; the cache makes a re-run reproducible.
+- **VI:** Mô phỏng, cộng thêm kiểm chứng formal tuỳ chọn cho các assertion đã sinh (giới hạn độ sâu hoặc k-induction, chỉ cấu hình tham số mặc định, chỉ tập SVA dịch được); không có CDC/RDC, STA, synthesis hay DFT; các luật loại đó được liệt kê là không kiểm được bằng mô phỏng. Nhiều clock có thể đồng bộ (khởi động cùng lúc) hoặc bất đồng bộ (pha ngẫu nhiên theo seed cho từng clock); metastability chỉ được mô hình nếu RTL có mô hình. Mỗi lần chạy là một cấu hình và một seed; run set (`run_set.json`) chạy nhiều cấu hình rồi gộp kết quả, check nào không lần chạy nào kiểm được thì báo NOT_VERIFIABLE. Test và checker do agent sinh có thể sai (sync_fifo là một ví dụ): đó là lý do có gate, bộ đếm hit, triage và mutation score. Kết quả của model có thể khác giữa các lần; cache giúp chạy lại cho cùng kết quả.
 
 ## Licence | Giấy phép
 

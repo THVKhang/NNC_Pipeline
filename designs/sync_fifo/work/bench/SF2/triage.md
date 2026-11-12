@@ -1,0 +1,172 @@
+# Failure triage
+
+Failures: 13; analysed: 12. The designer decides; nothing was changed.
+
+## 1. test_chk_013_random_ratios/ratio=0 (10_10): CHK-011 o_overflow=0 expected after write edge, got 1 at 1697.001 ns
+
+**Most likely:** A_rtl_wrong
+
+| Part | Content |
+|---|---|
+| Specification says | spec/SyncFIFO_Design_Specification.md:150 REQ-SRST-002: "From the cycle in which i_rst_n_sw is 0, writes shall be blocked ... Writes remain blocked until o_sw_rst_busy is 0. A blocked write shall not raise o_overflow." spec:138 REQ-FUNC-008: "o_overflow shall be a pulse ... after a write was requested while o_full was 1 and writes were not blocked by the software reset." spec:536: "o_overflow | flop: i_wr_en AND NOT block AND full flop, one cycle later", where spec:527 says "block | o_sw_rst_busy flop OR i_rst_n_sw = 0". spec:288: "Request during the software reset | Dropped, no overflow or underflow pulse". contract.json:489 CHK-011: "o_overflow == (i_wr_en=1 AND o_full=1 AND i_rst_n_sw=1 AND o_sw_rst_busy=0) ... no pulse for a write blocked by the software reset". rules.json:1514: "A blocked write shall not raise o_overflow." |
+| RTL does | rtl/m_vlsit_sfifo_wr.sv:158 `reg_overflow <= i_wr_en & reg_full;`. The block term w_wr_blk (line 114: `reg_sw_rst_busy | ~i_rst_n_sw`) is left out, even though the comment on line 157 says "A blocked write ... raises no pulse". Line 234 drives o_overflow from reg_overflow. reg_full (line 155, `w_occ_nxt >= PARA_SFIFO_DEPTH`) keeps updating while the software reset blocks writes. So any edge with i_wr_en=1 and reg_full=1 during a block gives o_overflow=1. The read side has the block term: rtl/m_vlsit_sfifo_rd.sv:154 `reg_underflow <= i_rd_en & ~w_rd_blk & reg_empty;`. Inference for the failing edge: the RTL gives 1 only when i_wr_en=1 and reg_full=1, and that makes o_full=1 (line 232). The monitor expected 0, so P.sw==0 or P.busy==1 must have held. The failing edge was therefore a software-reset-blocked write. sim.log:48 records only the assertion message, not the pre-edge port values. |
+| Test does | test_chk_013 (test_sync_fifo.py:718-735) runs Env.start((10,10)), then hw_reset for each release order, then random_traffic with sw_prob=0.02 (line 730). _rand_writer (lines 515-542) drives i_rst_n_sw=0 for 1..10 cycles at random. It keeps driving i_wr_en at random density (line 541) while the reset is low and while busy, so blocked writes happen. The passive Monitor checks at every i_clk_wr rise with i_rst_n_wr=1 (line 217). In _wr_edge (lines 303-306) it computes exp_ovf = we AND P.full==1 AND P.sw==1 AND P.busy==0 from the pre-edge port snapshot and asserts S.ovf == exp_ovf. The expected value follows CHK-011 / REQ-FUNC-008 / REQ-SRST-002 directly. The SVA verif/sva/nnc_chk_wr.sv:88 uses the same equation. |
+| A_rtl_wrong | For: m_vlsit_sfifo_wr.sv:158 does not include ~w_wr_blk. That contradicts spec:536 ("i_wr_en AND NOT block AND full flop"), spec:150 and spec:288, and the RTL's own comment at line 157. The read-side twin (m_vlsit_sfifo_rd.sv:154) does include ~w_rd_blk. Given line 158, a mismatch with exp=0/got=1 can only happen on a blocked write, which is exactly the excluded case. The same failure appears in every ratio of CHK-013 and in all software-reset tests (CHK-022, CHK-024), while tests without a software reset (CHK-015, CHK-016, CHK-019, CHK-020) pass with correct overflow pulses (sim.log:278-295).<br>Against: sim.log does not record the pre-edge i_rst_n_sw / o_sw_rst_busy values at 1697.001 ns. That the edge was blocked is deduced from the RTL equation, not observed directly. |
+| B_test_wrong | For: None found. The monitor equation (test_sync_fifo.py:305) matches contract.json:489 and spec:536 term for term. It samples pre-edge values in ReadOnly (lines 185-191), so it uses the right sampling point.<br>Against: The test follows the spec literally. The stimulus (wr_en=1 during the software reset) is legal per spec:288, which defines the response to it. |
+| C_spec_unclear | For: spec:532 defines the full flop as "next occupancy equals DEPTH", but RTL line 155 uses >=. Under the software reset (PTR state resets wptr while rptr may be nonzero) this can make reg_full=1 during the block. This only affects how often the bug shows up.<br>Against: The spec is consistent and explicit in four places (spec:138, 150, 288, 536) that a blocked write must not raise o_overflow. There is no ambiguity about the failing behaviour. |
+| Options | Fix RTL (recommended by the evidence): in m_vlsit_sfifo_wr.sv:158 change to `reg_overflow <= i_wr_en & ~w_wr_blk & reg_full;`, matching spec:536 and the read side at rd.sv:154. Optionally also check that line 155 (`>=`) agrees with spec:532 ("equals DEPTH"), or clarify the spec. Fix test: not justified, because the check matches the spec. Clarify spec: not needed for this failure. Only change the spec if the designer deliberately wants blocked writes to pulse o_overflow, which would contradict REQ-SRST-002 and require changing REQ-FUNC-008, spec:288 and spec:536. |
+
+## 2. test_chk_013_random_ratios/ratio=1 (12_8): CHK-011 o_overflow=0 expected after write edge, got 1 at 3053.002 ns
+
+**Most likely:** A_rtl_wrong
+
+| Part | Content |
+|---|---|
+| Specification says | Same as ratio=0. spec:150 REQ-SRST-002: "A blocked write shall not raise o_overflow." spec:536: "o_overflow | flop: i_wr_en AND NOT block AND full flop". spec:527: block = o_sw_rst_busy OR i_rst_n_sw = 0. contract.json:489 CHK-011: "no pulse for a write blocked by the software reset". |
+| RTL does | rtl/m_vlsit_sfifo_wr.sv:158 `reg_overflow <= i_wr_en & reg_full;` does not include ~w_wr_blk (w_wr_blk at line 114). With i_wr_en=1 and reg_full=1, a write blocked by i_rst_n_sw=0 or busy=1 still sets o_overflow=1 at the next edge. Since the RTL gave 1 and the monitor expected 0, the failing edge must have had P.sw=0 or P.busy=1. |
+| Test does | Same test as ratio=0 (test_sync_fifo.py:718-735) with pw=12, pr=8. _rand_writer (lines 515-542) asserts i_rst_n_sw at random and keeps i_wr_en random during the block. Monitor._wr_edge lines 303-306 expects ovf = we & full & sw & !busy. |
+| A_rtl_wrong | For: wr.sv:158 does not include the block term that spec:536 requires. The read side (rd.sv:154) has it. The same signature fails across all clock ratios, so it is not a timing or ratio effect.<br>Against: The exact pre-edge port values are not in sim.log:63. That the edge was blocked is deduced from the RTL equation. |
+| B_test_wrong | For: None found. The monitor equation at line 305 equals CHK-011 in contract.json:489.<br>Against: The check matches the spec exactly. |
+| C_spec_unclear | For: Minor: spec:532 says "equals DEPTH" while the RTL uses >=. This only affects how often reg_full=1 during a block.<br>Against: The spec is explicit in several places that a blocked write raises no overflow. |
+| Options | Fix RTL: in wr.sv:158 change to `reg_overflow <= i_wr_en & ~w_wr_blk & reg_full;`. Fix test: not justified. Clarify spec: only if blocked-write overflow is intended, which contradicts REQ-SRST-002. |
+
+## 3. test_chk_013_random_ratios/ratio=2 (8_12): CHK-011 o_overflow=0 expected after write edge, got 1 at 4333.003 ns
+
+**Most likely:** A_rtl_wrong
+
+| Part | Content |
+|---|---|
+| Specification says | spec:150 REQ-SRST-002: "A blocked write shall not raise o_overflow." spec:536: "i_wr_en AND NOT block AND full flop, one cycle later". contract.json:489 CHK-011 equation: i_wr_en AND o_full AND i_rst_n_sw AND NOT o_sw_rst_busy. |
+| RTL does | rtl/m_vlsit_sfifo_wr.sv:158 `reg_overflow <= i_wr_en & reg_full;` has no ~w_wr_blk. A blocked write with reg_full=1 pulses o_overflow. |
+| Test does | test_chk_013 (lines 718-735) with pw=8, pr=12. Random writer with software resets (lines 515-542). Monitor at lines 303-306. |
+| A_rtl_wrong | For: Missing block term at wr.sv:158, against spec:536, spec:150 and the RTL comment at line 157. Same failure at every ratio.<br>Against: The pre-edge values at the failing edge are deduced, not logged. |
+| B_test_wrong | For: None found.<br>Against: The monitor implements contract.json:489 verbatim. |
+| C_spec_unclear | For: spec:532 ("equals") vs RTL >= at line 155. Minor and secondary.<br>Against: The overflow-under-block rule is unambiguous. |
+| Options | Fix RTL: add ~w_wr_blk at wr.sv:158. Fix test: not justified. Clarify spec: not needed. |
+
+## 4. test_chk_013_random_ratios/ratio=3 (8_16): CHK-011 o_overflow=0 expected after write edge, got 1 at 5101.004 ns
+
+**Most likely:** A_rtl_wrong
+
+| Part | Content |
+|---|---|
+| Specification says | spec:150 REQ-SRST-002: "A blocked write shall not raise o_overflow." spec:536 o_overflow = flop(i_wr_en AND NOT block AND full flop). spec:288: request during the software reset -> "Dropped, no overflow or underflow pulse". contract.json:489 CHK-011. |
+| RTL does | rtl/m_vlsit_sfifo_wr.sv:158 `reg_overflow <= i_wr_en & reg_full;` does not include w_wr_blk (line 114). It pulses on blocked writes while reg_full=1. |
+| Test does | test_chk_013 (lines 718-735) with pw=8, pr=16. Random software resets with random i_wr_en (lines 515-542). Monitor at lines 303-306 expects no pulse when P.sw=0 or P.busy=1. |
+| A_rtl_wrong | For: Missing ~w_wr_blk at wr.sv:158. The read side's rd.sv:154 has the analogous term. Same signature in all failing tests.<br>Against: No waveform data in sim.log for the failing edge. |
+| B_test_wrong | For: None found.<br>Against: The check equals the spec and contract. |
+| C_spec_unclear | For: spec:532 vs RTL line 155 (>= vs equals). Minor.<br>Against: The spec is explicit for overflow under block. |
+| Options | Fix RTL: add ~w_wr_blk at wr.sv:158. Fix test: not justified. Clarify spec: not needed. |
+
+## 5. test_chk_013_random_ratios/ratio=4 (16_8): CHK-011 o_overflow=0 expected after write edge, got 1 at 5485.005 ns
+
+**Most likely:** A_rtl_wrong
+
+| Part | Content |
+|---|---|
+| Specification says | spec:150 REQ-SRST-002: "A blocked write shall not raise o_overflow." spec:536: "o_overflow | flop: i_wr_en AND NOT block AND full flop". contract.json:489 CHK-011. |
+| RTL does | rtl/m_vlsit_sfifo_wr.sv:158 `reg_overflow <= i_wr_en & reg_full;` does not include the block term, so a blocked write with reg_full=1 gives o_overflow=1. |
+| Test does | test_chk_013 (lines 718-735) with pw=16, pr=8. Random writer with software resets (lines 515-542). Monitor at lines 303-306. |
+| A_rtl_wrong | For: wr.sv:158 is missing ~w_wr_blk, against spec:536. Identical signature in all other failing tests.<br>Against: The failing-edge port values are deduced, not logged. |
+| B_test_wrong | For: None found.<br>Against: The monitor follows contract.json:489. |
+| C_spec_unclear | For: spec:532 vs RTL >= (line 155). Secondary.<br>Against: The spec is unambiguous about blocked-write overflow. |
+| Options | Fix RTL: add ~w_wr_blk at wr.sv:158. Fix test: not justified. Clarify spec: not needed. |
+
+## 6. test_chk_013_random_ratios/ratio=5 (12_28): CHK-011 o_overflow=0 expected after write edge, got 1 at 7981.006 ns
+
+**Most likely:** A_rtl_wrong
+
+| Part | Content |
+|---|---|
+| Specification says | spec:150 REQ-SRST-002: "A blocked write shall not raise o_overflow." spec:536 o_overflow = flop(i_wr_en AND NOT block AND full flop). contract.json:489 CHK-011. |
+| RTL does | rtl/m_vlsit_sfifo_wr.sv:158 `reg_overflow <= i_wr_en & reg_full;` does not include ~w_wr_blk. It pulses on software-reset-blocked writes while reg_full=1. |
+| Test does | test_chk_013 (lines 718-735) with pw=12, pr=28. Random software resets with i_wr_en kept random (lines 515-542). Monitor expectation at lines 303-306. |
+| A_rtl_wrong | For: Missing block term at wr.sv:158. Inconsistent with spec:536 and the read-side implementation rd.sv:154.<br>Against: No pre-edge snapshot in the log. |
+| B_test_wrong | For: None found.<br>Against: The check equals the spec. |
+| C_spec_unclear | For: spec:532 vs RTL line 155. Minor.<br>Against: Explicit spec text at spec:150 and 288. |
+| Options | Fix RTL: add ~w_wr_blk at wr.sv:158. Fix test: not justified. Clarify spec: not needed. |
+
+## 7. test_chk_013_random_ratios/ratio=6 (28_12): CHK-011 o_overflow=0 expected after write edge, got 1 at 9157.007 ns
+
+**Most likely:** A_rtl_wrong
+
+| Part | Content |
+|---|---|
+| Specification says | spec:150 REQ-SRST-002: "A blocked write shall not raise o_overflow." spec:536. contract.json:489 CHK-011. |
+| RTL does | rtl/m_vlsit_sfifo_wr.sv:158 `reg_overflow <= i_wr_en & reg_full;` has no block term, so blocked writes with reg_full=1 pulse o_overflow. |
+| Test does | test_chk_013 (lines 718-735) with pw=28, pr=12. Random software resets (lines 515-542). Monitor at lines 303-306. |
+| A_rtl_wrong | For: wr.sv:158 is missing ~w_wr_blk, against spec:536. Same signature across all ratios.<br>Against: The failing-edge values are not logged. |
+| B_test_wrong | For: None found.<br>Against: The check is spec-exact. |
+| C_spec_unclear | For: spec:532 vs RTL >=. Secondary.<br>Against: The spec is explicit. |
+| Options | Fix RTL: add ~w_wr_blk at wr.sv:158. Fix test: not justified. Clarify spec: not needed. |
+
+## 8. test_chk_013_random_ratios/ratio=7 (36_8): CHK-011 o_overflow=0 expected after write edge, got 1 at 10561.008 ns
+
+**Most likely:** A_rtl_wrong
+
+| Part | Content |
+|---|---|
+| Specification says | spec:150 REQ-SRST-002: "A blocked write shall not raise o_overflow." spec:536. contract.json:489 CHK-011. |
+| RTL does | rtl/m_vlsit_sfifo_wr.sv:158 `reg_overflow <= i_wr_en & reg_full;` does not include ~w_wr_blk. |
+| Test does | test_chk_013 (lines 718-735) with pw=36, pr=8. Random software resets (lines 515-542). Monitor at lines 303-306. |
+| A_rtl_wrong | For: Missing block term at wr.sv:158. The read-side twin rd.sv:154 is correct.<br>Against: The failing-edge values are deduced, not logged. |
+| B_test_wrong | For: None found.<br>Against: The check equals contract.json:489. |
+| C_spec_unclear | For: spec:532 vs RTL line 155. Minor.<br>Against: The spec is explicit. |
+| Options | Fix RTL: add ~w_wr_blk at wr.sv:158. Fix test: not justified. Clarify spec: not needed. |
+
+## 9. test_chk_022_sw_reset_sequence/ratio=0 (10_10): CHK-011 o_overflow=0 expected after write edge, got 1 at 44884.018 ns
+
+**Most likely:** A_rtl_wrong
+
+| Part | Content |
+|---|---|
+| Specification says | spec:150 REQ-SRST-002: "From the cycle in which i_rst_n_sw is 0, writes shall be blocked ... o_full shall be 1 ... Writes remain blocked until o_sw_rst_busy is 0. A blocked write shall not raise o_overflow." spec:536 o_overflow = flop(i_wr_en AND NOT block AND full flop). spec:288. contract.json:489 CHK-011. |
+| RTL does | rtl/m_vlsit_sfifo_wr.sv:158 `reg_overflow <= i_wr_en & reg_full;`. Here only 5 of 8 words are stored, so reg_full has to become 1 during the sequence. A likely path: in state PTR, w_wptr_nxt is forced to 0 (lines 128-129) while the visible read pointer is still nonzero. w_occ_nxt (lines 140-142) then wraps to 2*DEPTH - rptr >= DEPTH, so reg_full=1 (line 155). With i_wr_en held at 1 and no block term at line 158, o_overflow=1. This path is inferred from the code and not confirmed in a waveform. |
+| Test does | test_chk_022 (lines 1136-1209). full_thr=4, empty_thr=1. It writes 5 words (line 1149), then at a falling edge drives i_rst_n_sw=0 together with i_wr_en=1 (lines 1156-1158) and holds both for N cycles (lines 1163-1172). The test itself also asserts s.ovf == 0 during the sequence (lines 1167, 1177). The Monitor (lines 303-306) fired first with exp_ovf=0, because P.sw=0 or P.busy=1. |
+| A_rtl_wrong | For: wr.sv:158 is missing ~w_wr_blk (spec:536). This test drives exactly the case spec:150 and spec:288 cover: a write during the software reset. Writes are blocked, so no pulse is allowed.<br>Against: Why reg_full=1 with only 5 words is inferred (the pointer reset in PTR plus >= at line 155), not observed in a waveform. |
+| B_test_wrong | For: None found. The stimulus is legal per spec:288.<br>Against: The expected 0 follows directly from REQ-SRST-002. |
+| C_spec_unclear | For: spec:532 defines the full flop as "next occupancy equals DEPTH", but the RTL uses >= (line 155). With the pointer reset, the occupancy can exceed DEPTH and set reg_full=1. The designer may want to clarify what the full flop shows during the sequence.<br>Against: Whatever reg_full is, spec:150 and 536 forbid an overflow pulse on a blocked write. |
+| Options | Fix RTL: change wr.sv:158 to `reg_overflow <= i_wr_en & ~w_wr_blk & reg_full;`. Separately, check whether line 155 should be `== PARA_SFIFO_DEPTH` per spec:532, or clarify spec:532. Fix test: not justified. Clarify spec: only the full-flop definition, which is secondary. |
+
+## 10. test_chk_022_sw_reset_sequence/ratio=1 (8_12): CHK-011 o_overflow=0 expected after write edge, got 1 at 45644.019 ns
+
+**Most likely:** A_rtl_wrong
+
+| Part | Content |
+|---|---|
+| Specification says | spec:150 REQ-SRST-002: "A blocked write shall not raise o_overflow." spec:536. spec:288. contract.json:489 CHK-011. |
+| RTL does | rtl/m_vlsit_sfifo_wr.sv:158 `reg_overflow <= i_wr_en & reg_full;` has no block term. During the software-reset sequence reg_full can become 1 (pointer reset at lines 128-129, occupancy wrap at lines 140-142, >= at line 155). With i_wr_en=1 held by the test, o_overflow pulses. |
+| Test does | test_chk_022 (lines 1136-1209) with pw=8, pr=12. It writes 5 words, then drives i_rst_n_sw=0 with i_wr_en=1 held for N cycles (lines 1154-1172). Both the Monitor (line 306) and the test's own checks (lines 1167, 1177) expect o_overflow=0. |
+| A_rtl_wrong | For: Missing ~w_wr_blk at wr.sv:158, against spec:536 and spec:150.<br>Against: The reg_full=1 path is inferred. |
+| B_test_wrong | For: None found.<br>Against: The expectation is spec-exact. |
+| C_spec_unclear | For: spec:532 ("equals DEPTH") vs RTL >=.<br>Against: The overflow rule is explicit. |
+| Options | Fix RTL: add ~w_wr_blk at wr.sv:158, and check line 155 against spec:532. Fix test: not justified. Clarify spec: only the full-flop definition, if needed. |
+
+## 11. test_chk_022_sw_reset_sequence/ratio=2 (12_8): CHK-011 o_overflow=0 expected after write edge, got 1 at 46460.02 ns
+
+**Most likely:** A_rtl_wrong
+
+| Part | Content |
+|---|---|
+| Specification says | spec:150 REQ-SRST-002: "A blocked write shall not raise o_overflow." spec:536. spec:288. contract.json:489 CHK-011. |
+| RTL does | rtl/m_vlsit_sfifo_wr.sv:158 `reg_overflow <= i_wr_en & reg_full;` does not include ~w_wr_blk, so a blocked write with reg_full=1 pulses o_overflow. |
+| Test does | test_chk_022 (lines 1136-1209) with pw=12, pr=8. Same software-reset stimulus with i_wr_en=1 during the block (lines 1154-1172). Monitor at line 306. |
+| A_rtl_wrong | For: Missing block term at wr.sv:158.<br>Against: The reg_full=1 path is inferred. |
+| B_test_wrong | For: None found.<br>Against: The check is spec-exact. |
+| C_spec_unclear | For: spec:532 vs RTL >=.<br>Against: The overflow rule is explicit. |
+| Options | Fix RTL: add ~w_wr_blk at wr.sv:158. Fix test: not justified. Clarify spec: not needed for this failure. |
+
+## 12. test_chk_024_sw_reset_full_and_rerequest: CHK-011 o_overflow=0 expected after write edge, got 1 at 49536.022 ns
+
+**Most likely:** A_rtl_wrong
+
+| Part | Content |
+|---|---|
+| Specification says | spec:150 REQ-SRST-002: "From the cycle in which i_rst_n_sw is 0, writes shall be blocked ... A blocked write shall not raise o_overflow." spec:536: "o_overflow | flop: i_wr_en AND NOT block AND full flop". spec:288: request during the software reset -> "Dropped, no overflow or underflow pulse". contract.json:489 CHK-011. |
+| RTL does | rtl/m_vlsit_sfifo_wr.sv:158 `reg_overflow <= i_wr_en & reg_full;`. In this test the FIFO is full (8 words), so reg_full=1 already. At the first i_clk_wr edge with i_rst_n_sw=0 and i_wr_en=1, w_wr_blk=1 (line 114) but is ignored at line 158, so reg_overflow=1. This is the most direct case of the defect. |
+| Test does | test_chk_024 (lines 1274-1314). It fills the FIFO with DEPTH words (line 1284) and checks o_full=1. Then at a falling edge it drives i_rst_n_sw=0 and i_wr_en=1 together (lines 1289-1292) and keeps i_wr_en=1 during the whole sequence (line 1307). The Monitor (line 305) expects exp_ovf=0 because P.sw=0 (or busy=1 afterwards). The test also asserts s.ovf == 0 (line 1300). |
+| A_rtl_wrong | For: With reg_full=1 from the full FIFO, the RTL equation at line 158 gives 1 for a write blocked by i_rst_n_sw=0. spec:150, spec:288 and spec:536 explicitly require 0. RTL comment line 157 states the intended behaviour, and rd.sv:154 implements the analogous block term.<br>Against: None significant. The exact edge is not dumped, but on the first blocked edge every term of the RTL equation is known from the stimulus. |
+| B_test_wrong | For: None found. Writing during the software reset is a legal, specified case (spec:288).<br>Against: The expected 0 is exactly what REQ-SRST-002 requires. |
+| C_spec_unclear | For: None for this case. The FIFO is genuinely full, so the full-flop definition question does not arise.<br>Against: The spec is explicit and consistent. |
+| Options | Fix RTL: change wr.sv:158 to `reg_overflow <= i_wr_en & ~w_wr_blk & reg_full;`. Fix test: not justified. Clarify spec: not needed. Only change the spec if the designer explicitly wants blocked writes on a full FIFO to report overflow, which would require rewriting REQ-SRST-002, REQ-FUNC-008, spec:288 and spec:536. |
+

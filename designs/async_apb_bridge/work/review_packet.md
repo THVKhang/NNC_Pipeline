@@ -17,7 +17,7 @@ These gates were approved by an AI agent on delegation, not by a qualified perso
 
 - **G1_rules** (2026-11-10T19:01:14+00:00): Read rules.md: 260 rules kept, 12 merged, 32 rejected (descriptions, scope exclusions, structure, STA/physical items; checked). The 7 open questions were decided on delegation with the cited spec text (formula of LPARA_REQ_W binding; SVA-016 per reset domain, SVA-007 ordinary assertion; DEC-019/DEC-020 binding for verification; DEC-021 ports accepted, APB4 inputs ignored and outputs 0). A person should confirm, especially questions 2 and 6.
 - **G2_contract** (2026-11-10T19:51:49+00:00): Re-approval after a flow fix: only the interface parameters changed (checks, rules and plan unchanged). LPARA_STRB_W is now the localparam PARA_APBCDC_DATA_W / 8 (formula read from the Effect column; it was the literal 'Derived', which broke every SVA lint); LPARA_REQ_W and LPARA_RESP_W (internal bundle widths, no port uses them, formula conditional on APB5) are left out of the interface. Earlier note still applies: 35 checks, CHK-019/020/022/023/026/030 expected NOT_VERIFIABLE with the default parameters. A person should confirm.
-- **G3_verif_sources** (2026-11-11T05:55:34+00:00): 7 SVA modules lint clean after derived-parameter fix (LPARA_STRB_W = DATA_W/8); every property clocked in one domain; 18 cocotb tests reviewed: cross-domain checks use order + edge windows, NOT_VERIFIABLE for checks needing other parameters. A person should confirm.
+- **G3_verif_sources** (2026-11-12T07:11:23+00:00): verif/formal/nnc_env.sv extended after formal triage (6 counterexamples, all E): the two resets asserted in the same step and each released only at a rising edge of its own clock (AB2-3-39, AB2-3-41), written on the formal global clock; APB sequencing and PWAKEUP as before; address/data changes in Access stay free (ERR-004). Read one by one. A person should confirm.
 
 ## 3. Failures and what they mean
 
@@ -72,6 +72,22 @@ Code or cover points never reached (first ones):
 - line m_vlsit_apbcdc_mst.sv:98
 - line m_vlsit_apbcdc_mst.sv:119
 
+### Formal check (SymbiYosys)
+
+Every input sequence of up to 20 cycles was searched (multiclock (free clocks)); result {'BOUNDED': 12, 'PROVEN': 2, 'UNSUPPORTED': 3, 'VACUOUS': 1}. PROVEN holds for every cycle; BOUNDED found no counterexample within the depth. Details: `work/formal.md`.
+
+- **CHK-018 VACUOUS**
+
+Environment assumptions (the formal results hold only for inputs that respect them; an assumption the specification does not require would hide bugs):
+
+- ENV-01: Resets are asserted together: when i_rst_n_mst falls, i_rst_n_slv is low in the same step (never mst alone) (AB2-3-39, AB2-3-41, AB2-6.3-27)
+- ENV-02: Resets are asserted together: when i_rst_n_slv falls, i_rst_n_mst is low in the same step (never slv alone) (AB2-3-39, AB2-3-41, AB2-6.3-27)
+- ENV-06: i_rst_n_mst is released synchronously to its domain clock: it rises only together with a rising edge of i_clk_mst (AB2-3-39)
+- ENV-07: i_rst_n_slv is released synchronously to its domain clock: it rises only together with a rising edge of i_clk_slv (AB2-3-39)
+- ENV-03: The requester keeps i_apb_psel low while either reset is asserted; no transfer starts before both resets are released (AB2-7.3-04)
+- ENV-04: After the one-cycle Setup phase the requester stays in Access (PSEL and PENABLE high) until the PREADY cycle; no new Setup before PREADY (AB2-6.3-01, AB2-10.4-02, AB2-20.2-01, AB2-15.3-02)
+- ENV-05: APB5 only: once i_apb_pwakeup is high in a cycle with i_apb_psel, it stays high until o_apb_pready (AB2-6.3-13, AB2-8-04)
+
 ## 7. Reproduce without NNC
 
 `designs/async_apb_bridge/sim/` holds a Makefile that runs the same regression with Verilator and cocotb only (Linux or WSL):
@@ -94,6 +110,8 @@ Answer every item. Sign only if each one is true, or record why not in the appro
 - [ ] The requirements that simulation cannot check are assigned to another verification method.
 - [ ] Each surviving mutant is either truly equivalent or a known gap I accept.
 - [ ] The unreached code and cover points are unreachable by design or accepted.
+- [ ] Each formal environment assumption (verif/formal/nnc_env.sv) is an obligation the specification really places on the environment.
+- [ ] Each formal counterexample or vacuous check is resolved (RTL, checker or environment) or accepted.
 - [ ] I reproduced the regression (or CI did) and the outcome matches the report.
 
 Then: `nnc gate approve async_apb_bridge G4_signoff --by "<your name>" --note "<waivers, open items>"`. The approval is bound to the current results.json: a later run makes it STALE.

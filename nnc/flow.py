@@ -16,15 +16,16 @@ from pathlib import Path
 
 from nnc import contract as contract_mod
 from nnc import extract as extract_mod
-from nnc import closure, gen_cov, gen_sva, gen_tests, mutate, packet, report, review, runset, sim, triage
+from nnc import closure, formal, gen_cov, gen_env, gen_sva, gen_tests, mutate, packet, report, review, runset, sim, triage
 from nnc.agents.runtime import make_backend
 from nnc.ingest import build_index, save_index
 from nnc.project import Design, ProjectError
 from nnc.simhost import default_host
 
-STAGES = ("ingest", "extract", "review", "contract", "gen-sva", "gen-tests", "sim", "cover", "triage", "mutate",
-          "report")
-GATE_BEFORE = {"contract": "G1_rules", "gen-sva": "G2_contract", "gen-tests": "G2_contract", "sim": "G3_verif_sources",
+STAGES = ("ingest", "extract", "review", "contract", "gen-sva", "gen-tests", "gen-env", "sim", "cover", "triage",
+          "mutate", "formal", "report")
+GATE_BEFORE = {"contract": "G1_rules", "gen-sva": "G2_contract", "gen-tests": "G2_contract", "gen-env": "G2_contract",
+               "formal": "G3_verif_sources", "sim": "G3_verif_sources",
                "cover": "G3_verif_sources", "triage": "G3_verif_sources", "mutate": "G3_verif_sources", "report": "G3_verif_sources"}
 
 
@@ -155,9 +156,21 @@ def test_file(d: Design) -> Path:
     return d.root / "verif" / "tests" / f"test_{d.name}.py"
 
 
+def split_mode(d: Design) -> bool:
+    """config tests_mode=split: a shared test-bench library plus small test modules (gen_tests)."""
+    return str(d.config().get("tests_mode", "")).strip().lower() == "split"
+
+
 def test_files(d: Design) -> list[Path]:
-    """The generated test module, then the coverage-closure modules (one per closure round)."""
-    return [test_file(d)] + sorted((d.root / "verif" / "tests").glob(f"test_{d.name}_cov*.py"))
+    """The generated test module(s), then the coverage-closure modules (one per closure round)."""
+    tdir = d.root / "verif" / "tests"
+    main = sorted(tdir.glob(f"test_{d.name}_g*.py")) if split_mode(d) else [test_file(d)]
+    return main + sorted(tdir.glob(f"test_{d.name}_cov*.py"))
+
+
+def tests_base(d: Design) -> Path:
+    """The module closure tests import as `base`: the library in split mode, else the test module."""
+    return d.root / "verif" / "tests" / f"tb_{d.name}.py" if split_mode(d) else test_file(d)
 
 
 def test_map(d: Design) -> dict[str, list[str]]:
@@ -170,6 +183,16 @@ def test_map(d: Design) -> dict[str, list[str]]:
 
 def stage_gen_tests(d: Design, o: Options) -> None:
     _gate(d, "gen-tests", o)
+    if split_mode(d):
+        rep = gen_tests.generate_split(contract_mod.selected(_read(d.work / "contract.json")), _read(d.work / "rules.json"),
+                                       _backend(d, o), _logs(d), d.root / "verif" / "tests", d.name,
+                                       model=o.tests_model, run_opts=sim.sim_options(d.config()), workers=o.workers)
+        _write(d.work / "gen_tests.json", rep)
+        o.say(f"[gen-tests] split: library {rep['library']['status']}, "
+              + ", ".join(f"{g['file']} {g['status']}" for g in rep["groups"])
+              + f"; US${rep['usage']['cost_usd']} in {rep['usage']['calls']} calls"
+              + (f" PROBLEMS {rep['problems'][:4]}" if rep["problems"] else ""))
+        return
     rep = gen_tests.generate(contract_mod.selected(_read(d.work / "contract.json")), _read(d.work / "rules.json"), _backend(d, o), _logs(d),
                              test_file(d), model=o.tests_model, run_opts=sim.sim_options(d.config()))
     _write(d.work / "gen_tests.json", rep)
@@ -226,8 +249,20 @@ def stage_sim(d: Design, o: Options) -> None:
         if not errs:
             break
         o.say(f"[sim] {len(errs)} test(s) raised Python errors in the test code; repair round {rnd} (no RTL, no failed checks sent)")
-        rep = gen_tests.repair(contract_mod.selected(contract), _read(d.work / "rules.json"), _backend(d, o), _logs(d), test_file(d), errs,
-                               model=o.tests_model, round_no=rnd, run_opts=sim.sim_options(d.config()))
+        if split_mode(d):
+            owner = {}
+            for f in test_files(d):
+                if f.is_file() and "_cov" not in f.stem:
+                    owner.update({n: f.name for n in gen_tests.test_check_map(f.read_text(encoding="utf-8"))})
+            bad = {e.split(":")[0] for e in errs}
+            pairs = [(gen_tests.error_module(t, owner, f"tb_{d.name}.py"), e) for t in res["tests"]
+                     for e in errs if t["name"] in bad and e.startswith(t["name"] + ":")]
+            rep = gen_tests.repair_split(contract_mod.selected(contract), _read(d.work / "rules.json"), _backend(d, o),
+                                         _logs(d), d.root / "verif" / "tests", d.name, pairs, model=o.tests_model,
+                                         round_no=rnd, run_opts=sim.sim_options(d.config()))
+        else:
+            rep = gen_tests.repair(contract_mod.selected(contract), _read(d.work / "rules.json"), _backend(d, o), _logs(d), test_file(d), errs,
+                                   model=o.tests_model, round_no=rnd, run_opts=sim.sim_options(d.config()))
         o.say(f"[sim] repair: {rep['status']}")
         res = _regression(d, o, contract, d.root / "rtl")
         o.say("[sim] " + _summ_sim(res))
@@ -410,7 +445,7 @@ def stage_cover(d: Design, o: Options) -> None:
             entry["note"] = "no scenario with legal, specification-level stimulus"
             o.say(f"[cover] round {rnd}: no usable scenario ({len(an['output']['unreachable'])} unreachable claims)")
             break
-        code, problems = closure.write_tests(contract, rules_doc, keep, test_file(d), backend, _logs(d), rnd,
+        code, problems = closure.write_tests(contract, rules_doc, keep, tests_base(d), backend, _logs(d), rnd,
                                              o.tests_model, usage, run_opts=sim.sim_options(d.config()))
         if problems:
             entry["note"] = f"closure module invalid: {problems[:3]}"
@@ -440,6 +475,85 @@ def stage_cover(d: Design, o: Options) -> None:
     finish("target_met" if met else "target_unmet",
            f"{metric} {fin and fin['percent']} % for target {cov['target']} %; new modules change verif/: "
            f"approve G3_verif_sources again" if cov["rounds"] else "")
+
+
+def formal_enabled(d: Design) -> bool:
+    return str(d.config().get("formal", "")).strip().lower() in ("1", "on", "yes", "true")
+
+
+def env_file(d: Design) -> Path:
+    return d.root / "verif" / "formal" / "nnc_env.sv"
+
+
+def stage_gen_env(d: Design, o: Options) -> None:
+    """Agent A13: the environment's obligations as formal assumptions (verif/formal/nnc_env.sv)."""
+    if not formal_enabled(d):
+        o.say(f"[gen-env] skipped: formal is off (nnc config {d.name} formal=on)")
+        return
+    _gate(d, "gen-env", o)
+    feedback = None
+    if (d.work / "formal_triage.json").is_file() and env_file(d).is_file():
+        feedback = [a for a in _read(d.work / "formal_triage.json").get("analyses", [])
+                    if a.get("most_likely") == "E_environment_missing"] or None
+        if feedback:
+            o.say(f"[gen-env] {len(feedback)} counterexample(s) classified E by formal triage are given to A13")
+    rep = gen_env.generate(contract_mod.selected(_read(d.work / "contract.json")), _read(d.work / "rules.json"),
+                           _backend(d, o), _logs(d), default_host(), env_file(d), model=o.contract_model,
+                           feedback=feedback)
+    _write(d.work / "gen_env.json", rep)
+    o.say(f"[gen-env] {len(rep['assumptions'])} assumptions, {rep['status']} after {rep['attempts']} attempt(s)"
+          + (f" PROBLEMS {rep['problems'][:3]} {rep['lint_errors'][:300]}" if rep["status"] == "failed" else "")
+          + " -> verif/formal/nnc_env.sv (review it at G3)")
+
+
+def stage_formal(d: Design, o: Options) -> None:
+    """SymbiYosys on the approved assertions with the approved environment (no agent)."""
+    if not formal_enabled(d):
+        o.say(f"[formal] skipped: formal is off (nnc config {d.name} formal=on)")
+        return
+    _gate(d, "formal", o)
+    contract = _read(d.work / "contract.json")
+    cfg = d.config()
+    defines = [x.strip() for x in str(cfg.get("formal_defines", ",".join(sim.sim_options(cfg)["defines"])))
+               .replace(";", ",").split(",") if x.strip()]
+    depth = int(cfg.get("formal_depth", formal.DEFAULT_DEPTH))
+    res = formal.run(default_host(), contract, d.root / "rtl", d.root / "verif" / "sva", env_file(d),
+                     depth=depth, defines=defines, parallel=o.workers,
+                     task_timeout_s=int(cfg.get("formal_timeout", formal.DEFAULT_TIMEOUT_S)))
+    res["unreviewed_gates"] = d.require_gate("G3_verif_sources", True)
+    out = Path(res.pop("out_dir"))
+    tdir = d.work / "formal"
+    if tdir.is_dir():
+        for old in tdir.glob("*.vcd"):
+            old.unlink()
+    for cid, v in res["checks"].items():
+        for i, t in enumerate(v.get("traces", [])[:1]):
+            tdir.mkdir(parents=True, exist_ok=True)
+            dst = tdir / f"{cid}.vcd"
+            dst.write_bytes((out / t).read_bytes())
+            v["traces"] = [f"work/formal/{dst.name}"]
+    formal.write(d.work, d.name, res, contract)
+    o.say(f"[formal] depth {depth}: {res['by_status']} -> work/formal.md")
+    traces = {cid: d.root / v["traces"][0] for cid, v in res["checks"].items()
+              if v["status"] == "CEX" and v.get("traces") and (d.root / v["traces"][0]).is_file()}
+    for stale in (d.work / "formal_triage.json", d.work / "formal_triage.md"):
+        if stale.is_file():
+            stale.unlink()          # a triage belongs to the counterexamples of this run only
+    if traces and str(cfg.get("formal_triage", "on")).lower() not in ("0", "off", "no", "false"):
+        files: dict[str, Path] = {"contract.json": d.work / "contract.json", "rules.json": d.work / "rules.json"}
+        for doc in d.documents():
+            files[f"spec/{Path(doc['file']).name}"] = d.root / doc["file"]
+        for f in sim.rtl_files(d.root / "rtl"):
+            files[f"rtl/{f.name}"] = f
+        for f in sorted((d.root / "verif" / "sva").glob("nnc_chk_*.sv")):
+            files[f"verif/sva/{f.name}"] = f
+        if env_file(d).is_file():
+            files["verif/formal/nnc_env.sv"] = env_file(d)
+        tri = formal.triage_cex(res, contract, files, traces, _backend(d, o), _logs(d), model=o.triage_model)
+        _write(d.work / "formal_triage.json", tri)
+        (d.work / "formal_triage.md").write_text(formal.triage_markdown(d.name, tri), encoding="utf-8")
+        o.say(f"[formal] triage of {tri['checks']} counterexample(s): "
+              + ", ".join(f"{a['check']} {a['most_likely']}" for a in tri["analyses"]) + " -> work/formal_triage.md")
 
 
 def run_inject(d: Design, o: Options, patch: Path, out: Path, do_triage: bool = True) -> dict:
@@ -592,8 +706,9 @@ def stage_report(d: Design, o: Options) -> None:
     tri = _read(d.work / "triage.json") if (d.work / "triage.json").is_file() else None
     tmap = test_map(d)
     clo = _read(d.work / "coverage.json") if (d.work / "coverage.json").is_file() else None
+    fv = _read(d.work / "formal.json") if (d.work / "formal.json").is_file() and formal_enabled(d) else None
     rep = report.build(d.name, d.status(), _read(d.work / "rules.json"), contract, results, mutation, tri,
-                       agent_costs(d), bypass, tmap, clo)
+                       agent_costs(d), bypass, tmap, clo, fv)
     report.write(rep, contract, mutation, d.work)
     packet.write(d)
     o.say(f"[report] rules {rep['rules']['by_status']} | checks {rep['checks']['by_status']} -> work/report.md, "
@@ -601,7 +716,8 @@ def stage_report(d: Design, o: Options) -> None:
 
 
 RUNNERS = {"ingest": stage_ingest, "extract": stage_extract, "review": stage_review, "contract": stage_contract,
-           "gen-sva": stage_gen_sva, "gen-tests": stage_gen_tests, "sim": stage_sim, "cover": stage_cover,
+           "gen-sva": stage_gen_sva, "gen-tests": stage_gen_tests, "gen-env": stage_gen_env, "formal": stage_formal,
+           "sim": stage_sim, "cover": stage_cover,
            "triage": stage_triage,
            "mutate": stage_mutate, "report": stage_report}
 

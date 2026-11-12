@@ -1,0 +1,167 @@
+{
+ "analyses": [
+  {
+   "failure": "test_chk_018_local_error — CHK-007: expected pready=1 pslverr=1 prdata=0 a_valid=0 at E1 (cycle 9) got pready=0 pslverr=0 prdata=0x0 a_valid=1",
+   "spec_says": "spec/m_apb_tlul_bridge_Design_Specification.md:128 REQ-ERR-001: \"When a write has PSTRB other than 4'b1111, the bridge shall issue no TL-UL request and shall complete the transfer with PREADY = 1 and PSLVERR = 1 in the first Access cycle.\" Spec line 398 defines the internal signal: \"w_legal | i_apb_paddr[1:0] = 2'b00 and (i_apb_pwrite = 0 or i_apb_pstrb = 4'b1111)\". Line 164 says the Setup/legality block \"checks PSTRB and PADDR[1:0]\". Line 470 ERR-001 / rules.json BR-12-01 (line 3836): \"Write with PSTRB other than 4'b1111; ... PREADY = 1 and PSLVERR = 1 in the first Access cycle; PRDATA = 0; no TL-UL request\". DEC-001 (line 696) confirms this. contract.json:473 (CHK-007) uses illegal = (paddr[1:0]!=0) or (pwrite==1 and pstrb!=4'b1111).",
+   "rtl_does": "rtl/m_apb_if.sv:66 `assign w_legal = (i_apb_paddr[1:0] == 2'b00);` checks only alignment. The comment on lines 64-65 says it also needs \"a full strobe when the access is a write\", but i_apb_pstrb (port at line 26) is never used. So for an aligned write with PSTRB=0 at the Setup edge E0: w_req_launch=1 and w_local_err=0 (lines 69-70). The APB FSM goes IDLE->BUSY (line 91) instead of DONE. reg_pready/reg_pslverr stay 0 (lines 108-109, 139-140). m_tlul_if loads channel A (w_load, m_tlul_if.sv:89, 153, 180), so at E1 o_tlul_a_valid=1. This is exactly the observed pready=0 pslverr=0 a_valid=1.",
+   "test_does": "verif/tests/test_apb_tlul_bridge.py:724 builds illegal writes `Transfer(1, aligned(q), ..., s, ...)` for s in range(15). The first transfer is an aligned write with PSTRB=4'b0000. Each is followed by a legal full-strobe write (line 730). The scoreboard sets the expectation at lines 264-270: legal = paddr[1:0]==0 and (pwrite==0 or pstrb==0xF), and _setup_illegal = setup and not legal. Lines 217-220 then assert pready=1, pslverr=1, prdata=0, a_valid=0 at E1. This legality formula is the same as the one in spec line 398 and contract CHK-007.",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "m_apb_if.sv:66 leaves out the `(~i_apb_pwrite | i_apb_pstrb==4'b1111)` term that is required by spec line 398, REQ-ERR-001 (line 128), DEC-001 (line 696) and the RTL's own comment (lines 64-65). i_apb_pstrb is a port of m_apb_if (line 26) and is wired from the top (m_apb_tlul_bridge.sv:96), but no logic uses it. The failing stimulus is an aligned write with PSTRB=0, which only the missing term can reject. The observed values (a_valid=1, pready=0) match the launch path exactly.",
+     "evidence_against": "None found. Misaligned accesses go through the implemented term, and CHK-007 has hits=5 with fails=4 (sim.log:224), so one illegal Setup passed. That fits only the strobe term being missing."
+    },
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "None. One could ask whether the test applies PSTRB to the wrong cycle, but the Transfer holds PSTRB through Setup and Access, and the a_valid=1 at E1 shows the RTL did launch.",
+     "evidence_against": "The test's legality formula (test_apb_tlul_bridge.py:265) matches the spec (line 398), contract.json:473 and the SVA (nnc_chk_cross.sv:66) word for word. The stimulus (write, PSTRB=0, aligned) is explicitly in the illegal class in spec line 269: \"Write, any other PSTRB (including 4'b0000) | None | Not supported (DEC-001)\"."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "None.",
+     "evidence_against": "The spec is consistent and repeated in many places: line 19, 56, 106, 128, 269, 398, 409, 470, 696 (DEC-001, 'Confirmed by the designer'). rules.json also has a Q&A (line ~7552) confirming that PSTRB is ignored only for reads."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Fix RTL (recommended by evidence): in rtl/m_apb_if.sv:66 change to `assign w_legal = (i_apb_paddr[1:0] == 2'b00) & (~i_apb_pwrite | (i_apb_pstrb == 4'b1111));`. Then w_local_err sends partial-strobe writes to ENUM_ST_DONE with PREADY/PSLVERR=1, PRDATA=0 and no launch. Re-run CHK-018/025/028/029 and the CHK-007/CHK-014 assertions. No test or spec change is indicated. If the designer instead wants to accept partial writes, that reverses DEC-001 and needs a spec change (REQ-ERR-001, ERR-001, line 398) plus a PutPartialData implementation. It is not a test fix."
+  },
+  {
+   "failure": "test_chk_025_ignored_inputs — CHK-007: expected pready=1 pslverr=1 prdata=0 a_valid=0 at E1 (cycle 18) got pready=0 pslverr=0 prdata=0xfd8785b9 a_valid=1",
+   "spec_says": "Same as the first analysis. spec:128 REQ-ERR-001 \"When a write has PSTRB other than 4'b1111, the bridge shall issue no TL-UL request and shall complete the transfer with PREADY = 1 and PSLVERR = 1 in the first Access cycle.\" spec:398 w_legal includes \"(i_apb_pwrite = 0 or i_apb_pstrb = 4'b1111)\". spec:409 OP-003 gives \"PREADY = 1 with PSLVERR = 1, PRDATA = 0\".",
+   "rtl_does": "rtl/m_apb_if.sv:66 checks only paddr[1:0], so the aligned write with PSTRB=4'b0011 is treated as legal. o_req_launch=1 (line 73), the FSM goes to BUSY (line 91), and channel A becomes valid at E1 (m_tlul_if.sv:153,180). PRDATA keeps its last value 0xfd8785b9 (from the earlier read) because w_prdata_nxt defaults to reg_prdata (m_apb_if.sv:110) and w_local_err is 0.",
+   "test_does": "verif/tests/test_apb_tlul_bridge.py:973 `_seq025`: the third transfer is `Transfer(1, A(), ..., 0x3, prot, 0, ...)  # illegal strobe`. This is an aligned write with PSTRB=4'b0011, coming after a full write and a read (lines 971-972). The expectation comes from the same scoreboard legality formula at lines 265/270 and the assertion at 217-220. The test's purpose (PPROT has no effect, line 988) is unrelated to the failure. The failure comes from the shared scoreboard CHK-007 check.",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "Same root cause: m_apb_if.sv:66 has no PSTRB term, and i_apb_pstrb is unused. The stimulus is a write with PSTRB=0x3, which the spec explicitly lists as an illegal example (Figure 12-2 caption, spec:485: \"Write with PSTRB = 4'b0011: no TL-UL request, PSLVERR in the first Access cycle\"). sim.log:170-171 shows CHK-014 and CHK-007 failing together at 28915000, which matches a request launched from an illegal Setup.",
+     "evidence_against": "None found."
+    },
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "None. The non-zero prdata in the message is only the held value from the earlier read, which is consistent with no completion.",
+     "evidence_against": "The stimulus is marked illegal in the test (line 973 comment), and the expectation follows spec:398/contract.json:473 exactly."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "None.",
+     "evidence_against": "The spec uses this exact case (PSTRB=4'b0011 write) as its illustrative local-error waveform (spec:485, :291)."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Fix RTL: add the write-strobe term to w_legal in rtl/m_apb_if.sv:66 (`& (~i_apb_pwrite | (i_apb_pstrb == 4'b1111))`). After the fix, the trace comparison across PPROT values in this test should also go through the full sequence. No test or spec change is indicated."
+  },
+  {
+   "failure": "test_chk_028_back_to_back — CHK-007: expected pready=1 pslverr=1 prdata=0 a_valid=0 at E1 (cycle 36) got pready=0 pslverr=0 prdata=0x0 a_valid=1",
+   "spec_says": "spec:128 REQ-ERR-001 (quoted above). spec:291 Figure 6-4: back-to-back transfers with PSEL held high include \"a write with PSTRB = 4'b0011 that gets a local error (1 Access cycle)\". spec:398 w_legal = \"i_apb_paddr[1:0] = 2'b00 and (i_apb_pwrite = 0 or i_apb_pstrb = 4'b1111)\". rules.json BR-5.4-05 (line 2059): \"No TL-UL request is issued for an illegal APB request.\"",
+   "rtl_does": "rtl/m_apb_if.sv:62 detects the Setup level correctly (it also works with PSEL held). Line 66 then calls an aligned write with PSTRB=4'b0101 legal, so w_req_launch=1 (line 69), the FSM goes to BUSY (line 91) and channel A is loaded (m_tlul_if.sv:89,153). At E1, o_tlul_a_valid=1 and o_apb_pready=0.",
+   "test_does": "verif/tests/test_apb_tlul_bridge.py:1096-1097 kind \"ILS\" = `Transfer(1, aligned(q), ..., 0x5, ...)`, an aligned write with PSTRB=4'b0101. Pairs of W/R/ILS/MIS are run back to back (lines 1103-1109). Cycle 36 is the first ILS Setup reached in the prompt/gap-0 sweep. The expectation comes from the shared scoreboard (lines 265, 270, 217-220). The test's own check at line 1121 expects the same local error.",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "Same missing PSTRB term at m_apb_if.sv:66. The 'MIS' (misaligned) kind is handled by the existing term. The failure appears on the ILS kind, the one case that needs the strobe check. sim.log:172-173 shows CHK-014 and CHK-007 failing together at 41700000.",
+     "evidence_against": "None found."
+    },
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "None.",
+     "evidence_against": "ILS is defined as a write with PSTRB=0x5, which is illegal per spec:269 and spec:398. The scoreboard formula matches the contract."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "None.",
+     "evidence_against": "Spec Figure 6-4 (line 291) explicitly covers an illegal-strobe write in a back-to-back sequence with PSEL held high and expects a 1-cycle local error."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Fix RTL: rtl/m_apb_if.sv:66 → `assign w_legal = (i_apb_paddr[1:0] == 2'b00) & (~i_apb_pwrite | (i_apb_pstrb == 4'b1111));`. No test or spec change is indicated. After the fix, re-check the Setup-to-Setup interval assertion at test line 1116 (base=2 for illegal t1)."
+  },
+  {
+   "failure": "test_chk_029_random_scoreboard — CHK-007: expected pready=1 pslverr=1 prdata=0 a_valid=0 at E1 (cycle 18) got pready=0 pslverr=0 prdata=0x0 a_valid=1",
+   "spec_says": "spec:128 REQ-ERR-001, spec:398 w_legal definition, spec:470 ERR-001 / rules.json BR-12-01: \"Write with PSTRB other than 4'b1111; ... PREADY = 1 and PSLVERR = 1 in the first Access cycle; PRDATA = 0; no TL-UL request\". spec:572 COV-001 requires \"All 16 PSTRB values on writes\".",
+   "rtl_does": "rtl/m_apb_if.sv:66 checks only alignment. A random aligned write with PSTRB != 4'b1111 at cycle 17 therefore launches a TL-UL request (lines 69, 73, 91). At E1 (cycle 18) o_tlul_a_valid=1 and pready/pslverr=0.",
+   "test_does": "verif/tests/test_apb_tlul_bridge.py:1137 generates 10000 transfers with gen_random(q, True, True). COV-001 requires all 16 write PSTRB values, so partial-strobe writes are part of the stimulus. Expectations come from the shared scoreboard legality formula (lines 265, 270) and the CHK-007 assertion (lines 217-220). The mismatch is the same pattern as the directed tests: a_valid=1 instead of a local error.",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "Same signature as the three directed failures, and the same SVA pair (CHK-014 + CHK-007 at 41895000, sim.log:174-175). The only RTL path that gives a_valid=1 after an illegal Setup is the missing PSTRB term at m_apb_if.sv:66.",
+     "evidence_against": "I did not read gen_random to confirm the exact transfer at cycle 17. The conclusion that it is a partial-strobe aligned write is inferred from the matching SVA failures and from the misaligned path being implemented."
+    },
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "With random stimulus, one could ask whether the generator broke the APB protocol (e.g. a mid-transfer psel=1/penable=0). Contract ASM-001 (contract.json:1275) assumes it never does.",
+     "evidence_against": "No protocol check (CHK-001/009 etc.) fired before CHK-007. The independent SVA (nnc_chk_cross.sv:111, nnc_chk_tlul.sv:72-75), built from ports only, fails at the same time."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "None.",
+     "evidence_against": "The spec is unambiguous on partial-strobe writes (DEC-001, confirmed by the designer, spec:696)."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Fix RTL: add the write-strobe term to w_legal at rtl/m_apb_if.sv:66. To confirm, the designer can print the transfer at setup cycle 17 (pwrite, pstrb, paddr[1:0]) with the same NNC_SEED. It should be an aligned write with PSTRB != 4'b1111. No test or spec change is indicated."
+  },
+  {
+   "failure": "Assertion CHK-014 (A request starts only after a legal Setup): fails=4 hits=3307, first fail at 100000 (sim.log:168,170,172,174)",
+   "spec_says": "contract.json:604: \"If i_rst_n_core=1 at rising edges E and E+1, o_tlul_a_valid=0 at E and o_tlul_a_valid=1 at E+1, then at E: i_apb_psel=1, i_apb_penable=0, i_apb_paddr[1:0]==2'b00, and (i_apb_pwrite==0 or i_apb_pstrb==4'b1111).\" Rules: BR-5.4-05 (rules.json:2059) \"No TL-UL request is issued for an illegal APB request.\" BR-15.3-07 (rules.json:5132) SVA-007 \"No TL-UL request for an illegal APB request\". spec:128 REQ-ERR-001 and spec:398 w_legal.",
+   "rtl_does": "rtl/m_apb_if.sv:66 `w_legal = (i_apb_paddr[1:0] == 2'b00)`, with no PSTRB term. For an aligned write with PSTRB != 4'b1111, w_req_launch=1 at E (line 69). m_tlul_if w_load=1 (m_tlul_if.sv:89), the next state is REQ, and w_a_valid_nxt=1 (line 153), so reg_a_valid=1 at E+1 (line 180). o_tlul_a_valid rises after a Setup that the check classifies as illegal.",
+   "test_does": "verif/sva/nnc_chk_tlul.sv:72-75 samples h_prev_psel/penable/addr_lo/pwrite/pstrb (lines 65-68) and asserts that a rising a_valid follows a legal Setup, including `(!h_prev_pwrite || (h_prev_pstrb == 4'b1111))`. The 4 failures are at the same timestamps as the 4 CHK-007 failures (100000, 28915000, 41700000, 41895000), i.e. the illegal-strobe writes driven by tests 018, 025, 028 and 029. The same check is in the Python scoreboard at test_apb_tlul_bridge.py:248-251.",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "The assertion's legality term matches spec:398 and contract.json:604. The RTL leaves out the PSTRB term (m_apb_if.sv:66), although its own comment (lines 64-65) says it should check it. 3303 legal launches pass; only the 4 illegal-strobe launches fail. The failures line up one-to-one with CHK-007 failures in time.",
+     "evidence_against": "None found."
+    },
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "The checker samples inputs with history flops (nnc_chk_tlul.sv:65-68). A one-cycle misalignment there could in principle produce false failures.",
+     "evidence_against": "3303 passing hits show the history alignment is right for legal launches. The fails occur only together with CHK-007 on illegal-strobe writes."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "None.",
+     "evidence_against": "The spec (lines 19, 128, 269, 398, 696) consistently says a write with PSTRB != 4'b1111 must not issue a TL-UL request."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Fix RTL: rtl/m_apb_if.sv:66 → `assign w_legal = (i_apb_paddr[1:0] == 2'b00) & (~i_apb_pwrite | (i_apb_pstrb == 4'b1111));`. This removes the launch for partial-strobe writes, so a_valid no longer rises after an illegal Setup. No checker or spec change is indicated."
+  },
+  {
+   "failure": "Assertion CHK-007 (Illegal Setup completes locally in the first Access cycle with no request): fails=4 hits=5, first fail at 100000 (sim.log:169,171,173,175,224)",
+   "spec_says": "contract.json:473: \"Let illegal = (i_apb_paddr[1:0]!=2'b00) or (i_apb_pwrite==1 and i_apb_pstrb!=4'b1111). ... then at E1: o_apb_pready=1, o_apb_pslverr=1, o_apb_prdata=32'h0 and o_tlul_a_valid=0; and at E2: o_tlul_a_valid=0.\" spec:128 REQ-ERR-001; spec:129 REQ-ERR-002; spec:409 OP-003 \"APB write with PSTRB other than 4'b1111, or any access with PADDR[1:0] not 2'b00 | No TL-UL request | PREADY = 1 with PSLVERR = 1, PRDATA = 0 | 1 Access cycle\"; rules.json BR-T1-03 (line 41).",
+   "rtl_does": "rtl/m_apb_if.sv:66 computes legality from alignment only, so w_local_err (line 70) is 0 for an aligned write with a partial strobe. The local-error branch (lines 111-114: pready=1, pslverr=1, prdata=0) and the IDLE->DONE transition (line 93) are never taken for that case. Instead, the request is launched (lines 69, 73, 91). Misaligned accesses do take the local-error path. This fits hits=5 / fails=4: the one passing hit is consistent with a misaligned illegal Setup.",
+   "test_does": "verif/sva/nnc_chk_cross.sv:66 `w_illegal = (i_apb_paddr[1:0] != 2'b00) || (i_apb_pwrite && (i_apb_pstrb != 4'b1111))`. Lines 110-112 assert `(psel && !penable && w_illegal) |=> (pready && pslverr && prdata==0 && !a_valid) ##1 !a_valid`. The illegal-strobe writes come from tests 018 (PSTRB=0, test line 724), 025 (PSTRB=0x3, line 973), 028 (PSTRB=0x5, line 1097) and 029 (random).",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "The checker's illegal formula equals the spec (spec:398 negated) and the contract (contract.json:473). The RTL's legality at m_apb_if.sv:66 is missing the write-strobe term, and i_apb_pstrb is unused in m_apb_if, contradicting the module's own comment (lines 64-65) and spec:164 (\"checks PSTRB and PADDR[1:0]\"). All 4 fails coincide with CHK-014 fails, i.e. a request was launched.",
+     "evidence_against": "None found."
+    },
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "None. The checker is disabled in reset and uses only ports, and the antecedent is the plain Setup level with illegal inputs.",
+     "evidence_against": "The formula matches contract and spec exactly. The one passing hit shows the consequent timing (E1 local error, E2 no a_valid) is right for the RTL's implemented path."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "None.",
+     "evidence_against": "Spec, DEC-001 (designer-confirmed, spec:696) and rules.json Q&A (line ~7552-7553: \"A read ignores PSTRB, so any PSTRB value on a read is accepted\") all agree that only writes with a partial strobe are illegal. That is exactly the case that fails."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Fix RTL: in rtl/m_apb_if.sv:66 add the write-strobe term: `assign w_legal = (i_apb_paddr[1:0] == 2'b00) & (~i_apb_pwrite | (i_apb_pstrb == 4'b1111));`. With this, w_local_err drives the existing local-error path (lines 92-93, 111-114) for partial-strobe writes. This single change should clear all six reported failures. No checker, test or spec change is indicated."
+  }
+ ],
+ "clusters": 6,
+ "analysed": 6,
+ "usage": {
+  "calls": 1,
+  "cached": 0,
+  "cost_usd": 0.648,
+  "input_tokens": 20,
+  "output_tokens": 12148,
+  "cache_creation_input_tokens": 44218,
+  "cache_read_input_tokens": 255629
+ },
+ "prompt_version": "triage-v1",
+ "denials": []
+}

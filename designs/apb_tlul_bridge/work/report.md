@@ -1,6 +1,6 @@
 # Verification report — apb_tlul_bridge
 
-Generated 2026-11-11T12:49:12+00:00 by NNC Pipeline.
+Generated 2026-11-12T07:27:23+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -17,8 +17,9 @@ Generated 2026-11-11T12:49:12+00:00 by NNC Pipeline.
 | Code coverage (RTL), functional | 100.0 % (40/40 cover points of the specification) |
 | Mutation score | 100.0 % (33 killed / 0 survived / 0 not compiled) |
 | Coverage target | functional 100.0 %: **target_met** (baseline 95.0 % -> 100.0 %, work/coverage.md) |
+| Formal (SymbiYosys, depth 20) | {'BOUNDED': 7, 'PROVEN': 10} — reset assumptions + verif/formal/nnc_env.sv, work/formal.md |
 | Triage | no failure to analyse |
-| Agent cost | US$19.7665 in 83 calls (A1 0.8682, A10 0.416, A11 1.3515, A12 0.514, A2 0.7102, A3 0.3887, A4 3.2454, A5 1.0603, A6 0.2892, A7 10.3255, A9 0.5979) |
+| Agent cost | US$22.138 in 87 calls (A1 0.8682, A10 0.416, A11 1.3515, A12 0.514, A13 0.2732, A2 0.7102, A3 0.3887, A4 3.2454, A5 1.0603, A6 0.2892, A7 10.3255, A9 2.6961) |
 
 ## Sign-off conditions
 
@@ -32,6 +33,7 @@ Generated 2026-11-11T12:49:12+00:00 by NNC Pipeline.
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | met — 76 rules with attributed mutants |
 | Coverage target functional 100.0 % | met — target_met |
+| Formal: no counterexample, no vacuous or failed proof | met — {'BOUNDED': 7, 'PROVEN': 10} (work/formal.md) |
 
 ## Gates
 
@@ -39,30 +41,30 @@ Generated 2026-11-11T12:49:12+00:00 by NNC Pipeline.
 |---|---|---|
 | G1_rules | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-07T18:06:13+00:00 |
 | G2_contract | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-08T10:00:45+00:00 |
-| G3_verif_sources | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-08T10:47:56+00:00 |
+| G3_verif_sources | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-11T15:38:44+00:00 |
 | G4_signoff | PENDING | artifacts ready for review |
 
 ## Checks
 
 | Check | Kind | Title | Status | Evidence |
 |---|---|---|---|---|
-| CHK-001 | assertion | PREADY only in an APB Access cycle | **PASS** | hits 13715, fails 0 |
-| CHK-002 | assertion | PREADY is a one-cycle pulse | **PASS** | hits 13715, fails 0 |
-| CHK-003 | assertion | PSLVERR only with PREADY | **PASS** | hits 5019, fails 0 |
-| CHK-004 | assertion | PRDATA holds its value outside PREADY | **PASS** | hits 95936, fails 0 |
-| CHK-005 | assertion | PRDATA is zero on write and error completions | **PASS** | hits 8852, fails 0 |
-| CHK-006 | assertion | Legal Setup launches the request from flops in the first Access cycle | **PASS** | hits 9845, fails 0 |
-| CHK-007 | assertion | Illegal Setup completes locally in the first Access cycle with no request | **PASS** | hits 3880, fails 0 |
-| CHK-008 | assertion | One request at a time, none before the APB completion | **PASS** | hits 34101, fails 0 |
-| CHK-009 | assertion | a_valid only inside an APB Access phase before PREADY | **PASS** | hits 34101, fails 0 |
-| CHK-010 | assertion | Accepted TL-UL response is checked and mapped to the APB completion one cycle later | **PASS** | hits 9838, fails 0 |
-| CHK-011 | assertion | PREADY only caused by an illegal Setup or a counted response (orphans have no APB effect) | **PASS** | hits 13715, fails 0 |
-| CHK-012 | assertion | Output values while reset is asserted | **PASS** | hits 196, fails 0 |
-| CHK-013 | assertion | d_ready constant 1 after the first edge following reset release | **PASS** | hits 109651, fails 0 |
-| CHK-014 | assertion | A request starts only after a legal Setup | **PASS** | hits 9842, fails 0 |
-| CHK-015 | assertion | Channel A held and stable until accepted | **PASS** | hits 24260, fails 0 |
-| CHK-016 | assertion | a_valid drops after the handshake (accepted once) | **PASS** | hits 9841, fails 0 |
-| CHK-017 | assertion | Constant A-channel fields and legal opcode, size, mask and address | **PASS** | hits 109884, fails 0 |
+| CHK-001 | assertion | PREADY only in an APB Access cycle | **PASS** | hits 13715, fails 0; formal BOUNDED |
+| CHK-002 | assertion | PREADY is a one-cycle pulse | **PASS** | hits 13715, fails 0; formal PROVEN |
+| CHK-003 | assertion | PSLVERR only with PREADY | **PASS** | hits 5019, fails 0; formal PROVEN |
+| CHK-004 | assertion | PRDATA holds its value outside PREADY | **PASS** | hits 95936, fails 0; formal PROVEN |
+| CHK-005 | assertion | PRDATA is zero on write and error completions | **PASS** | hits 8852, fails 0; formal BOUNDED |
+| CHK-006 | assertion | Legal Setup launches the request from flops in the first Access cycle | **PASS** | hits 9845, fails 0; formal BOUNDED |
+| CHK-007 | assertion | Illegal Setup completes locally in the first Access cycle with no request | **PASS** | hits 3880, fails 0; formal BOUNDED |
+| CHK-008 | assertion | One request at a time, none before the APB completion | **PASS** | hits 34101, fails 0; formal BOUNDED |
+| CHK-009 | assertion | a_valid only inside an APB Access phase before PREADY | **PASS** | hits 34101, fails 0; formal PROVEN |
+| CHK-010 | assertion | Accepted TL-UL response is checked and mapped to the APB completion one cycle later | **PASS** | hits 9838, fails 0; formal BOUNDED |
+| CHK-011 | assertion | PREADY only caused by an illegal Setup or a counted response (orphans have no APB effect) | **PASS** | hits 13715, fails 0; formal BOUNDED |
+| CHK-012 | assertion | Output values while reset is asserted | **PASS** | hits 196, fails 0; formal PROVEN |
+| CHK-013 | assertion | d_ready constant 1 after the first edge following reset release | **PASS** | hits 109651, fails 0; formal PROVEN |
+| CHK-014 | assertion | A request starts only after a legal Setup | **PASS** | hits 9842, fails 0; formal PROVEN |
+| CHK-015 | assertion | Channel A held and stable until accepted | **PASS** | hits 24260, fails 0; formal PROVEN |
+| CHK-016 | assertion | a_valid drops after the handshake (accepted once) | **PASS** | hits 9841, fails 0; formal PROVEN |
+| CHK-017 | assertion | Constant A-channel fields and legal opcode, size, mask and address | **PASS** | hits 109884, fails 0; formal PROVEN |
 | CHK-018 | test | Local error for unsupported PSTRB and misaligned address | **PASS** | test_chk_018_local_error |
 | CHK-019 | test | Device error response (d_error) on read and write | **PASS** | test_chk_019_device_error |
 | CHK-020 | test | Wrong d_opcode and wrong d_source responses | **PASS** | test_chk_020_wrong_opcode_source |
@@ -355,6 +357,6 @@ Generated 2026-11-11T12:49:12+00:00 by NNC Pipeline.
 
 ## Not verified by this run
 
-- Formal proof, CDC/RDC, STA, synthesis and DFT checks are outside this flow.
+- Formal: the assertions were checked by SymbiYosys under the environment assumptions (work/formal.md); a BOUNDED result holds only up to its depth. CDC/RDC, STA, synthesis and DFT checks are outside this flow.
 - Rules marked NOT_VERIFIED_BY_SIM carry the contract's reason (static, structural, not observable...).
 - Only the default parameter configuration was simulated (no run_set.json).

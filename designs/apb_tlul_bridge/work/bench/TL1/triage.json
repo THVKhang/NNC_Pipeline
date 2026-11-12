@@ -1,0 +1,67 @@
+{
+ "analyses": [
+  {
+   "failure": "test_chk_020_wrong_opcode_source — CHK-010: expected o_apb_pslverr=1 at cycle 157 got 0 (sim.log:41, 54; traceback test_apb_tlul_bridge.py:794 -> :227)",
+   "spec_says": "spec/m_apb_tlul_bridge_Design_Specification.md:132 REQ-ERR-005: \"When the TL-UL response has d_source different from PARA_SRC_ID, the bridge shall complete the APB transfer with PSLVERR = 1.\" (rules.json:1213, BR-3-28). Spec :402 defines w_resp_err as \"i_tlul_d_error or (i_tlul_d_opcode differs from (reg_a_rd ? 3'b001 : 3'b000)) or (i_tlul_d_source differs from PARA_SRC_ID)\". Spec :178 says w_resp_err means \"d_error, wrong opcode or wrong source\". Spec :274 and :410 (OP-004) say wrong d_source gives PSLVERR=1 and PRDATA=0. Spec :474 has ERR-005 for \"d_source not equal to PARA_SRC_ID\". Spec :703 DEC-008: \"The response is checked for d_error, d_opcode and d_source\" (designer confirmed). contract.json:535 CHK-010 includes \"(i_tlul_d_source != PARA_SRC_ID)\" in err. contract.json:749-750 CHK-020 expects pslverr=1 and prdata=0 for each wrong-source response.",
+   "rtl_does": "rtl/m_tlul_if.sv:100-101: `assign w_resp_err = i_tlul_d_error | (i_tlul_d_opcode != w_exp_opcode) | 1'b0;`. The d_source term was replaced by a constant 1'b0. i_tlul_d_source (port at :46) is never read anywhere in the module. The comment at :97-98 claims \"d_source must echo the constant source identifier\", but the code does not check it. So when the response has the correct opcode, d_error=0 and d_source = PARA_SRC_ID^1, w_resp_err=0. m_apb_if.sv:115-118 then loads reg_pslverr <= i_resp_err = 0 and reg_prdata <= i_resp_rdata. For a wrong-source read, m_tlul_if.sv:106 also passes d_data through instead of 0. At the failing cycle the APB side shows pready=1 with pslverr=0.",
+   "test_does": "test_apb_tlul_bridge.py:783-786 first sends 14 wrong-opcode transfers. :787-788 then sends 4 transfers (R,W,R,W) with resp=\"src\": correct opcode, d_error=0 and d_source=bad_src = SRC_ID^1 (:113, driven at :399-401). A correct read follows each one (:791). Each bad/good pair takes about 11 cycles, so cycle 157 matches the first wrong-source transfer, after all 14 wrong-opcode cases passed. The RTL does check opcode, so those passing fits. The monitor works out the expected value from ports only (:273-279): err = d_error or d_opcode != exp_op or d_source != SRC_ID&SRC_MASK. It expects pslverr=err=1 at E+1 and compares at :227. The independent SVA in verif/sva/nnc_chk_cross.sv:73 builds err the same way, `(i_tlul_d_source != PARA_SRC_W'(PARA_SRC_ID))`, and it also failed (sim.log:138 NNC_FAIL CHK-010 @4800000, matching first_fail_time).",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "m_tlul_if.sv:100-101 has a literal `| 1'b0` where the spec's d_source term should be (spec :402). i_tlul_d_source is an unused input. REQ-ERR-005 (:132), DEC-008 (:703), ERR-005 (:474) and OP-004 (:410) all require PSLVERR=1 for a wrong source. The 14 wrong-opcode cases passed in the same test and failed only when the source-error cases began. The Python monitor and the SVA checker (nnc_chk_cross.sv:73) both flag it independently.",
+     "evidence_against": "None found. The only test-side question would be whether bad_src really differs from PARA_SRC_ID. SRC_ID^1 masked to SRC_W bits (:113) always differs for SRC_W>=1, so it does."
+    },
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "Nothing in the files backs this. The test's err formula (:277-278) matches contract.json:535 and spec :402 word for word.",
+     "evidence_against": "The stimulus follows contract.json:749 (\"i_tlul_d_source != PARA_SRC_ID (e.g. PARA_SRC_ID XOR 1)\") and contract.json:1280. The expected value comes from ports and the spec, not from the RTL. A separate SVA checker gives the same result."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "None. The spec is consistent about the source check in sections 3, 5, 6.3, 9, 11, 12 and DEC-008.",
+     "evidence_against": "REQ-ERR-005, the w_resp_err definition at :402 and DEC-008 (designer-confirmed 2026-10-18) state the d_source comparison clearly, with no conflict."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Fix RTL (recommended by the evidence): in rtl/m_tlul_if.sv:100-101 replace `| 1'b0` with `| (i_tlul_d_source != PARA_SRC_ID[PARA_SRC_W-1:0])`. This also makes o_resp_rdata (:106) return 0 for wrong-source reads, as spec :403 requires. Fix test: nothing to change, since stimulus and expected values match contract.json:535/749-750. Clarify spec: only if the designer now wants to drop the d_source check. That would mean revising REQ-ERR-005, DEC-008, ERR-005, spec :402 and CHK-010/CHK-020 together. The files do not support this."
+  },
+  {
+   "failure": "test_chk_029_random_scoreboard — CHK-010: expected o_apb_pslverr=1 at cycle 311 got 0 (sim.log:84, 97; traceback test_apb_tlul_bridge.py:1157 -> :227)",
+   "spec_says": "Same requirement as the first failure. spec :132 REQ-ERR-005 says a d_source different from PARA_SRC_ID shall give PSLVERR = 1. Spec :402 defines w_resp_err to include \"(i_tlul_d_source differs from PARA_SRC_ID)\". Spec :703 DEC-008 is designer-confirmed. contract.json:535 CHK-010 has err including (i_tlul_d_source != PARA_SRC_ID).",
+   "rtl_does": "rtl/m_tlul_if.sv:100-101 computes w_resp_err without d_source (`| 1'b0`). A counted response with a correct opcode, d_error=0 and the wrong d_source therefore reaches m_apb_if.sv:115-118 with i_resp_err=0, and o_apb_pslverr is 0 at E+1.",
+   "test_does": "gen_random (test_apb_tlul_bridge.py:690-713) is called with proto=True (:1137). It gives resp=\"src\" with about 5% probability (:710-711), using bad_src = SRC_ID^1 (:113, driven at :399-401), and resp=\"op\" with another 5%. The same port-based monitor (:273-279) expects pslverr=1 whenever d_source != SRC_ID at a counted response. At cycle 311 it saw 0. The run includes 5% random orphans (:1139-1154), but those are not counted responses in the monitor (:273 needs pending or a handshake), and CHK-011 (orphan check) reported 0 fails (sim.log:192). The 'op' and 'derr' paths are checked in RTL. So the failing transfer is most likely the first 'src' transfer, but the log does not say which response kind it was. The SVA also failed at the same point (sim.log:139 NNC_FAIL CHK-010 @66425000).",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "Same root cause as test_chk_020: m_tlul_if.sv:100-101 leaves out the d_source comparison that spec :402 and REQ-ERR-005 require. CHK-010 has exactly 2 fails in total (sim.log:191), one per failing test, which fits one shared defect. The only response error kind the RTL does not detect is wrong source; d_error and opcode are handled at :100.",
+     "evidence_against": "The log does not name the response kind at cycle 311, so the link to a 'src' transfer is inferred, not directly logged. Other paths with expected err=1 (derr, op) are implemented in the RTL, and CHK-019 (d_error) passed (sim.log:38)."
+    },
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "Random tests also inject orphans with a random d_source (:76-82). A monitor miscounting an orphan as a counted response could in principle produce a false err=1 expectation.",
+     "evidence_against": "The counted-response logic (:273) needs pending or a same-cycle handshake, matching contract.json:535. CHK-011 and CHK-008 report 0 fails (sim.log:189-192), so the counting matches the RTL. The SVA checker, separate from the Python model, fails at the same time."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "None found.",
+     "evidence_against": "The spec states the source check without ambiguity (:132, :178, :274, :402, :410, :474, :703)."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Fix RTL: add the missing term in rtl/m_tlul_if.sv:100-101, `w_resp_err = i_tlul_d_error | (i_tlul_d_opcode != w_exp_opcode) | (i_tlul_d_source != PARA_SRC_ID[PARA_SRC_W-1:0]);`. Then rerun with the same NNC_SEED to confirm cycle 311 passes. Optional test improvement, without weakening the check: log t.resp and t.desc() in the CHK-010 assertion message, so future random failures show the response kind. No spec change is indicated unless the designer reverses DEC-008."
+  }
+ ],
+ "clusters": 3,
+ "analysed": 3,
+ "usage": {
+  "calls": 1,
+  "cached": 0,
+  "cost_usd": 0.5186,
+  "input_tokens": 22,
+  "output_tokens": 7061,
+  "cache_creation_input_tokens": 40108,
+  "cache_read_input_tokens": 281457
+ },
+ "prompt_version": "triage-v1",
+ "denials": []
+}

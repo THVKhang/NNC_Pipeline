@@ -1,0 +1,116 @@
+# Failure triage
+
+Failures: 8; analysed: 8. The designer decides; nothing was changed.
+
+## 1. test_chk_018_long_apb_wait — CHK-016: pprot = AxPROT 5, got 0x1 at cycle 2014
+
+**Most likely:** A_rtl_wrong
+
+| Part | Content |
+|---|---|
+| Specification says | spec/AXI2APB_Bridge_Design_Specification.md:114 REQ-IF-006: "The bridge shall copy AxPROT to PPROT"; :227 o_apb_pprot "Copy of AxPROT", "Stable through transfer"; :305 "AxPROT/PPROT | 3 | Same semantics | Direct copy | No translation". rules.json:607 "The bridge shall copy AxPROT to PPROT."; rules.json:2218 "o_apb_pprot must be a copy of the corresponding AxPROT."; rules.json:4838 Q&A: "PPROT is a direct copy of AxPROT with no translation." contract.json:690 (CHK-016): "o_apb_pprot == the captured AxPROT, copied with no translation" at each completion edge, where owner=WR for a write. |
+| RTL does | rtl/m_axi2apb_wr_seq.sv:338 captures AWPROT into reg_wr_prot at the AW handshake, and :299 drives it out as o_req_prot. rtl/m_axi2apb_bridge.sv:192 connects it to apb_ctrl.i_wr_req_prot. But rtl/m_axi2apb_apb_ctrl.sv:256-262 is the write-request capture branch, and it does `reg_apb_prot <= i_rd_req_prot;` (line 262) instead of i_wr_req_prot. i_wr_req_prot is declared at apb_ctrl.sv:40 and never used anywhere else. The read seq holds its last captured ARPROT in reg_rd_prot (rd_seq.sv:357, driven out at :315), so a write's APB transfer gets PPROT from the most recent read's ARPROT, which is then driven at apb_ctrl.sv:192/200. Here the write 'wr' (AWPROT=5) shows PPROT=1, which is presumably the ARPROT of the earlier read 'rd'. rd2 has prot 0 and has not been accepted yet. |
+| Test does | verif/tests/test_axi2apb_bridge.py:865 sends a read with prot=randint(0,7) and makes the APB access wait 1000 cycles. :869 sends a write to 0x5000 with a separate random prot (here 5). The expected PPROT is cur['prot'], captured from the sampled i_axi_awprot at the AW handshake (tracker _new, :502), and checked at the APB completion edge (:591). The SVA checker does the same: nnc_chk_cross.sv:137 captures cap_prot <= n_prot at hs_accept, and :213 requires o_apb_pprot == cap_prot. The failure is on the write's completion edge (sim.log:257, @20230000). |
+| A_rtl_wrong | For: apb_ctrl.sv:262 loads reg_apb_prot from i_rd_req_prot in the write branch, and the i_wr_req_prot port (apb_ctrl.sv:40) is not used. The value seen (0x1) is not the AWPROT (5). This matches a stale read PPROT. Two independent checkers (Python :591 and SVA nnc_chk_cross.sv:213) flag the same thing. Tests that use prot=0 for both reads and writes (e.g. CHK-019, 024, 025, 026: test.py:909-912, 1097, 1132, 1153) pass, which fits the pattern that the mismatch shows only when AWPROT != last ARPROT.<br>Against: None found. The copy-AxPROT requirement is unambiguous, and the RTL write path is the only place the value goes wrong. |
+| B_test_wrong | For: The test drives random noise on AW/AR payload while VALID=0 (test.py:327-329), so in principle the expected value could be sampled at the wrong time.<br>Against: The tracker samples awprot only at the AW handshake (test.py:502), when the driver holds t.prot (test.py:320-324). The SVA checker uses its own capture (nnc_chk_cross.sv:137) and fails at the same time (sim.log:257). The expected value (AWPROT of the write) is exactly what the spec requires. |
+| C_spec_unclear | For: spec:60/526 say "system policy TBD" for PPROT.<br>Against: REQ-IF-006 (spec:114), spec:305 "Direct copy / No translation", and rules.json:4838 make it clear that the bridge does no translation. There is nothing in the spec to suggest a write may carry ARPROT. |
+| Options | Fix RTL: in rtl/m_axi2apb_apb_ctrl.sv line 262, change `reg_apb_prot <= i_rd_req_prot;` to `reg_apb_prot <= i_wr_req_prot;`. Then rerun the full regression, including CHK-029, which sweeps all 8 PROT values with alternating read and write. No test or spec change is needed. Optionally, add a lint rule for unused input ports, which would have caught i_wr_req_prot. |
+
+## 2. test_chk_021_response_backpressure — CHK-016: pprot = AxPROT 5, got 0x6 at cycle 607
+
+**Most likely:** A_rtl_wrong
+
+| Part | Content |
+|---|---|
+| Specification says | Same as above. spec:114 REQ-IF-006 "The bridge shall copy AxPROT to PPROT"; spec:305 "Direct copy | No translation"; contract.json:690 CHK-016 "o_apb_pprot == the captured AxPROT, copied with no translation". |
+| RTL does | For write transactions, rtl/m_axi2apb_apb_ctrl.sv:262 captures reg_apb_prot from i_rd_req_prot, which is the read sequencer's held reg_rd_prot (rd_seq.sv:315/357), instead of i_wr_req_prot (AWPROT, wr_seq.sv:338/299). Because reads and writes are interleaved here, the write's APB beats carry the previous read's ARPROT (0x6) instead of its own AWPROT (5). |
+| Test does | test.py:984-985 interleaves 16-beat INCR reads and 8-beat INCR writes, each with an independent random prot in 0..7, under random RREADY/BREADY backpressure. The expected value is the AWPROT sampled at the AW handshake (test.py:502), checked at each APB completion edge (test.py:591). The SVA check nnc_chk_cross.sv:213 also fails at @27950000 (sim.log:258). |
+| A_rtl_wrong | For: The write branch at apb_ctrl.sv:262 uses i_rd_req_prot, and i_wr_req_prot (apb_ctrl.sv:40) is unused. The observed 0x6 is a value from another transaction (a read). Both the Python and the SVA checkers fail.<br>Against: None found. |
+| B_test_wrong | For: Backpressure and interleaving make the tracker more complex.<br>Against: PPROT expectation is simply the prot captured at the owner's address handshake (test.py:502). The SVA checker computes the same thing independently and also fails. Backpressure affects R/B, not PPROT. |
+| C_spec_unclear | For: Policy is marked TBD (spec:60).<br>Against: The copy requirement is explicit (spec:114, :227, :305; rules.json:4838). |
+| Options | Fix RTL: apb_ctrl.sv:262 should be `reg_apb_prot <= i_wr_req_prot;`. No test or spec change is needed. |
+
+## 3. test_chk_023_unsupported_writes — CHK-016: pprot = AxPROT 2, got 0x0 at cycle 52
+
+**Most likely:** A_rtl_wrong
+
+| Part | Content |
+|---|---|
+| Specification says | spec:114 REQ-IF-006 "The bridge shall copy AxPROT to PPROT"; spec:305 "Direct copy | No translation"; contract.json:690 CHK-016 applies to supported transactions: "o_apb_pprot == the captured AxPROT". |
+| RTL does | The unsupported write produces no APB transfer (CHK-015 passes, 563 hits / 0 fails). The following legal write is converted to APB, but apb_ctrl.sv:262 captures PPROT from i_rd_req_prot. No read has happened yet in this test, so reg_rd_prot is still at its reset value of 0 (rd_seq.sv:345). PPROT=0 is therefore driven instead of AWPROT=2. |
+| Test does | test.py:1059 sends an unsupported write with random prot, then :1061 sends a legal INCR write ('good') with random prot (here 2). :1064 waits for both. The expected PPROT for the legal write is its AWPROT, sampled at the handshake (test.py:502) and checked at :591. The SVA check (nnc_chk_cross.sv:213) also fails at @39200000 (sim.log:259). |
+| A_rtl_wrong | For: There are no reads in this test, and PPROT = 0 is exactly the reset value of reg_rd_prot. This points straight to apb_ctrl.sv:262 using i_rd_req_prot for writes.<br>Against: None found. |
+| B_test_wrong | For: The failing transaction directly follows an unsupported one, so the tracker could in principle mis-attribute ownership.<br>Against: The message reports AxPROT 2 for a supported transaction (CHK-016 is only evaluated when cur['supported'], test.py:574). The SVA checker fails independently. The expected value follows the spec. |
+| C_spec_unclear | For: None specific.<br>Against: The spec is explicit about a direct copy (spec:114, :305). |
+| Options | Fix RTL: apb_ctrl.sv:262 → `reg_apb_prot <= i_wr_req_prot;`. No test or spec change is needed. |
+
+## 4. test_chk_027_random_legal_bursts — CHK-016: pprot = AxPROT 7, got 0x1 at cycle 1792
+
+**Most likely:** A_rtl_wrong
+
+| Part | Content |
+|---|---|
+| Specification says | spec:114 REQ-IF-006; spec:227 "Copy of AxPROT"; spec:305 "Direct copy | No translation"; contract.json:690 CHK-016 PPROT clause. |
+| RTL does | For the write corner transaction, apb_ctrl.sv:262 loads reg_apb_prot from i_rd_req_prot (the last read's ARPROT, held in rd_seq reg_rd_prot), so PPROT=0x1 instead of AWPROT=7. That value is then driven in SETUP/ACCESS (apb_ctrl.sv:192/200). |
+| Test does | test.py:1230/1232 issues random legal read or write bursts (FIXED/INCR/WRAP, sizes 1/2/4, cache 0/1) with prot=randint(0,7). Each is awaited on its own (:1234). The expected PPROT is the AWPROT sampled at the handshake (test.py:502), checked at :591. The SVA check also fails at @59770000 (sim.log:260). |
+| A_rtl_wrong | For: The write-path PPROT source is wrong at apb_ctrl.sv:262. The value seen (1) differs from AWPROT (7) and fits a stale ARPROT. Both checkers agree.<br>Against: None found. |
+| B_test_wrong | For: Random burst shapes stress the address model in beat_addrs.<br>Against: The failure is the PPROT clause, not the address clause, and the PPROT expectation does not depend on burst shape. |
+| C_spec_unclear | For: None.<br>Against: The direct-copy requirement is explicit. |
+| Options | Fix RTL: apb_ctrl.sv:262 → `reg_apb_prot <= i_wr_req_prot;`. No test or spec change is needed. |
+
+## 5. test_chk_029_pprot_passthrough — CHK-016: pprot = AxPROT 5, got 0x0 at cycle 19
+
+**Most likely:** A_rtl_wrong
+
+| Part | Content |
+|---|---|
+| Specification says | spec:114 REQ-IF-006 "The bridge shall copy AxPROT to PPROT"; spec:305 "Direct copy | No translation"; spec:527 "No local check; APB Completers enforce PPROT". contract.json:954-956 CHK-029: "AxPROT is copied to PPROT unchanged", "Every APB transfer has o_apb_pprot equal to the AxPROT of its own transaction". contract.json:955 says to alternate reads and writes "so that consecutive reads and writes use different PROT values". |
+| RTL does | The first transaction is a read with ARPROT=0, so reg_rd_prot=0. The second is a write with AWPROT=5. apb_ctrl.sv:262 captures reg_apb_prot <= i_rd_req_prot (=0), so the write's APB SETUP/ACCESS carry PPROT=0 (apb_ctrl.sv:192/200). |
+| Test does | test.py:1302-1304 builds the sequence R0, W5, R1, W6, ... and :1305-1306 asserts that consecutive PROT values differ, which is exactly what exposes cross-channel leakage. The second item is the write with prot (0+5)&7=5 (test.py:1311). The expected value is AWPROT 5, sampled at the handshake (test.py:502) and checked at :591 (and later at :1316). The SVA check fails at @61530000 (sim.log:261). |
+| A_rtl_wrong | For: The observed PPROT 0 equals the immediately preceding read's ARPROT (R0), which matches apb_ctrl.sv:262 copying i_rd_req_prot on the write path. This is the very first write in the test.<br>Against: None found. |
+| B_test_wrong | For: None. The test follows contract.json:955 exactly.<br>Against: Stimulus and expectation come straight from contract.json:954-956. |
+| C_spec_unclear | For: spec:60 "system policy TBD".<br>Against: rules.json:4838 resolves it: "PPROT is a direct copy of AxPROT with no translation... does not alter PPROT in the bridge". |
+| Options | Fix RTL: apb_ctrl.sv:262 → `reg_apb_prot <= i_wr_req_prot;`. No test or spec change is needed. This test is the direct regression test for the fix. |
+
+## 6. test_chk_030_id_echo — CHK-016: pprot = AxPROT 1, got 0x0 at cycle 62
+
+**Most likely:** A_rtl_wrong
+
+| Part | Content |
+|---|---|
+| Specification says | spec:114 REQ-IF-006; spec:305 "Direct copy | No translation"; contract.json:690 CHK-016 PPROT clause. |
+| RTL does | Writes in the ID group get PPROT from i_rd_req_prot (apb_ctrl.sv:262), which is the held ARPROT of the last accepted read (or the reset value 0). So a write with AWPROT=1 shows PPROT=0. |
+| Test does | test.py:1341-1342 builds read/write groups with random IDs and prot=randint(0,7), and :1354 waits for the group. The expected PPROT is the AWPROT sampled at the handshake (test.py:502), checked at :591. The SVA check fails at @62250000 (sim.log:262). |
+| A_rtl_wrong | For: Same write-path PPROT source bug at apb_ctrl.sv:262. The failure is a PPROT mismatch, not an ID mismatch.<br>Against: None found. |
+| B_test_wrong | For: The test focuses on ID echo, so the PPROT failure is incidental.<br>Against: The incidental PPROT check is a correct spec check, and the SVA checker independently flags it. |
+| C_spec_unclear | For: None.<br>Against: The requirement is explicit. |
+| Options | Fix RTL: apb_ctrl.sv:262 → `reg_apb_prot <= i_wr_req_prot;`. No test or spec change is needed. |
+
+## 7. test_regression_random — CHK-016: pprot = AxPROT 0, got 0x7 at cycle 65
+
+**Most likely:** A_rtl_wrong
+
+| Part | Content |
+|---|---|
+| Specification says | spec:114 REQ-IF-006; spec:227; spec:305 "Direct copy | No translation"; contract.json:690 CHK-016 PPROT clause. |
+| RTL does | A write with AWPROT=0 shows PPROT=0x7, which is the ARPROT held from a previous read (rd_seq.sv:357/315), because apb_ctrl.sv:262 loads reg_apb_prot from i_rd_req_prot on the write path. The end-of-run summary shows NNC_CHECK CHK-016 hits=962 fails=7 (sim.log:308). The 7th fail is @64950000 (sim.log:264). |
+| Test does | test.py:1451 onward generates random mixed reads and writes (with random prot via the generator at test.py:238-239). The expected PPROT is the AWPROT sampled at the handshake (test.py:502), checked at :591. |
+| A_rtl_wrong | For: The same signature appears here: a write carries a non-matching PPROT equal to a plausible earlier ARPROT. The apb_ctrl.sv:262 bug explains all 7 CHK-016 failures. All other checks report 0 fails.<br>Against: None found. |
+| B_test_wrong | For: The random regression also drives noise on idle address payloads (test.py:327-329).<br>Against: Expectations are sampled only at the handshake, and the SVA checker agrees on the failure. |
+| C_spec_unclear | For: None.<br>Against: The requirement is explicit. |
+| Options | Fix RTL: apb_ctrl.sv:262 → `reg_apb_prot <= i_wr_req_prot;`. Rerun the regression with the same seed to confirm that CHK-016 has 0 fails. |
+
+## 8. Assertion CHK-016 (nnc_chk_cross.sv a_CHK_016) — 7 fails / 962 hits, first at 20230000
+
+**Most likely:** A_rtl_wrong
+
+| Part | Content |
+|---|---|
+| Specification says | contract.json:690 CHK-016: "At the completion edge of transfer k ... o_apb_pprot == the captured AxPROT, copied with no translation." Derived from spec:114 REQ-IF-006 "The bridge shall copy AxPROT to PPROT" and spec:305 "Direct copy | No translation" (rules.json:607, 2218, 3050). |
+| RTL does | rtl/m_axi2apb_apb_ctrl.sv:256-262: on a write request accept, reg_apb_prot <= i_rd_req_prot (should be i_wr_req_prot, which is declared at :40 and otherwise unused). As a result every write's APB transfer carries the read sequencer's last ARPROT (rd_seq.sv:315/357), or 0 after reset. Reads are correct (apb_ctrl.sv:255). |
+| Test does | nnc_chk_cross.sv:129-137 captures cap_prot <= n_prot at the AR/AW handshake (hs_accept). :210-213 requires o_apb_pprot == cap_prot at apb_comp. :219 asserts ant_016 |-> cons_016. The fail times in sim.log:257-264 (20230000, 27950000, 39200000, 59770000, 61530000, 62250000, 64950000) match the failing cocotb tests one-for-one. |
+| A_rtl_wrong | For: There is a clear copy/paste error at apb_ctrl.sv:262. Every failure is on a write where AWPROT differs from the last ARPROT. Tests where all prot values are 0 pass. The independent Python scoreboard (test.py:591) reports the identical mismatch.<br>Against: None found. |
+| B_test_wrong | For: The SVA could in principle capture n_prot from the wrong channel.<br>Against: The expected values in the messages equal the AWPROT the tests drive for writes (e.g. CHK-029 W5 after R0). The checker's expectation is the per-transaction AxPROT, as the spec requires. |
+| C_spec_unclear | For: spec:60/526 mark the PPROT system policy as TBD.<br>Against: rules.json:4838 clarifies that it is a direct copy, and that policy is enforced by Completers, not by the bridge. |
+| Options | Fix RTL (recommended): change apb_ctrl.sv:262 to `reg_apb_prot <= i_wr_req_prot;`. Then rerun all failing tests and the regression, expecting CHK-016 fails=0. No checker or spec change is warranted. Do not relax the PPROT clause of CHK-016. |
+

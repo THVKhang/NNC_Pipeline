@@ -22,6 +22,7 @@
         "tag": "TL"
       }
     ],
+    "formal": "on",
     "top": "m_apb_tlul_bridge"
   },
   "created": "2026-11-07T15:05:11+00:00",
@@ -44,12 +45,12 @@
       "note": "Re-approved after the renumber fix: cross-references inside CHK-011, CHK-012, CHK-025, CHK-028 and in not_verified notes/assumptions now name the renumbered checks (ranges expanded). Interface gains clock/reset typing; checks, kinds and rule coverage (232 rules, 169 in checks, 63 not verified) unchanged."
     },
     "G3_verif_sources": {
-      "at": "2026-11-08T10:47:56+00:00",
+      "at": "2026-11-11T15:38:44+00:00",
       "by": "Claude (delegated by GabrielHCMUT)",
       "hashes": {
-        "verif": "d8135ed34a1a8500d18e187294b6c9b2abc59d60979b8d6820fae30099478f92"
+        "verif": "ee3a515e3ffcbc9eee9888f130a05fefdbc0b8e13db7a539c449ddc7202ac75f"
       },
-      "note": "Added closure module test_apb_tlul_bridge_cov1.py (COV-101 long response delays, COV-102 stale response at reset release) from a demonstration target functional=100 % set on delegation; the scenarios name only spec/contract signals, the tests assert the named checks edge by edge; 17/17 tests pass, functional 40/40."
+      "note": "Added verif/formal/nnc_env.sv (agent A13, from the spec only): 5 environment assumptions, read one by one: requester idle in reset (ENV-01), APB Setup->Access sequencing and PSEL/PENABLE held until PREADY (ENV-02/03), request fields stable until PREADY (ENV-04), TL-UL D beat held until accepted (ENV-05). Orphan responses and error responses stay allowed (the spec makes them legal inputs). Tests and checkers unchanged. A person should confirm the assumptions."
     }
   },
   "version": 1
