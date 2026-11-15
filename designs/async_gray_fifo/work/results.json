@@ -1,5 +1,5 @@
 {
- "date": "2026-11-11T11:29:32+00:00",
+ "date": "2026-11-14T16:06:38+00:00",
  "seed": 1,
  "rtl_files": [
   "VLSIT_CELL_SYNC_DFF_RN.sv",
@@ -32,7 +32,48 @@
  },
  "tests": [
   {
-   "name": "test_chk_014_nominal_latency/per=0",
+   "name": "test_chk_014_nominal_latency",
+   "runs": {
+    "base.s1": "fail",
+    "base.s2": "fail",
+    "base.s3": "fail",
+    "base.s4": "fail",
+    "base.s5": "fail",
+    "model_off.s1": "pass",
+    "syn.s1": "pass",
+    "cell1.s1": "fail",
+    "cell3.s1": "fail",
+    "cell4.s1": "fail",
+    "macro.s1": "fail",
+    "small.s1": "pass",
+    "wr_slow.s1": "fail",
+    "rd_slow.s1": "fail"
+   },
+   "sim_time_ns": "1680.691",
+   "message": "[failed in base.s1, base.s2, base.s3, base.s4, base.s5, cell1.s1, cell3.s1, cell4.s1, macro.s1, wr_slow.s1, rd_slow.s1] CHK-013: i_full_thr=depth expected o_full_thr=0 got 1 at 1680691 ps",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_d95c2930/C01/test_async_gray_fifo.py\", line 94, in run\n                                                            self.cb(len(self.v) - 1)\n                                                          File \"/root/nnc_runs/runset_d95c2930/C01/test_async_gray_fifo.py\", line 214, in _on_w\n                                                            assert fth == exp, f\"CHK-013: i_full_thr=depth expected o_full_thr={exp} got {fth} at {t} ps\"\n                                                        AssertionError: CHK-013: i_full_thr=depth expected o_full_thr=0 got 1 at 1680691 ps\n                                                        assert 1 == 0\n  1680.69ns WARNING  cocotb.regression                  test_async_gray_fifo.test_chk_014_nominal_latency failed",
+   "checks": [
+    "CHK-013",
+    "CHK-014"
+   ],
+   "failed_in": [
+    "base.s1",
+    "base.s2",
+    "base.s3",
+    "base.s4",
+    "base.s5",
+    "cell1.s1",
+    "cell3.s1",
+    "cell4.s1",
+    "macro.s1",
+    "wr_slow.s1",
+    "rd_slow.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_015_model_latency_window",
    "runs": {
     "base.s1": "pass",
     "base.s2": "pass",
@@ -52,204 +93,126 @@
    "status": "pass"
   },
   {
-   "name": "test_chk_014_nominal_latency/per=1",
+   "name": "test_chk_016_random_traffic_ratios",
    "runs": {
-    "base.s1": "pass",
-    "base.s2": "pass",
+    "base.s1": "fail",
+    "base.s2": "fail",
     "base.s3": "pass",
-    "base.s4": "pass",
+    "base.s4": "fail",
     "base.s5": "pass",
     "model_off.s1": "pass",
     "syn.s1": "pass",
-    "cell1.s1": "pass",
-    "cell3.s1": "pass",
-    "cell4.s1": "pass",
-    "macro.s1": "pass",
-    "small.s1": "pass",
-    "wr_slow.s1": "pass",
-    "rd_slow.s1": "pass"
+    "cell1.s1": "fail",
+    "cell3.s1": "fail",
+    "cell4.s1": "fail",
+    "macro.s1": "fail",
+    "small.s1": "fail",
+    "wr_slow.s1": "fail",
+    "rd_slow.s1": "fail"
    },
-   "status": "pass"
-  },
-  {
-   "name": "test_chk_015_latency_with_model",
-   "runs": {
-    "base.s1": "pass",
-    "base.s2": "pass",
-    "base.s3": "pass",
-    "base.s4": "pass",
-    "base.s5": "pass",
-    "model_off.s1": "pass",
-    "syn.s1": "pass",
-    "cell1.s1": "pass",
-    "cell3.s1": "pass",
-    "cell4.s1": "pass",
-    "macro.s1": "pass",
-    "small.s1": "pass",
-    "wr_slow.s1": "pass",
-    "rd_slow.s1": "pass"
-   },
-   "status": "pass"
-  },
-  {
-   "name": "test_chk_016_random_ratios/pair=0",
-   "runs": {
-    "base.s1": "pass",
-    "base.s2": "pass",
-    "base.s3": "pass",
-    "base.s4": "pass",
-    "base.s5": "pass",
-    "model_off.s1": "pass",
-    "syn.s1": "pass",
-    "cell1.s1": "pass",
-    "cell3.s1": "pass",
-    "cell4.s1": "pass",
-    "macro.s1": "pass",
-    "small.s1": "pass",
-    "wr_slow.s1": "pass",
-    "rd_slow.s1": "pass"
-   },
-   "status": "pass"
-  },
-  {
-   "name": "test_chk_016_random_ratios/pair=1",
-   "runs": {
-    "base.s1": "pass",
-    "base.s2": "pass",
-    "base.s3": "pass",
-    "base.s4": "pass",
-    "base.s5": "pass",
-    "model_off.s1": "pass",
-    "syn.s1": "pass",
-    "cell1.s1": "pass",
-    "cell3.s1": "pass",
-    "cell4.s1": "pass",
-    "macro.s1": "pass",
-    "small.s1": "pass",
-    "wr_slow.s1": "pass",
-    "rd_slow.s1": "pass"
-   },
-   "status": "pass"
-  },
-  {
-   "name": "test_chk_016_random_ratios/pair=2",
-   "runs": {
-    "base.s1": "pass",
-    "base.s2": "pass",
-    "base.s3": "pass",
-    "base.s4": "pass",
-    "base.s5": "pass",
-    "model_off.s1": "pass",
-    "syn.s1": "pass",
-    "cell1.s1": "pass",
-    "cell3.s1": "pass",
-    "cell4.s1": "pass",
-    "macro.s1": "pass",
-    "small.s1": "pass",
-    "wr_slow.s1": "pass",
-    "rd_slow.s1": "pass"
-   },
-   "status": "pass"
-  },
-  {
-   "name": "test_chk_016_random_ratios/pair=3",
-   "runs": {
-    "base.s1": "pass",
-    "base.s2": "pass",
-    "base.s3": "pass",
-    "base.s4": "pass",
-    "base.s5": "pass",
-    "model_off.s1": "pass",
-    "syn.s1": "pass",
-    "cell1.s1": "pass",
-    "cell3.s1": "pass",
-    "cell4.s1": "pass",
-    "macro.s1": "pass",
-    "small.s1": "pass",
-    "wr_slow.s1": "pass",
-    "rd_slow.s1": "pass"
-   },
-   "status": "pass"
-  },
-  {
-   "name": "test_chk_016_random_ratios/pair=4",
-   "runs": {
-    "base.s1": "pass",
-    "base.s2": "pass",
-    "base.s3": "pass",
-    "base.s4": "pass",
-    "base.s5": "pass",
-    "model_off.s1": "pass",
-    "syn.s1": "pass",
-    "cell1.s1": "pass",
-    "cell3.s1": "pass",
-    "cell4.s1": "pass",
-    "macro.s1": "pass",
-    "small.s1": "pass",
-    "wr_slow.s1": "pass",
-    "rd_slow.s1": "pass"
-   },
-   "status": "pass"
-  },
-  {
-   "name": "test_chk_016_random_ratios/pair=5",
-   "runs": {
-    "base.s1": "pass",
-    "base.s2": "pass",
-    "base.s3": "pass",
-    "base.s4": "pass",
-    "base.s5": "pass",
-    "model_off.s1": "pass",
-    "syn.s1": "pass",
-    "cell1.s1": "pass",
-    "cell3.s1": "pass",
-    "cell4.s1": "pass",
-    "macro.s1": "pass",
-    "small.s1": "pass",
-    "wr_slow.s1": "pass",
-    "rd_slow.s1": "pass"
-   },
-   "status": "pass"
+   "sim_time_ns": "2607.944000000003",
+   "message": "[failed in base.s1, base.s2, base.s4, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1] CHK-003: i_empty_thr>=depth expected o_empty_thr=1 got 0 at 57093716 ps",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_d95c2930/C01/test_async_gray_fifo.py\", line 94, in run\n                                                            self.cb(len(self.v) - 1)\n                                                          File \"/root/nnc_runs/runset_d95c2930/C01/test_async_gray_fifo.py\", line 256, in _on_r\n                                                            assert eth == 1, f\"CHK-003: i_empty_thr>=depth expected o_empty_thr=1 got {eth} at {t} ps\"\n                                                        AssertionError: CHK-003: i_empty_thr>=depth expected o_empty_thr=1 got 0 at 57093716 ps\n                                                        assert 0 == 1\n 57093.72ns WARNING  cocotb.regression                  test_async_gray_fifo.test_chk_016_random_traffic_ratios failed",
+   "checks": [
+    "CHK-003",
+    "CHK-016"
+   ],
+   "failed_in": [
+    "base.s1",
+    "base.s2",
+    "base.s4",
+    "cell1.s1",
+    "cell3.s1",
+    "cell4.s1",
+    "macro.s1",
+    "small.s1",
+    "wr_slow.s1",
+    "rd_slow.s1"
+   ],
+   "status": "fail"
   },
   {
    "name": "test_chk_017_synthesis_branch_regression",
    "runs": {
-    "base.s1": "pass",
-    "base.s2": "pass",
-    "base.s3": "pass",
-    "base.s4": "pass",
-    "base.s5": "pass",
+    "base.s1": "fail",
+    "base.s2": "fail",
+    "base.s3": "fail",
+    "base.s4": "fail",
+    "base.s5": "fail",
     "model_off.s1": "pass",
     "syn.s1": "pass",
-    "cell1.s1": "pass",
-    "cell3.s1": "pass",
-    "cell4.s1": "pass",
-    "macro.s1": "pass",
-    "small.s1": "pass",
-    "wr_slow.s1": "pass",
+    "cell1.s1": "fail",
+    "cell3.s1": "fail",
+    "cell4.s1": "fail",
+    "macro.s1": "fail",
+    "small.s1": "fail",
+    "wr_slow.s1": "fail",
     "rd_slow.s1": "pass"
    },
-   "status": "pass"
+   "sim_time_ns": "11568.129999999997",
+   "message": "[failed in base.s1, base.s2, base.s3, base.s4, base.s5, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1] CHK-013: i_full_thr=depth expected o_full_thr=0 got 1 at 68661847 ps",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_d95c2930/C01/test_async_gray_fifo.py\", line 94, in run\n                                                            self.cb(len(self.v) - 1)\n                                                          File \"/root/nnc_runs/runset_d95c2930/C01/test_async_gray_fifo.py\", line 214, in _on_w\n                                                            assert fth == exp, f\"CHK-013: i_full_thr=depth expected o_full_thr={exp} got {fth} at {t} ps\"\n                                                        AssertionError: CHK-013: i_full_thr=depth expected o_full_thr=0 got 1 at 68661847 ps\n                                                        assert 1 == 0\n 68661.85ns WARNING  cocotb.regression                  test_async_gray_fifo.test_chk_017_synthesis_branch_regression failed",
+   "checks": [
+    "CHK-013",
+    "CHK-017"
+   ],
+   "failed_in": [
+    "base.s1",
+    "base.s2",
+    "base.s3",
+    "base.s4",
+    "base.s5",
+    "cell1.s1",
+    "cell3.s1",
+    "cell4.s1",
+    "macro.s1",
+    "small.s1",
+    "wr_slow.s1"
+   ],
+   "status": "fail"
   },
   {
-   "name": "test_chk_018_write_n_read_n",
+   "name": "test_chk_018_write_n_read_n_show_ahead",
    "runs": {
-    "base.s1": "pass",
-    "base.s2": "pass",
-    "base.s3": "pass",
+    "base.s1": "fail",
+    "base.s2": "fail",
+    "base.s3": "fail",
     "base.s4": "pass",
-    "base.s5": "pass",
+    "base.s5": "fail",
     "model_off.s1": "pass",
     "syn.s1": "pass",
-    "cell1.s1": "pass",
-    "cell3.s1": "pass",
-    "cell4.s1": "pass",
-    "macro.s1": "pass",
-    "small.s1": "pass",
-    "wr_slow.s1": "pass",
-    "rd_slow.s1": "pass"
+    "cell1.s1": "fail",
+    "cell3.s1": "fail",
+    "cell4.s1": "fail",
+    "macro.s1": "fail",
+    "small.s1": "fail",
+    "wr_slow.s1": "fail",
+    "rd_slow.s1": "fail"
    },
-   "status": "pass"
+   "sim_time_ns": "2416.6589999999997",
+   "message": "[failed in base.s1, base.s2, base.s3, base.s5, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1] CHK-013: i_full_thr=depth expected o_full_thr=0 got 1 at 71078507 ps",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_d95c2930/C01/test_async_gray_fifo.py\", line 94, in run\n                                                            self.cb(len(self.v) - 1)\n                                                          File \"/root/nnc_runs/runset_d95c2930/C01/test_async_gray_fifo.py\", line 214, in _on_w\n                                                            assert fth == exp, f\"CHK-013: i_full_thr=depth expected o_full_thr={exp} got {fth} at {t} ps\"\n                                                        AssertionError: CHK-013: i_full_thr=depth expected o_full_thr=0 got 1 at 71078507 ps\n                                                        assert 1 == 0\n 71078.51ns WARNING  cocotb.regression                  test_async_gray_fifo.test_chk_018_write_n_read_n_show_ahead failed",
+   "checks": [
+    "CHK-013",
+    "CHK-018"
+   ],
+   "failed_in": [
+    "base.s1",
+    "base.s2",
+    "base.s3",
+    "base.s5",
+    "cell1.s1",
+    "cell3.s1",
+    "cell4.s1",
+    "macro.s1",
+    "small.s1",
+    "wr_slow.s1",
+    "rd_slow.s1"
+   ],
+   "status": "fail"
   },
   {
    "name": "test_chk_019_back_to_back_equal_clocks",
@@ -287,9 +250,20 @@
     "macro.s1": "pass",
     "small.s1": "pass",
     "wr_slow.s1": "pass",
-    "rd_slow.s1": "pass"
+    "rd_slow.s1": "fail"
    },
-   "status": "pass"
+   "sim_time_ns": "630.4689999999973",
+   "message": "[failed in rd_slow.s1] CHK-013: i_full_thr=depth expected o_full_thr=0 got 1 at 99049215 ps",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_d95c2930/C10/test_async_gray_fifo.py\", line 94, in run\n                                                            self.cb(len(self.v) - 1)\n                                                          File \"/root/nnc_runs/runset_d95c2930/C10/test_async_gray_fifo.py\", line 214, in _on_w\n                                                            assert fth == exp, f\"CHK-013: i_full_thr=depth expected o_full_thr={exp} got {fth} at {t} ps\"\n                                                        AssertionError: CHK-013: i_full_thr=depth expected o_full_thr=0 got 1 at 99049215 ps\n                                                        assert 1 == 0\n 99049.21ns WARNING  cocotb.regression                  test_async_gray_fifo.test_chk_020_overflow failed",
+   "checks": [
+    "CHK-013",
+    "CHK-020"
+   ],
+   "failed_in": [
+    "rd_slow.s1"
+   ],
+   "status": "fail"
   },
   {
    "name": "test_chk_021_underflow",
@@ -332,7 +306,7 @@
    "status": "pass"
   },
   {
-   "name": "test_chk_023_hw_reset_during_srst",
+   "name": "test_chk_023_hw_reset_during_sw_reset",
    "runs": {
     "base.s1": "pass",
     "base.s2": "pass",
@@ -354,6 +328,48 @@
   {
    "name": "test_chk_024_hw_reset_mid_traffic",
    "runs": {
+    "base.s1": "fail",
+    "base.s2": "fail",
+    "base.s3": "fail",
+    "base.s4": "fail",
+    "base.s5": "fail",
+    "model_off.s1": "pass",
+    "syn.s1": "pass",
+    "cell1.s1": "fail",
+    "cell3.s1": "fail",
+    "cell4.s1": "fail",
+    "macro.s1": "fail",
+    "small.s1": "fail",
+    "wr_slow.s1": "fail",
+    "rd_slow.s1": "fail"
+   },
+   "sim_time_ns": "4109.723000000013",
+   "message": "[failed in base.s1, base.s2, base.s3, base.s4, base.s5, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1] CHK-013: i_full_thr=depth expected o_full_thr=0 got 1 at 80584778 ps",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_d95c2930/C01/test_async_gray_fifo.py\", line 94, in run\n                                                            self.cb(len(self.v) - 1)\n                                                          File \"/root/nnc_runs/runset_d95c2930/C01/test_async_gray_fifo.py\", line 214, in _on_w\n                                                            assert fth == exp, f\"CHK-013: i_full_thr=depth expected o_full_thr={exp} got {fth} at {t} ps\"\n                                                        AssertionError: CHK-013: i_full_thr=depth expected o_full_thr=0 got 1 at 80584778 ps\n                                                        assert 1 == 0\n 80584.78ns WARNING  cocotb.regression                  test_async_gray_fifo.test_chk_024_hw_reset_mid_traffic failed",
+   "checks": [
+    "CHK-013",
+    "CHK-024"
+   ],
+   "failed_in": [
+    "base.s1",
+    "base.s2",
+    "base.s3",
+    "base.s4",
+    "base.s5",
+    "cell1.s1",
+    "cell3.s1",
+    "cell4.s1",
+    "macro.s1",
+    "small.s1",
+    "wr_slow.s1",
+    "rd_slow.s1"
+   ],
+   "status": "fail"
+  },
+  {
+   "name": "test_chk_025_srst_partly_filled_held",
+   "runs": {
     "base.s1": "pass",
     "base.s2": "pass",
     "base.s3": "pass",
@@ -372,38 +388,7 @@
    "status": "pass"
   },
   {
-   "name": "test_chk_025_srst_partial_fifo",
-   "runs": {
-    "base.s1": "pass",
-    "base.s2": "pass",
-    "base.s3": "pass",
-    "base.s4": "pass",
-    "base.s5": "pass",
-    "model_off.s1": "pass",
-    "syn.s1": "pass",
-    "cell1.s1": "pass",
-    "cell3.s1": "fail",
-    "cell4.s1": "pass",
-    "macro.s1": "pass",
-    "small.s1": "pass",
-    "wr_slow.s1": "fail",
-    "rd_slow.s1": "pass"
-   },
-   "sim_time_ns": "879.6640000001062",
-   "message": "[failed in cell3.s1, wr_slow.s1] CHK-025: (8) o_empty fall after P0: expected the change after destination edge 3..5 got 6",
-   "exception": "AssertionError",
-   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_e412cdfe/C05/test_async_gray_fifo.py\", line 1153, in test_chk_025_srst_partial_fifo\n                                                            chk_lat(lead(E2, \"o_empty\", 1), cid, \"(8) o_empty fall after P0\")\n                                                          File \"/root/nnc_runs/runset_e412cdfe/C05/test_async_gray_fifo.py\", line 93, in chk_lat\n                                                            assert ok, f\"{cid}: {what}: expected the change after destination edge {exp} got {L}\"\n                                                        AssertionError: CHK-025: (8) o_empty fall after P0: expected the change after destination edge 3..5 got 6\n                                                        assert False\n1126922.67ns WARNING  cocotb.regression                  test_async_gray_fifo.test_chk_025_srst_partial_fifo failed",
-   "checks": [
-    "CHK-025"
-   ],
-   "failed_in": [
-    "cell3.s1",
-    "wr_slow.s1"
-   ],
-   "status": "fail"
-  },
-  {
-   "name": "test_chk_026_srst_pulse_full_overflow",
+   "name": "test_chk_026_srst_one_cycle_pulse_full",
    "runs": {
     "base.s1": "pass",
     "base.s2": "pass",
@@ -443,7 +428,7 @@
    "status": "pass"
   },
   {
-   "name": "test_chk_028_srst_reassert_in_rel",
+   "name": "test_chk_028_srst_reasserted_in_rel",
    "runs": {
     "base.s1": "pass",
     "base.s2": "pass",
@@ -463,84 +448,40 @@
    "status": "pass"
   },
   {
-   "name": "test_chk_029_srst_random/pair=0",
+   "name": "test_chk_029_srst_random_traffic",
    "runs": {
-    "base.s1": "pass",
+    "base.s1": "fail",
     "base.s2": "pass",
     "base.s3": "pass",
-    "base.s4": "pass",
+    "base.s4": "fail",
     "base.s5": "pass",
     "model_off.s1": "pass",
     "syn.s1": "pass",
-    "cell1.s1": "pass",
+    "cell1.s1": "fail",
     "cell3.s1": "pass",
-    "cell4.s1": "pass",
-    "macro.s1": "pass",
-    "small.s1": "pass",
+    "cell4.s1": "fail",
+    "macro.s1": "fail",
+    "small.s1": "fail",
     "wr_slow.s1": "pass",
     "rd_slow.s1": "pass"
    },
-   "status": "pass"
-  },
-  {
-   "name": "test_chk_029_srst_random/pair=1",
-   "runs": {
-    "base.s1": "pass",
-    "base.s2": "pass",
-    "base.s3": "pass",
-    "base.s4": "pass",
-    "base.s5": "pass",
-    "model_off.s1": "pass",
-    "syn.s1": "pass",
-    "cell1.s1": "pass",
-    "cell3.s1": "pass",
-    "cell4.s1": "pass",
-    "macro.s1": "pass",
-    "small.s1": "pass",
-    "wr_slow.s1": "pass",
-    "rd_slow.s1": "pass"
-   },
-   "status": "pass"
-  },
-  {
-   "name": "test_chk_029_srst_random/pair=2",
-   "runs": {
-    "base.s1": "pass",
-    "base.s2": "pass",
-    "base.s3": "pass",
-    "base.s4": "pass",
-    "base.s5": "pass",
-    "model_off.s1": "pass",
-    "syn.s1": "pass",
-    "cell1.s1": "pass",
-    "cell3.s1": "pass",
-    "cell4.s1": "pass",
-    "macro.s1": "pass",
-    "small.s1": "pass",
-    "wr_slow.s1": "pass",
-    "rd_slow.s1": "pass"
-   },
-   "status": "pass"
-  },
-  {
-   "name": "test_chk_029_srst_random/pair=3",
-   "runs": {
-    "base.s1": "pass",
-    "base.s2": "pass",
-    "base.s3": "pass",
-    "base.s4": "pass",
-    "base.s5": "pass",
-    "model_off.s1": "pass",
-    "syn.s1": "pass",
-    "cell1.s1": "pass",
-    "cell3.s1": "pass",
-    "cell4.s1": "pass",
-    "macro.s1": "pass",
-    "small.s1": "pass",
-    "wr_slow.s1": "pass",
-    "rd_slow.s1": "pass"
-   },
-   "status": "pass"
+   "sim_time_ns": "21766.15400000001",
+   "message": "[failed in base.s1, base.s4, cell1.s1, cell4.s1, macro.s1, small.s1] CHK-032: occupancy 5 <= i_empty_thr 5 expected o_empty_thr=1 (never optimistic) got 0 at 106739668 ps",
+   "exception": "AssertionError",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_d95c2930/C01/test_async_gray_fifo.py\", line 94, in run\n                                                            self.cb(len(self.v) - 1)\n                                                          File \"/root/nnc_runs/runset_d95c2930/C01/test_async_gray_fifo.py\", line 276, in _on_r\n                                                            assert v[\"o_empty_thr\"] == 1, (f\"CHK-032: occupancy {occ} <= i_empty_thr {v['i_empty_thr']} expected \"\n                                                        AssertionError: CHK-032: occupancy 5 <= i_empty_thr 5 expected o_empty_thr=1 (never optimistic) got 0 at 106739668 ps\n                                                        assert 0 == 1\n106739.67ns WARNING  cocotb.regression                  test_async_gray_fifo.test_chk_029_srst_random_traffic failed",
+   "checks": [
+    "CHK-029",
+    "CHK-032"
+   ],
+   "failed_in": [
+    "base.s1",
+    "base.s4",
+    "cell1.s1",
+    "cell4.s1",
+    "macro.s1",
+    "small.s1"
+   ],
+   "status": "fail"
   },
   {
    "name": "test_chk_030_after_srst_like_hw_reset",
@@ -583,107 +524,7 @@
    "status": "pass"
   },
   {
-   "name": "test_chk_032_threshold_flags/thr=0",
-   "runs": {
-    "base.s1": "pass",
-    "base.s2": "pass",
-    "base.s3": "pass",
-    "base.s4": "pass",
-    "base.s5": "pass",
-    "model_off.s1": "pass",
-    "syn.s1": "pass",
-    "cell1.s1": "pass",
-    "cell3.s1": "pass",
-    "cell4.s1": "pass",
-    "macro.s1": "pass",
-    "small.s1": "pass",
-    "wr_slow.s1": "pass",
-    "rd_slow.s1": "pass"
-   },
-   "status": "pass"
-  },
-  {
-   "name": "test_chk_032_threshold_flags/thr=1",
-   "runs": {
-    "base.s1": "pass",
-    "base.s2": "pass",
-    "base.s3": "pass",
-    "base.s4": "pass",
-    "base.s5": "pass",
-    "model_off.s1": "pass",
-    "syn.s1": "pass",
-    "cell1.s1": "pass",
-    "cell3.s1": "pass",
-    "cell4.s1": "pass",
-    "macro.s1": "pass",
-    "small.s1": "pass",
-    "wr_slow.s1": "pass",
-    "rd_slow.s1": "pass"
-   },
-   "status": "pass"
-  },
-  {
-   "name": "test_chk_032_threshold_flags/thr=2",
-   "runs": {
-    "base.s1": "pass",
-    "base.s2": "pass",
-    "base.s3": "pass",
-    "base.s4": "pass",
-    "base.s5": "pass",
-    "model_off.s1": "pass",
-    "syn.s1": "pass",
-    "cell1.s1": "pass",
-    "cell3.s1": "pass",
-    "cell4.s1": "pass",
-    "macro.s1": "pass",
-    "small.s1": "pass",
-    "wr_slow.s1": "pass",
-    "rd_slow.s1": "pass"
-   },
-   "status": "pass"
-  },
-  {
-   "name": "test_chk_032_threshold_flags/thr=3",
-   "runs": {
-    "base.s1": "pass",
-    "base.s2": "pass",
-    "base.s3": "pass",
-    "base.s4": "pass",
-    "base.s5": "pass",
-    "model_off.s1": "pass",
-    "syn.s1": "pass",
-    "cell1.s1": "pass",
-    "cell3.s1": "pass",
-    "cell4.s1": "pass",
-    "macro.s1": "pass",
-    "small.s1": "pass",
-    "wr_slow.s1": "pass",
-    "rd_slow.s1": "pass"
-   },
-   "status": "pass"
-  },
-  {
-   "name": "test_chk_032_threshold_flags/thr=4",
-   "runs": {
-    "base.s1": "pass",
-    "base.s2": "pass",
-    "base.s3": "pass",
-    "base.s4": "pass",
-    "base.s5": "pass",
-    "model_off.s1": "pass",
-    "syn.s1": "pass",
-    "cell1.s1": "pass",
-    "cell3.s1": "pass",
-    "cell4.s1": "pass",
-    "macro.s1": "pass",
-    "small.s1": "pass",
-    "wr_slow.s1": "pass",
-    "rd_slow.s1": "pass"
-   },
-   "status": "pass"
-  },
-  {
-   "name": "test_chk_032_threshold_flags/thr=5",
+   "name": "test_chk_032_threshold_flags",
    "runs": {
     "base.s1": "pass",
     "base.s2": "pass",
@@ -705,1080 +546,929 @@
   {
    "name": "test_regression_random",
    "runs": {
-    "base.s1": "pass",
-    "base.s2": "pass",
-    "base.s3": "pass",
-    "base.s4": "pass",
-    "base.s5": "pass",
+    "base.s1": "fail",
+    "base.s2": "fail",
+    "base.s3": "fail",
+    "base.s4": "fail",
+    "base.s5": "fail",
     "model_off.s1": "pass",
     "syn.s1": "pass",
-    "cell1.s1": "pass",
-    "cell3.s1": "pass",
-    "cell4.s1": "pass",
-    "macro.s1": "pass",
-    "small.s1": "pass",
+    "cell1.s1": "fail",
+    "cell3.s1": "fail",
+    "cell4.s1": "fail",
+    "macro.s1": "fail",
+    "small.s1": "fail",
     "wr_slow.s1": "pass",
-    "rd_slow.s1": "pass"
+    "rd_slow.s1": "fail"
    },
-   "status": "pass"
+   "sim_time_ns": "8495.09599999999",
+   "message": "[failed in base.s1, base.s2, base.s3, base.s4, base.s5, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, rd_slow.s1] CHK-032: occupancy 5 >= i_full_thr 5 expected o_full_thr=1 (never optimistic) got 0 at 131612134 ps",
+   "exception": "AssertionError",
+   "traceback": "u_sync_rd_gray.gen_bit_cell[2].u_vlsit_afifo_cell_sync.gen_sim_msync seed=1 enable=1 stages=2\nAFIFO_MSYNC: nnc_tb_top.u_dut.u_vlsit_afifo_wr.u_sync_rd_gray.gen_bit_cell[3].u_vlsit_afifo_cell_sync.gen_sim_msync seed=1 enable=1 stages=2\nAFIFO_MSYNC: nnc_tb_top.u_dut.u_vlsit_afifo_rd.u_sync_wr_gray.gen_bit_cell[0].u_vlsit_afifo_cell_sync.gen_sim_msync seed=1 enable=1 stages=2\nAFIFO_MSYNC: nnc_tb_top.u_dut.u_vlsit_afifo_rd.u_sync_wr_gray.gen_bit_cell[1].u_vlsit_afifo_cell_sync.gen_sim_msync seed=1 enable=1 stages=2\nAFIFO_MSYNC: nnc_tb_top.u_dut.u_vlsit_afifo_rd.u_sync_wr_gray.gen_bit_cell[2].u_vlsit_afifo_cell_sync.gen_sim_msync seed=1 enable=1 stages=2\nAFIFO_MSYNC: nnc_tb_top.u_dut.u_vlsit_afifo_rd.u_sync_wr_gray.gen_bit_cell[3].u_vlsit_afifo_cell_sync.gen_sim_msync seed=1 enable=1 stages=2\nNNC_FAIL CHK-013 @1681000\nNNC_FAIL CHK-003 @57094000\nNNC_FAIL CHK-003 @57102000\nNNC_FAIL CHK-013 @68662000\nNNC_FAIL CHK-013 @71079000\nNNC_FAIL CHK-013 @80585000\n- (null):0: Verilog $finish\nNNC_COVER COVP-001 hits=1260\nNNC_COVER COVP-002 hits=1090\nNNC_COVER COVP-003 hits=1090\nNNC_COVER COVP-004 hits=882\nNNC_COVER COVP-005 hits=327\nNNC_COVER COVP-006 hits=319\nNNC_COVER COVP-007 hits=32\nNNC_COVER COVP-008 hits=776\nNNC_COVER COVP-009 hits=179\nNNC_COVER COVP-010 hits=2958\nNNC_COVER COVP-011 hits=2773\nNNC_COVER COVP-012 hits=368\nNNC_COVER COVP-013 hits=5686\nNNC_COVER COVP-014 hits=35\nNNC_COVER COVP-015 hits=20\nNNC_COVER COVP-016 hits=189\nNNC_COVER COVP-017 hits=35\nNNC_COVER COVP-018 hits=142\nNNC_COVER COVP-019 hits=424\nNNC_COVER COVP-020 hits=8\nNNC_COVER COVP-021 hits=1\nNNC_COVER COVP-022 hits=29\nNNC_COVER COVP-023 hits=56\nNNC_COVER COVP-024 hits=57\nNNC_COVER COVP-025 hits=1132\nNNC_COVER COVP-026 hits=1070\nNNC_COVER COVP-027 hits=753\nNNC_COVER COVP-028 hits=665\nNNC_COVER COVP-029 hits=233\nNNC_COVER COVP-030 hits=227\nNNC_COVER COVP-031 hits=941\nNNC_COVER COVP-032 hits=227\nNNC_COVER COVP-033 hits=2387\nNNC_COVER COVP-034 hits=4335\nNNC_COVER COVP-035 hits=854\nNNC_COVER COVP-036 hits=273\nNNC_COVER COVP-037 hits=325\nNNC_COVER COVP-038 hits=28\nNNC_COVER COVP-039 hits=59\nNNC_COVER COVP-040 hits=56\nNNC_CHECK CHK-007 hits=275 fails=0\nNNC_CHECK CHK-008 hits=12789 fails=0\nNNC_CHECK CHK-009 hits=1187 fails=0\nNNC_CHECK CHK-010 hits=11637 fails=0\nNNC_CHECK CHK-011 hits=1125 fails=0\nNNC_CHECK CHK-012 hits=12789 fails=0\nNNC_CHECK CHK-013 hits=12789 fails=4\nNNC_CHECK CHK-005 hits=5788 fails=0\nNNC_CHECK CHK-006 hits=15121 fails=0\nNNC_CHECK CHK-001 hits=220 fails=0\nNNC_CHECK CHK-002 hits=753 fails=0\nNNC_CHECK CHK-003 hits=9113 fails=2\nNNC_CHECK CHK-004 hits=8925 fails=0\nmake[1]: *** [/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb_tools/makefiles/simulators/Makefile.verilator:70: results.xml] Error 7\nmake[1]: Leaving directory '/root/nnc_runs/runset_d95c2930/C01'\nmake: *** [/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb_tools/makefiles/Makefile.inc:17: sim] Error 2\nNNC_MAKE_RC=2\n",
+   "checks": [
+    "CHK-032"
+   ],
+   "failed_in": [
+    "base.s1",
+    "base.s2",
+    "base.s3",
+    "base.s4",
+    "base.s5",
+    "cell1.s1",
+    "cell3.s1",
+    "cell4.s1",
+    "macro.s1",
+    "small.s1",
+    "rd_slow.s1"
+   ],
+   "status": "fail"
   }
  ],
  "assertions": {
   "CHK-001": {
-   "hits": 4594,
+   "hits": 3154,
    "fails": 0,
    "runs": {
     "base.s1": {
-     "hits": 325,
+     "hits": 220,
      "fails": 0
     },
     "base.s2": {
-     "hits": 326,
+     "hits": 219,
      "fails": 0
     },
     "base.s3": {
-     "hits": 326,
+     "hits": 204,
      "fails": 0
     },
     "base.s4": {
-     "hits": 329,
+     "hits": 223,
      "fails": 0
     },
     "base.s5": {
-     "hits": 323,
+     "hits": 247,
      "fails": 0
     },
     "model_off.s1": {
-     "hits": 324,
+     "hits": 223,
      "fails": 0
     },
     "syn.s1": {
-     "hits": 324,
+     "hits": 223,
      "fails": 0
     },
     "cell1.s1": {
-     "hits": 325,
+     "hits": 220,
      "fails": 0
     },
     "cell3.s1": {
-     "hits": 325,
+     "hits": 221,
      "fails": 0
     },
     "cell4.s1": {
-     "hits": 324,
+     "hits": 220,
      "fails": 0
     },
     "macro.s1": {
-     "hits": 325,
+     "hits": 220,
      "fails": 0
     },
     "small.s1": {
-     "hits": 326,
+     "hits": 220,
      "fails": 0
     },
     "wr_slow.s1": {
-     "hits": 368,
+     "hits": 273,
      "fails": 0
     },
     "rd_slow.s1": {
-     "hits": 324,
+     "hits": 221,
      "fails": 0
     }
    }
   },
   "CHK-002": {
-   "hits": 233290,
+   "hits": 40395,
    "fails": 0,
    "runs": {
     "base.s1": {
-     "hits": 14050,
+     "hits": 753,
      "fails": 0
     },
     "base.s2": {
-     "hits": 15375,
+     "hits": 2044,
      "fails": 0
     },
     "base.s3": {
-     "hits": 15582,
+     "hits": 3156,
      "fails": 0
     },
     "base.s4": {
-     "hits": 16392,
+     "hits": 2306,
      "fails": 0
     },
     "base.s5": {
-     "hits": 16823,
+     "hits": 11772,
      "fails": 0
     },
     "model_off.s1": {
-     "hits": 14175,
+     "hits": 3396,
      "fails": 0
     },
     "syn.s1": {
-     "hits": 14175,
+     "hits": 3396,
      "fails": 0
     },
     "cell1.s1": {
-     "hits": 14050,
+     "hits": 753,
      "fails": 0
     },
     "cell3.s1": {
-     "hits": 14543,
+     "hits": 1052,
      "fails": 0
     },
     "cell4.s1": {
-     "hits": 17494,
+     "hits": 806,
      "fails": 0
     },
     "macro.s1": {
-     "hits": 14050,
+     "hits": 753,
      "fails": 0
     },
     "small.s1": {
-     "hits": 35108,
+     "hits": 592,
      "fails": 0
     },
     "wr_slow.s1": {
-     "hits": 18446,
+     "hits": 8670,
      "fails": 0
     },
     "rd_slow.s1": {
-     "hits": 13027,
+     "hits": 946,
      "fails": 0
     }
    }
   },
   "CHK-003": {
-   "hits": 1523017,
-   "fails": 534,
+   "hits": 201444,
+   "fails": 18,
    "runs": {
     "base.s1": {
-     "hits": 102837,
-     "fails": 28
+     "hits": 9113,
+     "fails": 2
     },
     "base.s2": {
-     "hits": 97804,
-     "fails": 45
+     "hits": 12810,
+     "fails": 1
     },
     "base.s3": {
-     "hits": 103734,
-     "fails": 80
+     "hits": 15793,
+     "fails": 1
     },
     "base.s4": {
-     "hits": 103402,
-     "fails": 29
+     "hits": 12157,
+     "fails": 0
     },
     "base.s5": {
-     "hits": 101184,
-     "fails": 55
+     "hits": 31185,
+     "fails": 0
     },
     "model_off.s1": {
-     "hits": 93306,
+     "hits": 19897,
      "fails": 0
     },
     "syn.s1": {
-     "hits": 93306,
+     "hits": 19897,
      "fails": 0
     },
     "cell1.s1": {
-     "hits": 102837,
-     "fails": 28
+     "hits": 9113,
+     "fails": 2
     },
     "cell3.s1": {
-     "hits": 100892,
-     "fails": 46
+     "hits": 10152,
+     "fails": 2
     },
     "cell4.s1": {
-     "hits": 114759,
-     "fails": 59
+     "hits": 9889,
+     "fails": 2
     },
     "macro.s1": {
-     "hits": 102837,
-     "fails": 28
+     "hits": 9113,
+     "fails": 2
     },
     "small.s1": {
-     "hits": 184927,
-     "fails": 76
+     "hits": 7515,
+     "fails": 1
     },
     "wr_slow.s1": {
-     "hits": 120972,
-     "fails": 15
+     "hits": 25175,
+     "fails": 2
     },
     "rd_slow.s1": {
-     "hits": 100220,
-     "fails": 45
+     "hits": 9635,
+     "fails": 3
     }
    },
-   "first_fail_time": 239353000,
+   "first_fail_time": 57094000,
    "first_fail_run": "base.s1"
   },
   "CHK-004": {
-   "hits": 1518997,
+   "hits": 198741,
    "fails": 0,
    "runs": {
     "base.s1": {
-     "hits": 102553,
+     "hits": 8925,
      "fails": 0
     },
     "base.s2": {
-     "hits": 97519,
+     "hits": 12623,
      "fails": 0
     },
     "base.s3": {
-     "hits": 103449,
+     "hits": 15621,
      "fails": 0
     },
     "base.s4": {
-     "hits": 103114,
+     "hits": 11966,
      "fails": 0
     },
     "base.s5": {
-     "hits": 100902,
+     "hits": 30970,
      "fails": 0
     },
     "model_off.s1": {
-     "hits": 93023,
+     "hits": 19707,
      "fails": 0
     },
     "syn.s1": {
-     "hits": 93023,
+     "hits": 19707,
      "fails": 0
     },
     "cell1.s1": {
-     "hits": 102553,
+     "hits": 8925,
      "fails": 0
     },
     "cell3.s1": {
-     "hits": 100608,
+     "hits": 9963,
      "fails": 0
     },
     "cell4.s1": {
-     "hits": 114476,
+     "hits": 9701,
      "fails": 0
     },
     "macro.s1": {
-     "hits": 102553,
+     "hits": 8925,
      "fails": 0
     },
     "small.s1": {
-     "hits": 184642,
+     "hits": 7327,
      "fails": 0
     },
     "wr_slow.s1": {
-     "hits": 120645,
+     "hits": 24935,
      "fails": 0
     },
     "rd_slow.s1": {
-     "hits": 99937,
+     "hits": 9446,
      "fails": 0
     }
    }
   },
   "CHK-005": {
-   "hits": 817932,
+   "hits": 114441,
    "fails": 0,
    "runs": {
     "base.s1": {
-     "hits": 57047,
+     "hits": 5788,
      "fails": 0
     },
     "base.s2": {
-     "hits": 55479,
+     "hits": 7293,
      "fails": 0
     },
     "base.s3": {
-     "hits": 59126,
+     "hits": 9638,
      "fails": 0
     },
     "base.s4": {
-     "hits": 59252,
+     "hits": 6752,
      "fails": 0
     },
     "base.s5": {
-     "hits": 56449,
+     "hits": 12922,
      "fails": 0
     },
     "model_off.s1": {
-     "hits": 54082,
+     "hits": 13395,
      "fails": 0
     },
     "syn.s1": {
-     "hits": 54082,
+     "hits": 13395,
      "fails": 0
     },
     "cell1.s1": {
-     "hits": 57047,
+     "hits": 5788,
      "fails": 0
     },
     "cell3.s1": {
-     "hits": 55789,
+     "hits": 6208,
      "fails": 0
     },
     "cell4.s1": {
-     "hits": 61883,
+     "hits": 6124,
      "fails": 0
     },
     "macro.s1": {
-     "hits": 57047,
+     "hits": 5788,
      "fails": 0
     },
     "small.s1": {
-     "hits": 73786,
+     "hits": 4209,
      "fails": 0
     },
     "wr_slow.s1": {
-     "hits": 60835,
+     "hits": 11222,
      "fails": 0
     },
     "rd_slow.s1": {
-     "hits": 56028,
+     "hits": 5919,
      "fails": 0
     }
    }
   },
   "CHK-006": {
-   "hits": 1680955,
+   "hits": 283847,
    "fails": 0,
    "runs": {
     "base.s1": {
-     "hits": 115475,
+     "hits": 15121,
      "fails": 0
     },
     "base.s2": {
-     "hits": 109814,
+     "hits": 17489,
      "fails": 0
     },
     "base.s3": {
-     "hits": 113858,
+     "hits": 22439,
      "fails": 0
     },
     "base.s4": {
-     "hits": 112121,
+     "hits": 16509,
      "fails": 0
     },
     "base.s5": {
-     "hits": 112570,
+     "hits": 28235,
      "fails": 0
     },
     "model_off.s1": {
-     "hits": 101050,
+     "hits": 31073,
      "fails": 0
     },
     "syn.s1": {
-     "hits": 101050,
+     "hits": 31073,
      "fails": 0
     },
     "cell1.s1": {
-     "hits": 115475,
+     "hits": 15121,
      "fails": 0
     },
     "cell3.s1": {
-     "hits": 113025,
+     "hits": 17450,
      "fails": 0
     },
     "cell4.s1": {
-     "hits": 124419,
+     "hits": 15893,
      "fails": 0
     },
     "macro.s1": {
-     "hits": 115475,
+     "hits": 15121,
      "fails": 0
     },
     "small.s1": {
-     "hits": 207831,
+     "hits": 11520,
      "fails": 0
     },
     "wr_slow.s1": {
-     "hits": 108799,
+     "hits": 25593,
      "fails": 0
     },
     "rd_slow.s1": {
-     "hits": 129993,
+     "hits": 21210,
      "fails": 0
     }
    }
   },
   "CHK-007": {
-   "hits": 5221,
+   "hits": 3823,
    "fails": 0,
    "runs": {
     "base.s1": {
-     "hits": 371,
+     "hits": 275,
      "fails": 0
     },
     "base.s2": {
-     "hits": 378,
+     "hits": 265,
      "fails": 0
     },
     "base.s3": {
-     "hits": 372,
+     "hits": 254,
      "fails": 0
     },
     "base.s4": {
-     "hits": 371,
+     "hits": 253,
      "fails": 0
     },
     "base.s5": {
-     "hits": 367,
+     "hits": 255,
      "fails": 0
     },
     "model_off.s1": {
-     "hits": 372,
+     "hits": 284,
      "fails": 0
     },
     "syn.s1": {
-     "hits": 372,
+     "hits": 284,
      "fails": 0
     },
     "cell1.s1": {
-     "hits": 371,
+     "hits": 275,
      "fails": 0
     },
     "cell3.s1": {
-     "hits": 372,
+     "hits": 277,
      "fails": 0
     },
     "cell4.s1": {
-     "hits": 371,
+     "hits": 276,
      "fails": 0
     },
     "macro.s1": {
-     "hits": 371,
+     "hits": 275,
      "fails": 0
     },
     "small.s1": {
-     "hits": 371,
+     "hits": 274,
      "fails": 0
     },
     "wr_slow.s1": {
-     "hits": 367,
+     "hits": 276,
      "fails": 0
     },
     "rd_slow.s1": {
-     "hits": 395,
+     "hits": 300,
      "fails": 0
     }
    }
   },
   "CHK-008": {
-   "hits": 1681616,
+   "hits": 223849,
    "fails": 0,
    "runs": {
     "base.s1": {
-     "hits": 115523,
+     "hits": 12789,
      "fails": 0
     },
     "base.s2": {
-     "hits": 109858,
+     "hits": 13416,
      "fails": 0
     },
     "base.s3": {
-     "hits": 113900,
+     "hits": 17944,
      "fails": 0
     },
     "base.s4": {
-     "hits": 112170,
+     "hits": 12617,
      "fails": 0
     },
     "base.s5": {
-     "hits": 112616,
+     "hits": 16414,
      "fails": 0
     },
     "model_off.s1": {
-     "hits": 101095,
+     "hits": 26021,
      "fails": 0
     },
     "syn.s1": {
-     "hits": 101095,
+     "hits": 26021,
      "fails": 0
     },
     "cell1.s1": {
-     "hits": 115523,
+     "hits": 12789,
      "fails": 0
     },
     "cell3.s1": {
-     "hits": 113073,
+     "hits": 14840,
      "fails": 0
     },
     "cell4.s1": {
-     "hits": 124466,
+     "hits": 13538,
      "fails": 0
     },
     "macro.s1": {
-     "hits": 115523,
+     "hits": 12789,
      "fails": 0
     },
     "small.s1": {
-     "hits": 207880,
+     "hits": 9290,
      "fails": 0
     },
     "wr_slow.s1": {
-     "hits": 108844,
+     "hits": 16816,
      "fails": 0
     },
     "rd_slow.s1": {
-     "hits": 130050,
+     "hits": 18565,
      "fails": 0
     }
    }
   },
   "CHK-009": {
-   "hits": 88788,
+   "hits": 17567,
    "fails": 0,
    "runs": {
     "base.s1": {
-     "hits": 5668,
+     "hits": 1187,
      "fails": 0
     },
     "base.s2": {
-     "hits": 5702,
+     "hits": 798,
      "fails": 0
     },
     "base.s3": {
-     "hits": 5963,
+     "hits": 940,
      "fails": 0
     },
     "base.s4": {
-     "hits": 5724,
+     "hits": 546,
      "fails": 0
     },
     "base.s5": {
-     "hits": 5752,
+     "hits": 808,
      "fails": 0
     },
     "model_off.s1": {
-     "hits": 4527,
+     "hits": 1612,
      "fails": 0
     },
     "syn.s1": {
-     "hits": 4527,
+     "hits": 1612,
      "fails": 0
     },
     "cell1.s1": {
-     "hits": 5668,
+     "hits": 1187,
      "fails": 0
     },
     "cell3.s1": {
-     "hits": 6493,
+     "hits": 1909,
      "fails": 0
     },
     "cell4.s1": {
-     "hits": 8333,
+     "hits": 1319,
      "fails": 0
     },
     "macro.s1": {
-     "hits": 5668,
+     "hits": 1187,
      "fails": 0
     },
     "small.s1": {
-     "hits": 10308,
+     "hits": 649,
      "fails": 0
     },
     "wr_slow.s1": {
-     "hits": 4251,
+     "hits": 1810,
      "fails": 0
     },
     "rd_slow.s1": {
-     "hits": 10204,
+     "hits": 2003,
      "fails": 0
     }
    }
   },
   "CHK-010": {
-   "hits": 1596416,
+   "hits": 206894,
    "fails": 0,
    "runs": {
     "base.s1": {
-     "hits": 110096,
+     "hits": 11637,
      "fails": 0
     },
     "base.s2": {
-     "hits": 104398,
+     "hits": 12663,
      "fails": 0
     },
     "base.s3": {
-     "hits": 108190,
+     "hits": 17049,
      "fails": 0
     },
     "base.s4": {
-     "hits": 106689,
+     "hits": 12098,
      "fails": 0
     },
     "base.s5": {
-     "hits": 107109,
+     "hits": 15651,
      "fails": 0
     },
     "model_off.s1": {
-     "hits": 96813,
+     "hits": 24476,
      "fails": 0
     },
     "syn.s1": {
-     "hits": 96813,
+     "hits": 24476,
      "fails": 0
     },
     "cell1.s1": {
-     "hits": 110096,
+     "hits": 11637,
      "fails": 0
     },
     "cell3.s1": {
-     "hits": 106805,
+     "hits": 12976,
      "fails": 0
     },
     "cell4.s1": {
-     "hits": 116379,
+     "hits": 12249,
      "fails": 0
     },
     "macro.s1": {
-     "hits": 110096,
+     "hits": 11637,
      "fails": 0
     },
     "small.s1": {
-     "hits": 197997,
+     "hits": 8663,
      "fails": 0
     },
     "wr_slow.s1": {
-     "hits": 104788,
+     "hits": 15065,
      "fails": 0
     },
     "rd_slow.s1": {
-     "hits": 120147,
+     "hits": 16617,
      "fails": 0
     }
    }
   },
   "CHK-011": {
-   "hits": 85200,
+   "hits": 16594,
    "fails": 0,
    "runs": {
     "base.s1": {
-     "hits": 5427,
+     "hits": 1125,
      "fails": 0
     },
     "base.s2": {
-     "hits": 5460,
+     "hits": 745,
      "fails": 0
     },
     "base.s3": {
-     "hits": 5710,
+     "hits": 868,
      "fails": 0
     },
     "base.s4": {
-     "hits": 5481,
+     "hits": 490,
      "fails": 0
     },
     "base.s5": {
-     "hits": 5507,
+     "hits": 734,
      "fails": 0
     },
     "model_off.s1": {
-     "hits": 4282,
+     "hits": 1523,
      "fails": 0
     },
     "syn.s1": {
-     "hits": 4282,
+     "hits": 1523,
      "fails": 0
     },
     "cell1.s1": {
-     "hits": 5427,
+     "hits": 1125,
      "fails": 0
     },
     "cell3.s1": {
-     "hits": 6268,
+     "hits": 1835,
      "fails": 0
     },
     "cell4.s1": {
-     "hits": 8087,
+     "hits": 1260,
      "fails": 0
     },
     "macro.s1": {
-     "hits": 5427,
+     "hits": 1125,
      "fails": 0
     },
     "small.s1": {
-     "hits": 9883,
+     "hits": 599,
      "fails": 0
     },
     "wr_slow.s1": {
-     "hits": 4056,
+     "hits": 1723,
      "fails": 0
     },
     "rd_slow.s1": {
-     "hits": 9903,
+     "hits": 1919,
      "fails": 0
     }
    }
   },
   "CHK-012": {
-   "hits": 1681042,
+   "hits": 223849,
    "fails": 0,
    "runs": {
     "base.s1": {
-     "hits": 115482,
+     "hits": 12789,
      "fails": 0
     },
     "base.s2": {
-     "hits": 109817,
+     "hits": 13416,
      "fails": 0
     },
     "base.s3": {
-     "hits": 113859,
+     "hits": 17944,
      "fails": 0
     },
     "base.s4": {
-     "hits": 112129,
+     "hits": 12617,
      "fails": 0
     },
     "base.s5": {
-     "hits": 112575,
+     "hits": 16414,
      "fails": 0
     },
     "model_off.s1": {
-     "hits": 101054,
+     "hits": 26021,
      "fails": 0
     },
     "syn.s1": {
-     "hits": 101054,
+     "hits": 26021,
      "fails": 0
     },
     "cell1.s1": {
-     "hits": 115482,
+     "hits": 12789,
      "fails": 0
     },
     "cell3.s1": {
-     "hits": 113032,
+     "hits": 14840,
      "fails": 0
     },
     "cell4.s1": {
-     "hits": 124425,
+     "hits": 13538,
      "fails": 0
     },
     "macro.s1": {
-     "hits": 115482,
+     "hits": 12789,
      "fails": 0
     },
     "small.s1": {
-     "hits": 207839,
+     "hits": 9290,
      "fails": 0
     },
     "wr_slow.s1": {
-     "hits": 108803,
+     "hits": 16816,
      "fails": 0
     },
     "rd_slow.s1": {
-     "hits": 130009,
+     "hits": 18565,
      "fails": 0
     }
    }
   },
   "CHK-013": {
-   "hits": 1681616,
-   "fails": 721,
+   "hits": 223849,
+   "fails": 54,
    "runs": {
     "base.s1": {
-     "hits": 115523,
-     "fails": 57
+     "hits": 12789,
+     "fails": 4
     },
     "base.s2": {
-     "hits": 109858,
-     "fails": 43
+     "hits": 13416,
+     "fails": 5
     },
     "base.s3": {
-     "hits": 113900,
-     "fails": 29
+     "hits": 17944,
+     "fails": 5
     },
     "base.s4": {
-     "hits": 112170,
-     "fails": 55
+     "hits": 12617,
+     "fails": 6
     },
     "base.s5": {
-     "hits": 112616,
-     "fails": 29
+     "hits": 16414,
+     "fails": 5
     },
     "model_off.s1": {
-     "hits": 101095,
+     "hits": 26021,
      "fails": 0
     },
     "syn.s1": {
-     "hits": 101095,
+     "hits": 26021,
      "fails": 0
     },
     "cell1.s1": {
-     "hits": 115523,
-     "fails": 57
+     "hits": 12789,
+     "fails": 4
     },
     "cell3.s1": {
-     "hits": 113073,
-     "fails": 59
+     "hits": 14840,
+     "fails": 4
     },
     "cell4.s1": {
-     "hits": 124466,
-     "fails": 54
+     "hits": 13538,
+     "fails": 4
     },
     "macro.s1": {
-     "hits": 115523,
-     "fails": 57
+     "hits": 12789,
+     "fails": 4
     },
     "small.s1": {
-     "hits": 207880,
-     "fails": 161
+     "hits": 9290,
+     "fails": 4
     },
     "wr_slow.s1": {
-     "hits": 108844,
-     "fails": 64
+     "hits": 16816,
+     "fails": 4
     },
     "rd_slow.s1": {
-     "hits": 130050,
-     "fails": 56
+     "hits": 18565,
+     "fails": 5
     }
    },
-   "first_fail_time": 9712000,
+   "first_fail_time": 1681000,
    "first_fail_run": "base.s1"
   }
  },
- "not_verifiable": {
-  "CHK-015": "not verifiable in any of the 14 runs: seeing L=2,3,4 in both directions over the 5-seed run set needs the other seeds; this run covers seed 1 only | seeing L=2,3,4 in both directions over the 5-seed run set needs the other seeds; this run covers seed 2 only | seeing L=2,3,4 in both directions over the 5-seed run set needs the other seeds; this run covers seed 3 only | seeing L=2,3,4 in both directions over the 5-seed run set needs the other seeds; this run covers seed 4 only | seeing L=2,3,4 in both directions over the 5-seed run set needs the other seeds; this run covers seed 5 only | the met",
-  "CHK-016": "not verifiable in any of the 14 runs: the model-off run of the run set is another configuration; this run has the model on | the model-on runs with logged seeds are other configurations; this run has the model off",
-  "CHK-029": "not verifiable in any of the 14 runs: the other model settings / seeds of the run set are other runs (this run: model on, seed 1) | the other model settings / seeds of the run set are other runs (this run: model on, seed 2) | the other model settings / seeds of the run set are other runs (this run: model on, seed 3) | the other model settings / seeds of the run set are other runs (this run: model on, seed 4) | the other model settings / seeds of the run set are other runs (this run: model on, seed 5) | the other model settings / seeds of the run set are other runs (this run: model off, seed 1)"
- },
+ "not_verifiable": {},
  "not_verifiable_by_run": {
   "base.s1": {
-   "CHK-014": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-015": "seeing L=2,3,4 in both directions over the 5-seed run set needs the other seeds; this run covers seed 1 only",
-   "CHK-016": "the model-off run of the run set is another configuration; this run has the model on",
-   "CHK-017": "this run is built without VLSIT_SYNTHESIS: the synthesizable cell branch is not elaborated; the same traffic and latency checks run on the simulation branch",
-   "CHK-018": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-019": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-020": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-021": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-022": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-023": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-025": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-026": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-027": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-028": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-029": "the other model settings / seeds of the run set are other runs (this run: model on, seed 1)",
-   "CHK-030": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-032": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here"
+   "CHK-014": "exact latency S needs the metastability model off; window S..S+2 checked",
+   "CHK-017": "this run is not compiled with VLSIT_SYNTHESIS; the same sequence runs on the simulation branch with the run's latency expectation",
+   "CHK-019": "no-gap throughput needs nominal latency and DEPTH >= 2*S+3 (DEPTH=8, S=2, exact=False); order and integrity still checked"
   },
   "base.s2": {
-   "CHK-014": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-015": "seeing L=2,3,4 in both directions over the 5-seed run set needs the other seeds; this run covers seed 2 only",
-   "CHK-016": "the model-off run of the run set is another configuration; this run has the model on",
-   "CHK-017": "this run is built without VLSIT_SYNTHESIS: the synthesizable cell branch is not elaborated; the same traffic and latency checks run on the simulation branch",
-   "CHK-018": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-019": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-020": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-021": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-022": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-023": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-025": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-026": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-027": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-028": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-029": "the other model settings / seeds of the run set are other runs (this run: model on, seed 2)",
-   "CHK-030": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-032": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here"
+   "CHK-014": "exact latency S needs the metastability model off; window S..S+2 checked",
+   "CHK-017": "this run is not compiled with VLSIT_SYNTHESIS; the same sequence runs on the simulation branch with the run's latency expectation",
+   "CHK-019": "no-gap throughput needs nominal latency and DEPTH >= 2*S+3 (DEPTH=8, S=2, exact=False); order and integrity still checked"
   },
   "base.s3": {
-   "CHK-014": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 3); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-015": "seeing L=2,3,4 in both directions over the 5-seed run set needs the other seeds; this run covers seed 3 only",
-   "CHK-016": "the model-off run of the run set is another configuration; this run has the model on",
-   "CHK-017": "this run is built without VLSIT_SYNTHESIS: the synthesizable cell branch is not elaborated; the same traffic and latency checks run on the simulation branch",
-   "CHK-018": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 3); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-019": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 3); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-020": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 3); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-021": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 3); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-022": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 3); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-023": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 3); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-025": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 3); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-026": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 3); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-027": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 3); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-028": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 3); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-029": "the other model settings / seeds of the run set are other runs (this run: model on, seed 3)",
-   "CHK-030": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 3); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-032": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 3); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here"
+   "CHK-014": "exact latency S needs the metastability model off; window S..S+2 checked",
+   "CHK-017": "this run is not compiled with VLSIT_SYNTHESIS; the same sequence runs on the simulation branch with the run's latency expectation",
+   "CHK-019": "no-gap throughput needs nominal latency and DEPTH >= 2*S+3 (DEPTH=8, S=2, exact=False); order and integrity still checked"
   },
   "base.s4": {
-   "CHK-014": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 4); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-015": "seeing L=2,3,4 in both directions over the 5-seed run set needs the other seeds; this run covers seed 4 only",
-   "CHK-016": "the model-off run of the run set is another configuration; this run has the model on",
-   "CHK-017": "this run is built without VLSIT_SYNTHESIS: the synthesizable cell branch is not elaborated; the same traffic and latency checks run on the simulation branch",
-   "CHK-018": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 4); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-019": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 4); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-020": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 4); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-021": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 4); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-022": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 4); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-023": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 4); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-025": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 4); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-026": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 4); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-027": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 4); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-028": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 4); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-029": "the other model settings / seeds of the run set are other runs (this run: model on, seed 4)",
-   "CHK-030": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 4); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-032": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 4); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here"
+   "CHK-014": "exact latency S needs the metastability model off; window S..S+2 checked",
+   "CHK-017": "this run is not compiled with VLSIT_SYNTHESIS; the same sequence runs on the simulation branch with the run's latency expectation",
+   "CHK-019": "no-gap throughput needs nominal latency and DEPTH >= 2*S+3 (DEPTH=8, S=2, exact=False); order and integrity still checked"
   },
   "base.s5": {
-   "CHK-014": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 5); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-015": "seeing L=2,3,4 in both directions over the 5-seed run set needs the other seeds; this run covers seed 5 only",
-   "CHK-016": "the model-off run of the run set is another configuration; this run has the model on",
-   "CHK-017": "this run is built without VLSIT_SYNTHESIS: the synthesizable cell branch is not elaborated; the same traffic and latency checks run on the simulation branch",
-   "CHK-018": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 5); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-019": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 5); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-020": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 5); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-021": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 5); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-022": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 5); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-023": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 5); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-025": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 5); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-026": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 5); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-027": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 5); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-028": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 5); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-029": "the other model settings / seeds of the run set are other runs (this run: model on, seed 5)",
-   "CHK-030": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 5); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-032": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 5); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here"
+   "CHK-014": "exact latency S needs the metastability model off; window S..S+2 checked",
+   "CHK-017": "this run is not compiled with VLSIT_SYNTHESIS; the same sequence runs on the simulation branch with the run's latency expectation",
+   "CHK-019": "no-gap throughput needs nominal latency and DEPTH >= 2*S+3 (DEPTH=8, S=2, exact=False); order and integrity still checked"
   },
   "model_off.s1": {
-   "CHK-015": "the metastability model is not enabled in this run (or the VLSIT_SYNTHESIS build); only the plain latency was measured",
-   "CHK-016": "the model-on runs with logged seeds are other configurations; this run has the model off",
-   "CHK-017": "this run is built without VLSIT_SYNTHESIS: the synthesizable cell branch is not elaborated; the same traffic and latency checks run on the simulation branch",
-   "CHK-029": "the other model settings / seeds of the run set are other runs (this run: model off, seed 1)"
+   "CHK-015": "model disabled by +AFIFO_MSYNC_EN=0: window S..S+2 not exercised",
+   "CHK-017": "this run is not compiled with VLSIT_SYNTHESIS; the same sequence runs on the simulation branch with the run's latency expectation"
   },
   "syn.s1": {
-   "CHK-015": "the metastability model is not enabled in this run (or the VLSIT_SYNTHESIS build); only the plain latency was measured",
-   "CHK-016": "the model-on runs with logged seeds are other configurations; this run has the model off",
-   "CHK-029": "the other model settings / seeds of the run set are other runs (this run: model off, seed 1)"
+   "CHK-015": "built with VLSIT_SYNTHESIS: no metastability model, exact latency checked"
   },
   "cell1.s1": {
-   "CHK-014": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-015": "seeing L=2,3,4 in both directions over the 5-seed run set needs the other seeds; this run covers seed 1 only",
-   "CHK-016": "the model-off run of the run set is another configuration; this run has the model on",
-   "CHK-017": "this run is built without VLSIT_SYNTHESIS: the synthesizable cell branch is not elaborated; the same traffic and latency checks run on the simulation branch",
-   "CHK-018": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-019": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-020": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-021": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-022": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-023": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-025": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-026": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-027": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-028": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-029": "the other model settings / seeds of the run set are other runs (this run: model on, seed 1)",
-   "CHK-030": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-032": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here"
+   "CHK-014": "exact latency S needs the metastability model off; window S..S+2 checked",
+   "CHK-017": "this run is not compiled with VLSIT_SYNTHESIS; the same sequence runs on the simulation branch with the run's latency expectation",
+   "CHK-019": "no-gap throughput needs nominal latency and DEPTH >= 2*S+3 (DEPTH=8, S=2, exact=False); order and integrity still checked"
   },
   "cell3.s1": {
-   "CHK-014": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 3-edge cross-domain counts need the model off; only the window 3..5 destination edges is checked here",
-   "CHK-015": "seeing L=2,3,4 in both directions over the 5-seed run set needs the other seeds; this run covers seed 1 only",
-   "CHK-016": "the model-off run of the run set is another configuration; this run has the model on",
-   "CHK-017": "this run is built without VLSIT_SYNTHESIS: the synthesizable cell branch is not elaborated; the same traffic and latency checks run on the simulation branch",
-   "CHK-018": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 3-edge cross-domain counts need the model off; only the window 3..5 destination edges is checked here",
-   "CHK-019": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 3-edge cross-domain counts need the model off; only the window 3..5 destination edges is checked here",
-   "CHK-020": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 3-edge cross-domain counts need the model off; only the window 3..5 destination edges is checked here",
-   "CHK-021": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 3-edge cross-domain counts need the model off; only the window 3..5 destination edges is checked here",
-   "CHK-022": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 3-edge cross-domain counts need the model off; only the window 3..5 destination edges is checked here",
-   "CHK-023": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 3-edge cross-domain counts need the model off; only the window 3..5 destination edges is checked here",
-   "CHK-025": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 3-edge cross-domain counts need the model off; only the window 3..5 destination edges is checked here",
-   "CHK-026": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 3-edge cross-domain counts need the model off; only the window 3..5 destination edges is checked here",
-   "CHK-027": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 3-edge cross-domain counts need the model off; only the window 3..5 destination edges is checked here",
-   "CHK-028": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 3-edge cross-domain counts need the model off; only the window 3..5 destination edges is checked here",
-   "CHK-029": "the other model settings / seeds of the run set are other runs (this run: model on, seed 1)",
-   "CHK-030": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 3-edge cross-domain counts need the model off; only the window 3..5 destination edges is checked here",
-   "CHK-032": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 3-edge cross-domain counts need the model off; only the window 3..5 destination edges is checked here"
+   "CHK-014": "exact latency S needs the metastability model off; window S..S+2 checked",
+   "CHK-017": "this run is not compiled with VLSIT_SYNTHESIS; the same sequence runs on the simulation branch with the run's latency expectation",
+   "CHK-019": "no-gap throughput needs nominal latency and DEPTH >= 2*S+3 (DEPTH=8, S=3, exact=False); order and integrity still checked"
   },
   "cell4.s1": {
-   "CHK-014": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 4-edge cross-domain counts need the model off; only the window 4..6 destination edges is checked here",
-   "CHK-015": "seeing L=2,3,4 in both directions over the 5-seed run set needs the other seeds; this run covers seed 1 only",
-   "CHK-016": "the model-off run of the run set is another configuration; this run has the model on",
-   "CHK-017": "this run is built without VLSIT_SYNTHESIS: the synthesizable cell branch is not elaborated; the same traffic and latency checks run on the simulation branch",
-   "CHK-018": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 4-edge cross-domain counts need the model off; only the window 4..6 destination edges is checked here",
-   "CHK-019": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 4-edge cross-domain counts need the model off; only the window 4..6 destination edges is checked here",
-   "CHK-020": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 4-edge cross-domain counts need the model off; only the window 4..6 destination edges is checked here",
-   "CHK-021": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 4-edge cross-domain counts need the model off; only the window 4..6 destination edges is checked here",
-   "CHK-022": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 4-edge cross-domain counts need the model off; only the window 4..6 destination edges is checked here",
-   "CHK-023": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 4-edge cross-domain counts need the model off; only the window 4..6 destination edges is checked here",
-   "CHK-025": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 4-edge cross-domain counts need the model off; only the window 4..6 destination edges is checked here",
-   "CHK-026": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 4-edge cross-domain counts need the model off; only the window 4..6 destination edges is checked here",
-   "CHK-027": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 4-edge cross-domain counts need the model off; only the window 4..6 destination edges is checked here",
-   "CHK-028": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 4-edge cross-domain counts need the model off; only the window 4..6 destination edges is checked here",
-   "CHK-029": "the other model settings / seeds of the run set are other runs (this run: model on, seed 1)",
-   "CHK-030": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 4-edge cross-domain counts need the model off; only the window 4..6 destination edges is checked here",
-   "CHK-032": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 4-edge cross-domain counts need the model off; only the window 4..6 destination edges is checked here"
+   "CHK-014": "exact latency S needs the metastability model off; window S..S+2 checked",
+   "CHK-017": "this run is not compiled with VLSIT_SYNTHESIS; the same sequence runs on the simulation branch with the run's latency expectation",
+   "CHK-019": "no-gap throughput needs nominal latency and DEPTH >= 2*S+3 (DEPTH=8, S=4, exact=False); order and integrity still checked"
   },
   "macro.s1": {
-   "CHK-014": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-015": "seeing L=2,3,4 in both directions over the 5-seed run set needs the other seeds; this run covers seed 1 only",
-   "CHK-016": "the model-off run of the run set is another configuration; this run has the model on",
-   "CHK-017": "this run is built without VLSIT_SYNTHESIS: the synthesizable cell branch is not elaborated; the same traffic and latency checks run on the simulation branch",
-   "CHK-018": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-019": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-020": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-021": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-022": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-023": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-025": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-026": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-027": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-028": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-029": "the other model settings / seeds of the run set are other runs (this run: model on, seed 1)",
-   "CHK-030": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-032": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here"
+   "CHK-014": "exact latency S needs the metastability model off; window S..S+2 checked",
+   "CHK-017": "this run is not compiled with VLSIT_SYNTHESIS; the same sequence runs on the simulation branch with the run's latency expectation",
+   "CHK-019": "no-gap throughput needs nominal latency and DEPTH >= 2*S+3 (DEPTH=8, S=2, exact=False); order and integrity still checked"
   },
   "small.s1": {
-   "CHK-014": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-015": "seeing L=2,3,4 in both directions over the 5-seed run set needs the other seeds; this run covers seed 1 only",
-   "CHK-016": "the model-off run of the run set is another configuration; this run has the model on",
-   "CHK-017": "this run is built without VLSIT_SYNTHESIS: the synthesizable cell branch is not elaborated; the same traffic and latency checks run on the simulation branch",
-   "CHK-018": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-019": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-020": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-021": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-022": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-023": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-025": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-026": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-027": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-028": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-029": "the other model settings / seeds of the run set are other runs (this run: model on, seed 1)",
-   "CHK-030": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-032": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here"
+   "CHK-014": "exact latency S needs the metastability model off; window S..S+2 checked",
+   "CHK-017": "this run is not compiled with VLSIT_SYNTHESIS; the same sequence runs on the simulation branch with the run's latency expectation",
+   "CHK-019": "no-gap throughput needs nominal latency and DEPTH >= 2*S+3 (DEPTH=2, S=2, exact=False); order and integrity still checked",
+   "CHK-020": "PARA_AFIFO_DATA_W=1: fewer than 64 distinct words, the identity of dropped/discarded words is checked by value only",
+   "CHK-021": "PARA_AFIFO_DATA_W=1: fewer than 64 distinct words, the identity of dropped/discarded words is checked by value only",
+   "CHK-025": "PARA_AFIFO_DATA_W=1: fewer than 64 distinct words, the identity of dropped/discarded words is checked by value only",
+   "CHK-026": "PARA_AFIFO_DATA_W=1: fewer than 64 distinct words, the identity of dropped/discarded words is checked by value only",
+   "CHK-030": "PARA_AFIFO_DATA_W=1: fewer than 64 distinct words, the identity of dropped/discarded words is checked by value only"
   },
   "wr_slow.s1": {
-   "CHK-014": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-015": "seeing L=2,3,4 in both directions over the 5-seed run set needs the other seeds; this run covers seed 1 only",
-   "CHK-016": "the model-off run of the run set is another configuration; this run has the model on",
-   "CHK-017": "this run is built without VLSIT_SYNTHESIS: the synthesizable cell branch is not elaborated; the same traffic and latency checks run on the simulation branch",
-   "CHK-018": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-019": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-020": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-021": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-022": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-023": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-025": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-026": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-027": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-028": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-029": "the other model settings / seeds of the run set are other runs (this run: model on, seed 1)",
-   "CHK-030": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-032": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here"
+   "CHK-014": "exact latency S needs the metastability model off; window S..S+2 checked",
+   "CHK-017": "this run is not compiled with VLSIT_SYNTHESIS; the same sequence runs on the simulation branch with the run's latency expectation",
+   "CHK-019": "no-gap throughput needs nominal latency and DEPTH >= 2*S+3 (DEPTH=8, S=2, exact=False); order and integrity still checked"
   },
   "rd_slow.s1": {
-   "CHK-014": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-015": "seeing L=2,3,4 in both directions over the 5-seed run set needs the other seeds; this run covers seed 1 only",
-   "CHK-016": "the model-off run of the run set is another configuration; this run has the model on",
-   "CHK-017": "this run is built without VLSIT_SYNTHESIS: the synthesizable cell branch is not elaborated; the same traffic and latency checks run on the simulation branch",
-   "CHK-018": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-019": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-020": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-021": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-022": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-023": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-025": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-026": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-027": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-028": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-029": "the other model settings / seeds of the run set are other runs (this run: model on, seed 1)",
-   "CHK-030": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-032": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 1); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here"
+   "CHK-014": "exact latency S needs the metastability model off; window S..S+2 checked",
+   "CHK-017": "this run is not compiled with VLSIT_SYNTHESIS; the same sequence runs on the simulation branch with the run's latency expectation",
+   "CHK-019": "no-gap throughput needs nominal latency and DEPTH >= 2*S+3 (DEPTH=8, S=2, exact=False); order and integrity still checked"
   }
  },
  "coverage": {
@@ -2233,46 +1923,46 @@
   "scope": "merged over 14 run(s) of the run set"
  },
  "functional": {
-  "COVP-001": 261106,
-  "COVP-002": 232132,
-  "COVP-003": 232129,
-  "COVP-004": 184787,
-  "COVP-005": 72190,
-  "COVP-006": 70602,
-  "COVP-007": 3501,
-  "COVP-008": 156741,
-  "COVP-009": 56793,
-  "COVP-010": 161353,
-  "COVP-011": 596035,
-  "COVP-012": 158967,
-  "COVP-013": 409573,
-  "COVP-014": 3588,
-  "COVP-015": 795,
-  "COVP-016": 16393,
-  "COVP-017": 3588,
-  "COVP-018": 10835,
-  "COVP-019": 26061,
-  "COVP-020": 1007,
-  "COVP-021": 45,
-  "COVP-022": 545,
-  "COVP-023": 17837,
-  "COVP-024": 32224,
-  "COVP-025": 251303,
-  "COVP-026": 257753,
-  "COVP-027": 240682,
-  "COVP-028": 186018,
-  "COVP-029": 79251,
-  "COVP-030": 79234,
-  "COVP-031": 166975,
-  "COVP-032": 24512,
-  "COVP-033": 82213,
-  "COVP-034": 162012,
-  "COVP-035": 240629,
-  "COVP-036": 201370,
-  "COVP-037": 213391,
-  "COVP-038": 518,
-  "COVP-039": 18726,
-  "COVP-040": 30508
+  "COVP-001": 33441,
+  "COVP-002": 24148,
+  "COVP-003": 24145,
+  "COVP-004": 18584,
+  "COVP-005": 6995,
+  "COVP-006": 6850,
+  "COVP-007": 562,
+  "COVP-008": 16059,
+  "COVP-009": 6284,
+  "COVP-010": 44675,
+  "COVP-011": 59590,
+  "COVP-012": 7705,
+  "COVP-013": 90605,
+  "COVP-014": 612,
+  "COVP-015": 215,
+  "COVP-016": 3315,
+  "COVP-017": 612,
+  "COVP-018": 2576,
+  "COVP-019": 6220,
+  "COVP-020": 127,
+  "COVP-021": 16,
+  "COVP-022": 409,
+  "COVP-023": 1804,
+  "COVP-024": 5394,
+  "COVP-025": 31527,
+  "COVP-026": 46350,
+  "COVP-027": 40395,
+  "COVP-028": 32452,
+  "COVP-029": 8247,
+  "COVP-030": 8180,
+  "COVP-031": 33500,
+  "COVP-032": 7335,
+  "COVP-033": 36095,
+  "COVP-034": 62465,
+  "COVP-035": 31871,
+  "COVP-036": 10714,
+  "COVP-037": 9425,
+  "COVP-038": 394,
+  "COVP-039": 1898,
+  "COVP-040": 4721
  },
  "built": true,
  "build_errors": [],
@@ -2302,7 +1992,8 @@
     },
     "status": "ran",
     "tests": {
-     "pass": 34
+     "fail": 7,
+     "pass": 13
     },
     "assertions_failing": [
      "CHK-003",
@@ -2310,22 +2001,8 @@
     ],
     "not_verifiable": [
      "CHK-014",
-     "CHK-015",
-     "CHK-016",
      "CHK-017",
-     "CHK-018",
-     "CHK-019",
-     "CHK-020",
-     "CHK-021",
-     "CHK-022",
-     "CHK-023",
-     "CHK-025",
-     "CHK-026",
-     "CHK-027",
-     "CHK-028",
-     "CHK-029",
-     "CHK-030",
-     "CHK-032"
+     "CHK-019"
     ],
     "coverage_percent": {
      "line": 99.3,
@@ -2357,7 +2034,8 @@
     },
     "status": "ran",
     "tests": {
-     "pass": 34
+     "fail": 6,
+     "pass": 14
     },
     "assertions_failing": [
      "CHK-003",
@@ -2365,22 +2043,8 @@
     ],
     "not_verifiable": [
      "CHK-014",
-     "CHK-015",
-     "CHK-016",
      "CHK-017",
-     "CHK-018",
-     "CHK-019",
-     "CHK-020",
-     "CHK-021",
-     "CHK-022",
-     "CHK-023",
-     "CHK-025",
-     "CHK-026",
-     "CHK-027",
-     "CHK-028",
-     "CHK-029",
-     "CHK-030",
-     "CHK-032"
+     "CHK-019"
     ],
     "coverage_percent": {
      "line": 99.3,
@@ -2412,7 +2076,8 @@
     },
     "status": "ran",
     "tests": {
-     "pass": 34
+     "fail": 5,
+     "pass": 15
     },
     "assertions_failing": [
      "CHK-003",
@@ -2420,22 +2085,8 @@
     ],
     "not_verifiable": [
      "CHK-014",
-     "CHK-015",
-     "CHK-016",
      "CHK-017",
-     "CHK-018",
-     "CHK-019",
-     "CHK-020",
-     "CHK-021",
-     "CHK-022",
-     "CHK-023",
-     "CHK-025",
-     "CHK-026",
-     "CHK-027",
-     "CHK-028",
-     "CHK-029",
-     "CHK-030",
-     "CHK-032"
+     "CHK-019"
     ],
     "coverage_percent": {
      "line": 99.3,
@@ -2467,30 +2118,16 @@
     },
     "status": "ran",
     "tests": {
-     "pass": 34
+     "fail": 6,
+     "pass": 14
     },
     "assertions_failing": [
-     "CHK-003",
      "CHK-013"
     ],
     "not_verifiable": [
      "CHK-014",
-     "CHK-015",
-     "CHK-016",
      "CHK-017",
-     "CHK-018",
-     "CHK-019",
-     "CHK-020",
-     "CHK-021",
-     "CHK-022",
-     "CHK-023",
-     "CHK-025",
-     "CHK-026",
-     "CHK-027",
-     "CHK-028",
-     "CHK-029",
-     "CHK-030",
-     "CHK-032"
+     "CHK-019"
     ],
     "coverage_percent": {
      "line": 99.3,
@@ -2522,30 +2159,16 @@
     },
     "status": "ran",
     "tests": {
-     "pass": 34
+     "fail": 5,
+     "pass": 15
     },
     "assertions_failing": [
-     "CHK-003",
      "CHK-013"
     ],
     "not_verifiable": [
      "CHK-014",
-     "CHK-015",
-     "CHK-016",
      "CHK-017",
-     "CHK-018",
-     "CHK-019",
-     "CHK-020",
-     "CHK-021",
-     "CHK-022",
-     "CHK-023",
-     "CHK-025",
-     "CHK-026",
-     "CHK-027",
-     "CHK-028",
-     "CHK-029",
-     "CHK-030",
-     "CHK-032"
+     "CHK-019"
     ],
     "coverage_percent": {
      "line": 99.3,
@@ -2577,14 +2200,12 @@
     },
     "status": "ran",
     "tests": {
-     "pass": 34
+     "pass": 20
     },
     "assertions_failing": [],
     "not_verifiable": [
      "CHK-015",
-     "CHK-016",
-     "CHK-017",
-     "CHK-029"
+     "CHK-017"
     ],
     "coverage_percent": {
      "line": 98.9,
@@ -2618,13 +2239,11 @@
     },
     "status": "ran",
     "tests": {
-     "pass": 34
+     "pass": 20
     },
     "assertions_failing": [],
     "not_verifiable": [
-     "CHK-015",
-     "CHK-016",
-     "CHK-029"
+     "CHK-015"
     ],
     "coverage_percent": {
      "line": 99.1,
@@ -2658,7 +2277,8 @@
     },
     "status": "ran",
     "tests": {
-     "pass": 34
+     "fail": 7,
+     "pass": 13
     },
     "assertions_failing": [
      "CHK-003",
@@ -2666,22 +2286,8 @@
     ],
     "not_verifiable": [
      "CHK-014",
-     "CHK-015",
-     "CHK-016",
      "CHK-017",
-     "CHK-018",
-     "CHK-019",
-     "CHK-020",
-     "CHK-021",
-     "CHK-022",
-     "CHK-023",
-     "CHK-025",
-     "CHK-026",
-     "CHK-027",
-     "CHK-028",
-     "CHK-029",
-     "CHK-030",
-     "CHK-032"
+     "CHK-019"
     ],
     "coverage_percent": {
      "line": 99.3,
@@ -2715,8 +2321,8 @@
     },
     "status": "ran",
     "tests": {
-     "fail": 1,
-     "pass": 33
+     "fail": 6,
+     "pass": 14
     },
     "assertions_failing": [
      "CHK-003",
@@ -2724,22 +2330,8 @@
     ],
     "not_verifiable": [
      "CHK-014",
-     "CHK-015",
-     "CHK-016",
      "CHK-017",
-     "CHK-018",
-     "CHK-019",
-     "CHK-020",
-     "CHK-021",
-     "CHK-022",
-     "CHK-023",
-     "CHK-025",
-     "CHK-026",
-     "CHK-027",
-     "CHK-028",
-     "CHK-029",
-     "CHK-030",
-     "CHK-032"
+     "CHK-019"
     ],
     "coverage_percent": {
      "line": 99.3,
@@ -2773,7 +2365,8 @@
     },
     "status": "ran",
     "tests": {
-     "pass": 34
+     "fail": 7,
+     "pass": 13
     },
     "assertions_failing": [
      "CHK-003",
@@ -2781,22 +2374,8 @@
     ],
     "not_verifiable": [
      "CHK-014",
-     "CHK-015",
-     "CHK-016",
      "CHK-017",
-     "CHK-018",
-     "CHK-019",
-     "CHK-020",
-     "CHK-021",
-     "CHK-022",
-     "CHK-023",
-     "CHK-025",
-     "CHK-026",
-     "CHK-027",
-     "CHK-028",
-     "CHK-029",
-     "CHK-030",
-     "CHK-032"
+     "CHK-019"
     ],
     "coverage_percent": {
      "line": 99.3,
@@ -2830,7 +2409,8 @@
     },
     "status": "ran",
     "tests": {
-     "pass": 34
+     "fail": 7,
+     "pass": 13
     },
     "assertions_failing": [
      "CHK-003",
@@ -2838,22 +2418,8 @@
     ],
     "not_verifiable": [
      "CHK-014",
-     "CHK-015",
-     "CHK-016",
      "CHK-017",
-     "CHK-018",
-     "CHK-019",
-     "CHK-020",
-     "CHK-021",
-     "CHK-022",
-     "CHK-023",
-     "CHK-025",
-     "CHK-026",
-     "CHK-027",
-     "CHK-028",
-     "CHK-029",
-     "CHK-030",
-     "CHK-032"
+     "CHK-019"
     ],
     "coverage_percent": {
      "line": 97.9,
@@ -2888,7 +2454,8 @@
     },
     "status": "ran",
     "tests": {
-     "pass": 34
+     "fail": 6,
+     "pass": 14
     },
     "assertions_failing": [
      "CHK-003",
@@ -2896,22 +2463,13 @@
     ],
     "not_verifiable": [
      "CHK-014",
-     "CHK-015",
-     "CHK-016",
      "CHK-017",
-     "CHK-018",
      "CHK-019",
      "CHK-020",
      "CHK-021",
-     "CHK-022",
-     "CHK-023",
      "CHK-025",
      "CHK-026",
-     "CHK-027",
-     "CHK-028",
-     "CHK-029",
-     "CHK-030",
-     "CHK-032"
+     "CHK-030"
     ],
     "coverage_percent": {
      "line": 99.3,
@@ -2943,8 +2501,8 @@
     },
     "status": "ran",
     "tests": {
-     "fail": 1,
-     "pass": 33
+     "fail": 5,
+     "pass": 15
     },
     "assertions_failing": [
      "CHK-003",
@@ -2952,22 +2510,8 @@
     ],
     "not_verifiable": [
      "CHK-014",
-     "CHK-015",
-     "CHK-016",
      "CHK-017",
-     "CHK-018",
-     "CHK-019",
-     "CHK-020",
-     "CHK-021",
-     "CHK-022",
-     "CHK-023",
-     "CHK-025",
-     "CHK-026",
-     "CHK-027",
-     "CHK-028",
-     "CHK-029",
-     "CHK-030",
-     "CHK-032"
+     "CHK-019"
     ],
     "coverage_percent": {
      "line": 99.3,
@@ -2999,7 +2543,8 @@
     },
     "status": "ran",
     "tests": {
-     "pass": 34
+     "fail": 6,
+     "pass": 14
     },
     "assertions_failing": [
      "CHK-003",
@@ -3007,22 +2552,8 @@
     ],
     "not_verifiable": [
      "CHK-014",
-     "CHK-015",
-     "CHK-016",
      "CHK-017",
-     "CHK-018",
-     "CHK-019",
-     "CHK-020",
-     "CHK-021",
-     "CHK-022",
-     "CHK-023",
-     "CHK-025",
-     "CHK-026",
-     "CHK-027",
-     "CHK-028",
-     "CHK-029",
-     "CHK-030",
-     "CHK-032"
+     "CHK-019"
     ],
     "coverage_percent": {
      "line": 99.3,

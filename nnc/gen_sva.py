@@ -12,12 +12,13 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from nnc import literals
 from nnc.agents.backend import AgentTask
 from nnc.agents.runtime import Usage
 from nnc.contract import is_async, module_header, multi_clock
 from nnc.simhost import SimHost, lint_sv
 
-PROMPT_VERSION = "sva-v1"
+PROMPT_VERSION = "sva-v2"
 
 SYSTEM_PROMPT = (
     "You are an expert in SystemVerilog Assertions writing interface checkers that must compile in "
@@ -79,7 +80,7 @@ def _reset_off(iface: dict) -> str:
     return f"!{r['name']}" if r["active_low"] else r["name"]
 
 
-def build_prompt(group: str, iface: dict, checks: list[dict], rules_by_id: dict) -> str:
+def build_prompt(group: str, iface: dict, checks: list[dict], rules_by_id: dict, config: str = "") -> str:
     head, tail = scaffold(group, iface, checks)
     ports = "\n".join(f"  {p['name']} ({p['direction']} of the DUT, width {p['width']}): {p['meaning']}"
                       for p in iface["ports"])
@@ -112,7 +113,9 @@ def build_prompt(group: str, iface: dict, checks: list[dict], rules_by_id: dict)
     return (f"INTERFACE (all are inputs of the checker; directions are as seen by the DUT)\n{ports}\n\n"
             f"EXISTING CODE (header and counters)\n```systemverilog\n{head}\n```\n"
             f"EXISTING CODE (end)\n```systemverilog\n{tail}\n```\n\n"
-            f"CHECKS of group '{group}' ({len(checks)})\n" + "\n".join(lines) + f"\n\n{rules}")
+            f"CHECKS of group '{group}' ({len(checks)})\n" + "\n".join(lines) + f"\n\n{rules}"
+            + (f"\n{config}- Derived quantities (stages, latency bounds, depths) are localparams computed from the module "
+               "parameters, never numbers of the default configuration.\n" if config else ""))
 
 
 def validate_body(body: str, checks: list[dict]) -> list[str]:
@@ -136,7 +139,7 @@ def validate_body(body: str, checks: list[dict]) -> list[str]:
 
 
 def generate(contract: dict, rules_doc: dict, backend, log_dir: Path, host: SimHost | None, out_dir: Path, *,
-             model: str | None = "sonnet", rounds: int = 3) -> dict:
+             model: str | None = "sonnet", rounds: int = 3, runs: list[dict] | None = None) -> dict:
     iface = contract["interface"]
     rules_by_id = {r["id"]: r for r in rules_doc["rules"]}
     groups: dict[str, list[dict]] = {}
@@ -148,10 +151,11 @@ def generate(contract: dict, rules_doc: dict, backend, log_dir: Path, host: SimH
     report = {"modules": [], "usage": None}
     for group, checks in sorted(groups.items()):
         head, tail = scaffold(group, iface, checks)
-        prompt = build_prompt(group, iface, checks, rules_by_id)
+        prompt = build_prompt(group, iface, checks, rules_by_id, literals.config_text(contract, runs))
         history = ""
         status, problems, lint_err = "failed", [], ""
-        for attempt in range(rounds + 1):
+        literal_round = bool(runs)
+        for attempt in range(rounds + 2):
             task = AgentTask(f"A5_sva_{group}_r{attempt}", prompt + history, SCHEMA, system_prompt=SYSTEM_PROMPT,
                              model=model, max_turns=4)
             res = backend.run(task, log_dir)
@@ -161,8 +165,16 @@ def generate(contract: dict, rules_doc: dict, backend, log_dir: Path, host: SimH
             problems = validate_body(body, checks)
             lint_ok, lint_err = (True, "") if host is None else lint_sv(host, {f"{module_name(group)}.sv": code},
                                                                          module_name(group))
+            if not problems and lint_ok and literal_round:
+                literal_round = False
+                warn = literals.hardcoded(body, contract, runs, "sv")
+                if warn:
+                    history = f"\n\nYOUR BODY:\n```systemverilog\n{body}\n```" + literals.feedback(warn)
+                    continue
             if not problems and lint_ok:
                 status = "lint_clean" if host else "not_linted"
+                break
+            if attempt >= rounds:
                 break
             history = (f"\n\nYOUR PREVIOUS BODY (attempt {attempt + 1}) FAILED.\n```systemverilog\n{body}\n```\n"
                        f"PROBLEMS:\n" + "\n".join(problems) + (f"\nVERILATOR ERRORS:\n{lint_err}" if lint_err else "") +

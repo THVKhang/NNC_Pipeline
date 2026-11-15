@@ -1,0 +1,1611 @@
+{
+ "top": "m_ahb2axi_top",
+ "interface": {
+  "ports": [
+   {
+    "name": "i_clk_core",
+    "direction": "input",
+    "width": "1",
+    "type": "Clock",
+    "reset_value": "Not applicable: clock has no reset value",
+    "meaning": "Shared AHB/AXI clock / Clock AHB/AXI dùng chung",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "i_rst_n_core",
+    "direction": "input",
+    "width": "1",
+    "type": "Reset",
+    "reset_value": "1 after release",
+    "meaning": "Shared active-low bridge reset / Reset active-low dùng chung",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "i_ahb_hsel",
+    "direction": "input",
+    "width": "1",
+    "type": "Level",
+    "reset_value": "0",
+    "meaning": "Selects this Subordinate / Chọn Subordinate này",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "i_ahb_hready",
+    "direction": "input",
+    "width": "1",
+    "type": "Level",
+    "reset_value": "Ignored during bridge reset; externally unconstrained",
+    "meaning": "Global AHB ready qualifier / Điều kiện bus AHB sẵn sàng",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "i_ahb_haddr",
+    "direction": "input",
+    "width": "32",
+    "type": "Data (valid with HSEL && HREADY && HTRANS[1])",
+    "reset_value": "Not applicable: no reset/idle value is defined",
+    "meaning": "Byte address / Địa chỉ byte",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "i_ahb_htrans",
+    "direction": "input",
+    "width": "2",
+    "type": "Data (valid with HSEL && HREADY)",
+    "reset_value": "IDLE",
+    "meaning": "IDLE/BUSY/NONSEQ/SEQ transfer type / Loại transfer",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "i_ahb_hwrite",
+    "direction": "input",
+    "width": "1",
+    "type": "Data (valid with address phase)",
+    "reset_value": "0",
+    "meaning": "1=write, 0=read / 1=ghi, 0=đọc",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "i_ahb_hsize",
+    "direction": "input",
+    "width": "3",
+    "type": "Data (valid with address phase)",
+    "reset_value": "Not applicable: no reset/idle value is defined",
+    "meaning": "Transfer size encoding / Mã kích thước transfer",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "i_ahb_hburst",
+    "direction": "input",
+    "width": "3",
+    "type": "Data (valid with address phase)",
+    "reset_value": "SINGLE",
+    "meaning": "AHB burst type / Loại burst AHB",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "i_ahb_hprot",
+    "direction": "input",
+    "width": "7",
+    "type": "Data (valid with address phase)",
+    "reset_value": "Not applicable: no reset/idle value is defined",
+    "meaning": "Protection, memory and shareability attributes / Thuộc tính bảo vệ, bộ nhớ, shareability",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "i_ahb_hnonsec",
+    "direction": "input",
+    "width": "1",
+    "type": "Data (valid with address phase)",
+    "reset_value": "Not applicable: no reset/idle value is defined",
+    "meaning": "1=Non-secure / 1=Non-secure",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "i_ahb_hmastlock",
+    "direction": "input",
+    "width": "1",
+    "type": "Data (valid with address phase)",
+    "reset_value": "0",
+    "meaning": "Locked transfer indicator / Báo transfer khóa",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "i_ahb_hwdata",
+    "direction": "input",
+    "width": "32",
+    "type": "Data (valid with accepted write data phase)",
+    "reset_value": "Not applicable: no reset/idle value is defined",
+    "meaning": "Write data / Dữ liệu ghi",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "i_ahb_hwstrb",
+    "direction": "input",
+    "width": "4",
+    "type": "Data (valid with HWDATA)",
+    "reset_value": "Not applicable: no reset/idle value is defined",
+    "meaning": "Byte write strobes / Strobe ghi theo byte",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_ahb_hreadyout",
+    "direction": "output",
+    "width": "1",
+    "type": "Level",
+    "reset_value": "1 during reset",
+    "meaning": "Completes or extends current AHB transfer / Hoàn tất hoặc kéo dài transfer AHB",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_ahb_hresp",
+    "direction": "output",
+    "width": "1",
+    "type": "Level",
+    "reset_value": "0",
+    "meaning": "0=OKAY, 1=ERROR / 0=OKAY, 1=ERROR",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_ahb_hrdata",
+    "direction": "output",
+    "width": "32",
+    "type": "Data (valid with completed read response)",
+    "reset_value": "0",
+    "meaning": "Read data / Dữ liệu đọc",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_axi_awid",
+    "direction": "output",
+    "width": "3",
+    "type": "Data (valid with AWVALID)",
+    "reset_value": "0",
+    "meaning": "Write transaction ID / ID giao dịch ghi",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_axi_awaddr",
+    "direction": "output",
+    "width": "32",
+    "type": "Data (valid with AWVALID)",
+    "reset_value": "0",
+    "meaning": "Write start byte address / Địa chỉ byte bắt đầu ghi",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_axi_awlen",
+    "direction": "output",
+    "width": "8",
+    "type": "Data (valid with AWVALID)",
+    "reset_value": "0",
+    "meaning": "Write burst beats minus one / Số beat ghi trừ một",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_axi_awsize",
+    "direction": "output",
+    "width": "3",
+    "type": "Data (valid with AWVALID)",
+    "reset_value": "0",
+    "meaning": "Bytes per beat encoding / Mã byte mỗi beat",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_axi_awburst",
+    "direction": "output",
+    "width": "2",
+    "type": "Data (valid with AWVALID)",
+    "reset_value": "INCR",
+    "meaning": "AXI FIXED/INCR/WRAP encoding / Mã FIXED/INCR/WRAP",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_axi_awlock",
+    "direction": "output",
+    "width": "1",
+    "type": "Static",
+    "reset_value": "0",
+    "meaning": "Exclusive lock; tied low / Exclusive lock; luôn bằng 0",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_axi_awcache",
+    "direction": "output",
+    "width": "4",
+    "type": "Data (valid with AWVALID)",
+    "reset_value": "0",
+    "meaning": "Write memory attributes translated from HPROT / Thuộc tính ghi chuyển từ HPROT",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_axi_awprot",
+    "direction": "output",
+    "width": "3",
+    "type": "Data (valid with AWVALID)",
+    "reset_value": "0",
+    "meaning": "Write protection/security/type / Bảo vệ, security, loại ghi",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_axi_awvalid",
+    "direction": "output",
+    "width": "1",
+    "type": "Level",
+    "reset_value": "0",
+    "meaning": "Write address valid / Địa chỉ ghi hợp lệ",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "i_axi_awready",
+    "direction": "input",
+    "width": "1",
+    "type": "Level",
+    "reset_value": "Ignored during bridge reset; externally unconstrained",
+    "meaning": "Write address ready / Sẵn sàng nhận địa chỉ ghi",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_axi_wdata",
+    "direction": "output",
+    "width": "32",
+    "type": "Data (valid with WVALID)",
+    "reset_value": "0",
+    "meaning": "Write data / Dữ liệu ghi",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_axi_wstrb",
+    "direction": "output",
+    "width": "4",
+    "type": "Data (valid with WVALID)",
+    "reset_value": "0",
+    "meaning": "Write byte strobes / Strobe byte ghi",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_axi_wlast",
+    "direction": "output",
+    "width": "1",
+    "type": "Data (valid with WVALID)",
+    "reset_value": "0",
+    "meaning": "Last write beat / Beat ghi cuối",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_axi_wvalid",
+    "direction": "output",
+    "width": "1",
+    "type": "Level",
+    "reset_value": "0",
+    "meaning": "Write data valid / Dữ liệu ghi hợp lệ",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "i_axi_wready",
+    "direction": "input",
+    "width": "1",
+    "type": "Level",
+    "reset_value": "Ignored during bridge reset; externally unconstrained",
+    "meaning": "Write data ready / Sẵn sàng nhận dữ liệu ghi",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "i_axi_bid",
+    "direction": "input",
+    "width": "3",
+    "type": "Data (valid with BVALID)",
+    "reset_value": "Not applicable: no reset/idle value is defined",
+    "meaning": "Write response transaction ID / ID response ghi",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "i_axi_bresp",
+    "direction": "input",
+    "width": "2",
+    "type": "Data (valid with BVALID)",
+    "reset_value": "Not applicable: no reset/idle value is defined",
+    "meaning": "Write response status / Trạng thái response ghi",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "i_axi_bvalid",
+    "direction": "input",
+    "width": "1",
+    "type": "Level",
+    "reset_value": "0 during reset",
+    "meaning": "Write response valid / Response ghi hợp lệ",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_axi_bready",
+    "direction": "output",
+    "width": "1",
+    "type": "Level",
+    "reset_value": "0",
+    "meaning": "Write response ready / Sẵn sàng nhận response ghi",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_axi_arid",
+    "direction": "output",
+    "width": "3",
+    "type": "Data (valid with ARVALID)",
+    "reset_value": "0",
+    "meaning": "Read transaction ID / ID giao dịch đọc",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_axi_araddr",
+    "direction": "output",
+    "width": "32",
+    "type": "Data (valid with ARVALID)",
+    "reset_value": "0",
+    "meaning": "Read byte address / Địa chỉ byte đọc",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_axi_arlen",
+    "direction": "output",
+    "width": "8",
+    "type": "Data (valid with ARVALID)",
+    "reset_value": "0",
+    "meaning": "Read burst beats minus one; always zero / Số beat đọc trừ một; luôn bằng 0",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_axi_arsize",
+    "direction": "output",
+    "width": "3",
+    "type": "Data (valid with ARVALID)",
+    "reset_value": "0",
+    "meaning": "Bytes per beat encoding / Mã byte mỗi beat",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_axi_arburst",
+    "direction": "output",
+    "width": "2",
+    "type": "Data (valid with ARVALID)",
+    "reset_value": "INCR",
+    "meaning": "Read burst type; INCR / Loại burst đọc; INCR",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_axi_arlock",
+    "direction": "output",
+    "width": "1",
+    "type": "Static",
+    "reset_value": "0",
+    "meaning": "Exclusive lock; tied low / Exclusive lock; luôn bằng 0",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_axi_arcache",
+    "direction": "output",
+    "width": "4",
+    "type": "Data (valid with ARVALID)",
+    "reset_value": "0",
+    "meaning": "Read memory attributes translated from HPROT / Thuộc tính đọc chuyển từ HPROT",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_axi_arprot",
+    "direction": "output",
+    "width": "3",
+    "type": "Data (valid with ARVALID)",
+    "reset_value": "0",
+    "meaning": "Read protection/security/type / Bảo vệ, security, loại đọc",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_axi_arvalid",
+    "direction": "output",
+    "width": "1",
+    "type": "Level",
+    "reset_value": "0",
+    "meaning": "Read address valid / Địa chỉ đọc hợp lệ",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "i_axi_arready",
+    "direction": "input",
+    "width": "1",
+    "type": "Level",
+    "reset_value": "Ignored during bridge reset; externally unconstrained",
+    "meaning": "Read address ready / Sẵn sàng nhận địa chỉ đọc",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "i_axi_rid",
+    "direction": "input",
+    "width": "3",
+    "type": "Data (valid with RVALID)",
+    "reset_value": "Not applicable: no reset/idle value is defined",
+    "meaning": "Read response ID / ID response đọc",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "i_axi_rdata",
+    "direction": "input",
+    "width": "32",
+    "type": "Data (valid with RVALID)",
+    "reset_value": "Not applicable: no reset/idle value is defined",
+    "meaning": "Read data / Dữ liệu đọc",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "i_axi_rresp",
+    "direction": "input",
+    "width": "2",
+    "type": "Data (valid with RVALID)",
+    "reset_value": "Not applicable: no reset/idle value is defined",
+    "meaning": "Read response status / Trạng thái response đọc",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "i_axi_rlast",
+    "direction": "input",
+    "width": "1",
+    "type": "Data (valid with RVALID)",
+    "reset_value": "Not applicable: no reset/idle value is defined",
+    "meaning": "Final read beat / Beat đọc cuối",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "i_axi_rvalid",
+    "direction": "input",
+    "width": "1",
+    "type": "Level",
+    "reset_value": "0 during reset",
+    "meaning": "Read data valid / Dữ liệu đọc hợp lệ",
+    "domain": "CLK-CORE"
+   },
+   {
+    "name": "o_axi_rready",
+    "direction": "output",
+    "width": "1",
+    "type": "Level",
+    "reset_value": "0",
+    "meaning": "Read data ready / Sẵn sàng nhận dữ liệu đọc",
+    "domain": "CLK-CORE"
+   }
+  ],
+  "parameters": [
+   {
+    "name": "PARA_RD_ID_COUNT",
+    "default": "1",
+    "legal": "1..8"
+   },
+   {
+    "name": "PARA_WR_ID_COUNT",
+    "default": "1",
+    "legal": "1..8"
+   }
+  ],
+  "clock": "i_clk_core",
+  "reset": {
+   "name": "i_rst_n_core",
+   "active_low": true
+  },
+  "clocks": [
+   {
+    "name": "i_clk_core",
+    "domain": "CLK-CORE"
+   }
+  ],
+  "resets": [
+   {
+    "name": "i_rst_n_core",
+    "active_low": true,
+    "clock": "i_clk_core"
+   }
+  ],
+  "source_table": {
+   "section": "T1.7.2.2",
+   "line": 253
+  }
+ },
+ "checks": [
+  {
+   "id": "CHK-001",
+   "kind": "assertion",
+   "group": "ahb",
+   "title": "AHB ERROR is a two-cycle response",
+   "rules": [
+    "AA-12-16",
+    "AA-15.3-07",
+    "AA-T1.7.2.2-07"
+   ],
+   "behavior": "For rising edges with i_rst_n_core=1: (a) if at edge t o_ahb_hresp=1 and o_ahb_hreadyout=0, then at edge t+1 o_ahb_hresp=1 and o_ahb_hreadyout=1; (b) if at edge t o_ahb_hresp=1 and o_ahb_hreadyout=1, then at edge t-1 o_ahb_hresp=1 and o_ahb_hreadyout=0. So every ERROR has a first cycle with HREADYOUT low and a second cycle with HREADYOUT high.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-002",
+   "kind": "assertion",
+   "group": "ahb",
+   "title": "IDLE and BUSY transfers get zero-wait OKAY",
+   "rules": [
+    "AA-6.1-01",
+    "AA-T1.7.3.1-03"
+   ],
+   "behavior": "For rising edges t and t+1 with i_rst_n_core=1: if at edge t i_ahb_hsel=1, i_ahb_hready=1 and i_ahb_htrans is 2'b00 (IDLE) or 2'b01 (BUSY), then at edge t+1 o_ahb_hreadyout=1 and o_ahb_hresp=0.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-003",
+   "kind": "assertion",
+   "group": "axi",
+   "title": "AXI lock outputs tied low",
+   "rules": [
+    "AA-T1.7.2.2-11",
+    "AA-18-05",
+    "AA-T1.7.3.1-15"
+   ],
+   "behavior": "At every rising edge of i_clk_core, whether i_rst_n_core is 0 or 1: o_axi_awlock=0 and o_axi_arlock=0.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-004",
+   "kind": "assertion",
+   "group": "axi",
+   "title": "Reads are always single-beat INCR",
+   "rules": [
+    "AA-T1.7.2.2-20",
+    "AA-T1.7.2.2-21",
+    "AA-15.3-03",
+    "AA-1.1-04",
+    "AA-T1.7.3.2-03",
+    "AA-5.4-07"
+   ],
+   "behavior": "At every rising edge of i_clk_core (reset asserted or not): o_axi_arlen=8'h00 and o_axi_arburst=2'b01 (INCR). In particular at every AR handshake edge (o_axi_arvalid=1 and i_axi_arready=1) o_axi_arlen=0 and o_axi_arburst=INCR.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-005",
+   "kind": "assertion",
+   "group": "axi",
+   "title": "AW VALID and payload stable until AWREADY",
+   "rules": [
+    "AA-T1.7.2.2-12",
+    "AA-5.4-04",
+    "AA-15.3-01",
+    "AA-12-10",
+    "AA-T1.7.3.2-01",
+    "AA-15.2-01"
+   ],
+   "behavior": "For rising edges t and t+1 with i_rst_n_core=1 at both: if at edge t o_axi_awvalid=1 and i_axi_awready=0, then at edge t+1 o_axi_awvalid=1 and o_axi_awid, o_axi_awaddr, o_axi_awlen, o_axi_awsize, o_axi_awburst, o_axi_awcache and o_axi_awprot each equal their values at edge t.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-006",
+   "kind": "assertion",
+   "group": "axi",
+   "title": "W VALID and payload stable until WREADY",
+   "rules": [
+    "AA-T1.7.2.2-14",
+    "AA-5.4-04",
+    "AA-15.3-01",
+    "AA-12-10",
+    "AA-T1.7.3.2-01"
+   ],
+   "behavior": "For rising edges t and t+1 with i_rst_n_core=1 at both: if at edge t o_axi_wvalid=1 and i_axi_wready=0, then at edge t+1 o_axi_wvalid=1 and o_axi_wdata, o_axi_wstrb and o_axi_wlast each equal their values at edge t.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-007",
+   "kind": "assertion",
+   "group": "axi",
+   "title": "AR VALID and payload stable until ARREADY",
+   "rules": [
+    "AA-T1.7.2.2-22",
+    "AA-5.4-04",
+    "AA-15.3-01",
+    "AA-12-10",
+    "AA-T1.7.3.2-01"
+   ],
+   "behavior": "For rising edges t and t+1 with i_rst_n_core=1 at both: if at edge t o_axi_arvalid=1 and i_axi_arready=0, then at edge t+1 o_axi_arvalid=1 and o_axi_arid, o_axi_araddr, o_axi_arlen, o_axi_arsize, o_axi_arburst, o_axi_arcache and o_axi_arprot each equal their values at edge t.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-008",
+   "kind": "assertion",
+   "group": "axi",
+   "title": "At most one outstanding read and one outstanding write",
+   "rules": [
+    "AA-5.4-06",
+    "AA-T1.7.3.2-02",
+    "AA-T1.7.3.2-06",
+    "AA-1.1-01"
+   ],
+   "behavior": "Counters are cleared while i_rst_n_core=0. NW = number of AW handshakes (o_axi_awvalid=1 and i_axi_awready=1 at an edge) minus number of B handshakes (i_axi_bvalid=1 and o_axi_bready=1). NR = number of AR handshakes (o_axi_arvalid=1 and i_axi_arready=1) minus number of final R handshakes (i_axi_rvalid=1, o_axi_rready=1, i_axi_rlast=1). At any rising edge t with i_rst_n_core=1: if NW after edge t-1 equals 1 and no B handshake occurs at edge t, then o_axi_awvalid=0 at edge t; if NR after edge t-1 equals 1 and no R handshake occurs at edge t, then o_axi_arvalid=0 at edge t. Hence NW and NR are always 0 or 1. This holds for every value of PARA_RD_ID_COUNT and PARA_WR_ID_COUNT.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-009",
+   "kind": "assertion",
+   "group": "axi",
+   "title": "AXI IDs stay below the configured ID count",
+   "rules": [
+    "AA-15.3-09",
+    "AA-3-37"
+   ],
+   "behavior": "At every rising edge with i_rst_n_core=1: if o_axi_arvalid=1 then o_axi_arid < PARA_RD_ID_COUNT; if o_axi_awvalid=1 then o_axi_awid < PARA_WR_ID_COUNT. With the default count of 1, o_axi_arid=0 and o_axi_awid=0 whenever their VALID is 1.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-010",
+   "kind": "assertion",
+   "group": "axi",
+   "title": "W beat count and WLAST match AWLEN",
+   "rules": [
+    "AA-3-12",
+    "AA-5.4-07",
+    "AA-T1.7.2.2-16",
+    "AA-15.3-04",
+    "AA-9-09"
+   ],
+   "behavior": "W handshakes (o_axi_wvalid=1 and i_axi_wready=1) are split into W bursts, each ending at a handshake with o_axi_wlast=1. The k-th W burst since reset release is matched with the k-th AW handshake, whose o_axi_awlen is L_k (the check is deferred if W comes before AW). The k-th W burst must contain exactly L_k+1 handshakes. o_axi_wlast must be 0 on handshakes 1..L_k and 1 on handshake L_k+1. A W handshake with o_axi_wlast=1 before L_k+1 beats, or a beat number L_k+2 with o_axi_wlast=0, is a failure.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-011",
+   "kind": "assertion",
+   "group": "axi",
+   "title": "AW burst shape is legal and never crosses 4 KiB",
+   "rules": [
+    "AA-T1.7.3.2-04",
+    "AA-3-22",
+    "AA-T1.7.3.1-12",
+    "AA-9-09"
+   ],
+   "behavior": "At every rising edge with i_rst_n_core=1 and o_axi_awvalid=1: o_axi_awlen <= 15; o_axi_awburst is 2'b01 (INCR) or 2'b10 (WRAP), never 2'b00 or 2'b11. If o_axi_awburst=WRAP, then o_axi_awlen is 3, 7 or 15 and o_axi_awaddr is a multiple of 2^o_axi_awsize. If o_axi_awburst=INCR, then (o_axi_awaddr mod 4096) + (o_axi_awlen+1)*2^o_axi_awsize <= 4096, so no burst crosses a 4 KiB boundary.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-012",
+   "kind": "assertion",
+   "group": "axi",
+   "title": "Issued AXI requests use supported sizes and are aligned",
+   "rules": [
+    "AA-T1.7.3.1-04",
+    "AA-9-04"
+   ],
+   "behavior": "At every rising edge with i_rst_n_core=1: if o_axi_arvalid=1 then o_axi_arsize <= 2 and o_axi_araddr mod 2^o_axi_arsize = 0; if o_axi_awvalid=1 then o_axi_awsize <= 2 and o_axi_awaddr mod 2^o_axi_awsize = 0.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-013",
+   "kind": "assertion",
+   "group": "cross",
+   "title": "No AR before the matching AHB read is accepted",
+   "rules": [
+    "AA-3-06",
+    "AA-5.4-02",
+    "AA-15.3-02",
+    "AA-21-03",
+    "AA-1.1-01",
+    "AA-3-03"
+   ],
+   "behavior": "RA(t) counts the accepted, non-rejected AHB read address phases at edges strictly before t since reset release. An edge accepts a read when i_ahb_hsel=1, i_ahb_hready=1, i_ahb_htrans[1]=1 and i_ahb_hwrite=0. A read is non-rejected when i_ahb_hmastlock=0, i_ahb_hprot[6]=0, i_ahb_hsize<=2, i_ahb_haddr is a multiple of 2^i_ahb_hsize, and i_ahb_hprot[5:2] is not an AHB5-reserved code. ARH(t) counts AR handshakes at edges strictly before t. At every edge t with i_rst_n_core=1: if o_axi_arvalid=1 then RA(t) > ARH(t). Also ARH never exceeds the number of accepted non-rejected reads.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-014",
+   "kind": "assertion",
+   "group": "cross",
+   "title": "No AXI write burst before the full AHB fixed burst is accepted",
+   "rules": [
+    "AA-15.3-05",
+    "AA-5.4-05",
+    "AA-3-08",
+    "AA-T1.7.3.1-08"
+   ],
+   "behavior": "Non-rejected accepted AHB write beats are numbered in acceptance order. P(t) is the sum of (o_axi_awlen+1) over AW handshakes before edge t. At any edge t with i_rst_n_core=1, o_axi_awvalid=1 and o_axi_awlen=L>0, the beats P(t)+1 .. P(t)+L+1 must: (a) all have had their address phases accepted at edges strictly before t; (b) belong to one AHB burst that started with NONSEQ and continued with SEQ, with i_ahb_hburst in {WRAP4, INCR4, WRAP8, INCR8, WRAP16, INCR16} (3'b010..3'b111); and (c) come from a burst whose N beats (N=4, 8 or 16) all had their address phases accepted at edges strictly before t. Otherwise the check fails.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-015",
+   "kind": "assertion",
+   "group": "cross",
+   "title": "AHB read completes only with its R beat and carries RDATA unchanged",
+   "rules": [
+    "AA-5.3-02",
+    "AA-10.4-01",
+    "AA-3-05",
+    "AA-T1.7.3.4-01",
+    "AA-9-03",
+    "AA-1.1-01",
+    "AA-3-32",
+    "AA-3-33"
+   ],
+   "behavior": "For the j-th accepted non-rejected AHB read (acceptance edge a_j), its data phase completes at c_j, the first edge after a_j with i_rst_n_core=1 and o_ahb_hreadyout=1. The j-th R handshake (i_axi_rvalid=1 and o_axi_rready=1) since reset release must occur at an edge r_j with a_j < r_j <= c_j. If i_axi_rresp at r_j was 2'b00 (OKAY): at c_j o_ahb_hresp=0 and o_ahb_hrdata equals i_axi_rdata sampled at r_j, bit for bit. If i_axi_rresp at r_j was not OKAY: at c_j o_ahb_hresp=1. Because the AHB data phase cannot end before r_j, the next AHB read address cannot be accepted before r_j.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-016",
+   "kind": "assertion",
+   "group": "cross",
+   "title": "Waiting-class writes complete only after their BRESP",
+   "rules": [
+    "AA-3-17",
+    "AA-3-18",
+    "AA-10.4-03",
+    "AA-20.3-04",
+    "AA-21-02",
+    "AA-3-40",
+    "AA-10.2-02",
+    "AA-T1.7.3.4-02",
+    "AA-3-21"
+   ],
+   "behavior": "Non-rejected accepted AHB write beats are numbered j in acceptance order; beat j matches the j-th W handshake. X(j) is the index of the AXI write (counted by WLAST handshakes) that carries W handshake j. A beat is in the waiting class if any of these holds: i_ahb_hburst was SINGLE (3'b000) or INCR (3'b001); i_ahb_hprot[2]=0; i_ahb_hprot[6:2]=5'b00001 (Device-E); or it is the N-th beat of a fixed burst of N beats. For such a beat, its completion edge c_j (first edge after its acceptance with i_rst_n_core=1 and o_ahb_hreadyout=1) must be at or after the edge of the X(j)-th B handshake (i_axi_bvalid=1 and o_axi_bready=1). If any B handshake for that AXI write, or for a terminal beat any B handshake carrying a beat of its AHB burst, had i_axi_bresp not equal to 2'b00, then o_ahb_hresp=1 at c_j; otherwise o_ahb_hresp=0.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-017",
+   "kind": "assertion",
+   "group": "cross",
+   "title": "Locally rejected transfers end in ERROR and produce no W data",
+   "rules": [
+    "AA-3-34",
+    "AA-3-35",
+    "AA-T1.7.3.3-01",
+    "AA-20.3-02",
+    "AA-12-01",
+    "AA-12-03",
+    "AA-12-05",
+    "AA-20.2-01"
+   ],
+   "behavior": "An address phase accepted at edge t (i_ahb_hsel=1, i_ahb_hready=1, i_ahb_htrans[1]=1, i_rst_n_core=1) is rejected if any of these holds: i_ahb_hmastlock=1; i_ahb_hprot[6]=1; i_ahb_hsize>2; i_ahb_haddr mod 2^i_ahb_hsize != 0; or i_ahb_hprot[5:2] is in {0100, 0101, 1000, 1001, 1010, 1011, 1100, 1101}. For a rejected transfer, at its completion edge (first edge after t with o_ahb_hreadyout=1) o_ahb_hresp=1. In addition, at every edge the total number of W handshakes since reset release must not exceed the number of non-rejected accepted write address phases at earlier edges, so rejected writes add no W beats. Rejected reads are excluded from the count in CHK-013.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-018",
+   "kind": "assertion",
+   "group": "reset",
+   "title": "AHB outputs hold reset values during reset",
+   "rules": [
+    "AA-T1.7.2.2-05",
+    "AA-T1.7.2.2-06",
+    "AA-T1.7.2.2-08",
+    "AA-7.3-01",
+    "AA-10.2-06"
+   ],
+   "behavior": "At every rising edge of i_clk_core at which i_rst_n_core=0: o_ahb_hreadyout=1, o_ahb_hresp=0 (OKAY) and o_ahb_hrdata=32'h0000_0000, independent of all AHB and AXI input values.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-019",
+   "kind": "assertion",
+   "group": "reset",
+   "title": "AXI VALID/READY outputs suppressed during reset",
+   "rules": [
+    "AA-T1.7.2.2-13",
+    "AA-15.3-08",
+    "AA-7.3-01",
+    "AA-10.2-06",
+    "AA-5.1-02",
+    "AA-3-30"
+   ],
+   "behavior": "At every rising edge of i_clk_core at which i_rst_n_core=0: o_axi_awvalid=0, o_axi_wvalid=0, o_axi_arvalid=0, o_axi_bready=0 and o_axi_rready=0, whatever the values of i_ahb_hready, i_axi_awready, i_axi_wready, i_axi_arready, i_axi_bvalid and i_axi_rvalid.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-020",
+   "kind": "assertion",
+   "group": "reset",
+   "title": "AXI payload outputs hold reset values during reset",
+   "rules": [
+    "AA-T1.7.2.2-09",
+    "AA-T1.7.2.2-15",
+    "AA-T1.7.2.2-19",
+    "AA-T1.7.2.2-21"
+   ],
+   "behavior": "At every rising edge of i_clk_core at which i_rst_n_core=0: o_axi_awid=0, o_axi_awaddr=0, o_axi_awlen=0, o_axi_awsize=0, o_axi_awburst=2'b01 (INCR), o_axi_awcache=0, o_axi_awprot=0, o_axi_wdata=0, o_axi_wstrb=0, o_axi_wlast=0, o_axi_arid=0, o_axi_araddr=0, o_axi_arlen=0, o_axi_arsize=0, o_axi_arburst=2'b01 (INCR), o_axi_arcache=0 and o_axi_arprot=0.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-021",
+   "kind": "test",
+   "group": "ahb",
+   "title": "Only HSEL&HREADY&HTRANS[1] address phases create AXI traffic",
+   "rules": [
+    "AA-3-03",
+    "AA-3-04",
+    "AA-T1.7.3.1-01",
+    "AA-T1.7.3.1-03"
+   ],
+   "behavior": "Only address phases with HSEL=1, HREADY=1 and NONSEQ or SEQ produce AXI requests, exactly one per accepted beat.",
+   "stimulus": "Default parameters. (1) 50 cycles with i_ahb_hsel=1 and i_ahb_htrans=IDLE, with random other controls. (2) Undefined INCR and INCR4 reads and writes with random BUSY cycles between beats. (3) NONSEQ transfers with i_ahb_hsel=0 (transfers to other subordinates). (4) While the bridge has no data phase in progress, i_ahb_hready=0 is driven for 3 cycles (another subordinate's wait states), with i_ahb_hsel=1 and NONSEQ held. i_ahb_hready then goes to 1 at one edge, where the transfer is accepted.",
+   "expected": "(1) and (3) produce no o_axi_awvalid, o_axi_wvalid or o_axi_arvalid. In (2), the number of AR handshakes or AW-carried W beats equals the number of NONSEQ/SEQ beats accepted, with none for BUSY cycles. In (4), exactly one AXI request is produced for the transfer, created by the single edge with i_ahb_hready=1. IDLE and BUSY data phases complete in one cycle with o_ahb_hreadyout=1 and o_ahb_hresp=0."
+  },
+  {
+   "id": "CHK-022",
+   "kind": "test",
+   "group": "axi",
+   "title": "AXI outputs have no combinational dependency on READY",
+   "rules": [
+    "AA-T1.7.3.2-01"
+   ],
+   "behavior": "Changing an AXI READY input in the middle of a clock cycle does not change any AXI output in that cycle.",
+   "stimulus": "Default parameters. During random traffic, at each cycle where o_axi_awvalid, o_axi_wvalid or o_axi_arvalid is 1, the test toggles i_axi_awready, i_axi_wready and i_axi_arready at the falling edge of i_clk_core. It samples all o_axi_* outputs 1 time step before and 1 time step after the toggle.",
+   "expected": "For every toggle, all o_axi_* output values sampled after the toggle equal the values sampled before it, within the same clock cycle. Outputs change only after rising edges of i_clk_core."
+  },
+  {
+   "id": "CHK-023",
+   "kind": "test",
+   "group": "burst",
+   "title": "Device and non-bufferable fixed write bursts are serialized as singles",
+   "rules": [
+    "AA-1.1-03",
+    "AA-3-09",
+    "AA-3-10",
+    "AA-3-16",
+    "AA-3-17",
+    "AA-3-18",
+    "AA-5.3-04",
+    "AA-5.3-07",
+    "AA-T1.7.3.1-08",
+    "AA-T1.7.3.1-09",
+    "AA-T1.7.3.3-04",
+    "AA-10.2-02",
+    "AA-10.4-03",
+    "AA-20.3-04",
+    "AA-21-01",
+    "AA-21-02"
+   ],
+   "behavior": "Device and non-bufferable fixed write bursts are never merged or resized; every beat is its own AXI write and waits for its own BRESP.",
+   "stimulus": "Default parameters. Fixed write bursts INCR4, WRAP4, INCR8, WRAP8, INCR16 and WRAP16 with i_ahb_hsize 0, 1 and 2, using i_ahb_hprot[6:2]=5'b00000 (Device-nE, non-bufferable) and 5'b00001 (Device-E), with random HWDATA and HWSTRB. The AXI subordinate holds i_axi_awready, i_axi_wready and i_axi_arready=1 and returns B after a random 0..20 cycles with BRESP=OKAY.",
+   "expected": "Each AHB beat produces exactly one AW with o_axi_awlen=0, o_axi_awburst=2'b01, o_axi_awsize equal to i_ahb_hsize (size never changed) and o_axi_awaddr equal to that beat's address, plus one W with o_axi_wlast=1 and matching data and strobes. The beats appear in AHB order. No AW with o_axi_awlen>0 is ever seen for these bursts. The AW handshake of beat k+1 happens only after the B handshake of beat k. The AHB data phase of each beat (including Device-E) completes, with o_ahb_hresp=0, at or after its own B handshake edge, never before it."
+  },
+  {
+   "id": "CHK-024",
+   "kind": "test",
+   "group": "burst",
+   "title": "Eligible Normal Write-back fixed write bursts: optional aggregation, early OKAY, terminal waits for B",
+   "rules": [
+    "AA-1.1-02",
+    "AA-1.3-04",
+    "AA-3-02",
+    "AA-3-08",
+    "AA-3-11",
+    "AA-3-13",
+    "AA-3-14",
+    "AA-3-15",
+    "AA-3-39",
+    "AA-3-40",
+    "AA-5.3-05",
+    "AA-5.3-06",
+    "AA-5.3-08",
+    "AA-T1.7.3.1-08",
+    "AA-T1.7.3.3-06",
+    "AA-T1.7.3.4-03",
+    "AA-10.1-01",
+    "AA-10.2-03",
+    "AA-10.2-04",
+    "AA-10.4-02",
+    "AA-9-11"
+   ],
+   "behavior": "An eligible Normal Write-back fixed burst becomes either one matching AXI burst or ordered single-beat writes. Earlier beats may get OKAY early, but the terminal beat waits for every BRESP.",
+   "stimulus": "Default parameters. Back-to-back fixed write bursts INCR4, WRAP4, INCR8, WRAP8, INCR16 and WRAP16 (no BUSY), with i_ahb_hsize 0, 1 and 2, i_ahb_hprot[6:2] 5'b00111 or 5'b01111, and HPROT[1:0] and HNONSEC constant within each burst. Addresses follow the AHB rules (no 1 KiB crossing). HWDATA and HWSTRB are random. The AXI subordinate holds all READY signals at 1 in half of the runs and random stalls in the other half; B is returned with BRESP=OKAY after 1..20 cycles. i_ahb_hready is tied to o_ahb_hreadyout.",
+   "expected": "For each burst of N beats there are two possible results. (A) Aggregated: exactly one AW, with o_axi_awlen=N-1 (3, 7 or 15), o_axi_awburst=INCR for INCRx or WRAP for WRAPx, o_axi_awaddr equal to the first beat's address, o_axi_awsize equal to i_ahb_hsize and attributes mapped as in CHK-040. It is followed by N W beats in AHB beat order with matching wdata and wstrb, and o_axi_wlast=1 only on beat N. Its first o_axi_awvalid comes strictly after the edge accepting beat N's address. (B) Singles: N AWs with o_axi_awlen=0 in beat order. In both cases each beat is carried exactly once. The AHB data phase of beat N completes only at or after the last B handshake for the burst, with o_ahb_hresp=0. Beats 1..N-1 may complete OKAY before any B. Coverage records aggregated vs single outcomes for each burst length and type, and records whether beats 1..N-1 were accepted at one beat per i_clk_core cycle (throughput is recorded but not a failure)."
+  },
+  {
+   "id": "CHK-025",
+   "kind": "test",
+   "group": "burst",
+   "title": "Varying burst-scoped attributes force ordered singles",
+   "rules": [
+    "AA-T1.7.3.1-14",
+    "AA-T1.7.3.1-08",
+    "AA-3-09",
+    "AA-5.3-06",
+    "AA-10.2-05"
+   ],
+   "behavior": "If burst-scoped attributes change between beats, the bridge falls back to ordered single-beat writes that each carry their own beat's attributes.",
+   "stimulus": "Out-of-profile stimulus on purpose (the rule covers this case). Normal Write-back (i_ahb_hprot[6:2]=5'b00111) INCR4 and WRAP8 word write bursts where i_ahb_hnonsec alternates 0/1 between beats in one run and i_ahb_hprot[0] alternates in another run. The AXI subordinate holds READY=1. B is OKAY, except in one run where the second B is SLVERR (2'b10).",
+   "expected": "No AW with o_axi_awlen>0 is issued for these bursts. Each beat produces one AW with o_axi_awlen=0, in AHB beat order. Each AW's o_axi_awprot equals {~HPROT[0], HNONSEC, HPROT[1]} of its own beat, and each W carries that beat's data with o_axi_wlast=1. No beat is issued twice. The terminal beat's AHB data phase completes after the last B handshake: with o_ahb_hresp=0 when all BRESP are OKAY, and with the two-cycle ERROR in the run with the SLVERR."
+  },
+  {
+   "id": "CHK-026",
+   "kind": "test",
+   "group": "burst",
+   "title": "Early-terminated fixed write burst drains captured prefix as singles",
+   "rules": [
+    "AA-3-19",
+    "AA-3-20",
+    "AA-3-21",
+    "AA-T1.7.3.1-10",
+    "AA-10.1-01",
+    "AA-10.2-05",
+    "AA-10.4-05",
+    "AA-12-13",
+    "AA-5.4-05"
+   ],
+   "behavior": "An AHB fixed write burst cut short never produces an AXI burst; its captured beats are written once each as ordered singles, and the last captured beat waits for all their BRESPs.",
+   "stimulus": "Default parameters. Normal Write-back (5'b00111) INCR8 and WRAP16 word writes terminated after k beats, for every k from 1 to N-1. Termination is made by driving i_ahb_htrans=IDLE, or NONSEQ to a new SINGLE read, in the address-phase cycle right after beat k's acceptance edge. In half the runs one random BRESP of the drained singles is SLVERR or DECERR. READY is random.",
+   "expected": "No AW with o_axi_awlen>0 carries any of these k beats. Exactly k AWs with o_axi_awlen=0 are issued, carrying beats 1..k in order with matching address, data and strobes, and no beat is issued twice. Beat k's AHB data phase completes only at or after the k-th B handshake. Its response is the two-cycle ERROR (o_ahb_hresp=1 with o_ahb_hreadyout=0, then o_ahb_hresp=1 with o_ahb_hreadyout=1) if any of the k BRESP was not OKAY, and OKAY otherwise. Beats 1..k-1 that already completed OKAY are not re-responded. The following transfer after termination is handled normally."
+  },
+  {
+   "id": "CHK-027",
+   "kind": "test",
+   "group": "burst",
+   "title": "Defensive 4 KiB split preserves order and aggregates responses",
+   "rules": [
+    "AA-3-22",
+    "AA-3-23",
+    "AA-T1.7.3.1-12",
+    "AA-10.2-03"
+   ],
+   "behavior": "For a burst that would cross a 4 KiB boundary, the bridge splits or uses singles, keeps every beat once and in order, and reports any sub-burst error on the final AHB beat.",
+   "stimulus": "Out-of-profile stimulus on purpose (the rule covers this case). Normal Write-back (5'b00111) INCR16 word write starting at 0x0000_0FE0 (crosses 0x0000_1000 after 8 beats), and INCR8 halfword write starting at 0x0000_1FF8. READY is held at 1. In run 1 all BRESP are OKAY; in run 2 the first B handshake has BRESP=SLVERR.",
+   "expected": "Every AW satisfies CHK-011: no INCR burst crosses a 4 KiB boundary. Each AW's o_axi_awlen equals its beat count minus 1. The AWs, in handshake order, cover the burst's beats with contiguous increasing addresses (0x0FE0, 0x0FE4, ..., 0x101C for the INCR16 case). Each beat is carried exactly once, in AHB order, with matching wdata and wstrb. The terminal AHB beat completes after the last B handshake: OKAY in run 1, two-cycle ERROR in run 2."
+  },
+  {
+   "id": "CHK-028",
+   "kind": "test",
+   "group": "err",
+   "title": "Write BRESP error mapping and aggregation",
+   "rules": [
+    "AA-3-14",
+    "AA-3-33",
+    "AA-12-08",
+    "AA-12-09",
+    "AA-12-17",
+    "AA-20.3-03",
+    "AA-20.3-06",
+    "AA-T1.7.3.4-05",
+    "AA-18-08",
+    "AA-6.4-02"
+   ],
+   "behavior": "Non-OKAY BRESP values become a two-cycle AHB ERROR on the right beat, earlier acknowledged beats keep their OKAY, and failed writes are not retried.",
+   "stimulus": "Default parameters. (a) SINGLE word writes with i_axi_bresp=2'b10 (SLVERR), 2'b11 (DECERR) and 2'b01 (EXOKAY), each repeated. (b) Normal Write-back INCR4/8/16 and WRAP4/8/16 writes where one random B handshake for the burst returns SLVERR, DECERR or EXOKAY. (c) A Device-E (5'b00001) INCR4 write where beat 2's BRESP is SLVERR; the manager drives IDLE in the first ERROR cycle to cancel the burst. (d) The same patterns with all BRESP=OKAY as control.",
+   "expected": "(a) Each single write's data phase ends after its B handshake with o_ahb_hresp=1 and o_ahb_hreadyout=0 at edge e, then o_ahb_hresp=1 and o_ahb_hreadyout=1 at edge e+1. (b) Beats 1..N-1 that completed earlier keep their OKAY. The terminal beat ends with the two-cycle ERROR after the last B handshake. (c) Beat 2 ends with the two-cycle ERROR after its own B, and no AXI request is made for beats 3..4. (d) All beats complete OKAY. In no case is a failed write's AW or W re-issued (no retry), and the only error signalling is o_ahb_hresp=1 (no other error indication exists)."
+  },
+  {
+   "id": "CHK-029",
+   "kind": "test",
+   "group": "err",
+   "title": "Read RRESP error mapping",
+   "rules": [
+    "AA-12-07",
+    "AA-3-32",
+    "AA-3-33",
+    "AA-20.3-06",
+    "AA-T1.7.3.4-05",
+    "AA-18-08",
+    "AA-6.4-02",
+    "AA-12-17"
+   ],
+   "behavior": "A non-OKAY RRESP is consumed and returned as a two-cycle AHB ERROR without retrying the read; OKAY reads return data normally.",
+   "stimulus": "Default parameters. SINGLE word reads where the AXI subordinate returns i_axi_rresp of 2'b10 (SLVERR), 2'b11 (DECERR) or 2'b01 (EXOKAY) with i_axi_rlast=1, each followed by a read that returns OKAY with distinct RDATA. The R delay is random 0..20 cycles.",
+   "expected": "For each error read: an R handshake (i_axi_rvalid=1 and o_axi_rready=1) occurs, so the beat is consumed. The AHB data phase then ends with the two-cycle ERROR (o_ahb_hresp=1 with o_ahb_hreadyout=0 at edge e, then 1 and 1 at edge e+1). Exactly one AR is issued for that read (no retry). The following OKAY read completes with o_ahb_hresp=0 and o_ahb_hrdata equal to its own RDATA."
+  },
+  {
+   "id": "CHK-030",
+   "kind": "test",
+   "group": "err",
+   "title": "Unsupported AHB controls rejected with ERROR and no AXI request",
+   "rules": [
+    "AA-3-34",
+    "AA-3-35",
+    "AA-10.1-03",
+    "AA-12-01",
+    "AA-12-03",
+    "AA-12-05",
+    "AA-20.2-01",
+    "AA-T1.7.3.1-05",
+    "AA-T1.7.3.1-15",
+    "AA-T1.7.3.3-01",
+    "AA-T1.7.3.4-04",
+    "AA-20.3-02",
+    "AA-18-02",
+    "AA-18-04",
+    "AA-9-05"
+   ],
+   "behavior": "Transfers with unsupported controls get a two-cycle AHB ERROR, cause no AXI activity, and leave the bridge ready for the next legal transfer.",
+   "stimulus": "Default parameters, bridge idle (no pending AXI work). Isolated NONSEQ SINGLE reads and writes (deliberately illegal input) with: i_ahb_hmastlock=1; i_ahb_hprot[6]=1 (with otherwise Normal Write-back bits); i_ahb_hprot[5:2] in {0100, 0101, 1000, 1100}; i_ahb_hsize in 3..7; halfword at an odd address; word at addresses with haddr[1:0] of 01, 10 or 11. Each is followed by 16 IDLE cycles and then a legal SINGLE read.",
+   "expected": "Each rejected transfer's data phase consists of zero or more wait cycles (o_ahb_hreadyout=0, o_ahb_hresp=0), then o_ahb_hresp=1 with o_ahb_hreadyout=0, then o_ahb_hresp=1 with o_ahb_hreadyout=1. o_axi_awvalid, o_axi_wvalid and o_axi_arvalid stay 0 from the acceptance edge through the 16 IDLE cycles. The following legal read produces exactly one AR and completes OKAY."
+  },
+  {
+   "id": "CHK-031",
+   "kind": "test",
+   "group": "err",
+   "title": "Rejected transfer after a captured write prefix drains the prefix first",
+   "rules": [
+    "AA-12-02",
+    "AA-12-04",
+    "AA-12-06",
+    "AA-T1.7.3.1-05",
+    "AA-T1.7.3.4-04"
+   ],
+   "behavior": "When a burst is cut short by a rejected transfer, the captured beats are drained as singles first, and only then does the rejected transfer get its ERROR, with no AXI activity of its own.",
+   "stimulus": "Default parameters. A Normal Write-back (5'b00111) INCR8 word write is terminated after k=3 beats. The address phase right after beat 3 is a NONSEQ SINGLE write that is rejected because of, in separate runs: i_ahb_hmastlock=1; i_ahb_hprot[6]=1; i_ahb_hsize=3; or a misaligned word address. The same is repeated with a rejected read as the terminating transfer. BRESP is OKAY, except in one run where it is DECERR on the 2nd single.",
+   "expected": "Exactly 3 AWs with o_axi_awlen=0 carry beats 1..3 in order with matching data, and no AW or W carries the rejected transfer. Beat 3's AHB data phase completes at or after the 3rd B handshake: OKAY, or the two-cycle ERROR in the DECERR run. The rejected transfer's data phase then ends with the two-cycle ERROR, and its first ERROR cycle comes after the 3rd B handshake edge. No AR is issued for a rejected read."
+  },
+  {
+   "id": "CHK-032",
+   "kind": "test",
+   "group": "id",
+   "title": "Independent AXI ID rotation per direction with ID count > 1",
+   "rules": [
+    "AA-3-37",
+    "AA-T1.7.3.2-05",
+    "AA-9-13",
+    "AA-1.3-05",
+    "AA-8-02",
+    "AA-8-04"
+   ],
+   "behavior": "With ID counts above 1, each direction cycles through all of its legal IDs, IDs stay in range, and the larger ID count adds no extra outstanding transactions.",
+   "stimulus": "One simulation with PARA_RD_ID_COUNT=5 and PARA_WR_ID_COUNT=8. 200 SINGLE reads and 200 SINGLE writes in random interleaving, plus 20 Normal Write-back INCR4 writes. The AXI subordinate returns i_axi_rid=o_axi_arid and i_axi_bid=o_axi_awid, with random READY and response delays. All assertions are enabled.",
+   "expected": "Every o_axi_arid at an AR handshake is in 0..4, and every o_axi_awid at an AW handshake is in 0..7 (CHK-009). Within any 10 consecutive AR handshakes all of 0..4 appear, and within any 16 consecutive AW handshakes all of 0..7 appear. This is true however many transfers of the other direction are interleaved. CHK-008 never fails: at most one outstanding read and one outstanding write despite counts > 1. Coverage records each ID value in each direction."
+  },
+  {
+   "id": "CHK-033",
+   "kind": "test",
+   "group": "order",
+   "title": "Mixed random traffic: ordering, no loss, no duplication",
+   "rules": [
+    "AA-3-02",
+    "AA-3-13",
+    "AA-5.4-03",
+    "AA-5.4-06",
+    "AA-10.4-07",
+    "AA-15.3-06"
+   ],
+   "behavior": "In random mixed traffic, AXI requests and AHB responses follow AHB acceptance order, a later read never passes an earlier write beat, and nothing is lost or duplicated.",
+   "stimulus": "Default parameters. 3000 random legal transfers mixing reads and writes of all supported HBURST types, i_ahb_hsize 0..2, HPROT types 5'b00000, 5'b00001, 5'b00111 and 5'b01111, and random strobes. 5% of transfers are injected rejected transfers. Random READY stalls 0..16 cycles and response delays 0..30 cycles; 3% of responses are non-OKAY. A reference model built only from accepted AHB pin activity and the stated mappings predicts the AXI stream and the AHB responses.",
+   "expected": "The AR stream equals the predicted read order. The W beat stream equals the non-rejected AHB write beats in acceptance order. For a read accepted after a write beat, its AR handshake is no earlier than the AW handshake carrying that write beat. Each AHB data phase returns the response (and HRDATA for reads) of its own transfer, in acceptance order. At the end of the test: AR count = non-rejected reads, W beat count = non-rejected write beats, and every AXI response has been handshaken, so nothing is lost or duplicated."
+  },
+  {
+   "id": "CHK-034",
+   "kind": "test",
+   "group": "perf",
+   "title": "AR/AW issue latency at most 6 cycles under free conditions",
+   "rules": [
+    "AA-3-41",
+    "AA-3-42",
+    "AA-10.4-04",
+    "AA-10.4-05",
+    "AA-13-01",
+    "AA-20.3-05"
+   ],
+   "behavior": "With an idle bridge and AXI READY held high, the AR or AW handshake happens within 6 cycles of the starting point defined for each case.",
+   "stimulus": "Default parameters. i_axi_awready, i_axi_wready and i_axi_arready are held at 1; B and R are returned 1 cycle after the request handshake. Isolated (bridge idle) SINGLE reads, SINGLE writes, and Device-E burst beats. Normal Write-back INCR4, INCR8 and INCR16 writes. INCR8 Normal Write-back writes terminated after 3 beats by IDLE.",
+   "expected": "Single read: the AR handshake edge minus the AHB address acceptance edge is between 1 and 6. Single-beat write (including each Device-E beat): the AW handshake edge minus that beat's acceptance edge is between 1 and 6. Normal Write-back fixed burst: the first AW handshake carrying its beats minus (the acceptance edge of the final beat + 1) is at most 6, and no AW comes earlier than that. Early-terminated burst: the first drained single's AW handshake minus the edge where the terminating IDLE is first sampled (beat 3's acceptance edge + 1) is at most 6. Cycles with READY low are not part of this test."
+  },
+  {
+   "id": "CHK-035",
+   "kind": "test",
+   "group": "perf",
+   "title": "READY stalls and missing responses: stable signals, no timeout, no retry",
+   "rules": [
+    "AA-15.2-01",
+    "AA-12-10",
+    "AA-12-11",
+    "AA-18-09",
+    "AA-20.2-03"
+   ],
+   "behavior": "Under long READY stalls and late or missing responses, AXI signals stay stable, AHB waits without error, and nothing is retried or timed out.",
+   "stimulus": "Default parameters. (a) 1000 random legal transfers, with i_axi_awready, i_axi_wready and i_axi_arready held low for random runs of 0..32 cycles and B/R delayed 0..200 cycles. (b) A SINGLE read whose R is never returned for 2000 cycles, then a coordinated reset. (c) A Device-E SINGLE write whose B is never returned for 2000 cycles, then a coordinated reset.",
+   "expected": "(a) CHK-005/CHK-006/CHK-007 never fail; all transfers complete with correct data and OKAY, with no AHB ERROR caused by stalls. (b) For all 2000 cycles: o_ahb_hreadyout=0 and o_ahb_hresp=0 in the read's data phase, o_axi_arvalid=0 after the single AR handshake (no retry), and no AW or W. (c) For all 2000 cycles: o_ahb_hreadyout=0 and o_ahb_hresp=0, no second AW or W. After the reset in (b) and (c), the bridge accepts and completes a new legal transfer normally."
+  },
+  {
+   "id": "CHK-036",
+   "kind": "test",
+   "group": "proto",
+   "title": "Independent AHB5/AXI4 protocol compliance with injected endpoint violations",
+   "rules": [
+    "AA-15.2-02",
+    "AA-6.1-01",
+    "AA-6.1-02"
+   ],
+   "behavior": "Independent protocol checkers find no bridge violation on legal traffic and do report deliberately injected endpoint violations.",
+   "stimulus": "Default parameters. Run 5000 cycles of random legal traffic with independent AHB5 subordinate-side and AXI4 manager-side protocol checkers bound to the DUT ports. Then run a self-check phase where the endpoint models inject violations: the AXI subordinate deasserts i_axi_rvalid before o_axi_rready, changes i_axi_bresp while i_axi_bvalid=1 and o_axi_bready=0, and the AHB manager changes i_ahb_haddr during a wait state.",
+   "expected": "The legal-traffic phase reports zero protocol violations on DUT outputs (o_ahb_hreadyout, o_ahb_hresp, o_ahb_hrdata, and all o_axi_* handshakes and payloads), and all assertions CHK-001 to CHK-020 pass. In the injection phase, each injected endpoint violation is reported by the corresponding input-side checker."
+  },
+  {
+   "id": "CHK-037",
+   "kind": "test",
+   "group": "read",
+   "title": "Read conversion and attribute mapping scoreboard",
+   "rules": [
+    "AA-3-02",
+    "AA-3-05",
+    "AA-3-07",
+    "AA-1.1-04",
+    "AA-5.3-01",
+    "AA-T1.7.3.1-01",
+    "AA-T1.7.3.1-06",
+    "AA-T1.7.3.1-07",
+    "AA-T1.7.3.2-03",
+    "AA-T1.7.3.4-01",
+    "AA-10.2-01",
+    "AA-9-01",
+    "AA-9-04",
+    "AA-18-01",
+    "AA-18-03",
+    "AA-T1.7.3.3-02",
+    "AA-T1.7.3.3-03",
+    "AA-3-32"
+   ],
+   "behavior": "Each accepted AHB read beat becomes exactly one single-beat AXI read with correctly mapped attributes, and the read data comes back unchanged.",
+   "stimulus": "Default parameters. 2000 random legal AHB reads with i_ahb_hburst in {SINGLE, INCR, INCR4, WRAP4, INCR8, WRAP8, INCR16, WRAP16}, using legal burst address sequences that do not cross 1 KiB. i_ahb_hsize is 0, 1 or 2 with naturally aligned addresses anywhere in the 32-bit space, including 0x0000_0000 and 0xFFFF_FFFC. i_ahb_hprot[6:2] is one of 5'b00000, 5'b00001, 5'b00111 or 5'b01111. i_ahb_hprot[1:0] and i_ahb_hnonsec are random, and i_ahb_hmastlock=0. BUSY cycles are inserted randomly in bursts. The AXI subordinate model returns i_axi_rid=o_axi_arid, i_axi_rlast=1, i_axi_rresp=OKAY and random i_axi_rdata, with random 0..10 cycle READY and response delays.",
+   "expected": "For each accepted read beat (in acceptance order) there is exactly one AR handshake, in the same order, with: o_axi_araddr equal to that beat's i_ahb_haddr; o_axi_arsize equal to i_ahb_hsize; o_axi_arlen=0; o_axi_arburst=2'b01; o_axi_arprot equal to {~HPROT[0], HNONSEC, HPROT[1]}; and o_axi_arcache equal to {HPROT[4]&~HPROT[5], HPROT[4]&HPROT[5], HPROT[3], HPROT[2]}. Expected ARCACHE is 4'b0000 for Device-nE, 4'b0001 for Device-E, 4'b1011 for 5'b00111 and 4'b0111 for 5'b01111. INCR and WRAP bursts produce one AR per beat at the AHB beat addresses (wrapping addresses for WRAP). Each AHB read data phase completes with o_ahb_hresp=0 and o_ahb_hrdata equal to that beat's i_axi_rdata. At the end of the test, the total AR count equals the accepted read count: none lost and none duplicated. Every address region is forwarded."
+  },
+  {
+   "id": "CHK-038",
+   "kind": "test",
+   "group": "reset",
+   "title": "Asynchronous reset assertion, inputs ignored during reset, no acceptance before release",
+   "rules": [
+    "AA-6.1-03",
+    "AA-T1.7.2.2-02",
+    "AA-T1.7.2.2-04",
+    "AA-7.3-04",
+    "AA-7.3-01",
+    "AA-3-30"
+   ],
+   "behavior": "Shows that reset takes effect without a clock edge, that READY and AHB inputs are ignored while in reset, and that no transfer is accepted until reset release.",
+   "stimulus": "Default parameters. Bring the bridge out of reset and issue one Normal Write-back SINGLE word write with i_axi_awready=0, so o_axi_awvalid=1 is pending. Midway between two rising edges of i_clk_core, drive i_rst_n_core to 0. Hold reset for 8 cycles. During reset, toggle i_ahb_hready, i_axi_awready, i_axi_wready and i_axi_arready randomly each cycle, and keep i_axi_bvalid=0 and i_axi_rvalid=0. For reset cycles 1 to 4, drive i_ahb_hsel=1 and i_ahb_htrans=NONSEQ with random read/write controls. For the last 2 reset cycles, drive i_ahb_hsel=0 and i_ahb_htrans=IDLE. Deassert i_rst_n_core just after a rising edge (synchronous release). Then keep the bus IDLE for 20 cycles and issue one legal SINGLE word read.",
+   "expected": "1 time step after i_rst_n_core falls, before the next rising edge: o_axi_awvalid=0, o_axi_wvalid=0, o_axi_arvalid=0, o_axi_bready=0, o_axi_rready=0, o_ahb_hreadyout=1, o_ahb_hresp=0, and all AXI payload outputs at the values in CHK-020. At every rising edge during reset these values hold, whatever the READY toggling. During the 20 IDLE cycles after release: o_axi_awvalid, o_axi_wvalid and o_axi_arvalid stay 0, and o_ahb_hreadyout=1 with o_ahb_hresp=0. The NONSEQ cycles driven during reset produce no AXI request. The read after the IDLE cycles produces exactly one AR and completes OKAY with the subordinate's RDATA."
+  },
+  {
+   "id": "CHK-039",
+   "kind": "test",
+   "group": "reset",
+   "title": "Reset during in-flight transactions discards state",
+   "rules": [
+    "AA-3-31",
+    "AA-3-30",
+    "AA-10.2-06",
+    "AA-12-14",
+    "AA-10.5-03",
+    "AA-7.3-01"
+   ],
+   "behavior": "Shows that a coordinated reset drops all in-flight read and write state, so no pre-reset response or data appears after release.",
+   "stimulus": "Run three sub-scenarios in one simulation with default parameters. In each, reset the AXI subordinate model at the same time as the bridge, so it discards its pending state. (a) A SINGLE word read is accepted and its AR is handshaken; assert i_rst_n_core for 4 cycles before any R. (b) A Normal Write-back INCR8 word write (i_ahb_hprot[6:2]=5'b00111) has 5 beats accepted; assert reset in the cycle after beat 5's address phase. (c) A Device-nE SINGLE write has its AW and W handshaken and is waiting for B; assert reset. After each release, hold IDLE for 20 cycles, then issue a new SINGLE read to the same address with new RDATA and a new SINGLE write with new HWDATA.",
+   "expected": "After each release: during the 20 IDLE cycles, o_axi_awvalid, o_axi_wvalid and o_axi_arvalid stay 0, o_ahb_hreadyout=1 and o_ahb_hresp=0, so no response for a pre-reset transfer is presented. No W beat carries pre-reset HWDATA at any time after release. The new read produces exactly one AR and returns the new RDATA. The new write produces exactly one AW with o_axi_awlen=0 and one W beat with exactly the new HWDATA and HWSTRB, and no leftover beats from the 5-beat prefix are emitted."
+  },
+  {
+   "id": "CHK-040",
+   "kind": "test",
+   "group": "write",
+   "title": "SINGLE and undefined-INCR write conversion and byte-lane scoreboard",
+   "rules": [
+    "AA-3-02",
+    "AA-3-07",
+    "AA-3-11",
+    "AA-1.3-06",
+    "AA-9-01",
+    "AA-9-03",
+    "AA-9-06",
+    "AA-9-07",
+    "AA-T1.7.3.1-02",
+    "AA-T1.7.3.1-06",
+    "AA-T1.7.3.4-02",
+    "AA-10.2-02",
+    "AA-5.3-03",
+    "AA-18-01",
+    "AA-18-03",
+    "AA-T1.7.3.3-02",
+    "AA-T1.7.3.3-03",
+    "AA-3-32"
+   ],
+   "behavior": "Each SINGLE or undefined-INCR write beat becomes one single-beat AXI write with unchanged data and strobes, and completes on AHB only after its BRESP.",
+   "stimulus": "Default parameters. 2000 random legal AHB writes with i_ahb_hburst SINGLE or INCR (undefined length, 1..20 beats, with random BUSY cycles). Address and data phases are pipelined back to back, so i_ahb_haddr and the controls change while the previous i_ahb_hwdata is on the bus. i_ahb_hsize is 0, 1 or 2 with aligned addresses across the full 32-bit space. i_ahb_hwstrb is a random subset (including empty) of the active byte lanes, and i_ahb_hwdata is random. i_ahb_hprot[6:2] is one of 5'b00000, 5'b00001, 5'b00111 or 5'b01111, with random i_ahb_hprot[1:0] and i_ahb_hnonsec. The AXI subordinate model returns i_axi_bid=o_axi_awid and i_axi_bresp=OKAY, with random 0..10 cycle READY and B delays.",
+   "expected": "For each accepted write beat (in order) there is exactly one AW handshake with: o_axi_awlen=0; o_axi_awburst=2'b01; o_axi_awaddr equal to the beat's address-phase i_ahb_haddr; o_axi_awsize equal to i_ahb_hsize; o_axi_awprot equal to {~HPROT[0], HNONSEC, HPROT[1]}; and o_axi_awcache equal to {HPROT[4]&HPROT[5], HPROT[4]&~HPROT[5], HPROT[3], HPROT[2]}. Expected AWCACHE is 4'b0111 for 5'b00111 and 4'b1011 for 5'b01111. Each AW has exactly one W handshake with o_axi_wdata equal to the beat's data-phase i_ahb_hwdata (byte n in [8n+7:8n], no swap), o_axi_wstrb equal to its i_ahb_hwstrb, and o_axi_wlast=1. The AHB data phase of each beat completes with o_ahb_hresp=0, at or after that write's B handshake edge. At the end, AW count = W count = B count = accepted write beats."
+  }
+ ],
+ "not_verified": [
+  {
+   "rule": "AA-2.1-01",
+   "reason": "static_or_structural",
+   "note": "RTL coding-rule baseline (naming, hierarchy, reset style); checked by lint and review."
+  },
+  {
+   "rule": "AA-2.2-01",
+   "reason": "design_guideline",
+   "note": "Constraint on how specification decisions are written; nothing to observe at the ports."
+  },
+  {
+   "rule": "AA-3-01",
+   "reason": "design_guideline",
+   "note": "Verification-method requirement; this plan follows it by using only interface signals and spec mappings."
+  },
+  {
+   "rule": "AA-3-24",
+   "reason": "static_or_structural",
+   "note": "Exact elaborated port list; checked by port-list review, not simulation."
+  },
+  {
+   "rule": "AA-3-26",
+   "reason": "static_or_structural",
+   "note": "Single shared clock port; port and structure review."
+  },
+  {
+   "rule": "AA-3-27",
+   "reason": "static_or_structural",
+   "note": "No second clock or clock-domain crossing; port review and CDC/structure analysis."
+  },
+  {
+   "rule": "AA-3-28",
+   "reason": "static_or_structural",
+   "note": "No internal reset synchronizer; structural review."
+  },
+  {
+   "rule": "AA-3-29",
+   "reason": "not_applicable_to_dut",
+   "note": "Binds the SoC reset source; the tests apply synchronous deassertion as a stimulus constraint."
+  },
+  {
+   "rule": "AA-3-36",
+   "reason": "static_or_structural",
+   "note": "Parameter legal range 1..8; checked at elaboration, not in one simulation."
+  },
+  {
+   "rule": "AA-3-44",
+   "reason": "static_or_structural",
+   "note": "Hierarchy and file naming; RTL rule checker."
+  },
+  {
+   "rule": "AA-3-45",
+   "reason": "static_or_structural",
+   "note": "No CSR interface; port-list and register review."
+  },
+  {
+   "rule": "AA-4-02",
+   "reason": "static_or_structural",
+   "note": "Elaboration error for illegal parameter values; parameter sweep, not a simulation test."
+  },
+  {
+   "rule": "AA-5.1-01",
+   "reason": "static_or_structural",
+   "note": "Internal clock/reset connections of sequential logic and FIFOs; structural review."
+  },
+  {
+   "rule": "AA-5.1-04",
+   "reason": "static_or_structural",
+   "note": "Internal FIFO depths and pin ties; not visible at the interface."
+  },
+  {
+   "rule": "AA-6.2-01",
+   "reason": "static_or_structural",
+   "note": "Single clock edge and single reset input; port review (all assertions are clocked on the rising edge of i_clk_core)."
+  },
+  {
+   "rule": "AA-T1.7.2.1-01",
+   "reason": "static_or_structural",
+   "note": "HCLK and ACLK map to one port i_clk_core; port review."
+  },
+  {
+   "rule": "AA-T1.7.2.2-01",
+   "reason": "static_or_structural",
+   "note": "No USER sideband ports; port-list review."
+  },
+  {
+   "rule": "AA-T1.7.2.2-03",
+   "reason": "not_applicable_to_dut",
+   "note": "AHB manager input values at reset/idle; applied as a stimulus constraint in all tests (except CHK-038, which deliberately drives NONSEQ during reset)."
+  },
+  {
+   "rule": "AA-T1.7.2.2-17",
+   "reason": "not_applicable_to_dut",
+   "note": "AXI subordinate obligation (BVALID=0 in reset); stimulus constraint of the AXI subordinate model."
+  },
+  {
+   "rule": "AA-T1.7.2.2-18",
+   "reason": "not_applicable_to_dut",
+   "note": "AXI subordinate must hold BVALID until BREADY; stimulus constraint, violated only in the CHK-036 injection phase."
+  },
+  {
+   "rule": "AA-T1.7.2.2-23",
+   "reason": "not_applicable_to_dut",
+   "note": "Expected RLAST=1 from the AXI subordinate; stimulus constraint (the model always returns i_axi_rlast=1)."
+  },
+  {
+   "rule": "AA-T1.7.2.2-24",
+   "reason": "not_applicable_to_dut",
+   "note": "AXI subordinate obligation (RVALID=0 in reset); stimulus constraint."
+  },
+  {
+   "rule": "AA-T1.7.2.2-25",
+   "reason": "not_applicable_to_dut",
+   "note": "AXI subordinate must hold RVALID until RREADY; stimulus constraint, violated only in the CHK-036 injection phase."
+  },
+  {
+   "rule": "AA-T1.7.3.1-11",
+   "reason": "not_applicable_to_dut",
+   "note": "AHB manager rule (no 1 KiB crossing); stimulus constraint, deliberately broken only in CHK-027."
+  },
+  {
+   "rule": "AA-T1.7.3.1-13",
+   "reason": "not_applicable_to_dut",
+   "note": "AHB manager rule (HPROT constant in a burst); stimulus constraint, deliberately broken only in CHK-025."
+  },
+  {
+   "rule": "AA-6.4-01",
+   "reason": "static_or_structural",
+   "note": "No interrupt or event output port; port-list review."
+  },
+  {
+   "rule": "AA-7.1-01",
+   "reason": "static_or_structural",
+   "note": "Shared clock and no internal clock gating; structural review."
+  },
+  {
+   "rule": "AA-7.2-01",
+   "reason": "static_or_structural",
+   "note": "No CDC structures; structural and CDC review."
+  },
+  {
+   "rule": "AA-7.2-02",
+   "reason": "static_or_structural",
+   "note": "Internal FIFO clock/reset pin ties; not observable at the interface."
+  },
+  {
+   "rule": "AA-7.3-02",
+   "reason": "not_applicable_to_dut",
+   "note": "Binds the SoC reset network; stimulus applies asynchronous assertion and synchronous deassertion."
+  },
+  {
+   "rule": "AA-7.3-03",
+   "reason": "static_or_structural",
+   "note": "No reset synchronizer in the RTL; structural review."
+  },
+  {
+   "rule": "AA-8-01",
+   "reason": "static_or_structural",
+   "note": "Parameter default and range of PARA_RD_ID_COUNT; elaboration and review."
+  },
+  {
+   "rule": "AA-8-03",
+   "reason": "static_or_structural",
+   "note": "Parameter default and range of PARA_WR_ID_COUNT; elaboration and review."
+  },
+  {
+   "rule": "AA-8-06",
+   "reason": "static_or_structural",
+   "note": "Widths and FIFO depths not overridable; parameter-list review."
+  },
+  {
+   "rule": "AA-8-07",
+   "reason": "static_or_structural",
+   "note": "Parameter comment format; lint and review."
+  },
+  {
+   "rule": "AA-14.1-01",
+   "reason": "static_or_structural",
+   "note": "SystemVerilog coding rules; lint."
+  },
+  {
+   "rule": "AA-14.1-04",
+   "reason": "static_or_structural",
+   "note": "Naming rules; lint."
+  },
+  {
+   "rule": "AA-14.2-01",
+   "reason": "static_or_structural",
+   "note": "Top-level instance policy; hierarchy inspection."
+  },
+  {
+   "rule": "AA-14.2-02",
+   "reason": "static_or_structural",
+   "note": "Controller instance policy; hierarchy inspection."
+  },
+  {
+   "rule": "AA-14.2-03",
+   "reason": "static_or_structural",
+   "note": "FIFO instance naming; hierarchy inspection."
+  },
+  {
+   "rule": "AA-14.2-04",
+   "reason": "static_or_structural",
+   "note": "FIFO clock/reset pin ties; hierarchy inspection."
+  },
+  {
+   "rule": "AA-14.2-05",
+   "reason": "static_or_structural",
+   "note": "File naming; review."
+  },
+  {
+   "rule": "AA-14.3-03",
+   "reason": "covered_by_other_check",
+   "note": "Per designer decision there is no separate FIFO check. FIFO behavior is covered through external behavior in CHK-039 (reset clears valid state), CHK-037, CHK-040 and CHK-033 (no loss, no duplication, order kept)."
+  },
+  {
+   "rule": "AA-14.3-04",
+   "reason": "static_or_structural",
+   "note": "No latches or tri-states; synthesis and lint."
+  },
+  {
+   "rule": "AA-15.1-01",
+   "reason": "not_applicable_to_dut",
+   "note": "Binds the verification environment (independent BFMs)."
+  },
+  {
+   "rule": "AA-15.1-02",
+   "reason": "not_applicable_to_dut",
+   "note": "Binds the verification environment (reference model built from pins); this plan follows it."
+  },
+  {
+   "rule": "AA-15.1-03",
+   "reason": "not_applicable_to_dut",
+   "note": "Verification deliverable content."
+  },
+  {
+   "rule": "AA-15.1-04",
+   "reason": "not_applicable_to_dut",
+   "note": "Verification flow packaging (single Makefile)."
+  },
+  {
+   "rule": "AA-15.3-10",
+   "reason": "design_guideline",
+   "note": "Functional coverage plan; coverage points are recorded in CHK-021, CHK-023, CHK-024, CHK-025, CHK-026, CHK-027, CHK-028, CHK-029, CHK-030, CHK-031, CHK-032, CHK-033, CHK-034, CHK-035, CHK-037, CHK-040 but are not pass/fail checks."
+  },
+  {
+   "rule": "AA-15.4-01",
+   "reason": "static_or_structural",
+   "note": "Formal proof requirement; the matching simulation properties are CHK-011, CHK-013, CHK-015, CHK-016 and CHK-033."
+  },
+  {
+   "rule": "AA-15.4-02",
+   "reason": "static_or_structural",
+   "note": "Static timing analysis setup."
+  },
+  {
+   "rule": "AA-15.4-03",
+   "reason": "static_or_structural",
+   "note": "Reset structural analysis; simulation-observable reset behavior is in CHK-018 to CHK-020, CHK-038 and CHK-039."
+  },
+  {
+   "rule": "AA-17.1.1-01",
+   "reason": "not_applicable_to_dut",
+   "note": "Binds the SoC integrator (clock constraints)."
+  },
+  {
+   "rule": "AA-17.1.3-02",
+   "reason": "static_or_structural",
+   "note": "Timing-constraint rule."
+  },
+  {
+   "rule": "AA-17.1.3-03",
+   "reason": "static_or_structural",
+   "note": "Timing-exception policy."
+  },
+  {
+   "rule": "AA-17.2-01",
+   "reason": "static_or_structural",
+   "note": "Synthesis mapping of FIFO storage."
+  },
+  {
+   "rule": "AA-20.3-01",
+   "reason": "static_or_structural",
+   "note": "Single shared clock decision; port and structure review."
+  }
+ ],
+ "assumptions": [
+  "Definitions used in all checks: an 'active edge' is a rising edge of i_clk_core with i_rst_n_core=1. An AHB address phase is 'accepted' at a rising edge with i_ahb_hsel=1, i_ahb_hready=1 and i_ahb_htrans[1]=1. Its data phase 'completes' at the first later active edge with o_ahb_hreadyout=1. i_ahb_hwdata and i_ahb_hwstrb belong to that data phase.",
+  "Except in CHK-021 case (4), the testbench models a single-subordinate system with i_ahb_hready driven equal to o_ahb_hreadyout. In CHK-021, i_ahb_hready is driven on its own only while the bridge has no data phase in progress.",
+  "Encodings: HTRANS IDLE=00, BUSY=01, NONSEQ=10, SEQ=11. HBURST SINGLE=000, INCR=001, WRAP4=010, INCR4=011, WRAP8=100, INCR8=101, WRAP16=110, INCR16=111. AxBURST FIXED=00, INCR=01, WRAP=10. xRESP OKAY=00, EXOKAY=01, SLVERR=10, DECERR=11.",
+  "Legal-stimulus HPROT[6:2] patterns are limited to those the given rules list as supported: 5'b00000 (Device-nE), 5'b00001 (Device-E), 5'b00111 and 5'b01111 (Write-back, Non-shareable). Rejection tests use HPROT[6]=1 and the AHB5-reserved HPROT[5:2] codes {0100, 0101, 1000, 1001, 1010, 1011, 1100, 1101}, which cannot be in the supported list. Normal Non-cacheable and Write-through patterns are not exercised, because the excerpt does not say whether they are supported.",
+  "AxCACHE mapping is read as each table row setting exactly one allocate bit, with the other bit 0: ARCACHE = {HPROT[4]&~HPROT[5], HPROT[4]&HPROT[5], HPROT[3], HPROT[2]} and AWCACHE = {HPROT[4]&HPROT[5], HPROT[4]&~HPROT[5], HPROT[3], HPROT[2]}.",
+  "The 3-bit HBURST field has no reserved values in AHB5, so the 'reserved HBURST' rejection case cannot be stimulated; the other rejection causes are verified.",
+  "The AXI subordinate model follows AXI4 subordinate rules (except in the CHK-036 injection phase): it returns i_axi_bid=o_axi_awid, i_axi_rid=o_axi_arid and i_axi_rlast=1, and is reset together with the bridge for coordinated-reset scenarios.",
+  "AXI W beats are matched to AHB write beats by order, and B/R responses to AXI transactions by order. This is valid because the spec requires in-order handling and at most one outstanding transaction per direction.",
+  "An AHB data phase may complete at the same rising edge as the R or B handshake it depends on (a same-cycle response path is allowed); checks require completion 'at or after' that handshake edge.",
+  "Early termination of a fixed burst is driven by the manager placing IDLE or a new NONSEQ in the address-phase cycle right after the last captured beat's acceptance edge, so the termination is visible during that beat's data phase.",
+  "Latency in CHK-034 is the AR/AW handshake edge minus the start edge. The start edge is the address acceptance edge for single requests, the final beat's acceptance edge + 1 for fixed bursts, and the edge at which the terminating transfer type is first sampled for early termination. The 6-cycle bound applies only with AXI READY held at 1 and the bridge otherwise idle.",
+  "ID rotation order and the ID value after reset are not assumed. CHK-032 only expects that every legal ID appears within 2 x count consecutive transactions of the same direction, which follows from rotating through 0..count-1."
+ ],
+ "decisions": [
+  {
+   "rules": [
+    "AA-1.1-02",
+    "AA-1.3-04"
+   ],
+   "question": "FEAT-004 is 'Required' but its aggregation is conditional and 'may' in AA-1.1-02. Is aggregation mandatory when conditions hold or optional?",
+   "answer": "Optional, per DEC-BURST-001 (§20.3, 'may aggregate'). Checks must accept both one aggregated INCR/WRAP AXI burst and single-beat AXI transfers for an eligible burst; when a burst is aggregated it must match the AHB burst (LEN 3/7/15 before split, same beats in order). Coverage records whether aggregation happened. [Delegated assumption: confirm at G4]",
+   "by": "Claude (delegated by GabrielHCMUT)",
+   "at": "2026-11-12T16:11:29+00:00"
+  },
+  {
+   "rules": [
+    "AA-3-41",
+    "AA-3-42"
+   ],
+   "question": "REQ-PERF-002 says 'shall meet' but also calls the 6-cycle limit a 'target'. Is it a hard checked bound or a goal? Does the count include cycles when the AHB transfer is stalled?",
+   "answer": "Hard bound under the stated conditions only, per DEC-PERF-002 (§20.3): at most 6 i_clk_core cycles from the accepted AHB address phase to AXI request issue while queue space exists and AXI READY is high; for fixed (aggregated) bursts the count starts after full capture or early termination. Cycles with READY low or no queue space are not counted; when the conditions are not met the check is not applied. [Delegated assumption: confirm at G4]",
+   "by": "Claude (delegated by GabrielHCMUT)",
+   "at": "2026-11-12T16:11:30+00:00"
+  },
+  {
+   "rules": [
+    "AA-5.4-06",
+    "AA-5.3-02"
+   ],
+   "question": "Does the bridge allow one read and one write outstanding simultaneously, or does the control policy serialize them?",
+   "answer": "Not specified, so neither required nor forbidden: checks enforce at most one outstanding read and at most one outstanding write (AA-5.4-06) and the ordering rules of §10.4 where they apply, but no check requires or forbids a read and a write outstanding at the same time. [Delegated assumption: confirm at G4]",
+   "by": "Claude (delegated by GabrielHCMUT)",
+   "at": "2026-11-12T16:11:30+00:00"
+  },
+  {
+   "rules": [
+    "AA-8-01",
+    "AA-8-02",
+    "AA-8-03",
+    "AA-8-04"
+   ],
+   "question": "Does 'ID width remains 3' with PARA_RD_ID_COUNT up to 8 imply IDs 0..7 rotate, and what is the rotation order/reset value when count is not a power of 2?",
+   "answer": "Per DEC-ID-001 and §8: every ARID is in 0..PARA_RD_ID_COUNT-1 and every AWID in 0..PARA_WR_ID_COUNT-1 (3-bit fields); with count 1 the ID is always 0. The reset value and the exact rotation order are not specified, so no check assumes them; coverage records that every legal ID value is used. [Delegated assumption: confirm at G4]",
+   "by": "Claude (delegated by GabrielHCMUT)",
+   "at": "2026-11-12T16:11:30+00:00"
+  },
+  {
+   "rules": [
+    "AA-9-11",
+    "AA-9-09"
+   ],
+   "question": "After boundary split, what are the AWLEN values of the split bursts? Only pre-split lengths are given.",
+   "answer": "No fixed sub-burst lengths: each AXI sub-burst stays within a 4 KiB boundary, its AWLEN equals its beat count minus one, the sub-bursts carry all beats of the AHB burst exactly once, in order and with contiguous addresses, and their responses aggregate onto the final AHB beat (REQ-FUNC-010, DEC-BURST-002). [Delegated assumption: confirm at G4]",
+   "by": "Claude (delegated by GabrielHCMUT)",
+   "at": "2026-11-12T16:11:30+00:00"
+  },
+  {
+   "rules": [
+    "AA-14.3-03",
+    "AA-14.3-02"
+   ],
+   "question": "Which section defines the FIFO contract that the FIFO storage must meet, and how is a violation detected?",
+   "answer": "The internal FIFOs are not visible at the IP boundary and their spec (002_SyncFIFO) is not in the documents: no separate FIFO contract check. FIFO behavior is verified only through the bridge's external behavior (no loss, no duplication, order kept, FIFO valid state cleared by reset as seen at the ports). [Delegated assumption: confirm at G4]",
+   "by": "Claude (delegated by GabrielHCMUT)",
+   "at": "2026-11-12T16:11:31+00:00"
+  }
+ ],
+ "coverage": {
+  "rules": 234,
+  "in_checks": 177,
+  "not_verified": 57,
+  "uncovered_after_first_pass": 0,
+  "uncovered": [],
+  "unknown_ids": []
+ },
+ "contract": {
+  "prompt_version": "contract-v1",
+  "model": "opus",
+  "date": "2026-11-12T16:21:47+00:00",
+  "usage": {
+   "calls": 1,
+   "cached": 0,
+   "cost_usd": 1.9029,
+   "input_tokens": 2,
+   "output_tokens": 68914,
+   "cache_creation_input_tokens": 64781,
+   "cache_read_input_tokens": 0
+  },
+  "rules_sha_source": [
+   "rules_AHB2AXI_Bridge_Design_Specification.json"
+  ],
+  "unreviewed_gates": []
+ }
+}

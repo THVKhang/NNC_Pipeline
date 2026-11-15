@@ -9,7 +9,7 @@ SymbiYosys on the generated assertions, translated to immediate form by `nnc/for
 - **UNSUPPORTED**: the assertion uses SVA outside the translated subset, or its checker is simulation-only (event timing, queues); not checked.
 - **TIMEOUT**: the solver did not finish within 600 s per task; nothing concluded.
 
-**Result:** {'BOUNDED': 7, 'PROVEN': 9, 'TIMEOUT': 1}
+**Result:** {'BOUNDED': 4, 'PROVEN': 12, 'TIMEOUT': 1}
 
 | Check | Title | Formal | Detail |
 |---|---|---|---|
@@ -24,9 +24,9 @@ SymbiYosys on the generated assertions, translated to immediate form by `nnc/for
 | CHK-009 | R channel hold under RREADY backpressure | **PROVEN** |  |
 | CHK-010 | RID echo, RLAST position and R beat count | **BOUNDED** |  |
 | CHK-011 | Legal read beat data and response from the APB completion | **BOUNDED** |  |
-| CHK-012 | Unsupported read beats are SLVERR with zero data | **BOUNDED** |  |
+| CHK-012 | Unsupported read beats are SLVERR with zero data | **PROVEN** |  |
 | CHK-013 | WREADY gated by AW acceptance; W beats never exceed AWLEN+1 | **BOUNDED** |  |
-| CHK-014 | Transaction tracker: one global owner, actions only after the handshake | **BOUNDED** |  |
-| CHK-015 | No APB activity for unsupported requests | **BOUNDED** |  |
+| CHK-014 | Transaction tracker: one global owner, actions only after the handshake | **PROVEN** |  |
+| CHK-015 | No APB activity for unsupported requests | **PROVEN** |  |
 | CHK-016 | APB transfer sequence matches AXI beats (direction, address, PPROT, data, strobes, count) | **TIMEOUT** |  |
 | CHK-017 | Synchronous reset values of all outputs | **PROVEN** |  |

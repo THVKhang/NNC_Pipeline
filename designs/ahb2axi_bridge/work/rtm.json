@@ -1,0 +1,5075 @@
+[
+ {
+  "rule": "AA-1.1-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "1.1",
+  "sentences": [
+   "1.1:s4",
+   "1.1:s9"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must serialize reads and must never issue speculative reads.",
+  "checks": [
+   "CHK-008",
+   "CHK-013",
+   "CHK-015"
+  ],
+  "check_status": {
+   "CHK-008": "PASS",
+   "CHK-013": "PASS",
+   "CHK-015": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-1.1-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "1.1",
+  "sentences": [
+   "1.1:s5",
+   "1.1:s10"
+  ],
+  "strength": "MAY",
+  "statement": "The bridge may aggregate eligible bufferable Normal Write-back AHB write bursts into AXI4 bursts of up to 16 beats.",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-1.1-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "1.1",
+  "sentences": [
+   "1.1:s5",
+   "1.1:s10"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The bridge must never merge Device writes.",
+  "checks": [
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-023": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-1.1-04",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "1.1",
+  "sentences": [
+   "1.1:s19"
+  ],
+  "strength": "MUST",
+  "statement": "Reads must always use AXI single-beat transactions.",
+  "checks": [
+   "CHK-004",
+   "CHK-037"
+  ],
+  "check_status": {
+   "CHK-004": "PASS",
+   "CHK-037": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-1.3-04",
+  "spec_refs": [
+   "REQ-FUNC-005",
+   "REQ-PERF-001"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "1.3",
+  "sentences": [
+   "1.3:s4"
+  ],
+  "strength": "MAY",
+  "statement": "The bridge must support conditional aggregation of bufferable Normal Write-back fixed writes up to 16 beats (FEAT-004).",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-1.3-05",
+  "spec_refs": [
+   "REQ-PARAM-001"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "1.3",
+  "sentences": [
+   "1.3:s5"
+  ],
+  "strength": "MAY",
+  "statement": "Rotating AXI read/write IDs are an optional configuration with ID-count parameters 1..8, default 1.",
+  "checks": [
+   "CHK-032"
+  ],
+  "check_status": {
+   "CHK-032": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-1.3-06",
+  "spec_refs": [
+   "REQ-FUNC-006",
+   "REQ-IF-001"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "1.3",
+  "sentences": [
+   "1.3:s6"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must convert AHB HWSTRB to AXI WSTRB (FEAT-007).",
+  "checks": [
+   "CHK-040"
+  ],
+  "check_status": {
+   "CHK-040": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-2.1-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "2.1",
+  "sentences": [
+   "2.1:s3"
+  ],
+  "strength": "MUST",
+  "statement": "The RTL shall follow the VLSIT RTL Design Rules v2 (REF-003) as the mandatory baseline for naming, hierarchy, single-clock, reset and synthesis.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-2.1-01",
+   "reason": "static_or_structural",
+   "note": "RTL coding-rule baseline (naming, hierarchy, reset style); checked by lint and review."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-2.2-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "2.2",
+  "sentences": [
+   "2.2:s3"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "User-approved decisions in §20 may restrict legal protocol behavior but must not contradict it.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-2.2-01",
+   "reason": "design_guideline",
+   "note": "Constraint on how specification decisions are written; nothing to observe at the ports."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-01",
+  "spec_refs": [
+   "REQ-VER-001"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s2",
+   "3:s4",
+   "3:s26"
+  ],
+  "strength": "MUST",
+  "statement": "Verification must be derived from this specification and REF-001/REF-002, not from generated RTL or internal RTL names/structure.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-3-01",
+   "reason": "design_guideline",
+   "note": "Verification-method requirement; this plan follows it by using only interface signals and spec mappings."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-02",
+  "spec_refs": [
+   "REQ-FUNC-001"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s5"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must convert every accepted supported AHB transfer to AXI4 without loss, duplication or data alteration.",
+  "checks": [
+   "CHK-024",
+   "CHK-033",
+   "CHK-037",
+   "CHK-040"
+  ],
+  "check_status": {
+   "CHK-024": "FAIL",
+   "CHK-033": "FAIL",
+   "CHK-037": "FAIL",
+   "CHK-040": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-03",
+  "spec_refs": [
+   "REQ-FUNC-002"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s6"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "AHB address/control must be sampled only when HSEL=1, HREADY=1 and HTRANS is NONSEQ or SEQ.",
+  "checks": [
+   "CHK-013",
+   "CHK-021"
+  ],
+  "check_status": {
+   "CHK-013": "PASS",
+   "CHK-021": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-04",
+  "spec_refs": [
+   "REQ-FUNC-002"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s6"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "IDLE or BUSY transfers must not issue AXI requests.",
+  "checks": [
+   "CHK-021"
+  ],
+  "check_status": {
+   "CHK-021": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-05",
+  "spec_refs": [
+   "REQ-FUNC-003"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s7"
+  ],
+  "strength": "MUST",
+  "statement": "Each accepted AHB read must issue exactly one AXI single-beat AR transaction.",
+  "checks": [
+   "CHK-015",
+   "CHK-037"
+  ],
+  "check_status": {
+   "CHK-015": "FAIL",
+   "CHK-037": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-06",
+  "spec_refs": [
+   "REQ-FUNC-003"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s7"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "No read request may be issued before its AHB address is accepted.",
+  "checks": [
+   "CHK-013"
+  ],
+  "check_status": {
+   "CHK-013": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-07",
+  "spec_refs": [
+   "REQ-FUNC-004"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s8"
+  ],
+  "strength": "MUST",
+  "statement": "AHB SINGLE and undefined-length INCR transfers and every read beat must map to AXI single-beat transactions.",
+  "checks": [
+   "CHK-037",
+   "CHK-040"
+  ],
+  "check_status": {
+   "CHK-037": "FAIL",
+   "CHK-040": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-08",
+  "spec_refs": [
+   "REQ-FUNC-005"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s9"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "Such a write burst may map to a matching AXI burst only after all data beats are captured and burst-scoped attributes are constant.",
+  "checks": [
+   "CHK-014",
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-014": "NOT_HIT",
+   "CHK-024": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-09",
+  "spec_refs": [
+   "REQ-FUNC-005"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s9"
+  ],
+  "strength": "MUST",
+  "statement": "Otherwise the bridge must issue ordered AXI single-beat writes.",
+  "checks": [
+   "CHK-023",
+   "CHK-025"
+  ],
+  "check_status": {
+   "CHK-023": "FAIL",
+   "CHK-025": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-10",
+  "spec_refs": [
+   "REQ-FUNC-005"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s9"
+  ],
+  "strength": "MUST",
+  "statement": "Non-bufferable writes must use single-beat AXI transactions.",
+  "checks": [
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-023": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-11",
+  "spec_refs": [
+   "REQ-FUNC-006"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s10"
+  ],
+  "strength": "MUST",
+  "statement": "AXI WDATA/WSTRB must preserve each AHB HWDATA/HWSTRB beat.",
+  "checks": [
+   "CHK-024",
+   "CHK-040"
+  ],
+  "check_status": {
+   "CHK-024": "FAIL",
+   "CHK-040": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-12",
+  "spec_refs": [
+   "REQ-FUNC-006"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s10"
+  ],
+  "strength": "MUST",
+  "statement": "WLAST must identify the final beat of each AXI write transaction.",
+  "checks": [
+   "CHK-010"
+  ],
+  "check_status": {
+   "CHK-010": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-13",
+  "spec_refs": [
+   "REQ-FUNC-007"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s11"
+  ],
+  "strength": "MUST",
+  "statement": "AHB responses must remain in transfer order.",
+  "checks": [
+   "CHK-024",
+   "CHK-033"
+  ],
+  "check_status": {
+   "CHK-024": "FAIL",
+   "CHK-033": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-14",
+  "spec_refs": [
+   "REQ-FUNC-007"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s11"
+  ],
+  "strength": "MUST",
+  "statement": "All B statuses must be combined and any error reported on the terminal AHB beat.",
+  "checks": [
+   "CHK-024",
+   "CHK-028"
+  ],
+  "check_status": {
+   "CHK-024": "FAIL",
+   "CHK-028": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-15",
+  "spec_refs": [
+   "REQ-FUNC-007"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s11"
+  ],
+  "strength": "MAY",
+  "statement": "Earlier beats may receive OKAY once safely buffered.",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-16",
+  "spec_refs": [
+   "REQ-FUNC-008"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s12"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "Device memory transfers must not be merged or have their size changed.",
+  "checks": [
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-023": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-17",
+  "spec_refs": [
+   "REQ-FUNC-008"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s12"
+  ],
+  "strength": "MUST",
+  "statement": "Device-E writes must use ordered AXI single-beat transactions and wait for each final-destination BRESP before the AHB response.",
+  "checks": [
+   "CHK-016",
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-016": "FAIL",
+   "CHK-023": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-18",
+  "spec_refs": [
+   "REQ-FUNC-008"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s12"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "No early AHB write response is allowed without a visibility guarantee.",
+  "checks": [
+   "CHK-016",
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-016": "FAIL",
+   "CHK-023": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-19",
+  "spec_refs": [
+   "REQ-FUNC-009"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s13"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "An early-terminated fixed write burst must never produce an incomplete AXI burst.",
+  "checks": [
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-026": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-20",
+  "spec_refs": [
+   "REQ-FUNC-009"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s13"
+  ],
+  "strength": "MUST",
+  "statement": "Captured but unissued accepted write beats must be emitted as ordered AXI single-beat transactions without reissuing beats already sent.",
+  "checks": [
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-026": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-21",
+  "spec_refs": [
+   "REQ-FUNC-009"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s13"
+  ],
+  "strength": "MUST",
+  "statement": "The terminal AHB response must be held until all corresponding B responses arrive, and any non-OKAY status reported on it.",
+  "checks": [
+   "CHK-016",
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-016": "FAIL",
+   "CHK-026": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-22",
+  "spec_refs": [
+   "REQ-FUNC-010"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s14"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "No AXI burst may cross a 4 KiB boundary.",
+  "checks": [
+   "CHK-011",
+   "CHK-027"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-027": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-23",
+  "spec_refs": [
+   "REQ-FUNC-010"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s14"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must preserve beat order and aggregate all sub-burst responses onto the final AHB beat.",
+  "checks": [
+   "CHK-027"
+  ],
+  "check_status": {
+   "CHK-027": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-24",
+  "spec_refs": [
+   "REQ-IF-001"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s15"
+  ],
+  "strength": "MUST",
+  "statement": "The single top module m_ahb2axi_top must expose exactly the fixed clock, reset, AHB and AXI ports listed in §6.2.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-3-24",
+   "reason": "static_or_structural",
+   "note": "Exact elaborated port list; checked by port-list review, not simulation."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-26",
+  "spec_refs": [
+   "REQ-CLK-001"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s16"
+  ],
+  "strength": "MUST",
+  "statement": "AHB and AXI interfaces must use the same rising-edge clock input i_clk_core.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-3-26",
+   "reason": "static_or_structural",
+   "note": "Single shared clock port; port and structure review."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-27",
+  "spec_refs": [
+   "REQ-CLK-001"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s16"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "No second clock port or clock-domain crossing is permitted.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-3-27",
+   "reason": "static_or_structural",
+   "note": "No second clock or clock-domain crossing; port review and CDC/structure analysis."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-28",
+  "spec_refs": [
+   "REQ-RESET-001"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s17"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must expose one active-low reset input i_rst_n_core and use it directly without an internal reset synchronizer.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-3-28",
+   "reason": "static_or_structural",
+   "note": "No internal reset synchronizer; structural review."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-29",
+  "spec_refs": [
+   "REQ-RESET-001"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s17"
+  ],
+  "strength": "MUST",
+  "statement": "The SoC reset source must synchronize deassertion to i_clk_core before the reset reaches the IP.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-3-29",
+   "reason": "not_applicable_to_dut",
+   "note": "Binds the SoC reset source; the tests apply synchronous deassertion as a stimulus constraint."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-30",
+  "spec_refs": [
+   "REQ-RESET-001"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s17"
+  ],
+  "strength": "MUST",
+  "statement": "Reset must clear all bridge/FIFO valid state.",
+  "checks": [
+   "CHK-019",
+   "CHK-038",
+   "CHK-039"
+  ],
+  "check_status": {
+   "CHK-019": "PASS",
+   "CHK-038": "FAIL",
+   "CHK-039": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-31",
+  "spec_refs": [
+   "REQ-RESET-001"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s17"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "No pre-reset response may be returned after reset release.",
+  "checks": [
+   "CHK-039"
+  ],
+  "check_status": {
+   "CHK-039": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-32",
+  "spec_refs": [
+   "REQ-ERR-001"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s18"
+  ],
+  "strength": "MUST",
+  "statement": "AXI OKAY must map to AHB OKAY.",
+  "checks": [
+   "CHK-015",
+   "CHK-029",
+   "CHK-037",
+   "CHK-040"
+  ],
+  "check_status": {
+   "CHK-015": "FAIL",
+   "CHK-029": "FAIL",
+   "CHK-037": "FAIL",
+   "CHK-040": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-33",
+  "spec_refs": [
+   "REQ-ERR-001"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s18"
+  ],
+  "strength": "MUST",
+  "statement": "These must map to the AHB two-cycle ERROR response.",
+  "checks": [
+   "CHK-015",
+   "CHK-028",
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-015": "FAIL",
+   "CHK-028": "FAIL",
+   "CHK-029": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-34",
+  "spec_refs": [
+   "REQ-ERR-002"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s19"
+  ],
+  "strength": "MUST",
+  "statement": "Such transfers must return two-cycle AHB ERROR.",
+  "checks": [
+   "CHK-017",
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-017": "FAIL",
+   "CHK-030": "PASS"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-35",
+  "spec_refs": [
+   "REQ-ERR-002"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s19"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "No AXI request must be issued for the rejected transfer.",
+  "checks": [
+   "CHK-017",
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-017": "FAIL",
+   "CHK-030": "PASS"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-36",
+  "spec_refs": [
+   "REQ-PARAM-001"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s20"
+  ],
+  "strength": "MUST",
+  "statement": "Read and write ID-count parameters must be in the range 1..8.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-3-36",
+   "reason": "static_or_structural",
+   "note": "Parameter legal range 1..8; checked at elaboration, not in one simulation."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-37",
+  "spec_refs": [
+   "REQ-PARAM-001"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s20"
+  ],
+  "strength": "MUST",
+  "statement": "Each direction must rotate IDs through 0..count-1.",
+  "checks": [
+   "CHK-009",
+   "CHK-032"
+  ],
+  "check_status": {
+   "CHK-009": "PASS",
+   "CHK-032": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-39",
+  "spec_refs": [
+   "REQ-PERF-001"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s21"
+  ],
+  "strength": "MAY",
+  "statement": "The bridge may accept one AHB beat per i_clk_core cycle.",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-40",
+  "spec_refs": [
+   "REQ-PERF-001"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s21"
+  ],
+  "strength": "MUST",
+  "statement": "Terminal completion must wait for all required BRESPs.",
+  "checks": [
+   "CHK-016",
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-016": "FAIL",
+   "CHK-024": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-41",
+  "spec_refs": [
+   "REQ-PERF-002"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s22"
+  ],
+  "strength": "MUST",
+  "statement": "AR/AW handshake must occur within 6 i_clk_core cycles of accepted AHB address.",
+  "checks": [
+   "CHK-034"
+  ],
+  "check_status": {
+   "CHK-034": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-42",
+  "spec_refs": [
+   "REQ-PERF-002"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s22"
+  ],
+  "strength": "MUST",
+  "statement": "The AW timing target starts after the full burst or its early termination has been captured.",
+  "checks": [
+   "CHK-034"
+  ],
+  "check_status": {
+   "CHK-034": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-44",
+  "spec_refs": [
+   "REQ-RTL-001"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s24"
+  ],
+  "strength": "MUST",
+  "statement": "RTL must follow REF-003; the single top module contains only structural instances and each module is in a same-named file.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-3-44",
+   "reason": "static_or_structural",
+   "note": "Hierarchy and file naming; RTL rule checker."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-3-45",
+  "spec_refs": [
+   "REQ-REG-001"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s25"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The IP must have no software-visible CSR interface; all configuration is static at elaboration.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-3-45",
+   "reason": "static_or_structural",
+   "note": "No CSR interface; port-list and register review."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-4-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "4",
+  "sentences": [
+   "4:s5",
+   "4:s7"
+  ],
+  "strength": "MUST",
+  "statement": "A parameter value outside its legal range must be treated as an elaboration error.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-4-02",
+   "reason": "static_or_structural",
+   "note": "Elaboration error for illegal parameter values; parameter sweep, not a simulation test."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-5.1-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "5.1",
+  "sentences": [
+   "5.1:s5"
+  ],
+  "strength": "MUST",
+  "statement": "All sequential logic and FIFO clock/reset pins use the shared i_clk_core and i_rst_n_core.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-5.1-01",
+   "reason": "static_or_structural",
+   "note": "Internal clock/reset connections of sequential logic and FIFOs; structural review."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-5.1-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "5.1",
+  "sentences": [
+   "5.1:s5",
+   "5.1:s10"
+  ],
+  "strength": "MUST",
+  "statement": "The combinational AXI adapter uses i_rst_n_core only to suppress AXI VALID/READY during reset.",
+  "checks": [
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-5.1-04",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "5.1",
+  "sentences": [
+   "5.1:s14",
+   "5.1:s15"
+  ],
+  "strength": "MUST",
+  "statement": "The five FIFO instances have depths 2, 16, 2, 2 and 2 entries respectively, with software-reset inactive and both clock/reset pins tied to shared inputs.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-5.1-04",
+   "reason": "static_or_structural",
+   "note": "Internal FIFO depths and pin ties; not visible at the interface."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-5.3-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "5.3",
+  "sentences": [
+   "5.3:s1",
+   "5.4:s8"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge issues ARLEN=0 and ARBURST=INCR, accepts one R beat with RLAST=1, and returns HRDATA and HRESP in the AHB data phase.",
+  "checks": [
+   "CHK-037"
+  ],
+  "check_status": {
+   "CHK-037": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-5.3-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "5.3",
+  "sentences": [
+   "5.3:s2"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The bridge must not accept the next AHB read while the current read is unresolved.",
+  "checks": [
+   "CHK-015"
+  ],
+  "check_status": {
+   "CHK-015": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-5.3-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "5.3",
+  "sentences": [
+   "5.3:s3"
+  ],
+  "strength": "MUST",
+  "statement": "Issue one AXI write with AWLEN=0, one W beat with WLAST=1, wait for the B response, then return AHB completion/error.",
+  "checks": [
+   "CHK-040"
+  ],
+  "check_status": {
+   "CHK-040": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-5.3-04",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "5.3",
+  "sentences": [
+   "5.3:s4"
+  ],
+  "strength": "MUST",
+  "statement": "Fixed non-bufferable bursts are serialized beat by beat.",
+  "checks": [
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-023": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-5.3-05",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "5.3",
+  "sentences": [
+   "5.3:s5"
+  ],
+  "strength": "MUST",
+  "statement": "Collect all 4/8/16 AHB address/data beats in order.",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-5.3-06",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "5.3",
+  "sentences": [
+   "5.3:s6"
+  ],
+  "strength": "MUST",
+  "statement": "If all AXI address attributes are constant, emit one matching INCR/WRAP AXI burst; otherwise emit ordered AXI single-beat writes.",
+  "checks": [
+   "CHK-024",
+   "CHK-025"
+  ],
+  "check_status": {
+   "CHK-024": "FAIL",
+   "CHK-025": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-5.3-07",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "5.3",
+  "sentences": [
+   "5.3:s7"
+  ],
+  "strength": "MUST",
+  "statement": "Keep Device-E and non-bufferable writes as single AXI writes.",
+  "checks": [
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-023": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-5.3-08",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "5.3",
+  "sentences": [
+   "5.3:s8"
+  ],
+  "strength": "MAY",
+  "statement": "Earlier safely buffered Normal Write-back beats may complete OKAY.",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-5.4-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "5.4",
+  "sentences": [
+   "5.4:s3"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "No AXI read address is issued before the corresponding AHB read address is accepted.",
+  "checks": [
+   "CHK-013"
+  ],
+  "check_status": {
+   "CHK-013": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-5.4-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "5.4",
+  "sentences": [
+   "5.4:s4"
+  ],
+  "strength": "MUST",
+  "statement": "AHB and AXI transaction order is preserved, with no read speculation or response reordering.",
+  "checks": [
+   "CHK-033"
+  ],
+  "check_status": {
+   "CHK-033": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-5.4-04",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "5.4",
+  "sentences": [
+   "5.4:s5"
+  ],
+  "strength": "MUST",
+  "statement": "AXI VALID and payload remain stable until the READY handshake.",
+  "checks": [
+   "CHK-005",
+   "CHK-006",
+   "CHK-007"
+  ],
+  "check_status": {
+   "CHK-005": "FAIL",
+   "CHK-006": "PASS",
+   "CHK-007": "PASS"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-5.4-05",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "5.4",
+  "sentences": [
+   "5.4:s6"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "An AXI burst is issued only when the complete AHB fixed write burst has been captured.",
+  "checks": [
+   "CHK-014",
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-014": "NOT_HIT",
+   "CHK-026": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-5.4-06",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "5.4",
+  "sentences": [
+   "5.4:s7"
+  ],
+  "strength": "MUST",
+  "statement": "At most one read and one write transaction are outstanding; a later AHB transaction must not pass a stalled response.",
+  "checks": [
+   "CHK-008",
+   "CHK-033"
+  ],
+  "check_status": {
+   "CHK-008": "PASS",
+   "CHK-033": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-5.4-07",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "5.4",
+  "sentences": [
+   "5.4:s8"
+  ],
+  "strength": "MUST",
+  "statement": "WLAST is high exactly on the final AXI W beat; read ARLEN is always zero and expected RLAST is one.",
+  "checks": [
+   "CHK-004",
+   "CHK-010"
+  ],
+  "check_status": {
+   "CHK-004": "PASS",
+   "CHK-010": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-6.1-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "6.1",
+  "sentences": [
+   "6.1:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must provide IF-001, a required AHB5 (IHI 0033 Version C) Subordinate interface, clocked by i_clk_core and reset by i_rst_n_core, in configuration CFG-BASE.",
+  "checks": [
+   "CHK-002",
+   "CHK-036"
+  ],
+  "check_status": {
+   "CHK-002": "FAIL",
+   "CHK-036": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-6.1-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "6.1",
+  "sentences": [
+   "6.1:s2"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must provide IF-002, a required AXI4 (IHI 0022 Issue H.c) Manager interface, clocked by i_clk_core and reset by i_rst_n_core, in configuration CFG-BASE.",
+  "checks": [
+   "CHK-036"
+  ],
+  "check_status": {
+   "CHK-036": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-6.1-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "6.1",
+  "sentences": [
+   "6.1:s3"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must provide IF-003, a single required active-low shared reset from the reset controller, with asynchronous assert and SoC-synchronized release before the IP boundary.",
+  "checks": [
+   "CHK-038"
+  ],
+  "check_status": {
+   "CHK-038": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-6.2-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "6.2",
+  "sentences": [
+   "6.2:s2",
+   "6.2:s3"
+  ],
+  "strength": "MUST",
+  "statement": "AHB and AXI interface signals must use the rising edge of i_clk_core, and i_rst_n_core must be the only reset input.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-6.2-01",
+   "reason": "static_or_structural",
+   "note": "Single clock edge and single reset input; port review (all assertions are clocked on the rising edge of i_clk_core)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.2.1-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.2.1",
+  "sentences": [
+   "T1.7.2.1:s1"
+  ],
+  "strength": "MUST",
+  "statement": "AHB HCLK and AXI ACLK must both map to the single clock i_clk_core.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-T1.7.2.1-01",
+   "reason": "static_or_structural",
+   "note": "HCLK and ACLK map to one port i_clk_core; port review."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.2.2-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.2.2",
+  "sentences": [
+   "T1.7.2.2:s1"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The IP must not implement any AHB or AXI USER sideband ports.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-T1.7.2.2-01",
+   "reason": "static_or_structural",
+   "note": "No USER sideband ports; port-list review."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.2.2-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.2.2",
+  "sentences": [
+   "T1.7.2.2:s3"
+  ],
+  "strength": "MUST",
+  "statement": "i_rst_n_core asserts asynchronously and is deasserted synchronously by the SoC before the IP boundary; it is 1 after release.",
+  "checks": [
+   "CHK-038"
+  ],
+  "check_status": {
+   "CHK-038": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.2.2-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.2.2",
+  "sentences": [
+   "T1.7.2.2:s4",
+   "T1.7.2.2:s7",
+   "T1.7.2.2:s8",
+   "T1.7.2.2:s10",
+   "T1.7.2.2:s13"
+  ],
+  "strength": "MUST",
+  "statement": "i_ahb_hsel is 0, i_ahb_htrans is IDLE, i_ahb_hwrite is 0, i_ahb_hburst is SINGLE and i_ahb_hmastlock is 0 at reset/idle.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-T1.7.2.2-03",
+   "reason": "not_applicable_to_dut",
+   "note": "AHB manager input values at reset/idle; applied as a stimulus constraint in all tests (except CHK-038, which deliberately drives NONSEQ during reset)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.2.2-04",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.2.2",
+  "sentences": [
+   "T1.7.2.2:s5",
+   "T1.7.2.2:s28",
+   "T1.7.2.2:s33",
+   "T1.7.2.2:s47"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge ignores i_ahb_hready, i_axi_awready, i_axi_wready and i_axi_arready during bridge reset; they are externally unconstrained.",
+  "checks": [
+   "CHK-038"
+  ],
+  "check_status": {
+   "CHK-038": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.2.2-05",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.2.2",
+  "sentences": [
+   "T1.7.2.2:s16"
+  ],
+  "strength": "MUST",
+  "statement": "o_ahb_hreadyout is 1 during reset.",
+  "checks": [
+   "CHK-018"
+  ],
+  "check_status": {
+   "CHK-018": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.2.2-06",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.2.2",
+  "sentences": [
+   "T1.7.2.2:s17"
+  ],
+  "strength": "MUST",
+  "statement": "o_ahb_hresp is 0 (OKAY) at reset.",
+  "checks": [
+   "CHK-018"
+  ],
+  "check_status": {
+   "CHK-018": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.2.2-07",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.2.2",
+  "sentences": [
+   "T1.7.2.2:s17"
+  ],
+  "strength": "MUST",
+  "statement": "An o_ahb_hresp ERROR follows the AHB two-cycle error response.",
+  "checks": [
+   "CHK-001"
+  ],
+  "check_status": {
+   "CHK-001": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.2.2-08",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.2.2",
+  "sentences": [
+   "T1.7.2.2:s18"
+  ],
+  "strength": "MUST",
+  "statement": "o_ahb_hrdata is 0 at reset.",
+  "checks": [
+   "CHK-018"
+  ],
+  "check_status": {
+   "CHK-018": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.2.2-09",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.2.2",
+  "sentences": [
+   "T1.7.2.2:s19",
+   "T1.7.2.2:s20",
+   "T1.7.2.2:s21",
+   "T1.7.2.2:s22",
+   "T1.7.2.2:s25",
+   "T1.7.2.2:s26"
+  ],
+  "strength": "MUST",
+  "statement": "o_axi_awid, o_axi_awaddr, o_axi_awlen, o_axi_awsize, o_axi_awcache and o_axi_awprot are 0 at reset.",
+  "checks": [
+   "CHK-020"
+  ],
+  "check_status": {
+   "CHK-020": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.2.2-11",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.2.2",
+  "sentences": [
+   "T1.7.2.2:s24",
+   "T1.7.2.2:s43"
+  ],
+  "strength": "MUST",
+  "statement": "o_axi_awlock and o_axi_arlock are constant 0 (tied low).",
+  "checks": [
+   "CHK-003"
+  ],
+  "check_status": {
+   "CHK-003": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.2.2-12",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.2.2",
+  "sentences": [
+   "T1.7.2.2:s27"
+  ],
+  "strength": "MUST",
+  "statement": "o_axi_awvalid is held high until i_axi_awready.",
+  "checks": [
+   "CHK-005"
+  ],
+  "check_status": {
+   "CHK-005": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.2.2-13",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.2.2",
+  "sentences": [
+   "T1.7.2.2:s27",
+   "T1.7.2.2:s32",
+   "T1.7.2.2:s37",
+   "T1.7.2.2:s46",
+   "T1.7.2.2:s53"
+  ],
+  "strength": "MUST",
+  "statement": "o_axi_awvalid, o_axi_wvalid, o_axi_bready, o_axi_arvalid and o_axi_rready are 0 at reset.",
+  "checks": [
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.2.2-14",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.2.2",
+  "sentences": [
+   "T1.7.2.2:s29",
+   "T1.7.2.2:s30",
+   "T1.7.2.2:s32"
+  ],
+  "strength": "MUST",
+  "statement": "o_axi_wdata, o_axi_wstrb and o_axi_wvalid are held until i_axi_wready.",
+  "checks": [
+   "CHK-006"
+  ],
+  "check_status": {
+   "CHK-006": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.2.2-15",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.2.2",
+  "sentences": [
+   "T1.7.2.2:s29",
+   "T1.7.2.2:s30",
+   "T1.7.2.2:s31"
+  ],
+  "strength": "MUST",
+  "statement": "o_axi_wdata, o_axi_wstrb and o_axi_wlast are 0 at reset.",
+  "checks": [
+   "CHK-020"
+  ],
+  "check_status": {
+   "CHK-020": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.2.2-16",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.2.2",
+  "sentences": [
+   "T1.7.2.2:s31"
+  ],
+  "strength": "MUST",
+  "statement": "o_axi_wlast is high only on the final beat of a write burst.",
+  "checks": [
+   "CHK-010"
+  ],
+  "check_status": {
+   "CHK-010": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.2.2-17",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.2.2",
+  "sentences": [
+   "T1.7.2.2:s36"
+  ],
+  "strength": "MUST",
+  "statement": "i_axi_bvalid is 0 during reset.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-T1.7.2.2-17",
+   "reason": "not_applicable_to_dut",
+   "note": "AXI subordinate obligation (BVALID=0 in reset); stimulus constraint of the AXI subordinate model."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.2.2-18",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.2.2",
+  "sentences": [
+   "T1.7.2.2:s36"
+  ],
+  "strength": "MUST",
+  "statement": "i_axi_bvalid is held until o_axi_bready.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-T1.7.2.2-18",
+   "reason": "not_applicable_to_dut",
+   "note": "AXI subordinate must hold BVALID until BREADY; stimulus constraint, violated only in the CHK-036 injection phase."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.2.2-19",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.2.2",
+  "sentences": [
+   "T1.7.2.2:s38",
+   "T1.7.2.2:s39",
+   "T1.7.2.2:s41",
+   "T1.7.2.2:s44",
+   "T1.7.2.2:s45"
+  ],
+  "strength": "MUST",
+  "statement": "o_axi_arid, o_axi_araddr, o_axi_arsize, o_axi_arcache and o_axi_arprot are 0 at reset.",
+  "checks": [
+   "CHK-020"
+  ],
+  "check_status": {
+   "CHK-020": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.2.2-20",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.2.2",
+  "sentences": [
+   "T1.7.2.2:s40"
+  ],
+  "strength": "MUST",
+  "statement": "o_axi_arlen is always zero, so every read is a single beat.",
+  "checks": [
+   "CHK-004"
+  ],
+  "check_status": {
+   "CHK-004": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.2.2-21",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.2.2",
+  "sentences": [
+   "T1.7.2.2:s42"
+  ],
+  "strength": "MUST",
+  "statement": "o_axi_arburst is INCR, including at reset.",
+  "checks": [
+   "CHK-004",
+   "CHK-020"
+  ],
+  "check_status": {
+   "CHK-004": "PASS",
+   "CHK-020": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.2.2-22",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.2.2",
+  "sentences": [
+   "T1.7.2.2:s46"
+  ],
+  "strength": "MUST",
+  "statement": "o_axi_arvalid is held high until i_axi_arready.",
+  "checks": [
+   "CHK-007"
+  ],
+  "check_status": {
+   "CHK-007": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.2.2-23",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.2.2",
+  "sentences": [
+   "T1.7.2.2:s51"
+  ],
+  "strength": "SHOULD",
+  "statement": "i_axi_rlast is expected high for each single-beat read.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-T1.7.2.2-23",
+   "reason": "not_applicable_to_dut",
+   "note": "Expected RLAST=1 from the AXI subordinate; stimulus constraint (the model always returns i_axi_rlast=1)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.2.2-24",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.2.2",
+  "sentences": [
+   "T1.7.2.2:s52"
+  ],
+  "strength": "MUST",
+  "statement": "i_axi_rvalid is 0 during reset.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-T1.7.2.2-24",
+   "reason": "not_applicable_to_dut",
+   "note": "AXI subordinate obligation (RVALID=0 in reset); stimulus constraint."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.2.2-25",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.2.2",
+  "sentences": [
+   "T1.7.2.2:s52"
+  ],
+  "strength": "MUST",
+  "statement": "i_axi_rvalid is held until o_axi_rready.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-T1.7.2.2-25",
+   "reason": "not_applicable_to_dut",
+   "note": "AXI subordinate must hold RVALID until RREADY; stimulus constraint, violated only in the CHK-036 injection phase."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.1-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.1",
+  "sentences": [
+   "T1.7.3.1:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge accepts a transfer at a rising i_clk_core edge when HSEL, HREADY and HTRANS[1] are all 1.",
+  "checks": [
+   "CHK-021",
+   "CHK-037"
+  ],
+  "check_status": {
+   "CHK-021": "FAIL",
+   "CHK-037": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.1-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.1",
+  "sentences": [
+   "T1.7.3.1:s2"
+  ],
+  "strength": "MUST",
+  "statement": "Address/control are taken from the address phase; HWDATA/HWSTRB belong to the corresponding data phase.",
+  "checks": [
+   "CHK-040"
+  ],
+  "check_status": {
+   "CHK-040": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.1-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.1",
+  "sentences": [
+   "T1.7.3.1:s3",
+   "T1.7.3.1:s4"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "BUSY and IDLE transfers must not create AXI traffic.",
+  "checks": [
+   "CHK-002",
+   "CHK-021"
+  ],
+  "check_status": {
+   "CHK-002": "FAIL",
+   "CHK-021": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.1-04",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.1",
+  "sentences": [
+   "T1.7.3.1:s5",
+   "T1.7.3.1:s6"
+  ],
+  "strength": "MUST",
+  "statement": "Supported HSIZE encodings are byte, halfword and word (0,1,2), and transfer addresses shall be naturally aligned to HSIZE.",
+  "checks": [
+   "CHK-012"
+  ],
+  "check_status": {
+   "CHK-012": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.1-05",
+  "spec_refs": [
+   "REQ-FUNC-009"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.1",
+  "sentences": [
+   "T1.7.3.1:s7",
+   "T1.7.3.1:s8"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge returns AHB ERROR with no AXI request for the rejected transfer; any earlier accepted write prefix is drained.",
+  "checks": [
+   "CHK-030",
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-030": "PASS",
+   "CHK-031": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.1-06",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.1",
+  "sentences": [
+   "T1.7.3.1:s9"
+  ],
+  "strength": "MUST",
+  "statement": "AHB SINGLE and undefined INCR are converted to AXI single-beat INCR transactions.",
+  "checks": [
+   "CHK-037",
+   "CHK-040"
+  ],
+  "check_status": {
+   "CHK-037": "FAIL",
+   "CHK-040": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.1-07",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.1",
+  "sentences": [
+   "T1.7.3.1:s10",
+   "T1.7.3.1:s11"
+  ],
+  "strength": "MUST",
+  "statement": "Each read beat of fixed INCR/WRAP bursts issues its own single-beat AR request.",
+  "checks": [
+   "CHK-037"
+  ],
+  "check_status": {
+   "CHK-037": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.1-08",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.1",
+  "sentences": [
+   "T1.7.3.1:s12"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "AXI write burst aggregation is limited to complete legal Normal Write-back fixed write bursts with constant AXI address attributes.",
+  "checks": [
+   "CHK-014",
+   "CHK-023",
+   "CHK-024",
+   "CHK-025"
+  ],
+  "check_status": {
+   "CHK-014": "NOT_HIT",
+   "CHK-023": "FAIL",
+   "CHK-024": "FAIL",
+   "CHK-025": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.1-09",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.1",
+  "sentences": [
+   "T1.7.3.1:s13",
+   "T1.7.3.1:s15"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "Device writes must never be merged into an AXI burst.",
+  "checks": [
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-023": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.1-10",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.1",
+  "sentences": [
+   "T1.7.3.1:s14",
+   "T1.7.3.1:s16",
+   "T1.7.3.1:s24",
+   "T1.7.3.1:s26"
+  ],
+  "strength": "MUST",
+  "statement": "Captured but unissued write beats are drained as ordered AXI singles without reissuing sent beats; no short AXI burst replaces the AHB burst.",
+  "checks": [
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-026": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.1-11",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.1",
+  "sentences": [
+   "T1.7.3.1:s17"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "AHB managers must not start an incrementing burst that crosses a 1 KiB boundary.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-T1.7.3.1-11",
+   "reason": "not_applicable_to_dut",
+   "note": "AHB manager rule (no 1 KiB crossing); stimulus constraint, deliberately broken only in CHK-027."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.1-12",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.1",
+  "sentences": [
+   "T1.7.3.1:s18",
+   "T1.7.3.1:s19"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge keeps every AXI burst within a 4 KiB boundary, splitting defensively for out-of-profile address sequences.",
+  "checks": [
+   "CHK-011",
+   "CHK-027"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-027": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.1-13",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.1",
+  "sentences": [
+   "T1.7.3.1:s22"
+  ],
+  "strength": "MUST",
+  "statement": "HPROT remains constant throughout an AHB burst.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-T1.7.3.1-13",
+   "reason": "not_applicable_to_dut",
+   "note": "AHB manager rule (HPROT constant in a burst); stimulus constraint, deliberately broken only in CHK-025."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.1-14",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.1",
+  "sentences": [
+   "T1.7.3.1:s23",
+   "T1.7.3.1:s25"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge uses ordered AXI singles instead of a burst.",
+  "checks": [
+   "CHK-025"
+  ],
+  "check_status": {
+   "CHK-025": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.1-15",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.1",
+  "sentences": [
+   "T1.7.3.1:s27",
+   "T1.7.3.1:s28"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge issues no exclusive requests; HMASTLOCK=1 is rejected with AHB ERROR.",
+  "checks": [
+   "CHK-003",
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-003": "PASS",
+   "CHK-030": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.2-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.2",
+  "sentences": [
+   "T1.7.3.2:s1",
+   "T1.7.3.2:s2"
+  ],
+  "strength": "MUST",
+  "statement": "AXI4 VALID and payload remain stable until READY handshakes; AXI outputs have no combinational dependency on READY.",
+  "checks": [
+   "CHK-005",
+   "CHK-006",
+   "CHK-007",
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-005": "FAIL",
+   "CHK-006": "PASS",
+   "CHK-007": "PASS",
+   "CHK-022": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.2-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.2",
+  "sentences": [
+   "T1.7.3.2:s4"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "At most one read and one write transaction may be outstanding.",
+  "checks": [
+   "CHK-008"
+  ],
+  "check_status": {
+   "CHK-008": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.2-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.2",
+  "sentences": [
+   "T1.7.3.2:s5",
+   "T1.7.3.2:s7"
+  ],
+  "strength": "MUST",
+  "statement": "Reads are single-beat: ARLEN=0, ARBURST=INCR, RLAST=1.",
+  "checks": [
+   "CHK-004",
+   "CHK-037"
+  ],
+  "check_status": {
+   "CHK-004": "PASS",
+   "CHK-037": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.2-04",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.2",
+  "sentences": [
+   "T1.7.3.2:s6",
+   "T1.7.3.2:s8"
+  ],
+  "strength": "MUST",
+  "statement": "Writes are single-beat or fixed bursts up to 16 beats.",
+  "checks": [
+   "CHK-011"
+  ],
+  "check_status": {
+   "CHK-011": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.2-05",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.2",
+  "sentences": [
+   "T1.7.3.2:s9",
+   "T1.7.3.2:s10",
+   "T1.7.3.2:s12"
+  ],
+  "strength": "MUST",
+  "statement": "AXI ID is 3 bits; each direction rotates through IDs 0..count-1 after each completed transaction.",
+  "checks": [
+   "CHK-032"
+  ],
+  "check_status": {
+   "CHK-032": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.2-06",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.2",
+  "sentences": [
+   "T1.7.3.2:s11",
+   "T1.7.3.2:s13"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "ID count greater than 1 does not enable concurrent transactions.",
+  "checks": [
+   "CHK-008"
+  ],
+  "check_status": {
+   "CHK-008": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.3-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.3",
+  "sentences": [
+   "T1.7.3.3:s4",
+   "T1.7.3.3:s5",
+   "T1.7.3.3:s14",
+   "T1.7.3.3:s16",
+   "T1.7.3.3:s17"
+  ],
+  "strength": "MUST",
+  "statement": "The transfer is rejected with AHB ERROR before any AXI request is issued.",
+  "checks": [
+   "CHK-017",
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-017": "FAIL",
+   "CHK-030": "PASS"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.3-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.3",
+  "sentences": [
+   "T1.7.3.3:s6",
+   "T1.7.3.3:s7",
+   "T1.7.3.3:s8"
+  ],
+  "strength": "MUST",
+  "statement": "AxPROT[0]=HPROT[1], AxPROT[1]=HNONSEC, AxPROT[2]=~HPROT[0].",
+  "checks": [
+   "CHK-037",
+   "CHK-040"
+  ],
+  "check_status": {
+   "CHK-037": "FAIL",
+   "CHK-040": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.3-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.3",
+  "sentences": [
+   "T1.7.3.3:s9",
+   "T1.7.3.3:s10",
+   "T1.7.3.3:s11",
+   "T1.7.3.3:s12",
+   "T1.7.3.3:s13"
+  ],
+  "strength": "MUST",
+  "statement": "AxCACHE[1]=HPROT[3], AxCACHE[0]=HPROT[2]; HPROT[4]=0 gives AxCACHE[3:2]=00; HPROT[4]=1 sets direction-specific allocate bits per HPROT[5].",
+  "checks": [
+   "CHK-037",
+   "CHK-040"
+  ],
+  "check_status": {
+   "CHK-037": "FAIL",
+   "CHK-040": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.3-04",
+  "spec_refs": [
+   "REQ-FUNC-005"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.3",
+  "sentences": [
+   "T1.7.3.3:s18",
+   "T1.7.3.3:s19",
+   "T1.7.3.4:s4"
+  ],
+  "strength": "MUST",
+  "statement": "Issue one AXI single per beat, never merge, and wait for final-destination BRESP.",
+  "checks": [
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-023": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.3-06",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.3",
+  "sentences": [
+   "T1.7.3.3:s22"
+  ],
+  "strength": "MAY",
+  "statement": "The bridge may aggregate such bursts into an AXI burst.",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.4-01",
+  "spec_refs": [
+   "REQ-FUNC-003"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.4",
+  "sentences": [
+   "T1.7.3.4:s1"
+  ],
+  "strength": "MUST",
+  "statement": "One accepted address returns one AXI R beat; no speculative or multi-beat read; AHB waits for R and maps RRESP.",
+  "checks": [
+   "CHK-015",
+   "CHK-037"
+  ],
+  "check_status": {
+   "CHK-015": "FAIL",
+   "CHK-037": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.4-02",
+  "spec_refs": [
+   "REQ-FUNC-004"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.4",
+  "sentences": [
+   "T1.7.3.4:s2"
+  ],
+  "strength": "MUST",
+  "statement": "One AHB beat maps to one AXI single with no undefined-length aggregation; wait for BRESP.",
+  "checks": [
+   "CHK-016",
+   "CHK-040"
+  ],
+  "check_status": {
+   "CHK-016": "FAIL",
+   "CHK-040": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.4-03",
+  "spec_refs": [
+   "REQ-FUNC-005"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.4",
+  "sentences": [
+   "T1.7.3.4:s3"
+  ],
+  "strength": "MUST",
+  "statement": "A full 4/8/16-beat burst uses one AXI burst only with uniform attributes; prior beats get early OKAY and terminal HRESP reflects final B status.",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.4-04",
+  "spec_refs": [
+   "REQ-ERR-002"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.4",
+  "sentences": [
+   "T1.7.3.4:s5"
+  ],
+  "strength": "MUST",
+  "statement": "No AXI request for the rejected transfer; two-cycle AHB ERROR; drain any previously accepted write prefix.",
+  "checks": [
+   "CHK-030",
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-030": "PASS",
+   "CHK-031": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-T1.7.3.4-05",
+  "spec_refs": [
+   "REQ-ERR-001"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "T1.7.3.4",
+  "sentences": [
+   "T1.7.3.4:s6"
+  ],
+  "strength": "MUST",
+  "statement": "Non-OKAY maps to AHB ERROR.",
+  "checks": [
+   "CHK-028",
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-028": "FAIL",
+   "CHK-029": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-6.4-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "6.4",
+  "sentences": [
+   "6.4:s1"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The bridge IP includes no interrupt or event output port.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-6.4-01",
+   "reason": "static_or_structural",
+   "note": "No interrupt or event output port; port-list review."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-6.4-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "6.4",
+  "sentences": [
+   "6.4:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Supported errors are returned to the AHB master on the AHB response channel (HRESP) rather than via an interrupt or event output.",
+  "checks": [
+   "CHK-028",
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-028": "FAIL",
+   "CHK-029": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-7.1-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "7.1",
+  "sentences": [
+   "7.1:s1",
+   "7.1:s3"
+  ],
+  "strength": "MUST",
+  "statement": "AHB HCLK and AXI ACLK, and all FIFO instances, must use the same physical i_clk_core input, rising-edge, with no internal clock gating.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-7.1-01",
+   "reason": "static_or_structural",
+   "note": "Shared clock and no internal clock gating; structural review."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-7.2-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "7.2",
+  "sentences": [
+   "7.2:s1",
+   "7.2:s2"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The bridge must operate in the single CLK-CORE domain and must not contain asynchronous crossings, synchronizer chains, Gray pointers or CDC FIFOs.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-7.2-01",
+   "reason": "static_or_structural",
+   "note": "No CDC structures; structural and CDC review."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-7.2-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "7.2",
+  "sentences": [
+   "7.2:s3"
+  ],
+  "strength": "MUST",
+  "statement": "Each m_vlsit_sfifo_top write/read clock input must be tied to i_clk_core and its two reset inputs tied to i_rst_n_core.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-7.2-02",
+   "reason": "static_or_structural",
+   "note": "Internal FIFO clock/reset pin ties; not observable at the interface."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-7.3-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "7.3",
+  "sentences": [
+   "7.3:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Reset values must be HREADYOUT=1, HRESP=OKAY, AWVALID/WVALID/ARVALID=0, BREADY/RREADY=0, and FIFO valid state cleared, for all bridge logic and five FIFOs.",
+  "checks": [
+   "CHK-018",
+   "CHK-019",
+   "CHK-038",
+   "CHK-039"
+  ],
+  "check_status": {
+   "CHK-018": "PASS",
+   "CHK-019": "PASS",
+   "CHK-038": "FAIL",
+   "CHK-039": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-7.3-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "7.3",
+  "sentences": [
+   "7.3:s1",
+   "7.3:s2",
+   "7.3:s3"
+  ],
+  "strength": "MUST",
+  "statement": "The SoC must provide one active-low reset net i_rst_n_core to both protocol sides and all FIFOs, asserted asynchronously and with deassertion synchronized to i_clk_core before the IP.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-7.3-02",
+   "reason": "not_applicable_to_dut",
+   "note": "Binds the SoC reset network; stimulus applies asynchronous assertion and synchronous deassertion."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-7.3-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "7.3",
+  "sentences": [
+   "7.3:s4"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The RTL must use i_rst_n_core directly and must not contain a reset synchronizer.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-7.3-03",
+   "reason": "static_or_structural",
+   "note": "No reset synchronizer in the RTL; structural review."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-7.3-04",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "7.3",
+  "sentences": [
+   "7.3:s5"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "No transaction may be accepted by the bridge until reset is released.",
+  "checks": [
+   "CHK-038"
+  ],
+  "check_status": {
+   "CHK-038": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-8-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s1"
+  ],
+  "strength": "MUST",
+  "statement": "PARA_RD_ID_COUNT, the number of read IDs in rotation, must default to 1 and be within the legal range 1..8.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-8-01",
+   "reason": "static_or_structural",
+   "note": "Parameter default and range of PARA_RD_ID_COUNT; elaboration and review."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-8-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The read ID width must remain 3 regardless of PARA_RD_ID_COUNT, and the count must not increase outstanding capacity.",
+  "checks": [
+   "CHK-032"
+  ],
+  "check_status": {
+   "CHK-032": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-8-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s2"
+  ],
+  "strength": "MUST",
+  "statement": "PARA_WR_ID_COUNT, the number of write IDs in rotation, must default to 1 and be within the legal range 1..8.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-8-03",
+   "reason": "static_or_structural",
+   "note": "Parameter default and range of PARA_WR_ID_COUNT; elaboration and review."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-8-04",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s2"
+  ],
+  "strength": "MUST",
+  "statement": "The write ID width must remain 3 regardless of PARA_WR_ID_COUNT, and the count must not increase outstanding capacity.",
+  "checks": [
+   "CHK-032"
+  ],
+  "check_status": {
+   "CHK-032": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-8-06",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s4"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "AXI address, data and ID widths, FIFO depths and protocol features must not be user-overridable in this revision.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-8-06",
+   "reason": "static_or_structural",
+   "note": "Widths and FIFO depths not overridable; parameter-list review."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-8-07",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s8"
+  ],
+  "strength": "MUST",
+  "statement": "Immediately above each RTL parameter, comments // Parameter Description, // Parameter values and // Parameter unit must appear in that order.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-8-07",
+   "reason": "static_or_structural",
+   "note": "Parameter comment format; lint and review."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-9-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "9",
+  "sentences": [
+   "9:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The AXI address must equal the corresponding accepted AHB address (32-bit byte address).",
+  "checks": [
+   "CHK-037",
+   "CHK-040"
+  ],
+  "check_status": {
+   "CHK-037": "FAIL",
+   "CHK-040": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-9-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "9",
+  "sentences": [
+   "9:s2"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The bridge must not byte-swap data between AHB and AXI.",
+  "checks": [
+   "CHK-015",
+   "CHK-040"
+  ],
+  "check_status": {
+   "CHK-015": "FAIL",
+   "CHK-040": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-9-04",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "9",
+  "sentences": [
+   "9:s3"
+  ],
+  "strength": "MUST",
+  "statement": "HSIZE/AxSIZE must encode 0 as 1 byte, 1 as 2 bytes and 2 as 4 bytes.",
+  "checks": [
+   "CHK-012",
+   "CHK-037"
+  ],
+  "check_status": {
+   "CHK-012": "PASS",
+   "CHK-037": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-9-05",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "9",
+  "sentences": [
+   "9:s3"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must reject transfers with sizes larger than 4 bytes.",
+  "checks": [
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-030": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-9-06",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "9",
+  "sentences": [
+   "9:s4"
+  ],
+  "strength": "MUST",
+  "statement": "HWSTRB[n] and WSTRB[n] must qualify byte [8n+7:8n] of HWDATA/WDATA respectively.",
+  "checks": [
+   "CHK-040"
+  ],
+  "check_status": {
+   "CHK-040": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-9-07",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "9",
+  "sentences": [
+   "9:s4"
+  ],
+  "strength": "MUST",
+  "statement": "The strobe must be passed from HWSTRB to WSTRB per beat.",
+  "checks": [
+   "CHK-040"
+  ],
+  "check_status": {
+   "CHK-040": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-9-09",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "9",
+  "sentences": [
+   "9:s6"
+  ],
+  "strength": "MUST",
+  "statement": "AXI LEN must equal the beat count minus one.",
+  "checks": [
+   "CHK-010",
+   "CHK-011"
+  ],
+  "check_status": {
+   "CHK-010": "PASS",
+   "CHK-011": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-9-11",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "9",
+  "sentences": [
+   "9:s6"
+  ],
+  "strength": "MUST",
+  "statement": "AWLEN must be 3, 7 or 15 for an aggregated write burst before boundary split.",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-9-13",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "9",
+  "sentences": [
+   "9:s7"
+  ],
+  "strength": "MUST",
+  "statement": "Each direction (read and write) must rotate its ID independently through the configured count.",
+  "checks": [
+   "CHK-032"
+  ],
+  "check_status": {
+   "CHK-032": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-10.1-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "10.1",
+  "sentences": [
+   "10.1:s3"
+  ],
+  "strength": "MAY",
+  "statement": "An eligible fixed Normal Write-back write may remain in capture until all expected beats are received.",
+  "checks": [
+   "CHK-024",
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-024": "FAIL",
+   "CHK-026": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-10.1-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "10.1",
+  "sentences": [
+   "10.1:s4",
+   "10.2:s5"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must return a two-cycle AHB ERROR response and issue no AXI request for the rejected transfer.",
+  "checks": [
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-030": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-10.2-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "10.2",
+  "sentences": [
+   "10.2:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must issue one AR with ARLEN=0, receive one R beat, and complete AHB with HRDATA and HRESP derived from RRESP.",
+  "checks": [
+   "CHK-037"
+  ],
+  "check_status": {
+   "CHK-037": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-10.2-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "10.2",
+  "sentences": [
+   "10.2:s2"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must issue one AW with AWLEN=0 and one W beat with WLAST=1, wait for BRESP, and map the response to that AHB transfer.",
+  "checks": [
+   "CHK-016",
+   "CHK-023",
+   "CHK-040"
+  ],
+  "check_status": {
+   "CHK-016": "FAIL",
+   "CHK-023": "FAIL",
+   "CHK-040": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-10.2-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "10.2",
+  "sentences": [
+   "10.2:s3"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must issue one AW/W burst of up to 16 beats, splitting at 4 KiB if needed; the terminal AHB beat waits for all corresponding BRESPs.",
+  "checks": [
+   "CHK-024",
+   "CHK-027"
+  ],
+  "check_status": {
+   "CHK-024": "FAIL",
+   "CHK-027": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-10.2-04",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "10.2",
+  "sentences": [
+   "10.2:s3"
+  ],
+  "strength": "MAY",
+  "statement": "Earlier accepted beats of an AXI write burst may return OKAY before the BRESPs arrive.",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-10.2-05",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "10.2",
+  "sentences": [
+   "10.2:s4"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must issue ordered AXI singles for remaining captured beats, not reissue completed beats, and aggregate relevant B errors to the terminal AHB beat.",
+  "checks": [
+   "CHK-025",
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-025": "FAIL",
+   "CHK-026": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-10.2-06",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "10.2",
+  "sentences": [
+   "10.2:s6"
+  ],
+  "strength": "MUST",
+  "statement": "On assertion of i_rst_n_core the bridge must drop in-flight queues and VALID state and drive HREADYOUT=1 during reset.",
+  "checks": [
+   "CHK-018",
+   "CHK-019",
+   "CHK-039"
+  ],
+  "check_status": {
+   "CHK-018": "PASS",
+   "CHK-019": "PASS",
+   "CHK-039": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-10.4-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "10.4",
+  "sentences": [
+   "10.4:s2",
+   "10.4:s3"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The bridge must serialize reads and must not accept the next AHB read until the current R data/status returns.",
+  "checks": [
+   "CHK-015"
+  ],
+  "check_status": {
+   "CHK-015": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-10.4-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "10.4",
+  "sentences": [
+   "10.4:s5"
+  ],
+  "strength": "MAY",
+  "statement": "The bridge can accept one AHB beat per i_clk_core cycle.",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-10.4-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "10.4",
+  "sentences": [
+   "10.4:s6"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must wait for each single-beat BRESP and must not acknowledge Device-E before the final destination responds.",
+  "checks": [
+   "CHK-016",
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-016": "FAIL",
+   "CHK-023": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-10.4-04",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "10.4",
+  "sentences": [
+   "10.4:s8"
+  ],
+  "strength": "SHOULD",
+  "statement": "The AR/AW handshake should complete within 6 i_clk_core cycles of the accepted AHB address.",
+  "checks": [
+   "CHK-034"
+  ],
+  "check_status": {
+   "CHK-034": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-10.4-05",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "10.4",
+  "sentences": [
+   "10.4:s9",
+   "10.4:s11",
+   "10.4:s12"
+  ],
+  "strength": "MUST",
+  "statement": "The AW latency bound starts after the complete AHB burst or its early termination is captured, not from the first AHB address; no AXI burst is issued before capture.",
+  "checks": [
+   "CHK-026",
+   "CHK-034"
+  ],
+  "check_status": {
+   "CHK-026": "FAIL",
+   "CHK-034": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-10.4-07",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "10.4",
+  "sentences": [
+   "10.4:s19",
+   "10.4:s20"
+  ],
+  "strength": "MUST",
+  "statement": "Read/write arbitration must follow AHB acceptance order, and no later transaction may bypass an unresolved AHB operation.",
+  "checks": [
+   "CHK-033"
+  ],
+  "check_status": {
+   "CHK-033": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-10.5-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "10.5",
+  "sentences": [
+   "10.5:s4"
+  ],
+  "strength": "MUST",
+  "statement": "FIFO pointer and validity state must be cleared by the shared reset; payload contents need not be reset.",
+  "checks": [
+   "CHK-039"
+  ],
+  "check_status": {
+   "CHK-039": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-12-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "12",
+  "sentences": [
+   "12:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must reject a transfer with HMASTLOCK=1 using a two-cycle ERROR response and issue no AXI request for it.",
+  "checks": [
+   "CHK-017",
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-017": "FAIL",
+   "CHK-030": "PASS"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-12-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "12",
+  "sentences": [
+   "12:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must drain any accepted write prefix before giving the terminal ERROR response for a transfer rejected for HMASTLOCK=1.",
+  "checks": [
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-031": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-12-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "12",
+  "sentences": [
+   "12:s2"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must reject a transfer with HPROT[6]=1 or unsupported/reserved HPROT using a two-cycle ERROR response, with no AXI request or side effect for the rejected beat.",
+  "checks": [
+   "CHK-017",
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-017": "FAIL",
+   "CHK-030": "PASS"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-12-04",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "12",
+  "sentences": [
+   "12:s2"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must drain any accepted write prefix when rejecting a beat for HPROT error.",
+  "checks": [
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-031": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-12-05",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "12",
+  "sentences": [
+   "12:s3"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must reject a transfer with HSIZE>2, misalignment or reserved HBURST using a two-cycle ERROR response, with no AXI request or side effect for the rejected beat.",
+  "checks": [
+   "CHK-017",
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-017": "FAIL",
+   "CHK-030": "PASS"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-12-06",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "12",
+  "sentences": [
+   "12:s3"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must drain any accepted write prefix when rejecting a beat for HSIZE, misalignment or reserved HBURST.",
+  "checks": [
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-031": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-12-07",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "12",
+  "sentences": [
+   "12:s4"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must consume the R beat and return a two-cycle AHB ERROR response for the read, reporting the mapped error.",
+  "checks": [
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-029": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-12-08",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "12",
+  "sentences": [
+   "12:s5"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must return a two-cycle ERROR for a single write, or on the terminal AHB beat of a Normal Write-back burst, when BRESP is SLVERR/DECERR/EXOKAY.",
+  "checks": [
+   "CHK-028"
+  ],
+  "check_status": {
+   "CHK-028": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-12-09",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "12",
+  "sentences": [
+   "12:s5"
+  ],
+  "strength": "MUST",
+  "statement": "Earlier buffered beats must remain acknowledged, and the terminal status must reflect all B responses.",
+  "checks": [
+   "CHK-028"
+  ],
+  "check_status": {
+   "CHK-028": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-12-10",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "12",
+  "sentences": [
+   "12:s6"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must hold VALID and payload stable until the AXI handshake completes.",
+  "checks": [
+   "CHK-005",
+   "CHK-006",
+   "CHK-007",
+   "CHK-035"
+  ],
+  "check_status": {
+   "CHK-005": "FAIL",
+   "CHK-006": "PASS",
+   "CHK-007": "PASS",
+   "CHK-035": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-12-11",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "12",
+  "sentences": [
+   "12:s7"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The bridge must not implement an internal timeout; AHB waits indefinitely and recovery is left to a system-level watchdog/reset.",
+  "checks": [
+   "CHK-035"
+  ],
+  "check_status": {
+   "CHK-035": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-12-13",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "12",
+  "sentences": [
+   "12:s8"
+  ],
+  "strength": "MUST",
+  "statement": "The terminal AHB response must wait for all relevant B responses, aggregate errors, and not reissue completed beats.",
+  "checks": [
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-026": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-12-14",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "12",
+  "sentences": [
+   "12:s9"
+  ],
+  "strength": "MUST",
+  "statement": "In-flight state is discarded and the bridge and connected endpoint/interconnect are reset consistently.",
+  "checks": [
+   "CHK-039"
+  ],
+  "check_status": {
+   "CHK-039": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-12-16",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "12",
+  "sentences": [
+   "12:s11"
+  ],
+  "strength": "MUST",
+  "statement": "In the first ERROR cycle HREADYOUT must be low and in the second ERROR cycle HREADYOUT must be high.",
+  "checks": [
+   "CHK-001"
+  ],
+  "check_status": {
+   "CHK-001": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-12-17",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "12",
+  "sentences": [
+   "12:s12",
+   "12:s13"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "AXI errors must not be returned as AHB split responses.",
+  "checks": [
+   "CHK-028",
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-028": "FAIL",
+   "CHK-029": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-13-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "13",
+  "sentences": [
+   "13:s5"
+  ],
+  "strength": "SHOULD",
+  "statement": "A single request should be issued within at most 6 i_clk_core cycles; this is a cycle-based design target requiring implementation verification.",
+  "checks": [
+   "CHK-034"
+  ],
+  "check_status": {
+   "CHK-034": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-14.1-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "14.1",
+  "sentences": [
+   "14.1:s1",
+   "14.1:s4"
+  ],
+  "strength": "MUST",
+  "statement": "RTL shall be synthesizable SystemVerilog following VLSIT RTL Design Rules v2 using logic declarations, with no package, plain always, always_latch, define/undef, or signed types.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-14.1-01",
+   "reason": "static_or_structural",
+   "note": "SystemVerilog coding rules; lint."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-14.1-04",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "14.1",
+  "sentences": [
+   "14.1:s2",
+   "14.1:s5"
+  ],
+  "strength": "MUST",
+  "statement": "Parameters use uppercase PARA_ names, localparams use uppercase LPARA_ names, and enum type names end in _type_def.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-14.1-04",
+   "reason": "static_or_structural",
+   "note": "Naming rules; lint."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-14.2-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "14.2",
+  "sentences": [
+   "14.2:s1",
+   "14.2:s7",
+   "14.2:s10"
+  ],
+  "strength": "MUST",
+  "statement": "m_ahb2axi_top is the single structural top with fixed AHB/AXI ports and instantiates only u_ahb2axi_ctrl.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-14.2-01",
+   "reason": "static_or_structural",
+   "note": "Top-level instance policy; hierarchy inspection."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-14.2-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "14.2",
+  "sentences": [
+   "14.2:s2",
+   "14.2:s3",
+   "14.2:s4",
+   "14.2:s7",
+   "14.2:s10"
+  ],
+  "strength": "MUST",
+  "statement": "m_ahb2axi_ctrl instantiates one m_ahb2axi_ahb_if (u_ahb2axi_ahb_if) and one m_ahb2axi_axi_if (u_ahb2axi_axi_if) plus its control RTL.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-14.2-02",
+   "reason": "static_or_structural",
+   "note": "Controller instance policy; hierarchy inspection."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-14.2-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "14.2",
+  "sentences": [
+   "14.2:s3",
+   "14.2:s5",
+   "14.2:s7",
+   "14.2:s9",
+   "14.2:s10",
+   "14.2:s12"
+  ],
+  "strength": "MUST",
+  "statement": "m_ahb2axi_ctrl instantiates five m_vlsit_sfifo_top FIFOs named u_vlsit_sfifo_top_0 through _4, with indexes starting at zero.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-14.2-03",
+   "reason": "static_or_structural",
+   "note": "FIFO instance naming; hierarchy inspection."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-14.2-04",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "14.2",
+  "sentences": [
+   "14.2:s5"
+  ],
+  "strength": "MUST",
+  "statement": "Both clock pins of each FIFO instance tie to i_clk_core and both hardware-reset pins tie to i_rst_n_core.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-14.2-04",
+   "reason": "static_or_structural",
+   "note": "FIFO clock/reset pin ties; hierarchy inspection."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-14.2-05",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "14.2",
+  "sentences": [
+   "14.2:s8",
+   "14.2:s11"
+  ],
+  "strength": "MUST",
+  "statement": "Each module is stored in a file with the same basename as the module.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-14.2-05",
+   "reason": "static_or_structural",
+   "note": "File naming; review."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-14.3-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "14.3",
+  "sentences": [
+   "14.3:s3",
+   "14.3:s6"
+  ],
+  "strength": "MUST",
+  "statement": "The FIFO storage implementation must meet the FIFO contract.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-14.3-03",
+   "reason": "covered_by_other_check",
+   "note": "Per designer decision there is no separate FIFO check. FIFO behavior is covered through external behavior in CHK-039 (reset clears valid state), CHK-037, CHK-040 and CHK-033 (no loss, no duplication, order kept)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-14.3-04",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "14.3",
+  "sentences": [
+   "14.3:s4",
+   "14.3:s7"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The design must have no latches, inferred tri-states, or technology cells outside dedicated wrappers.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-14.3-04",
+   "reason": "static_or_structural",
+   "note": "No latches or tri-states; synthesis and lint."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-15.1-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "15.1",
+  "sentences": [
+   "15.1:s3",
+   "15.1:s7"
+  ],
+  "strength": "MUST",
+  "statement": "AHB master and AXI Subordinate BFMs shall be independent of each other.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-15.1-01",
+   "reason": "not_applicable_to_dut",
+   "note": "Binds the verification environment (independent BFMs)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-15.1-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "15.1",
+  "sentences": [
+   "15.1:s3",
+   "15.1:s7"
+  ],
+  "strength": "MUST",
+  "statement": "Expected transactions shall be computed from accepted AHB pin activity and stated mappings, not from RTL hierarchy, internal state or generated names.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-15.1-02",
+   "reason": "not_applicable_to_dut",
+   "note": "Binds the verification environment (reference model built from pins); this plan follows it."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-15.1-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "15.1",
+  "sentences": [
+   "15.1:s4",
+   "15.1:s8"
+  ],
+  "strength": "MUST",
+  "statement": "All test sources and run commands shall be retained in the verification deliverable.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-15.1-03",
+   "reason": "not_applicable_to_dut",
+   "note": "Verification deliverable content."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-15.1-04",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "15.1",
+  "sentences": [
+   "15.1:s4",
+   "15.1:s8"
+  ],
+  "strength": "MUST",
+  "statement": "The verification flow owner shall place all run commands in one Makefile.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-15.1-04",
+   "reason": "not_applicable_to_dut",
+   "note": "Verification flow packaging (single Makefile)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-15.2-01",
+  "spec_refs": [
+   "REQ-PERF-002"
+  ],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "15.2",
+  "sentences": [
+   "15.2:s7"
+  ],
+  "strength": "MUST",
+  "statement": "AXI VALID and payload shall remain stable during READY stalls; no completion bound is asserted and the bridge has no internal timeout.",
+  "checks": [
+   "CHK-005",
+   "CHK-035"
+  ],
+  "check_status": {
+   "CHK-005": "FAIL",
+   "CHK-035": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-15.2-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "15.2",
+  "sentences": [
+   "15.2:s10"
+  ],
+  "strength": "MUST",
+  "statement": "Protocol checks shall report no violation on legal traffic and shall report injected endpoint violations.",
+  "checks": [
+   "CHK-036"
+  ],
+  "check_status": {
+   "CHK-036": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-15.3-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "15.3",
+  "sentences": [
+   "15.3:s1"
+  ],
+  "strength": "MUST",
+  "statement": "AXI VALID and payload must remain stable while READY=0.",
+  "checks": [
+   "CHK-005",
+   "CHK-006",
+   "CHK-007"
+  ],
+  "check_status": {
+   "CHK-005": "FAIL",
+   "CHK-006": "PASS",
+   "CHK-007": "PASS"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-15.3-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "15.3",
+  "sentences": [
+   "15.3:s1"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "No AXI read may be issued before AHB acceptance.",
+  "checks": [
+   "CHK-013"
+  ],
+  "check_status": {
+   "CHK-013": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-15.3-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "15.3",
+  "sentences": [
+   "15.3:s1"
+  ],
+  "strength": "MUST",
+  "statement": "ARLEN must be 0 for single-beat reads.",
+  "checks": [
+   "CHK-004"
+  ],
+  "check_status": {
+   "CHK-004": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-15.3-04",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "15.3",
+  "sentences": [
+   "15.3:s1"
+  ],
+  "strength": "MUST",
+  "statement": "WLAST must be asserted at exactly the final W beat.",
+  "checks": [
+   "CHK-010"
+  ],
+  "check_status": {
+   "CHK-010": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-15.3-05",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "15.3",
+  "sentences": [
+   "15.3:s1"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "No AW may be issued before the complete aggregated AHB burst is captured.",
+  "checks": [
+   "CHK-014"
+  ],
+  "check_status": {
+   "CHK-014": "NOT_HIT"
+  },
+  "status": "NOT_PROVEN",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-15.3-06",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "15.3",
+  "sentences": [
+   "15.3:s1"
+  ],
+  "strength": "MUST",
+  "statement": "AHB responses must be returned in order.",
+  "checks": [
+   "CHK-033"
+  ],
+  "check_status": {
+   "CHK-033": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-15.3-07",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "15.3",
+  "sentences": [
+   "15.3:s1"
+  ],
+  "strength": "MUST",
+  "statement": "AHB ERROR response must last two cycles.",
+  "checks": [
+   "CHK-001"
+  ],
+  "check_status": {
+   "CHK-001": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-15.3-08",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "15.3",
+  "sentences": [
+   "15.3:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Reset must clear AXI VALID.",
+  "checks": [
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-15.3-09",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "15.3",
+  "sentences": [
+   "15.3:s1"
+  ],
+  "strength": "MUST",
+  "statement": "ID values must remain below the configured ID count.",
+  "checks": [
+   "CHK-009"
+  ],
+  "check_status": {
+   "CHK-009": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-15.3-10",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "15.3",
+  "sentences": [
+   "15.3:s2",
+   "15.3:s3"
+  ],
+  "strength": "MUST",
+  "statement": "Functional coverage shall cross direction, size, burst type, HPROT memory type, bufferable/non-bufferable, strobe mask, response status, READY stall length, uniform/varying address attributes, early termination, ID count and reset timing.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-15.3-10",
+   "reason": "design_guideline",
+   "note": "Functional coverage plan; coverage points are recorded in CHK-021, CHK-023, CHK-024, CHK-025, CHK-026, CHK-027, CHK-028, CHK-029, CHK-030, CHK-031, CHK-032, CHK-033, CHK-034, CHK-035, CHK-037, CHK-040 but are not pass/fail checks."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-15.4-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "15.4",
+  "sentences": [
+   "15.4:s1",
+   "15.4:s3"
+  ],
+  "strength": "MUST",
+  "statement": "Formal checks shall prove ordering, no duplication/loss, no speculative read, no AXI boundary crossing and response mapping.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-15.4-01",
+   "reason": "static_or_structural",
+   "note": "Formal proof requirement; the matching simulation properties are CHK-011, CHK-013, CHK-015, CHK-016 and CHK-033."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-15.4-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "15.4",
+  "sentences": [
+   "15.4:s2",
+   "15.4:s4"
+  ],
+  "strength": "MUST",
+  "statement": "Static timing analysis shall treat all bridge and FIFO paths as single-clock synchronous paths under i_clk_core, with no CDC paths or asynchronous clock groups.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-15.4-02",
+   "reason": "static_or_structural",
+   "note": "Static timing analysis setup."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-15.4-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "15.4",
+  "sentences": [
+   "15.4:s3",
+   "15.4:s5"
+  ],
+  "strength": "MUST",
+  "statement": "Reset analysis shall verify the one-reset contract, asynchronous assertion, SoC-synchronized deassertion before the IP boundary, and clearing of FIFO valid state.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-15.4-03",
+   "reason": "static_or_structural",
+   "note": "Reset structural analysis; simulation-observable reset behavior is in CHK-018 to CHK-020, CHK-038 and CHK-039."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-17.1.1-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "17.1.1",
+  "sentences": [
+   "17.1.1:s2"
+  ],
+  "strength": "MUST",
+  "statement": "The SoC integrator shall supply the i_clk_core clock frequency/period and uncertainty before static timing analysis.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-17.1.1-01",
+   "reason": "not_applicable_to_dut",
+   "note": "Binds the SoC integrator (clock constraints)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-17.1.3-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "17.1.3",
+  "sentences": [
+   "17.1.3:s2",
+   "17.1.3:s4"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "Asynchronous clock groups or false paths must not be declared between bridge logic and FIFO pointers.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-17.1.3-02",
+   "reason": "static_or_structural",
+   "note": "Timing-constraint rule."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-17.1.3-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "17.1.3",
+  "sentences": [
+   "17.1.3:s3",
+   "17.1.3:s5"
+  ],
+  "strength": "MUST",
+  "statement": "Only justified reset, generated-clock or memory-macro constraints supplied by the selected library and SoC flow shall be applied; no numeric exception is invented.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-17.1.3-03",
+   "reason": "static_or_structural",
+   "note": "Timing-exception policy."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-17.2-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "17.2",
+  "sentences": [
+   "17.2:s2",
+   "17.2:s4"
+  ],
+  "strength": "MUST",
+  "statement": "The synchronous FIFO storage must be mapped to standard cells or a compatible single-clock memory macro.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-17.2-01",
+   "reason": "static_or_structural",
+   "note": "Synthesis mapping of FIFO storage."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-18-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "18",
+  "sentences": [
+   "18:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must preserve HNONSEC and translate supported HPROT fields per §6.3.",
+  "checks": [
+   "CHK-037",
+   "CHK-040"
+  ],
+  "check_status": {
+   "CHK-037": "FAIL",
+   "CHK-040": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-18-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "18",
+  "sentences": [
+   "18:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must reject Shareable transfers and unsupported HPROT combinations.",
+  "checks": [
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-030": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-18-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "18",
+  "sentences": [
+   "18:s1"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The bridge must not implement address-based access control.",
+  "checks": [
+   "CHK-037",
+   "CHK-040"
+  ],
+  "check_status": {
+   "CHK-037": "FAIL",
+   "CHK-040": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-18-04",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "18",
+  "sentences": [
+   "18:s2"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must reject transfers with HMASTLOCK; exclusive/atomic access is not implemented.",
+  "checks": [
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-030": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-18-05",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "18",
+  "sentences": [
+   "18:s2"
+  ],
+  "strength": "MUST",
+  "statement": "The AXI lock outputs must be tied low.",
+  "checks": [
+   "CHK-003"
+  ],
+  "check_status": {
+   "CHK-003": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-18-08",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "18",
+  "sentences": [
+   "18:s6"
+  ],
+  "strength": "MUST",
+  "statement": "AXI response errors must be returned on AHB.",
+  "checks": [
+   "CHK-028",
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-028": "FAIL",
+   "CHK-029": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-18-09",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "18",
+  "sentences": [
+   "18:s6"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The bridge must not add any timeout or retry.",
+  "checks": [
+   "CHK-035"
+  ],
+  "check_status": {
+   "CHK-035": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-20.2-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "20.2",
+  "sentences": [
+   "20.2:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must return AHB ERROR for unsupported size, misaligned address or reserved transfer encodings without issuing any AXI transaction.",
+  "checks": [
+   "CHK-017",
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-017": "FAIL",
+   "CHK-030": "PASS"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-20.2-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "20.2",
+  "sentences": [
+   "20.2:s2"
+  ],
+  "strength": "MUST",
+  "statement": "The AHB transfer remains pending when the AXI response never arrives, with no out-of-band error notification.",
+  "checks": [
+   "CHK-035"
+  ],
+  "check_status": {
+   "CHK-035": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-20.3-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "20.3",
+  "sentences": [
+   "20.3:s4"
+  ],
+  "strength": "MUST",
+  "statement": "AHB, AXI and all FIFO instances must use one shared rising-edge clock input i_clk_core.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AA-20.3-01",
+   "reason": "static_or_structural",
+   "note": "Single shared clock decision; port and structure review."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AA-20.3-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "20.3",
+  "sentences": [
+   "20.3:s9"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must reject transfers with HPROT[6] equal to 1.",
+  "checks": [
+   "CHK-017",
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-017": "FAIL",
+   "CHK-030": "PASS"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-20.3-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "20.3",
+  "sentences": [
+   "20.3:s14"
+  ],
+  "strength": "MUST",
+  "statement": "Errors of eligible Normal Write-back bufferable fixed writes must be reported at the terminal AHB beat.",
+  "checks": [
+   "CHK-028"
+  ],
+  "check_status": {
+   "CHK-028": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-20.3-04",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "20.3",
+  "sentences": [
+   "20.3:s14"
+  ],
+  "strength": "MUST",
+  "statement": "Device-E and non-bufferable writes must wait for BRESP on each beat.",
+  "checks": [
+   "CHK-016",
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-016": "FAIL",
+   "CHK-023": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-20.3-05",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "20.3",
+  "sentences": [
+   "20.3:s17"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must issue a request within 6 i_clk_core cycles when queue space exists and READY is high.",
+  "checks": [
+   "CHK-034"
+  ],
+  "check_status": {
+   "CHK-034": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-20.3-06",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "20.3",
+  "sentences": [
+   "20.3:s18"
+  ],
+  "strength": "MUST",
+  "statement": "A non-OKAY AXI response, including unexpected EXOKAY, must map to a two-cycle AHB ERROR response.",
+  "checks": [
+   "CHK-028",
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-028": "FAIL",
+   "CHK-029": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-21-01",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "21",
+  "sentences": [
+   "21:s8"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The bridge must not merge Device-E (bufferable Device memory) writes.",
+  "checks": [
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-023": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-21-02",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "21",
+  "sentences": [
+   "21:s8"
+  ],
+  "strength": "MUST",
+  "statement": "The bridge must wait for the final-destination BRESP before completing a Device-E write.",
+  "checks": [
+   "CHK-016",
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-016": "FAIL",
+   "CHK-023": "FAIL"
+  },
+  "status": "FAILED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AA-21-03",
+  "spec_refs": [],
+  "doc": "AHB2AXI_Bridge_Design_Specification.md",
+  "section": "21",
+  "sentences": [
+   "21:s10"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The bridge must not issue an AXI read before its AHB address has been accepted (no speculation).",
+  "checks": [
+   "CHK-013"
+  ],
+  "check_status": {
+   "CHK-013": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ }
+]

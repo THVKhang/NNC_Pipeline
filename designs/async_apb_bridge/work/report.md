@@ -1,6 +1,6 @@
 # Verification report — async_apb_bridge
 
-Generated 2026-11-12T07:27:25+00:00 by NNC Pipeline.
+Generated 2026-11-14T15:58:08+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -16,11 +16,11 @@ Generated 2026-11-12T07:27:25+00:00 by NNC Pipeline.
 | Code coverage (RTL), expression | 74.8 % (663/886 condition terms) |
 | Code coverage (RTL), toggle | 98.6 % (26577/26946 bit toggles 0->1 and 1->0) |
 | Code coverage (RTL), functional | 97.5 % (39/40 cover points of the specification) |
-| Mutation score | 83.3 % (30 killed / 6 survived / 0 not compiled) |
+| Mutation score | 91.7 % (11 killed / 1 survived / 0 not compiled) |
 | Coverage target | not requested (`nnc cover <design> --target <n> --metric <m>`) |
-| Formal (SymbiYosys, depth 20) | {'BOUNDED': 12, 'PROVEN': 2, 'UNSUPPORTED': 3, 'VACUOUS': 1} — reset assumptions + verif/formal/nnc_env.sv, work/formal.md |
+| Formal (SymbiYosys, depth 20) | {'PROVEN': 15, 'UNSUPPORTED': 3} — reset assumptions + verif/formal/nnc_env.sv, work/formal.md |
 | Triage | no failure to analyse |
-| Agent cost | US$17.3001 in 99 calls (A1 0.9876, A12 1.4006, A13 0.7526, A14 1.5197, A2 0.7731, A3 0.4261, A4 1.6549, A5 1.783, A6 1.2864, A7 4.1576, A9 2.5583) |
+| Agent cost | US$29.1714 in 111 calls (A1 0.9876, A12 1.6017, A13 0.7526, A14 1.5197, A2 0.7731, A3 0.4261, A4 1.6549, A5 2.1882, A6 1.2864, A7 12.0202, A9 5.9606); of which US$3.7405 in 3 failed calls (usage limit, timeout, invalid answer) |
 
 ## Sign-off conditions
 
@@ -33,8 +33,8 @@ Generated 2026-11-12T07:27:25+00:00 by NNC Pipeline.
 | Every rule in a check or declared not verifiable | met |
 | Every run of the run set built and ran | met — 14 runs |
 | Mutation run | met |
-| Per-requirement mutation score >= 85 % | **not met** — 3 rule(s) below: AB2-1.3-01, AB2-10.2-01, AB2-10.2-02 |
-| Formal: no counterexample, no vacuous or failed proof | **not met** — VACUOUS 1 |
+| Per-requirement mutation score >= 85 % | **not met** — 3 rule(s) below: AB2-1.3-01, AB2-1.3-03, AB2-1.3-05 |
+| Formal: no counterexample, no vacuous or failed proof | met — {'PROVEN': 15, 'UNSUPPORTED': 3} (work/formal.md) |
 
 ## Run set
 
@@ -42,20 +42,20 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 
 | Run | Parameters changed | Defines | Plusargs | Status | Tests | Failing assertions | Not verifiable here |
 |---|---|---|---|---|---|---|---|
-| apb4.s1 — CFG-APB4, metastability model on | defaults | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 7 |
-| apb4.s2 — CFG-APB4, metastability model on | defaults | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 7 |
-| apb4.s3 — CFG-APB4, metastability model on | defaults | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 7 |
-| model_off.s1 — CFG-APB4, model at nominal latency | defaults | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=0 | ran | {'pass': 28} | none | 6 |
-| syn.s1 — synthesis branch of the cell wrapper | defaults | VLSIT_SYNTHESIS | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 6 |
-| 4ph.s1 — CFG-4PH | PARA_APBCDC_HS_TYPE=1 | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 8 |
-| 4ph_off.s1 — CFG-4PH, model at nominal latency | PARA_APBCDC_HS_TYPE=1 | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=0 | ran | {'pass': 28} | none | 7 |
-| apb5.s1 — CFG-APB5 | PARA_APBCDC_APB5=1 | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 7 |
+| apb4.s1 — CFG-APB4, metastability model on | defaults | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 8 |
+| apb4.s2 — CFG-APB4, metastability model on | defaults | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 8 |
+| apb4.s3 — CFG-APB4, metastability model on | defaults | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 8 |
+| model_off.s1 — CFG-APB4, model at nominal latency | defaults | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=0 | ran | {'pass': 28} | none | 7 |
+| syn.s1 — synthesis branch of the cell wrapper | defaults | VLSIT_SYNTHESIS | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 8 |
+| 4ph.s1 — CFG-4PH | PARA_APBCDC_HS_TYPE=1 | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 9 |
+| 4ph_off.s1 — CFG-4PH, model at nominal latency | PARA_APBCDC_HS_TYPE=1 | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=0 | ran | {'pass': 28} | none | 8 |
+| apb5.s1 — CFG-APB5 | PARA_APBCDC_APB5=1 | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 8 |
 | user.s1 — CFG-USER | PARA_APBCDC_APB5=1, PARA_APBCDC_USER_REQ_W=4, PARA_APBCDC_USER_DATA_W=8, PARA_APBCDC_USER_RESP_W=4 | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 6 |
-| sync3.s1 — CFG-SYNC3, 3-FF cell | PARA_APBCDC_CELL_TYPE=3 | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 7 |
-| sync4.s1 — CFG-SYNC3, 4-FF cell | PARA_APBCDC_CELL_TYPE=4 | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 6 |
-| min.s1 — CFG-MIN | PARA_APBCDC_ADDR_W=1, PARA_APBCDC_DATA_W=8 | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 6 |
-| slv_fast.s1 — completer clock 3x faster | defaults | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 7 |
-| slv_slow.s1 — completer clock 9x slower | defaults | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 7 |
+| sync3.s1 — CFG-SYNC3, 3-FF cell | PARA_APBCDC_CELL_TYPE=3 | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 8 |
+| sync4.s1 — CFG-SYNC3, 4-FF cell | PARA_APBCDC_CELL_TYPE=4 | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 7 |
+| min.s1 — CFG-MIN | PARA_APBCDC_ADDR_W=1, PARA_APBCDC_DATA_W=8 | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 7 |
+| slv_fast.s1 — completer clock 3x faster | defaults | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 8 |
+| slv_slow.s1 — completer clock 9x slower | defaults | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 8 |
 
 ## Gates
 
@@ -63,47 +63,47 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 |---|---|---|
 | G1_rules | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-10T19:01:14+00:00 |
 | G2_contract | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-10T19:51:49+00:00 |
-| G3_verif_sources | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-12T07:11:23+00:00 |
+| G3_verif_sources | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-14T15:49:26+00:00 |
 | G4_signoff | PENDING | artifacts ready for review |
 
 ## Checks
 
 | Check | Kind | Title | Status | Evidence |
 |---|---|---|---|---|
-| CHK-001 | assertion | Absent APB5 signals drive zero | **PASS** | hits 4724149, fails 0; hit in 14/14 runs; formal BOUNDED |
-| CHK-002 | assertion | Outputs change only at their own clock edge or on reset assertion | **PASS** | hits 4724149, fails 0; hit in 14/14 runs; formal UNSUPPORTED |
-| CHK-003 | assertion | Requester-side PREADY only in an Access cycle | **PASS** | hits 88959, fails 0; hit in 14/14 runs; formal BOUNDED |
-| CHK-004 | assertion | Requester-side PREADY is a one-cycle pulse | **PASS** | hits 88959, fails 0; hit in 14/14 runs; formal BOUNDED |
-| CHK-005 | assertion | PSLVERR only in the PREADY cycle (no sticky error) | **PASS** | hits 24553, fails 0; hit in 14/14 runs; formal BOUNDED |
-| CHK-006 | assertion | At most one PREADY per accepted Setup phase | **PASS** | hits 178408, fails 0; hit in 14/14 runs; formal BOUNDED |
-| CHK-007 | assertion | Response outputs stable outside the PREADY cycle | **PASS** | hits 2406162, fails 0; hit in 14/14 runs; formal BOUNDED |
-| CHK-008 | assertion | No unknown requester-side outputs after reset | **PASS** | hits 2495109, fails 0; hit in 14/14 runs; formal PROVEN |
-| CHK-009 | assertion | Requester-side outputs at reset value while i_rst_n_mst is low | **PASS** | hits 20712, fails 0; hit in 14/14 runs; formal UNSUPPORTED |
-| CHK-010 | assertion | Completer-side outputs at reset value while i_rst_n_slv is low | **PASS** | hits 12538, fails 0; hit in 14/14 runs; formal UNSUPPORTED |
-| CHK-011 | assertion | No unknown completer-side outputs after reset | **PASS** | hits 2225884, fails 0; hit in 14/14 runs; formal PROVEN |
-| CHK-012 | assertion | Completer-side PENABLE implies PSEL; PSEL rises in a Setup cycle | **PASS** | hits 665096, fails 0; hit in 14/14 runs; formal BOUNDED |
-| CHK-013 | assertion | Completer-side Setup phase lasts exactly one cycle | **PASS** | hits 89169, fails 0; hit in 14/14 runs; formal BOUNDED |
-| CHK-014 | assertion | Access phase held while the completer is not ready (no timeout) | **PASS** | hits 486828, fails 0; hit in 14/14 runs; formal BOUNDED |
-| CHK-015 | assertion | Completer-side transfer ends at the PREADY edge | **PASS** | hits 89099, fails 0; hit in 14/14 runs; formal BOUNDED |
-| CHK-016 | assertion | Completer-side request fields stable during a transfer | **PASS** | hits 575997, fails 0; hit in 14/14 runs; formal BOUNDED |
-| CHK-017 | assertion | Completer-side request fields loaded only at Setup entry | **PASS** | hits 89160, fails 0; hit in 14/14 runs; formal BOUNDED |
-| CHK-018 | assertion | APB5 o_apb_pwakeup high no later than o_apb_psel and until completion | **PASS** | hits 96138, fails 0; hit in 2/14 runs; formal VACUOUS |
-| CHK-019 | test | APB5 user signals transported unchanged | **PASS** | test_chk_019_apb5_user_signals; verified in user.s1 |
+| CHK-001 | assertion | Absent APB5 signals drive zero | **PASS** | hits 2341690, fails 0; hit in 14/14 runs; formal PROVEN |
+| CHK-002 | assertion | Outputs change only at their own clock edge or on reset assertion | **PASS** | hits 2341690, fails 0; hit in 14/14 runs; formal UNSUPPORTED |
+| CHK-003 | assertion | Requester-side PREADY only in an Access cycle | **PASS** | hits 73949, fails 0; hit in 14/14 runs; formal PROVEN |
+| CHK-004 | assertion | Requester-side PREADY is a one-cycle pulse | **PASS** | hits 73949, fails 0; hit in 14/14 runs; formal PROVEN |
+| CHK-005 | assertion | PSLVERR only in the PREADY cycle (no sticky error) | **PASS** | hits 35908, fails 0; hit in 14/14 runs; formal PROVEN |
+| CHK-006 | assertion | At most one PREADY per accepted Setup phase | **PASS** | hits 73949, fails 0; hit in 14/14 runs; formal PROVEN |
+| CHK-007 | assertion | Response outputs stable outside the PREADY cycle | **PASS** | hits 2264200, fails 0; hit in 14/14 runs; formal PROVEN |
+| CHK-008 | assertion | No unknown requester-side outputs after reset | **PASS** | hits 2341676, fails 0; hit in 14/14 runs; formal PROVEN |
+| CHK-009 | assertion | Requester-side outputs at reset value while i_rst_n_mst is low | **PASS** | hits 16516, fails 0; hit in 14/14 runs; formal UNSUPPORTED |
+| CHK-010 | assertion | Completer-side outputs at reset value while i_rst_n_slv is low | **PASS** | hits 8632, fails 0; hit in 14/14 runs; formal UNSUPPORTED |
+| CHK-011 | assertion | No unknown completer-side outputs after reset | **PASS** | hits 1697468, fails 0; hit in 14/14 runs; formal PROVEN |
+| CHK-012 | assertion | Completer-side PENABLE implies PSEL; PSEL rises in a Setup cycle | **PASS** | hits 578274, fails 0; hit in 14/14 runs; formal PROVEN |
+| CHK-013 | assertion | Completer-side Setup phase lasts exactly one cycle | **PASS** | hits 74154, fails 0; hit in 14/14 runs; formal PROVEN |
+| CHK-014 | assertion | Access phase held while the completer is not ready (no timeout) | **PASS** | hits 430033, fails 0; hit in 14/14 runs; formal PROVEN |
+| CHK-015 | assertion | Completer-side transfer ends at the PREADY edge | **PASS** | hits 74087, fails 0; hit in 14/14 runs; formal PROVEN |
+| CHK-016 | assertion | Completer-side request fields stable during a transfer | **PASS** | hits 504187, fails 0; hit in 14/14 runs; formal PROVEN |
+| CHK-017 | assertion | Completer-side request fields loaded only at Setup entry | **PASS** | hits 74148, fails 0; hit in 14/14 runs; formal PROVEN |
+| CHK-018 | assertion | APB5 o_apb_pwakeup high no later than o_apb_psel and until completion | **PASS** | hits 83596, fails 0; hit in 2/14 runs; formal PROVEN |
+| CHK-019 | test | APB5 user signals transported unchanged | **PASS** | test_chk_019_apb5_user; verified in user.s1 |
 | CHK-020 | test | APB5 wake-up propagation and in-progress term | **PASS** | test_chk_020_apb5_wakeup; verified in apb5.s1, user.s1 |
 | CHK-021 | test | APB4 configuration ignores APB5 inputs | **PASS** | test_chk_021_apb4_ignores_apb5; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1 |
 | CHK-022 | test | Smallest legal configuration CFG-MIN end to end | **PASS** | test_chk_022_cfg_min; verified in min.s1 |
-| CHK-023 | test | Four-phase handshake: same function, PREADY only after the handshake closes | **PASS** | test_chk_023_four_phase/periods=0, test_chk_023_four_phase/periods=1; verified in 4ph.s1, 4ph_off.s1 |
-| CHK-024 | test | Requester protocol violations: PENABLE without Setup, field changes during Access, extended Setup | **PASS** | test_chk_024_requester_violations; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1 |
-| CHK-025 | test | Two-phase transfer duration bound | **PASS** | test_chk_025_two_phase_duration/periods=0, test_chk_025_two_phase_duration/periods=1, test_chk_025_two_phase_duration/periods=2, test_chk_025_two_phase_duration/periods=3, test_chk_025_two_phase_duration/periods=4; verified in model_off.s1, syn.s1 |
-| CHK-026 | test | Four-phase transfer duration bound | **PASS** | test_chk_026_four_phase_duration/periods=0, test_chk_026_four_phase_duration/periods=1, test_chk_026_four_phase_duration/periods=2, test_chk_026_four_phase_duration/periods=3, test_chk_026_four_phase_duration/periods=4; verified in 4ph_off.s1 |
+| CHK-023 | test | Four-phase handshake: same function, PREADY only after the handshake closes | **PASS** | test_chk_023_four_phase/clocks=0, test_chk_023_four_phase/clocks=1; verified in 4ph.s1, 4ph_off.s1 |
+| CHK-024 | test | Requester protocol violations: PENABLE without Setup, field changes during Access, extended Setup | **PASS** | test_chk_024_requester_violations; verified in user.s1 |
+| CHK-025 | test | Two-phase transfer duration bound | **PASS** | test_chk_025_two_phase_duration/clocks=0, test_chk_025_two_phase_duration/clocks=1, test_chk_025_two_phase_duration/clocks=2, test_chk_025_two_phase_duration/clocks=3, test_chk_025_two_phase_duration/clocks=4; verified in model_off.s1 |
+| CHK-026 | test | Four-phase transfer duration bound | **PASS** | test_chk_026_four_phase_duration/clocks=0, test_chk_026_four_phase_duration/clocks=1, test_chk_026_four_phase_duration/clocks=2, test_chk_026_four_phase_duration/clocks=3, test_chk_026_four_phase_duration/clocks=4; verified in 4ph_off.s1 |
 | CHK-027 | test | Reset values, quiet idle after release, asynchronous reset assertion | **PASS** | test_chk_027_reset_values; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1 |
 | CHK-028 | test | Reset during random traffic: transfer lost, clean restart, staggered release | **PASS** | test_chk_028_reset_during_traffic; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1 |
-| CHK-029 | test | Random traffic scoreboard across clock ratios with a noisy completer | **PASS** | test_chk_029_scoreboard_ratios; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1 |
+| CHK-029 | test | Random traffic scoreboard across clock ratios with a noisy completer | **PASS** | test_chk_029_scoreboard_ratios, test_regression_random; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1 |
 | CHK-030 | test | Synchronizer depth seen in crossing latency (CELL_TYPE 4) | **PASS** | test_chk_030_sync_depth; verified in sync4.s1 |
 | CHK-031 | test | Single write and read without wait states, two-phase, field and response transport with crossing windows | **PASS** | test_chk_031_single_write_read; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1 |
 | CHK-032 | test | Completer wait states extend the transfer without limit | **PASS** | test_chk_032_wait_states; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1 |
 | CHK-033 | test | Error response forwarded with data, next transfer independent | **PASS** | test_chk_033_error_response; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1 |
-| CHK-034 | test | Back-to-back transfers, one at a time | **PASS** | test_chk_034_back_to_back/periods=0, test_chk_034_back_to_back/periods=1; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1 |
+| CHK-034 | test | Back-to-back transfers, one at a time | **PASS** | test_chk_034_back_to_back/clocks=run, test_chk_034_back_to_back/clocks=swap; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1 |
 | CHK-035 | test | PPROT and PSTRB forwarded unchanged, including PSTRB of a read | **PASS** | test_chk_035_pprot_pstrb; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1 |
 
 ## Requirement traceability (RTM)
@@ -114,65 +114,65 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 | AB2-1.1-02 |  | The source must hold the multi-bit request and response bundles stable for the whole handshake. | CHK-024:PASS, CHK-029:PASS | — | **VERIFIED** |
 | AB2-1.1-03 |  | The destination must load the multi-bit bundle only after the associated control bit has arrived. | not verified: not_observable_at_interface | — | **NOT_VERIFIED_BY_SIM** |
 | AB2-1.1-04 |  | The timing of the bundle paths must be bounded by set_max_delay constraints (Section 17). | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
-| AB2-1.3-01 | REQ-FUNC-001, REQ-FUNC-009 | The bridge must always support APB4 write and read transfers across two asynchronous clocks (FEAT-001, REQ-FUNC-001 to REQ-FUNC-009). | CHK-031:PASS | 76.9 % (10/13) **below** | **VERIFIED** |
+| AB2-1.3-01 | REQ-FUNC-001, REQ-FUNC-009 | The bridge must always support APB4 write and read transfers across two asynchronous clocks (FEAT-001, REQ-FUNC-001 to REQ-FUNC-009). | CHK-031:PASS | 83.3 % (5/6) **below** | **VERIFIED** |
 | AB2-1.3-02 | REQ-FUNC-005, REQ-FUNC-006 | The bridge must always transport wait states and error responses across the crossing (FEAT-002). | CHK-032:PASS, CHK-033:PASS | — | **VERIFIED** |
-| AB2-1.3-03 | REQ-HS-001, REQ-PERF-001 | The bridge must provide the two-phase handshake when PARA_APBCDC_HS_TYPE is 0 (FEAT-003). | CHK-025:PASS, CHK-031:PASS | 100.0 % (7/7) | **VERIFIED** |
-| AB2-1.3-04 | REQ-HS-001, REQ-HS-004, REQ-PERF-002 | The bridge must provide the four-phase handshake when PARA_APBCDC_HS_TYPE is 1 (FEAT-004). | CHK-023:PASS | 100.0 % (2/2) | **VERIFIED** |
-| AB2-1.3-05 | REQ-CLK-003 | The bridge must support selectable synchronizer depth with PARA_APBCDC_CELL_TYPE 1 to 4; 0 is for simulation only (FEAT-005). | CHK-030:PASS | — | **VERIFIED** |
+| AB2-1.3-03 | REQ-HS-001, REQ-PERF-001 | The bridge must provide the two-phase handshake when PARA_APBCDC_HS_TYPE is 0 (FEAT-003). | CHK-025:PASS, CHK-031:PASS | 66.7 % (2/3) **below** | **VERIFIED** |
+| AB2-1.3-04 | REQ-HS-001, REQ-HS-004, REQ-PERF-002 | The bridge must provide the four-phase handshake when PARA_APBCDC_HS_TYPE is 1 (FEAT-004). | CHK-023:PASS | — | **VERIFIED** |
+| AB2-1.3-05 | REQ-CLK-003 | The bridge must support selectable synchronizer depth with PARA_APBCDC_CELL_TYPE 1 to 4; 0 is for simulation only (FEAT-005). | CHK-030:PASS | 66.7 % (2/3) **below** | **VERIFIED** |
 | AB2-1.3-06 | REQ-APB5-001 | The bridge must provide APB5 wake-up signaling when PARA_APBCDC_APB5 is 1 (FEAT-006). | CHK-020:PASS | 100.0 % (1/1) | **VERIFIED** |
 | AB2-1.3-07 | REQ-APB5-002 | The bridge must provide the APB5 user signals when PARA_APBCDC_APB5 is 1 and the width is above 0 (FEAT-007). | CHK-019:PASS | — | **VERIFIED** |
 | AB2-1.3-08 | REQ-TIM-001, REQ-TIM-003 | The IP must always deliver an executable SDC with the crossing constraints (FEAT-008). | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
 | AB2-2.2-01 |  | The RTL must comply with REF-003 baseline; conflicts are resolved by revising the requirement or choosing a compliant implementation, not by a local RTL exception. | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
 | AB2-2.3-01 |  | The IP implements the AMBA APB Issue D completer role on the requester-side interface and requester role on the completer-side interface, with PSTRB, PPROT, PSLVERR always present and APB5 signals in the APB5 profile. | CHK-003:PASS, CHK-031:PASS | — | **VERIFIED** |
-| AB2-3-01 | REQ-FUNC-001 | The bridge shall start exactly one completer-side APB transfer with the same PWRITE, PADDR, PPROT, PSTRB and, for a write, PWDATA as driven in the Setup phase. | CHK-029:PASS, CHK-031:PASS | 100.0 % (10/10) | **VERIFIED** |
+| AB2-3-01 | REQ-FUNC-001 | The bridge shall start exactly one completer-side APB transfer with the same PWRITE, PADDR, PPROT, PSTRB and, for a write, PWDATA as driven in the Setup phase. | CHK-029:PASS, CHK-031:PASS | 100.0 % (4/4) | **VERIFIED** |
 | AB2-3-02 | REQ-FUNC-001 | In APB5 the completer-side transfer shall carry the same PAUSER and, for a write, the same PWUSER as the requester-side Setup phase. | CHK-019:PASS | — | **VERIFIED** |
-| AB2-3-03 | REQ-FUNC-002 | The bridge shall return the completer-side PRDATA of a read and PSLVERR unchanged on the requester side, valid in the cycle where PREADY is high. | CHK-031:PASS, CHK-033:PASS | 100.0 % (1/1) | **VERIFIED** |
+| AB2-3-03 | REQ-FUNC-002 | The bridge shall return the completer-side PRDATA of a read and PSLVERR unchanged on the requester side, valid in the cycle where PREADY is high. | CHK-031:PASS, CHK-033:PASS | — | **VERIFIED** |
 | AB2-3-04 | REQ-FUNC-002 | In APB5 the bridge shall return PRUSER of a read and PBUSER unchanged on the requester side, valid when PREADY is high. | CHK-019:PASS | — | **VERIFIED** |
 | AB2-3-05 | REQ-FUNC-003 | Transfers shall be carried in start order, one completer-side transfer per requester-side transfer, with no loss and no duplicate. | CHK-029:PASS | — | **VERIFIED** |
 | AB2-3-06 | REQ-FUNC-003 | No new completer-side transfer shall start before the response of the previous one has been delivered. | CHK-029:PASS | — | **VERIFIED** |
-| AB2-3-07 | REQ-FUNC-004 | Requester-side PREADY shall be low from the Setup phase until the response is available. | CHK-006:PASS | 100.0 % (1/1) | **VERIFIED** |
+| AB2-3-07 | REQ-FUNC-004 | Requester-side PREADY shall be low from the Setup phase until the response is available. | CHK-006:PASS | — | **VERIFIED** |
 | AB2-3-08 | REQ-FUNC-004 | Requester-side PREADY shall then be high for exactly one i_clk_mst cycle, in a cycle in which PSEL and PENABLE are high. | CHK-003:PASS, CHK-004:PASS | — | **VERIFIED** |
 | AB2-3-09 | REQ-FUNC-005 | Requester-side PREADY shall be raised only after the completer-side PREADY was seen, so completer wait states extend the requester-side transfer. | CHK-032:PASS | 100.0 % (1/1) | **VERIFIED** |
-| AB2-3-10 | REQ-FUNC-005 | The bridge shall wait without limit for the completer response, with no timeout. | CHK-014:PASS, CHK-032:PASS | 100.0 % (1/1) | **VERIFIED** |
-| AB2-3-11 | REQ-FUNC-006 | Requester-side PSLVERR shall not be high outside the PREADY cycle. | CHK-005:PASS | 100.0 % (1/1) | **VERIFIED** |
+| AB2-3-10 | REQ-FUNC-005 | The bridge shall wait without limit for the completer response, with no timeout. | CHK-014:PASS, CHK-032:PASS | — | **VERIFIED** |
+| AB2-3-11 | REQ-FUNC-006 | Requester-side PSLVERR shall not be high outside the PREADY cycle. | CHK-005:PASS | — | **VERIFIED** |
 | AB2-3-12 | REQ-FUNC-006 | Requester-side PSLVERR shall not be high unless the completer-side PSLVERR was high at the end of the transfer. | CHK-033:PASS | — | **VERIFIED** |
 | AB2-3-13 | REQ-FUNC-007, REQ-PERF-003 | The bridge shall accept the Setup phase of a new requester-side transfer in the cycle following the PREADY cycle (back-to-back). | CHK-034:PASS | 100.0 % (1/1) | **VERIFIED** |
-| AB2-3-14 | REQ-FUNC-008 | On the completer side the bridge shall drive PSEL high for the whole transfer. | CHK-012:PASS, CHK-014:PASS | 100.0 % (2/2) | **VERIFIED** |
-| AB2-3-15 | REQ-FUNC-008 | PENABLE shall be low in the Setup cycle and high from the next cycle until the transfer completes. | CHK-012:PASS, CHK-013:PASS | 100.0 % (2/2) | **VERIFIED** |
+| AB2-3-14 | REQ-FUNC-008 | On the completer side the bridge shall drive PSEL high for the whole transfer. | CHK-012:PASS, CHK-014:PASS | — | **VERIFIED** |
+| AB2-3-15 | REQ-FUNC-008 | PENABLE shall be low in the Setup cycle and high from the next cycle until the transfer completes. | CHK-012:PASS, CHK-013:PASS | 100.0 % (1/1) | **VERIFIED** |
 | AB2-3-16 | REQ-FUNC-008 | The bridge shall keep PADDR, PPROT, PWRITE, PWDATA, PSTRB, PAUSER and PWUSER unchanged from the Setup phase until PREADY is seen high. | CHK-016:PASS | — | **VERIFIED** |
-| AB2-3-17 | REQ-FUNC-008 | The bridge shall drive PSEL and PENABLE low when no transfer is in progress. | CHK-015:PASS, CHK-027:PASS | 100.0 % (2/2) | **VERIFIED** |
+| AB2-3-17 | REQ-FUNC-008 | The bridge shall drive PSEL and PENABLE low when no transfer is in progress. | CHK-015:PASS, CHK-027:PASS | — | **VERIFIED** |
 | AB2-3-18 | REQ-FUNC-009 | PPROT and PSTRB shall be forwarded unchanged. | CHK-035:PASS | — | **VERIFIED** |
 | AB2-3-19 | REQ-FUNC-009 | The bridge does not check that PSTRB is low in a read; it forwards what the requester drove. | CHK-035:PASS | — | **VERIFIED** |
 | AB2-3-20 | REQ-IF-001 | The IP shall expose exactly the ports of Section 6.2 of the configured revision. | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
 | AB2-3-21 | REQ-IF-002 | Every output of both APB interfaces shall be a flip-flop output with no logic after it, so it is glitch-free. | CHK-002:PASS | — | **VERIFIED** |
 | AB2-3-22 | REQ-IF-003 | Outputs that need not be valid shall hold a stable value (reset value zero). | CHK-007:PASS, CHK-017:PASS | — | **VERIFIED** |
-| AB2-3-23 | REQ-IF-003 | PSLVERR shall be low when PREADY is low. | CHK-005:PASS | 100.0 % (1/1) | **VERIFIED** |
-| AB2-3-24 | REQ-HS-001 | The request bit shall toggle once per transfer and the acknowledge bit shall toggle once per transfer (two-phase handshake). | CHK-029:PASS | 100.0 % (3/3) | **VERIFIED** |
-| AB2-3-25 | REQ-HS-001 | The four-phase handshake shall sequence request high, acknowledge high, request low, acknowledge low. | CHK-023:PASS | 100.0 % (2/2) | **VERIFIED** |
-| AB2-3-26 | REQ-HS-001 | The function seen on the two APB interfaces shall be the same for both handshake types. | CHK-023:PASS | 100.0 % (4/4) | **VERIFIED** |
+| AB2-3-23 | REQ-IF-003 | PSLVERR shall be low when PREADY is low. | CHK-005:PASS | — | **VERIFIED** |
+| AB2-3-24 | REQ-HS-001 | The request bit shall toggle once per transfer and the acknowledge bit shall toggle once per transfer (two-phase handshake). | CHK-029:PASS | — | **VERIFIED** |
+| AB2-3-25 | REQ-HS-001 | The four-phase handshake shall sequence request high, acknowledge high, request low, acknowledge low. | CHK-023:PASS | — | **VERIFIED** |
+| AB2-3-26 | REQ-HS-001 | The function seen on the two APB interfaces shall be the same for both handshake types. | CHK-023:PASS | — | **VERIFIED** |
 | AB2-3-27 | REQ-HS-002 | The request bundle in the requester-side hold register shall not change from the request launch edge until the acknowledge was seen. | CHK-024:PASS, CHK-029:PASS | — | **VERIFIED** |
 | AB2-3-28 | REQ-HS-002 | The response bundle in the completer-side hold register shall not change from the acknowledge launch edge until the next request was seen. | CHK-029:PASS | — | **VERIFIED** |
 | AB2-3-29 | REQ-HS-003 | The request bit shall be launched at the same edge the request bundle is loaded, and the acknowledge bit at the same edge the response bundle is loaded. | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
 | AB2-3-30 | REQ-HS-003 | There shall be no logic between a launch flip-flop and its synchronizer. | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
-| AB2-3-31 | REQ-HS-004 | The requester side shall raise PREADY only after the acknowledge returned to 0. | CHK-023:PASS | 100.0 % (2/2) | **VERIFIED** |
+| AB2-3-31 | REQ-HS-004 | The requester side shall raise PREADY only after the acknowledge returned to 0. | CHK-023:PASS | — | **VERIFIED** |
 | AB2-3-32 | REQ-CLK-001 | The IP shall be correct for any frequency ratio and phase of i_clk_mst and i_clk_slv, including equal frequency. | CHK-029:PASS | — | **VERIFIED** |
 | AB2-3-33 | REQ-CLK-002 | Only the five crossings (request, request bundle, acknowledge, response bundle, wake-up) shall exist between the clock domains. | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
 | AB2-3-34 | REQ-CLK-002 | Each control bit shall cross through a synchronizer and no bundle bit shall cross through one. | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
 | AB2-3-35 | REQ-CLK-003 | Synchronizer depth shall follow PARA_APBCDC_CELL_TYPE: 1 and 2 two stages, 3 three stages, 4 four stages. | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
 | AB2-3-36 | REQ-CLK-003 | The value 0 (no stage) is for simulation only and shall not be used in a netlist. | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
-| AB2-3-37 | REQ-RESET-001 | Both resets shall be active-low with asynchronous assertion. | CHK-009:PASS, CHK-027:PASS | 100.0 % (8/8) | **VERIFIED** |
-| AB2-3-38 | REQ-RESET-001 | Every flip-flop of the domain shall be at its reset value: payload registers 0, request 0, acknowledge 0, FSMs IDLE, PSEL, PENABLE, PREADY, PSLVERR, PWAKEUP 0. | CHK-009:PASS, CHK-010:PASS, CHK-027:PASS | 100.0 % (8/8) | **VERIFIED** |
+| AB2-3-37 | REQ-RESET-001 | Both resets shall be active-low with asynchronous assertion. | CHK-009:PASS, CHK-027:PASS | 100.0 % (3/3) | **VERIFIED** |
+| AB2-3-38 | REQ-RESET-001 | Every flip-flop of the domain shall be at its reset value: payload registers 0, request 0, acknowledge 0, FSMs IDLE, PSEL, PENABLE, PREADY, PSLVERR, PWAKEUP 0. | CHK-009:PASS, CHK-010:PASS, CHK-027:PASS | 100.0 % (1/1) | **VERIFIED** |
 | AB2-3-39 | REQ-RESET-002 | The two resets shall be asserted together and each released synchronously to its domain clock, outside the IP. | CHK-028:PASS | — | **VERIFIED** |
 | AB2-3-40 | REQ-RESET-002 | A transfer in flight when a reset is asserted is lost. | CHK-028:PASS | — | **VERIFIED** |
 | AB2-3-41 | REQ-RESET-002 | Asserting only one reset is not supported. | not verified: not_applicable_to_dut | — | **NOT_VERIFIED_BY_SIM** |
-| AB2-3-42 | REQ-APB5-001 | o_apb_pwakeup shall be a flip-flop output that is high whenever the synchronized i_apb_pwakeup is high or a completer-side transfer is in progress. | CHK-020:PASS | 100.0 % (3/3) | **VERIFIED** |
-| AB2-3-43 | REQ-APB5-001 | o_apb_pwakeup shall be high no later than o_apb_psel. | CHK-018:PASS | 100.0 % (2/2) | **VERIFIED** |
-| AB2-3-44 | REQ-APB5-002 | PAUSER, PWUSER, PRUSER, PBUSER shall be transported with the same timing rules as the other request and response fields; a signal with width parameter 0 is not present. | CHK-001:PASS, CHK-019:PASS | — | **VERIFIED** |
+| AB2-3-42 | REQ-APB5-001 | o_apb_pwakeup shall be a flip-flop output that is high whenever the synchronized i_apb_pwakeup is high or a completer-side transfer is in progress. | CHK-020:PASS | 100.0 % (1/1) | **VERIFIED** |
+| AB2-3-43 | REQ-APB5-001 | o_apb_pwakeup shall be high no later than o_apb_psel. | CHK-018:PASS | — | **VERIFIED** |
+| AB2-3-44 | REQ-APB5-002 | PAUSER, PWUSER, PRUSER, PBUSER shall be transported with the same timing rules as the other request and response fields; a signal with width parameter 0 is not present. | CHK-001:PASS, CHK-019:PASS | 100.0 % (1/1) | **VERIFIED** |
 | AB2-3-45 | REQ-APB5-003 | The APB5 signals shall have no effect: o_apb_pwakeup is 0 and user outputs are 0. | CHK-001:PASS, CHK-021:PASS | 100.0 % (2/2) | **VERIFIED** |
 | AB2-3-46 | REQ-PARAM-001 | The IP shall accept the parameter values of Section 8. | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
 | AB2-3-48 | REQ-PERF-001 | Duration from first Setup cycle to end of the requester PREADY cycle shall not exceed (N+3) x T_mst + (N+3+w) x T_slv. | CHK-025:PASS | — | **VERIFIED** |
 | AB2-3-49 | REQ-PERF-002 | Duration from first Setup cycle to end of the requester PREADY cycle shall not exceed (2N+4) x T_mst + (2N+4+w) x T_slv. | CHK-026:PASS | — | **VERIFIED** |
-| AB2-3-50 | REQ-PERF-003 | The bridge shall carry one transfer at a time. | CHK-034:PASS | — | **VERIFIED** |
+| AB2-3-50 | REQ-PERF-003 | The bridge shall carry one transfer at a time. | CHK-034:PASS | 100.0 % (1/1) | **VERIFIED** |
 | AB2-3-51 | REQ-TIM-001 | The IP shall be delivered with a Synopsys-dialect SDC defining the two clocks, interface budgets and exceptions of the five crossings, with budgets computed from clock periods and synchronizer depth. | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
 | AB2-3-52 | REQ-TIM-002 | Each crossing path shall be constrained by set_max_delay with clock latency ignored. | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
 | AB2-3-53 | REQ-TIM-002 | No set_clock_groups -asynchronous and no set_false_path, other than the hold-only false path of the crossings, shall exist between the two clocks. | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
@@ -183,27 +183,27 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 | AB2-3-58 | REQ-VER-002 | The random regression shall cover both handshake types, two synchronizer depths, APB4 and APB5, at least ten clock ratios including equal and 9:1 both directions, with wait states and errors, and report no error. | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
 | AB2-4-01 |  | CFG-MIN must be based on CFG-APB4 with FEAT-004, FEAT-006 and FEAT-007 disabled, ADDR_W 1 and DATA_W 8, as the smallest legal instance verified by TEST-014. | CHK-022:PASS | — | **VERIFIED** |
 | AB2-4-02 |  | FEAT-004, FEAT-006 and FEAT-007 must be selected by an elaboration-time parameter and be present or absent, not enabled or disabled at run time. | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
-| AB2-5.3-02 |  | With the two-phase handshake reg_req toggles; with the four-phase handshake reg_req rises. | CHK-031:PASS | 100.0 % (2/2) | **VERIFIED** |
+| AB2-5.3-02 |  | With the two-phase handshake reg_req toggles; with the four-phase handshake reg_req rises. | CHK-031:PASS | — | **VERIFIED** |
 | AB2-5.3-03 |  | Loading reg_req_payload and launching the request happen at the same clock edge. | not verified: not_observable_at_interface | — | **NOT_VERIFIED_BY_SIM** |
 | AB2-5.3-04 |  | The slv FSM loads reg_apb_payload from reg_req_payload, which has been stable for at least N destination periods, then raises PSEL (Setup). | CHK-031:PASS | — | **VERIFIED** |
 | AB2-5.3-05 |  | PENABLE (Access) is raised one cycle after PSEL. | CHK-013:PASS | — | **VERIFIED** |
-| AB2-5.3-06 |  | The slv FSM waits in ACCESS until the completer drives PREADY. | CHK-014:PASS, CHK-032:PASS | 100.0 % (1/1) | **VERIFIED** |
-| AB2-5.3-07 |  | At that edge the slv block loads reg_resp_hold with PRDATA, PSLVERR, PRUSER, PBUSER, drops PSEL and PENABLE, and launches the acknowledge (toggle or rise). | CHK-015:PASS, CHK-031:PASS | 100.0 % (1/1) | **VERIFIED** |
+| AB2-5.3-06 |  | The slv FSM waits in ACCESS until the completer drives PREADY. | CHK-014:PASS, CHK-032:PASS | — | **VERIFIED** |
+| AB2-5.3-07 |  | At that edge the slv block loads reg_resp_hold with PRDATA, PSLVERR, PRUSER, PBUSER, drops PSEL and PENABLE, and launches the acknowledge (toggle or rise). | CHK-015:PASS, CHK-031:PASS | — | **VERIFIED** |
 | AB2-5.3-08 |  | The mst FSM loads the response output registers from reg_resp_hold and raises PREADY for one cycle (state RESP). | CHK-031:PASS | — | **VERIFIED** |
-| AB2-5.3-09 |  | The mst FSM first drops the request, waits for the acknowledge to fall, then loads the response and raises PREADY. | CHK-023:PASS | 100.0 % (2/2) | **VERIFIED** |
-| AB2-5.3-10 |  | The slv FSM waits in REQ0 for the request to fall and then drops the acknowledge. | CHK-023:PASS | 100.0 % (2/2) | **VERIFIED** |
+| AB2-5.3-09 |  | The mst FSM first drops the request, waits for the acknowledge to fall, then loads the response and raises PREADY. | CHK-023:PASS | — | **VERIFIED** |
+| AB2-5.3-10 |  | The slv FSM waits in REQ0 for the request to fall and then drops the acknowledge. | CHK-023:PASS | — | **VERIFIED** |
 | AB2-5.3-11 |  | The mst FSM returns to IDLE and captures the next Setup phase driven in the cycle after the PREADY cycle. | CHK-034:PASS | — | **VERIFIED** |
 | AB2-5.3-12 |  | i_apb_pwakeup is registered in the mst block, crosses through u_sync_wk, and drives o_apb_pwakeup through a flip-flop in the slv block together with an in-progress term. | CHK-020:PASS | — | **VERIFIED** |
 | AB2-5.4-01 |  | At most one transfer is in flight, and the FSMs are in IDLE only between transfers. | CHK-029:PASS | — | **VERIFIED** |
-| AB2-5.4-02 | REQ-HS-002 | The request and response bundles change only while the handshake is not in the phase in which the other domain may load them. | CHK-029:PASS | — | **VERIFIED** |
-| AB2-5.4-03 |  | With the two-phase handshake the request and acknowledge bits are equal; with the four-phase handshake both are 0. | CHK-027:PASS | 100.0 % (4/4) | **VERIFIED** |
+| AB2-5.4-02 | REQ-HS-002 | The request and response bundles change only while the handshake is not in the phase in which the other domain may load them. | CHK-029:PASS | 100.0 % (1/1) | **VERIFIED** |
+| AB2-5.4-03 |  | With the two-phase handshake the request and acknowledge bits are equal; with the four-phase handshake both are 0. | CHK-027:PASS | 100.0 % (1/1) | **VERIFIED** |
 | AB2-5.4-04 |  | Requester-side PREADY is high only in state RESP, for one cycle per transfer. | CHK-004:PASS, CHK-006:PASS | — | **VERIFIED** |
-| AB2-5.4-05 |  | Completer-side PSEL is high only in states SETUP and ACCESS. | CHK-012:PASS | 100.0 % (1/1) | **VERIFIED** |
-| AB2-5.4-06 |  | Every flip-flop that drives an APB output is reset to 0. | CHK-009:PASS, CHK-010:PASS, CHK-027:PASS | 100.0 % (2/2) | **VERIFIED** |
+| AB2-5.4-05 |  | Completer-side PSEL is high only in states SETUP and ACCESS. | CHK-012:PASS | — | **VERIFIED** |
+| AB2-5.4-06 |  | Every flip-flop that drives an APB output is reset to 0. | CHK-009:PASS, CHK-010:PASS, CHK-027:PASS | — | **VERIFIED** |
 | AB2-6.1-01 |  | The IP provides interface IF-001, an AMBA APB4/APB5 Issue D completer interface (requests in, responses out) in CLK-MST, in all configurations. | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
 | AB2-6.1-02 |  | The IP provides interface IF-002, an AMBA APB4/APB5 Issue D requester interface (requests out, responses in) in CLK-SLV, in all configurations. | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
 | AB2-6.1-03 |  | The IP provides interface IF-003 as receiver of clocks and hardware resets (inputs) for CLK-MST and CLK-SLV, in all configurations. | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
-| AB2-6.2-01 |  | o_apb_pslverr is a flop output that is high only in the o_apb_pready cycle, loaded with o_apb_pready and cleared at the next edge; reset value 0. | CHK-005:PASS | 100.0 % (1/1) | **VERIFIED** |
+| AB2-6.2-01 |  | o_apb_pslverr is a flop output that is high only in the o_apb_pready cycle, loaded with o_apb_pready and cleared at the next edge; reset value 0. | CHK-005:PASS | — | **VERIFIED** |
 | AB2-6.2-02 |  | o_apb_pwrite is loaded with the request and stays stable until the transfer completes; reset value 0. | CHK-016:PASS | — | **VERIFIED** |
 | AB2-6.2-03 |  | o_apb_paddr is loaded with the request and stays stable until the transfer completes; reset value 0. | CHK-016:PASS | — | **VERIFIED** |
 | AB2-6.2-04 |  | o_apb_pprot is loaded with the request and stays stable until the transfer completes; reset value 0. | CHK-016:PASS | — | **VERIFIED** |
@@ -211,18 +211,18 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 | AB2-6.2-06 |  | o_apb_pwdata is loaded with the request and stays stable until the transfer completes; reset value 0. | CHK-016:PASS | — | **VERIFIED** |
 | AB2-6.2-07 |  | o_apb_pauser is loaded with the request and stays stable until the transfer completes; reset value 0. | CHK-016:PASS, CHK-019:PASS | — | **VERIFIED** |
 | AB2-6.2-08 |  | o_apb_pwuser is loaded with the request and stays stable until the transfer completes; reset value 0. | CHK-016:PASS, CHK-019:PASS | — | **VERIFIED** |
-| AB2-6.3-01 |  | A transfer starts with a one-cycle Setup phase (PSEL high, PENABLE low), followed by the Access phase (PENABLE high), which ends in the cycle where PREADY is high. | CHK-012:PASS, CHK-013:PASS | — | **VERIFIED** |
+| AB2-6.3-01 |  | A transfer starts with a one-cycle Setup phase (PSEL high, PENABLE low), followed by the Access phase (PENABLE high), which ends in the cycle where PREADY is high. | CHK-012:PASS, CHK-013:PASS | 100.0 % (1/1) | **VERIFIED** |
 | AB2-6.3-02 |  | After PREADY the bus may return to IDLE or go directly to the Setup phase of the next transfer. | CHK-034:PASS | — | **VERIFIED** |
 | AB2-6.3-03 |  | PADDR, PPROT, PENABLE, PWRITE, PAUSER, PSTRB, active PWDATA lanes and PWUSER of a write are valid whenever PSEL is high; the bridge captures them in the Setup cycle. | CHK-031:PASS | — | **VERIFIED** |
 | AB2-6.3-04 |  | PREADY is valid when PSEL and PENABLE are high. | CHK-003:PASS | — | **VERIFIED** |
-| AB2-6.3-05 |  | PRDATA of a read, PSLVERR, PRUSER of a read and PBUSER are valid when PSEL, PENABLE and PREADY are high. | CHK-008:PASS, CHK-031:PASS | 100.0 % (1/1) | **VERIFIED** |
+| AB2-6.3-05 |  | PRDATA of a read, PSLVERR, PRUSER of a read and PBUSER are valid when PSEL, PENABLE and PREADY are high. | CHK-008:PASS, CHK-031:PASS | — | **VERIFIED** |
 | AB2-6.3-06 |  | PADDR, PPROT, PWRITE, PWDATA, PSTRB, PAUSER and PWUSER must not change between Setup and Access phase and while PREADY is low. | CHK-016:PASS | — | **VERIFIED** |
 | AB2-6.3-07 |  | The bridge guarantees stability of the completer-side fields by loading them into reg_apb_payload once, relying on requester stability only in the Setup cycle. | CHK-017:PASS, CHK-024:PASS | — | **VERIFIED** |
 | AB2-6.3-09 |  | PSLVERR is valid only in the last cycle of a transfer. | CHK-005:PASS | — | **VERIFIED** |
 | AB2-6.3-10 |  | The bridge forwards PRDATA and PSLVERR together without masking, even for a read with an error. | CHK-033:PASS | — | **VERIFIED** |
-| AB2-6.3-11 |  | PSTRB must be low in a read. | CHK-029:PASS | 100.0 % (1/1) | **VERIFIED** |
+| AB2-6.3-11 |  | PSTRB must be low in a read. | CHK-029:PASS | — | **VERIFIED** |
 | AB2-6.3-12 |  | The bridge forwards PSTRB as received. | CHK-035:PASS | — | **VERIFIED** |
-| AB2-6.3-13 |  | PWAKEUP must be glitch-free to be sampled asynchronously and must stay high until PREADY when high in the same cycle as PSEL. | CHK-018:PASS, CHK-020:PASS | 100.0 % (1/1) | **VERIFIED** |
+| AB2-6.3-13 |  | PWAKEUP must be glitch-free to be sampled asynchronously and must stay high until PREADY when high in the same cycle as PSEL. | CHK-018:PASS, CHK-020:PASS | 100.0 % (2/2) | **VERIFIED** |
 | AB2-6.3-14 |  | PWAKEUP may be asserted before, during or after PSEL. | CHK-020:PASS | 100.0 % (1/1) | **VERIFIED** |
 | AB2-6.3-15 |  | PWAKEUP should be asserted one cycle before PSEL. | CHK-020:PASS | — | **VERIFIED** |
 | AB2-6.3-16 |  | A completer may wait for PWAKEUP before driving PREADY. | CHK-020:PASS | — | **VERIFIED** |
@@ -230,9 +230,9 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 | AB2-6.3-18 |  | PRUSER and PBUSER are valid in the PREADY cycle. | CHK-019:PASS | — | **VERIFIED** |
 | AB2-6.3-19 |  | A domain-crossing bridge should provide all user signals. | not verified: design_guideline | — | **NOT_VERIFIED_BY_SIM** |
 | AB2-6.3-20 | REQ-FUNC-001, REQ-FUNC-002 | The bridge performs one completer-side transfer and returns the response. | CHK-031:PASS | — | **VERIFIED** |
-| AB2-6.3-21 | REQ-FUNC-005 | Requester-side PREADY stays low until the completer response. | CHK-032:PASS | 100.0 % (1/1) | **VERIFIED** |
-| AB2-6.3-22 | REQ-FUNC-006 | The bridge returns PSLVERR with PREADY and forwards the data. | CHK-033:PASS | 100.0 % (1/1) | **VERIFIED** |
-| AB2-6.3-23 | REQ-FUNC-007 | The bridge accepts a back-to-back transfer whose Setup phase follows right after PREADY. | CHK-034:PASS | — | **VERIFIED** |
+| AB2-6.3-21 | REQ-FUNC-005 | Requester-side PREADY stays low until the completer response. | CHK-032:PASS | — | **VERIFIED** |
+| AB2-6.3-22 | REQ-FUNC-006 | The bridge returns PSLVERR with PREADY and forwards the data. | CHK-033:PASS | — | **VERIFIED** |
+| AB2-6.3-23 | REQ-FUNC-007 | The bridge accepts a back-to-back transfer whose Setup phase follows right after PREADY. | CHK-034:PASS | 100.0 % (1/1) | **VERIFIED** |
 | AB2-6.3-24 | REQ-FUNC-001 | The bridge ignores PENABLE high without a preceding Setup cycle and starts no transfer. | CHK-024:PASS | — | **VERIFIED** |
 | AB2-6.3-25 | REQ-FUNC-001 | The bridge does not detect the change and uses the values captured in the Setup phase. | CHK-024:PASS | — | **VERIFIED** |
 | AB2-6.3-26 | REQ-FUNC-005 | The bridge waits without limit for the completer PREADY. | CHK-032:PASS | — | **VERIFIED** |
@@ -240,17 +240,17 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 | AB2-6.4-01 |  | The IP has no interrupt or event output; errors travel as PSLVERR of the transfer. | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
 | AB2-7.2-01 | REQ-CLK-002 | Only the five listed crossings (CDC-001 to CDC-005) join the CLK-MST and CLK-SLV domains; no other path exists between them. | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
 | AB2-7.2-02 |  | Each data bundle must be held stable and loaded by the destination only after its control bit arrives, so no bundle bit passes through a synchronizer. | CHK-029:PASS | — | **VERIFIED** |
-| AB2-7.2-03 |  | The request bundle reg_req_payload must be held in mst, loaded at the launch edge of the request bit, and loaded into reg_apb_payload in slv at the edge that sees the request event, without a synchronizer. | CHK-017:PASS, CHK-031:PASS | 100.0 % (1/1) | **VERIFIED** |
+| AB2-7.2-03 |  | The request bundle reg_req_payload must be held in mst, loaded at the launch edge of the request bit, and loaded into reg_apb_payload in slv at the edge that sees the request event, without a synchronizer. | CHK-017:PASS, CHK-031:PASS | — | **VERIFIED** |
 | AB2-7.2-04 |  | The request hold register reg_req_payload and reg_apb_payload must reset to 0. | CHK-027:PASS | 100.0 % (2/2) | **VERIFIED** |
 | AB2-7.2-05 |  | reg_req must cross to slv through N-stage synchronizer u_sync_req with no logic between the flop and the first stage, its stages reset to 0 by i_rst_n_slv. | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
 | AB2-7.2-06 |  | reg_ack must cross to mst through N-stage synchronizer u_sync_ack with no logic before the first stage, reset to 0 by i_rst_n_mst. | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
 | AB2-7.2-07 |  | reg_resp_hold must be held in slv, loaded at the launch edge of the acknowledge bit, and loaded into reg_resp_payload in mst at the edge that sees the acknowledge event, without a synchronizer. | CHK-031:PASS | — | **VERIFIED** |
 | AB2-7.2-08 |  | reg_resp_hold and reg_resp_payload must reset to 0. | CHK-027:PASS | — | **VERIFIED** |
-| AB2-7.2-09 |  | reg_wakeup, a registered copy of i_apb_pwakeup, must cross to slv through N-stage synchronizer u_sync_wk, reset to 0 by i_rst_n_slv. | CHK-020:PASS | 100.0 % (1/1) | **VERIFIED** |
+| AB2-7.2-09 |  | reg_wakeup, a registered copy of i_apb_pwakeup, must cross to slv through N-stage synchronizer u_sync_wk, reset to 0 by i_rst_n_slv. | CHK-020:PASS | — | **VERIFIED** |
 | AB2-7.2-11 |  | Release of one reset while the other domain is still in reset is allowed; no request is launched or seen because the mst FSM leaves IDLE only on a Setup phase. | CHK-028:PASS | — | **VERIFIED** |
-| AB2-7.3-01 |  | On i_rst_n_mst assertion (active-low, asynchronous), all mst-block state resets: registers 0, FSM IDLE, o_apb_pready and o_apb_pslverr 0. | CHK-009:PASS, CHK-027:PASS | 100.0 % (6/6) | **VERIFIED** |
-| AB2-7.3-02 |  | On i_rst_n_slv assertion (active-low, asynchronous), all slv-block state resets: registers 0, FSM IDLE, including o_apb_psel, o_apb_penable and o_apb_pwakeup. | CHK-010:PASS, CHK-027:PASS | 100.0 % (6/6) | **VERIFIED** |
-| AB2-7.3-04 |  | No transfer may start before both resets are released; the requester keeps i_apb_psel low until then. | CHK-027:PASS, CHK-028:PASS | — | **VERIFIED** |
+| AB2-7.3-01 |  | On i_rst_n_mst assertion (active-low, asynchronous), all mst-block state resets: registers 0, FSM IDLE, o_apb_pready and o_apb_pslverr 0. | CHK-009:PASS, CHK-027:PASS | 100.0 % (1/1) | **VERIFIED** |
+| AB2-7.3-02 |  | On i_rst_n_slv assertion (active-low, asynchronous), all slv-block state resets: registers 0, FSM IDLE, including o_apb_psel, o_apb_penable and o_apb_pwakeup. | CHK-010:PASS, CHK-027:PASS | 100.0 % (1/1) | **VERIFIED** |
+| AB2-7.3-04 |  | No transfer may start before both resets are released; the requester keeps i_apb_psel low until then. | CHK-027:PASS, CHK-028:PASS | 100.0 % (3/3) | **VERIFIED** |
 | AB2-8-02 |  | PARA_APBCDC_ADDR_W, default 32 and legal range 1 to 32, sets the width of PADDR and of the request bundle. | CHK-022:PASS | — | **VERIFIED** |
 | AB2-8-03 |  | PARA_APBCDC_DATA_W, default 32 and legal values 8, 16 or 32, sets the width of PWDATA and PRDATA; PSTRB has DATA_W/8 bits. | CHK-022:PASS | — | **VERIFIED** |
 | AB2-8-04 |  | PARA_APBCDC_APB5 selects APB4 (0, default) or APB5 (1); APB5 adds PWAKEUP and the user signals, and user widths apply only when 1. | CHK-001:PASS, CHK-021:PASS | 100.0 % (1/1) | **VERIFIED** |
@@ -274,21 +274,21 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 | AB2-9-08 |  | Request and acknowledge bits are 1 bit wide; in two-phase mode the value toggles per transfer and the request and acknowledge are equal when idle. | CHK-029:PASS | — | **VERIFIED** |
 | AB2-9-09 |  | In four-phase mode the request and acknowledge bit is 1 while a phase is requested and 0 when idle. | CHK-023:PASS | — | **VERIFIED** |
 | AB2-10.1-01 |  | The requester FSM must leave IDLE to WAIT, loading reg_req_payload and toggling reg_req (two-phase) or setting it (four-phase) at the exit edge. | CHK-031:PASS | 100.0 % (1/1) | **VERIFIED** |
-| AB2-10.1-02 |  | In WAIT the requester must keep o_apb_pready low; on the acknowledge event it goes to RESP (two-phase, raising o_apb_pready) or clears reg_req and goes to CLOSE (four-phase). | CHK-006:PASS, CHK-031:PASS | 100.0 % (4/4) | **VERIFIED** |
-| AB2-10.1-03 |  | In CLOSE reg_req must be 0; when the synchronized acknowledge falls the FSM loads the response registers, raises o_apb_pready and goes to RESP. | CHK-023:PASS | 100.0 % (2/2) | **VERIFIED** |
-| AB2-10.1-04 |  | In RESP o_apb_pready must be high for one cycle, then the FSM returns to IDLE and clears o_apb_pready and o_apb_pslverr at the exit edge. | CHK-004:PASS, CHK-005:PASS | 100.0 % (1/1) | **VERIFIED** |
+| AB2-10.1-02 |  | In WAIT the requester must keep o_apb_pready low; on the acknowledge event it goes to RESP (two-phase, raising o_apb_pready) or clears reg_req and goes to CLOSE (four-phase). | CHK-006:PASS, CHK-031:PASS | — | **VERIFIED** |
+| AB2-10.1-03 |  | In CLOSE reg_req must be 0; when the synchronized acknowledge falls the FSM loads the response registers, raises o_apb_pready and goes to RESP. | CHK-023:PASS | — | **VERIFIED** |
+| AB2-10.1-04 |  | In RESP o_apb_pready must be high for one cycle, then the FSM returns to IDLE and clears o_apb_pready and o_apb_pslverr at the exit edge. | CHK-004:PASS, CHK-005:PASS | — | **VERIFIED** |
 | AB2-10.1-05 |  | The completer FSM must go to SETUP, loading reg_apb_payload from the request bundle and driving o_apb_psel high at the exit edge. | CHK-017:PASS, CHK-031:PASS | — | **VERIFIED** |
 | AB2-10.1-06 |  | In SETUP o_apb_penable must be low; the FSM always moves to ACCESS and sets o_apb_penable high at the exit edge. | CHK-013:PASS | — | **VERIFIED** |
 | AB2-10.1-07 |  | On i_apb_pready high the FSM must load reg_resp_hold, drop o_apb_psel and o_apb_penable, toggle (two-phase) or set (four-phase) reg_ack, and go to IDLE (two-phase) or REQ0 (four-phase). | CHK-015:PASS, CHK-031:PASS | — | **VERIFIED** |
-| AB2-10.1-08 |  | In REQ0 the FSM must wait for the synchronized request to fall, then clear reg_ack and go to IDLE. | CHK-023:PASS | 100.0 % (2/2) | **VERIFIED** |
-| AB2-10.2-01 | REQ-PERF-001, REQ-PERF-002 | The bridge must capture the fields, cross the request, run one APB write on the completer side and return the response, with PREADY for one cycle. | CHK-031:PASS | 57.1 % (4/7) **below** | **VERIFIED** |
-| AB2-10.2-02 |  | For a read the bridge must return PRDATA and PRUSER to the requester with PREADY. | CHK-031:PASS | 57.1 % (4/7) **below** | **VERIFIED** |
-| AB2-10.2-03 |  | The completer-side Access phase must last w + 1 cycles and requester-side PREADY must follow after the response. | CHK-032:PASS | 100.0 % (1/1) | **VERIFIED** |
-| AB2-10.2-04 |  | PSLVERR must be carried in the response bundle and be high in the requester-side PREADY cycle. | CHK-033:PASS | 100.0 % (1/1) | **VERIFIED** |
-| AB2-10.2-05 |  | The mst FSM must be back in IDLE and capture the Setup phase immediately, starting the second transfer at once; one transfer at a time. | CHK-034:PASS | — | **VERIFIED** |
+| AB2-10.1-08 |  | In REQ0 the FSM must wait for the synchronized request to fall, then clear reg_ack and go to IDLE. | CHK-023:PASS | — | **VERIFIED** |
+| AB2-10.2-01 | REQ-PERF-001, REQ-PERF-002 | The bridge must capture the fields, cross the request, run one APB write on the completer side and return the response, with PREADY for one cycle. | CHK-031:PASS | 100.0 % (3/3) | **VERIFIED** |
+| AB2-10.2-02 |  | For a read the bridge must return PRDATA and PRUSER to the requester with PREADY. | CHK-031:PASS | — | **VERIFIED** |
+| AB2-10.2-03 |  | The completer-side Access phase must last w + 1 cycles and requester-side PREADY must follow after the response. | CHK-032:PASS | — | **VERIFIED** |
+| AB2-10.2-04 |  | PSLVERR must be carried in the response bundle and be high in the requester-side PREADY cycle. | CHK-033:PASS | — | **VERIFIED** |
+| AB2-10.2-05 |  | The mst FSM must be back in IDLE and capture the Setup phase immediately, starting the second transfer at once; one transfer at a time. | CHK-034:PASS | 100.0 % (1/1) | **VERIFIED** |
 | AB2-10.2-06 |  | o_apb_pwakeup must follow the synchronized wake-up OR the in-progress term and be high before or with o_apb_psel. | CHK-018:PASS, CHK-020:PASS | 100.0 % (1/1) | **VERIFIED** |
 | AB2-10.2-07 |  | PAUSER and PWUSER must cross in the request bundle and PRUSER and PBUSER in the response bundle, with identical values on the other side. | CHK-019:PASS | — | **VERIFIED** |
-| AB2-10.2-08 |  | State of the domain must clear asynchronously, all registers at reset value, and a transfer in flight is lost. | CHK-027:PASS, CHK-028:PASS | — | **VERIFIED** |
+| AB2-10.2-08 |  | State of the domain must clear asynchronously, all registers at reset value, and a transfer in flight is lost. | CHK-027:PASS, CHK-028:PASS | 100.0 % (2/2) | **VERIFIED** |
 | AB2-10.2-09 | REQ-PERF-002 | The bridge must use the four-phase handshake and give the same results as OP-001 and OP-002. | CHK-023:PASS | — | **VERIFIED** |
 | AB2-10.3-02 |  | The slv FSM must see the event at edge N+1 of i_clk_slv, load reg_apb_payload, raise o_apb_psel, then pass SETUP and ACCESS, with o_apb_penable high from the second edge. | CHK-031:PASS | — | **VERIFIED** |
 | AB2-10.3-03 |  | At the i_apb_pready edge the response must be held, acknowledge launched, and o_apb_psel and o_apb_penable low. | CHK-015:PASS | — | **VERIFIED** |
@@ -330,7 +330,7 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 | AB2-15.3-01 |  | Assertions and coverage are disabled while either reset is asserted, except SVA-016 which remains enabled. | not verified: design_guideline | — | **NOT_VERIFIED_BY_SIM** |
 | AB2-15.3-02 | REQ-FUNC-004 | When o_apb_pready is high, i_apb_psel and i_apb_penable must be high (SVA-001, never fails). | CHK-003:PASS | — | **VERIFIED** |
 | AB2-15.3-03 | REQ-FUNC-004 | o_apb_pready must be high for exactly one cycle per transfer (SVA-002). | CHK-004:PASS, CHK-006:PASS | — | **VERIFIED** |
-| AB2-15.3-04 | REQ-FUNC-006 | o_apb_pslverr high must imply o_apb_pready high (SVA-003). | CHK-005:PASS | 100.0 % (1/1) | **VERIFIED** |
+| AB2-15.3-04 | REQ-FUNC-006 | o_apb_pslverr high must imply o_apb_pready high (SVA-003). | CHK-005:PASS | — | **VERIFIED** |
 | AB2-15.3-05 | REQ-FUNC-002 | The requester-side response must equal the completer-side response of the same transfer (SVA-004, checked by scoreboard). | CHK-029:PASS | — | **VERIFIED** |
 | AB2-15.3-06 | REQ-FUNC-008 | o_apb_penable must rise one cycle after o_apb_psel, and o_apb_penable high must imply o_apb_psel high (SVA-005). | CHK-012:PASS, CHK-013:PASS | 100.0 % (1/1) | **VERIFIED** |
 | AB2-15.3-07 | REQ-FUNC-008 | Completer-side fields must not change while o_apb_psel is high and i_apb_pready is low (SVA-006). | CHK-016:PASS | — | **VERIFIED** |
@@ -340,11 +340,11 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 | AB2-15.3-11 | REQ-FUNC-003 | No second completer-side Setup phase may occur before o_apb_pready of the previous transfer (SVA-010). | CHK-029:PASS | — | **VERIFIED** |
 | AB2-15.3-12 | REQ-HS-002 | The request hold register must be stable from request launch until acknowledge is seen, and the response hold register stable from acknowledge launch until the next request is seen (SVA-011). | CHK-029:PASS | — | **VERIFIED** |
 | AB2-15.3-13 | REQ-HS-001 | In two-phase handshake the request bit must change exactly once and the acknowledge bit exactly once per transfer (SVA-012). | CHK-029:PASS | — | **VERIFIED** |
-| AB2-15.3-14 | REQ-HS-001, REQ-HS-004 | In four-phase handshake the sequence must be request high, acknowledge high, request low, acknowledge low, then o_apb_pready (SVA-013). | CHK-023:PASS | 100.0 % (2/2) | **VERIFIED** |
-| AB2-15.3-15 | REQ-APB5-001 | o_apb_pwakeup must be high no later than o_apb_psel (SVA-014). | CHK-018:PASS | 100.0 % (1/1) | **VERIFIED** |
-| AB2-15.3-16 | REQ-APB5-001 | o_apb_pwakeup must stay high until i_apb_pready when it is high with o_apb_psel (SVA-015). | CHK-018:PASS | 100.0 % (1/1) | **VERIFIED** |
-| AB2-15.3-17 | REQ-RESET-001 | In reset every output must be at its reset value (SVA-016). | CHK-009:PASS, CHK-010:PASS | 100.0 % (3/3) | **VERIFIED** |
-| AB2-15.3-18 | REQ-IF-003 | After reset no output may be unknown; o_apb_prdata must not be unknown when o_apb_pready of a read is high (SVA-017). | CHK-008:PASS, CHK-011:PASS | 100.0 % (2/2) | **VERIFIED** |
+| AB2-15.3-14 | REQ-HS-001, REQ-HS-004 | In four-phase handshake the sequence must be request high, acknowledge high, request low, acknowledge low, then o_apb_pready (SVA-013). | CHK-023:PASS | — | **VERIFIED** |
+| AB2-15.3-15 | REQ-APB5-001 | o_apb_pwakeup must be high no later than o_apb_psel (SVA-014). | CHK-018:PASS | — | **VERIFIED** |
+| AB2-15.3-16 | REQ-APB5-001 | o_apb_pwakeup must stay high until i_apb_pready when it is high with o_apb_psel (SVA-015). | CHK-018:PASS | — | **VERIFIED** |
+| AB2-15.3-17 | REQ-RESET-001 | In reset every output must be at its reset value (SVA-016). | CHK-009:PASS, CHK-010:PASS | 100.0 % (2/2) | **VERIFIED** |
+| AB2-15.3-18 | REQ-IF-003 | After reset no output may be unknown; o_apb_prdata must not be unknown when o_apb_pready of a read is high (SVA-017). | CHK-008:PASS, CHK-011:PASS | 100.0 % (1/1) | **VERIFIED** |
 | AB2-15.3-19 | REQ-PERF-001, REQ-PERF-002 | The duration of every transfer must be within the bound of REQ-PERF-001 or REQ-PERF-002 (SVA-018). | CHK-025:PASS, CHK-026:PASS | — | **VERIFIED** |
 | AB2-15.4-02 |  | A CDC tool or the structural check of TEST-015 must confirm only control bits pass through synchronizers, no logic precedes a first stage, and no other path joins the domains across the five crossings. | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
 | AB2-16-01 |  | The RTL shall contain no latch, no combinational loop, no tri-state, no clock gating and no derived clock, so that scan insertion is possible. | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
@@ -375,42 +375,18 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 
 | ID | File:line | Operator | Status | Caught by | Rules | Equivalent? |
 |---|---|---|---|---|---|---|
-| M01 | m_vlsit_apbcdc_slv.sv:159 | negate_if | killed | CHK-017, CHK-003, CHK-006, test_chk_021_apb4_ignores_apb5, test_chk_022_cfg_min, test_chk_024_requester_violations, test | AB2-3-01, AB2-1.3-01, AB2-10.1-02, AB2-5.3-02, AB2-3-15 |  |
-| M02 | m_vlsit_apbcdc_slv.sv:202 | zero_to_one | killed | CHK-010, CHK-001, test_chk_027_reset_values, test_chk_028_reset_during_traffic | AB2-7.3-02, AB2-3-45, AB2-15.3-17, AB2-3-38, AB2-20.2-08 |  |
-| M03 | m_vlsit_apbcdc_cell_sync.sv:158 | negate_if | killed | test_chk_021_apb4_ignores_apb5, test_chk_022_cfg_min, test_chk_024_requester_violations, test_chk_025_two_phase_duration | AB2-1.3-01, AB2-3-01, AB2-10.2-01, AB2-10.2-02, AB2-1.3-03 |  |
-| M04 | m_vlsit_apbcdc_cell_sync.sv:168 | one_to_zero | killed | test_chk_021_apb4_ignores_apb5, test_chk_022_cfg_min, test_chk_024_requester_violations, test_chk_025_two_phase_duration | AB2-1.3-01, AB2-3-01, AB2-10.2-01, AB2-10.2-02, AB2-1.3-03 |  |
-| M05 | m_vlsit_apbcdc_mst.sv:214 | ne_to_eq | killed | test_chk_020_apb5_wakeup | AB2-3-42, AB2-1.3-06, AB2-6.3-14, AB2-10.2-06, AB2-7.2-09 |  |
-| M06 | m_vlsit_apbcdc_cell_sync.sv:154 | zero_to_one | killed | CHK-003, CHK-006, test_chk_022_cfg_min, test_chk_024_requester_violations, test_chk_025_two_phase_duration/periods=0, te | AB2-15.3-18, AB2-6.3-05, AB2-5.4-03, AB2-3-37, AB2-7.3-02 |  |
-| M07 | m_vlsit_apbcdc_cell_sync.sv:171 | eq_to_ne | survived |  | AB2-1.3-01, AB2-10.2-01, AB2-10.2-02 |  |
-| M08 | m_vlsit_apbcdc_mst.sv:208 | negate_if | killed | CHK-009, test_chk_021_apb4_ignores_apb5, test_chk_022_cfg_min, test_chk_024_requester_violations, test_chk_025_two_phase | AB2-7.3-01, AB2-3-37, AB2-3-38, AB2-15.3-17, AB2-5.4-06 |  |
-| M09 | m_vlsit_apbcdc_slv.sv:207 | ne_to_eq | killed | CHK-001, test_chk_021_apb4_ignores_apb5, test_chk_022_cfg_min, test_chk_024_requester_violations, test_chk_025_two_phase | AB2-3-45, AB2-20.2-08, AB2-8-04, AB2-3-43, AB2-3-42 |  |
-| M10 | m_vlsit_apbcdc_slv.sv:179 | eq_to_ne | killed | test_chk_021_apb4_ignores_apb5, test_chk_022_cfg_min, test_chk_024_requester_violations, test_chk_025_two_phase_duration | AB2-1.3-03, AB2-3-13, AB2-10.1-02, AB2-3-07, AB2-3-01 |  |
-| M11 | VLSIT_CELL_SYNC_2FF_RN.sv:37 | zero_to_one | killed | test_chk_021_apb4_ignores_apb5, test_chk_022_cfg_min, test_chk_024_requester_violations, test_chk_025_two_phase_duration | AB2-3-37, AB2-3-38, AB2-7.3-01, AB2-7.3-02, AB2-5.4-03 |  |
-| M12 | VLSIT_CELL_SYNC_2FF_RN.sv:36 | negate_if | killed | test_chk_021_apb4_ignores_apb5, test_chk_022_cfg_min, test_chk_024_requester_violations, test_chk_025_two_phase_duration | AB2-7.3-01, AB2-7.3-02, AB2-3-37, AB2-3-38, AB2-1.3-01 |  |
-| M13 | m_vlsit_apbcdc_slv.sv:179 | one_to_zero | killed | test_chk_021_apb4_ignores_apb5, test_chk_022_cfg_min, test_chk_023_four_phase/periods=0, test_chk_023_four_phase/periods | AB2-3-25, AB2-3-26, AB2-1.3-04, AB2-5.3-09, AB2-10.1-03 |  |
-| M14 | m_vlsit_apbcdc_mst.sv:192 | one_to_zero | killed | test_chk_021_apb4_ignores_apb5, test_chk_022_cfg_min, test_chk_023_four_phase/periods=0, test_chk_023_four_phase/periods | AB2-3-25, AB2-3-26, AB2-1.3-04, AB2-5.3-09, AB2-10.1-03 |  |
-| M15 | m_vlsit_apbcdc_cell_sync.sv:140 | ne_to_eq | survived |  |  | claimed: In run apb4.s1 no +APBCDC_MSYNC_EN plusarg is given, so $value$plusargs fails and this assignment never executes. sim_en stays at its default of 1 and the ports |
-| M16 | m_vlsit_apbcdc_mst.sv:236 | zero_to_one | killed | CHK-004, CHK-005, test_chk_021_apb4_ignores_apb5, test_chk_022_cfg_min, test_chk_024_requester_violations, test_chk_025_ | AB2-3-11, AB2-3-23, AB2-15.3-04, AB2-6.2-01, AB2-10.1-04 |  |
-| M17 | m_vlsit_apbcdc_mst.sv:137 | eq_to_ne | killed | test_chk_021_apb4_ignores_apb5, test_chk_022_cfg_min, test_chk_024_requester_violations, test_chk_025_two_phase_duration | AB2-1.3-03, AB2-10.2-03, AB2-6.3-21, AB2-3-09, AB2-3-01 |  |
-| M18 | m_vlsit_apbcdc_slv.sv:164 | negate_if | killed | CHK-014, CHK-015, test_chk_021_apb4_ignores_apb5, test_chk_022_cfg_min, test_chk_024_requester_violations, test_chk_025_ | AB2-3-17, AB2-3-14, AB2-3-10, AB2-5.3-06, AB2-5.3-07 |  |
-| M19 | m_vlsit_apbcdc_slv.sv:181 | zero_to_one | killed | test_chk_021_apb4_ignores_apb5, test_chk_022_cfg_min, test_chk_023_four_phase/periods=0, test_chk_023_four_phase/periods | AB2-3-26, AB2-3-31, AB2-10.1-08, AB2-5.3-10, AB2-15.3-14 |  |
-| M20 | m_vlsit_apbcdc_cell_sync.sv:171 | negate_if | survived |  | AB2-1.3-01, AB2-10.2-01, AB2-10.2-02 |  |
-| M21 | m_vlsit_apbcdc_cell_sync.sv:136 | one_to_zero | survived |  | AB2-1.3-01, AB2-10.2-01, AB2-10.2-02 |  |
-| M22 | m_vlsit_apbcdc_cell_sync.sv:164 | zero_to_one | killed | test_chk_021_apb4_ignores_apb5, test_chk_022_cfg_min, test_chk_024_requester_violations, test_chk_025_two_phase_duration | AB2-1.3-01, AB2-3-01, AB2-10.2-01, AB2-15.3-18, AB2-3-24 |  |
-| M23 | m_vlsit_apbcdc_cell_sync.sv:162 | eq_to_ne | killed | test_chk_021_apb4_ignores_apb5, test_chk_022_cfg_min, test_chk_024_requester_violations, test_chk_025_two_phase_duration | AB2-1.3-01, AB2-3-01, AB2-10.2-01, AB2-10.2-02, AB2-1.3-03 |  |
-| M24 | m_vlsit_apbcdc_mst.sv:191 | negate_if | killed | test_chk_021_apb4_ignores_apb5, test_chk_022_cfg_min, test_chk_024_requester_violations, test_chk_025_two_phase_duration | AB2-3-01, AB2-1.3-01, AB2-10.1-01, AB2-5.3-02, AB2-7.2-03 |  |
-| M25 | m_vlsit_apbcdc_slv.sv:208 | ne_to_eq | killed | CHK-018, test_chk_019_apb5_user_signals, test_chk_020_apb5_wakeup, test_chk_022_cfg_min, test_chk_024_requester_violatio | AB2-3-43, AB2-3-42, AB2-15.3-15, AB2-15.3-16, AB2-6.3-13 |  |
-| M26 | m_vlsit_apbcdc_slv.sv:205 | eq_to_ne | killed | CHK-012, CHK-013, CHK-016, CHK-017, test_chk_021_apb4_ignores_apb5, test_chk_022_cfg_min, test_chk_024_requester_violati | AB2-15.3-06, AB2-3-14, AB2-3-15, AB2-3-17, AB2-5.4-05 |  |
-| M27 | m_vlsit_apbcdc_mst.sv:210 | zero_to_one | survived |  |  | claimed: In apb4.s1 PARA_APBCDC_APB5=0. reg_wakeup is only reset to 1 during reset and is 0 after the first clock. Its only sink is o_apb_pwakeup, which the slv block ga |
-| M28 | m_vlsit_apbcdc_mst.sv:181 | eq_to_ne | killed | test_chk_026_four_phase_duration/periods=4 | AB2-3-26, AB2-3-31, AB2-10.1-08, AB2-5.3-10, AB2-15.3-14 |  |
-| M29 | m_vlsit_apbcdc_slv.sv:227 | negate_if | killed | test_chk_021_apb4_ignores_apb5, test_chk_022_cfg_min, test_chk_024_requester_violations, test_chk_025_two_phase_duration | AB2-3-03, AB2-10.2-04, AB2-6.3-11, AB2-6.3-22, AB2-10.2-02 |  |
-| M30 | m_vlsit_apbcdc_slv.sv:199 | zero_to_one | killed | CHK-003, CHK-006, test_chk_021_apb4_ignores_apb5, test_chk_022_cfg_min, test_chk_024_requester_violations, test_chk_025_ | AB2-7.3-02, AB2-3-38, AB2-3-37, AB2-7.2-04, AB2-5.4-03 |  |
-| M31 | m_vlsit_apbcdc_cell_sync.sv:150 | negate_if | killed | test_chk_021_apb4_ignores_apb5, test_chk_022_cfg_min, test_chk_024_requester_violations, test_chk_025_two_phase_duration | AB2-3-37, AB2-3-38, AB2-7.3-01, AB2-7.3-02, AB2-1.3-01 |  |
-| M32 | m_vlsit_apbcdc_cell_sync.sv:173 | zero_to_one | survived |  |  | claimed: The line clears pend after a delayed change is applied. Leaving it at 1 is harmless: pend is only stuck after the apply, when cnt is 0 and sim_nxt equals sim_cu |
-| M33 | m_vlsit_apbcdc_mst.sv:200 | negate_if | killed | test_chk_021_apb4_ignores_apb5, test_chk_022_cfg_min, test_chk_024_requester_violations, test_chk_025_two_phase_duration | AB2-7.3-01, AB2-3-37, AB2-3-38, AB2-15.3-17, AB2-5.4-06 |  |
-| M34 | m_vlsit_apbcdc_slv.sv:134 | ne_to_eq | killed | test_chk_021_apb4_ignores_apb5, test_chk_022_cfg_min, test_chk_024_requester_violations, test_chk_025_two_phase_duration | AB2-3-01, AB2-1.3-03, AB2-10.1-02, AB2-1.3-01, AB2-3-24 |  |
-| M35 | m_vlsit_apbcdc_slv.sv:134 | eq_to_ne | killed | test_chk_021_apb4_ignores_apb5, test_chk_022_cfg_min, test_chk_024_requester_violations, test_chk_025_two_phase_duration | AB2-3-01, AB2-1.3-03, AB2-10.1-02, AB2-1.3-01, AB2-3-24 |  |
-| M36 | m_vlsit_apbcdc_mst.sv:209 | zero_to_one | killed | CHK-003, CHK-006, test_chk_021_apb4_ignores_apb5, test_chk_022_cfg_min, test_chk_024_requester_violations, test_chk_025_ | AB2-7.3-01, AB2-3-37, AB2-3-38, AB2-7.2-04, AB2-5.4-03 |  |
+| M01 | m_vlsit_apbcdc_slv.sv:159 | negate_if | killed | test_chk_031_single_write_read, test_chk_032_wait_states, test_chk_033_error_response, test_chk_034_back_to_back/clocks= | AB2-6.3-01, AB2-15.3-06, AB2-3-15, AB2-10.1-01, AB2-5.4-02 |  |
+| M02 | m_vlsit_apbcdc_slv.sv:202 | zero_to_one | killed | CHK-010, CHK-001, test_chk_027_reset_values, test_chk_028_reset_during_traffic | AB2-7.3-02, AB2-15.3-17, AB2-3-38, AB2-20.2-08, AB2-3-45 |  |
+| M03 | m_vlsit_apbcdc_cell_sync.sv:158 | negate_if | killed | test_chk_031_single_write_read, test_chk_032_wait_states, test_chk_033_error_response, test_chk_034_back_to_back/clocks= | AB2-1.3-01, AB2-1.3-05, AB2-3-01, AB2-10.2-01, AB2-1.3-03 |  |
+| M04 | m_vlsit_apbcdc_cell_sync.sv:168 | one_to_zero | killed | test_chk_031_single_write_read, test_chk_032_wait_states, test_chk_033_error_response, test_chk_034_back_to_back/clocks= | AB2-1.3-01, AB2-10.2-01, AB2-1.3-03, AB2-3-01, AB2-3-09 |  |
+| M05 | m_vlsit_apbcdc_mst.sv:214 | ne_to_eq | killed | test_chk_020_apb5_wakeup | AB2-1.3-06, AB2-3-42, AB2-10.2-06, AB2-6.3-13, AB2-6.3-14 |  |
+| M06 | m_vlsit_apbcdc_cell_sync.sv:154 | zero_to_one | killed | test_chk_032_wait_states, test_chk_033_error_response, test_chk_034_back_to_back/clocks=run, test_chk_034_back_to_back/c | AB2-7.3-04, AB2-7.2-04, AB2-10.2-08, AB2-15.3-18, AB2-3-37 |  |
+| M07 | m_vlsit_apbcdc_cell_sync.sv:171 | eq_to_ne | survived |  | AB2-1.3-01, AB2-1.3-03, AB2-1.3-05 |  |
+| M08 | m_vlsit_apbcdc_mst.sv:208 | negate_if | killed | CHK-009, test_chk_031_single_write_read, test_chk_032_wait_states, test_chk_033_error_response, test_chk_034_back_to_bac | AB2-7.3-01, AB2-3-37, AB2-15.3-17, AB2-1.3-01, AB2-3-01 |  |
+| M09 | m_vlsit_apbcdc_slv.sv:207 | ne_to_eq | killed | CHK-001, test_chk_031_single_write_read, test_chk_032_wait_states, test_chk_033_error_response, test_chk_034_back_to_bac | AB2-3-45, AB2-20.2-08, AB2-8-04, AB2-3-44, AB2-6.3-13 |  |
+| M10 | m_vlsit_apbcdc_slv.sv:179 | eq_to_ne | killed | test_chk_031_single_write_read, test_chk_032_wait_states, test_chk_033_error_response, test_chk_034_back_to_back/clocks= | AB2-1.3-01, AB2-3-13, AB2-10.2-05, AB2-3-50, AB2-6.3-23 |  |
+| M11 | VLSIT_CELL_SYNC_2FF_RN.sv:37 | zero_to_one | killed | test_chk_031_single_write_read, test_chk_032_wait_states, test_chk_033_error_response, test_chk_034_back_to_back/clocks= | AB2-7.3-04, AB2-7.2-04, AB2-3-37, AB2-10.2-08, AB2-5.4-03 |  |
+| M12 | VLSIT_CELL_SYNC_2FF_RN.sv:36 | negate_if | killed | test_chk_031_single_write_read, test_chk_032_wait_states, test_chk_033_error_response, test_chk_034_back_to_back/clocks= | AB2-1.3-01, AB2-3-01, AB2-10.2-01, AB2-1.3-05, AB2-7.3-04 |  |
 
 ## Not verified by this run
 

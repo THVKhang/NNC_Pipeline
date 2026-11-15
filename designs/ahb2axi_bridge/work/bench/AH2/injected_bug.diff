@@ -1,0 +1,11 @@
+--- rtl/m_ahb2axi_ctrl.sv
++++ rtl/m_ahb2axi_ctrl.sv
+@@ -933,7 +933,7 @@
+         else
+           reg_rd_id <= $bits(reg_rd_id)'(reg_rd_id + 3'd1);
+         reg_rsp_valid <= 1'b1;
+-        reg_rsp_err <= (w_rd_rsp_rd_data[1:0] != 2'b00);
++        reg_rsp_err <= (w_rd_rsp_rd_data[1:0] == 2'b10);
+         reg_rsp_data  <= w_rd_rsp_rd_data[33:2];
+       end
+ 

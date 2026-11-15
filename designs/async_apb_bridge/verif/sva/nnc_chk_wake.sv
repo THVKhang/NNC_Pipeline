@@ -49,9 +49,14 @@ module nnc_chk_wake #(
   int unsigned hits_CHK_018 = 0;
 
   // CHK-018: APB5 o_apb_pwakeup high no later than o_apb_psel and until completion (AB2-3-43, AB2-15.3-15, AB2-15.3-16, AB2-6.3-13, AB2-10.2-06)
-  a_CHK_018: assert property (@(posedge i_clk_slv) disable iff (!i_rst_n_slv) ((PARA_APBCDC_APB5 == 1) && i_rst_n_mst && o_apb_psel) |-> o_apb_pwakeup)
-    else begin fails_CHK_018++; $display("NNC_FAIL CHK-018 @%0t", $time); end
-  always_ff @(posedge i_clk_slv) if (!(!i_rst_n_slv) && ((PARA_APBCDC_APB5 == 1) && i_rst_n_mst && o_apb_psel)) hits_CHK_018 <= hits_CHK_018 + 1;
+  generate
+    if (PARA_APBCDC_APB5 != 0) begin : g_chk_018
+      a_CHK_018: assert property (@(posedge i_clk_slv) disable iff (!i_rst_n_slv)
+        (i_rst_n_mst && o_apb_psel) |-> o_apb_pwakeup)
+        else begin fails_CHK_018++; $display("NNC_FAIL CHK-018 @%0t", $time); end
+      always_ff @(posedge i_clk_slv) if (!(!i_rst_n_slv) && (i_rst_n_mst && o_apb_psel)) hits_CHK_018 <= hits_CHK_018 + 1;
+    end
+  endgenerate
 
   final begin
     $display("NNC_CHECK CHK-018 hits=%0d fails=%0d", hits_CHK_018, fails_CHK_018);

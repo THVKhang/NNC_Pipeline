@@ -114,6 +114,8 @@ Each configuration starts from the design configuration and overrides only what 
 - **Không cần sinh lại test:** test tự đọc tham số, define và plusarg của lần chạy để biết mình kiểm được gì.
 - `--single-run` bỏ qua file run set.
 
+**Configuration-aware generation.** When `run_set.json` exists before `gen-sva`/`gen-tests`, the SVA and test writers get every configuration of it in their prompt, with the rule that a quantity depending on a parameter is computed from it. After generation, code looks for integer literals equal to the default value (≥ 5) of a parameter the run set changes; each is sent back once to be replaced by an expression, or kept with the comment `nnc-literal-ok` when the number does not come from the parameter (`nnc/literals.py`). Formal (`formal=on`) proves each check in every configuration of the run set with a distinct parameter set: a counterexample in any configuration is a CEX, otherwise the weakest status counts (PROVEN < BOUNDED < TIMEOUT); a configuration where the check is vacuous or unsupported is not counted. — **VI:** nếu có `run_set.json` trước khi sinh SVA/test, agent thấy mọi cấu hình trong prompt và phải tính mọi đại lượng phụ thuộc tham số từ chính tham số đó. Sau khi sinh, code tìm các số nguyên trùng giá trị mặc định của tham số mà run set thay đổi; mỗi số bị gửi lại một lần để thay bằng biểu thức (hoặc giữ lại với chú thích `nnc-literal-ok` nếu số đó không đến từ tham số). Formal chứng minh từng check ở mọi cấu hình có đổi tham số và giữ kết quả yếu nhất.
+
 ## 4. Verification sources — Gate 3 | Mã kiểm chứng — Gate 3
 
 ```bash
@@ -195,6 +197,17 @@ The environment: resets are asserted in the initial state (code), and `verif/for
 - **cover:** điều kiện kích hoạt có xảy ra được không; nếu không thì check là **VACUOUS** (rỗng).
 
 Giả định môi trường (`nnc_env.sv`) do A13 viết từ spec và **phải được người duyệt G3 đọc**, vì một giả định spec không đòi hỏi sẽ che bug. Mỗi phản ví dụ được agent A14 phân loại: A (RTL sai), B (checker sai), C (spec không rõ) hoặc **E (môi trường thiếu giả định)**.
+
+### Baseline: the hand-written testbench | So với testbench viết tay
+
+```bash
+python -m nnc baseline my_ip                 # bugs of bugs/bugs.json and the mutants of work/mutation.json
+python -m nnc baseline my_ip --no-mutants    # bugs only
+```
+
+`designs/<ip>/baseline/` holds the testbench the RTL was delivered with (copied with its licence notice) and `baseline.json`, which says how its own script runs it: top, files, defines, pass strings, and the runs (parameters, plusargs). The baseline must pass on the unmodified RTL; then every fault of `bugs/bugs.json` and every mutant of the NNC mutation run (one changed line each) is simulated with it (Icarus Verilog, via WSL on Windows). A fault is caught, a mutant killed, when any run fails. `work/baseline.md` puts the result next to the NNC result: caught by both, by one only, by neither. — **VI:** thư mục `baseline/` chứa testbench viết tay đi kèm RTL và `baseline.json` mô tả cách chạy nó. Lệnh này chạy testbench đó trên RTL gốc (phải pass), trên từng bug cài sẵn và từng mutant của NNC, rồi đặt kết quả cạnh kết quả của NNC trong `work/baseline.md`: lỗi nào cả hai bắt được, lỗi nào chỉ một bên bắt được.
+
+**Which failures triage analyses | Triage phân tích lỗi nào.** One triage call analyses at most 12 failures. A failing assertion is often the cause of several failing tests, so up to half of the places go to failing assertions, and places one kind does not use go to the other (`nnc/triage.py` `select`). `work/triage.md` says how many failures there were and how many were analysed. — **VI:** một lần triage phân tích tối đa 12 lỗi. Vì một assertion fail thường là nguyên nhân của nhiều test fail, tối đa một nửa số chỗ dành cho assertion; chỗ nào loại này không dùng thì nhường cho loại kia.
 
 ### Split test generation (experimental) | Sinh test chia nhỏ (thử nghiệm)
 

@@ -1,0 +1,124 @@
+{
+ "file": "C:\\Users\\Admin\\OneDrive\\ドキュメント\\GitHub\\NNC_Pipeline\\designs\\ahb2axi_bridge\\verif\\formal\\nnc_env.sv",
+ "status": "lint_clean",
+ "attempts": 1,
+ "problems": [],
+ "lint_errors": "NNC_RC=0",
+ "assumptions": [
+  {
+   "id": "ENV-01",
+   "obligation": "While i_rst_n_core is low, the AHB manager drives HSEL=0, HTRANS=IDLE, HWRITE=0, HBURST=SINGLE and HMASTLOCK=0.",
+   "rules": [
+    "AA-T1.7.2.2-03"
+   ]
+  },
+  {
+   "id": "ENV-02",
+   "obligation": "The AXI Subordinate is reset together with the bridge and keeps BVALID and RVALID low during reset.",
+   "rules": [
+    "AA-T1.7.2.2-17",
+    "AA-T1.7.2.2-24",
+    "AA-12-14"
+   ]
+  },
+  {
+   "id": "ENV-03",
+   "obligation": "During a data phase owned by this Subordinate, the global HREADY equals this Subordinate's HREADYOUT, as set by the AHB5 HREADY multiplexor. Outside such a phase, and during reset, HREADY is left unconstrained.",
+   "rules": [
+    "AA-6.1-01",
+    "AA-T1.7.3.1-01",
+    "AA-12-16",
+    "AA-T1.7.2.2-04"
+   ]
+  },
+  {
+   "id": "ENV-04",
+   "obligation": "The manager holds HWDATA/HWSTRB stable while a write data phase to this Subordinate is extended by HREADY=0.",
+   "rules": [
+    "AA-T1.7.3.1-02",
+    "AA-6.1-01"
+   ]
+  },
+  {
+   "id": "ENV-05",
+   "obligation": "HTRANS=SEQ or BUSY is presented to this Subordinate only inside a non-SINGLE burst. The first beat of a burst is NONSEQ.",
+   "rules": [
+    "AA-6.1-01",
+    "AA-T1.7.3.1-01",
+    "AA-3-03"
+   ]
+  },
+  {
+   "id": "ENV-06",
+   "obligation": "The AXI Subordinate asserts BVALID only after both the AW handshake and the WLAST W handshake of an outstanding write have completed.",
+   "rules": [
+    "AA-6.1-02",
+    "AA-3-21",
+    "AA-T1.7.3.2-02"
+   ]
+  },
+  {
+   "id": "ENV-07",
+   "obligation": "Once BVALID is asserted, BVALID, BID and BRESP stay stable until BREADY.",
+   "rules": [
+    "AA-T1.7.2.2-18",
+    "AA-6.1-02"
+   ]
+  },
+  {
+   "id": "ENV-08",
+   "obligation": "BID equals the AWID of the outstanding write. This is enforced only while exactly one write is outstanding and its ID is known.",
+   "rules": [
+    "AA-6.1-02",
+    "AA-T1.7.3.2-05",
+    "AA-9-13"
+   ]
+  },
+  {
+   "id": "ENV-09",
+   "obligation": "The AXI Subordinate asserts RVALID only after the AR handshake of an outstanding read.",
+   "rules": [
+    "AA-6.1-02",
+    "AA-5.3-01",
+    "AA-T1.7.3.4-01"
+   ]
+  },
+  {
+   "id": "ENV-10",
+   "obligation": "Once RVALID is asserted, RVALID, RID, RDATA, RRESP and RLAST stay stable until RREADY.",
+   "rules": [
+    "AA-T1.7.2.2-25",
+    "AA-6.1-02"
+   ]
+  },
+  {
+   "id": "ENV-11",
+   "obligation": "RID equals the ARID of the outstanding read. This is enforced only while exactly one read is outstanding and its ID is known.",
+   "rules": [
+    "AA-6.1-02",
+    "AA-T1.7.3.2-05",
+    "AA-9-13"
+   ]
+  },
+  {
+   "id": "ENV-12",
+   "obligation": "Every R beat carries RLAST=1, because every read is single-beat (ARLEN=0).",
+   "rules": [
+    "AA-T1.7.2.2-23",
+    "AA-5.4-07",
+    "AA-T1.7.3.2-03",
+    "AA-5.3-01"
+   ]
+  }
+ ],
+ "usage": {
+  "calls": 1,
+  "cached": 0,
+  "cost_usd": 0.4926,
+  "input_tokens": 2,
+  "output_tokens": 17785,
+  "cache_creation_input_tokens": 16913,
+  "cache_read_input_tokens": 0
+ },
+ "prompt_version": "env-v1"
+}

@@ -15,9 +15,10 @@ from pathlib import Path
 
 from nnc.agents.backend import AgentTask
 from nnc.agents.runtime import Usage
+from nnc import literals
 from nnc.contract import is_async, multi_clock
 
-PROMPT_VERSION = "tests-v2"
+PROMPT_VERSION = "tests-v3"
 SYSTEM_PROMPT = (
     "You are an expert verification engineer writing cocotb 2.1 testbenches in Python. You derive every "
     "stimulus and expected value from the specification text and the plan you are given; you never assume "
@@ -149,6 +150,8 @@ def build_prompt(contract: dict, rules_doc: dict, run_opts: dict | None = None) 
             f"PARAMETERS: {params}\n"
             f"PORTS (name | direction | width | type | reset value | meaning)\n{ports}\n\n" +
             (run_config_text(run_opts) + "\n" if run_config_text(run_opts) else "") +
+            (literals.config_text(contract, (run_opts or {}).get("runs")) + "\n"
+             if (run_opts or {}).get("runs") else "") +
             f"TEST CHECKS TO IMPLEMENT ({len(tests)})\n" + "\n".join(tests) +
             f"\n\nASSERTION CHECKS (checked by SVA during every test; your traffic must exercise them)\n" +
             "\n".join(asserts) + f"\n\nASSUMPTIONS OF THE PLAN\n" + "\n".join(f"- {a}" for a in contract.get("assumptions", [])) +
@@ -177,17 +180,26 @@ def validate(code: str, contract: dict) -> list[str]:
 
 
 def _run(prompt: str, name: str, backend, log_dir: Path, model: str, contract: dict, usage: Usage,
-         rounds: int) -> tuple[str, list[str], int]:
+         rounds: int, runs: list[dict] | None = None) -> tuple[str, list[str], int]:
     history = ""
     code, problems = "", []
-    for attempt in range(rounds + 1):
+    literal_round = bool(runs)          # one round on literals that look like default parameter values
+    for attempt in range(rounds + 2):
         res = backend.run(AgentTask(f"{name}_r{attempt}", prompt + history, SCHEMA, system_prompt=SYSTEM_PROMPT,
                                     model=model, max_turns=4), log_dir)
         usage.add(res)
         code = res.output["code"]
         problems = validate(code, contract)
+        if not problems and literal_round:
+            literal_round = False
+            warn = literals.hardcoded(code, contract, runs, "python")
+            if warn:
+                history = f"\n\nYOUR MODULE:\n```python\n{code}\n```" + literals.feedback(warn)
+                continue
         if not problems:
             return code, [], attempt + 1
+        if attempt >= rounds:
+            break
         history = ("\n\nYOUR PREVIOUS MODULE FAILED VALIDATION:\n" + "\n".join(problems) +
                    f"\n```python\n{code}\n```\nReturn the corrected complete module.")
     return code, problems, rounds + 1
@@ -197,7 +209,7 @@ def generate(contract: dict, rules_doc: dict, backend, log_dir: Path, out_file: 
              rounds: int = 2, run_opts: dict | None = None) -> dict:
     usage = Usage()
     code, problems, attempts = _run(build_prompt(contract, rules_doc, run_opts), "A7_tests", backend, log_dir, model,
-                                    contract, usage, rounds)
+                                    contract, usage, rounds, (run_opts or {}).get("runs"))
     out_file.parent.mkdir(parents=True, exist_ok=True)
     out_file.write_text(code, encoding="utf-8")
     return {"file": out_file.name, "status": "valid" if not problems else "invalid", "problems": problems,

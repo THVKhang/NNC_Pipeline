@@ -1,0 +1,21 @@
+--- rtl/m_ahb2axi_ahb_if.sv
++++ rtl/m_ahb2axi_ahb_if.sv
+@@ -84,8 +84,6 @@
+     o_ahb_hrdata      = '0;
+ 
+     if (i_rst_n_core) begin
+-      o_req_valid  = i_ahb_hsel & i_ahb_hready & i_ahb_htrans[1] &
+-                     (~reg_data_phase_valid | o_rsp_ready);
+       o_data_valid = reg_data_phase_valid & reg_data_phase_wr & ~reg_data_sent;
+ 
+       if (reg_data_phase_valid) begin
+@@ -101,6 +99,9 @@
+         end
+       end
+ 
++      o_req_valid  = i_ahb_hsel & i_ahb_hready & i_ahb_htrans[1] &
++                     (~reg_data_phase_valid | o_rsp_ready);
++
+       if (i_ahb_hsel & i_ahb_htrans[1] & ~i_req_ready)
+         o_ahb_hreadyout = 1'b0;
+     end

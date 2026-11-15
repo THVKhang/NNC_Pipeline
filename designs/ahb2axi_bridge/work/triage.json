@@ -1,0 +1,317 @@
+{
+ "analyses": [
+  {
+   "failure": "test_chk_021_accept_qualifiers — CHK-021: AR handshakes expected 42 got 26 (all 4 runs)",
+   "spec_says": "spec/AHB2AXI_Bridge_Design_Specification.md:143 REQ-FUNC-003 \"Each accepted AHB read shall issue exactly one AXI single-beat AR transaction\"; :312 \"A transfer is accepted at a rising i_clk_core edge when HSEL, HREADY and HTRANS[1] are all 1\"; :141 REQ-FUNC-001 \"convert every supported AHB transfer accepted by this IP to AXI4 without loss\". contract.json:838-840 (CHK-021) \"exactly one per accepted beat ... the number of AR handshakes ... equals the number of NONSEQ/SEQ beats accepted\".",
+   "rtl_does": "rtl/m_ahb2axi_ahb_if.sv:78-107 is one always_comb. Line 81 sets o_rsp_ready=1'b0. Lines 87-88 then compute o_req_valid = hsel & hready & htrans[1] & (~reg_data_phase_valid | o_rsp_ready). The real o_rsp_ready is only assigned later, at line 97, so line 88 always reads 0. The effective condition is o_req_valid = hsel&hready&htrans[1]&~reg_data_phase_valid. When a data phase completes (HREADYOUT=1, lines 92-98) while the next NONSEQ/SEQ address is on the bus (the normal AHB pipeline), the AHB manager sees an accepted transfer. The bridge does not capture it: w_req_hs=0, so nothing is written to the cmd FIFO (m_ahb2axi_ctrl.sv:409, 456-457). At that edge line 123-124 clears reg_data_phase_valid. In the next cycle the dropped transfer's 'data phase' sees reg_data_phase_valid=0, so the defaults at lines 82-84 give HREADYOUT=1, HRESP=0, HRDATA=0. The transfer completes with zero wait and no AR. Only beats that follow an IDLE/BUSY cycle or a non-completing cycle get captured. Here that gave 26 of 42 reads.",
+   "test_does": "verif/tests/test_ahb2axi_bridge.py:696-704. 24 groups of mk(..., INCR or INCR4, random size/memory type, n=1..6, busy=0.5). BUSY cycles are inserted randomly between beats, so some beats are back-to-back. Expected nrd (line 703) = the number of read beats the monitor saw accepted (hsel&hready&htrans>=2, Mon.step lines 184-190). Line 702 passed, so the monitor counted all beats as accepted. Line 704 compares that count with AR handshakes: 42 expected, 26 got. hready is mirrored from o_ahb_hreadyout (Ahb.mirror_run 268-275), so acceptance is defined only by the bridge's own HREADYOUT.",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "m_ahb2axi_ahb_if.sv:81/87-88/97: o_rsp_ready is read before it is computed in the same always_comb, so pipelined transfers are dropped while HREADYOUT=1. The same signature appears in other tests. test_chk_023 gets exactly half the W beats (168/336) for back-to-back even-length Device bursts with no BUSY, i.e. every second beat is dropped. test_chk_029 gets 1 AR for 2 back-to-back reads (results.json:222). test_chk_031 gets 2 AWs for 3 beats (results.json:254). test_chk_034 gets 2 AWs for 4 Device-E beats (results.json:323). test_chk_030 passes, and its transfers are always separated by IDLEs (test lines 952), which is the case the bug does not hit.",
+     "evidence_against": "No waveform is available, so the per-beat drop pattern is inferred from the code and the counts. Some ARs could also be lost through the stale-response desync that follows the first drop. That has the same root cause."
+    },
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "The test infers acceptance from its own monitor (hsel&hready&htrans>=2), not from the DUT.",
+     "evidence_against": "This is exactly the acceptance definition in spec :312 and contract CHK-021. hready is the mirror of the DUT's HREADYOUT, so the manager behaves legally. The driver advances only when the sampled hready=1 (lines 287-297), which matches AHB pipelining."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "None found.",
+     "evidence_against": "Spec :141-143 and :312 are explicit: each accepted beat produces exactly one AR, with no loss."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Fix RTL (m_ahb2axi_ahb_if.sv). Compute o_rsp_ready before o_req_valid in p_com_ahb_rsp: move lines 87-88 after lines 91-102, or compute the completion term in a separate always_comb or assign. Then o_req_valid = hsel&hready&htrans[1]&(~reg_data_phase_valid | o_rsp_ready) uses the real value, and a transfer accepted on the completing edge is pushed into the cmd FIFO. Re-run the whole suite after this fix. Most of the failures below are expected to change. No test or spec change is indicated."
+  },
+  {
+   "failure": "test_chk_022_no_comb_ready_path — timeout after 190000 cycles waiting for AHB transfers to complete (all 4 runs)",
+   "spec_says": "spec :322 \"AXI4 VALID and payload shall remain stable until READY handshakes. AXI outputs have no combinational dependency on AXI READY.\" (rules AA-T1.7.3.2-01). contract.json:850-852 (CHK-022). The test also needs the bridge to finish legal random traffic: spec :141 REQ-FUNC-001 requires no loss, and :153 and :325 say a transfer stays pending only while the AXI response is missing. Here the AXI model always responds.",
+   "rtl_does": "The property under test looks satisfied by construction. m_ahb2axi_axi_if.sv:105-131 maps payload and VALID straight from the controller, and the controller's VALID/payload (m_ahb2axi_ctrl.sv:657-715) depend on state and FIFO flags, not on *_ready. The test never got that far, though. The AHB side deadlocked. Inferred mechanism: the pipelined-transfer drop (m_ahb2axi_ahb_if.sv:81/87-88/97) desynchronises the AHB data phases from the controller FSM. After an early-acked or dropped terminal beat, the FSM reaches ENUM_ST_AHB_RSP with reg_rsp_valid=1 and no AHB data phase to deliver it to (ctrl.sv:648-651 needs w_reg_rsp_ready, which needs reg_data_phase_valid). That stale response then completes a later transfer. A second defect makes it worse. w_cap_stop (ctrl.sv:513-516) is not gated by state and is true whenever the wr-cmd FIFO head is NONSEQ, and ctrl.sv:859-862 runs after the start block at 818-841, so every NONSEQ write starts with reg_burst_fallback=1. In WR_B, ctrl.sv:617/905 then loops while (reg_burst_widx+1) < reg_burst_count, and reg_burst_count is stale from an earlier WB burst. WR_SINGLE waits for ~w_wr_data_empty (ctrl.sv:682), which never comes, so HREADYOUT stays 0.",
+   "test_does": "test lines 750-759. setup with random READY ('r',4), bdel/rdel 0..6. A toggler (728-747) flips READY for one time step after each falling edge and compares all o_axi_* before and after. Stimulus: rand_traffic(r, 400, busy=0.1), i.e. all burst types, all legal memory types, reads and writes. The timeout 400+400*len(items)=190000 (line 520) means about 474 items never finished. The line-758 READY-dependency assertion was never reached.",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "The same timeout signature hits every test that sends back-to-back traffic or WB fixed bursts (022, 024, 025, 026, 027, 032, 033, 035, 036, regression; results.json). Both defects are visible in the code: the ordering bug at ahb_if.sv:87-88 vs 97, and the ungated w_cap_stop at ctrl.sv:513-516 plus 859-862. CHK-014 has hits=0 in every run (results.json:790-811), i.e. no AW with AWLEN>0 was ever issued, which is consistent with fallback being forced on every burst start.",
+     "evidence_against": "The exact deadlock state cannot be confirmed without a waveform. The hang mechanism is inferred."
+    },
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "The toggler drives READY inputs from the test while the Axi model also drives them, and could in principle interfere.",
+     "evidence_against": "The toggler restores the original value one step later, before the next rising edge (lines 739-744). The Axi model re-drives READY every falling edge (354-355). The same timeout happens in tests without the toggler (024/025/026/033/035)."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "None for the hang.",
+     "evidence_against": "The AXI model returns all responses, so spec :325 (pending only while R/B is missing) does not apply."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Fix RTL. (1) Fix the o_req_valid/o_rsp_ready ordering in m_ahb2axi_ahb_if.sv:87-98. (2) Gate w_cap_stop with reg_fsm_ctrl_current_state==ENUM_ST_WR_CAPTURE (ctrl.sv:513-516), or at least do not let the ctrl.sv:859-862 assignment override the start block at 818-841. Also clear or qualify reg_burst_count for non-eligible starts so that w_more_fallback_beats (ctrl.sv:542) cannot use a stale count. Then re-run CHK-022 to check the READY-independence property itself. No test change is needed."
+  },
+  {
+   "failure": "test_chk_023_device_bursts_singles — CHK-033/CHK-040 (CHK-023): expected 336 W beats got 168 (all 4 runs)",
+   "spec_says": "spec :148 REQ-FUNC-008 \"Device-E writes shall use ordered AXI single-beat transactions and shall wait for each final-destination BRESP\"; :434 OP-WR-SINGLE \"One AWLEN=0, one W beat, WLAST=1 ... Wait for BRESP\"; :200 \"Fixed non-bufferable bursts are serialized beat by beat\"; :146 REQ-FUNC-006 \"WDATA/WSTRB shall preserve each AHB HWDATA/HWSTRB beat\". contract.json:877-879 (CHK-023) \"Each AHB beat produces exactly one AW ... plus one W with o_axi_wlast=1\".",
+   "rtl_does": "Device-nE (prot[6:2]=00000) and Device-E (00001) beats are not eligible (ctrl.sv:354-370 needs lookup=prot[4]), so each beat goes IDLE→WR_SINGLE→WR_B→AHB_RSP. Beat k completes in AHB_RSP with HREADYOUT=1 while beat k+1 (SEQ) is on the bus. Because of m_ahb2axi_ahb_if.sv:81/87-88/97, o_req_valid=0, so beat k+1 is not written to the wr-cmd FIFO and no data is stored for it (reg_data_store and o_data_valid need reg_data_phase_valid, ahb_if.sv:89, ctrl.sv:782). Beat k+1's data phase then gets the idle default HREADYOUT=1/HRESP=0 (ahb_if.sv:82-83), which also completes it before any BRESP. Beat k+2 is captured. Every burst has an even length (4/8/16), which gives exactly 168 of 336. A second issue also shows here: for the NONSEQ beat, w_cap_stop (ctrl.sv:513-516) forces reg_burst_fallback=1 (ctrl.sv:859-862 overrides 825). WR_SINGLE then drives AWADDR/AWSIZE/AWCACHE/AWPROT from reg_burst_addr[0]/reg_burst_size[0]/... (ctrl.sv:688-693), which were never loaded for a Device burst. This would show next as a CHK-040 address mismatch.",
+   "test_does": "test lines 762-777. For DEV_NE and DEV_E, every fixed burst type (INCR4/WRAP4/INCR8/WRAP8/INCR16/WRAP16) and every size 0..2: mk(r,1,b,sz,mt) (no BUSY), followed by 0-2 IDLEs. READY is held at 1 and B is OKAY after 0..20 cycles. check_all line 618-620: the expected W count is the number of accepted non-rejected write beats seen by the monitor (336). The W count from the monitor's W handshakes was 168.",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "Exactly 50% loss with back-to-back even-length bursts matches the alternating drop caused by ahb_if.sv:87-88 reading o_rsp_ready before line 97 assigns it. The W list in the traceback shows W only for alternate beats (acc 2→W t=6, acc 10→W t=15). The test did not time out, so the dropped beats were completed by the bridge without B, which the spec forbids for Device (:148).",
+     "evidence_against": "Without a waveform, the alternate-beat pattern is inferred from the counts and timestamps."
+    },
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "The expected count comes from the test's monitor rather than the DUT.",
+     "evidence_against": "The monitor applies spec :312 acceptance exactly, using the DUT's own HREADYOUT through the mirror. The expected one W per beat is a direct reading of spec :148/:434."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "None.",
+     "evidence_against": "The spec is explicit that Device beats are serialized one AXI single per beat (:148, :200, :347-348)."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Fix RTL: the ordering fix in m_ahb2axi_ahb_if.sv:87-98. Also fix the ungated w_cap_stop/fallback override in ctrl.sv:513-516 and 859-862, so that non-eligible NONSEQ writes use reg_cmd_addr (ctrl.sv:695-698) and not stale reg_burst_* entries. Re-run CHK-023 to check the AW address, size and per-beat BRESP-wait expectations. No test or spec change."
+  },
+  {
+   "failure": "test_chk_024_wb_burst_aggregation — timeout after 68400 cycles waiting for AHB transfers to complete (all 4 runs)",
+   "spec_says": "spec :145 REQ-FUNC-005 (an eligible WB fixed burst may aggregate after all beats are captured, otherwise ordered singles); :147 REQ-FUNC-007 \"earlier beats may receive OKAY once safely buffered\"; :157/:459 \"may accept one AHB beat per i_clk_core cycle while the 16-entry buffer has room\"; :202 \"the terminal AHB beat waits for the required B response(s)\". contract.json:909-911 (CHK-024).",
+   "rtl_does": "Beat 1 (NONSEQ, eligible) is early-acked in its first data-phase cycle (ctrl.sv:421, 436-442), so HREADYOUT=1 with beat 2 (SEQ) on the bus. o_req_valid uses the stale o_rsp_ready=0 (ahb_if.sv:81/87-88), so beat 2 is dropped and completes zero-wait. Beat 3 is captured and early-acked, which drops beat 4, and so on. The capture never sees N beats. Separately, w_cap_stop at the start edge (head is NONSEQ, ctrl.sv:513-516) sets reg_burst_term_seen=1 and reg_burst_fallback=1 (ctrl.sv:859-862, overriding 838/837). WR_CAPTURE therefore drains whatever was captured as singles (ctrl.sv:630-632). This is consistent with CHK-014 hits=0: no AWLEN>0 was ever issued. The terminal AHB beat was itself dropped, so the bridge then sits in ENUM_ST_AHB_RSP with reg_rsp_valid=1 and no data phase to deliver it to (ctrl.sv:648-651, 449-450). That stale response completes the next burst's first beat, and the AHB and AXI sides desynchronise until the bridge holds HREADYOUT=0 indefinitely (the exact deadlock state is inferred).",
+   "test_does": "test lines 780-791. For READY const-1 and then random ('r',6): every FIXED burst × size 0..2 with WB_A/WB_B and no BUSY, back-to-back, plus 2 IDLEs. B is OKAY after 1..20 cycles. The timeout 400+400*170=68400 (line 520) is generous for 168 beats. The scoreboard checks (lines 792-811) were never reached.",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "The ahb_if.sv:87-88 ordering bug drops every SEQ beat that follows an early-acked beat. The ungated w_cap_stop (ctrl.sv:513-516, 859-862) forces fallback and term_seen on every burst start, and CHK-014 hits=0 in all runs (results.json:790-811) shows aggregation never occurs. The stale reg_rsp_valid in AHB_RSP with no pending data phase is visible in ctrl.sv:440-450/648-651.",
+     "evidence_against": "No waveform, so the exact cycle where the AHB side wedges is not identified."
+    },
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "Back-to-back bursts with no IDLE between them are a heavy load.",
+     "evidence_against": "Back-to-back legal AHB bursts are explicitly in the stimulus contract (contract.json:910), and spec :459 promises one beat per cycle while buffer room exists. With READY=1 and B within 20 cycles, the timeout leaves about 400 cycles per item."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "rules.json:7226-7227 records an open question on whether aggregation is mandatory. It does not affect this failure, because both aggregated and singles outcomes are accepted by the test.",
+     "evidence_against": "Neither allowed outcome includes a hang or a lost beat (:141)."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Fix RTL: (1) the ahb_if o_req_valid/o_rsp_ready ordering; (2) gate w_cap_stop to the WR_CAPTURE state and stop it overriding reg_burst_fallback/reg_burst_term_seen at the start edge (ctrl.sv:513-516, 859-862); (3) make sure a terminal response is never left in AHB_RSP without an owning AHB data phase. Re-run CHK-024 and look at the coverage of aggregated vs singles outcomes. The aggregation mandatory-or-optional question (rules.json:7226) can be settled separately in the spec."
+  },
+  {
+   "failure": "test_chk_025_varying_attrs_singles — timeout after 4400 cycles waiting for AHB transfers to complete (all 4 runs)",
+   "spec_says": "spec :317 \"If a burst-scoped AXI address attribute differs between accepted beats, the bridge uses ordered AXI singles\"; :436 OP-WR-FALLBACK \"Ordered AXI singles ... Aggregate relevant B errors to the terminal AHB beat\"; :147 REQ-FUNC-007. contract.json:925-927 (CHK-025; the stimulus is marked out-of-profile on purpose, and the rule covers the case).",
+   "rtl_does": "Same path as CHK-024. The first beat of the WB_A burst is eligible and early-acked (ctrl.sv:421, 436). The pipelined SEQ beat is dropped by ahb_if.sv:87-88, and alternate beats go missing. reg_burst_fallback/term_seen are forced at the start edge by the ungated w_cap_stop (ctrl.sv:513-516, 859-862). The terminal beat is lost, so the drained response is left in AHB_RSP (ctrl.sv:648-651). The timeout value 4400 = 400+400*10 equals the WRAP8 case (8 beats + 2 IDLE). So the first INCR4 run (6 items, 2800 cycles) finished, and the hang started at the first WRAP8 run. That fits a stale terminal response from the INCR4 case being handed to the WRAP8 burst's first beat and the bridge then wedging.",
+   "test_does": "test lines 815-832. For vary in (ns, p0, ns+SLVERR on beat 2) × (INCR4, WRAP8): mk(r,1,b,2,WB_A,vary=...) + idles(2), each run separately with e.run. READY=1, B 1..8 cycles. Expected: only AWLEN=0, per-beat AWPROT, and a terminal hresp per BRESP.",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "The drop mechanism (ahb_if.sv:81/87-88/97) and the forced fallback (ctrl.sv:859-862) are both in the code. The timeout length points to the second e.run (WRAP8) hanging after the INCR4 run left a stale state.",
+     "evidence_against": "The deadlock cycle is inferred, not observed."
+    },
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "The stimulus is deliberately out-of-profile (HNONSEC/HPROT[0] vary within a burst, while spec :317 says HPROT stays constant in a burst).",
+     "evidence_against": "Spec :317 and :436 define the bridge's behavior for exactly this case (ordered singles), so the stimulus is in scope. Nothing in the stimulus can legitimately cause a hang."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "Varying HNONSEC/HPROT within an AHB burst is not AHB-legal, so a designer could argue it is unsupported.",
+     "evidence_against": "The spec explicitly covers varying burst-scoped attributes (:317 \"If a burst-scoped AXI address attribute differs ... uses ordered AXI singles\")."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Fix RTL: the same two fixes as CHK-024 (ahb_if ordering; gate w_cap_stop and stop the fallback/term_seen override). Check that the fallback compare at ctrl.sv:850-856 is what selects singles once capture works. If the designer considers varying-attribute bursts out of scope, that must be written into the spec. Otherwise keep the test unchanged."
+  },
+  {
+   "failure": "test_chk_026_early_termination — timeout after 86000 cycles waiting for AHB transfers to complete (all 4 runs)",
+   "spec_says": "spec :149 REQ-FUNC-009 \"An early-terminated AHB fixed write burst shall never produce an incomplete AXI burst ... emit any captured but unissued accepted write beats as ordered AXI single-beat transactions ... and hold the terminal AHB response until all corresponding B responses arrive\"; :317. contract.json:946-947 (CHK-026) \"Beat k's AHB data phase completes only at or after the k-th B handshake ... The following transfer after termination is handled normally.\"",
+   "rtl_does": "For k=1 (INCR8, beat 1 then IDLE), beat 1 is eligible with len>1, so w_input_early_ack=1 (ctrl.sv:421). In its first data-phase cycle, w_early_ack_now = w_data_hs & ... & ~w_burst_term (ctrl.sv:436-437). w_burst_term's IDLE clause needs w_wr_cmd_start (ctrl.sv:428-429), and that is still 0 because the cmd FIFO's registered empty flag only clears one edge after the write (m_vlsit_sfifo_rd.sv:151, which uses the pre-edge write pointer). The IDLE termination is therefore missed, and beat k is OKAY'd before any B, which violates CHK-026. The FSM then drains in WR_CAPTURE→WR_SINGLE→WR_B and parks the real terminal response in AHB_RSP with no data phase to deliver it to (ctrl.sv:648-651). Meanwhile ahb_if.sv:104-105 holds HREADYOUT=0 against the next NONSEQ. In cases with k≥2, pipelined SEQ beats are also dropped by ahb_if.sv:87-88. Over 214 items the AHB side eventually wedges (inferred).",
+   "test_does": "test lines 835-857. For INCR8 and WRAP16, every k=1..N-1: mk(r,1,b,2,WB_A,k=k), then a terminator (IDLE when k is odd, otherwise a NONSEQ SINGLE read), then 2 IDLEs. Every other case has one SLVERR/DECERR BRESP. READY random ('r',4), bdel/rdel 0..10. Timeout 400+400*214=86000.",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "Three code-level faults combine. (1) The early ack escapes termination detection because w_burst_term (ctrl.sv:426-432) depends on the lagging FIFO empty flag. (2) The response is left in AHB_RSP with no owner (ctrl.sv:440-450, 648-651). (3) ahb_if.sv:87-88 drops pipelined beats. CHK-002 fails 14 cycles into this test in both base runs (s1 2668805000 ps vs start 2668665 ns; s2 3303475000 vs 3303335 ns), which matches HREADYOUT being held low after the early-acked k=1 beat.",
+     "evidence_against": "No waveform. The hang point is inferred."
+    },
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "The terminator is driven in the address phase right after beat k's acceptance edge (contract.json:946), which is the most aggressive timing.",
+     "evidence_against": "That timing is legal AHB and is the stimulus the contract specifies. Any subordinate sees the next HTRANS in the same cycle as beat k's data phase."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "At the moment beat k is buffered the bridge cannot yet know it is the last one. REQ-FUNC-007 (:147) allows early OKAY for buffered non-terminal beats, while REQ-FUNC-009 (:149) requires the last captured beat to wait for B. The spec does not say that early OKAY must be delayed until the next address phase shows SEQ/BUSY.",
+     "evidence_against": "The AHB data phase of beat k overlaps the address phase of beat k+1, so the bridge can see HTRANS before raising HREADYOUT. The RTL already tries this through w_burst_term. CHK-026's expected result is unambiguous."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Fix RTL. Make early-ack termination detection independent of the FIFO empty-flag lag: for example, qualify w_early_ack_now directly on the current HTRANS being SEQ/BUSY for the same burst, instead of on w_wr_cmd_start (ctrl.sv:426-437). Also fix the ahb_if ordering and the w_cap_stop gating. Optionally clarify the spec: add to REQ-FUNC-007/009 that early OKAY on beat k is allowed only when the overlapping address phase is SEQ/BUSY of the same burst."
+  },
+  {
+   "failure": "Assertion CHK-002 — IDLE and BUSY transfers get zero-wait OKAY: 17 fails / 20390 hits (base.s1 2, base.s2 11, ids8 2, ids35 2); first fail 2668805000 ps",
+   "spec_says": "spec :142 REQ-FUNC-002 and :312 (IDLE/BUSY create no AXI traffic). The zero-wait OKAY for IDLE/BUSY comes from AHB (REF-001), which rules AA-6.1-01 and AA-T1.7.3.1-03 bind (contract.json:528-535, CHK-002): \"if at edge t i_ahb_hsel=1, i_ahb_hready=1 and i_ahb_htrans is IDLE or BUSY, then at edge t+1 o_ahb_hreadyout=1 and o_ahb_hresp=0.\"",
+   "rtl_does": "m_ahb2axi_ahb_if.sv:104-105 forces o_ahb_hreadyout=0 whenever hsel & htrans[1] & ~i_req_ready, even when no data phase of this subordinate is active (reg_data_phase_valid=0). i_req_ready is 0 in every controller state except IDLE/AHB_RSP/WR_CAPTURE (ctrl.sv:564-582). The failing case: the bridge has already completed the AHB side of a write early (an early-acked beat whose termination was missed, ctrl.sv:426-437, or a beat dropped by ahb_if.sv:87-88) and is still draining on AXI. The manager then sends IDLE (accepted at t) followed by a NONSEQ, and the IDLE's data phase at t+1 gets HREADYOUT=0. The first fails sit 14 cycles into test_chk_026 in both base seeds (s1 2668805000 ps / start 2668665 ns; s2 3303475000 / 3303335 ns), i.e. right after the first INCR8 k=1 beat + IDLE termination case. Other fails are mid-test (s2 3180000 ps in test_chk_021; 6188780000.. in test_chk_033).",
+   "test_does": "This is an SVA assertion (verif/sva/nnc_chk_ahb.sv:79-83): (hsel && hready && htrans∈{IDLE,BUSY}) |=> (hreadyout && !hresp), disabled during reset. The stimulus is whatever each cocotb test drives. In test_chk_026 that is INCR8 k=1 + idles(1) + idles(2) followed by the next case's NONSEQ (test lines 841-849). hready is the mirror of hreadyout.",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "ahb_if.sv:104-105 back-pressures a new address phase by pulling HREADYOUT low with no data phase of its own active. An AHB subordinate can only stall the next address by extending its own pending data phase. The situation arises because the controller is busy after the AHB side was already acknowledged (early ack escaping w_burst_term, ctrl.sv:426-437, or the ahb_if.sv:87-88 drop). The fail times line up deterministically with the first early-termination case of test 026 in both base seeds.",
+     "evidence_against": "Only 17 fails in about 20k hits, so it is a corner case. No waveform confirms which of the two upstream defects led to each fail."
+    },
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "The first fails come right after test_chk_025 timed out. The helper reset_dut (nnc_cocotb, not in this directory) only forces i_ahb_hready=1 (test line 526), so stale AHB inputs from the hung test could be present at the start of the next test.",
+     "evidence_against": "The fail is about 14 cycles after the test start, after the 5-cycle reset, the 2 idle cycles, and Ahb.__init__ driving IDLE (line 239). Fails also occur mid-test in s2 (test 021 at 3180 ns, test 033) with no preceding timeout. The assertion is disabled during reset."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "The spec quotes only \"IDLE/BUSY shall not issue AXI requests\" (:142, :312). The zero-wait OKAY wording is inherited from AHB through AA-6.1-01, not written out in the spec.",
+     "evidence_against": "The spec adopts AHB5 IHI0033C as the interface standard (:130, :238), and that standard mandates zero-wait OKAY for IDLE/BUSY."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Fix RTL. Remove the unconditional HREADYOUT=0 at ahb_if.sv:104-105. Stall a new address only by extending a pending data phase of this bridge, which means the bridge must not complete the last AHB beat of a write before it can accept the next address. Concretely: fix the early-ack termination detection (ctrl.sv:426-437), and keep the terminal or last-captured beat's data phase open until the drain completes, as REQ-FUNC-009 already requires. The ahb_if ordering fix removes the drop-induced cases. Optionally state the IDLE/BUSY zero-wait OKAY rule in spec §6.3."
+  },
+  {
+   "failure": "Assertion CHK-005 — AW VALID and payload stable until AWREADY: 2 fails / 14676 hits (base.s2 only); first fail 4256675000 ps",
+   "spec_says": "spec :322 \"AXI4 VALID and payload shall remain stable until READY handshakes\"; :216 \"AXI VALID and payload remain stable until READY handshake.\"; :280 o_axi_awvalid \"Hold until AWREADY\". rules.json:7444-7445: \"VALID and payload must stay stable until the READY handshake.\"",
+   "rtl_does": "In ENUM_ST_WR_SINGLE, the AW payload is chosen by reg_burst_fallback (ctrl.sv:688-699): reg_burst_addr/size/prot[widx] when it is 1, reg_cmd_* when it is 0. reg_burst_fallback is set by `if (w_cap_stop)` at ctrl.sv:859-862 in any state. w_cap_stop (ctrl.sv:513-516) is 1 whenever the wr-cmd FIFO is non-empty and its head is not a SEQ write. If, while AW is pending (AWVALID=1, AWREADY=0) for a SEQ-head command (fallback=0), another write command with a NONSEQ head is already in the 2-deep cmd FIFO, fallback flips to 1 at the next edge. AWADDR/AWSIZE/AWCACHE/AWPROT then switch to the reg_burst_* entries. A FIFO holding two commands only happens after the AHB/FSM desync caused by the ahb_if.sv:87-88 drop and stale AHB_RSP responses. Both fails (4256675000 in test_chk_032, 6190410000 in test_chk_033) come in seed s2 traffic that is already failing CHK-015/016.",
+   "test_does": "This is an SVA assertion in verif/sva/nnc_chk_axi.sv (not opened; its behavior is quoted from contract.json:581): AWVALID & !AWREADY at t ⇒ AWVALID and AWID/ADDR/LEN/SIZE/BURST/CACHE/PROT equal at t+1. The stimulus is test_chk_032 (lines 985-998: 400 shuffled SINGLE reads/writes + 20 INCR4 WB writes, READY random ('r',3)) and test_chk_033 (mixed random traffic, READY ('r',16)).",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "ctrl.sv:859-862 changes the AW payload selector in any state, including while AWVALID is pending. ctrl.sv:688-699 makes the AW payload a combinational function of that selector. The Mon protocol checker in the test (stable_aw, lines 153-156) applies the same rule.",
+     "evidence_against": "Only 2 fails, in one seed, and only after the bridge is already desynchronised by the pipelined-drop bug. The exact payload field that changed is not logged."
+    },
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "None found. The assertion is a direct encoding of the spec.",
+     "evidence_against": "The property is disabled across reset (contract: both edges with rst=1), so reset-induced changes are excluded."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "None.",
+     "evidence_against": "Spec :322 and the Q&A at rules.json:7445 are explicit."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Fix RTL. Gate w_cap_stop (ctrl.sv:513-516), or the fallback update at ctrl.sv:859-862, to ENUM_ST_WR_CAPTURE, so that reg_burst_fallback cannot change while an AW/W from WR_SINGLE is pending. Alternatively, register the AW payload at issue time and hold it until handshake. Fixing the ahb_if ordering removes the desync that exposes this. Re-run base.s2 to confirm."
+  },
+  {
+   "failure": "Assertion CHK-015 — AHB read completes only with its R beat and carries RDATA unchanged: 3834 fails / 8723 hits; first fail 1050000 ps (test_chk_021)",
+   "spec_says": "spec :143 REQ-FUNC-003; :198 \"accept one R beat (RLAST=1) → return HRDATA and HRESP in the AHB data phase. No next AHB read is accepted while the current read is unresolved.\"; :458 \"AHB does not accept the next read until the current R data/status returns\"; :357 \"AHB waits for R; map RRESP\". contract.json:736 (CHK-015).",
+   "rtl_does": "When a read's address phase is pipelined behind a completing transfer, m_ahb2axi_ahb_if.sv:87-88 (which reads o_rsp_ready=0 from line 81 before line 97 assigns it) does not capture it, yet HREADYOUT=1 accepts it on the bus. In its data phase reg_data_phase_valid=0, so lines 82-84 output HREADYOUT=1, HRESP=0, HRDATA=0 with no AR or R ever issued. That gives c15_have=0 and a fail. Once the FSM desyncs, reg_rsp_valid can also be left in ENUM_ST_AHB_RSP (ctrl.sv:648-651), and a later read data phase is completed with a stale response or data (ctrl.sv:440-447). The first fail is at edge ~105 of test_chk_021, right after the first ARs at t=101/113 shown in the traceback.",
+   "test_does": "SVA in verif/sva/nnc_chk_cross.sv:199-210: c15_ant = dp_active && dp_rd && !dp_rej && o_ahb_hreadyout. It needs an R handshake seen during the data phase (dp_rseen, latched at 165-169) or at the same edge, and HRESP/HRDATA matching RRESP/RDATA. dp_* is set on every AHB acceptance (154-162). The stimulus comes from all cocotb tests that issue reads.",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "The ahb_if.sv:81/87-88/97 ordering bug lets a read complete with no R. The fail rate (44%) matches the pipelined-read share of random traffic. test_chk_029 (2 back-to-back reads → 1 AR/1 R, results.json:222) and test_chk_037 (1118 of 2006 ARs, results.json:392) show the same loss.",
+     "evidence_against": "No waveform for individual fails. Some fails may come from the stale-response path rather than direct drops, but that has the same root cause."
+    },
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "The checker matches a read to the R handshake inside its own data phase instead of the j-th R by index, which differs slightly from the contract wording.",
+     "evidence_against": "That is more permissive, not stricter. A read completing with no R at all fails under any reading of :143/:198/:458."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "None.",
+     "evidence_against": "Spec :198 and :458 are explicit."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Fix RTL: reorder p_com_ahb_rsp in m_ahb2axi_ahb_if.sv so o_req_valid uses the computed o_rsp_ready. Also make sure reg_rsp_valid cannot be left without an owning AHB data phase (ctrl.sv:440-450, 648-651). No checker or test change."
+  },
+  {
+   "failure": "Assertion CHK-016 — Waiting-class writes complete only after their BRESP: 9771 fails / 9814 hits; first fail 1270000 ps (test_chk_021)",
+   "spec_says": "spec :148 REQ-FUNC-008 \"Device-E writes ... shall wait for each final-destination BRESP; no early AHB write response is allowed\"; :434 OP-WR-SINGLE \"Wait for BRESP; map the response to that AHB transfer\"; :358 \"AHB single/INCR write ... Wait for BRESP\"; :149 REQ-FUNC-009 and :202 for the terminal beat. contract.json:756 (CHK-016).",
+   "rtl_does": "Pipelined write beats are not captured (m_ahb2axi_ahb_if.sv:87-88 uses the stale o_rsp_ready=0). Their data phase completes zero-wait OKAY (lines 82-83) with no AW/W/B, which is a direct violation for SINGLE/INCR/Device beats. Early ack can also complete the last captured beat of a terminated WB burst before B (ctrl.sv:421, 436-437; termination is missed because of the lagging w_wr_cmd_start in w_burst_term, ctrl.sv:426-432). Separately, for every NONSEQ write the forced reg_burst_fallback (ctrl.sv:513-516, 859-862) sends a stale reg_burst_addr[0] as AWADDR (ctrl.sv:688-689). As a result the test's AXI model returns BRESP keyed by the wrong address; test_chk_028 got hresp=0 for an injected SLVERR (results.json:198).",
+   "test_does": "SVA in verif/sva/nnc_chk_cross.sv:212-241. Beat j (counted from accepted non-rejected writes, wa) is matched to the j-th W handshake (xw[]); c16_bok requires wh>=dp_j and bh>=X(j) at completion. Stimulus comes from all cocotb tests with writes.",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "Writes complete with no W/B because of the ahb_if ordering bug. test_chk_023 (half the W beats) and test_chk_040 (1103 of 2009 W) show the loss directly. Early ack of a terminated beat and the wrong AWADDR from the forced fallback are further RTL faults affecting this check.",
+     "evidence_against": "The very high fail ratio (99.6%) is partly a cascade. Once one accepted write beat produces no W handshake, the checker's j↔W-handshake index (nnc_chk_cross.sv:137-148, 216-219) is permanently shifted, so later correct writes also fail c16_wdone. The fail count overstates the number of distinct bad writes."
+    },
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "The index-based matching cascades after the first lost beat and inflates the fail count.",
+     "evidence_against": "Matching beat j to the j-th W handshake is what the contract specifies (contract.json:756), and it is correct for a bridge that loses no beats (REQ-FUNC-001). The first fail of each run is a real violation."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "For the early-termination subcase, the tension between REQ-FUNC-007 (early OKAY for buffered beats) and REQ-FUNC-009 (the last captured beat waits) is noted under CHK-026.",
+     "evidence_against": "For SINGLE/INCR/Device beats (most hits) the spec is unambiguous."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Fix RTL: the ahb_if o_req_valid/o_rsp_ready ordering, the w_cap_stop gating so NONSEQ singles use reg_cmd_addr, and the early-ack termination detection. After the fix, re-check that the remaining CHK-016 fails (if any) are not cascades. Optionally (test infrastructure, not weakening) add a diagnostic to the checker that reports the first index desync separately so cascades are visible. Do not relax the check."
+  },
+  {
+   "failure": "Assertion CHK-017 — Locally rejected transfers end in ERROR and produce no W data: 4 fails / 5549 hits (one per run); first fail 3620270000 ps (test_chk_031)",
+   "spec_says": "spec :155 REQ-ERR-002 \"HMASTLOCK, HPROT[6]=1, reserved/unsupported HPROT combinations, unsupported HSIZE and misaligned transfers shall return two-cycle AHB ERROR; no AXI request shall be issued for the rejected transfer.\"; :313 \"any earlier accepted write prefix is drained under REQ-FUNC-009\"; :361. contract.json:775 (CHK-017).",
+   "rtl_does": "In test_chk_031 the rejected NONSEQ (lock/p6/size/mis) is driven in the address phase right after beat 3 of an INCR8 WB prefix. When beat 3's data phase completes (early ack or the drained response, HREADYOUT=1), m_ahb2axi_ahb_if.sv:87-88 does not capture the pipelined rejected transfer (o_rsp_ready reads 0 from line 81). It never reaches the controller's local-error path (ctrl.sv:590-596 → ENUM_ST_LOCAL → reg_rsp_err=1 at 940-944). Its data phase then gets HREADYOUT=1, HRESP=0 (ahb_if.sv:82-83), i.e. OKAY instead of the two-cycle ERROR. The same test shows beat 2 dropped too: 2 AWs for 3 beats (results.json:254). Fail times fall inside test_chk_031 in each run (s1 3620270000 within 3620030-3620315 ns; s2 4254790000 within 4254510-4254835 ns).",
+   "test_does": "SVA verif/sva/nnc_chk_cross.sv:243-251: at the completion of a rejected data phase (dp_rej && hreadyout) HRESP must be 1, and W handshakes must not exceed accepted non-rejected writes. Stimulus (test lines 961-976): mk(r,1,INCR8,2,WB_A,k=3) followed immediately by mk_rej(...) and 3 IDLEs.",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "The rejected transfer is pipelined and dropped by the ahb_if.sv:87-88 ordering bug, so it completes OKAY. test_chk_030 passes all its rejection cases, and those always follow IDLEs (test line 952), which isolates the pipelining as the trigger.",
+     "evidence_against": "No waveform for the exact cycle."
+    },
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "None.",
+     "evidence_against": "A rejected transfer pipelined after a burst prefix is legal AHB (the manager may terminate a burst at any time) and is explicitly covered by spec :313/:361."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "None.",
+     "evidence_against": "REQ-ERR-002 (:155) is explicit."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Fix RTL: the ahb_if ordering fix so that a transfer accepted on a completing edge is captured and routed through f_local_error (ctrl.sv:411-412, 590-596). Re-run test_chk_031/CHK-017 to check the drain-then-ERROR order. No test or spec change."
+  },
+  {
+   "failure": "Assertion CHK-020 — AXI payload outputs hold reset values during reset: 452 fails / 452 hits (every reset cycle, all runs); first fail 0 ps",
+   "spec_says": "Port table, reset/idle value column: spec :298 o_axi_arprot \"Reset / idle value: 0\"; :282 o_axi_wdata \"0\"; :283 o_axi_wstrb \"0\"; :272-279, 291-297 (rules AA-T1.7.2.2-09/15/19/21). contract.json:823 (CHK-020) \"o_axi_arprot=0 ... o_axi_wdata=0 ...\". Counterpoints: :467 \"FIFO payload contents need not be reset\"; :176/:182 \"the combinational AXI adapter uses the reset only to suppress VALID/READY\"; :386 and rules.json:7411/7627 list only HREADYOUT/HRESP/VALID/READY as reset values.",
+   "rtl_does": "m_ahb2axi_ctrl.sv:677 always drives w_axi_ar_prot = f_axi_prot(reg_cmd_prot[1:0], reg_cmd_nonsec) = {~hprot[0], nonsec, hprot[1]} (ctrl.sv:373-380). With the reset values reg_cmd_prot=0 and reg_cmd_nonsec=0 (ctrl.sv:757-758) this gives 3'b100. m_ahb2axi_axi_if.sv:130 passes o_axi_arprot through with no reset gating, so ARPROT=4 at every reset edge, which explains 100% fails. In addition, o_axi_wdata/wstrb = w_wr_data_rd_data (ctrl.sv:667-668, axi_if.sv:117-118) is the resetless FIFO read register (m_vlsit_sfifo_mem.sv:48, 59-61). test_chk_038 saw wdata=3712105952 one step after async reset (results.json:416).",
+   "test_does": "SVA verif/sva/nnc_chk_reset.sv:76-79: at every posedge with i_rst_n_core=0, all AXI payload outputs equal their table reset values (ARPROT=0, WDATA=0, ...). The cocotb monitor checks the same RST_VAL table (test lines 42-44, 137-141).",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "The port table gives an explicit reset value of 0 for o_axi_arprot (:298), and the RTL produces 3'b100 deterministically from ctrl.sv:677 + axi_if.sv:130 in every reset cycle. Fixing this needs no new reset gating in the adapter: the controller can drive ar_prot/ar_cache/ar_addr only in ENUM_ST_RD_AR and 0 otherwise. For WDATA/WSTRB the controller can drive 0 unless w_axi_w_valid.",
+     "evidence_against": "For WDATA/WSTRB specifically, spec :467 allows unreset FIFO payload, and the architecture text (:176) says the adapter uses reset only for VALID/READY."
+    },
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "Data ports are only qualified by VALID (rules.json:7445 \"The payload is only qualified by its VALID\"), so checking payload values during reset could be called over-specification.",
+     "evidence_against": "The check encodes the spec's own per-port reset value column (:272-298) as captured in contract.json, so it is not invented by the test."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "The spec mixes two statements: per-port reset value 0 for payloads (:282, :298) versus \"FIFO payload contents need not be reset\" (:467), adapter reset only on VALID/READY (:176), and reset-value lists in §7.3 (:386) and the Q&A (rules.json:7411, 7627) that name only HREADYOUT/HRESP/VALID/READY.",
+     "evidence_against": "For ARPROT the source is a controller register, not FIFO payload, and the table value is unambiguous."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "(a) Fix RTL: in ctrl.sv p_com_axi_req, default w_axi_ar_prot/ar_cache/ar_addr/ar_size to 0 and assign the mapped values only in ENUM_ST_RD_AR (ctrl.sv:671-680). Default w_axi_w_data/w_strb to 0 unless w_axi_w_valid (ctrl.sv:667-668). That keeps the payload stable while VALID is high and meets the reset values without adding reset logic to axi_if. (b) Clarify the spec: state whether the 'Reset / idle value' column for Data(valid with VALID) ports is binding during reset. If it is not, remove those columns or mark them don't-care, and update the contract CHK-020 accordingly. That is a spec decision, not a weakening of the check. ARPROT=4 still contradicts the table as written."
+  }
+ ],
+ "clusters": 26,
+ "analysed": 12,
+ "usage": {
+  "calls": 1,
+  "cached": 0,
+  "cost_usd": 3.9846,
+  "input_tokens": 40,
+  "output_tokens": 73013,
+  "cache_creation_input_tokens": 248690,
+  "cache_read_input_tokens": 2672573
+ },
+ "prompt_version": "triage-v1",
+ "denials": []
+}

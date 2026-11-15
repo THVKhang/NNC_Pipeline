@@ -39,6 +39,9 @@ from nnc.sim import checker_files, rtl_files, tb_top
 from nnc.simhost import SimHost
 
 DEFAULT_DEPTH = 20
+# prove: property-directed reachability (abc pdr) and k-induction in parallel; the first conclusive wins.
+# PDR closed every check that k-induction left BOUNDED on apb_tlul_bridge (7 of 7, 45 s).
+PROVE_ENGINES = "abc pdr\nprove: smtbmc yices"
 DEFAULT_TIMEOUT_S = 600          # per SymbiYosys task (bmc, prove, cover) of one check
 _UNSUPPORTED = re.compile(r"##\s*\[|\[\s*\*|\[\s*->|\[\s*=|\b(throughout|within|intersect|s_eventually|eventually|"
                           r"until|until_with|s_until|first_match|strong|weak|nexttime|always|accept_on|reject_on|"
@@ -316,7 +319,9 @@ multiclock {multiclock}
 timeout {timeout}
 
 [engines]
-smtbmc {solver}
+bmc: smtbmc {solver}
+cover: smtbmc {solver}
+prove: {prove_engines}
 
 [script]
 {read}
@@ -330,7 +335,7 @@ setundef -zero -init {checkers}
 
 def build(contract: dict, rtl_dir: Path, sva_dir: Path, env_file: Path | None, *, depth: int = DEFAULT_DEPTH,
           defines: list[str] | None = None, solver: str = "yices", params: dict | None = None,
-          task_timeout_s: int = DEFAULT_TIMEOUT_S) -> tuple[dict, list[Prop]]:
+          task_timeout_s: int = DEFAULT_TIMEOUT_S, prove_engines: str = PROVE_ENGINES) -> tuple[dict, list[Prop]]:
     """Input files of the formal run: per supported check an .sby project, plus the shared sources."""
     rtl = rtl_files(rtl_dir)
     chk = [f for f in checker_files(sva_dir) if f.name.startswith("nnc_chk_")]
@@ -355,7 +360,7 @@ def build(contract: dict, rtl_dir: Path, sva_dir: Path, env_file: Path | None, *
     files["src/nnc_fv_top.sv"] = top_module(contract, [f.stem for f in used], user_env)
     srcs = [k[4:] for k in files if k.startswith("src/")]
     defs = " ".join(f"-D{d}" for d in (defines or []))
-    gen = " ".join(f"-chparam {k} {v} nnc_fv_top" for k, v in (params or {}).items())
+    gen = "\n".join(f"chparam -set {k} {v} nnc_fv_top" for k, v in (params or {}).items())
     multiclock = "on" if is_async(contract["interface"]) else "off"
     # Checker variables start at 0 as in simulation (2-state int/bit); DUT flops keep a free initial value.
     checker_sel = " ".join(f"*{f.stem}*" for f in used) or "nnc_fv_top"
@@ -366,6 +371,7 @@ def build(contract: dict, rtl_dir: Path, sva_dir: Path, env_file: Path | None, *
             read += f"\n{gen}"
         files[f"{tag}.sby"] = SBY.format(depth=depth, multiclock=multiclock, solver=solver, read=read,
                                           timeout=task_timeout_s, checkers=checker_sel,
+                                          prove_engines=prove_engines,
                                           files="\n".join(f"src/{s}" for s in srcs))
     files["src_list.txt"] = "\n".join(srcs) + "\n"
     return files, props
@@ -407,9 +413,9 @@ def parse_status(out_dir: Path, tag: str) -> dict:
 
 def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, env_file: Path | None = None, *,
         depth: int = DEFAULT_DEPTH, defines: list[str] | None = None, parallel: int = 4,
-        task_timeout_s: int = DEFAULT_TIMEOUT_S) -> dict:
+        task_timeout_s: int = DEFAULT_TIMEOUT_S, params: dict | None = None) -> dict:
     files, props = build(contract, rtl_dir, sva_dir, env_file, depth=depth, defines=defines,
-                         task_timeout_s=task_timeout_s)
+                         task_timeout_s=task_timeout_s, params=params)
     n = len([k for k in files if k.endswith(".sby")])
     timeout_s = 600 + 3 * task_timeout_s * max(1, -(-n // max(1, parallel)))
     res = host.run(files, RUN.format(parallel=parallel),
@@ -438,6 +444,54 @@ def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, env_file: P
             "out_dir": str(res.out_dir)}
 
 
+_SEVERITY = ["PROVEN", "BOUNDED", "TIMEOUT", "ERROR"]
+
+
+def formal_configs(runs: list[dict] | None) -> list[dict]:
+    """Distinct parameter sets of a run set ({name, params}), first one first. Plusargs and clock periods do
+    not matter to formal (no simulation model; clocks are free or one global clock)."""
+    out, seen = [], set()
+    for r in runs or []:
+        key = tuple(sorted((r.get("params") or {}).items()))
+        if key not in seen:
+            seen.add(key)
+            out.append({"name": r["config"], "params": dict(r.get("params") or {})})
+    return out or [{"name": "default", "params": {}}]
+
+
+def merge_configs(per: dict[str, dict]) -> dict:
+    """Merge formal results of several configurations per check: CEX anywhere is a CEX; a configuration in
+    which the check is VACUOUS or UNSUPPORTED does not count; otherwise the weakest result
+    (PROVEN < BOUNDED < TIMEOUT < ERROR). VACUOUS only if vacuous in every configuration that checked it."""
+    names = list(per)
+    checks: dict[str, dict] = {}
+    for cid in sorted({c for r in per.values() for c in r["checks"]}):
+        sts = {n: per[n]["checks"][cid] for n in names if cid in per[n]["checks"]}
+        rec: dict = {"per_config": {n: v["status"] for n, v in sts.items()}}
+        cex = [n for n, v in sts.items() if v["status"] == "CEX"]
+        real = {n: v for n, v in sts.items() if v["status"] not in ("VACUOUS", "UNSUPPORTED")}
+        if cex:
+            rec.update(sts[cex[0]])
+            rec["status"], rec["config"] = "CEX", cex[0]
+        elif real:
+            worst = max(real.items(), key=lambda kv: _SEVERITY.index(kv[1]["status"]) if kv[1]["status"] in _SEVERITY else 0)
+            rec.update(worst[1])
+            rec["status"] = worst[1]["status"]
+        elif any(v["status"] == "VACUOUS" for v in sts.values()):
+            rec["status"] = "VACUOUS"
+        else:
+            rec.update(next(iter(sts.values())))
+        rec["per_config"] = {n: v["status"] for n, v in sts.items()}
+        checks[cid] = rec
+    counts: dict[str, int] = {}
+    for v in checks.values():
+        counts[v["status"]] = counts.get(v["status"], 0) + 1
+    first = per[names[0]]
+    return {**{k: first[k] for k in ("depth", "task_timeout_s", "clocks", "defines", "environment") if k in first},
+            "configs": {n: {"by_status": r["by_status"]} for n, r in per.items()},
+            "checks": checks, "by_status": dict(sorted(counts.items()))}
+
+
 def to_markdown(name: str, res: dict, contract: dict) -> str:
     titles = {c["id"]: c["title"] for c in contract["checks"]}
     out = [f"# Formal check — {name}", "",
@@ -453,10 +507,18 @@ def to_markdown(name: str, res: dict, contract: dict) -> str:
            "- **UNSUPPORTED**: the assertion uses SVA outside the translated subset, or its checker is "
            "simulation-only (event timing, queues); not checked.",
            f"- **TIMEOUT**: the solver did not finish within {res.get('task_timeout_s')} s per task; nothing concluded.", "",
-           f"**Result:** {res['by_status']}", "", "| Check | Title | Formal | Detail |", "|---|---|---|---|"]
+           f"**Result:** {res['by_status']}", ""]
+    if res.get("configs"):
+        out += ["Configurations (parameters of the run set; a check counts as PROVEN only if proven in every "
+                "configuration where it is not vacuous):", ""]
+        out += [f"- {n}: {v['by_status']}" for n, v in res["configs"].items()]
+        out.append("")
+    out += ["| Check | Title | Formal | Detail |", "|---|---|---|---|"]
     for cid, v in res["checks"].items():
         det = v.get("reason") or ("trace: " + ", ".join(v["traces"][:1]) if v.get("traces") else "") \
             or ("; ".join(v.get("errors", [])[:2]))
+        if v.get("per_config") and len(v["per_config"]) > 1:
+            det = (det + " " if det else "") + "(" + ", ".join(f"{n} {st}" for n, st in v["per_config"].items()) + ")"
         out.append(f"| {cid} | {titles.get(cid, '')} | **{v['status']}** | {det.replace('|', '/')[:200]} |")
     return "\n".join(out) + "\n"
 

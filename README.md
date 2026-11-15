@@ -55,9 +55,9 @@ python -m nnc inject my_ip my_bug.diff   # does the approved verification catch 
 cd designs/my_ip/sim && make help        # reproduce the regression without the orchestrator
 ```
 
-In Claude Code: `/nnc-flow my_ip` runs the same steps and presents each gate. Full walk-through: [docs/GUIDE.md](docs/GUIDE.md). Design and measurements: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+In Claude Code: `/nnc-flow my_ip` runs the same steps and presents each gate. Full walk-through: [docs/GUIDE.md](docs/GUIDE.md). Design and measurements: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Evaluation of the latest phases: [docs/EVALUATION.md](docs/EVALUATION.md).
 
-## Results on five designs | Kết quả trên năm thiết kế
+## Results on six designs | Kết quả trên sáu thiết kế
 
 Specifications and RTL from [VLSIT_ASIC_SOC_AI_SKILLS](https://github.com/nguyenquanicd/VLSIT_ASIC_SOC_AI_SKILLS) `common_rtl/` (Apache-2.0; copies unchanged except one line fixed in axi2apb's `m_axi2apb_wr_seq.sv`, see each design's NOTICE). Everything under `work/`, `verif/` and `sim/` was produced by the flow, except the test-bench fixes described below (each recorded at a G3 re-approval). Gates G1–G3 were approved by Claude **on the user's delegation** (recorded as such, with reasons); **G4 sign-off is left to a person**.
 
@@ -91,14 +91,24 @@ A mutant counts as killed only by a test or check that passes on the unmutated R
 | Checks (assertions + tests) | 32 (13 + 19) | 35 (18 + 17) |
 | Run set | 14 runs, 10 configurations: CFG-BASE seeds 1–5, model off, `VLSIT_SYNTHESIS`, cell 1/3/4, SRAM macro, depth 2 × width 1, clock ratios 11:3 and 3:11 | 14 runs, 12 configurations: APB4 seeds 1–3, model off, `VLSIT_SYNTHESIS`, 4-phase (model on/off), APB5, user signals, 3-/4-FF cells, CFG-MIN, completer 3× faster / 9× slower |
 | NOT_VERIFIABLE, one run → run set | 17 → **3** (statistics across seeds) | 7 → **0** |
-| Result | 26 PASS; CHK-003, CHK-013, CHK-025 fail → triage **C: the specification contradicts itself** | **35/35 checks PASS** in every configuration; rules VERIFIED 185, NOT_PROVEN 0 |
+| Result (regenerated with the run set, 2026-11-14) | 23 PASS, 9 FAIL, all in model-on runs → triage **C: the specification contradicts itself** (10/10) | **35/35 checks PASS** in every configuration; rules VERIFIED 185, NOT_PROVEN 0 |
 | Line / toggle / functional (merged) | 99.1 / 99.5 % / 40 of 40 | 91.9 / 98.6 % / 39 of 40 |
 | Mutation (36), one run → run set | 80.6 → **91.7 %**, rules below 85 %: 14 → 5 | 72.2 → **83.3 %**, rules below 85 %: 18 → 3 |
+| Mutation after regeneration (sample of 12) | 100 % (12/12) | 91.7 % (11/12) |
+| Test-bench hand fixes (triage B) | 13 (10 simulation, 3 formal) | 1 |
 | Agent cost | US$39.5 (of which US$5.5 lost to calls cut by the usage limit) | US$12.5 |
 
-- **async_gray_fifo — a contradiction in the specification.** REQ-VER-001 makes the metastability model delay *each bit independently* and lets a later change replace a pending one. When the source Gray pointer steps twice inside that delay, the synchronized value can be a code that never existed (CHK-003, CHK-013: threshold flags break "never optimistic"), and a short pointer bit can vanish so that `o_empty` falls one edge after the S..S+2 window (CHK-025). Real synchronizers cannot do either. Every model-off and synthesis-branch run passes all 34 tests and 13 assertions. The RTL follows the specification, so the decision (a coherent model, or a bound for back-to-back updates) is the designer's; the checks were not relaxed. Eight test-bench fixes followed triage B, four of them for faults only visible in other configurations (a checker discarding pre-reset words at the S=2 edge for every cell type, tests assuming depth 8). → [work/triage.md](designs/async_gray_fifo/work/triage.md)
+- **async_gray_fifo — a contradiction in the specification.** REQ-VER-001 makes the metastability model delay *each bit independently* and lets a later change replace a pending one. When the source Gray pointer steps twice inside that delay, the synchronized value can be a code that never existed (CHK-003, CHK-013: threshold flags break "never optimistic"), and a short pointer bit can vanish so that `o_empty` falls one edge after the S..S+2 window (CHK-025). Real synchronizers cannot do either. Every model-off and synthesis-branch run passes every test and assertion. The RTL follows the specification, so the decision (a coherent model, or a bound for back-to-back updates) is the designer's; the checks were not relaxed. The first generation needed eight test-bench fixes, four of them for faults only visible in other configurations (a checker discarding pre-reset words at the S=2 edge for every cell type, tests assuming depth 8). Regenerated with the run set in the prompts (2026-11-14), the configuration faults are gone, but 13 fixes of other kinds were needed (reset handling, clock-edge sampling; 3 from formal counterexamples), so the total did not drop; see [docs/EVALUATION.md](docs/EVALUATION.md). → [work/triage.md](designs/async_gray_fifo/work/triage.md)
 - **async_apb_bridge — clean in every configuration of its specification.** The 7 checks that needed APB5, user signals, the four-phase handshake, a 4-FF cell, the minimum widths or the model off are now verified in the run that has them.
 - **Mutation over a run set:** a mutant runs in the first run that executes its line; a survivor runs again in every other configuration. A four-phase or APB5 term reached in the default run is thus tested where it matters, which is where most of the gain comes from.
+
+### A sixth design: ahb2axi_bridge | Thiết kế thứ sáu
+
+[ahb2axi_bridge](designs/ahb2axi_bridge) (AHB5 → AXI4, 52 ports, burst aggregation; upstream has lint logs but no testbench) went through G1–G3 with no change to the flow: 234 rules, 40 checks, tests valid at the first attempt and no hand fix. On the delivered RTL **1 of 21 tests pass** and formal finds 9 counterexamples; triage judges every analysed failure an RTL fault. Three faults are traced to lines of the RTL (pipelined transfers dropped, single writes using a stale burst address, HREADYOUT held for the next address phase); two fix candidates, checked on a copy with `nnc inject`, raise the result to 6/21. `rtl/` is unchanged: the fix is the designer's decision. → [fix_candidate/README.md](designs/ahb2axi_bridge/fix_candidate/README.md)
+
+### Compared with the hand-written testbenches | So với testbench viết tay
+
+`nnc baseline <ip>` runs the upstream hand-written testbench, as its own script runs it, against the same benchmark bugs and the same mutants. sync_fifo: bugs 3/3 for both, mutants **29/36 hand-written vs 36/36 NNC**; apb_tlul_bridge: 3/3 and 33/33 for both; async_apb_bridge: bugs 3/3 for both. Only three designs have an upstream testbench, and the benchmark bugs were written by the same assistant; see the limits in [docs/EVALUATION.md](docs/EVALUATION.md).
 
 ### Bug benchmark and CI | Đo bằng bug cài sẵn và CI
 
@@ -108,11 +118,14 @@ A mutant counts as killed only by a test or check that passes on the unmutated R
 
 `nnc config <ip> formal=on`, then `gen-env` and `formal`: SymbiYosys checks every generated assertion, alone, by bounded model checking (depth 20), k-induction and a cover of its antecedent (vacuity). Open-source Yosys does not read clocked concurrent SVA, so the subset the generator emits is translated to immediate assertions by code; the rest is reported, never approximated. The environment (`verif/formal/nnc_env.sv`) holds the obligations of the specification on the input side, written by agent A13 from the specification only and approved at G3; counterexamples are classified by agent A14 (RTL, checker, specification, or a missing environment obligation).
 
-| | apb_tlul | axi2apb | sync_fifo | async_apb | async_gray_fifo |
-|---|---|---|---|---|---|
-| PROVEN / BOUNDED (depth 20) | 10 / 7 | 9 / 7 | 4 / 5 | 2 / 12 | 1 / 8 |
-| Counterexamples left | 0 | 0 | 0 | 0 | 2 (CHK-003, CHK-013) |
-| Not checked | — | 1 timeout | 1 timeout, 1 simulation-only checker | 3 simulation-only, 1 vacuous (APB5 check, default APB4 parameters) | 2 simulation-only |
+Formal runs once per distinct parameter set of the run set (a counterexample in any configuration counts; otherwise the weakest result), and the prove step tries `abc pdr` before k-induction.
+
+| | apb_tlul | axi2apb | sync_fifo | async_apb | async_gray_fifo | ahb2axi |
+|---|---|---|---|---|---|---|
+| PROVEN / BOUNDED (depth 20), first version | 10 / 7 | 9 / 7 | 4 / 5 | 2 / 12 | 1 / 8 | — |
+| PROVEN / BOUNDED, per configuration + PDR | **17 / 0** | 12 / 4 | 7 / 2 | **15 / 0** | 5 / 2 | 8 / 2 |
+| Counterexamples left | 0 | 0 | 0 | 0 | 0 | **9, all judged RTL faults** |
+| Not checked | — | 1 timeout | 1 timeout, 1 simulation-only checker | 3 simulation-only | 6 simulation-only (the regenerated read checker uses `time`) | 1 vacuous |
 
 - **The three injected apb_tlul bugs** each gave a counterexample on the right checks.
 - **axi2apb: a generated checker was wrong three times**, invisible to simulation because no test drove those requests: a FIXED burst above 16 beats, a 4-KiB range taken from an unaligned start, an unaligned WRAP start. The RTL rejected all three as the specification requires; the checker's classification was fixed (G3, NOTICE).
@@ -120,7 +133,7 @@ A mutant counts as killed only by a test or check that passes on the unmutated R
 
 CI (`.github/workflows/ci.yml`) runs the unit tests, then each design's reproduction kit with `make` only, and `nnc kit-check` compares its outcome with the committed results. No agent runs in CI.
 
-`nnc report` also writes `work/review_packet.md` for the person who signs G4: the delegated decisions, failures with their triage, hand edits, what is not verified and a checklist.
+`nnc report` also writes `work/review_packet.md` for the person who signs G4: the delegated decisions, failures with their triage, hand edits, what is not verified and a checklist. **G4 is open on every design**; a request for a qualified reviewer is in [docs/G4_REVIEW_REQUEST.md](docs/G4_REVIEW_REQUEST.md).
 
 Coverage targets are the designer's choice: `cover` shows every baseline, the functional points never hit and the uncovered code items, and runs closure only when a target is set. On apb_tlul_bridge a demonstration target (functional 100 %, set on delegation) was closed in one round: the analyst turned the two missed points (response delayed ≥ 8 cycles, response pending at reset release) into two specification-level scenarios, a writer without RTL access produced `test_apb_tlul_bridge_cov1.py`, and both tests pass (US$1.77).
 
