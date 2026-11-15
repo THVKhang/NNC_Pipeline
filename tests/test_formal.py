@@ -74,6 +74,25 @@ class FormalTest(unittest.TestCase):
             (out / "CHK_001_bmc" / "status").write_text("TIMEOUT")
             self.assertEqual(formal.parse_status(out, "CHK_001")["status"], "TIMEOUT")
 
+    def test_configs_and_merge(self):
+        runs = [{"config": "base", "params": {}}, {"config": "off", "params": {}},
+                {"config": "apb5", "params": {"P_APB5": 1}}]
+        self.assertEqual(formal.formal_configs(runs), [{"name": "base", "params": {}},
+                                                       {"name": "apb5", "params": {"P_APB5": 1}}])
+        self.assertEqual(formal.formal_configs(None), [{"name": "default", "params": {}}])
+
+        def r(**st):
+            return {"depth": 20, "checks": {k.replace("_", "-"): {"status": v} for k, v in st.items()},
+                    "by_status": {}}
+        m = formal.merge_configs({"base": r(CHK_001="PROVEN", CHK_002="VACUOUS", CHK_003="PROVEN", CHK_004="PROVEN"),
+                                  "apb5": r(CHK_001="BOUNDED", CHK_002="PROVEN", CHK_003="CEX", CHK_004="VACUOUS")})
+        st = {k: v["status"] for k, v in m["checks"].items()}
+        self.assertEqual(st, {"CHK-001": "BOUNDED", "CHK-002": "PROVEN", "CHK-003": "CEX", "CHK-004": "PROVEN"})
+        self.assertEqual(m["checks"]["CHK-003"]["config"], "apb5")
+        self.assertEqual(m["checks"]["CHK-002"]["per_config"], {"base": "VACUOUS", "apb5": "PROVEN"})
+        m = formal.merge_configs({"a": r(CHK_001="VACUOUS"), "b": r(CHK_001="VACUOUS")})
+        self.assertEqual(m["checks"]["CHK-001"]["status"], "VACUOUS")
+
     def test_env_validation(self):
         good = "  // ENV-01: idle in reset (R-1)\n  always @(*) if (!rst_n) assume (!a);\n"
         self.assertEqual(gen_env.validate_body(good), [])

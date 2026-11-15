@@ -430,3 +430,42 @@ Cuối tài liệu là danh sách câu hỏi phải trả lời trước `G4_sig
   - 12/15 test pass, ba test hỏng ở một hàm của thư viện.
 - Lần đầu còn tốn thêm vì prompt nhóm vẫn chứa dòng "thêm `test_regression_random`" (mâu thuẫn, đã sửa).
 - Kết luận: không rẻ hơn; lợi ích duy nhất là khi bị ngắt chỉ mất một nhóm. Mặc định vẫn một khối.
+
+## 18. Sinh theo cấu hình, formal theo cấu hình, thiết kế thứ sáu, so với testbench viết tay (2026-11-15)
+
+Số đo đầy đủ: [EVALUATION.md](EVALUATION.md). Lời nhờ người ký G4: [G4_REVIEW_REQUEST.md](G4_REVIEW_REQUEST.md).
+
+**Sinh theo cấu hình (giai đoạn 1).**
+- Generator nhận run set (cấu hình, tham số, define, seed) và phải viết test/checker đúng cho mọi cấu hình. Con số suy ra từ tham số (số tầng đồng bộ, độ sâu) phải tính từ tham số. Một hằng số chỉ được giữ nếu có đánh dấu `nnc-literal-ok` kèm lý do (`nnc/literals.py` kiểm).
+- Sinh lại hai thiết kế CDC từ G2:
+  - async_gray_fifo: lỗi testbench "chỉ lộ ở cấu hình khác" từ 4 → **0**. Nhưng tổng số sửa tay **không giảm** (8 → 13): test mới thử nhiều tổ hợp reset hơn, nên có lỗi kiểu khác (scoreboard chỉ lấy cạnh lên, model không bật lại sau reset một miền, kiểm tra trước reset đầu tiên), cộng 3 sửa từ phản ví dụ formal. Ghi thẳng: mục tiêu "ít sửa tay hơn" không đạt, chỉ đổi loại lỗi.
+  - async_apb: test đúng ngay lần đầu, 0 hằng số miễn trừ, 1 sửa tay (`Completer.close`, đóng cửa sổ chấm điểm khi reset). 35/35 check PASS ở 12 cấu hình.
+- FIFO: số check FAIL 3 → 9, cùng một mâu thuẫn spec (REQ-VER-001 cho từng bit trễ độc lập, spec:477/684 và DEC-023 nói chỉ giá trị Gray hợp lệ tới đích). Mọi lỗi đều ở lần chạy bật model; tắt model và nhánh synthesis pass hết. Triage: 10/10 là C.
+
+**Formal theo cấu hình (giai đoạn 2).**
+- Chạy formal một lần cho mỗi bộ tham số khác nhau trong run set rồi gộp:
+  - CEX ở cấu hình nào thì check là CEX;
+  - nếu không, lấy kết quả yếu nhất (PROVEN < BOUNDED < TIMEOUT < ERROR);
+  - cấu hình mà check VACUOUS/UNSUPPORTED thì không tính cho check đó.
+- Bước prove chạy `abc pdr` trước `smtbmc`: PDR tìm được bất biến quy nạp mà k-induction thường bỏ sót.
+- PROVEN trên 5 thiết kế cũ: 26 → 56 (apb_tlul 17/17, async_apb 15 + 3 chỉ-mô-phỏng).
+- Lưu ý FIFO: checker đọc sinh lại có dùng `time` nên CHK-001..004 (kể cả CHK-003 từng có CEX) giờ chỉ kiểm bằng mô phỏng. "0 CEX" không hoàn toàn là tiến bộ.
+
+**Thiết kế thứ sáu: ahb2axi_bridge (giai đoạn 3).**
+- AHB5 → AXI4, 52 cổng, gộp burst, tham số số ID; upstream không có testbench.
+- Chạy flow không đổi code: G1 234 luật, 6 câu hỏi trả lời thận trọng (đánh dấu để người duyệt G4 xác nhận); G2 40 check; G3 test đúng ngay lần đầu, 0 sửa tay.
+- RTL bàn giao: **1/21 test**, 6/20 assertion fail; formal 9 CEX. Triage (mô phỏng 12/12, formal 9/9) đều là A. Ba lỗi RTL có dẫn chứng:
+  - `ahb_if.sv:87-88`: `o_req_valid` đọc `o_rsp_ready` trước khi nó được gán → giao dịch pipeline bị mất (OKAY nhưng không có giao dịch AXI);
+  - `ctrl.sv:859-862`: `w_cap_stop` đặt `reg_burst_fallback` ở mọi trạng thái → ghi đơn dùng địa chỉ burst cũ, payload AW đổi khi AWVALID=1 mà AWREADY=0;
+  - `ahb_if.sv:104-105`: HREADYOUT bị kéo xuống vì địa chỉ *kế tiếp* → chu kỳ ERROR thứ hai bị kéo dài, IDLE/BUSY bị wait.
+- Hai bản sửa đề xuất (`fix_candidate/`), kiểm bằng `nnc inject` trên bản sao: 1/21 → 3/21 → 6/21 test. `rtl/` không sửa: đó là quyết định của người thiết kế. 13 test vẫn treo; bước tiếp là triage trên bản đã vá.
+
+**So với testbench viết tay (giai đoạn 4, `nnc baseline`).**
+- Chạy testbench gốc theo đúng script của nó, với cùng bug benchmark và cùng mutant.
+- sync_fifo: bug 3/3 cả hai; mutant viết tay 29/36, NNC 36/36 (7 mutant chỉ NNC bắt).
+- apb_tlul: 3/3 và 33/33 cả hai.
+- async_apb: bug 3/3 cả hai; mutant viết tay 10/12, NNC 11/12. Không có mutant nào chỉ testbench viết tay bắt được.
+- Giới hạn:
+  - chỉ 3 thiết kế có testbench gốc;
+  - bug benchmark do chính trợ lý viết, biết RTL, nên mutant là thước đo tốt hơn;
+  - không so được công sức (giờ người so với tiền agent).

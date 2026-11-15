@@ -253,6 +253,19 @@ def cmd_bench(args) -> int:
     return 0 if res["summary"]["caught"] == res["summary"]["bugs"] else 3
 
 
+def cmd_baseline(args) -> int:
+    from nnc import baseline
+    from nnc.simhost import default_host
+    d = _open(args)
+    data = baseline.compare(d.root, default_host(), mutants=not args.no_mutants)
+    print(f"[baseline] hand-written {data['baseline_caught']}/{data['total']}, NNC {data['nnc_caught']}/{data['total']}"
+          f" -> {d.work / 'baseline.md'}")
+    mu = data.get("mutation")
+    if mu:
+        print(f"[baseline] mutants killed: hand-written {mu['baseline_killed']}/{mu['count']}, NNC {mu['nnc_killed']}/{mu['count']}")
+    return 0 if data["clean_pass"] else 1
+
+
 def cmd_kit_check(args) -> int:
     from nnc import kitcheck
     d = _open(args)
@@ -401,6 +414,11 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--single-run", action="store_true", help="ignore run_set.json: one run of the design configuration")
     _agent_args(s)
     s.set_defaults(func=cmd_bench)
+
+    s = sub.add_parser("baseline", help="run the upstream hand-written testbench (designs/<ip>/baseline) on the bench faults")
+    s.add_argument("design")
+    s.add_argument("--no-mutants", action="store_true", help="only the bench faults, not the mutants of work/mutation.json")
+    s.set_defaults(func=cmd_baseline)
 
     s = sub.add_parser("kit-check", help="compare a run of the reproduction kit (designs/<ip>/sim) with the recorded results")
     s.add_argument("design")

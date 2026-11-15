@@ -1,0 +1,60 @@
+{
+ "design": "ahb2axi_bridge",
+ "summary": {
+  "bugs": 3,
+  "caught": 1,
+  "detection_rate": 33.3,
+  "triaged": 0,
+  "triage_correct": 0,
+  "triage_accuracy": null,
+  "triage_cost_usd": 0
+ },
+ "bugs": [
+  {
+   "id": "AH1",
+   "title": "WLAST one beat early in an aggregated write burst (never raised for a one-beat burst)",
+   "file": "m_ahb2axi_ctrl.sv",
+   "spec": "AXI WLAST on the final beat of the burst (AWLEN = beats - 1)",
+   "expect": "A_rtl_wrong",
+   "caught": false,
+   "new_failing": [],
+   "status": "ran",
+   "triage_most_likely": [],
+   "triage_verdict": null,
+   "triage_correct": null,
+   "triage_cost_usd": null
+  },
+  {
+   "id": "AH2",
+   "title": "read DECERR returned as AHB OKAY",
+   "file": "m_ahb2axi_ctrl.sv",
+   "spec": "REQ-ERR-001: SLVERR, DECERR and EXOKAY map to the AHB two-cycle ERROR",
+   "expect": "A_rtl_wrong",
+   "caught": false,
+   "new_failing": [],
+   "status": "ran",
+   "triage_most_likely": [],
+   "triage_verdict": null,
+   "triage_correct": null,
+   "triage_cost_usd": null
+  },
+  {
+   "id": "AH3",
+   "title": "word alignment checks only address bit 0",
+   "file": "m_ahb2axi_ctrl.sv",
+   "spec": "REQ-ERR-002: a misaligned transfer returns AHB ERROR with no AXI request",
+   "expect": "A_rtl_wrong",
+   "caught": true,
+   "new_failing": [
+    "test_chk_030_rejected_controls",
+    "CHK-012",
+    "CHK-013"
+   ],
+   "status": "ran",
+   "triage_most_likely": [],
+   "triage_verdict": null,
+   "triage_correct": null,
+   "triage_cost_usd": null
+  }
+ ]
+}

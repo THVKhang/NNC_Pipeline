@@ -138,8 +138,9 @@ def stage_contract(d: Design, o: Options) -> None:
 
 def stage_gen_sva(d: Design, o: Options) -> None:
     _gate(d, "gen-sva", o)
-    rep = gen_sva.generate(contract_mod.selected(_read(d.work / "contract.json")), _read(d.work / "rules.json"), _backend(d, o), _logs(d),
-                           default_host(), d.root / "verif" / "sva", model=o.sva_model)
+    contract = _read(d.work / "contract.json")
+    rep = gen_sva.generate(contract_mod.selected(contract), _read(d.work / "rules.json"), _backend(d, o), _logs(d),
+                           default_host(), d.root / "verif" / "sva", model=o.sva_model, runs=_runs(d, o, contract))
     _write(d.work / "gen_sva.json", rep)
     for m in rep["modules"]:
         o.say(f"[gen-sva] {m['module']}: {len(m['checks'])} checks, {m['status']} after {m['attempts']} attempt(s)"
@@ -181,12 +182,22 @@ def test_map(d: Design) -> dict[str, list[str]]:
     return out
 
 
+def _gen_opts(d: Design, o: Options) -> dict:
+    """Run options for the test writer: the design configuration plus the run set (configurations to support)."""
+    opts = dict(sim.sim_options(d.config()))
+    if (d.work / "contract.json").is_file():
+        runs = _runs(d, o, _read(d.work / "contract.json"))
+        if runs:
+            opts["runs"] = runs
+    return opts
+
+
 def stage_gen_tests(d: Design, o: Options) -> None:
     _gate(d, "gen-tests", o)
     if split_mode(d):
         rep = gen_tests.generate_split(contract_mod.selected(_read(d.work / "contract.json")), _read(d.work / "rules.json"),
                                        _backend(d, o), _logs(d), d.root / "verif" / "tests", d.name,
-                                       model=o.tests_model, run_opts=sim.sim_options(d.config()), workers=o.workers)
+                                       model=o.tests_model, run_opts=_gen_opts(d, o), workers=o.workers)
         _write(d.work / "gen_tests.json", rep)
         o.say(f"[gen-tests] split: library {rep['library']['status']}, "
               + ", ".join(f"{g['file']} {g['status']}" for g in rep["groups"])
@@ -194,7 +205,7 @@ def stage_gen_tests(d: Design, o: Options) -> None:
               + (f" PROBLEMS {rep['problems'][:4]}" if rep["problems"] else ""))
         return
     rep = gen_tests.generate(contract_mod.selected(_read(d.work / "contract.json")), _read(d.work / "rules.json"), _backend(d, o), _logs(d),
-                             test_file(d), model=o.tests_model, run_opts=sim.sim_options(d.config()))
+                             test_file(d), model=o.tests_model, run_opts=_gen_opts(d, o))
     _write(d.work / "gen_tests.json", rep)
     o.say(f"[gen-tests] {rep['file']}: {rep['status']} after {rep['attempts']} attempt(s)"
           + (f" PROBLEMS {rep['problems'][:4]}" if rep["problems"] else ""))
@@ -259,10 +270,10 @@ def stage_sim(d: Design, o: Options) -> None:
                      for e in errs if t["name"] in bad and e.startswith(t["name"] + ":")]
             rep = gen_tests.repair_split(contract_mod.selected(contract), _read(d.work / "rules.json"), _backend(d, o),
                                          _logs(d), d.root / "verif" / "tests", d.name, pairs, model=o.tests_model,
-                                         round_no=rnd, run_opts=sim.sim_options(d.config()))
+                                         round_no=rnd, run_opts=_gen_opts(d, o))
         else:
             rep = gen_tests.repair(contract_mod.selected(contract), _read(d.work / "rules.json"), _backend(d, o), _logs(d), test_file(d), errs,
-                                   model=o.tests_model, round_no=rnd, run_opts=sim.sim_options(d.config()))
+                                   model=o.tests_model, round_no=rnd, run_opts=_gen_opts(d, o))
         o.say(f"[sim] repair: {rep['status']}")
         res = _regression(d, o, contract, d.root / "rtl")
         o.say("[sim] " + _summ_sim(res))
@@ -446,7 +457,7 @@ def stage_cover(d: Design, o: Options) -> None:
             o.say(f"[cover] round {rnd}: no usable scenario ({len(an['output']['unreachable'])} unreachable claims)")
             break
         code, problems = closure.write_tests(contract, rules_doc, keep, tests_base(d), backend, _logs(d), rnd,
-                                             o.tests_model, usage, run_opts=sim.sim_options(d.config()))
+                                             o.tests_model, usage, run_opts=_gen_opts(d, o))
         if problems:
             entry["note"] = f"closure module invalid: {problems[:3]}"
             o.say(f"[cover] round {rnd}: {entry['note']}")
@@ -517,21 +528,30 @@ def stage_formal(d: Design, o: Options) -> None:
     defines = [x.strip() for x in str(cfg.get("formal_defines", ",".join(sim.sim_options(cfg)["defines"])))
                .replace(";", ",").split(",") if x.strip()]
     depth = int(cfg.get("formal_depth", formal.DEFAULT_DEPTH))
-    res = formal.run(default_host(), contract, d.root / "rtl", d.root / "verif" / "sva", env_file(d),
-                     depth=depth, defines=defines, parallel=o.workers,
-                     task_timeout_s=int(cfg.get("formal_timeout", formal.DEFAULT_TIMEOUT_S)))
-    res["unreviewed_gates"] = d.require_gate("G3_verif_sources", True)
-    out = Path(res.pop("out_dir"))
+    # formal_configs: "all" (every parameter set of the run set, the default when there is one) or "default"
+    which = str(cfg.get("formal_configs", "all")).strip().lower()
+    confs = formal.formal_configs(_runs(d, o, contract)) if which != "default" else [{"name": "default", "params": {}}]
     tdir = d.work / "formal"
     if tdir.is_dir():
         for old in tdir.glob("*.vcd"):
             old.unlink()
-    for cid, v in res["checks"].items():
-        for i, t in enumerate(v.get("traces", [])[:1]):
-            tdir.mkdir(parents=True, exist_ok=True)
-            dst = tdir / f"{cid}.vcd"
-            dst.write_bytes((out / t).read_bytes())
-            v["traces"] = [f"work/formal/{dst.name}"]
+    per: dict[str, dict] = {}
+    for conf in confs:
+        r = formal.run(default_host(), contract, d.root / "rtl", d.root / "verif" / "sva", env_file(d),
+                       depth=depth, defines=defines, parallel=o.workers, params=conf["params"],
+                       task_timeout_s=int(cfg.get("formal_timeout", formal.DEFAULT_TIMEOUT_S)))
+        out = Path(r.pop("out_dir"))
+        for cid, v in r["checks"].items():
+            for t in v.get("traces", [])[:1]:
+                tdir.mkdir(parents=True, exist_ok=True)
+                dst = tdir / (f"{cid}.vcd" if len(confs) == 1 else f"{cid}_{conf['name']}.vcd")
+                dst.write_bytes((out / t).read_bytes())
+                v["traces"] = [f"work/formal/{dst.name}"]
+        per[conf["name"]] = r
+        if len(confs) > 1:
+            o.say(f"[formal] {conf['name']} {conf['params'] or '(default parameters)'}: {r['by_status']}")
+    res = per[confs[0]["name"]] if len(confs) == 1 else formal.merge_configs(per)
+    res["unreviewed_gates"] = d.require_gate("G3_verif_sources", True)
     formal.write(d.work, d.name, res, contract)
     o.say(f"[formal] depth {depth}: {res['by_status']} -> work/formal.md")
     traces = {cid: d.root / v["traces"][0] for cid, v in res["checks"].items()

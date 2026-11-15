@@ -36,12 +36,12 @@
       "note": "Re-approval after a flow fix: only the interface parameters changed (checks, rules and plan unchanged). LPARA_STRB_W is now the localparam PARA_APBCDC_DATA_W / 8 (formula read from the Effect column; it was the literal 'Derived', which broke every SVA lint); LPARA_REQ_W and LPARA_RESP_W (internal bundle widths, no port uses them, formula conditional on APB5) are left out of the interface. Earlier note still applies: 35 checks, CHK-019/020/022/023/026/030 expected NOT_VERIFIABLE with the default parameters. A person should confirm."
     },
     "G3_verif_sources": {
-      "at": "2026-11-12T07:11:23+00:00",
+      "at": "2026-11-14T15:49:26+00:00",
       "by": "Claude (delegated by GabrielHCMUT)",
       "hashes": {
-        "verif": "94b4c30c944b33ac97943a541678afe2bd3e706d07ed59d7b7ffa55de6006729"
+        "verif": "4e7e01dfad6153516275f90e20d634bcb1e3a669e66712f4606d447f9e622573"
       },
-      "note": "verif/formal/nnc_env.sv extended after formal triage (6 counterexamples, all E): the two resets asserted in the same step and each released only at a rising edge of its own clock (AB2-3-39, AB2-3-41), written on the formal global clock; APB sequencing and PWAKEUP as before; address/data changes in Access stay free (ERR-004). Read one by one. A person should confirm."
+      "note": "Phase 1 regeneration (tests valid at the first attempt, no literal exemption) plus one triage-B hand fix (second triage, same failure): test_chk_028 in slv_slow.s1 scored a transfer whose requester had already seen PREADY before the completer model had recorded its completion edge C (it records C at the next falling slv edge; with a slow slv clock the reset comes first). Completer.close(), called when the resets are asserted, records C as the last rising slv edge when i_apb_pready=1 was driven in Access before it. Score and checks unchanged. A person should confirm."
     }
   },
   "version": 1

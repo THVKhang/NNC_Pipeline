@@ -1,0 +1,203 @@
+{
+ "analyses": [
+  {
+   "check": "CHK-001",
+   "what_happens": "Through step 10 the trace contains many AHB transfers, some of them illegal (AHB address/control changes while HREADY=0, for example steps 8->9 and 11->12). There is one B handshake at step 7 with BRESP=3 (DECERR). At step 10 a NONSEQ Device-E write (HPROT=5) is accepted. At step 11 the bridge drives o_ahb_hresp=1 and o_ahb_hreadyout=0, which is the first ERROR cycle; the manager is presenting a NONSEQ read with HREADY=0. At step 12 the manager presents a NONSEQ write (HWRITE changed 0->1 while the transfer was waited). The bridge again drives hresp=1 and hreadyout=0. This is a second 'first' ERROR cycle where an ERROR with HREADYOUT=1 is required, so a_CHK_001 fails at step 12 (chk001_prev_first=1 but hresp&&hreadyout=0). Reset is asserted at step 13.",
+   "spec_says": "spec/AHB2AXI_Bridge_Design_Specification.md:494 \"AHB ERROR timing follows REF-001 §5.1: the first ERROR cycle has HREADYOUT low and the second has HREADYOUT high.\" (rules.json AA-12-16). spec:270 o_ahb_hresp \"ERROR follows two-cycle response\" (AA-T1.7.2.2-07). spec:154 REQ-ERR-001 \"...map to the AHB two-cycle ERROR response.\"",
+   "rtl_does": "rtl/m_ahb2axi_ahb_if.sv:91-101: when a data phase is valid and i_rsp_err=1, hreadyout=0 only while ~reg_err_second (lines 95-96), and reg_err_second is set at the next edge (lines 120-121). That gives a correct second cycle. Lines 104-105 then override it unconditionally: `if (i_ahb_hsel & i_ahb_htrans[1] & ~i_req_ready) o_ahb_hreadyout = 1'b0;`. At step 12 HSEL=1 and HTRANS=NONSEQ write. The controller is in ENUM_ST_AHB_RSP (reg_rsp_valid is held), so w_req_ready = ~w_wr_cmd_full (m_ahb2axi_ctrl.sv:568-572), and that is 0 here. The bridge therefore holds the current data phase low to backpressure the *next* address, which stretches the second ERROR cycle.",
+   "checker_does": "verif/sva/nnc_chk_ahb.sv:65-69 registers chk001_prev_first = hresp && !hreadyout. Lines 72-75 assert (hresp || prev_first) |-> (prev_first == (hresp && hreadyout)). This means a first ERROR cycle must be followed by ERROR with HREADYOUT=1, and ERROR with HREADYOUT=1 must follow a first cycle. This matches the contract behaviour text and spec:494.",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "ahb_if.sv:104-105 forces HREADYOUT low whenever the next address phase cannot be queued, even during the second ERROR cycle. This directly breaks spec:494/AA-12-16. CHK-002 fails from the same lines with fully legal stimulus (see CHK-002). A subordinate must not extend the current data phase because of the next address phase. It must accept or register the address and wait-state that transfer's own data phase.",
+     "evidence_against": "In this particular trace the stall depends on the address phase at step 12 being a write (write command FIFO full). Had the manager kept the step-11 NONSEQ read stable, req_ready = ~w_rd_cmd_full, which is probably 1 (no read was accepted in the trace), and the second cycle would have been HREADYOUT=1."
+    },
+    {
+     "cause": "E_environment_missing",
+     "evidence_for": "The manager changes HWRITE (0->1) of a NONSEQ address phase between step 11 and step 12 while HREADY=0. It also changes address/control during waited NONSEQ phases at steps 5->6 and 8->9. AHB5 (IHI 0033C, the interface named in spec:238/AA-6.1-01) requires the manager to hold the address and control of a NONSEQ/SEQ transfer stable until HREADY=1; after an ERROR it may only change HTRANS to IDLE. nnc_env.sv has no such assumption: ENV-04 (lines 174-178) covers only HWDATA/HWSTRB and ENV-05 (lines 180-185) covers only SEQ/BUSY.",
+     "evidence_against": "The defect sits in the RTL (lines 104-105) and does not depend on the manager violation. A legal manager that presents and holds a NONSEQ write during the first ERROR cycle while the write command FIFO is full would see the same stretched second cycle. The spec's ERROR timing rule has no exception for back-pressure."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "(1) RTL: remove the next-address stall from the current data phase in m_ahb2axi_ahb_if.sv:104-105. Capture an address phase that cannot enter the controller in a one-entry holding register, then wait-state that transfer's own data phase. Keep the second ERROR cycle (and IDLE/BUSY data phases) at HREADYOUT=1. (2) Separately, and supported by AHB5 IHI 0033C (AA-6.1-01): add an env assumption that address/control of a waited NONSEQ/SEQ address phase to this subordinate stay stable until HREADY=1, except for a change to IDLE after an ERROR first cycle. Re-run afterwards: with option 2 alone CHK-001 may still fail through the same RTL lines (a held write with the write command FIFO full)."
+  },
+  {
+   "check": "CHK-002",
+   "what_happens": "Step 1: NONSEQ INCR8 write, HPROT=28 (Normal Write-back, eligible), accepted. Step 2: IDLE with HSEL=1 and HREADY=1; the write gets its early OKAY (HREADYOUT=1). Step 3: IDLE with HSEL=1 and HREADY=1, which is the antecedent. Step 4: the manager presents a NONSEQ read. The bridge drives o_ahb_hreadyout=0 in the data phase of the step-3 IDLE transfer, and ENV-03 forces HREADY=0. a_CHK_002 fails at step 4 because the IDLE transfer did not get a zero-wait OKAY.",
+   "spec_says": "spec:312 \"A transfer is accepted ... when HSEL, HREADY and HTRANS[1] are all 1 ... BUSY and IDLE do not create AXI traffic\" (AA-T1.7.3.1-01/-03). spec:238 IF-001 is an AHB5 IHI 0033C Subordinate (AA-6.1-01); AHB5 requires a zero-wait OKAY to IDLE/BUSY. contract.json CHK-021 expected (line 840): \"IDLE and BUSY data phases complete in one cycle with o_ahb_hreadyout=1 and o_ahb_hresp=0.\"",
+   "rtl_does": "The write command written at step 1 becomes visible (FIFO empty flag registered, m_vlsit_sfifo_rd.sv:143-151) at step 3. The controller pops it in IDLE and moves to ENUM_ST_WR_CAPTURE; at step 4 o_axi_arcache=11 confirms reg_cmd_prot was loaded. In WR_CAPTURE, w_req_ready is 0 for a read (m_ahb2axi_ctrl.sv:574-578). m_ahb2axi_ahb_if.sv:104-105 `if (i_ahb_hsel & i_ahb_htrans[1] & ~i_req_ready) o_ahb_hreadyout = 1'b0;` then pulls HREADYOUT low, although no data phase is pending (reg_data_phase_valid was cleared at step 2) and the current data phase belongs to an IDLE.",
+   "checker_does": "verif/sva/nnc_chk_ahb.sv:79-82: (hsel && hready && htrans in {IDLE,BUSY}) |=> (hreadyout && !hresp), disabled during reset. This is the contract behaviour exactly.",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "The stimulus is legal: an INCR8 burst ends early with IDLE (explicitly covered by spec:317 and CHK-026), followed by an ordinary NONSEQ read, and HREADY follows HREADYOUT as ENV-03 requires (nnc_env.sv:168-172). The only source of HREADYOUT=0 is ahb_if.sv:104-105, which back-pressures the next address by extending the current IDLE data phase. AHB5 does not allow this.",
+     "evidence_against": "None found. The spec's buffering allowance (spec:488 \"AHB waits subject to buffering contract\") does not permit wait states in an IDLE data phase."
+    },
+    {
+     "cause": "B_checker_wrong",
+     "evidence_for": "The checker samples hsel/hready/htrans directly; one could ask whether 'IDLE accepted' needs a data-phase owner.",
+     "evidence_against": "The AHB data phase of an IDLE with HSEL=1 and HREADY=1 belongs to this subordinate, and contract CHK-021 requires one-cycle OKAY. The checker matches the spec."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "RTL fix in m_ahb2axi_ahb_if.sv:104-105 (shared with CHK-001): accept or register the NONSEQ/SEQ address phase into a one-entry pending register when the controller is not ready, and insert the wait states in that transfer's own data phase. Never drive HREADYOUT=0 during an IDLE/BUSY data phase or during the second ERROR cycle. No checker or environment change is supported."
+  },
+  {
+   "check": "CHK-005",
+   "what_happens": "Long trace (16 steps). AWREADY is 1 at steps 4-9 and 0 from step 10 on. At step 10 a SEQ write with HPROT=89 (HPROT[6]=1, which must be rejected) is accepted, and at step 11 a SEQ write to 0xFFFFFFFD with HSIZE=1 (misaligned, must be rejected) is accepted. Both enter the write command FIFO. The failure edge lies in steps 11-14, where o_axi_awvalid=1 and i_axi_awready=0 at t but VALID or the AW payload differs at t+1. The AW columns are truncated in the provided counterexample, so the exact edge and field cannot be read from the trace.",
+   "spec_says": "spec:216 \"AXI VALID and payload remain stable until READY handshake.\" (AA-5.4-04). spec:322 \"AXI4 VALID and payload shall remain stable until READY handshakes.\" spec:488 \"Hold VALID/payload stable until handshake\" (AA-12-10). spec:313 misaligned and HPROT-reserved transfers \"return AHB ERROR with no AXI request for the rejected transfer\".",
+   "rtl_does": "In ENUM_ST_WR_SINGLE the AW payload is selected by reg_burst_fallback (m_ahb2axi_ctrl.sv:688-699): reg_cmd_* when 0, reg_burst_*[reg_burst_widx] when 1. reg_burst_fallback is set by `if (w_cap_stop) ... reg_burst_fallback <= 1'b1;` (lines 859-862) in every state. w_cap_stop = w_burst_term | (~w_wr_cmd_empty & ((w_cap_cmd_htrans != 2'b11) | ~w_cap_cmd_wr | w_cap_cmd_err)) (lines 513-516) is not gated by WR_CAPTURE. Rejected beats are still pushed into the write command FIFO (line 456: w_wr_cmd_wr_en = w_req_hs & w_req_wr, with no ~w_input_err). So while a single write sits in WR_SINGLE with AWVALID=1 and AWREADY=0, a queued non-SEQ or erroneous entry at the FIFO head flips reg_burst_fallback 0->1. At the next edge AWADDR/AWSIZE/AWCACHE/AWPROT switch from reg_cmd_* to reg_burst_*[widx]. No other AW payload source in WR_SINGLE/WR_BURST changes without a handshake (reg_cmd_* changes only at IDLE start, lines 818-822; reg_wr_id only at w_wr_rsp_rd_en, lines 895-899).",
+   "checker_does": "verif/sva/nnc_chk_axi.sv:148-151: (awvalid && !awready) |=> awvalid && $stable(awid, awaddr, awlen, awsize, awburst, awcache, awprot), with disable iff (!i_rst_n_core). This matches the contract text.",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "The only RTL path that changes the AW payload of a pending WR_SINGLE request is the state-ungated w_cap_stop -> reg_burst_fallback update (ctrl.sv:513-516, 859-862), selected at lines 688-699. The same flag bug visibly corrupts AW in CHK-011/CHK-012. The AXI stability invariant (spec:216) is unconditional, and the spec requires out-of-profile AHB beats to be rejected with no AXI side effect (spec:313, 484-485).",
+     "evidence_against": "The AW columns are truncated, so the failing field and edge cannot be confirmed from the given trace; the mechanism is inferred from the RTL."
+    },
+    {
+     "cause": "E_environment_missing",
+     "evidence_for": "The stimulus breaks AHB5 manager rules that nnc_env.sv does not assume. Step 3 is a SEQ write after a NONSEQ read at step 2 (HWRITE changes inside a burst). HBURST/HSIZE/HPROT change between beats (step 9 HPROT=1 -> step 10 HPROT=89; spec:317 \"HPROT remains constant throughout an AHB burst (REF-001 §3.8)\"). The SEQ address at step 11 does not follow the burst. Address/control change during waited NONSEQ phases (steps 5-9). ENV-05 (nnc_env.sv:180-185) only requires ahb_in_burst for SEQ/BUSY.",
+     "evidence_against": "The spec requires the bridge to tolerate varying burst attributes (spec:317, CHK-025) and to reject misaligned or HPROT[6]=1 beats with ERROR (spec:313). AXI stability must hold whatever the AHB stimulus. The same fallback flip can be triggered by a queued NONSEQ head behind a SEQ head, without attribute changes."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "(1) RTL: restrict the w_cap_stop side effects (reg_burst_term_seen/reg_burst_fallback, ctrl.sv:859-862) to ENUM_ST_WR_CAPTURE (and to the IDLE start of an eligible burst), so reg_burst_fallback cannot change while an AW request is pending. Optionally keep rejected beats out of the burst-capture path. (2) Re-run with the AW columns dumped to confirm the failing field. (3) Separately, and supported by AHB5 and spec:317: add env assumptions for burst consistency (SEQ continues the same HWRITE/HSIZE/HBURST/HPROT burst, address/control held while waited). Do not use them to mask this failure; the AXI invariant is unconditional."
+  },
+  {
+   "check": "CHK-011",
+   "what_happens": "Step 1: NONSEQ write, HBURST=5 (INCR8), HPROT=4 (HPROT[6:2]=00001, Device-E, not aggregatable), HADDR=0, HSIZE=2, accepted. Then IDLE. Step 4: the bridge issues AWVALID=1 with o_axi_awaddr=4095 (0xFFF), o_axi_awsize=5, AWLEN=0, AWBURST=INCR, WLAST=1. The checker computes aw_end = 0xFFF + (1<<5) = 4127 > 4096, and a_CHK_011 fails at step 4. In the same cycle o_axi_arsize=2 and arcache=1, showing that reg_cmd_* holds the correct beat (size 2, address 0).",
+   "spec_says": "spec:150 REQ-FUNC-010 \"No AXI burst shall cross a 4 KiB boundary.\" (AA-3-22). spec:316 \"The bridge additionally keeps every AXI burst within a 4 KiB boundary\" (AA-T1.7.3.1-12). spec:411 \"AXI address equals the corresponding accepted AHB address.\" spec:148 REQ-FUNC-008 Device transfers \"shall not be merged or have their size changed\". spec:413 sizes 0..2 only.",
+   "rtl_does": "At the IDLE edge that pops the write (ctrl.sv:818-841), reg_burst_fallback<=0 (line 825), but reg_burst_addr/size[0] are written only when the command is eligible (lines 827-840). In the same always_ff block, w_cap_stop is 1 because the FIFO head is NONSEQ (lines 513-516: w_cap_cmd_htrans != 2'b11). The later assignment at lines 859-862 wins, so reg_burst_fallback=1. In WR_SINGLE the AW payload then comes from reg_burst_addr[0]/reg_burst_size[0] (lines 688-693) instead of reg_cmd_addr/reg_cmd_size (lines 695-698). These array entries have no reset (lines 123-127, not in the reset list at 754-779) and were never written, so they are arbitrary (here 0xFFF and size 5).",
+   "checker_does": "verif/sva/nnc_chk_axi.sv:132-135 compute aw_mask/aw_bytes/aw_end from awaddr[11:0], awlen and awsize. Lines 188-193 assert awlen<=15, a legal burst type, the WRAP rules, and for INCR aw_end <= 4096. This matches the contract and spec:150.",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "The stimulus is a plain legal Device-E write. The AW address and size disagree with the accepted beat (HADDR=0, HSIZE=2) while reg_cmd_* is correct (arsize=2 at step 4). The cause is the state-ungated w_cap_stop overriding reg_burst_fallback at the IDLE start (ctrl.sv:825 vs 859-862), which selects the stale or uninitialised reg_burst_* path (688-693). CHK-012 shows the same corruption.",
+     "evidence_against": "The specific values 0xFFF/5 come from uninitialised registers that the formal tool may choose freely. In silicon or simulation they would be stale or X values, but the address would still be wrong."
+    },
+    {
+     "cause": "B_checker_wrong",
+     "evidence_for": "None of substance; aw_end uses 32-bit arithmetic and the INCR condition from the contract.",
+     "evidence_against": "4095 + 32 = 4127 > 4096 is a real 4 KiB crossing, and AWSIZE=5 is itself illegal for a 32-bit bus (spec:413)."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "RTL fix in m_ahb2axi_ctrl.sv: gate w_cap_stop's update of reg_burst_fallback/reg_burst_term_seen (lines 859-862) to ENUM_ST_WR_CAPTURE, or give the IDLE-start clear (line 825) priority for non-eligible commands. Single writes started from IDLE must use reg_cmd_* (lines 695-698). The checker and environment need no change."
+  },
+  {
+   "check": "CHK-012",
+   "what_happens": "Step 1: NONSEQ SINGLE write, HSIZE=1, HADDR=0, HPROT=0 (Device-nE), accepted. Step 4: AWVALID=1 with o_axi_awsize=4 (16 bytes), awaddr=0, awprot=4, WLAST=1. a_CHK_012 fails at step 4 because awsize > 2. In the same cycle o_axi_arsize=1, showing that reg_cmd_size holds the correct HSIZE=1.",
+   "spec_says": "spec:313 \"Supported HSIZE encodings are byte, halfword and word (0, 1, 2). Transfer addresses shall be naturally aligned to HSIZE.\" (AA-T1.7.3.1-04). spec:413 \"HSIZE/AxSIZE 0=1 byte, 1=2 bytes, 2=4 bytes. Larger sizes are rejected.\" (AA-9-04). spec:148 Device transfers shall not \"have their size changed\".",
+   "rtl_does": "Same mechanism as CHK-011. At the IDLE edge that pops the NONSEQ write, w_cap_stop=1 (ctrl.sv:513-516, head HTRANS != SEQ) sets reg_burst_fallback=1 (lines 859-862), overriding the clear at line 825. reg_burst_size[0] is not written for a non-eligible command (lines 827-840). In WR_SINGLE, w_axi_aw_size = reg_burst_size[reg_burst_widx] (line 690), an unreset, unwritten register, instead of reg_cmd_size (line 696).",
+   "checker_does": "verif/sva/nnc_chk_axi.sv:132-133 aw_mask = (1<<awsize)-1. Lines 197-201 assert, when AWVALID, awsize<=2 and the address aligned to awsize (same for AR). This matches the contract text.",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "The input is a legal halfword SINGLE write to address 0, but the bridge emits AWSIZE=4. reg_cmd_size is correct (arsize=1), which proves the wrong payload source was selected because reg_burst_fallback was set by the state-ungated w_cap_stop (ctrl.sv:513-516, 859-862, 688-693).",
+     "evidence_against": "The value 4 comes from an uninitialised register chosen by the solver; any value other than 1 is still a spec violation."
+    },
+    {
+     "cause": "B_checker_wrong",
+     "evidence_for": "None.",
+     "evidence_against": "AWSIZE <= 2 is stated directly in spec:313/413, and the checker encodes it exactly."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Same RTL fix as CHK-011: in m_ahb2axi_ctrl.sv do not let w_cap_stop set reg_burst_fallback outside WR_CAPTURE (lines 859-862), so non-eligible singles use reg_cmd_addr/reg_cmd_size (lines 695-698). Optionally reset reg_burst_* to make stale-value bugs visible earlier. No checker or environment change."
+  },
+  {
+   "check": "CHK-015",
+   "what_happens": "Step 1: NONSEQ INCR8 write, HPROT=28 (eligible Normal Write-back), accepted. Step 2: the write data phase completes with an early OKAY (HREADYOUT=1), and in the same cycle the manager drives a NONSEQ read (HSEL=1, HREADY=1, HPROT=0, HSIZE=0), which is accepted on the AHB bus (checker h_acc=1). Step 3: HREADYOUT=1, HRESP=0, HRDATA=0, so the read's data phase completes without any AR or R handshake (ARVALID and RVALID stay 0). a_CHK_015 fails at step 3 (c15_ant=1, no R beat seen).",
+   "spec_says": "spec:312 \"A transfer is accepted at a rising i_clk_core edge when HSEL, HREADY and HTRANS[1] are all 1.\" (AA-T1.7.3.1-01). spec:143 REQ-FUNC-003 \"Each accepted AHB read shall issue exactly one AXI single-beat AR transaction\" (AA-3-05). spec:198 \"... accept one R beat (RLAST=1) → return HRDATA and HRESP in the AHB data phase.\" spec:357 \"AHB waits for R; map RRESP\". spec:141 REQ-FUNC-001 \"without loss\".",
+   "rtl_does": "rtl/m_ahb2axi_ahb_if.sv:78-107 is one always_comb block. Line 81 sets the default o_rsp_ready = 1'b0. Line 87-88 computes `o_req_valid = i_ahb_hsel & i_ahb_hready & i_ahb_htrans[1] & (~reg_data_phase_valid | o_rsp_ready);` *before* o_rsp_ready gets its real value at lines 97-98. With procedural semantics, line 87 reads the default 0. When a data phase completes in the same cycle as a new address phase, o_req_valid=0, so the address is never enqueued and reg_data_phase_valid is not set again (lines 123-135). At step 3 no data phase is valid, so HREADYOUT defaults to 1 with HRESP=0 and HRDATA=0 (lines 82-84). The FIFO empty-flag latency (m_vlsit_sfifo_rd.sv:143-151) keeps w_burst_term=0 at step 2, which is why the early OKAY at step 2 occurs.",
+   "checker_does": "verif/sva/nnc_chk_cross.sv:73 h_acc = hsel&&hready&&htrans[1]. Lines 154-162 open a data-phase record on h_acc. Lines 165-169 capture the first R handshake. Lines 200-209 assert at completion (dp_active && dp_rd && !dp_rej && hreadyout) that an R beat was seen and HRESP/HRDATA match it. This matches the contract behaviour (r_j <= c_j).",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "The read was accepted per the AHB pins (spec:312) but silently dropped: there is no AR, and the data phase completes OKAY with HRDATA=0. The cause is the read-before-write of o_rsp_ready in the ahb_if always_comb (lines 81, 87-88, 97-98). The stimulus is legal: an early-terminated fixed burst followed by NONSEQ is explicitly supported (spec:317; contract CHK-026 stimulus).",
+     "evidence_against": "None found."
+    },
+    {
+     "cause": "E_environment_missing",
+     "evidence_for": "The INCR8 burst is cut after one beat by a NONSEQ read.",
+     "evidence_against": "The spec explicitly allows and handles early termination (spec:317, spec:490, REQ-FUNC-009 spec:149). The same drop happens for any address phase that coincides with a completing data phase."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "RTL fix in m_ahb2axi_ahb_if.sv p_com_ahb_rsp: compute o_rsp_ready (lines 91-101) before o_req_valid (lines 87-88), or use an intermediate variable, so that an address phase arriving while the previous data phase completes is enqueued. Re-check CHK-016/CHK-017, which have the same root cause. No checker or environment change."
+  },
+  {
+   "check": "CHK-016",
+   "what_happens": "Step 1: NONSEQ INCR8 write, HPROT=28, accepted. Step 2: the step-1 beat gets an early OKAY (HREADYOUT=1), and in the same cycle a NONSEQ SINGLE write (HBURST=0, HPROT=28, HSEL=1, HREADY=1) is accepted on the AHB bus. This is beat j=2 of the waiting class (SINGLE). Step 3: HREADYOUT=1, HRESP=0, so beat 2 completes OKAY although it has no W handshake (c16_wdone=0, wh=0) and no B handshake (BVALID=0, AWVALID=0). a_CHK_016 fails at step 3.",
+   "spec_says": "spec:144 REQ-FUNC-004 \"AHB SINGLE and undefined-length INCR transfers ... shall map to AXI single-beat transactions.\" spec:200 \"capture the AHB beat → issue one AXI write ... → wait for B response → return AHB completion/error.\" spec:358 \"AHB single/INCR write | One AHB beat to one AXI single | ... | Wait for BRESP\". spec:434 OP-WR-SINGLE \"Wait for BRESP; map the response to that AHB transfer\". spec:141 REQ-FUNC-001 \"without loss\".",
+   "rtl_does": "Same root cause as CHK-015. In m_ahb2axi_ahb_if.sv:87-88, o_req_valid uses o_rsp_ready while it still holds its default 0 from line 81; the real value is assigned at lines 97-98. At step 2 the early acknowledgement completes the step-1 data phase (ctrl.sv:436-437, 440-442), so reg_data_phase_valid=1 makes o_req_valid=0 and the SINGLE write is never pushed to the write command FIFO. At step 3 no data phase is valid, so HREADYOUT defaults to 1 and HRESP to 0 (ahb_if.sv:82-83).",
+   "checker_does": "verif/sva/nnc_chk_cross.sv:106-107 classify the beat as waiting class (hburst<=1). Lines 137-142 and 154-162 record dp_j=2 and dp_wait=1. Lines 215-221 set c16_bok = (wh >= dp_j) && B count >= X(j). Lines 235-240 assert c16_bok and the HRESP mapping at completion. Trace: dp_j=2, dp_wait=1, c16_wdone=0, so the assertion fails as the contract text intends.",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "A legal SINGLE write accepted on the AHB pins is dropped and acknowledged OKAY with no AXI write and no BRESP, which violates spec:144/200/434. The cause is the ordering bug in ahb_if.sv:81/87-88/97-98.",
+     "evidence_against": "None found."
+    },
+    {
+     "cause": "B_checker_wrong",
+     "evidence_for": "The checker counts acceptance from the pins rather than from the bridge's internal request.",
+     "evidence_against": "That is exactly the spec's acceptance definition (spec:312, AA-T1.7.3.1-01), so the checker is correct."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Same RTL fix as CHK-015 (compute o_rsp_ready before o_req_valid in m_ahb2axi_ahb_if.sv). No checker or environment change."
+  },
+  {
+   "check": "CHK-017",
+   "what_happens": "Step 1: NONSEQ INCR8 write, HSIZE=1, HADDR=0, HPROT=28, accepted. Step 2: the write gets an early OKAY (HREADYOUT=1), and in the same cycle a NONSEQ read with HPROT=32 (HPROT[5:2]=1000, a reserved code, so h_rej=1) is accepted on the AHB bus. Step 3: HREADYOUT=1 with HRESP=0, so the rejected transfer completes OKAY instead of with the two-cycle ERROR. a_CHK_017 fails at step 3 (c17_rejdone=1, hresp=0).",
+   "spec_says": "spec:155 REQ-ERR-002 \"HMASTLOCK, HPROT[6]=1, reserved/unsupported HPROT combinations, unsupported HSIZE and misaligned transfers shall return two-cycle AHB ERROR; no AXI request shall be issued for the rejected transfer.\" (AA-3-34). spec:343 \"every unlisted pattern is reserved and returns AHB ERROR\" (0b0_1000 is not listed at spec:345-351). spec:484 \"HPROT[6]=1 or unsupported/reserved HPROT | No request | Two-cycle ERROR\".",
+   "rtl_does": "The RTL would reject HPROT[6:2]=01000 (f_hprot_valid, ctrl.sv:310-318, reaching ENUM_ST_LOCAL at lines 590-591, 940-944), but the request never reaches the controller. m_ahb2axi_ahb_if.sv:87-88 computes o_req_valid with the default o_rsp_ready=0 from line 81 while the step-1 data phase is completing, so the address phase is dropped. At step 3 no data phase is valid, so HREADYOUT=1 and HRESP=0 (lines 82-83).",
+   "checker_does": "verif/sva/nnc_chk_cross.sv:83-88 compute h_rsv/h_rej, which here gives h_rej=1 and h_rsv=1. Lines 154-157 record dp_rej. Lines 244-250 assert that a rejected transfer completes with HRESP=1, and that the W handshake count stays below accepted non-rejected writes. This matches the contract text.",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "A rejected transfer that the AHB pins accepted is acknowledged OKAY because the bridge dropped it. The root cause is the same as CHK-015/016 (ahb_if.sv:81, 87-88, 97-98). The early termination of the INCR8 by a NONSEQ is a spec-supported scenario (spec:317).",
+     "evidence_against": "None found."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "One could ask whether a reserved HPROT on a read after a burst cut is in profile.",
+     "evidence_against": "spec:343 and spec:155 state unambiguously that unlisted patterns return the two-cycle ERROR."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "Same RTL fix as CHK-015 (m_ahb2axi_ahb_if.sv: evaluate o_rsp_ready before o_req_valid so the address phase coinciding with a completing data phase is enqueued, then routed to ENUM_ST_LOCAL). No checker or environment change."
+  },
+  {
+   "check": "CHK-020",
+   "what_happens": "i_rst_n_core=0 at steps 0-2 with all inputs quiet. During reset o_axi_arprot=4 (3'b100) while every other AXI payload output is 0 and both bursts are INCR. a_CHK_020 fails at step 0.",
+   "spec_says": "spec:298 port table: o_axi_arprot \"Reset / idle value | 0\" (rules.json AA-T1.7.2.2-19 quote, line 2484: \"Port: o_axi_arprot ... Reset / idle value: 0\"). The contract interface also lists reset_value \"0\" for o_axi_arprot (contract.json:393-399). spec:386 reset table lists only HREADYOUT/HRESP/VALID/READY values, not payload.",
+   "rtl_does": "m_ahb2axi_ctrl.sv:677 `w_axi_ar_prot = f_axi_prot(reg_cmd_prot[1:0], reg_cmd_nonsec);` is driven at all times, not only in RD_AR. f_axi_prot returns {~hprot[0], hnonsec, hprot[1]} (line 378). With reset values reg_cmd_prot=0 and reg_cmd_nonsec=0 (lines 757-758) this gives 3'b100. m_ahb2axi_axi_if.sv:130 passes it unchanged with no reset gating (only the VALID signals are gated, lines 114/120/131). AWPROT defaults to '0 (ctrl.sv:665), so only ARPROT differs.",
+   "checker_does": "verif/sva/nnc_chk_reset.sv:77: (!i_rst_n_core) |-> all listed AXI payload outputs equal their table reset values, including o_axi_arprot == 3'd0. This matches the contract behaviour and the spec port table.",
+   "candidates": [
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "The spec port table (spec:298) and the contract give o_axi_arprot a reset value of 0. The RTL produces 4 because of the inversion of HPROT[0] applied to reset-zero registers (ctrl.sv:377-378, 677) with no reset or idle override.",
+     "evidence_against": "The value is a payload qualified by ARVALID (\"Data (valid with ARVALID)\"), and ARVALID=0 during reset, so no AXI protocol rule is broken."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "The reset table at spec:386 lists only HREADYOUT, HRESP, the VALIDs and the READYs. The 'Reset / idle value' column for VALID-qualified payload may have been meant as 'don't care while VALID=0'.",
+     "evidence_against": "The column gives an explicit 0 for arprot, and rules.json AA-T1.7.2.2-19 is tagged MUST, so as written the requirement is clear."
+    }
+   ],
+   "most_likely": "A_rtl_wrong",
+   "options": "(1) RTL: make the idle/reset AR payload 0, for example drive w_axi_ar_prot/ar_cache/ar_addr/ar_size from reg_cmd_* only in ENUM_ST_RD_AR and '0 otherwise (ctrl.sv:671-677, like the AW defaults at 659-665), or reset-gate the payload in m_ahb2axi_axi_if.sv:123-130. (2) Only if the designer decides payload values are don't-care while VALID=0: change the spec port table (spec:298) and the contract reset_value first, then align CHK-020. Do not relax the checker without that spec change."
+  }
+ ],
+ "checks": 9,
+ "usage": {
+  "calls": 1,
+  "cached": 0,
+  "cost_usd": 2.8678,
+  "input_tokens": 34,
+  "output_tokens": 52796,
+  "cache_creation_input_tokens": 184467,
+  "cache_read_input_tokens": 1679202
+ }
+}

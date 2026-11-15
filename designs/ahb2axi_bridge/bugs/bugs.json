@@ -1,0 +1,32 @@
+{
+ "note": "Hand-written realistic RTL faults for the bug benchmark (nnc bench). Each replaces one line of rtl/; the delivered RTL is never changed. 'expect' is the correct triage verdict.",
+ "bugs": [
+  {
+   "id": "AH1",
+   "title": "WLAST one beat early in an aggregated write burst (never raised for a one-beat burst)",
+   "file": "m_ahb2axi_ctrl.sv",
+   "find": "w_axi_w_last   = (reg_burst_widx + 5'd1) ==",
+   "replace": "w_axi_w_last   = (reg_burst_widx + 5'd2) ==",
+   "spec": "AXI WLAST on the final beat of the burst (AWLEN = beats - 1)",
+   "expect": "A_rtl_wrong"
+  },
+  {
+   "id": "AH2",
+   "title": "read DECERR returned as AHB OKAY",
+   "file": "m_ahb2axi_ctrl.sv",
+   "find": "reg_rsp_err <= (w_rd_rsp_rd_data[1:0] != 2'b00);",
+   "replace": "reg_rsp_err <= (w_rd_rsp_rd_data[1:0] == 2'b10);",
+   "spec": "REQ-ERR-001: SLVERR, DECERR and EXOKAY map to the AHB two-cycle ERROR",
+   "expect": "A_rtl_wrong"
+  },
+  {
+   "id": "AH3",
+   "title": "word alignment checks only address bit 0",
+   "file": "m_ahb2axi_ctrl.sv",
+   "find": "3'b010:  f_addr_aligned = ~(|addr_low[1:0]);",
+   "replace": "3'b010:  f_addr_aligned = ~addr_low[0];",
+   "spec": "REQ-ERR-002: a misaligned transfer returns AHB ERROR with no AXI request",
+   "expect": "A_rtl_wrong"
+  }
+ ]
+}

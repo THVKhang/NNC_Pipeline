@@ -48,57 +48,91 @@ module nnc_chk_glitch #(
   int unsigned fails_CHK_002 = 0;
   int unsigned hits_CHK_002 = 0;
 
-  // Helper event monitors: record the time of the last allowed edge per domain and count illegal output changes
-  time         t_edge_m = 0;
-  time         t_chg_m  = 0;
-  bit          have_edge_m = 1'b0;
-  bit          have_chg_m  = 1'b0;
-  int unsigned glitch_cnt_m = 0;
+  // helpers for CHK-002: event monitors, one per output domain
+  int unsigned gl_cnt_m = 0;
+  int unsigned gl_cnt_s = 0;
+  time         edge_t_m = 0;
+  time         edge_t_s = 0;
+  logic        seen_m = 1'b0;
+  logic        seen_s = 1'b0;
+  logic        pclk_m = 1'b0;
+  logic        prst_m = 1'b1;
+  logic        pclk_s = 1'b0;
+  logic        prst_s = 1'b1;
+  logic        e_m, e_s, c_m, c_s;
 
-  time         t_edge_s = 0;
-  time         t_chg_s  = 0;
-  bit          have_edge_s = 1'b0;
-  bit          have_chg_s  = 1'b0;
-  int unsigned glitch_cnt_s = 0;
+  logic                                p_pready;
+  logic [(PARA_APBCDC_DATA_W)-1:0]     p_prdata;
+  logic                                p_pslverr;
+  logic [(PARA_APBCDC_USER_DATA_W)-1:0] p_pruser;
+  logic [(PARA_APBCDC_USER_RESP_W)-1:0] p_pbuser;
 
-  always @(posedge i_clk_mst or negedge i_rst_n_mst) begin
-    t_edge_m = $time;
-    have_edge_m = 1'b1;
-  end
+  logic                                q_psel, q_penable, q_pwrite, q_pwakeup;
+  logic [(PARA_APBCDC_ADDR_W)-1:0]     q_paddr;
+  logic [2:0]                          q_pprot;
+  logic [(LPARA_STRB_W)-1:0]           q_pstrb;
+  logic [(PARA_APBCDC_DATA_W)-1:0]     q_pwdata;
+  logic [(PARA_APBCDC_USER_REQ_W)-1:0] q_pauser;
+  logic [(PARA_APBCDC_USER_DATA_W)-1:0] q_pwuser;
 
-  always @(posedge i_clk_slv or negedge i_rst_n_slv) begin
-    t_edge_s = $time;
-    have_edge_s = 1'b1;
-  end
-
-  always @(o_apb_pready or o_apb_pslverr or o_apb_prdata or o_apb_pruser or o_apb_pbuser) begin
-    if ($time != 0) begin
-      if (!(have_edge_m && (t_edge_m == $time)) || (have_chg_m && (t_chg_m == $time)))
-        glitch_cnt_m = glitch_cnt_m + 1;
-      t_chg_m = $time;
-      have_chg_m = 1'b1;
+  // master-domain outputs: any change outside a clk_mst rise / rst_n_mst fall time step is counted
+  always @(i_clk_mst or i_rst_n_mst or o_apb_pready or o_apb_prdata or o_apb_pslverr or
+           o_apb_pruser or o_apb_pbuser) begin
+    e_m = (i_clk_mst === 1'b1 && pclk_m !== 1'b1) || (i_rst_n_mst === 1'b0 && prst_m !== 1'b0);
+    c_m = (o_apb_pready !== p_pready) || (o_apb_prdata !== p_prdata) ||
+          (o_apb_pslverr !== p_pslverr) || (o_apb_pruser !== p_pruser) ||
+          (o_apb_pbuser !== p_pbuser);
+    if (e_m) begin
+      seen_m = 1'b1;
+      edge_t_m = $time;
     end
+    if (c_m && seen_m && (edge_t_m != $time)) gl_cnt_m = gl_cnt_m + 1;
+    pclk_m = i_clk_mst;
+    prst_m = i_rst_n_mst;
+    p_pready = o_apb_pready;
+    p_prdata = o_apb_prdata;
+    p_pslverr = o_apb_pslverr;
+    p_pruser = o_apb_pruser;
+    p_pbuser = o_apb_pbuser;
   end
 
-  always @(o_apb_psel or o_apb_penable or o_apb_pwrite or o_apb_paddr or o_apb_pprot or
-           o_apb_pstrb or o_apb_pwdata or o_apb_pwakeup or o_apb_pauser or o_apb_pwuser) begin
-    if ($time != 0) begin
-      if (!(have_edge_s && (t_edge_s == $time)) || (have_chg_s && (t_chg_s == $time)))
-        glitch_cnt_s = glitch_cnt_s + 1;
-      t_chg_s = $time;
-      have_chg_s = 1'b1;
+  // slave-domain outputs: any change outside a clk_slv rise / rst_n_slv fall time step is counted
+  always @(i_clk_slv or i_rst_n_slv or o_apb_psel or o_apb_penable or o_apb_pwrite or
+          o_apb_paddr or o_apb_pprot or o_apb_pstrb or o_apb_pwdata or o_apb_pwakeup or
+          o_apb_pauser or o_apb_pwuser) begin
+    e_s = (i_clk_slv === 1'b1 && pclk_s !== 1'b1) || (i_rst_n_slv === 1'b0 && prst_s !== 1'b0);
+    c_s = (o_apb_psel !== q_psel) || (o_apb_penable !== q_penable) ||
+          (o_apb_pwrite !== q_pwrite) || (o_apb_paddr !== q_paddr) ||
+          (o_apb_pprot !== q_pprot) || (o_apb_pstrb !== q_pstrb) ||
+          (o_apb_pwdata !== q_pwdata) || (o_apb_pwakeup !== q_pwakeup) ||
+          (o_apb_pauser !== q_pauser) || (o_apb_pwuser !== q_pwuser);
+    if (e_s) begin
+      seen_s = 1'b1;
+      edge_t_s = $time;
     end
+    if (c_s && seen_s && (edge_t_s != $time)) gl_cnt_s = gl_cnt_s + 1;
+    pclk_s = i_clk_slv;
+    prst_s = i_rst_n_slv;
+    q_psel = o_apb_psel;
+    q_penable = o_apb_penable;
+    q_pwrite = o_apb_pwrite;
+    q_paddr = o_apb_paddr;
+    q_pprot = o_apb_pprot;
+    q_pstrb = o_apb_pstrb;
+    q_pwdata = o_apb_pwdata;
+    q_pwakeup = o_apb_pwakeup;
+    q_pauser = o_apb_pauser;
+    q_pwuser = o_apb_pwuser;
   end
 
   // CHK-002: Outputs change only at their own clock edge or on reset assertion (AB2-3-21, AB2-20.2-06)
-  a_CHK_002: assert property (@(posedge i_clk_mst) disable iff (!i_rst_n_mst) 1'b1 |-> $stable(glitch_cnt_m))
+  a_CHK_002: assert property (@(posedge i_clk_mst) disable iff (!i_rst_n_mst) 1'b1 |-> $stable(gl_cnt_m))
     else begin fails_CHK_002++; $display("NNC_FAIL CHK-002 @%0t", $time); end
   always_ff @(posedge i_clk_mst) if (!(!i_rst_n_mst) && (1'b1)) hits_CHK_002 <= hits_CHK_002 + 1;
 
-  // CHK-002: Outputs change only at their own clock edge or on reset assertion, slv domain (AB2-3-21, AB2-20.2-06)
-  a_CHK_002_slv: assert property (@(posedge i_clk_slv) disable iff (!i_rst_n_slv) 1'b1 |-> $stable(glitch_cnt_s))
+  // CHK-002: slave-domain outputs, same check on the completer clock (AB2-3-21, AB2-20.2-06)
+  a_CHK_002_slv: assert property (@(posedge i_clk_slv) disable iff (!i_rst_n_slv) 1'b1 |-> $stable(gl_cnt_s))
     else begin fails_CHK_002++; $display("NNC_FAIL CHK-002 @%0t", $time); end
-  always_ff @(posedge i_clk_slv) if (!(!i_rst_n_slv) && (1'b1)) hits_CHK_002 <= hits_CHK_002 + 1;
 
   final begin
     $display("NNC_CHECK CHK-002 hits=%0d fails=%0d", hits_CHK_002, fails_CHK_002);

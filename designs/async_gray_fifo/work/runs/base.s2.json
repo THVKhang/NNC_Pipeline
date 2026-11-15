@@ -20,7 +20,8 @@
  },
  "status": "ran",
  "tests": {
-  "pass": 34
+  "fail": 6,
+  "pass": 14
  },
  "assertions_failing": [
   "CHK-003",
@@ -28,22 +29,8 @@
  ],
  "not_verifiable": [
   "CHK-014",
-  "CHK-015",
-  "CHK-016",
   "CHK-017",
-  "CHK-018",
-  "CHK-019",
-  "CHK-020",
-  "CHK-021",
-  "CHK-022",
-  "CHK-023",
-  "CHK-025",
-  "CHK-026",
-  "CHK-027",
-  "CHK-028",
-  "CHK-029",
-  "CHK-030",
-  "CHK-032"
+  "CHK-019"
  ],
  "coverage_percent": {
   "line": 99.3,
@@ -55,250 +42,207 @@
  "result": {
   "tests": [
    {
-    "name": "test_chk_014_nominal_latency/per=0",
-    "status": "pass",
-    "sim_time_ns": "6902.025"
+    "name": "test_chk_014_nominal_latency",
+    "status": "fail",
+    "sim_time_ns": "702.443",
+    "message": "CHK-013: i_full_thr=depth expected o_full_thr=0 got 1 at 702443 ps",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_d95c2930/C01/test_async_gray_fifo.py\", line 94, in run\n                                                            self.cb(len(self.v) - 1)\n                                                          File \"/root/nnc_runs/runset_d95c2930/C01/test_async_gray_fifo.py\", line 214, in _on_w\n                                                            assert fth == exp, f\"CHK-013: i_full_thr=depth expected o_full_thr={exp} got {fth} at {t} ps\"\n                                                        AssertionError: CHK-013: i_full_thr=depth expected o_full_thr=0 got 1 at 702443 ps\n                                                        assert 1 == 0\n   702.44ns WARNING  cocotb.regression                  test_async_gray_fifo.test_chk_014_nominal_latency failed",
+    "checks": [
+     "CHK-013",
+     "CHK-014"
+    ]
    },
    {
-    "name": "test_chk_014_nominal_latency/per=1",
+    "name": "test_chk_015_model_latency_window",
     "status": "pass",
-    "sim_time_ns": "6130.718000000001"
+    "sim_time_ns": "52997.937"
    },
    {
-    "name": "test_chk_015_latency_with_model",
-    "status": "pass",
-    "sim_time_ns": "51724.984"
-   },
-   {
-    "name": "test_chk_016_random_ratios/pair=0",
-    "status": "pass",
-    "sim_time_ns": "80142.76699999999"
-   },
-   {
-    "name": "test_chk_016_random_ratios/pair=1",
-    "status": "pass",
-    "sim_time_ns": "70891.468"
-   },
-   {
-    "name": "test_chk_016_random_ratios/pair=2",
-    "status": "pass",
-    "sim_time_ns": "136564.711"
-   },
-   {
-    "name": "test_chk_016_random_ratios/pair=3",
-    "status": "pass",
-    "sim_time_ns": "309144.368"
-   },
-   {
-    "name": "test_chk_016_random_ratios/pair=4",
-    "status": "pass",
-    "sim_time_ns": "124817.56700000004"
-   },
-   {
-    "name": "test_chk_016_random_ratios/pair=5",
-    "status": "pass",
-    "sim_time_ns": "261321.98199999996"
+    "name": "test_chk_016_random_traffic_ratios",
+    "status": "fail",
+    "sim_time_ns": "5324.484000000004",
+    "message": "CHK-032: occupancy 3 <= i_empty_thr 6 expected o_empty_thr=1 (never optimistic) got 0 at 59024866 ps",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_d95c2930/C01/test_async_gray_fifo.py\", line 94, in run\n                                                            self.cb(len(self.v) - 1)\n                                                          File \"/root/nnc_runs/runset_d95c2930/C01/test_async_gray_fifo.py\", line 276, in _on_r\n                                                            assert v[\"o_empty_thr\"] == 1, (f\"CHK-032: occupancy {occ} <= i_empty_thr {v['i_empty_thr']} expected \"\n                                                        AssertionError: CHK-032: occupancy 3 <= i_empty_thr 6 expected o_empty_thr=1 (never optimistic) got 0 at 59024866 ps\n                                                        assert 0 == 1\n 59024.87ns WARNING  cocotb.regression                  test_async_gray_fifo.test_chk_016_random_traffic_ratios failed",
+    "checks": [
+     "CHK-016",
+     "CHK-032"
+    ]
    },
    {
     "name": "test_chk_017_synthesis_branch_regression",
-    "status": "pass",
-    "sim_time_ns": "43256.052000000025"
+    "status": "fail",
+    "sim_time_ns": "7060.190000000002",
+    "message": "CHK-013: i_full_thr=depth expected o_full_thr=0 got 1 at 66085057 ps",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_d95c2930/C01/test_async_gray_fifo.py\", line 94, in run\n                                                            self.cb(len(self.v) - 1)\n                                                          File \"/root/nnc_runs/runset_d95c2930/C01/test_async_gray_fifo.py\", line 214, in _on_w\n                                                            assert fth == exp, f\"CHK-013: i_full_thr=depth expected o_full_thr={exp} got {fth} at {t} ps\"\n                                                        AssertionError: CHK-013: i_full_thr=depth expected o_full_thr=0 got 1 at 66085057 ps\n                                                        assert 1 == 0\n 66085.06ns WARNING  cocotb.regression                  test_async_gray_fifo.test_chk_017_synthesis_branch_regression failed",
+    "checks": [
+     "CHK-013",
+     "CHK-017"
+    ]
    },
    {
-    "name": "test_chk_018_write_n_read_n",
-    "status": "pass",
-    "sim_time_ns": "5110.39599999995"
+    "name": "test_chk_018_write_n_read_n_show_ahead",
+    "status": "fail",
+    "sim_time_ns": "2477.396999999997",
+    "message": "CHK-013: i_full_thr=depth expected o_full_thr=0 got 1 at 68562455 ps",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_d95c2930/C01/test_async_gray_fifo.py\", line 94, in run\n                                                            self.cb(len(self.v) - 1)\n                                                          File \"/root/nnc_runs/runset_d95c2930/C01/test_async_gray_fifo.py\", line 214, in _on_w\n                                                            assert fth == exp, f\"CHK-013: i_full_thr=depth expected o_full_thr={exp} got {fth} at {t} ps\"\n                                                        AssertionError: CHK-013: i_full_thr=depth expected o_full_thr=0 got 1 at 68562455 ps\n                                                        assert 1 == 0\n 68562.46ns WARNING  cocotb.regression                  test_async_gray_fifo.test_chk_018_write_n_read_n_show_ahead failed",
+    "checks": [
+     "CHK-013",
+     "CHK-018"
+    ]
    },
    {
     "name": "test_chk_019_back_to_back_equal_clocks",
     "status": "pass",
-    "sim_time_ns": "433.2129999999888"
+    "sim_time_ns": "406.1049999999959"
    },
    {
     "name": "test_chk_020_overflow",
     "status": "pass",
-    "sim_time_ns": "734.7490000000689"
+    "sim_time_ns": "865.8419999999896"
    },
    {
     "name": "test_chk_021_underflow",
     "status": "pass",
-    "sim_time_ns": "1070.999000000069"
+    "sim_time_ns": "980.096000000005"
    },
    {
     "name": "test_chk_022_hw_reset_independent",
     "status": "pass",
-    "sim_time_ns": "893.1029999998864"
+    "sim_time_ns": "1067.896000000008"
    },
    {
-    "name": "test_chk_023_hw_reset_during_srst",
+    "name": "test_chk_023_hw_reset_during_sw_reset",
     "status": "pass",
-    "sim_time_ns": "1454.3129999998491"
+    "sim_time_ns": "2133.001999999993"
    },
    {
     "name": "test_chk_024_hw_reset_mid_traffic",
-    "status": "pass",
-    "sim_time_ns": "8340.665999999968"
+    "status": "fail",
+    "sim_time_ns": "2605.4820000000036",
+    "message": "CHK-013: i_full_thr=depth expected o_full_thr=0 got 1 at 76620884 ps",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_d95c2930/C01/test_async_gray_fifo.py\", line 94, in run\n                                                            self.cb(len(self.v) - 1)\n                                                          File \"/root/nnc_runs/runset_d95c2930/C01/test_async_gray_fifo.py\", line 214, in _on_w\n                                                            assert fth == exp, f\"CHK-013: i_full_thr=depth expected o_full_thr={exp} got {fth} at {t} ps\"\n                                                        AssertionError: CHK-013: i_full_thr=depth expected o_full_thr=0 got 1 at 76620884 ps\n                                                        assert 1 == 0\n 76620.88ns WARNING  cocotb.regression                  test_async_gray_fifo.test_chk_024_hw_reset_mid_traffic failed",
+    "checks": [
+     "CHK-013",
+     "CHK-024"
+    ]
    },
    {
-    "name": "test_chk_025_srst_partial_fifo",
+    "name": "test_chk_025_srst_partly_filled_held",
     "status": "pass",
-    "sim_time_ns": "829.6310000000522"
+    "sim_time_ns": "841.2130000000034"
    },
    {
-    "name": "test_chk_026_srst_pulse_full_overflow",
+    "name": "test_chk_026_srst_one_cycle_pulse_full",
     "status": "pass",
-    "sim_time_ns": "727.0509999999776"
+    "sim_time_ns": "846.7489999999962"
    },
    {
     "name": "test_chk_027_read_released_first",
     "status": "pass",
-    "sim_time_ns": "1557.719000000041"
+    "sim_time_ns": "1770.7099999999919"
    },
    {
-    "name": "test_chk_028_srst_reassert_in_rel",
+    "name": "test_chk_028_srst_reasserted_in_rel",
     "status": "pass",
-    "sim_time_ns": "1084.2219999998342"
+    "sim_time_ns": "1186.1030000000028"
    },
    {
-    "name": "test_chk_029_srst_random/pair=0",
+    "name": "test_chk_029_srst_random_traffic",
     "status": "pass",
-    "sim_time_ns": "36099.826999999816"
-   },
-   {
-    "name": "test_chk_029_srst_random/pair=1",
-    "status": "pass",
-    "sim_time_ns": "40232.53700000001"
-   },
-   {
-    "name": "test_chk_029_srst_random/pair=2",
-    "status": "pass",
-    "sim_time_ns": "72178.41299999994"
-   },
-   {
-    "name": "test_chk_029_srst_random/pair=3",
-    "status": "pass",
-    "sim_time_ns": "55574.7350000001"
+    "sim_time_ns": "34200.312999999995"
    },
    {
     "name": "test_chk_030_after_srst_like_hw_reset",
     "status": "pass",
-    "sim_time_ns": "3368.0470000000205"
+    "sim_time_ns": "2474.6659999999974"
    },
    {
     "name": "test_chk_031_clock_stop_during_srst",
     "status": "pass",
-    "sim_time_ns": "2726.433999999892"
+    "sim_time_ns": "2649.4349999999977"
    },
    {
-    "name": "test_chk_032_threshold_flags/thr=0",
+    "name": "test_chk_032_threshold_flags",
     "status": "pass",
-    "sim_time_ns": "2217.0200000000186"
-   },
-   {
-    "name": "test_chk_032_threshold_flags/thr=1",
-    "status": "pass",
-    "sim_time_ns": "2199.9869999999646"
-   },
-   {
-    "name": "test_chk_032_threshold_flags/thr=2",
-    "status": "pass",
-    "sim_time_ns": "2216.750999999931"
-   },
-   {
-    "name": "test_chk_032_threshold_flags/thr=3",
-    "status": "pass",
-    "sim_time_ns": "2214.3169999998063"
-   },
-   {
-    "name": "test_chk_032_threshold_flags/thr=4",
-    "status": "pass",
-    "sim_time_ns": "2215.9209999998566"
-   },
-   {
-    "name": "test_chk_032_threshold_flags/thr=5",
-    "status": "pass",
-    "sim_time_ns": "2154.5789999999106"
+    "sim_time_ns": "11325.051000000007"
    },
    {
     "name": "test_regression_random",
-    "status": "pass",
-    "sim_time_ns": "88363.09200000018"
+    "status": "fail",
+    "sim_time_ns": "24716.238000000012",
+    "message": "CHK-003: i_empty_thr>=depth expected o_empty_thr=1 got 0 at 156631371 ps",
+    "exception": "AssertionError",
+    "traceback": "_gray.gen_bit_cell[2].u_vlsit_afifo_cell_sync.gen_sim_msync seed=2 enable=1 stages=2\nAFIFO_MSYNC: nnc_tb_top.u_dut.u_vlsit_afifo_wr.u_sync_rd_gray.gen_bit_cell[3].u_vlsit_afifo_cell_sync.gen_sim_msync seed=2 enable=1 stages=2\nAFIFO_MSYNC: nnc_tb_top.u_dut.u_vlsit_afifo_rd.u_sync_wr_gray.gen_bit_cell[0].u_vlsit_afifo_cell_sync.gen_sim_msync seed=2 enable=1 stages=2\nAFIFO_MSYNC: nnc_tb_top.u_dut.u_vlsit_afifo_rd.u_sync_wr_gray.gen_bit_cell[1].u_vlsit_afifo_cell_sync.gen_sim_msync seed=2 enable=1 stages=2\nAFIFO_MSYNC: nnc_tb_top.u_dut.u_vlsit_afifo_rd.u_sync_wr_gray.gen_bit_cell[2].u_vlsit_afifo_cell_sync.gen_sim_msync seed=2 enable=1 stages=2\nAFIFO_MSYNC: nnc_tb_top.u_dut.u_vlsit_afifo_rd.u_sync_wr_gray.gen_bit_cell[3].u_vlsit_afifo_cell_sync.gen_sim_msync seed=2 enable=1 stages=2\nNNC_FAIL CHK-013 @702000\nNNC_FAIL CHK-013 @53705000\nNNC_FAIL CHK-013 @66085000\nNNC_FAIL CHK-013 @68562000\nNNC_FAIL CHK-013 @76621000\n- (null):0: Verilog $finish\nNNC_FAIL CHK-003 @156631000\nNNC_COVER COVP-001 hits=1931\nNNC_COVER COVP-002 hits=1217\nNNC_COVER COVP-003 hits=1217\nNNC_COVER COVP-004 hits=937\nNNC_COVER COVP-005 hits=391\nNNC_COVER COVP-006 hits=389\nNNC_COVER COVP-007 hits=42\nNNC_COVER COVP-008 hits=824\nNNC_COVER COVP-009 hits=4124\nNNC_COVER COVP-010 hits=2792\nNNC_COVER COVP-011 hits=891\nNNC_COVER COVP-012 hits=175\nNNC_COVER COVP-013 hits=5028\nNNC_COVER COVP-014 hits=45\nNNC_COVER COVP-015 hits=10\nNNC_COVER COVP-016 hits=252\nNNC_COVER COVP-017 hits=45\nNNC_COVER COVP-018 hits=181\nNNC_COVER COVP-019 hits=202\nNNC_COVER COVP-020 hits=6\nNNC_COVER COVP-021 hits=1\nNNC_COVER COVP-022 hits=29\nNNC_COVER COVP-023 hits=96\nNNC_COVER COVP-024 hits=128\nNNC_COVER COVP-025 hits=1813\nNNC_COVER COVP-026 hits=2698\nNNC_COVER COVP-027 hits=2044\nNNC_COVER COVP-028 hits=1657\nNNC_COVER COVP-029 hits=431\nNNC_COVER COVP-030 hits=425\nNNC_COVER COVP-031 hits=2085\nNNC_COVER COVP-032 hits=355\nNNC_COVER COVP-033 hits=2247\nNNC_COVER COVP-034 hits=3886\nNNC_COVER COVP-035 hits=1687\nNNC_COVER COVP-036 hits=1252\nNNC_COVER COVP-037 hits=467\nNNC_COVER COVP-038 hits=28\nNNC_COVER COVP-039 hits=102\nNNC_COVER COVP-040 hits=193\nNNC_CHECK CHK-007 hits=265 fails=0\nNNC_CHECK CHK-008 hits=13416 fails=0\nNNC_CHECK CHK-009 hits=798 fails=0\nNNC_CHECK CHK-010 hits=12663 fails=0\nNNC_CHECK CHK-011 hits=745 fails=0\nNNC_CHECK CHK-012 hits=13416 fails=0\nNNC_CHECK CHK-013 hits=13416 fails=5\nNNC_CHECK CHK-005 hits=7293 fails=0\nNNC_CHECK CHK-006 hits=17489 fails=0\nNNC_CHECK CHK-001 hits=219 fails=0\nNNC_CHECK CHK-002 hits=2044 fails=0\nNNC_CHECK CHK-003 hits=12810 fails=1\nNNC_CHECK CHK-004 hits=12623 fails=0\nmake[1]: *** [/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb_tools/makefiles/simulators/Makefile.verilator:70: results.xml] Error 6\nmake[1]: Leaving directory '/root/nnc_runs/runset_d95c2930/C01'\nmake: *** [/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb_tools/makefiles/Makefile.inc:17: sim] Error 2\nNNC_MAKE_RC=2\n",
+    "checks": [
+     "CHK-003"
+    ]
    }
   ],
   "assertions": {
    "CHK-007": {
-    "hits": 378,
+    "hits": 265,
     "fails": 0
    },
    "CHK-008": {
-    "hits": 109858,
+    "hits": 13416,
     "fails": 0
    },
    "CHK-009": {
-    "hits": 5702,
+    "hits": 798,
     "fails": 0
    },
    "CHK-010": {
-    "hits": 104398,
+    "hits": 12663,
     "fails": 0
    },
    "CHK-011": {
-    "hits": 5460,
+    "hits": 745,
     "fails": 0
    },
    "CHK-012": {
-    "hits": 109817,
+    "hits": 13416,
     "fails": 0
    },
    "CHK-013": {
-    "hits": 109858,
-    "fails": 43,
-    "first_fail_time": 8148000
+    "hits": 13416,
+    "fails": 5,
+    "first_fail_time": 702000
    },
    "CHK-005": {
-    "hits": 55479,
+    "hits": 7293,
     "fails": 0
    },
    "CHK-006": {
-    "hits": 109814,
+    "hits": 17489,
     "fails": 0
    },
    "CHK-001": {
-    "hits": 326,
+    "hits": 219,
     "fails": 0
    },
    "CHK-002": {
-    "hits": 15375,
+    "hits": 2044,
     "fails": 0
    },
    "CHK-003": {
-    "hits": 97804,
-    "fails": 45,
-    "first_fail_time": 66615000
+    "hits": 12810,
+    "fails": 1,
+    "first_fail_time": 156631000
    },
    "CHK-004": {
-    "hits": 97519,
+    "hits": 12623,
     "fails": 0
    }
   },
   "not_verifiable": {
-   "CHK-014": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-015": "seeing L=2,3,4 in both directions over the 5-seed run set needs the other seeds; this run covers seed 2 only",
-   "CHK-016": "the model-off run of the run set is another configuration; this run has the model on",
-   "CHK-017": "this run is built without VLSIT_SYNTHESIS: the synthesizable cell branch is not elaborated; the same traffic and latency checks run on the simulation branch",
-   "CHK-018": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-019": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-020": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-021": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-022": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-023": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-025": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-026": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-027": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-028": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-029": "the other model settings / seeds of the run set are other runs (this run: model on, seed 2)",
-   "CHK-030": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here",
-   "CHK-032": "this run enables the metastability model (+AFIFO_MSYNC_EN, seed 2); the exact 2-edge cross-domain counts need the model off; only the window 2..4 destination edges is checked here"
+   "CHK-014": "exact latency S needs the metastability model off; window S..S+2 checked",
+   "CHK-017": "this run is not compiled with VLSIT_SYNTHESIS; the same sequence runs on the simulation branch with the run's latency expectation",
+   "CHK-019": "no-gap throughput needs nominal latency and DEPTH >= 2*S+3 (DEPTH=8, S=2, exact=False); order and integrity still checked"
   },
   "coverage": {
    "status": "measured",
@@ -551,48 +495,48 @@
    ]
   },
   "functional": {
-   "COVP-001": 18387,
-   "COVP-002": 15042,
-   "COVP-003": 15042,
-   "COVP-004": 12150,
-   "COVP-005": 4393,
-   "COVP-006": 4296,
-   "COVP-007": 236,
-   "COVP-008": 10418,
-   "COVP-009": 17046,
-   "COVP-010": 3800,
-   "COVP-011": 28279,
-   "COVP-012": 13795,
-   "COVP-013": 22170,
-   "COVP-014": 242,
-   "COVP-015": 56,
-   "COVP-016": 1086,
-   "COVP-017": 242,
-   "COVP-018": 834,
-   "COVP-019": 1679,
-   "COVP-020": 72,
-   "COVP-021": 3,
-   "COVP-022": 39,
-   "COVP-023": 1028,
-   "COVP-024": 2217,
-   "COVP-025": 17659,
-   "COVP-026": 17222,
-   "COVP-027": 15914,
-   "COVP-028": 12441,
-   "COVP-029": 4631,
-   "COVP-030": 4629,
-   "COVP-031": 11350,
-   "COVP-032": 1811,
-   "COVP-033": 4130,
-   "COVP-034": 6581,
-   "COVP-035": 27633,
-   "COVP-036": 7042,
-   "COVP-037": 14178,
-   "COVP-038": 37,
-   "COVP-039": 1090,
-   "COVP-040": 1979
+   "COVP-001": 1931,
+   "COVP-002": 1217,
+   "COVP-003": 1217,
+   "COVP-004": 937,
+   "COVP-005": 391,
+   "COVP-006": 389,
+   "COVP-007": 42,
+   "COVP-008": 824,
+   "COVP-009": 4124,
+   "COVP-010": 2792,
+   "COVP-011": 891,
+   "COVP-012": 175,
+   "COVP-013": 5028,
+   "COVP-014": 45,
+   "COVP-015": 10,
+   "COVP-016": 252,
+   "COVP-017": 45,
+   "COVP-018": 181,
+   "COVP-019": 202,
+   "COVP-020": 6,
+   "COVP-021": 1,
+   "COVP-022": 29,
+   "COVP-023": 96,
+   "COVP-024": 128,
+   "COVP-025": 1813,
+   "COVP-026": 2698,
+   "COVP-027": 2044,
+   "COVP-028": 1657,
+   "COVP-029": 431,
+   "COVP-030": 425,
+   "COVP-031": 2085,
+   "COVP-032": 355,
+   "COVP-033": 2247,
+   "COVP-034": 3886,
+   "COVP-035": 1687,
+   "COVP-036": 1252,
+   "COVP-037": 467,
+   "COVP-038": 28,
+   "COVP-039": 102,
+   "COVP-040": 193
   },
-  "make_rc": 0,
+  "make_rc": 2,
   "built": true,
   "build_errors": [],
   "status": "ran",

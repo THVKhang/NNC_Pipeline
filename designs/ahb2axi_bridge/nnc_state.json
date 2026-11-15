@@ -1,0 +1,45 @@
+{
+  "config": {
+    "documents": [
+      {
+        "file": "spec/AHB2AXI_Bridge_Design_Specification.md",
+        "role": "ip_spec",
+        "sections": [],
+        "skip": [],
+        "tag": "AA"
+      }
+    ],
+    "formal": "on",
+    "formal_defines": "VLSIT_SYNTHESIS",
+    "top": "m_ahb2axi_top"
+  },
+  "created": "2026-11-12T07:48:03+00:00",
+  "design": "ahb2axi_bridge",
+  "gates": {
+    "G1_rules": {
+      "at": "2026-11-12T16:11:43+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "work/rules.json": "314d77194577f962f32cb643d6d61dd0834d9eb3002c39066f7af2bdb16ef0f5"
+      },
+      "note": "Delegated review (the user is not a hardware designer). 234 rules kept; the 39 rejected are structural, documentation or licensing statements with no observable behaviour. The six open questions were answered conservatively from \u00a720.3 decisions (DEC-BURST-001, DEC-PERF-002, DEC-ID-001, DEC-BURST-002): nothing the spec leaves open is checked. All six are marked as delegated assumptions to confirm by a qualified human reviewer at G4."
+    },
+    "G2_contract": {
+      "at": "2026-11-12T16:22:11+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "work/contract.json": "042ff4131202d2a853588cbb92c2c2fefb927b83a7c873aa0e80554d0aca8393"
+      },
+      "note": "Delegated review. Interface (52 ports, 2 parameters) matches the spec port table and the RTL top. 40 checks (20 assertions, 20 tests) cover 177 of 234 rules; 57 are not verifiable by simulation (structural, synthesis, DFT). Checks follow the delegated answers of G1 (optional aggregation CHK-024, conditional 6-cycle bound CHK-034, ID range only CHK-009/032, no fixed split lengths CHK-027). All checks kept (designer choice not made by the user)."
+    },
+    "G3_verif_sources": {
+      "at": "2026-11-14T15:41:48+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "verif": "f25e7c6e68f486b27eb2f68450ae30d915c50d33c4cad2768e357e50fa0c2e11"
+      },
+      "note": "Generated with the run set (base x2 seeds, ids8, ids35) in the prompts. Reviewed: tests valid at the first attempt, 0 literal exemptions, only top-level ports are touched (no internal signals); checkers (ahb, axi, cross, reset) and coverage lint clean; formal environment ENV-01..: reset idle, AXI subordinate reset with the bridge, HREADY mux, HWDATA stable. A person should confirm."
+    }
+  },
+  "version": 1
+}

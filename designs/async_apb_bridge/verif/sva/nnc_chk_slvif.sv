@@ -60,40 +60,56 @@ module nnc_chk_slvif #(
   int unsigned fails_CHK_017 = 0;
   int unsigned hits_CHK_017 = 0;
 
+  // helper registers (slv domain)
+  logic rst_ok_q_slv = 1'b0;
+  always_ff @(posedge i_clk_slv) rst_ok_q_slv <= i_rst_n_slv && i_rst_n_mst;
+
   // CHK-011: No unknown completer-side outputs after reset (AB2-15.3-18)
-  a_CHK_011: assert property (@(posedge i_clk_slv) disable iff (!i_rst_n_slv) 1'b1 |-> !$isunknown({o_apb_psel, o_apb_penable, o_apb_pwrite, o_apb_paddr, o_apb_pprot, o_apb_pstrb, o_apb_pwdata, o_apb_pwakeup, o_apb_pauser, o_apb_pwuser}))
+  a_CHK_011: assert property (@(posedge i_clk_slv) disable iff (!i_rst_n_slv)
+    1'b1 |-> !$isunknown({o_apb_psel, o_apb_penable, o_apb_pwrite, o_apb_paddr, o_apb_pprot,
+                          o_apb_pstrb, o_apb_pwdata, o_apb_pwakeup, o_apb_pauser, o_apb_pwuser}))
     else begin fails_CHK_011++; $display("NNC_FAIL CHK-011 @%0t", $time); end
-  always_ff @(posedge i_clk_slv) if (!(!i_rst_n_slv) && (1'b1)) hits_CHK_011 <= hits_CHK_011 + 1;
+  always_ff @(posedge i_clk_slv) if (i_rst_n_slv && (1'b1)) hits_CHK_011 <= hits_CHK_011 + 1;
 
   // CHK-012: Completer-side PENABLE implies PSEL; PSEL rises in a Setup cycle (AB2-15.3-06, AB2-3-14, AB2-3-15, AB2-5.4-05, AB2-6.3-01)
-  a_CHK_012: assert property (@(posedge i_clk_slv) disable iff (!i_rst_n_slv) (i_rst_n_mst && (o_apb_penable || o_apb_psel)) |-> ((!o_apb_penable || o_apb_psel) && !(o_apb_psel && !$past(o_apb_psel) && o_apb_penable)))
+  a_CHK_012: assert property (@(posedge i_clk_slv) disable iff (!i_rst_n_slv || !i_rst_n_mst)
+    (o_apb_penable || o_apb_psel) |->
+      ((!o_apb_penable || o_apb_psel) &&
+       (!rst_ok_q_slv || !o_apb_psel || $past(o_apb_psel) || !o_apb_penable)))
     else begin fails_CHK_012++; $display("NNC_FAIL CHK-012 @%0t", $time); end
-  always_ff @(posedge i_clk_slv) if (!(!i_rst_n_slv) && (i_rst_n_mst && (o_apb_penable || o_apb_psel))) hits_CHK_012 <= hits_CHK_012 + 1;
+  always_ff @(posedge i_clk_slv) if (i_rst_n_slv && i_rst_n_mst && ((o_apb_penable || o_apb_psel))) hits_CHK_012 <= hits_CHK_012 + 1;
 
   // CHK-013: Completer-side Setup phase lasts exactly one cycle (AB2-3-15, AB2-5.3-05, AB2-10.1-06, AB2-15.3-06, AB2-6.3-01)
-  a_CHK_013: assert property (@(posedge i_clk_slv) disable iff (!i_rst_n_slv) (i_rst_n_mst && o_apb_psel && !o_apb_penable) |=> (o_apb_psel && o_apb_penable))
+  a_CHK_013: assert property (@(posedge i_clk_slv) disable iff (!i_rst_n_slv || !i_rst_n_mst)
+    (o_apb_psel && !o_apb_penable) |=> (o_apb_psel && o_apb_penable))
     else begin fails_CHK_013++; $display("NNC_FAIL CHK-013 @%0t", $time); end
-  always_ff @(posedge i_clk_slv) if (!(!i_rst_n_slv) && (i_rst_n_mst && o_apb_psel && !o_apb_penable)) hits_CHK_013 <= hits_CHK_013 + 1;
+  always_ff @(posedge i_clk_slv) if (i_rst_n_slv && i_rst_n_mst && ((o_apb_psel && !o_apb_penable))) hits_CHK_013 <= hits_CHK_013 + 1;
 
   // CHK-014: Access phase held while the completer is not ready (AB2-3-14, AB2-3-10, AB2-5.3-06)
-  a_CHK_014: assert property (@(posedge i_clk_slv) disable iff (!i_rst_n_slv) (i_rst_n_mst && o_apb_psel && o_apb_penable && !i_apb_pready) |=> (o_apb_psel && o_apb_penable))
+  a_CHK_014: assert property (@(posedge i_clk_slv) disable iff (!i_rst_n_slv || !i_rst_n_mst)
+    (o_apb_psel && o_apb_penable && !i_apb_pready) |=> (o_apb_psel && o_apb_penable))
     else begin fails_CHK_014++; $display("NNC_FAIL CHK-014 @%0t", $time); end
-  always_ff @(posedge i_clk_slv) if (!(!i_rst_n_slv) && (i_rst_n_mst && o_apb_psel && o_apb_penable && !i_apb_pready)) hits_CHK_014 <= hits_CHK_014 + 1;
+  always_ff @(posedge i_clk_slv) if (i_rst_n_slv && i_rst_n_mst && ((o_apb_psel && o_apb_penable && !i_apb_pready))) hits_CHK_014 <= hits_CHK_014 + 1;
 
   // CHK-015: Completer-side transfer ends at the PREADY edge (AB2-3-17, AB2-10.3-03, AB2-10.1-07, AB2-5.3-07, AB2-15.3-08)
-  a_CHK_015: assert property (@(posedge i_clk_slv) disable iff (!i_rst_n_slv) (i_rst_n_mst && o_apb_psel && o_apb_penable && i_apb_pready) |=> (!o_apb_psel && !o_apb_penable))
+  a_CHK_015: assert property (@(posedge i_clk_slv) disable iff (!i_rst_n_slv || !i_rst_n_mst)
+    (o_apb_psel && o_apb_penable && i_apb_pready) |=> (!o_apb_psel && !o_apb_penable))
     else begin fails_CHK_015++; $display("NNC_FAIL CHK-015 @%0t", $time); end
-  always_ff @(posedge i_clk_slv) if (!(!i_rst_n_slv) && (i_rst_n_mst && o_apb_psel && o_apb_penable && i_apb_pready)) hits_CHK_015 <= hits_CHK_015 + 1;
+  always_ff @(posedge i_clk_slv) if (i_rst_n_slv && i_rst_n_mst && ((o_apb_psel && o_apb_penable && i_apb_pready))) hits_CHK_015 <= hits_CHK_015 + 1;
 
-  // CHK-016: Completer-side request fields stable during a transfer (AB2-3-16, AB2-15.3-07, AB2-6.2-02..08, AB2-6.3-06, AB2-6.3-17)
-  a_CHK_016: assert property (@(posedge i_clk_slv) disable iff (!i_rst_n_slv) (i_rst_n_mst && o_apb_psel && !(o_apb_penable && i_apb_pready)) |=> $stable({o_apb_pwrite, o_apb_paddr, o_apb_pprot, o_apb_pstrb, o_apb_pwdata, o_apb_pauser, o_apb_pwuser}))
+  // CHK-016: Completer-side request fields stable during a transfer (AB2-3-16, AB2-15.3-07, AB2-6.2-02, AB2-6.2-03, AB2-6.2-04, AB2-6.2-05, AB2-6.2-06, AB2-6.2-07, AB2-6.2-08, AB2-6.3-06, AB2-6.3-17)
+  a_CHK_016: assert property (@(posedge i_clk_slv) disable iff (!i_rst_n_slv || !i_rst_n_mst)
+    (o_apb_psel && !(o_apb_penable && i_apb_pready)) |=>
+      $stable({o_apb_pwrite, o_apb_paddr, o_apb_pprot, o_apb_pstrb, o_apb_pwdata, o_apb_pauser, o_apb_pwuser}))
     else begin fails_CHK_016++; $display("NNC_FAIL CHK-016 @%0t", $time); end
-  always_ff @(posedge i_clk_slv) if (!(!i_rst_n_slv) && (i_rst_n_mst && o_apb_psel && !(o_apb_penable && i_apb_pready))) hits_CHK_016 <= hits_CHK_016 + 1;
+  always_ff @(posedge i_clk_slv) if (i_rst_n_slv && i_rst_n_mst && ((o_apb_psel && !(o_apb_penable && i_apb_pready)))) hits_CHK_016 <= hits_CHK_016 + 1;
 
   // CHK-017: Completer-side request fields loaded only at Setup entry (AB2-3-22, AB2-6.3-07, AB2-10.1-05, AB2-7.2-03)
-  a_CHK_017: assert property (@(posedge i_clk_slv) disable iff (!i_rst_n_slv) (i_rst_n_mst && !$stable({o_apb_pwrite, o_apb_paddr, o_apb_pprot, o_apb_pstrb, o_apb_pwdata, o_apb_pauser, o_apb_pwuser})) |-> (o_apb_psel && !o_apb_penable && !$past(o_apb_psel)))
+  a_CHK_017: assert property (@(posedge i_clk_slv) disable iff (!i_rst_n_slv || !i_rst_n_mst)
+    (rst_ok_q_slv && !$stable({o_apb_pwrite, o_apb_paddr, o_apb_pprot, o_apb_pstrb, o_apb_pwdata, o_apb_pauser, o_apb_pwuser}))
+      |-> (o_apb_psel && !o_apb_penable && !$past(o_apb_psel)))
     else begin fails_CHK_017++; $display("NNC_FAIL CHK-017 @%0t", $time); end
-  always_ff @(posedge i_clk_slv) if (!(!i_rst_n_slv) && (i_rst_n_mst && !$stable({o_apb_pwrite, o_apb_paddr, o_apb_pprot, o_apb_pstrb, o_apb_pwdata, o_apb_pauser, o_apb_pwuser}))) hits_CHK_017 <= hits_CHK_017 + 1;
+  always_ff @(posedge i_clk_slv) if (i_rst_n_slv && i_rst_n_mst && ((rst_ok_q_slv && !$stable({o_apb_pwrite, o_apb_paddr, o_apb_pprot, o_apb_pstrb, o_apb_pwdata, o_apb_pauser, o_apb_pwuser})))) hits_CHK_017 <= hits_CHK_017 + 1;
 
   final begin
     $display("NNC_CHECK CHK-011 hits=%0d fails=%0d", hits_CHK_011, fails_CHK_011);

@@ -56,16 +56,26 @@ def clusters(results: dict, contract: dict) -> list[dict]:
     return out
 
 
+def select(cl: list[dict], n: int) -> list[dict]:
+    """At most n failures to analyse. A failing assertion is often the cause of several failing tests, so up to
+    half of the places go to assertions; places one kind does not use go to the other."""
+    tests = [c for c in cl if c["kind"] == "test"]
+    asserts = [c for c in cl if c["kind"] != "test"]
+    na = min(len(asserts), max(n // 2, n - len(tests)))
+    return tests[:n - na] + asserts[:na]
+
+
 def run(results: dict, contract: dict, files: dict[str, Path], backend, log_dir: Path, *,
         model: str = "opus", max_clusters: int = 12) -> dict:
     cl = clusters(results, contract)
+    sel = select(cl, max_clusters)
     if not cl:
         return {"analyses": [], "clusters": 0, "usage": Usage().as_dict()}
     listing = "\n".join(f"  {name}" for name in sorted(files))
     instructions = (
         "FILES IN THIS DIRECTORY\n" + listing +
         "\n\nFAILURES TO ANALYSE (one analysis each, same order)\n" +
-        json.dumps(cl[:max_clusters], indent=1) +
+        json.dumps(sel, indent=1) +
         "\n\nFor each failure: read the check/test, the rule quotes in contract.json and rules.json, the test code, the "
         "checker code and the RTL. Fill spec_says (quote + file:line), rtl_does (file:line + what it does in the "
         "failing cycles), test_does (stimulus, expected value and how it was derived, file:line), the three "
@@ -76,7 +86,7 @@ def run(results: dict, contract: dict, files: dict[str, Path], backend, log_dir:
                      system_prompt=SYSTEM_PROMPT, model=model, max_turns=60)
     res = backend.run(task, log_dir)
     usage.add(res)
-    return {"analyses": res.output["analyses"], "clusters": len(cl), "analysed": min(len(cl), max_clusters),
+    return {"analyses": res.output["analyses"], "clusters": len(cl), "analysed": len(sel),
             "usage": usage.as_dict(), "prompt_version": PROMPT_VERSION, "denials": res.permission_denials}
 
 
