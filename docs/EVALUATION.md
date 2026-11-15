@@ -23,7 +23,7 @@ Trang này tổng hợp số đo của bốn giai đoạn. Mọi con số đều
 | Formal (depth 20): PROVEN / BOUNDED / other | 17 / 0 / 0 | 12 / 4 / 1 timeout | 7 / 2 / 1 timeout, 1 sim-only | 15 / 0 / 3 sim-only | 5 / 2 / 6 sim-only | 8 / 2 / **9 CEX**, 1 vacuous |
 | Mutation score | 100 % (33/33) | 88.9 % (32/36) | 100 % (36/36) | 91.7 % (11/12) | 100 % (12/12) | not run (RTL fails) |
 | Bug benchmark: caught, triage correct | 3/3, 3/3 | 3/3, 3/3 | 3/3, 3/3 | 3/3 | 3/3 | 1/3 (masked, see §3) |
-| Hand-written baseline: bugs, mutants | 3/3, 33/33 | no upstream testbench | 3/3, 29/36 | 3/3, see §4 | no upstream testbench | no upstream testbench |
+| Hand-written baseline: bugs, mutants | 3/3, 33/33 | no upstream testbench | 3/3, 29/36 | 3/3, 10/12 | no upstream testbench | no upstream testbench |
 | Test-bench hand fixes (triage B) | 0 | 4 (1 test model, 3 checker) | 1 (checker) | 1 | 13 | 0 |
 
 Sources:
@@ -145,9 +145,10 @@ A fault counts as caught by a side if any of its runs fails.
 |---|---|---|---|
 | sync_fifo | `002_SyncFIFO/verification`, 8 runs per RTL | 3/3 / 3/3 | **29/36 / 36/36** (7 only by NNC, 0 only by hand-written) |
 | apb_tlul_bridge | `example/apb_tlul_bridge/verification`, 2 runs | 3/3 / 3/3 | 33/33 / 33/33 |
-| async_apb_bridge | `004_AsyncAPBBridge/verification`, 64 runs | 3/3 / 3/3 | TBD |
+| async_apb_bridge | `004_AsyncAPBBridge/verification`, 64 runs | 3/3 / 3/3 | 10/12 / 11/12 (1 only by NNC, 1 by neither) |
 
 **Limits of this comparison:**
+- **On no design did the hand-written testbench kill a mutant that NNC missed.** NNC killed 8 more in total (7 on sync_fifo, 1 on async_apb). The one async_apb mutant neither killed (M07, `m_vlsit_apbcdc_cell_sync.sv:171`) is the NNC survivor already listed in its review packet.
 - **Few designs have an upstream testbench.** The upstream repository has none for async_gray_fifo (`001` holds RTL, lint and waveforms only) or ahb2axi (`005`), and no copy of axi2apb. Three designs is a small sample.
 - **The bug-benchmark faults are not independent of the flow.** They were written for this flow by the same assistant, with knowledge of the RTL. Three per design cannot separate the two testbenches; the mutants are the stronger measure.
 - **The mutants are a limited sample.** They are one-line, drawn only from executed lines, at most 36 per design, and some may be equivalent.

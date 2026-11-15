@@ -108,7 +108,7 @@ A mutant counts as killed only by a test or check that passes on the unmutated R
 
 ### Compared with the hand-written testbenches | So với testbench viết tay
 
-`nnc baseline <ip>` runs the upstream hand-written testbench, as its own script runs it, against the same benchmark bugs and the same mutants. sync_fifo: bugs 3/3 for both, mutants **29/36 hand-written vs 36/36 NNC**; apb_tlul_bridge: 3/3 and 33/33 for both; async_apb_bridge: bugs 3/3 for both. Only three designs have an upstream testbench, and the benchmark bugs were written by the same assistant; see the limits in [docs/EVALUATION.md](docs/EVALUATION.md).
+`nnc baseline <ip>` runs the upstream hand-written testbench, as its own script runs it, against the same benchmark bugs and the same mutants. sync_fifo: bugs 3/3 for both, mutants **29/36 hand-written vs 36/36 NNC**; apb_tlul_bridge: 3/3 and 33/33 for both; async_apb_bridge: bugs 3/3 for both, mutants 10/12 vs 11/12. No mutant was killed only by the hand-written testbench. Only three designs have an upstream testbench, and the benchmark bugs were written by the same assistant; see the limits in [docs/EVALUATION.md](docs/EVALUATION.md).
 
 ### Bug benchmark and CI | Đo bằng bug cài sẵn và CI
 

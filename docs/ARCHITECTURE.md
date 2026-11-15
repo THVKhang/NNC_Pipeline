@@ -464,7 +464,7 @@ Số đo đầy đủ: [EVALUATION.md](EVALUATION.md). Lời nhờ người ký 
 - Chạy testbench gốc theo đúng script của nó, với cùng bug benchmark và cùng mutant.
 - sync_fifo: bug 3/3 cả hai; mutant viết tay 29/36, NNC 36/36 (7 mutant chỉ NNC bắt).
 - apb_tlul: 3/3 và 33/33 cả hai.
-- async_apb: bug 3/3 cả hai; mutant: xem EVALUATION.md.
+- async_apb: bug 3/3 cả hai; mutant viết tay 10/12, NNC 11/12. Không có mutant nào chỉ testbench viết tay bắt được.
 - Giới hạn:
   - chỉ 3 thiết kế có testbench gốc;
   - bug benchmark do chính trợ lý viết, biết RTL, nên mutant là thước đo tốt hơn;
