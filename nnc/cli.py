@@ -33,7 +33,8 @@ def _options(args) -> flow.Options:
                      workers=getattr(args, "workers", 4), seed=getattr(args, "seed", 1),
                      mutants=getattr(args, "mutants", 12), timeout_s=getattr(args, "agent_timeout", 1800),
                      single=getattr(args, "single_run", False))
-    for stage in ("extract", "review", "contract", "sva", "tests", "triage"):
+    o.rtl_rounds = getattr(args, "rtl_rounds", 3)
+    for stage in ("extract", "review", "contract", "sva", "tests", "triage", "rtl"):
         v = getattr(args, f"{stage}_model", None)
         if v:
             setattr(o, f"{stage}_model", v)
@@ -335,6 +336,134 @@ def cmd_cover(args) -> int:
     return 0
 
 
+def cmd_restyle(args) -> int:
+    """A16 rewrites the RTL to follow docs/RTL_RULES.md; formal equivalence with the original; -> restyle/."""
+    from nnc import params, restyle, rtlcheck, sim
+    from nnc.simhost import default_host
+    d = _open(args)
+    o = _options(args)
+    c = json.loads((d.work / "contract.json").read_text(encoding="utf-8"))
+    rules = json.loads((d.work / "rules.json").read_text(encoding="utf-8"))
+    fc = d.work / "final_config.json"
+    over = json.loads(fc.read_text(encoding="utf-8")).get("overrides", {}) if fc.is_file() else {}
+    values = params.resolve(c["interface"], over)
+    rtl = sim.rtl_files(d.root / "rtl")
+    original = {f.name: f.read_text(encoding="utf-8", errors="replace") for f in rtl}
+    original["filelist.f"] = "\n".join(f.name for f in rtl) + "\n"
+    host = default_host()
+    orig_chk = rtlcheck.check(host, original, c, values, {r["id"] for r in rules["rules"]}, synth=False)
+    rep = restyle.restyle(d.root, c, rules, values, original, flow._backend(d, o), flow._logs(d), host,
+                          model=o.rtl_model, rounds=o.rtl_rounds, depth=args.depth)
+    restyle.write(d.root, rep, orig_chk, d.name)
+    eq = rep["equivalence"]
+    print(f"[restyle] {rep['status']} after {rep['attempts']} attempt(s); equivalence {eq.get('status')}; findings "
+          f"original {orig_chk['counts']} -> restyled {rep['counts']}; {len(rep['suspected_bugs'])} suspected bug(s); "
+          f"US${rep['usage'].get('cost_usd', 0):.2f} -> {d.root / 'restyle' / 'restyle.md'}")
+    return 0 if rep["status"] == "clean" else 1
+
+
+def cmd_spec_check(args) -> int:
+    from nnc import specdraft
+    d = _open(args)
+    if args.file:
+        path = Path(args.file)
+    else:
+        ip = next((x for x in d.documents() if x["role"] == "ip_spec"), None)
+        if ip is None:
+            raise ProjectError("no ip_spec document registered; give the file")
+        path = d.root / ip["file"]
+    res = specdraft.check_spec(path, d.config().get("top"))
+    print(f"{path.name}: {res.get('sections')} sections, {res['ports']} ports, {res['parameters']} parameters, "
+          f"{res['requirements']} requirement IDs, {res.get('normative')} normative sentences")
+    for f in res["findings"]:
+        print(f"  {f['severity']:<7} {f['message']}")
+    return 1 if any(f["severity"] == "error" for f in res["findings"]) else 0
+
+
+def cmd_spec_draft(args) -> int:
+    """A0 drafts the specification from a description; registers it as the ip_spec of a new or empty design."""
+    from nnc import specdraft
+    path = _design_path(args.design, args.root)
+    d = Design.open(path) if (path / "nnc_state.json").is_file() else Design.init(path)
+    if any(x["role"] == "ip_spec" for x in d.documents()) and not args.replace:
+        raise ProjectError(f"{d.name} already has a specification; pass --replace to draft a new one")
+    desc = Path(args.description).read_text(encoding="utf-8")
+    top = args.top or d.config().get("top") or f"m_{d.name}"
+    d.set_config(top=top, rtl_origin="generated")
+    o = _options(args)
+    rep = specdraft.draft(desc, d.name, top, flow._backend(d, o), flow._logs(d), d.work / "spec_draft",
+                          model=args.spec_model, rounds=args.rounds)
+    name = f"{d.name}_Design_Specification.md"
+    (d.root / "spec").mkdir(parents=True, exist_ok=True)
+    (d.root / "spec" / name).write_text(rep["markdown"].rstrip() + "\n", encoding="utf-8")
+    (d.root / "spec" / "design_description.md").write_text(desc, encoding="utf-8")
+    d.add_document(f"spec/{name}", "ip_spec", args.tag)
+    (d.work / "spec_draft.md").write_text(specdraft.report_md(rep, d.name, f"spec/{name}"), encoding="utf-8")
+    c = rep["check"]
+    print(f"[spec-draft] spec/{name}: {c.get('ports')} ports, {c.get('parameters')} parameters, {c.get('requirements')} "
+          f"requirements; {len(rep['assumptions'])} assumptions, {len(rep['open_questions'])} open questions; "
+          f"US${rep['usage'].get('cost_usd', 0):.2f} -> work/spec_draft.md")
+    print(f"next: read and correct the draft, then 'nnc flow {d.name}' (ingest .. review, gate G1)")
+    return 0
+
+
+def cmd_export(args) -> int:
+    from nnc import export
+    d = _open(args)
+    out = Path(args.out) if args.out else d.root / "export"
+    res = export.export(d.root, d.documents(), [w.strip() for w in args.what.split(",")],
+                        [f.strip() for f in args.format.split(",")], out)
+    for r in res:
+        print(f"  {r['doc']:<9} {r['format']:<5} " + (r.get("path") or f"skipped: {r['skipped']}"))
+    if not res:
+        print("nothing to export: none of the requested documents exists yet")
+    return 0 if res and all("path" in r for r in res) else 1
+
+
+def cmd_derive(args) -> int:
+    from nnc import derive
+    d = derive.derive(_design_path(args.source, args.root), _design_path(args.design, args.root))
+    print(f"created {d.root} (RTL to be generated; spec, rules, contract and verification from {args.source})")
+    for st in d.status():
+        print(f"  {st.gate:<18} {st.state:<9} {st.detail[:90]}")
+    print(f"next: 'nnc params {d.name} --choose ... --by <name>', approve D1_config, then 'nnc gen-rtl {d.name}'")
+    return 0
+
+
+def cmd_fix_rtl(args) -> int:
+    d = _open(args)
+    n = flow.stage_fix_rtl(d, _options(args))
+    return 0 if n else 1
+
+
+def cmd_close_loop(args) -> int:
+    d = _open(args)
+    res = flow.close_loop(d, _options(args), rounds=args.rounds)
+    return 0 if res["rounds"] and res["rounds"][-1]["failures"] == 0 else 1
+
+
+def cmd_rtl_check(args) -> int:
+    """Code checks of docs/RTL_RULES.md on the RTL of any design (delivered or generated); nothing is written."""
+    from nnc import params, rtlcheck
+    from nnc.simhost import default_host
+    d = _open(args)
+    c = json.loads((d.work / "contract.json").read_text(encoding="utf-8"))
+    rules = json.loads((d.work / "rules.json").read_text(encoding="utf-8"))
+    files = {f.name: f.read_text(encoding="utf-8", errors="replace") for f in (d.root / "rtl").iterdir()
+             if f.suffix in (".sv", ".f")}
+    fc = d.work / "final_config.json"
+    over = json.loads(fc.read_text(encoding="utf-8")).get("overrides", {}) if fc.is_file() else {}
+    res = rtlcheck.check(None if args.source_only else default_host(), files, c, params.resolve(c["interface"], over),
+                         {r["id"] for r in rules["rules"]}, synth=not args.no_synth)
+    for f in res["findings"]:
+        where = f"{f['file']}:{f['line']}" if f["line"] else f["file"]
+        print(f"  {f['severity']:<7} {f['rule']} {where} {f['message']}")
+    for k, v in (res["synth"].get("corners") or {}).items():
+        print(f"  synth {k}: area {v['area_um2']} um^2, longest combinational path {v['comb_delay_ps']} ps (estimate)")
+    print(f"RESULT: {res['counts']}; REQ tags on {res['trace']['coverage']} % of the rules")
+    return 1 if res["counts"]["error"] else 0
+
+
 def cmd_flow(args) -> int:
     d = _open(args)
     last = flow.run_flow(d, _options(args), args.from_stage, args.to_stage)
@@ -349,8 +478,9 @@ def _agent_args(p) -> None:
     p.add_argument("--agent-timeout", type=int, default=1800,
                    help="seconds one agent call may take (default 1800; a large test plan may need more)")
     for stage, default in (("extract", "sonnet"), ("review", "sonnet"), ("contract", "opus"), ("sva", "sonnet"),
-                           ("tests", "opus"), ("triage", "opus")):
+                           ("tests", "opus"), ("triage", "opus"), ("rtl", "opus")):
         p.add_argument(f"--{stage}-model", help=f"model alias for {stage} (default {default})")
+    p.add_argument("--rtl-rounds", type=int, default=3, help="repairs of the generated RTL after the code checks (default 3)")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -425,6 +555,8 @@ def build_parser() -> argparse.ArgumentParser:
                            ("gen-sva", "generate and lint the SVA checkers"),
                            ("gen-tests", "generate the cocotb tests"),
                            ("gen-env", "formal environment assumptions from the spec (agent A13; config formal=on)"),
+                           ("gen-rtl", "RTL from the spec, rules, interface and chosen configuration (agent A15; "
+                                       "rtl_origin=generated) -> rtl/, work/rtl_gen.md (D2)"),
                            ("formal", "SymbiYosys on the assertions -> formal.md (config formal=on)"),
                            ("sim", "integrate the DUT and simulate -> results.json"),
                            ("triage", "analyse failures for the designer -> triage.md"),
@@ -502,6 +634,67 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--single-run", action="store_true", help="ignore run_set.json: one run of the design configuration")
     _agent_args(s)
     s.set_defaults(func=cmd_cover)
+
+    s = sub.add_parser("restyle", help="rewrite the RTL to follow docs/RTL_RULES.md, formally equivalent to the "
+                                       "original (agent A16) -> restyle/ (rtl/ untouched)")
+    s.add_argument("design")
+    s.add_argument("--depth", type=int, default=20, help="equivalence BMC depth (default 20)")
+    _agent_args(s)
+    s.set_defaults(func=cmd_restyle)
+
+    s = sub.add_parser("spec-check", help="can the flow read this specification? (sections, port and parameter "
+                                          "tables, legal values, requirement IDs)")
+    s.add_argument("design")
+    s.add_argument("file", nargs="?", help="a specification file (default: the registered ip_spec)")
+    s.set_defaults(func=cmd_spec_check)
+
+    s = sub.add_parser("spec-draft", help="draft a specification in the shape of docs/SPEC_TEMPLATE.md from a design "
+                                          "description (agent A0); creates the design if needed (RTL generated)")
+    s.add_argument("design")
+    s.add_argument("description", help="Markdown or text file: what the block must do")
+    s.add_argument("--top", help="top module name (default m_<design>)")
+    s.add_argument("--tag", default="SP", help="rule ID prefix for the specification (default SP)")
+    s.add_argument("--spec-model", default="opus")
+    s.add_argument("--rounds", type=int, default=2, help="repairs after the shape check (default 2)")
+    s.add_argument("--replace", action="store_true", help="replace an existing specification")
+    _agent_args(s)
+    s.set_defaults(func=cmd_spec_draft)
+
+    s = sub.add_parser("export", help="export the specification and reports to DOCX, HTML and PDF -> <design>/export")
+    s.add_argument("design")
+    s.add_argument("--what", default="spec,rules,contract,rtl,report,packet",
+                   help="comma-separated: spec, rules, contract, rtl, report, packet, triage")
+    s.add_argument("--format", default="docx,html,pdf", help="comma-separated: docx, html, pdf")
+    s.add_argument("--out", help="output folder (default designs/<ip>/export)")
+    s.set_defaults(func=cmd_export)
+
+    s = sub.add_parser("derive", help="new workspace whose RTL the flow generates, from a verified design "
+                                      "(spec, rules, contract, verification and approvals carried; RTL left behind)")
+    s.add_argument("source")
+    s.add_argument("design")
+    s.set_defaults(func=cmd_derive)
+
+    s = sub.add_parser("fix-rtl", help="repair the generated RTL from the faults triage judged A (agent A15; "
+                                       "spec-level fault text only, never the tests)")
+    s.add_argument("design")
+    s.add_argument("--unreviewed", action="store_true", help="run past an unapproved gate (results marked UNREVIEWED)")
+    _agent_args(s)
+    s.set_defaults(func=cmd_fix_rtl)
+
+    s = sub.add_parser("close-loop", help="generated RTL: sim -> triage -> fix-rtl until clean or the repair budget")
+    s.add_argument("design")
+    s.add_argument("--rounds", type=int, default=3, help="RTL repairs at most (default 3)")
+    s.add_argument("--unreviewed", action="store_true", help="run past an unapproved gate (results marked UNREVIEWED)")
+    s.add_argument("--seed", type=int, default=1)
+    s.add_argument("--single-run", action="store_true", help="ignore run_set.json: one run of the design configuration")
+    _agent_args(s)
+    s.set_defaults(func=cmd_close_loop)
+
+    s = sub.add_parser("rtl-check", help="code checks of docs/RTL_RULES.md on the RTL (lint, structure, ports, synthesis)")
+    s.add_argument("design")
+    s.add_argument("--source-only", action="store_true", help="text checks only (no Verilator/Yosys)")
+    s.add_argument("--no-synth", action="store_true", help="skip synthesis")
+    s.set_defaults(func=cmd_rtl_check)
 
     s = sub.add_parser("flow", help="run the stages in order, stopping at the first gate that needs review")
     s.add_argument("design")
