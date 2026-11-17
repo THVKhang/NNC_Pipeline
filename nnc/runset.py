@@ -37,6 +37,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from nnc import sim
+from nnc.params import check as legal_check
 from nnc.simhost import SimHost
 
 FILE = "run_set.json"
@@ -87,6 +88,9 @@ def load(path: Path, contract: dict, design_config: dict) -> list[dict]:
             params = {k: int(v, 0) if isinstance(v, str) else int(v) for k, v in params.items()}
         except ValueError as e:
             raise RunSetError(f"{path.name}: configuration {name}: parameter values must be integers") from e
+        illegal = [e for e in legal_check(contract["interface"], params)["errors"] if ": no value" not in e]
+        if illegal:     # the legal values of the specification (contract), checked by code
+            raise RunSetError(f"{path.name}: configuration {name} is illegal: " + "; ".join(illegal))
         opts = dict(base_opts)
         if "defines" in c or "plusargs" in c:
             override = sim.sim_options({"defines": _text(c.get("defines", ",".join(base_opts["defines"]))),

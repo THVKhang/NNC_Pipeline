@@ -242,6 +242,50 @@ def cmd_plan(args) -> int:
     return 0
 
 
+def cmd_params(args) -> int:
+    """Legal parameter values of the contract; check the run set; choose the configuration (gate D1)."""
+    from nnc import params
+    d = _open(args)
+    path = d.work / "contract.json"
+    if not path.is_file():
+        raise ProjectError("no contract yet: the parameter table comes from contract.json (G2)")
+    c = json.loads(path.read_text(encoding="utf-8"))
+    if args.choose is not None:
+        doc = params.choose(d.work, c, params.parse_assignments(args.choose), args.by or "", args.note or "",
+                            args.accept_unchecked)
+        print("final configuration -> work/final_config.json")
+        for k, v in doc["values"].items():
+            print(f"  {k} = {v}" + ("   (override)" if k in doc["overrides"] else ""))
+        for k, n in doc["notes"].items():
+            print(f"  note {k}: {n}")
+        if d.rtl_generated():
+            print(f"next: review and 'nnc gate approve {d.name} D1_config --by <name>'")
+        return 0
+    if args.check:
+        bad = 0
+        for label, res in params.check_design(d.root, c):
+            state = "ILLEGAL" if res["errors"] else "ok"
+            extra = f"  unchecked: {res['unchecked']}" if res["unchecked"] else ""
+            print(f"  {label:<24} {state}{extra}")
+            for e in res["errors"]:
+                print(f"      {e}")
+            bad += bool(res["errors"])
+        return 1 if bad else 0
+    for row in params.table(c["interface"]):
+        cons = row["constraint"]
+        if cons["kind"] == "set":
+            shown = "one of " + ", ".join(map(str, cons["values"]))
+        elif cons["kind"] == "range":
+            shown = " ".join(x for x in (f"min {cons['min']}" if "min" in cons else "",
+                                         f"max {cons['max']}" if "max" in cons else "",
+                                         "power of 2" if cons.get("pow2") else "") if x)
+        else:
+            shown = cons["kind"].upper() if cons["kind"] == "unchecked" else "-"
+        dflt = f"= {row['derived']}" if row["derived"] else row["default"]
+        print(f"  {row['name']:<28} {str(dflt):<26} {shown}" + (f"   note: {cons['note']}" if cons.get("note") else ""))
+    return 0
+
+
 def cmd_bench(args) -> int:
     from nnc import bench
     d = _open(args)
@@ -404,6 +448,18 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--by", help="name of the person who decides")
     s.add_argument("--reason", help="why (recorded in the contract)")
     s.set_defaults(func=cmd_plan)
+
+    s = sub.add_parser("params", help="parameter table with legal values; --check the run set; --choose the "
+                                      "configuration of the RTL to generate (gate D1_config)")
+    s.add_argument("design")
+    g = s.add_mutually_exclusive_group()
+    g.add_argument("--check", action="store_true", help="check defaults, run_set.json and final_config.json")
+    g.add_argument("--choose", nargs="*", metavar="NAME=VALUE", help="record work/final_config.json (others: default)")
+    s.add_argument("--by", help="who chooses (required with --choose)")
+    s.add_argument("--note", help="why (recorded)")
+    s.add_argument("--accept-unchecked", action="store_true",
+                   help="accept parameters whose legal values are free text the flow cannot check")
+    s.set_defaults(func=cmd_params)
 
     s = sub.add_parser("bench", help="bug benchmark: run the faults of bugs/bugs.json against the approved verification")
     s.add_argument("design")
