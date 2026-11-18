@@ -114,6 +114,20 @@ class SpecCheckTest(unittest.TestCase):
             self.assertIn("width 'PARA_Q'", msgs)
 
 
+class FaultTextTest(unittest.TestCase):
+    def test_formal_fault_hides_the_verification(self):
+        from nnc import gen_rtl
+        got = gen_rtl.fault_text([
+            {"check": "CHK-010 (a_CHK_010, verif/sva/nnc_chk_wr.sv:79-82)", "most_likely": "A_rtl_wrong",
+             "spec_says": "spec:527 block is busy OR sw low. The checker nnc_chk_wr.sv:38 uses the same term.",
+             "rtl_does": "rtl/m_wr.sv:135 adds a third term. See verif/sva/nnc_chk_wr.sv for the model."},
+            {"check": "CHK-008 (a_CHK_008, verif/sva/x.sv:1)", "most_likely": "B_checker_wrong"}])
+        self.assertEqual(len(got), 1)
+        self.assertEqual(got[0]["fault"], "formal counterexample on CHK-010")
+        self.assertEqual(got[0]["spec_says"], "spec:527 block is busy OR sw low.")
+        self.assertEqual(got[0]["rtl_does"], "rtl/m_wr.sv:135 adds a third term.")
+
+
 class ExportAndDeriveTest(unittest.TestCase):
     def test_export_sources_skip_standards_and_missing(self):
         with tempfile.TemporaryDirectory() as t:

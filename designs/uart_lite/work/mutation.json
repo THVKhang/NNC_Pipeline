@@ -1,0 +1,2082 @@
+{
+ "mutants": [
+  {
+   "id": "M01",
+   "file": "m_uart_lite_rx.sv",
+   "line": 151,
+   "operator": "negate_if",
+   "original": "if (!i_rst_n) begin",
+   "mutated": "    if (!(!i_rst_n)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_chk_022_rx_basic",
+    "test_chk_023_sampling_points",
+    "test_chk_024_glitch",
+    "test_chk_025_rx_back_to_back",
+    "test_chk_026_rx_ready",
+    "test_chk_027_frame_error",
+    "test_chk_028_idle_break",
+    "test_chk_029_rx_random",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-003"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M02",
+   "file": "m_uart_lite_tx.sv",
+   "line": 75,
+   "operator": "and_to_or",
+   "original": "if ((r_tx_bit_idx == LPARA_IDX_STOP) && (r_tx_cnt == LPARA_CNT_ONE)) begin",
+   "mutated": "      if ((r_tx_bit_idx == LPARA_IDX_STOP) || (r_tx_cnt == LPARA_CNT_ONE)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_030_tx_back_to_back",
+    "test_chk_031_tx_gaps",
+    "test_chk_032_tx_valid_drop",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-011",
+    "CHK-012",
+    "CHK-013"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M03",
+   "file": "m_uart_lite_tx.sv",
+   "line": 69,
+   "operator": "one_to_zero",
+   "original": "o_txd <= 1'b1;",
+   "mutated": "      o_txd <= 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_chk_022_rx_basic",
+    "test_chk_023_sampling_points",
+    "test_chk_024_glitch",
+    "test_chk_025_rx_back_to_back",
+    "test_chk_026_rx_ready",
+    "test_chk_027_frame_error",
+    "test_chk_028_idle_break",
+    "test_chk_029_rx_random",
+    "test_chk_030_tx_back_to_back",
+    "test_chk_031_tx_gaps",
+    "test_chk_032_tx_valid_drop",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-010",
+    "CHK-013"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M04",
+   "file": "m_uart_lite_rx.sv",
+   "line": 72,
+   "operator": "one_to_zero",
+   "original": "r_rxd_meta <= 1'b1;",
+   "mutated": "      r_rxd_meta <= 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_loopback",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-003",
+    "CHK-004",
+    "CHK-005",
+    "CHK-006",
+    "CHK-009"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M05",
+   "file": "m_uart_lite_tx.sv",
+   "line": 75,
+   "operator": "eq_to_ne",
+   "original": "if ((r_tx_bit_idx == LPARA_IDX_STOP) && (r_tx_cnt == LPARA_CNT_ONE)) begin",
+   "mutated": "      if ((r_tx_bit_idx == LPARA_IDX_STOP) && (r_tx_cnt != LPARA_CNT_ONE)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_020_reset_idle",
+    "test_chk_030_tx_back_to_back",
+    "test_chk_031_tx_gaps",
+    "test_chk_032_tx_valid_drop",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-012"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M06",
+   "file": "m_uart_lite_rx.sv",
+   "line": 125,
+   "operator": "eq_to_ne",
+   "original": "if (r_rx_bit_cnt == 3'd7) begin",
+   "mutated": "          if (r_rx_bit_cnt != 3'd7) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_chk_022_rx_basic",
+    "test_chk_023_sampling_points",
+    "test_chk_024_glitch",
+    "test_chk_025_rx_back_to_back",
+    "test_chk_026_rx_ready",
+    "test_chk_027_frame_error",
+    "test_chk_028_idle_break",
+    "test_chk_029_rx_random",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-003",
+    "CHK-004",
+    "CHK-005",
+    "CHK-006",
+    "CHK-009"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M07",
+   "file": "m_uart_lite_tx.sv",
+   "line": 70,
+   "operator": "negate_if",
+   "original": "end else if (!w_tx_cnt_zero) begin",
+   "mutated": "    end else if (!(!w_tx_cnt_zero)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_030_tx_back_to_back",
+    "test_chk_031_tx_gaps",
+    "test_chk_032_tx_valid_drop",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-010",
+    "CHK-011",
+    "CHK-012"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M08",
+   "file": "m_uart_lite_tx.sv",
+   "line": 61,
+   "operator": "zero_to_one",
+   "original": "o_txd        <= 1'b0;",
+   "mutated": "      o_txd        <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_030_tx_back_to_back",
+    "test_chk_031_tx_gaps",
+    "test_chk_032_tx_valid_drop",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-010",
+    "CHK-011",
+    "CHK-013"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M09",
+   "file": "m_uart_lite_rx.sv",
+   "line": 180,
+   "operator": "zero_to_one",
+   "original": "o_rx_frame_err <= 1'b0;",
+   "mutated": "      o_rx_frame_err <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_chk_022_rx_basic",
+    "test_chk_023_sampling_points",
+    "test_chk_024_glitch",
+    "test_chk_025_rx_back_to_back",
+    "test_chk_026_rx_ready",
+    "test_chk_027_frame_error",
+    "test_chk_028_idle_break",
+    "test_chk_029_rx_random",
+    "test_chk_030_tx_back_to_back",
+    "test_chk_031_tx_gaps",
+    "test_chk_032_tx_valid_drop",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-002"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M10",
+   "file": "m_uart_lite_rx.sv",
+   "line": 71,
+   "operator": "negate_if",
+   "original": "if (!i_rst_n) begin",
+   "mutated": "    if (!(!i_rst_n)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_chk_022_rx_basic",
+    "test_chk_023_sampling_points",
+    "test_chk_024_glitch",
+    "test_chk_025_rx_back_to_back",
+    "test_chk_026_rx_ready",
+    "test_chk_027_frame_error",
+    "test_chk_028_idle_break",
+    "test_chk_029_rx_random",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-003"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M11",
+   "file": "m_uart_lite_tx.sv",
+   "line": 76,
+   "operator": "one_to_zero",
+   "original": "o_tx_ready <= 1'b1;",
+   "mutated": "        o_tx_ready <= 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_020_reset_idle",
+    "test_chk_030_tx_back_to_back",
+    "test_chk_031_tx_gaps",
+    "test_chk_032_tx_valid_drop",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-010",
+    "CHK-012"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M12",
+   "file": "m_uart_lite_rx.sv",
+   "line": 139,
+   "operator": "one_to_zero",
+   "original": "w_rx_frame_done = 1'b1;",
+   "mutated": "          w_rx_frame_done = 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_chk_022_rx_basic",
+    "test_chk_023_sampling_points",
+    "test_chk_024_glitch",
+    "test_chk_025_rx_back_to_back",
+    "test_chk_026_rx_ready",
+    "test_chk_027_frame_error",
+    "test_chk_028_idle_break",
+    "test_chk_029_rx_random",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-003"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M13",
+   "file": "m_uart_lite_tx.sv",
+   "line": 75,
+   "operator": "eq_to_ne",
+   "original": "if ((r_tx_bit_idx == LPARA_IDX_STOP) && (r_tx_cnt == LPARA_CNT_ONE)) begin",
+   "mutated": "      if ((r_tx_bit_idx != LPARA_IDX_STOP) && (r_tx_cnt == LPARA_CNT_ONE)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_030_tx_back_to_back",
+    "test_chk_031_tx_gaps",
+    "test_chk_032_tx_valid_drop",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-011",
+    "CHK-012",
+    "CHK-013"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M14",
+   "file": "m_uart_lite_tx.sv",
+   "line": 75,
+   "operator": "negate_if",
+   "original": "if ((r_tx_bit_idx == LPARA_IDX_STOP) && (r_tx_cnt == LPARA_CNT_ONE)) begin",
+   "mutated": "      if (!((r_tx_bit_idx == LPARA_IDX_STOP) && (r_tx_cnt == LPARA_CNT_ONE))) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_030_tx_back_to_back",
+    "test_chk_031_tx_gaps",
+    "test_chk_032_tx_valid_drop",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-011",
+    "CHK-012",
+    "CHK-013"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M15",
+   "file": "m_uart_lite_tx.sv",
+   "line": 62,
+   "operator": "zero_to_one",
+   "original": "o_tx_ready   <= 1'b0;",
+   "mutated": "      o_tx_ready   <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_030_tx_back_to_back",
+    "test_chk_031_tx_gaps",
+    "test_chk_032_tx_valid_drop",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-010",
+    "CHK-011",
+    "CHK-012",
+    "CHK-013"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M16",
+   "file": "m_uart_lite_rx.sv",
+   "line": 178,
+   "operator": "zero_to_one",
+   "original": "o_rx_valid     <= 1'b0;",
+   "mutated": "      o_rx_valid     <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_chk_022_rx_basic",
+    "test_chk_023_sampling_points",
+    "test_chk_024_glitch",
+    "test_chk_025_rx_back_to_back",
+    "test_chk_026_rx_ready",
+    "test_chk_027_frame_error",
+    "test_chk_028_idle_break",
+    "test_chk_029_rx_random",
+    "test_chk_030_tx_back_to_back",
+    "test_chk_031_tx_gaps",
+    "test_chk_032_tx_valid_drop",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-002"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M17",
+   "file": "m_uart_lite_rx.sv",
+   "line": 99,
+   "operator": "negate_if",
+   "original": "if (w_rx_start_fall) begin",
+   "mutated": "        if (!(w_rx_start_fall)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_chk_022_rx_basic",
+    "test_chk_023_sampling_points",
+    "test_chk_024_glitch",
+    "test_chk_025_rx_back_to_back",
+    "test_chk_026_rx_ready",
+    "test_chk_027_frame_error",
+    "test_chk_028_idle_break",
+    "test_chk_029_rx_random",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-003",
+    "CHK-004",
+    "CHK-005",
+    "CHK-006",
+    "CHK-009"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M18",
+   "file": "m_uart_lite_tx.sv",
+   "line": 86,
+   "operator": "one_to_zero",
+   "original": "r_tx_shift   <= {1'b1, r_tx_shift[7:1]};",
+   "mutated": "      r_tx_shift   <= {1'b0, r_tx_shift[7:1]};",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_020_reset_idle",
+    "test_chk_030_tx_back_to_back",
+    "test_chk_031_tx_gaps",
+    "test_chk_032_tx_valid_drop",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-011",
+    "CHK-013"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M19",
+   "file": "m_uart_lite_rx.sv",
+   "line": 74,
+   "operator": "one_to_zero",
+   "original": "r_rxd_prev <= 1'b1;",
+   "mutated": "      r_rxd_prev <= 1'b0;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "also_run": [
+    "min.s1",
+    "odd.s1",
+    "wide.s1"
+   ]
+  },
+  {
+   "id": "M20",
+   "file": "m_uart_lite_tx.sv",
+   "line": 66,
+   "operator": "negate_if",
+   "original": "end else if (o_tx_ready) begin",
+   "mutated": "    end else if (!(o_tx_ready)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_chk_022_rx_basic",
+    "test_chk_023_sampling_points",
+    "test_chk_024_glitch",
+    "test_chk_025_rx_back_to_back",
+    "test_chk_026_rx_ready",
+    "test_chk_027_frame_error",
+    "test_chk_028_idle_break",
+    "test_chk_029_rx_random",
+    "test_chk_030_tx_back_to_back",
+    "test_chk_031_tx_gaps",
+    "test_chk_032_tx_valid_drop",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-010",
+    "CHK-011",
+    "CHK-012",
+    "CHK-013"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M21",
+   "file": "m_uart_lite_rx.sv",
+   "line": 181,
+   "operator": "zero_to_one",
+   "original": "o_rx_overrun   <= 1'b0;",
+   "mutated": "      o_rx_overrun   <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_chk_022_rx_basic",
+    "test_chk_023_sampling_points",
+    "test_chk_024_glitch",
+    "test_chk_025_rx_back_to_back",
+    "test_chk_026_rx_ready",
+    "test_chk_027_frame_error",
+    "test_chk_028_idle_break",
+    "test_chk_029_rx_random",
+    "test_chk_030_tx_back_to_back",
+    "test_chk_031_tx_gaps",
+    "test_chk_032_tx_valid_drop",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-002"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M22",
+   "file": "m_uart_lite_rx.sv",
+   "line": 125,
+   "operator": "negate_if",
+   "original": "if (r_rx_bit_cnt == 3'd7) begin",
+   "mutated": "          if (!(r_rx_bit_cnt == 3'd7)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_chk_022_rx_basic",
+    "test_chk_023_sampling_points",
+    "test_chk_024_glitch",
+    "test_chk_025_rx_back_to_back",
+    "test_chk_026_rx_ready",
+    "test_chk_027_frame_error",
+    "test_chk_028_idle_break",
+    "test_chk_029_rx_random",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-003",
+    "CHK-004",
+    "CHK-005",
+    "CHK-006",
+    "CHK-009"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M23",
+   "file": "m_uart_lite_tx.sv",
+   "line": 51,
+   "operator": "one_to_zero",
+   "original": "o_txd        <= 1'b1;",
+   "mutated": "      o_txd        <= 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_chk_022_rx_basic",
+    "test_chk_023_sampling_points",
+    "test_chk_024_glitch",
+    "test_chk_025_rx_back_to_back",
+    "test_chk_026_rx_ready",
+    "test_chk_027_frame_error",
+    "test_chk_028_idle_break",
+    "test_chk_029_rx_random",
+    "test_chk_030_tx_back_to_back",
+    "test_chk_031_tx_gaps",
+    "test_chk_032_tx_valid_drop",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-002"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M24",
+   "file": "m_uart_lite_rx.sv",
+   "line": 73,
+   "operator": "one_to_zero",
+   "original": "r_rxd_sync <= 1'b1;",
+   "mutated": "      r_rxd_sync <= 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_loopback",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-003",
+    "CHK-005",
+    "CHK-006",
+    "CHK-009"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M25",
+   "file": "m_uart_lite_tx.sv",
+   "line": 56,
+   "operator": "negate_if",
+   "original": "end else if (w_tx_accept) begin",
+   "mutated": "    end else if (!(w_tx_accept)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_chk_022_rx_basic",
+    "test_chk_023_sampling_points",
+    "test_chk_024_glitch",
+    "test_chk_025_rx_back_to_back",
+    "test_chk_026_rx_ready",
+    "test_chk_027_frame_error",
+    "test_chk_028_idle_break",
+    "test_chk_029_rx_random",
+    "test_chk_030_tx_back_to_back",
+    "test_chk_031_tx_gaps",
+    "test_chk_032_tx_valid_drop",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-010"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M26",
+   "file": "m_uart_lite_rx.sv",
+   "line": 96,
+   "operator": "zero_to_one",
+   "original": "w_rx_frame_done  = 1'b0;",
+   "mutated": "    w_rx_frame_done  = 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_chk_022_rx_basic",
+    "test_chk_023_sampling_points",
+    "test_chk_024_glitch",
+    "test_chk_025_rx_back_to_back",
+    "test_chk_026_rx_ready",
+    "test_chk_027_frame_error",
+    "test_chk_028_idle_break",
+    "test_chk_029_rx_random",
+    "test_chk_030_tx_back_to_back",
+    "test_chk_031_tx_gaps",
+    "test_chk_032_tx_valid_drop",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-005",
+    "CHK-006",
+    "CHK-007",
+    "CHK-009"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M27",
+   "file": "m_uart_lite_rx.sv",
+   "line": 119,
+   "operator": "negate_if",
+   "original": "if (!w_rx_cnt_zero) begin",
+   "mutated": "        if (!(!w_rx_cnt_zero)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_chk_022_rx_basic",
+    "test_chk_023_sampling_points",
+    "test_chk_024_glitch",
+    "test_chk_025_rx_back_to_back",
+    "test_chk_026_rx_ready",
+    "test_chk_027_frame_error",
+    "test_chk_028_idle_break",
+    "test_chk_029_rx_random",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-003",
+    "CHK-004",
+    "CHK-005",
+    "CHK-006",
+    "CHK-009"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M28",
+   "file": "m_uart_lite_tx.sv",
+   "line": 52,
+   "operator": "one_to_zero",
+   "original": "o_tx_ready   <= 1'b1;",
+   "mutated": "      o_tx_ready   <= 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_chk_022_rx_basic",
+    "test_chk_023_sampling_points",
+    "test_chk_024_glitch",
+    "test_chk_025_rx_back_to_back",
+    "test_chk_026_rx_ready",
+    "test_chk_027_frame_error",
+    "test_chk_028_idle_break",
+    "test_chk_029_rx_random",
+    "test_chk_030_tx_back_to_back",
+    "test_chk_031_tx_gaps",
+    "test_chk_032_tx_valid_drop",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-002"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M29",
+   "file": "m_uart_lite_rx.sv",
+   "line": 191,
+   "operator": "one_to_zero",
+   "original": "o_rx_valid     <= 1'b1;",
+   "mutated": "        o_rx_valid     <= 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_chk_022_rx_basic",
+    "test_chk_023_sampling_points",
+    "test_chk_024_glitch",
+    "test_chk_025_rx_back_to_back",
+    "test_chk_026_rx_ready",
+    "test_chk_027_frame_error",
+    "test_chk_028_idle_break",
+    "test_chk_029_rx_random",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-003"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M30",
+   "file": "m_uart_lite_tx.sv",
+   "line": 50,
+   "operator": "negate_if",
+   "original": "if (!i_rst_n) begin",
+   "mutated": "    if (!(!i_rst_n)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_chk_022_rx_basic",
+    "test_chk_023_sampling_points",
+    "test_chk_024_glitch",
+    "test_chk_025_rx_back_to_back",
+    "test_chk_026_rx_ready",
+    "test_chk_027_frame_error",
+    "test_chk_028_idle_break",
+    "test_chk_029_rx_random",
+    "test_chk_030_tx_back_to_back",
+    "test_chk_031_tx_gaps",
+    "test_chk_032_tx_valid_drop",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-002"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M31",
+   "file": "m_uart_lite_rx.sv",
+   "line": 198,
+   "operator": "zero_to_one",
+   "original": "o_rx_valid <= 1'b0;",
+   "mutated": "        o_rx_valid <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_chk_022_rx_basic",
+    "test_chk_023_sampling_points",
+    "test_chk_024_glitch",
+    "test_chk_025_rx_back_to_back",
+    "test_chk_026_rx_ready",
+    "test_chk_027_frame_error",
+    "test_chk_028_idle_break",
+    "test_chk_029_rx_random",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-007"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M32",
+   "file": "m_uart_lite_rx.sv",
+   "line": 187,
+   "operator": "negate_if",
+   "original": "if (w_rx_load) begin",
+   "mutated": "      if (!(w_rx_load)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_chk_022_rx_basic",
+    "test_chk_023_sampling_points",
+    "test_chk_024_glitch",
+    "test_chk_025_rx_back_to_back",
+    "test_chk_026_rx_ready",
+    "test_chk_027_frame_error",
+    "test_chk_028_idle_break",
+    "test_chk_029_rx_random",
+    "test_chk_030_tx_back_to_back",
+    "test_chk_031_tx_gaps",
+    "test_chk_032_tx_valid_drop",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-004",
+    "CHK-007",
+    "CHK-008",
+    "CHK-009"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M33",
+   "file": "m_uart_lite_rx.sv",
+   "line": 177,
+   "operator": "negate_if",
+   "original": "if (!i_rst_n) begin",
+   "mutated": "    if (!(!i_rst_n)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_chk_022_rx_basic",
+    "test_chk_023_sampling_points",
+    "test_chk_024_glitch",
+    "test_chk_025_rx_back_to_back",
+    "test_chk_026_rx_ready",
+    "test_chk_027_frame_error",
+    "test_chk_028_idle_break",
+    "test_chk_029_rx_random",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-003"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M34",
+   "file": "m_uart_lite_rx.sv",
+   "line": 108,
+   "operator": "negate_if",
+   "original": "end else if (r_rxd_sync) begin",
+   "mutated": "        end else if (!(r_rxd_sync)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_chk_022_rx_basic",
+    "test_chk_023_sampling_points",
+    "test_chk_024_glitch",
+    "test_chk_025_rx_back_to_back",
+    "test_chk_026_rx_ready",
+    "test_chk_027_frame_error",
+    "test_chk_028_idle_break",
+    "test_chk_029_rx_random",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-003",
+    "CHK-005",
+    "CHK-006",
+    "CHK-009"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M35",
+   "file": "m_uart_lite_rx.sv",
+   "line": 133,
+   "operator": "negate_if",
+   "original": "if (!w_rx_cnt_zero) begin",
+   "mutated": "        if (!(!w_rx_cnt_zero)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_chk_022_rx_basic",
+    "test_chk_023_sampling_points",
+    "test_chk_024_glitch",
+    "test_chk_025_rx_back_to_back",
+    "test_chk_026_rx_ready",
+    "test_chk_027_frame_error",
+    "test_chk_028_idle_break",
+    "test_chk_029_rx_random",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-003",
+    "CHK-004",
+    "CHK-005",
+    "CHK-006",
+    "CHK-009"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M36",
+   "file": "m_uart_lite_rx.sv",
+   "line": 106,
+   "operator": "negate_if",
+   "original": "if (!w_rx_cnt_zero) begin",
+   "mutated": "        if (!(!w_rx_cnt_zero)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_full_duplex",
+    "test_chk_018_loopback",
+    "test_chk_019_async_reset",
+    "test_chk_020_reset_idle",
+    "test_chk_021_low_at_release",
+    "test_chk_022_rx_basic",
+    "test_chk_023_sampling_points",
+    "test_chk_024_glitch",
+    "test_chk_025_rx_back_to_back",
+    "test_chk_026_rx_ready",
+    "test_chk_027_frame_error",
+    "test_chk_028_idle_break",
+    "test_chk_029_rx_random",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-003",
+    "CHK-004",
+    "CHK-005",
+    "CHK-006",
+    "CHK-009"
+   ],
+   "run": "base.s1"
+  }
+ ],
+ "candidates": 37,
+ "count": 36,
+ "killed": 35,
+ "survived": 1,
+ "not_compiled": 0,
+ "score": 97.2,
+ "seed": 1,
+ "excluded_uncovered": {
+  "files": [
+   "m_uart_lite.sv"
+  ],
+  "lines": 4
+ },
+ "baseline_failing": {
+  "tests": [],
+  "checks": []
+ },
+ "runs": {
+  "available": [
+   "base.s1",
+   "base.s2",
+   "min.s1",
+   "min.s2",
+   "odd.s1",
+   "odd.s2",
+   "wide.s1"
+  ],
+  "used": [
+   "base.s1"
+  ],
+  "second_chance_sims": 3
+ },
+ "threshold": 85.0,
+ "attribution": {
+  "mutants": {
+   "M01": {
+    "rules": [
+     "UL-6.2-08",
+     "UL-6.2-11",
+     "UL-6.2-04",
+     "UL-6.2-01"
+    ],
+    "equivalent": false,
+    "reason": "Inverting the reset test in the RX sequencer makes reset not clear the sequencer. A partly received frame survives reset, and normal operation is held in reset state."
+   },
+   "M02": {
+    "rules": [
+     "UL-7.2-05",
+     "UL-7.2-04",
+     "UL-8.1-03",
+     "UL-12.2-06"
+    ],
+    "equivalent": false,
+    "reason": "Changing && to || makes o_tx_ready rise at the wrong time. It rises early whenever bit_idx is 9 or cnt is 1, instead of only in the last stop-bit cycle."
+   },
+   "M03": {
+    "rules": [
+     "UL-1.2-01",
+     "UL-7.3-04",
+     "UL-7.3-05",
+     "UL-7.2-03"
+    ],
+    "equivalent": false,
+    "reason": "While idle, o_txd would be driven low instead of staying high. The idle line and the stop bit at the end of a frame are broken."
+   },
+   "M04": {
+    "rules": [
+     "UL-6.2-05",
+     "UL-6.2-12",
+     "UL-14-06"
+    ],
+    "equivalent": false,
+    "reason": "The first synchronizer flop would reset to 0. A spurious start bit is detected after reset release, even when the line is idle high."
+   },
+   "M05": {
+    "rules": [
+     "UL-7.2-05",
+     "UL-7.2-04",
+     "UL-8.1-03",
+     "UL-12.2-06"
+    ],
+    "equivalent": false,
+    "reason": "With != on the counter, o_tx_ready is raised at the wrong cycle of the stop bit (counter not equal to 1). The ready timing E0+10N-1 is wrong."
+   },
+   "M06": {
+    "rules": [
+     "UL-7.5-02",
+     "UL-7.5-01",
+     "UL-1.1-01",
+     "UL-8.2-01"
+    ],
+    "equivalent": false,
+    "reason": "Inverting the bit-count test moves the data-to-stop transition to the wrong bit. The stop sample M and the delivery time V are wrong and the byte is garbled."
+   },
+   "M07": {
+    "rules": [
+     "UL-8.1-02",
+     "UL-7.2-04",
+     "UL-7.2-05",
+     "UL-8.1-03",
+     "UL-1.1-02"
+    ],
+    "equivalent": false,
+    "reason": "Inverting the counter-nonzero test makes the counter decrement only at zero and load a new bit at nonzero. Bit width and frame length are wrong."
+   },
+   "M08": {
+    "rules": [
+     "UL-8.1-01",
+     "UL-7.3-01",
+     "UL-1.1-01",
+     "UL-7.1-01"
+    ],
+    "equivalent": false,
+    "reason": "At acceptance o_txd would stay 1 instead of going to the start bit 0. There is no start bit in the cycle after E0."
+   },
+   "M09": {
+    "rules": [
+     "UL-5-10",
+     "UL-6.2-02",
+     "UL-14-07",
+     "UL-7.6-05",
+     "UL-6.2-08"
+    ],
+    "equivalent": false,
+    "reason": "o_rx_frame_err would reset to 1 instead of 0. The reset output value is wrong."
+   },
+   "M10": {
+    "rules": [
+     "UL-6.2-05",
+     "UL-6.2-12",
+     "UL-14-06",
+     "UL-6.2-01",
+     "UL-7.4-01"
+    ],
+    "equivalent": false,
+    "reason": "The synchronizer reset is inverted, so the flops are not reset when i_rst_n=0 and instead load i_rxd. The first-edge start detection and the reset behaviour are wrong."
+   },
+   "M11": {
+    "rules": [
+     "UL-7.2-05",
+     "UL-8.1-03",
+     "UL-7.2-03",
+     "UL-8.1-05"
+    ],
+    "equivalent": false,
+    "reason": "o_tx_ready would be driven 0 where it should return to 1 in the last stop-bit cycle. The transmitter never becomes ready again."
+   },
+   "M12": {
+    "rules": [
+     "UL-7.5-05",
+     "UL-8.2-01",
+     "UL-7.6-01",
+     "UL-14-03"
+    ],
+    "equivalent": false,
+    "reason": "frame_done is never asserted at M. No byte is ever loaded and delivered."
+   },
+   "M13": {
+    "rules": [
+     "UL-7.2-05",
+     "UL-7.2-04",
+     "UL-8.1-03",
+     "UL-12.2-06"
+    ],
+    "equivalent": false,
+    "reason": "With the index test inverted, o_tx_ready is raised in the wrong bit (any bit other than the stop bit). The ready timing is wrong."
+   },
+   "M14": {
+    "rules": [
+     "UL-7.2-05",
+     "UL-7.2-04",
+     "UL-8.1-03",
+     "UL-12.2-06"
+    ],
+    "equivalent": false,
+    "reason": "The whole ready condition is negated, so o_tx_ready is raised at every counter step except the final stop-bit one. It goes high early and the frame is cut short."
+   },
+   "M15": {
+    "rules": [
+     "UL-7.2-04",
+     "UL-8.1-03",
+     "UL-7.2-01",
+     "UL-8.1-04",
+     "UL-7.2-08"
+    ],
+    "equivalent": false,
+    "reason": "o_tx_ready would stay 1 after acceptance instead of dropping to 0. Another byte can be accepted during a frame."
+   },
+   "M16": {
+    "rules": [
+     "UL-5-05",
+     "UL-6.2-02",
+     "UL-6.2-09",
+     "UL-6.2-04",
+     "UL-6.2-08"
+    ],
+    "equivalent": false,
+    "reason": "o_rx_valid would reset to 1 instead of 0. A byte appears valid during and after reset."
+   },
+   "M17": {
+    "rules": [
+     "UL-7.4-03",
+     "UL-7.4-02",
+     "UL-1.2-07",
+     "UL-7.7-03",
+     "UL-14-05"
+    ],
+    "equivalent": false,
+    "reason": "The start condition is inverted. Starts are detected when there is no falling edge and ignored when there is one."
+   },
+   "M18": {
+    "rules": [
+     "UL-7.3-01",
+     "UL-1.1-01",
+     "UL-7.1-01",
+     "UL-1.2-04"
+    ],
+    "equivalent": false,
+    "reason": "The shift register would fill with 0 instead of 1. The stop bit (frame bit 9) is sent as 0, so the stop bit is wrong."
+   },
+   "M19": {
+    "rules": [
+     "UL-6.2-05",
+     "UL-6.2-12"
+    ],
+    "equivalent": true,
+    "reason": "r_rxd_prev is reset to 0 instead of 1, but r_rxd_sync is still reset to 1. So w_rx_start_fall = prev & ~sync is 0 while in reset or in the cycle just after release. At the first edge R1 prev reloads from sync (=1) in both versions. The first-edge start detection is therefore identical at the ports."
+   },
+   "M20": {
+    "rules": [
+     "UL-7.3-04",
+     "UL-1.2-01",
+     "UL-7.3-05",
+     "UL-7.2-03",
+     "UL-7.2-04"
+    ],
+    "equivalent": false,
+    "reason": "The idle branch condition is inverted. Idle forces o_txd to 1 only during a frame, and the frame is run when idle. Idle and frame behaviour are both broken."
+   },
+   "M21": {
+    "rules": [
+     "UL-5-12",
+     "UL-6.2-02",
+     "UL-6.2-08",
+     "UL-7.8-04"
+    ],
+    "equivalent": false,
+    "reason": "o_rx_overrun would reset to 1 instead of 0. The output has the wrong value during reset."
+   },
+   "M22": {
+    "rules": [
+     "UL-7.5-02",
+     "UL-7.5-01",
+     "UL-1.1-01",
+     "UL-8.2-01"
+    ],
+    "equivalent": false,
+    "reason": "The bit-count test is negated, so the receiver goes to the stop state after the first data bit and then keeps counting. Sampling points and delivery are wrong."
+   },
+   "M23": {
+    "rules": [
+     "UL-5-14",
+     "UL-6.2-02",
+     "UL-6.2-06",
+     "UL-14-08",
+     "UL-6.2-01"
+    ],
+    "equivalent": false,
+    "reason": "o_txd would reset to 0 instead of 1. The line is low during reset and an abandoned frame does not return the line high."
+   },
+   "M24": {
+    "rules": [
+     "UL-6.2-05",
+     "UL-14-06",
+     "UL-6.2-12",
+     "UL-10.5-01"
+    ],
+    "equivalent": false,
+    "reason": "The second synchronizer flop would reset to 0. After reset a start fall (prev=1, sync=0) is detected spuriously."
+   },
+   "M25": {
+    "rules": [
+     "UL-7.2-01",
+     "UL-5-02",
+     "UL-7.2-02",
+     "UL-7.2-06",
+     "UL-6.2-03"
+    ],
+    "equivalent": false,
+    "reason": "The accept condition is negated, so a byte is accepted when i_tx_valid=0 or o_tx_ready=0 and not accepted at the handshake. Nothing is transmitted correctly."
+   },
+   "M26": {
+    "rules": [
+     "UL-7.8-04",
+     "UL-7.4-06",
+     "UL-10.4-03",
+     "UL-7.6-01",
+     "UL-7.5-05"
+    ],
+    "equivalent": false,
+    "reason": "The default for w_rx_frame_done would be 1, so frames are signalled complete in every state. This gives spurious loads and overrun pulses."
+   },
+   "M27": {
+    "rules": [
+     "UL-7.5-01",
+     "UL-14-02",
+     "UL-1.1-02",
+     "UL-7.5-03"
+    ],
+    "equivalent": false,
+    "reason": "The nonzero test in the data state is inverted. The counter decrements only at zero and the data bit is sampled at the wrong edges. The byte is wrong."
+   },
+   "M28": {
+    "rules": [
+     "UL-5-03",
+     "UL-6.2-02",
+     "UL-14-01",
+     "UL-6.2-10",
+     "UL-6.2-01"
+    ],
+    "equivalent": false,
+    "reason": "o_tx_ready would reset to 0 instead of 1. The transmitter is not ready in and after reset."
+   },
+   "M29": {
+    "rules": [
+     "UL-7.6-01",
+     "UL-8.2-01",
+     "UL-14-03",
+     "UL-1.2-05",
+     "UL-5-06"
+    ],
+    "equivalent": false,
+    "reason": "On load o_rx_valid would be set to 0 rather than 1. A received byte is never presented as valid."
+   },
+   "M30": {
+    "rules": [
+     "UL-6.2-01",
+     "UL-6.2-02",
+     "UL-6.2-06",
+     "UL-14-08",
+     "UL-6.2-10"
+    ],
+    "equivalent": false,
+    "reason": "The TX reset test is inverted. Reset does not abandon a frame or set o_txd/o_tx_ready, and the normal logic is held in reset when reset is released."
+   },
+   "M31": {
+    "rules": [
+     "UL-7.6-03",
+     "UL-5-07",
+     "UL-10.2-03",
+     "UL-7.8-03"
+    ],
+    "equivalent": false,
+    "reason": "When the consumer takes the byte, o_rx_valid would stay 1 instead of dropping to 0. A taken byte appears again."
+   },
+   "M32": {
+    "rules": [
+     "UL-7.6-01",
+     "UL-7.6-02",
+     "UL-14-04",
+     "UL-10.2-02",
+     "UL-8.2-01"
+    ],
+    "equivalent": false,
+    "reason": "The load condition is inverted. Bytes are loaded when no frame completes and not loaded when one does."
+   },
+   "M33": {
+    "rules": [
+     "UL-6.2-02",
+     "UL-6.2-08",
+     "UL-6.2-09",
+     "UL-5-05",
+     "UL-5-08"
+    ],
+    "equivalent": false,
+    "reason": "The reset test of the holding-register block is inverted. The outputs are not reset on reset and are cleared during normal run."
+   },
+   "M34": {
+    "rules": [
+     "UL-7.4-05",
+     "UL-10.3-01",
+     "UL-10.3-02",
+     "UL-7.4-06",
+     "UL-12.3-02"
+    ],
+    "equivalent": false,
+    "reason": "The start-bit recheck at T0+H is inverted. Glitches are accepted as starts and valid start bits are rejected."
+   },
+   "M35": {
+    "rules": [
+     "UL-7.5-02",
+     "UL-8.2-01",
+     "UL-14-03",
+     "UL-7.5-05"
+    ],
+    "equivalent": false,
+    "reason": "The nonzero test in the stop state is inverted. The stop sample M and the delivery edge V are at the wrong time."
+   },
+   "M36": {
+    "rules": [
+     "UL-7.4-05",
+     "UL-14-02",
+     "UL-10.3-02",
+     "UL-7.5-01",
+     "UL-4-02"
+    ],
+    "equivalent": false,
+    "reason": "The nonzero test in the start state is inverted. The start-bit check at T0+H is at the wrong time and so are all later sample edges."
+   }
+  },
+  "unknown_ids": [],
+  "model": "sonnet",
+  "cost_usd": 0.0
+ },
+ "rule_scores": {
+  "UL-1.1-01": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-1.1-02": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-1.2-01": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-1.2-04": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-1.2-05": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-1.2-07": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-10.2-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-10.2-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-10.3-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-10.3-02": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-10.4-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-10.5-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-12.2-06": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-12.3-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-14-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-14-02": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-14-03": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-14-04": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-14-05": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-14-06": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-14-07": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-14-08": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-4-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-5-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-5-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-5-05": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-5-06": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-5-07": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-5-08": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-5-10": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-5-12": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-5-14": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-6.2-01": {
+   "relevant": 5,
+   "killed": 5,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-6.2-02": {
+   "relevant": 7,
+   "killed": 7,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-6.2-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-6.2-04": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-6.2-05": {
+   "relevant": 4,
+   "killed": 3,
+   "survived": [
+    "M19"
+   ],
+   "claimed_equivalent": [
+    "M19"
+   ],
+   "score": 75.0,
+   "meets_threshold": false
+  },
+  "UL-6.2-06": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-6.2-08": {
+   "relevant": 5,
+   "killed": 5,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-6.2-09": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-6.2-10": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-6.2-11": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-6.2-12": {
+   "relevant": 4,
+   "killed": 3,
+   "survived": [
+    "M19"
+   ],
+   "claimed_equivalent": [
+    "M19"
+   ],
+   "score": 75.0,
+   "meets_threshold": false
+  },
+  "UL-7.1-01": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.2-01": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.2-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.2-03": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.2-04": {
+   "relevant": 7,
+   "killed": 7,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.2-05": {
+   "relevant": 6,
+   "killed": 6,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.2-06": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.2-08": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.3-01": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.3-04": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.3-05": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.4-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.4-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.4-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.4-05": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.4-06": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.5-01": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.5-02": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.5-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.5-05": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.6-01": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.6-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.6-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.6-05": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.7-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.8-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-7.8-04": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-8.1-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-8.1-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-8.1-03": {
+   "relevant": 7,
+   "killed": 7,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-8.1-04": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-8.1-05": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UL-8.2-01": {
+   "relevant": 6,
+   "killed": 6,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ }
+}

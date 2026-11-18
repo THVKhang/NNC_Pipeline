@@ -4,7 +4,7 @@
 
 **VI:** NNC Pipeline đọc đặc tả phần cứng và các chuẩn giao thức trên cổng của nó, trích mọi luật kèm trích dẫn, chuyển các luật đã duyệt thành verification contract, sinh SystemVerilog Assertion, cover point chức năng và test cocotb **mà không bao giờ cho agent viết chúng xem RTL**, chạy trên RTL bằng Verilator, đo code coverage, functional coverage và mutation theo từng luật, và phân tích lỗi cho người thiết kế. Một người duyệt mỗi gate trong bốn gate; orchestrator Python cưỡng chế chúng.
 
-Status / Trạng thái: working prototype, run end-to-end on three designs (below) · Python 3.11+ standard library only · agents through Claude Code (no API key) · Verilator 5 + cocotb 2.
+Status / Trạng thái: working prototype, run end-to-end on six delivered designs, two regenerated from their specification and one designed from a short description (below) · Python 3.11+ standard library (optional: pypandoc for export) · agents through Claude Code (no API key) · Verilator 5 + cocotb 2.
 
 ## Flow | Luồng
 
@@ -137,11 +137,46 @@ CI (`.github/workflows/ci.yml`) runs the unit tests, then each design's reproduc
 
 Coverage targets are the designer's choice: `cover` shows every baseline, the functional points never hit and the uncovered code items, and runs closure only when a target is set. On apb_tlul_bridge a demonstration target (functional 100 %, set on delegation) was closed in one round: the analyst turned the two missed points (response delayed ≥ 8 cycles, response pending at reset release) into two specification-level scenarios, a writer without RTL access produced `test_apb_tlul_bridge_cov1.py`, and both tests pass (US$1.77).
 
+## Design half | Nửa thiết kế
+
+**EN:** The same gates, extended to a design whose RTL the flow writes (`rtl_origin=generated`). Two gates are added: D1 approves the final parameter values, and D2 approves the generated RTL.
+
+```
+ description ──[spec-draft] A0 → spec (SPEC_TEMPLATE), checked by spec-check
+        ══ G1 rules ══ ══ G2 contract ══
+   [params --choose]   legal values from the spec tables, checked by code      ══ D1 config ══
+   [gen-rtl] A15 (never sees verif/) → rtl-check: RTL_RULES, Verilator lint, Yosys structure,
+             GF180MCU synthesis (area, ABC delay at TT/SS) → repairs                ══ D2 rtl ══
+   [close-loop] sim → triage → fix-rtl (spec-level fault text only; also --from formal)
+   [restyle] A16 rewrites to RTL_RULES → Yosys miter + SymbiYosys: PROVEN / CEX
+   [export]  spec, rules, contract, reports → DOCX / HTML / PDF
+```
+
+| Design | What was tested | Result |
+|---|---|---|
+| gen_apb_tlul_bridge | A15 rewrote the RTL from the spec; the approved verification and the upstream testbench ran on it | 17/17 tests, 17/17 formal PROVEN, mutation 36/36, upstream testbench passes |
+| gen_sync_fifo | the same, on the FIFO | formal found 2 RTL faults that simulation missed, `fix-rtl --from formal` repaired them in 1 attempt; 24/25 tests, the one left is a question for the specification owner (CHK-008) |
+| apb_tlul_bridge restyle | rewrite to RTL_RULES without changing behaviour | 6 rule warnings → 0, equivalence **PROVEN** |
+| uart_lite (new) | a 30-line description → spec → RTL → verification | RTL right first time; 20/20 tests and 13/13 assertions in 4 configurations (after 2 recorded hand fixes of the generated checker and harness), no formal counterexample, mutation 35/36, about US$12 |
+
+Details: [docs/EVALUATION.md §6](docs/EVALUATION.md), [docs/GUIDE.md §6](docs/GUIDE.md), [docs/RTL_RULES.md](docs/RTL_RULES.md), [docs/SPEC_TEMPLATE.md](docs/SPEC_TEMPLATE.md).
+
+**VI:** Cùng hệ thống gate, mở rộng cho thiết kế mà flow tự viết RTL. Có thêm hai gate: D1 duyệt giá trị tham số cuối cùng, D2 duyệt RTL đã sinh.
+- Agent viết RTL không bao giờ thấy phần verification.
+- Vòng sửa chỉ gửi cho agent mô tả lỗi ở mức spec.
+- `restyle` chứng minh bản viết lại tương đương bằng formal.
+
+Kết quả:
+- Sinh lại hai thiết kế đã kiểm chứng: cầu APB đạt hết. FIFO thì formal tìm ra 2 lỗi RTL mà mô phỏng bỏ sót, và vòng sửa đã sửa chúng.
+- UART làm từ đầu: RTL đúng ngay lần đầu.
+
+D1/D2 được duyệt theo uỷ quyền. **G4 chưa ai ký.**
+
 ## Scope | Phạm vi
 
-NNC Pipeline covers the **verification** half of a specification-to-silicon flow such as [VLSIT_RTL_Generator_AI_Flow](https://github.com/nguyenquanicd/VLSIT_RTL_Generator_AI_Flow): from an approved specification and an existing RTL to evidence a person can sign off. It does not write specifications or RTL, and it does not run synthesis, STA, formal proof or CDC analysis.
+NNC Pipeline started as the **verification** half of a specification-to-silicon flow such as [VLSIT_RTL_Generator_AI_Flow](https://github.com/nguyenquanicd/VLSIT_RTL_Generator_AI_Flow). Phases 5 to 10 add the **design** half (see [Design half](#design-half--nửa-thiết-kế)): a specification draft from a short description, a checked parameter configuration, RTL written by an agent that never sees the verification, code rule checks with Verilator lint and Yosys synthesis on GF180MCU, a closed repair loop driven by the specification-level text of failures, a restyle with a formal equivalence proof, and DOCX/PDF export. It does not run STA, place and route, CDC/RDC analysis or DFT.
 
-NNC Pipeline đảm nhiệm **nửa verification** của một flow từ spec tới RTL: từ spec đã duyệt và RTL có sẵn tới bằng chứng để người ký duyệt. Nó không viết spec hay RTL, không chạy synthesis, STA, formal hay CDC.
+NNC Pipeline ban đầu là **nửa verification** của một flow từ spec tới silicon. Giai đoạn 5 đến 10 thêm **nửa thiết kế**: soạn nháp spec từ một mô tả ngắn, cấu hình tham số được kiểm tra, RTL do một agent viết mà không bao giờ thấy phần verification, kiểm luật code cùng Verilator lint và tổng hợp Yosys trên GF180MCU, vòng sửa khép kín dựa trên mô tả lỗi ở mức spec, viết lại RTL cho sạch kèm chứng minh tương đương formal, và xuất DOCX/PDF. Hệ thống không chạy STA, place and route, phân tích CDC/RDC hay DFT.
 
 ## Repository | Cấu trúc
 
@@ -149,6 +184,8 @@ NNC Pipeline đảm nhiệm **nửa verification** của một flow từ spec t�
 nnc/                 orchestrator: ingest, extract, review, contract, gen_sva, gen_cov, gen_tests, sim, coverage,
                      closure, triage, mutate, report, inject, flow, runset (run sets), bench (bug benchmark),
                      kitcheck (CI comparison), packet (G4 reviewer packet), formal + gen_env (SymbiYosys)
+                     design half: params (legal values, D1), gen_rtl + rtlcheck (A15, lint, Yosys/GF180, D2),
+                     derive, equiv + restyle (A16, equivalence proof), specdraft (A0), export (DOCX/PDF)
 nnc/agents/          Claude Code backend (inline worker / sandboxed deep agent), manual backend, cache, schema validator
 nnc/simlib/          helper library copied next to generated cocotb tests (clocks, resets, multi-clock helpers)
 .claude/commands/    /nnc-flow, /nnc-gate
@@ -161,8 +198,8 @@ docs/                ARCHITECTURE.md, GUIDE.md
 
 ## Limits | Giới hạn
 
-- **EN:** Simulation, plus an optional formal check of the generated assertions (bounded or k-induction, default parameters only, assertions in the translated SVA subset); no CDC/RDC, STA, synthesis or DFT checks; rules of that kind are listed as not verifiable by simulation. Several clocks may be synchronous (started together) or asynchronous (seeded random phase per clock); metastability itself is modelled only if the RTL has a model. One run is one configuration and one seed; a run set (`run_set.json`) runs several and merges them, and a check that no run can verify is reported NOT_VERIFIABLE. Generated tests and checkers can be wrong (sync_fifo shows one): that is what the gates, the hit counters, triage and the mutation score are for. Model outputs vary between runs; the cache makes a re-run reproducible.
-- **VI:** Mô phỏng, cộng thêm kiểm chứng formal tuỳ chọn cho các assertion đã sinh (giới hạn độ sâu hoặc k-induction, chỉ cấu hình tham số mặc định, chỉ tập SVA dịch được); không có CDC/RDC, STA, synthesis hay DFT; các luật loại đó được liệt kê là không kiểm được bằng mô phỏng. Nhiều clock có thể đồng bộ (khởi động cùng lúc) hoặc bất đồng bộ (pha ngẫu nhiên theo seed cho từng clock); metastability chỉ được mô hình nếu RTL có mô hình. Mỗi lần chạy là một cấu hình và một seed; run set (`run_set.json`) chạy nhiều cấu hình rồi gộp kết quả, check nào không lần chạy nào kiểm được thì báo NOT_VERIFIABLE. Test và checker do agent sinh có thể sai (sync_fifo là một ví dụ): đó là lý do có gate, bộ đếm hit, triage và mutation score. Kết quả của model có thể khác giữa các lần; cache giúp chạy lại cho cùng kết quả.
+- **EN:** Simulation, plus an optional formal check of the generated assertions (bounded or k-induction, default parameters only, assertions in the translated SVA subset); no CDC/RDC, STA or DFT checks (synthesis gives area and an ABC delay estimate for generated RTL only, not timing sign-off); rules of that kind are listed as not verifiable by simulation. Several clocks may be synchronous (started together) or asynchronous (seeded random phase per clock); metastability itself is modelled only if the RTL has a model. One run is one configuration and one seed; a run set (`run_set.json`) runs several and merges them, and a check that no run can verify is reported NOT_VERIFIABLE. Generated tests and checkers can be wrong (sync_fifo shows one): that is what the gates, the hit counters, triage and the mutation score are for. Model outputs vary between runs; the cache makes a re-run reproducible.
+- **VI:** Mô phỏng, cộng thêm kiểm chứng formal tuỳ chọn cho các assertion đã sinh (giới hạn độ sâu hoặc k-induction, chỉ cấu hình tham số mặc định, chỉ tập SVA dịch được); không có CDC/RDC, STA hay DFT (synthesis chỉ cho diện tích và ước lượng trễ của RTL do flow sinh, không phải ký duyệt timing); các luật loại đó được liệt kê là không kiểm được bằng mô phỏng. Nhiều clock có thể đồng bộ (khởi động cùng lúc) hoặc bất đồng bộ (pha ngẫu nhiên theo seed cho từng clock); metastability chỉ được mô hình nếu RTL có mô hình. Mỗi lần chạy là một cấu hình và một seed; run set (`run_set.json`) chạy nhiều cấu hình rồi gộp kết quả, check nào không lần chạy nào kiểm được thì báo NOT_VERIFIABLE. Test và checker do agent sinh có thể sai (sync_fifo là một ví dụ): đó là lý do có gate, bộ đếm hit, triage và mutation score. Kết quả của model có thể khác giữa các lần; cache giúp chạy lại cho cùng kết quả.
 
 ## Licence | Giấy phép
 

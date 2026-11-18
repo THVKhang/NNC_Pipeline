@@ -114,17 +114,24 @@ def interface_md(contract: dict, final: dict) -> str:
     return "\n".join(out) + "\n"
 
 
+HIDDEN = ("verif/", "test_", "nnc_chk", "nnc_cov", "nnc_env", "checker")
+
+
 def fault_text(analyses: list[dict]) -> list[dict]:
-    """Faults judged A (RTL wrong) by triage, reduced to the specification-level description."""
+    """Faults judged A (RTL wrong) by triage (simulation or formal), reduced to the specification-level
+    description: sentences that name the verification (files, tests, checkers) are dropped."""
     out = []
     for a in analyses:
         if a.get("most_likely") != "A_rtl_wrong":
             continue
 
         def clean(text: str) -> str:
-            keep = [s for s in re.split(r"(?<=[.;])\s+", text or "") if "verif/" not in s and "test_" not in s]
+            keep = [s for s in re.split(r"(?<=[.;])\s+", text or "") if not any(h in s for h in HIDDEN)]
             return " ".join(keep).strip()
-        title = re.sub(r"^test_\w+\s*[—-]\s*", "", a.get("failure", ""))
+        if a.get("failure"):
+            title = re.sub(r"^test_\w+\s*[—-]\s*", "", a["failure"])
+        else:                                     # formal: "CHK-010 (a_CHK_010, verif/sva/...)"
+            title = "formal counterexample on " + re.sub(r"\s*\(.*\)\s*$", "", a.get("check", ""))
         out.append({"fault": title[:300], "spec_says": clean(a.get("spec_says", ""))[:2500],
                     "rtl_does": clean(a.get("rtl_does", ""))[:3000]})
     return out

@@ -6,8 +6,9 @@ specification, and run the same approved verification (and the upstream hand-wri
 `baseline/` exists) on it. Neither A15 nor the verification ever saw the other.
 
 Copied: spec/ (documents and standards), work/rules.json, work/rules.md, work/contract.json,
-work/contract.md, work/spec/ (indexes), verif/, run_set.json, bugs/ and baseline/ (with their NOTICE),
-LICENSE/NOTICE files, and the design configuration with rtl_origin=generated. NOT copied: rtl/, results,
+work/contract.md, work/spec/ (indexes), verif/, run_set.json and baseline/ (with its NOTICE),
+LICENSE/NOTICE files, and the design configuration with rtl_origin=generated. NOT copied: rtl/, bugs/ (its
+one-line faults are written against the delivered RTL), results,
 triage, mutation, formal results, logs and the answer cache.
 
 Gate approvals G1-G3 are carried over only because their artifacts are byte-identical (the hashes are
@@ -23,7 +24,7 @@ from nnc.project import STATE_FILE, Design, ProjectError, _now
 
 COPY_FILES = ("work/rules.json", "work/rules.md", "work/contract.json", "work/contract.md", "run_set.json",
               "LICENSE-Apache-2.0", "NOTICE.md")
-COPY_DIRS = ("spec", "work/spec", "verif", "bugs", "baseline")
+COPY_DIRS = ("spec", "work/spec", "verif", "baseline")
 CARRY = ("G1_rules", "G2_contract", "G3_verif_sources")
 
 

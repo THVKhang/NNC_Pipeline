@@ -432,7 +432,7 @@ def cmd_derive(args) -> int:
 
 def cmd_fix_rtl(args) -> int:
     d = _open(args)
-    n = flow.stage_fix_rtl(d, _options(args))
+    n = flow.stage_fix_rtl(d, _options(args), source=args.source)
     return 0 if n else 1
 
 
@@ -677,6 +677,8 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("fix-rtl", help="repair the generated RTL from the faults triage judged A (agent A15; "
                                        "spec-level fault text only, never the tests)")
     s.add_argument("design")
+    s.add_argument("--from", dest="source", choices=["sim", "formal", "all"], default="sim",
+                   help="which triage to repair from: simulation (default), formal counterexamples, or both")
     s.add_argument("--unreviewed", action="store_true", help="run past an unapproved gate (results marked UNREVIEWED)")
     _agent_args(s)
     s.set_defaults(func=cmd_fix_rtl)

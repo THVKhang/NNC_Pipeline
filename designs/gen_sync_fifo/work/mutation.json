@@ -1,0 +1,2019 @@
+{
+ "mutants": [
+  {
+   "id": "M01",
+   "file": "m_vlsit_sfifo_mem.sv",
+   "line": 54,
+   "operator": "negate_if",
+   "original": "if (i_wr_en) begin",
+   "mutated": "        if (!(i_wr_en)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_012_strict_later_latency_3_2",
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_014_first_word_show_ahead",
+    "test_chk_015_full_empty_overflow_underflow",
+    "test_chk_016_no_bypass_simultaneous",
+    "test_chk_017_pointer_wrap/ratio=0",
+    "test_chk_017_pointer_wrap/ratio=1",
+    "test_chk_018_gap_free_equal",
+    "test_chk_019_write_faster",
+    "test_chk_020_read_faster",
+    "test_chk_021_hw_reset",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_chk_025_thresholds",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-006",
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M02",
+   "file": "m_vlsit_sfifo_wr.sv",
+   "line": 222,
+   "operator": "and_to_or",
+   "original": "if (!w_ack_view && (w_rd_ptr_view == '0)) begin",
+   "mutated": "        if (!w_ack_view || (w_rd_ptr_view == '0)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=5"
+   ],
+   "killed_by_checks": [
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M03",
+   "file": "m_vlsit_sfifo_rd.sv",
+   "line": 123,
+   "operator": "ne_to_eq",
+   "original": "assign w_block = w_req_view | (reg_fsm_srst_current_state != ENUM_ST_RUN);",
+   "mutated": "  assign w_block = w_req_view | (reg_fsm_srst_current_state == ENUM_ST_RUN);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_012_strict_later_latency_3_2",
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_014_first_word_show_ahead",
+    "test_chk_015_full_empty_overflow_underflow",
+    "test_chk_016_no_bypass_simultaneous",
+    "test_chk_017_pointer_wrap/ratio=0",
+    "test_chk_017_pointer_wrap/ratio=1",
+    "test_chk_018_gap_free_equal",
+    "test_chk_019_write_faster",
+    "test_chk_020_read_faster",
+    "test_chk_021_hw_reset",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_chk_025_thresholds",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-004"
+   ]
+  },
+  {
+   "id": "M04",
+   "file": "m_vlsit_sfifo_wr.sv",
+   "line": 203,
+   "operator": "or_to_and",
+   "original": "if (!i_rst_n_sw || reg_sw_rst_pend) begin",
+   "mutated": "        if (!i_rst_n_sw && reg_sw_rst_pend) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M05",
+   "file": "m_vlsit_sfifo_wr.sv",
+   "line": 184,
+   "operator": "zero_to_one",
+   "original": "reg_overflow <= 1'b0;",
+   "mutated": "      reg_overflow <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_012_strict_later_latency_3_2",
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_014_first_word_show_ahead",
+    "test_chk_015_full_empty_overflow_underflow",
+    "test_chk_016_no_bypass_simultaneous",
+    "test_chk_017_pointer_wrap/ratio=0",
+    "test_chk_017_pointer_wrap/ratio=1",
+    "test_chk_018_gap_free_equal",
+    "test_chk_019_write_faster",
+    "test_chk_020_read_faster",
+    "test_chk_021_hw_reset",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_chk_025_thresholds",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M06",
+   "file": "m_vlsit_sfifo_rd.sv",
+   "line": 198,
+   "operator": "and_to_or",
+   "original": "if (!w_req_view && (w_wr_ptr_view == '0)) begin",
+   "mutated": "        if (!w_req_view || (w_wr_ptr_view == '0)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M07",
+   "file": "m_vlsit_sfifo_rd.sv",
+   "line": 174,
+   "operator": "eq_to_ne",
+   "original": "reg_empty     <= (w_occ_nxt == '0);",
+   "mutated": "      reg_empty     <= (w_occ_nxt != '0);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_012_strict_later_latency_3_2",
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_014_first_word_show_ahead",
+    "test_chk_015_full_empty_overflow_underflow",
+    "test_chk_016_no_bypass_simultaneous",
+    "test_chk_017_pointer_wrap/ratio=0",
+    "test_chk_017_pointer_wrap/ratio=1",
+    "test_chk_018_gap_free_equal",
+    "test_chk_019_write_faster",
+    "test_chk_020_read_faster",
+    "test_chk_021_hw_reset",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_chk_025_thresholds",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-006",
+    "CHK-007",
+    "CHK-004"
+   ]
+  },
+  {
+   "id": "M08",
+   "file": "m_vlsit_sfifo_rd.sv",
+   "line": 142,
+   "operator": "negate_if",
+   "original": "end else if (w_rd_accept) begin",
+   "mutated": "    end else if (!(w_rd_accept)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_012_strict_later_latency_3_2",
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_014_first_word_show_ahead",
+    "test_chk_015_full_empty_overflow_underflow",
+    "test_chk_016_no_bypass_simultaneous",
+    "test_chk_017_pointer_wrap/ratio=0",
+    "test_chk_017_pointer_wrap/ratio=1",
+    "test_chk_018_gap_free_equal",
+    "test_chk_019_write_faster",
+    "test_chk_020_read_faster",
+    "test_chk_021_hw_reset",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_chk_025_thresholds",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-010",
+    "CHK-006",
+    "CHK-007",
+    "CHK-004"
+   ]
+  },
+  {
+   "id": "M09",
+   "file": "m_vlsit_sfifo_rd.sv",
+   "line": 170,
+   "operator": "one_to_zero",
+   "original": "reg_empty_thr <= 1'b1;",
+   "mutated": "      reg_empty_thr <= 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_012_strict_later_latency_3_2",
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_014_first_word_show_ahead",
+    "test_chk_015_full_empty_overflow_underflow",
+    "test_chk_016_no_bypass_simultaneous",
+    "test_chk_017_pointer_wrap/ratio=0",
+    "test_chk_017_pointer_wrap/ratio=1",
+    "test_chk_018_gap_free_equal",
+    "test_chk_019_write_faster",
+    "test_chk_020_read_faster",
+    "test_chk_021_hw_reset",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_chk_025_thresholds",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M10",
+   "file": "m_vlsit_sfifo_rd.sv",
+   "line": 171,
+   "operator": "zero_to_one",
+   "original": "reg_underflow <= 1'b0;",
+   "mutated": "      reg_underflow <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_012_strict_later_latency_3_2",
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_014_first_word_show_ahead",
+    "test_chk_015_full_empty_overflow_underflow",
+    "test_chk_016_no_bypass_simultaneous",
+    "test_chk_017_pointer_wrap/ratio=0",
+    "test_chk_017_pointer_wrap/ratio=1",
+    "test_chk_018_gap_free_equal",
+    "test_chk_019_write_faster",
+    "test_chk_020_read_faster",
+    "test_chk_021_hw_reset",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_chk_025_thresholds",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M11",
+   "file": "m_vlsit_sfifo_wr.sv",
+   "line": 270,
+   "operator": "ne_to_eq",
+   "original": "reg_sw_rst_busy            <= (w_fsm_srst_nxt_state != ENUM_ST_RUN);",
+   "mutated": "      reg_sw_rst_busy            <= (w_fsm_srst_nxt_state == ENUM_ST_RUN);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_012_strict_later_latency_3_2",
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_014_first_word_show_ahead",
+    "test_chk_015_full_empty_overflow_underflow",
+    "test_chk_016_no_bypass_simultaneous",
+    "test_chk_017_pointer_wrap/ratio=0",
+    "test_chk_017_pointer_wrap/ratio=1",
+    "test_chk_018_gap_free_equal",
+    "test_chk_019_write_faster",
+    "test_chk_020_read_faster",
+    "test_chk_021_hw_reset",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_chk_025_thresholds",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M12",
+   "file": "m_vlsit_sfifo_wr.sv",
+   "line": 272,
+   "operator": "eq_to_ne",
+   "original": "reg_req                    <= (w_fsm_srst_nxt_state == ENUM_ST_REQ)",
+   "mutated": "      reg_req                    <= (w_fsm_srst_nxt_state != ENUM_ST_REQ)",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_012_strict_later_latency_3_2",
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_014_first_word_show_ahead",
+    "test_chk_015_full_empty_overflow_underflow",
+    "test_chk_016_no_bypass_simultaneous",
+    "test_chk_017_pointer_wrap/ratio=0",
+    "test_chk_017_pointer_wrap/ratio=1",
+    "test_chk_018_gap_free_equal",
+    "test_chk_019_write_faster",
+    "test_chk_020_read_faster",
+    "test_chk_021_hw_reset",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_chk_025_thresholds",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-004"
+   ]
+  },
+  {
+   "id": "M13",
+   "file": "m_vlsit_sfifo_wr.sv",
+   "line": 155,
+   "operator": "negate_if",
+   "original": "end else if (w_wr_accept) begin",
+   "mutated": "    end else if (!(w_wr_accept)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_012_strict_later_latency_3_2",
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_014_first_word_show_ahead",
+    "test_chk_015_full_empty_overflow_underflow",
+    "test_chk_016_no_bypass_simultaneous",
+    "test_chk_017_pointer_wrap/ratio=0",
+    "test_chk_017_pointer_wrap/ratio=1",
+    "test_chk_018_gap_free_equal",
+    "test_chk_019_write_faster",
+    "test_chk_020_read_faster",
+    "test_chk_021_hw_reset",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_chk_025_thresholds",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-006",
+    "CHK-007",
+    "CHK-004"
+   ]
+  },
+  {
+   "id": "M14",
+   "file": "m_vlsit_sfifo_wr.sv",
+   "line": 183,
+   "operator": "zero_to_one",
+   "original": "reg_full_thr <= 1'b0;",
+   "mutated": "      reg_full_thr <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_012_strict_later_latency_3_2",
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_014_first_word_show_ahead",
+    "test_chk_015_full_empty_overflow_underflow",
+    "test_chk_016_no_bypass_simultaneous",
+    "test_chk_017_pointer_wrap/ratio=0",
+    "test_chk_017_pointer_wrap/ratio=1",
+    "test_chk_018_gap_free_equal",
+    "test_chk_019_write_faster",
+    "test_chk_020_read_faster",
+    "test_chk_021_hw_reset",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_chk_025_thresholds",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M15",
+   "file": "m_vlsit_sfifo_rd.sv",
+   "line": 133,
+   "operator": "eq_to_ne",
+   "original": "assign w_rd_ptr_inc = (reg_rd_ptr == LPARA_PTR_LAST[LPARA_PTR_W-1:0])",
+   "mutated": "  assign w_rd_ptr_inc = (reg_rd_ptr != LPARA_PTR_LAST[LPARA_PTR_W-1:0])",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_012_strict_later_latency_3_2",
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_014_first_word_show_ahead",
+    "test_chk_015_full_empty_overflow_underflow",
+    "test_chk_016_no_bypass_simultaneous",
+    "test_chk_017_pointer_wrap/ratio=0",
+    "test_chk_017_pointer_wrap/ratio=1",
+    "test_chk_018_gap_free_equal",
+    "test_chk_019_write_faster",
+    "test_chk_020_read_faster",
+    "test_chk_021_hw_reset",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_chk_025_thresholds",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-010",
+    "CHK-006",
+    "CHK-007",
+    "CHK-004",
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M16",
+   "file": "m_vlsit_sfifo_rd.sv",
+   "line": 140,
+   "operator": "negate_if",
+   "original": "if (reg_fsm_srst_current_state == ENUM_ST_RST) begin",
+   "mutated": "    if (!(reg_fsm_srst_current_state == ENUM_ST_RST)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_012_strict_later_latency_3_2",
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_014_first_word_show_ahead",
+    "test_chk_015_full_empty_overflow_underflow",
+    "test_chk_016_no_bypass_simultaneous",
+    "test_chk_017_pointer_wrap/ratio=0",
+    "test_chk_017_pointer_wrap/ratio=1",
+    "test_chk_018_gap_free_equal",
+    "test_chk_019_write_faster",
+    "test_chk_020_read_faster",
+    "test_chk_021_hw_reset",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_chk_025_thresholds",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-010",
+    "CHK-006",
+    "CHK-007",
+    "CHK-004",
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M17",
+   "file": "m_vlsit_sfifo_rd.sv",
+   "line": 169,
+   "operator": "one_to_zero",
+   "original": "reg_empty     <= 1'b1;",
+   "mutated": "      reg_empty     <= 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_012_strict_later_latency_3_2",
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_014_first_word_show_ahead",
+    "test_chk_015_full_empty_overflow_underflow",
+    "test_chk_016_no_bypass_simultaneous",
+    "test_chk_017_pointer_wrap/ratio=0",
+    "test_chk_017_pointer_wrap/ratio=1",
+    "test_chk_018_gap_free_equal",
+    "test_chk_019_write_faster",
+    "test_chk_020_read_faster",
+    "test_chk_021_hw_reset",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_chk_025_thresholds",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M18",
+   "file": "m_vlsit_sfifo_rd.sv",
+   "line": 213,
+   "operator": "zero_to_one",
+   "original": "reg_ack                    <= 1'b0;",
+   "mutated": "      reg_ack                    <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [],
+   "killed_by_checks": [
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M19",
+   "file": "m_vlsit_sfifo_wr.sv",
+   "line": 146,
+   "operator": "eq_to_ne",
+   "original": "assign w_wr_ptr_inc = (reg_wr_ptr == LPARA_PTR_LAST[LPARA_PTR_W-1:0])",
+   "mutated": "  assign w_wr_ptr_inc = (reg_wr_ptr != LPARA_PTR_LAST[LPARA_PTR_W-1:0])",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_012_strict_later_latency_3_2",
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_014_first_word_show_ahead",
+    "test_chk_015_full_empty_overflow_underflow",
+    "test_chk_016_no_bypass_simultaneous",
+    "test_chk_017_pointer_wrap/ratio=0",
+    "test_chk_017_pointer_wrap/ratio=1",
+    "test_chk_018_gap_free_equal",
+    "test_chk_019_write_faster",
+    "test_chk_020_read_faster",
+    "test_chk_021_hw_reset",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_chk_025_thresholds",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-010",
+    "CHK-004",
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M20",
+   "file": "m_vlsit_sfifo_wr.sv",
+   "line": 222,
+   "operator": "negate_if",
+   "original": "if (!w_ack_view && (w_rd_ptr_view == '0)) begin",
+   "mutated": "        if (!(!w_ack_view && (w_rd_ptr_view == '0))) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2"
+   ],
+   "killed_by_checks": [
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M21",
+   "file": "m_vlsit_sfifo_wr.sv",
+   "line": 182,
+   "operator": "zero_to_one",
+   "original": "reg_full     <= 1'b0;",
+   "mutated": "      reg_full     <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_012_strict_later_latency_3_2",
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_014_first_word_show_ahead",
+    "test_chk_015_full_empty_overflow_underflow",
+    "test_chk_016_no_bypass_simultaneous",
+    "test_chk_017_pointer_wrap/ratio=0",
+    "test_chk_017_pointer_wrap/ratio=1",
+    "test_chk_018_gap_free_equal",
+    "test_chk_019_write_faster",
+    "test_chk_020_read_faster",
+    "test_chk_021_hw_reset",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_chk_025_thresholds",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M22",
+   "file": "m_vlsit_sfifo_rd.sv",
+   "line": 198,
+   "operator": "eq_to_ne",
+   "original": "if (!w_req_view && (w_wr_ptr_view == '0)) begin",
+   "mutated": "        if (!w_req_view && (w_wr_ptr_view != '0)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M23",
+   "file": "m_vlsit_sfifo_rd.sv",
+   "line": 189,
+   "operator": "negate_if",
+   "original": "if (w_req_view) begin",
+   "mutated": "        if (!(w_req_view)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_012_strict_later_latency_3_2",
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_014_first_word_show_ahead",
+    "test_chk_015_full_empty_overflow_underflow",
+    "test_chk_016_no_bypass_simultaneous",
+    "test_chk_017_pointer_wrap/ratio=0",
+    "test_chk_017_pointer_wrap/ratio=1",
+    "test_chk_018_gap_free_equal",
+    "test_chk_019_write_faster",
+    "test_chk_020_read_faster",
+    "test_chk_021_hw_reset",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_chk_025_thresholds",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-004"
+   ]
+  },
+  {
+   "id": "M24",
+   "file": "m_vlsit_sfifo_wr.sv",
+   "line": 274,
+   "operator": "eq_to_ne",
+   "original": "| (w_fsm_srst_nxt_state == ENUM_ST_HOLD);",
+   "mutated": "                                  | (w_fsm_srst_nxt_state != ENUM_ST_HOLD);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_012_strict_later_latency_3_2",
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_014_first_word_show_ahead",
+    "test_chk_015_full_empty_overflow_underflow",
+    "test_chk_016_no_bypass_simultaneous",
+    "test_chk_017_pointer_wrap/ratio=0",
+    "test_chk_017_pointer_wrap/ratio=1",
+    "test_chk_018_gap_free_equal",
+    "test_chk_019_write_faster",
+    "test_chk_020_read_faster",
+    "test_chk_021_hw_reset",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_chk_025_thresholds",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-004"
+   ]
+  },
+  {
+   "id": "M25",
+   "file": "m_vlsit_sfifo_wr.sv",
+   "line": 216,
+   "operator": "negate_if",
+   "original": "if (i_rst_n_sw) begin",
+   "mutated": "        if (!(i_rst_n_sw)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M26",
+   "file": "m_vlsit_sfifo_wr.sv",
+   "line": 263,
+   "operator": "zero_to_one",
+   "original": "reg_sw_rst_busy            <= 1'b0;",
+   "mutated": "      reg_sw_rst_busy            <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_012_strict_later_latency_3_2",
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_014_first_word_show_ahead",
+    "test_chk_015_full_empty_overflow_underflow",
+    "test_chk_016_no_bypass_simultaneous",
+    "test_chk_017_pointer_wrap/ratio=0",
+    "test_chk_017_pointer_wrap/ratio=1",
+    "test_chk_018_gap_free_equal",
+    "test_chk_019_write_faster",
+    "test_chk_020_read_faster",
+    "test_chk_021_hw_reset",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_chk_025_thresholds",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M27",
+   "file": "m_vlsit_sfifo_rd.sv",
+   "line": 216,
+   "operator": "eq_to_ne",
+   "original": "reg_ack                    <= (w_fsm_srst_nxt_state == ENUM_ST_ACK);",
+   "mutated": "      reg_ack                    <= (w_fsm_srst_nxt_state != ENUM_ST_ACK);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2"
+   ],
+   "killed_by_checks": [
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M28",
+   "file": "m_vlsit_sfifo_rd.sv",
+   "line": 198,
+   "operator": "negate_if",
+   "original": "if (!w_req_view && (w_wr_ptr_view == '0)) begin",
+   "mutated": "        if (!(!w_req_view && (w_wr_ptr_view == '0))) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M29",
+   "file": "m_vlsit_sfifo_wr.sv",
+   "line": 273,
+   "operator": "eq_to_ne",
+   "original": "| (w_fsm_srst_nxt_state == ENUM_ST_PTR)",
+   "mutated": "                                  | (w_fsm_srst_nxt_state != ENUM_ST_PTR)",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_012_strict_later_latency_3_2",
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_014_first_word_show_ahead",
+    "test_chk_015_full_empty_overflow_underflow",
+    "test_chk_016_no_bypass_simultaneous",
+    "test_chk_017_pointer_wrap/ratio=0",
+    "test_chk_017_pointer_wrap/ratio=1",
+    "test_chk_018_gap_free_equal",
+    "test_chk_019_write_faster",
+    "test_chk_020_read_faster",
+    "test_chk_021_hw_reset",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_chk_025_thresholds",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-004"
+   ]
+  },
+  {
+   "id": "M30",
+   "file": "m_vlsit_sfifo_wr.sv",
+   "line": 208,
+   "operator": "negate_if",
+   "original": "if (w_ack_view) begin",
+   "mutated": "        if (!(w_ack_view)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7"
+   ],
+   "killed_by_checks": [
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M31",
+   "file": "m_vlsit_sfifo_wr.sv",
+   "line": 266,
+   "operator": "zero_to_one",
+   "original": "reg_sw_rst_req_d           <= 1'b0;",
+   "mutated": "      reg_sw_rst_req_d           <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [],
+   "killed_by_checks": [
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M32",
+   "file": "m_vlsit_sfifo_rd.sv",
+   "line": 140,
+   "operator": "eq_to_ne",
+   "original": "if (reg_fsm_srst_current_state == ENUM_ST_RST) begin",
+   "mutated": "    if (reg_fsm_srst_current_state != ENUM_ST_RST) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_012_strict_later_latency_3_2",
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_014_first_word_show_ahead",
+    "test_chk_015_full_empty_overflow_underflow",
+    "test_chk_016_no_bypass_simultaneous",
+    "test_chk_017_pointer_wrap/ratio=0",
+    "test_chk_017_pointer_wrap/ratio=1",
+    "test_chk_018_gap_free_equal",
+    "test_chk_019_write_faster",
+    "test_chk_020_read_faster",
+    "test_chk_021_hw_reset",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_chk_025_thresholds",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-010",
+    "CHK-006",
+    "CHK-007",
+    "CHK-004",
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M33",
+   "file": "m_vlsit_sfifo_rd.sv",
+   "line": 211,
+   "operator": "negate_if",
+   "original": "if (!i_rst_n_rd) begin",
+   "mutated": "    if (!(!i_rst_n_rd)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M34",
+   "file": "m_vlsit_sfifo_wr.sv",
+   "line": 222,
+   "operator": "eq_to_ne",
+   "original": "if (!w_ack_view && (w_rd_ptr_view == '0)) begin",
+   "mutated": "        if (!w_ack_view && (w_rd_ptr_view != '0)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M35",
+   "file": "m_vlsit_sfifo_wr.sv",
+   "line": 261,
+   "operator": "negate_if",
+   "original": "if (!i_rst_n_wr) begin",
+   "mutated": "    if (!(!i_rst_n_wr)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M36",
+   "file": "m_vlsit_sfifo_wr.sv",
+   "line": 265,
+   "operator": "zero_to_one",
+   "original": "reg_sw_rst_pend            <= 1'b0;",
+   "mutated": "      reg_sw_rst_pend            <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_012_strict_later_latency_3_2",
+    "test_chk_013_random_ratios/ratio=0",
+    "test_chk_013_random_ratios/ratio=1",
+    "test_chk_013_random_ratios/ratio=2",
+    "test_chk_013_random_ratios/ratio=3",
+    "test_chk_013_random_ratios/ratio=4",
+    "test_chk_013_random_ratios/ratio=5",
+    "test_chk_013_random_ratios/ratio=6",
+    "test_chk_013_random_ratios/ratio=7",
+    "test_chk_014_first_word_show_ahead",
+    "test_chk_015_full_empty_overflow_underflow",
+    "test_chk_016_no_bypass_simultaneous",
+    "test_chk_017_pointer_wrap/ratio=0",
+    "test_chk_017_pointer_wrap/ratio=1",
+    "test_chk_018_gap_free_equal",
+    "test_chk_019_write_faster",
+    "test_chk_020_read_faster",
+    "test_chk_021_hw_reset",
+    "test_chk_022_sw_reset_sequence/ratio=0",
+    "test_chk_022_sw_reset_sequence/ratio=1",
+    "test_chk_022_sw_reset_sequence/ratio=2",
+    "test_chk_023_hw_reset_priority",
+    "test_chk_025_thresholds",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  }
+ ],
+ "candidates": 44,
+ "count": 36,
+ "killed": 36,
+ "survived": 0,
+ "not_compiled": 0,
+ "score": 100.0,
+ "seed": 1,
+ "excluded_uncovered": {
+  "files": [
+   "m_vlsit_sfifo_ram_macro.sv"
+  ],
+  "lines": 25
+ },
+ "baseline_failing": {
+  "tests": [
+   "test_chk_024_sw_reset_full_and_rerequest"
+  ],
+  "checks": []
+ },
+ "threshold": 85.0,
+ "attribution": {
+  "mutants": {
+   "M01": {
+    "rules": [
+     "SF-3-01",
+     "SF-1.1-01",
+     "SF-14.2.1-11",
+     "SF-10.5-01",
+     "SF-3-03"
+    ],
+    "equivalent": false,
+    "reason": "The memory write enable is inverted, so accepted writes are not stored and rejected cycles overwrite entries. Data read back is wrong."
+   },
+   "M02": {
+    "rules": [
+     "SF-10.7-02",
+     "SF-10.7-08",
+     "SF-3-44",
+     "SF-10.1-02",
+     "SF-3-48"
+    ],
+    "equivalent": false,
+    "reason": "The REL flush check uses OR instead of AND. Because rd_ptr is already 0, the write FSM leaves REL while the acknowledge is still 1, so o_sw_rst_busy falls earlier than it should."
+   },
+   "M03": {
+    "rules": [
+     "SF-3-38",
+     "SF-10.7-03",
+     "SF-10.6-06",
+     "SF-3-39",
+     "SF-6.3-11"
+    ],
+    "equivalent": false,
+    "reason": "The read block term is inverted. Reads are blocked in normal RUN and allowed during a software reset, so o_empty, o_empty_thr and read acceptance are wrong."
+   },
+   "M04": {
+    "rules": [
+     "SF-3-33",
+     "SF-10.7-02",
+     "SF-3-44",
+     "SF-10.1-02",
+     "SF-3-47"
+    ],
+    "equivalent": false,
+    "reason": "The RUN-to-REQ condition becomes AND. A low i_rst_n_sw alone no longer starts the software reset sequence, because pend is 0 in RUN."
+   },
+   "M05": {
+    "rules": [
+     "SF-7.3-01",
+     "SF-3-29",
+     "SF-3-30",
+     "SF-12-03",
+     "SF-10.6-10"
+    ],
+    "equivalent": false,
+    "reason": "The hardware reset value of o_overflow becomes 1, so o_overflow is high while i_rst_n_wr is low."
+   },
+   "M06": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "The read FSM can only be in ACK after req_view was 1. req stays 1 from REQ through HOLD, and the write pointer is cleared in PTR, before req falls in REL. Writes stay blocked until the write FSM returns to RUN, and that needs ack=0, which means the read FSM has already left ACK. So whenever req_view=0 in ACK, wr_ptr_view is already 0 and the `|| (wr_ptr_view=='0)` change cannot alter any transition."
+   },
+   "M07": {
+    "rules": [
+     "SF-3-08",
+     "SF-5.3-02",
+     "SF-3-52",
+     "SF-10.2-02",
+     "SF-10.2-03"
+    ],
+    "equivalent": false,
+    "reason": "The empty flop gets the inverted occupancy comparison, so o_empty is 1 when the FIFO has data and 0 when it is empty."
+   },
+   "M08": {
+    "rules": [
+     "SF-3-02",
+     "SF-5.3-04",
+     "SF-6.3-03",
+     "SF-3-11",
+     "SF-3-19"
+    ],
+    "equivalent": false,
+    "reason": "The read pointer advances when no read is accepted and holds when one is accepted. Read data order and occupancy are wrong."
+   },
+   "M09": {
+    "rules": [
+     "SF-7.3-02",
+     "SF-3-29",
+     "SF-3-30",
+     "SF-10.6-10",
+     "SF-7.3-05"
+    ],
+    "equivalent": false,
+    "reason": "The reset value of o_empty_thr becomes 0 instead of 1 during hardware reset."
+   },
+   "M10": {
+    "rules": [
+     "SF-12-06",
+     "SF-7.3-02",
+     "SF-3-29",
+     "SF-3-30",
+     "SF-7.3-05"
+    ],
+    "equivalent": false,
+    "reason": "The reset value of o_underflow becomes 1, so o_underflow is high while i_rst_n_rd is low."
+   },
+   "M11": {
+    "rules": [
+     "SF-3-44",
+     "SF-6.2-02",
+     "SF-10.7-02",
+     "SF-3-33",
+     "SF-10.1-02"
+    ],
+    "equivalent": false,
+    "reason": "o_sw_rst_busy is inverted. It is 1 in normal RUN and 0 during a software reset."
+   },
+   "M12": {
+    "rules": [
+     "SF-3-38",
+     "SF-10.7-03",
+     "SF-3-44",
+     "SF-10.1-02",
+     "SF-10.7-04"
+    ],
+    "equivalent": false,
+    "reason": "The request to the read side is inverted for the REQ state. The read side sees a wrong request, so the sequence and the read blocking and flush are wrong."
+   },
+   "M13": {
+    "rules": [
+     "SF-3-01",
+     "SF-5.3-01",
+     "SF-3-19",
+     "SF-6.3-01",
+     "SF-3-13"
+    ],
+    "equivalent": false,
+    "reason": "The write pointer advances when no write is accepted and holds when one is accepted. Occupancy, o_full and the data placement are wrong."
+   },
+   "M14": {
+    "rules": [
+     "SF-7.3-01",
+     "SF-3-29",
+     "SF-3-30",
+     "SF-10.6-10",
+     "SF-3-14"
+    ],
+    "equivalent": false,
+    "reason": "The reset value of o_full_thr becomes 1 instead of 0 during hardware reset."
+   },
+   "M15": {
+    "rules": [
+     "SF-3-13",
+     "SF-9-01",
+     "SF-3-04",
+     "SF-15.2-08",
+     "SF-8-10"
+    ],
+    "equivalent": false,
+    "reason": "The read pointer wrap condition is inverted. The pointer resets to 0 at almost every step, so the read order and o_empty are wrong."
+   },
+   "M16": {
+    "rules": [
+     "SF-10.7-03",
+     "SF-5.3-04",
+     "SF-3-19",
+     "SF-10.1-07",
+     "SF-3-48"
+    ],
+    "equivalent": false,
+    "reason": "The read pointer is cleared in every state except RST. It is cleared constantly in normal operation and not cleared in RST during a software reset."
+   },
+   "M17": {
+    "rules": [
+     "SF-7.3-02",
+     "SF-3-29",
+     "SF-3-30",
+     "SF-10.6-05",
+     "SF-3-52"
+    ],
+    "equivalent": false,
+    "reason": "The reset value of o_empty becomes 0, so o_empty is low during hardware reset."
+   },
+   "M18": {
+    "rules": [
+     "SF-10.7-09",
+     "SF-3-46",
+     "SF-7.3-08",
+     "SF-10.7-02",
+     "SF-3-44"
+    ],
+    "equivalent": false,
+    "reason": "The acknowledge resets to 1 instead of 0. A software reset requested while the read reset is still asserted is acknowledged at once, which changes the o_sw_rst_busy timing."
+   },
+   "M19": {
+    "rules": [
+     "SF-3-13",
+     "SF-9-01",
+     "SF-3-04",
+     "SF-15.2-08",
+     "SF-8-10"
+    ],
+    "equivalent": false,
+    "reason": "The write pointer wrap condition is inverted. The pointer resets to 0 at almost every step, so occupancy, o_full and the data order are wrong."
+   },
+   "M20": {
+    "rules": [
+     "SF-10.7-02",
+     "SF-10.7-08",
+     "SF-3-44",
+     "SF-10.1-02",
+     "SF-3-48"
+    ],
+    "equivalent": false,
+    "reason": "The REL flush condition is negated. The FSM leaves REL when the acknowledge or read pointer is not clear, and stays in REL after the flush completes. o_sw_rst_busy never falls at the right time."
+   },
+   "M21": {
+    "rules": [
+     "SF-7.3-01",
+     "SF-3-29",
+     "SF-3-30",
+     "SF-10.6-02",
+     "SF-3-05"
+    ],
+    "equivalent": false,
+    "reason": "The reset value of o_full becomes 1 during hardware reset."
+   },
+   "M22": {
+    "rules": [
+     "SF-10.7-03",
+     "SF-10.7-02",
+     "SF-3-44",
+     "SF-10.7-08",
+     "SF-3-48"
+    ],
+    "equivalent": false,
+    "reason": "The read FSM waits in ACK for a non-zero write pointer, which is 0. It never returns to RUN, so ack stays 1, the software reset never completes and reads stay blocked."
+   },
+   "M23": {
+    "rules": [
+     "SF-10.7-03",
+     "SF-3-38",
+     "SF-10.6-06",
+     "SF-3-39",
+     "SF-10.1-06"
+    ],
+    "equivalent": false,
+    "reason": "The RUN to RST transition is inverted. The read FSM leaves RUN when there is no request and stays when there is one, so the sequence is not acknowledged."
+   },
+   "M24": {
+    "rules": [
+     "SF-3-38",
+     "SF-10.7-03",
+     "SF-10.7-02",
+     "SF-3-44",
+     "SF-10.6-06"
+    ],
+    "equivalent": false,
+    "reason": "The request term for the HOLD state is inverted, so reg_req is 1 in RUN, REQ, PTR and REL and 0 in HOLD. The read side is blocked in normal operation and the flush behaviour changes."
+   },
+   "M25": {
+    "rules": [
+     "SF-10.7-06",
+     "SF-3-34",
+     "SF-10.7-02",
+     "SF-3-44",
+     "SF-3-47"
+    ],
+    "equivalent": false,
+    "reason": "HOLD is left when i_rst_n_sw is low instead of high. The sequence ends while the request is still asserted and holds after it is released."
+   },
+   "M26": {
+    "rules": [
+     "SF-7.3-01",
+     "SF-3-29",
+     "SF-3-30",
+     "SF-3-44",
+     "SF-6.2-02"
+    ],
+    "equivalent": false,
+    "reason": "The reset value of o_sw_rst_busy becomes 1, so busy is high while i_rst_n_wr is low."
+   },
+   "M27": {
+    "rules": [
+     "SF-10.7-02",
+     "SF-10.7-08",
+     "SF-3-44",
+     "SF-3-48",
+     "SF-10.1-02"
+    ],
+    "equivalent": false,
+    "reason": "The acknowledge is inverted. It is 1 in RUN and 0 in ACK, so the handshake with the write side fails and the software reset sequence is wrong."
+   },
+   "M28": {
+    "rules": [
+     "SF-10.7-03",
+     "SF-10.7-02",
+     "SF-3-44",
+     "SF-10.7-08",
+     "SF-3-48"
+    ],
+    "equivalent": false,
+    "reason": "The ACK exit condition is negated. The read FSM leaves ACK while the request is still high and stays in ACK after the flush is clear."
+   },
+   "M29": {
+    "rules": [
+     "SF-3-38",
+     "SF-10.7-03",
+     "SF-10.7-02",
+     "SF-3-44",
+     "SF-10.6-06"
+    ],
+    "equivalent": false,
+    "reason": "The request term for the PTR state is inverted, so reg_req is 1 in RUN, REQ, HOLD and REL and 0 in PTR. The read side is blocked in normal operation and the handshake is wrong."
+   },
+   "M30": {
+    "rules": [
+     "SF-10.7-02",
+     "SF-3-44",
+     "SF-3-33",
+     "SF-10.1-02",
+     "SF-10.7-04"
+    ],
+    "equivalent": false,
+    "reason": "The REQ state advances on ack=0 instead of ack=1. The write FSM moves on before the read side acknowledges and the sequence is wrong."
+   },
+   "M31": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "reg_sw_rst_req_d is only read through w_sw_rst_fall, and that only matters in the REQ and PTR states. After hardware reset the FSM is in RUN and its first clock edge reloads req_d with ~i_rst_n_sw. So the reset value is never used."
+   },
+   "M32": {
+    "rules": [
+     "SF-10.7-03",
+     "SF-5.3-04",
+     "SF-3-19",
+     "SF-10.1-07",
+     "SF-3-48"
+    ],
+    "equivalent": false,
+    "reason": "The read pointer is cleared in every state except RST. It is cleared constantly in normal operation and not cleared during a software reset."
+   },
+   "M33": {
+    "rules": [
+     "SF-3-46",
+     "SF-7.3-08",
+     "SF-10.7-09",
+     "SF-3-29",
+     "SF-7.3-02"
+    ],
+    "equivalent": false,
+    "reason": "The reset condition of the read FSM block is inverted. The state and acknowledge are reset on every clock edge when reset is not asserted and run freely when it is."
+   },
+   "M34": {
+    "rules": [
+     "SF-10.7-02",
+     "SF-10.7-08",
+     "SF-3-44",
+     "SF-10.1-02",
+     "SF-3-48"
+    ],
+    "equivalent": false,
+    "reason": "The REL flush check requires rd_ptr_view to be non-zero, but rd_ptr is 0 after the reset. The write FSM never returns to RUN and o_sw_rst_busy stays 1."
+   },
+   "M35": {
+    "rules": [
+     "SF-3-46",
+     "SF-7.3-08",
+     "SF-10.7-09",
+     "SF-3-44",
+     "SF-6.2-02"
+    ],
+    "equivalent": false,
+    "reason": "The reset condition of the write FSM block is inverted. The FSM, busy, req and pend flops are reset on every clock edge when reset is not asserted, and the software reset never runs."
+   },
+   "M36": {
+    "rules": [
+     "SF-7.3-08",
+     "SF-10.7-09",
+     "SF-3-46",
+     "SF-3-47",
+     "SF-10.7-10"
+    ],
+    "equivalent": false,
+    "reason": "reg_sw_rst_pend resets to 1, so after hardware reset RUN sees a pending request and starts a software reset sequence on its own. o_sw_rst_busy rises with no i_rst_n_sw request."
+   }
+  },
+  "unknown_ids": [],
+  "model": "sonnet",
+  "cost_usd": 0.3141384
+ },
+ "rule_scores": {
+  "SF-1.1-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-10.1-02": {
+   "relevant": 8,
+   "killed": 8,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-10.1-06": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-10.1-07": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-10.2-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-10.2-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-10.5-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-10.6-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-10.6-05": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-10.6-06": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-10.6-10": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-10.7-02": {
+   "relevant": 13,
+   "killed": 13,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-10.7-03": {
+   "relevant": 9,
+   "killed": 9,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-10.7-04": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-10.7-06": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-10.7-08": {
+   "relevant": 6,
+   "killed": 6,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-10.7-09": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-10.7-10": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-12-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-12-06": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-14.2.1-11": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-15.2-08": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-3-01": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-3-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-3-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-3-04": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-3-05": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-3-08": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-3-11": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-3-13": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-3-14": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-3-19": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-3-29": {
+   "relevant": 8,
+   "killed": 8,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-3-30": {
+   "relevant": 7,
+   "killed": 7,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-3-33": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-3-34": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-3-38": {
+   "relevant": 5,
+   "killed": 5,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-3-39": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-3-44": {
+   "relevant": 16,
+   "killed": 16,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-3-46": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-3-47": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-3-48": {
+   "relevant": 8,
+   "killed": 8,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-3-52": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-5.3-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-5.3-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-5.3-04": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-6.2-02": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-6.3-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-6.3-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-6.3-11": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-7.3-01": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-7.3-02": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-7.3-05": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-7.3-08": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-8-10": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SF-9-01": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ }
+}

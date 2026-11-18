@@ -1,0 +1,67 @@
+{
+  "config": {
+    "clock_periods": "i_clk=20",
+    "documents": [
+      {
+        "file": "spec/uart_lite_Design_Specification.md",
+        "role": "ip_spec",
+        "sections": [],
+        "skip": [],
+        "tag": "UL"
+      }
+    ],
+    "formal": "on",
+    "formal_depth": "64",
+    "rtl_origin": "generated",
+    "top": "m_uart_lite"
+  },
+  "created": "2026-11-17T10:16:31+00:00",
+  "design": "uart_lite",
+  "gates": {
+    "D1_config": {
+      "at": "2026-11-17T10:30:58+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "work/final_config.json": "9f3d371fe4efc23f883782b79d9781b4f443c08536820c5e909939fcf96bf801"
+      },
+      "note": "Delegated: default configuration."
+    },
+    "D2_rtl": {
+      "at": "2026-11-18T19:24:52+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "rtl": "f89e75adaafe2a87d6f95d99b147b2aa6756abbbc6c8357672bbd054e81101ad",
+        "work/rtl_gen.json": "ab9633be7f439b14ce87261231593cd5d9929c1637669f6dc3bc4b2c0a265d81"
+      },
+      "note": "Delegated review (the designer is not a hardware engineer). work/rtl_gen.md: rtl-check clean in 1 attempt (1 info: $error parameter range check inside ifndef SYNTHESIS, accepted under the RR-10 exception for REQ-PAR-003), synthesis 6553 um2 TT, 7.7 ns at SS (budget 20 ns at 50 MHz), 80.5 % rule tags. Open points read: 2-FF synchronizer plus a reset-to-1 previous-sample flop for start detection (D-003, REQ-RST-005), every internal flop reset, no separate TX busy flag. Verification on this RTL: sim 20/20 tests and 13/13 assertions over 7 runs in 4 configurations; formal depth 64 no counterexample in any configuration; mutation 35/36 (M19, reset value of r_rxd_prev, claimed equivalent: the synchronizer also resets to 1). Not reviewed by a hardware engineer."
+    },
+    "G1_rules": {
+      "at": "2026-11-17T10:24:39+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "work/rules.json": "301ad979caf540cdc7fb7297125db6ed10b33e49d2f553c168c27dac84b22490"
+      },
+      "note": "Delegated: 154 rules from the A0 draft (designer decisions D-001..D-012 recorded in the spec by the same delegate); 2 open questions decided (loopback via half-cycle delay; synchronizer structure checked at D2).",
+      "sources": {
+        "spec/uart_lite_Design_Specification.md": "5d158669ff6d5a3bb8b492e9f6a359b1c6ceed093447e3edee2168e03557b685"
+      }
+    },
+    "G2_contract": {
+      "at": "2026-11-17T10:30:57+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "work/contract.json": "3a0ea03742544d3f6607c88f9a002804d2f0850ace9a218bf985ded81e23f8eb"
+      },
+      "note": "Delegated: 32 checks (13 assertions, 19 tests); 22 rules not verified by simulation (environment obligations, structural/implementation constraints: synchronizer structure checked at D2). Run set: CFG-BASE/MIN/ODD/WIDE."
+    },
+    "G3_verif_sources": {
+      "at": "2026-11-18T17:16:30+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "verif": "90ce5f90f45a8deb80978e6825c47fc83f1e0e82c2663d0751fbca47b6d39d8d"
+      },
+      "note": "Re-approval after two hand fixes (NNC hand fix (G3, triage B)), both from work/triage.md of 2026-11-18, all 6 failures judged B: (1) verif/tests/test_uart_lite.py Env.start(): i_rst_n now falls before the clock starts (ENV-002), the generated harness clocked an un-reset DUT for 3 edges (CHK-002, CHK-010 at 0-40 ns); (2) verif/sva/nnc_chk_rx.sv reference model: a frame starts only on a falling edge of i_rxd (previous sample reset to 1, REQ-RST-010), it started on any low sample and invented frames on a line held low (CHK-003/005/006/009). Neither edit removes or relaxes a check; both make the model follow the spec. Earlier review of the rest unchanged. Delegated; not reviewed by a hardware engineer."
+    }
+  },
+  "version": 1
+}

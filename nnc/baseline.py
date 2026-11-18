@@ -156,7 +156,8 @@ def compare(design_root: Path, host: SimHost, log=print, mutants: bool = True) -
     ours = {b["id"]: b for b in json.loads((work / "bench.json").read_text(encoding="utf-8"))["bugs"]} \
         if (work / "bench.json").is_file() else {}
     rows = []
-    for b in bench.load(design_root):
+    bugs = bench.load(design_root) if (design_root / "bugs" / bench.MANIFEST).is_file() else []
+    for b in bugs:
         out = work / "baseline" / b["id"]
         inject.make_copy(design_root / "rtl", bench.make_patch(design_root / "rtl", b), out / "rtl")
         r = run(host, design_root, out / "rtl", desc)

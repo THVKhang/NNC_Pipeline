@@ -686,6 +686,12 @@ def stage_mutate(d: Design, o: Options) -> None:
         o.say(f"[mutate] run set: {len(runs)} runs; each mutant runs where its line is executed (primary first)")
     res = mutate.run(default_host(), _read(d.work / "contract.json"), d.root / "rtl", d.root / "verif" / "sva",
                      test_files(d), count=o.mutants, seed=o.seed, **kw)
+    if res["count"] and res["not_compiled"] == res["count"]:
+        # a one-operator change rarely breaks the build; all of them failing means the simulator host failed
+        # (e.g. WSL stopped), and a score of "None" with every mutant "not compiled" would mislead the reader
+        raise ProjectError(f"none of the {res['count']} mutants compiled: the simulator host probably failed "
+                           "(check with 'nnc doctor'; on Windows 'wsl --shutdown' restarts WSL); "
+                           "work/mutation.json was not written")
     ex = res.get("excluded_uncovered") or {}
     o.say(f"[mutate] {res['count']} mutants: killed {res['killed']}, survived {res['survived']}, "
           f"not compiled {res['not_compiled']}; score {res['score']} % (candidates on executed lines only; "
@@ -752,12 +758,17 @@ def stage_gen_rtl(d: Design, o: Options) -> None:
     _save_rtl(d, rep, o, "gen-rtl")
 
 
-def stage_fix_rtl(d: Design, o: Options) -> int:
-    """Repair the generated RTL from the faults triage judged A (RTL wrong); returns the number of faults."""
+def stage_fix_rtl(d: Design, o: Options, source: str = "sim") -> int:
+    """Repair the generated RTL from the faults triage judged A (RTL wrong); returns the number of faults.
+    `source`: "sim" (work/triage.json), "formal" (work/formal_triage.json) or "all"."""
     _require_generated(d)
     _gate(d, "fix-rtl", o)
-    tri = _read(d.work / "triage.json")
-    fixes = gen_rtl.fault_text(tri.get("analyses", []))
+    analyses = []
+    if source in ("sim", "all"):
+        analyses += _read(d.work / "triage.json").get("analyses", [])
+    if source in ("formal", "all"):
+        analyses += _read(d.work / "formal_triage.json").get("analyses", [])
+    fixes = gen_rtl.fault_text(analyses)
     if not fixes:
         o.say("[fix-rtl] triage judged no failure an RTL fault: nothing to repair")
         return 0
