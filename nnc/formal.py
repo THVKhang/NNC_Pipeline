@@ -435,6 +435,12 @@ def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, env_file: P
         if bad:      # some assertions of the check could not be translated: the result covers the others
             checks[cid]["reason"] = "not translated: " + "; ".join(bad)
             checks[cid]["partial"] = True
+    tried = [v for v in checks.values() if v["status"] != "UNSUPPORTED"]
+    if tried and all(v["status"] == "ERROR" and not v.get("bmc") and not v.get("prove") and not v.get("errors")
+                     for v in tried):
+        # no task wrote a status or a log line: SymbiYosys never ran (the host failed, e.g. WSL stopped)
+        raise RuntimeError("formal: no SymbiYosys task produced a status or a log; the tool host probably failed "
+                           "(check with 'nnc doctor'; on Windows 'wsl --shutdown' restarts WSL)")
     counts: dict[str, int] = {}
     for v in checks.values():
         counts[v["status"]] = counts.get(v["status"], 0) + 1

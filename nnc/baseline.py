@@ -50,11 +50,15 @@ def apbcdc_stimulus(index: int, nx: int) -> tuple[str, str]:
 def build(desc: dict, design_root: Path, rtl_dir: Path) -> tuple[dict, str, list[str]]:
     """Input files, the shell script and the run names."""
     files: dict[str, object] = {}
-    for f in desc["rtl"]:
+    rtl = desc["rtl"]
+    if rtl == "filelist":                      # a generated RTL: the files of rtl/filelist.f, in order
+        from nnc.sim import rtl_files
+        rtl = [f.name for f in rtl_files(rtl_dir)]
+    for f in rtl:
         files[f"rtl/{f}"] = rtl_dir / f
     for f in desc["tb"]:
         files[f"tb/{f}"] = design_root / "baseline" / f
-    srcs = " ".join([f"rtl/{f}" for f in desc["rtl"]] + [f"tb/{f}" for f in desc["tb"]])
+    srcs = " ".join([f"rtl/{f}" for f in rtl] + [f"tb/{f}" for f in desc["tb"]])
     names = []
     for r in desc["runs"]:
         name = r["name"]
@@ -152,7 +156,8 @@ def compare(design_root: Path, host: SimHost, log=print, mutants: bool = True) -
     ours = {b["id"]: b for b in json.loads((work / "bench.json").read_text(encoding="utf-8"))["bugs"]} \
         if (work / "bench.json").is_file() else {}
     rows = []
-    for b in bench.load(design_root):
+    bugs = bench.load(design_root) if (design_root / "bugs" / bench.MANIFEST).is_file() else []
+    for b in bugs:
         out = work / "baseline" / b["id"]
         inject.make_copy(design_root / "rtl", bench.make_patch(design_root / "rtl", b), out / "rtl")
         r = run(host, design_root, out / "rtl", desc)

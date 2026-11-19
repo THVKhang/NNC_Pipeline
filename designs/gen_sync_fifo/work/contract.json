@@ -1,0 +1,1409 @@
+{
+ "top": "m_vlsit_sfifo_top",
+ "interface": {
+  "ports": [
+   {
+    "name": "i_clk_wr",
+    "direction": "input",
+    "width": "1",
+    "type": "Clock (free running, rising edge)",
+    "reset_value": "Not applicable",
+    "meaning": "Write-domain clock",
+    "domain": "CLK-WR"
+   },
+   {
+    "name": "i_rst_n_wr",
+    "direction": "input",
+    "width": "1",
+    "type": "Reset (active-low level, asynchronous assertion, release synchronous to i_clk_wr outside the IP)",
+    "reset_value": "Not applicable",
+    "meaning": "Hardware reset of all write-domain state",
+    "domain": "CLK-WR"
+   },
+   {
+    "name": "i_wr_en",
+    "direction": "input",
+    "width": "1",
+    "type": "Level (request, active-high; held high gives one write per cycle)",
+    "reset_value": "0",
+    "meaning": "Write request: accepted when i_wr_en = 1 and o_full = 0",
+    "domain": "CLK-WR"
+   },
+   {
+    "name": "i_wr_data",
+    "direction": "input",
+    "width": "PARA_SFIFO_DATA_W",
+    "type": "Data (valid at the edge where the write is accepted)",
+    "reset_value": "Not applicable",
+    "meaning": "Word to store",
+    "domain": "CLK-WR"
+   },
+   {
+    "name": "i_full_thr",
+    "direction": "input",
+    "width": "LPARA_OCC_W",
+    "type": "Static (quasi-static: set before use and not changed while the FIFO is in use)",
+    "reset_value": "Not applicable",
+    "meaning": "Threshold of o_full_thr, an occupancy value",
+    "domain": "static, no clock"
+   },
+   {
+    "name": "i_rst_n_sw",
+    "direction": "input",
+    "width": "1",
+    "type": "Level (control, active-low; a one-cycle low pulse is enough)",
+    "reset_value": "1",
+    "meaning": "Software reset request, active-low",
+    "domain": "CLK-WR"
+   },
+   {
+    "name": "o_sw_rst_busy",
+    "direction": "output",
+    "width": "1",
+    "type": "Level (flop output, active-high)",
+    "reset_value": "0",
+    "meaning": "Software reset busy: writes are possible again when it is 0",
+    "domain": "CLK-WR"
+   },
+   {
+    "name": "o_full",
+    "direction": "output",
+    "width": "1",
+    "type": "Level (flag: flop output ORed with the block term)",
+    "reset_value": "0",
+    "meaning": "FIFO has no free place in the write view; also 1 while writes are blocked by the software reset",
+    "domain": "CLK-WR"
+   },
+   {
+    "name": "o_full_thr",
+    "direction": "output",
+    "width": "1",
+    "type": "Level (flag: flop output, selected by the block term)",
+    "reset_value": "0",
+    "meaning": "Occupancy in the write view is at or above i_full_thr; while writes are blocked it shows the value of an empty FIFO",
+    "domain": "CLK-WR"
+   },
+   {
+    "name": "o_overflow",
+    "direction": "output",
+    "width": "1",
+    "type": "Pulse (1 write-clock cycle, flop output, not sticky; several events in consecutive cycles give consecutive pulses)",
+    "reset_value": "0",
+    "meaning": "A write was requested while the FIFO was full and was dropped",
+    "domain": "CLK-WR"
+   },
+   {
+    "name": "i_clk_rd",
+    "direction": "input",
+    "width": "1",
+    "type": "Clock (free running, rising edge)",
+    "reset_value": "Not applicable",
+    "meaning": "Read-domain clock",
+    "domain": "CLK-RD"
+   },
+   {
+    "name": "i_rst_n_rd",
+    "direction": "input",
+    "width": "1",
+    "type": "Reset (active-low level, asynchronous assertion, release synchronous to i_clk_rd outside the IP)",
+    "reset_value": "Not applicable",
+    "meaning": "Hardware reset of all read-domain state",
+    "domain": "CLK-RD"
+   },
+   {
+    "name": "i_rd_en",
+    "direction": "input",
+    "width": "1",
+    "type": "Level (request, active-high; held high gives one read per cycle)",
+    "reset_value": "0",
+    "meaning": "Read request: accepted when i_rd_en = 1 and o_empty = 0",
+    "domain": "CLK-RD"
+   },
+   {
+    "name": "i_empty_thr",
+    "direction": "input",
+    "width": "LPARA_OCC_W",
+    "type": "Static (quasi-static: set before use and not changed while the FIFO is in use)",
+    "reset_value": "Not applicable",
+    "meaning": "Threshold of o_empty_thr, an occupancy value",
+    "domain": "static, no clock"
+   },
+   {
+    "name": "o_rd_data",
+    "direction": "output",
+    "width": "PARA_SFIFO_DATA_W",
+    "type": "Data (valid when o_empty = 0)",
+    "reset_value": "Not defined until the first word is stored (not reset)",
+    "meaning": "Word at the read pointer (show-ahead); the memory output register",
+    "domain": "CLK-RD"
+   },
+   {
+    "name": "o_empty",
+    "direction": "output",
+    "width": "1",
+    "type": "Level (flag: flop output ORed with the block term)",
+    "reset_value": "1",
+    "meaning": "FIFO has no word visible to the read side; also 1 while reads are blocked by the software reset",
+    "domain": "CLK-RD"
+   },
+   {
+    "name": "o_empty_thr",
+    "direction": "output",
+    "width": "1",
+    "type": "Level (flag: flop output, selected by the block term)",
+    "reset_value": "1",
+    "meaning": "Occupancy in the read view is at or below i_empty_thr; while reads are blocked it is 1",
+    "domain": "CLK-RD"
+   },
+   {
+    "name": "o_underflow",
+    "direction": "output",
+    "width": "1",
+    "type": "Pulse (1 read-clock cycle, flop output, not sticky)",
+    "reset_value": "0",
+    "meaning": "A read was requested while the FIFO was empty and was dropped",
+    "domain": "CLK-RD"
+   }
+  ],
+  "parameters": [
+   {
+    "name": "PARA_SFIFO_DEPTH",
+    "default": "8",
+    "legal": "Any integer of 2 or more, no upper limit (DEC-009)"
+   },
+   {
+    "name": "PARA_SFIFO_DATA_W",
+    "default": "32",
+    "legal": "1 or more, no upper limit"
+   },
+   {
+    "name": "PARA_SFIFO_PTR_RETIME",
+    "default": "0",
+    "legal": "0 or 1"
+   },
+   {
+    "name": "PARA_SFIFO_MEM_USE_MACRO",
+    "default": "0",
+    "legal": "0 or 1"
+   },
+   {
+    "name": "LPARA_ADDR_W",
+    "default": "Derived",
+    "legal": "At least 1",
+    "derived": "$clog2(PARA_SFIFO_DEPTH)"
+   },
+   {
+    "name": "LPARA_PTR_W",
+    "default": "Derived",
+    "legal": "At least 2",
+    "derived": "$clog2(2 * PARA_SFIFO_DEPTH)"
+   },
+   {
+    "name": "LPARA_OCC_W",
+    "default": "Derived",
+    "legal": "At least 2",
+    "derived": "$clog2(PARA_SFIFO_DEPTH + 1)"
+   }
+  ],
+  "clock": "i_clk_wr",
+  "reset": {
+   "name": "i_rst_n_wr",
+   "active_low": true
+  },
+  "clocks": [
+   {
+    "name": "i_clk_wr",
+    "domain": "CLK-WR"
+   },
+   {
+    "name": "i_clk_rd",
+    "domain": "CLK-RD"
+   }
+  ],
+  "resets": [
+   {
+    "name": "i_rst_n_wr",
+    "active_low": true,
+    "clock": "i_clk_wr"
+   },
+   {
+    "name": "i_rst_n_rd",
+    "active_low": true,
+    "clock": "i_clk_rd"
+   }
+  ],
+  "source_table": {
+   "section": "6.2",
+   "line": 235
+  }
+ },
+ "checks": [
+  {
+   "id": "CHK-001",
+   "kind": "assertion",
+   "group": "clk",
+   "title": "Outputs change only at their own clock edge",
+   "rules": [
+    "SF-5.4-05",
+    "SF-10.3-05",
+    "SF-6.2-02"
+   ],
+   "behavior": "o_overflow and o_sw_rst_busy change only right after a rising edge of i_clk_wr or when i_rst_n_wr falls. o_full and o_full_thr change only right after a rising edge of i_clk_wr, when i_rst_n_wr falls, or when i_rst_n_sw changes (block term). o_underflow and o_rd_data change only right after a rising edge of i_clk_rd (o_underflow also when i_rst_n_rd falls). o_empty and o_empty_thr change only right after a rising edge of i_clk_rd, when i_rst_n_rd falls, or (rise to 1 only) right after the i_clk_wr rising edge after which o_sw_rst_busy goes from 0 to 1. Inputs are sampled at the edge that ends a cycle.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-002",
+   "kind": "assertion",
+   "group": "inputs",
+   "title": "No unknown input when a request is sampled",
+   "rules": [
+    "SF-15.3-04"
+   ],
+   "behavior": "At every rising edge of i_clk_wr with i_rst_n_wr=1: i_wr_en, i_rst_n_sw and i_full_thr have no X/Z, and if i_wr_en=1 then i_wr_data has no X/Z. At every rising edge of i_clk_rd with i_rst_n_rd=1: i_rd_en and i_empty_thr have no X/Z. Any violation is a checker error.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-003",
+   "kind": "assertion",
+   "group": "rd",
+   "title": "Reads blocked while software reset busy",
+   "rules": [
+    "SF-3-38",
+    "SF-10.6-06",
+    "SF-10.7-03",
+    "SF-15.3-13"
+   ],
+   "behavior": "At every rising edge of i_clk_rd with i_rst_n_rd=1 and i_rst_n_wr=1 where o_sw_rst_busy=1 is sampled: o_empty=1 and o_empty_thr=1. As a result, no read is accepted at that edge.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-004",
+   "kind": "assertion",
+   "group": "rd",
+   "title": "Read-view occupancy model for o_empty and o_empty_thr",
+   "rules": [
+    "SF-1.3-02",
+    "SF-1.3-03",
+    "SF-3-08",
+    "SF-3-15",
+    "SF-3-52",
+    "SF-3-54",
+    "SF-5.1-01",
+    "SF-5.3-02",
+    "SF-5.4-03",
+    "SF-9-03",
+    "SF-9-05",
+    "SF-9-06",
+    "SF-10.2-02",
+    "SF-10.2-03",
+    "SF-10.2-07",
+    "SF-10.3-13",
+    "SF-10.4-06",
+    "SF-10.6-05",
+    "SF-10.6-06",
+    "SF-13-03"
+   ],
+   "behavior": "WA and RA are the counters of CHK-010, with the same clearing. At each i_clk_rd rising edge t: OCC_R(t) = WA counted only over i_clk_wr edges strictly earlier than t (a coincident write edge is not counted) minus RA (including an accept at t). At each i_clk_rd rising edge t' with i_rst_n_rd=1 where o_sw_rst_busy=0 is sampled both at t' and at the previous i_clk_rd edge t: o_empty == (OCC_R(t) == 0) and o_empty_thr == (OCC_R(t) <= i_empty_thr, zero-extended). Before the first edge after release, OCC_R=0. Consequences: after a write into an empty FIFO, o_empty falls right after the first i_clk_rd edge strictly later than the write edge; o_empty=1 in the cycle after the read of the last word; with i_empty_thr > PARA_SFIFO_DEPTH, o_empty_thr is always 1.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-005",
+   "kind": "assertion",
+   "group": "rd",
+   "title": "o_underflow one-cycle pulse",
+   "rules": [
+    "SF-1.3-04",
+    "SF-3-18",
+    "SF-3-39",
+    "SF-6.2-06",
+    "SF-6.3-06",
+    "SF-6.3-10",
+    "SF-10.2-06",
+    "SF-10.3-08",
+    "SF-10.6-07",
+    "SF-12-04",
+    "SF-12-07",
+    "SF-12-10",
+    "SF-12-11",
+    "SF-15.3-11"
+   ],
+   "behavior": "At every rising edge of i_clk_rd with i_rst_n_rd=1, using the values sampled at that edge: (a) if o_underflow=1 after the edge, then i_rd_en=1 and o_empty=1 were sampled at that edge; (b) if o_sw_rst_busy=0 was sampled at that edge, then after the edge o_underflow == (i_rd_en=1 AND o_empty=1). The pulse lasts one i_clk_rd cycle unless the next edge again meets the condition (consecutive rejected reads give consecutive pulses). There is no sticky state. o_underflow=0 while i_rst_n_rd=0.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-006",
+   "kind": "assertion",
+   "group": "sb",
+   "title": "Scoreboard: order, no loss, no duplication, show-ahead data",
+   "rules": [
+    "SF-1.1-01",
+    "SF-1.1-02",
+    "SF-1.3-05",
+    "SF-3-01",
+    "SF-3-02",
+    "SF-3-03",
+    "SF-3-07",
+    "SF-3-10",
+    "SF-3-11",
+    "SF-3-19",
+    "SF-5.3-01",
+    "SF-5.3-03",
+    "SF-5.3-04",
+    "SF-5.4-02",
+    "SF-6.3-01",
+    "SF-6.3-03",
+    "SF-6.3-04",
+    "SF-6.3-07",
+    "SF-6.3-09",
+    "SF-7.3-07",
+    "SF-10.1-01",
+    "SF-10.3-06",
+    "SF-10.4-01",
+    "SF-10.5-01",
+    "SF-10.5-02",
+    "SF-10.5-03",
+    "SF-15.3-02",
+    "SF-15.3-03",
+    "SF-15.3-05",
+    "SF-15.3-06",
+    "SF-15.3-07",
+    "SF-15.3-12",
+    "SF-20.2-01",
+    "SF-20.2-05"
+   ],
+   "behavior": "Reference queue Q: at each i_clk_wr rising edge with i_wr_en=1 and o_full=0, push i_wr_data. Nothing is pushed when o_full=1, so there is no bypass even if a read happens at the same edge. At each i_clk_rd rising edge where o_empty=0 is sampled: Q must be non-empty and o_rd_data must equal the head of Q. If i_rd_en=1 at that edge, pop the head. No pop when o_empty=1. At coincident edges, the read check and pop are done before the write push. Q is cleared at the i_clk_wr edge after which o_sw_rst_busy goes from 1 to 0, and while either hardware reset is asserted. o_rd_data is never sampled while o_empty=1. The checker is disabled while i_rst_n_wr=0 or i_rst_n_rd=0.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-007",
+   "kind": "assertion",
+   "group": "sb",
+   "title": "Occupancy bounds and safe-direction flag lag",
+   "rules": [
+    "SF-3-05",
+    "SF-5.4-01",
+    "SF-5.4-04",
+    "SF-6.3-05",
+    "SF-15.3-08",
+    "SF-15.3-09",
+    "SF-15.3-15"
+   ],
+   "behavior": "With Q from CHK-006 (size before the edge): at every rising edge of i_clk_wr and i_clk_rd, 0 <= size(Q) <= PARA_SFIFO_DEPTH. At every i_clk_wr rising edge where size(Q) == PARA_SFIFO_DEPTH, o_full=1. At every i_clk_rd rising edge where size(Q) == 0, o_empty=1. At every i_clk_wr edge, OCC_W of CHK-010 >= size(Q), and at every i_clk_rd edge, OCC_R of CHK-004 <= size(Q): the views lag only in the safe direction. Disabled while either hardware reset is asserted.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-008",
+   "kind": "assertion",
+   "group": "srst",
+   "title": "o_sw_rst_busy start and idle behavior",
+   "rules": [
+    "SF-3-33",
+    "SF-3-44",
+    "SF-6.2-02",
+    "SF-10.1-02",
+    "SF-10.7-02",
+    "SF-15.3-14"
+   ],
+   "behavior": "At every rising edge of i_clk_wr with i_rst_n_wr=1: (a) if o_sw_rst_busy=0 and i_rst_n_sw=0, then o_sw_rst_busy=1 after the edge (one low cycle is enough); (b) if o_sw_rst_busy=0 and i_rst_n_sw=1, then o_sw_rst_busy=0 after the edge. o_sw_rst_busy=0 while i_rst_n_wr=0, and it changes only right after a rising edge of i_clk_wr or when i_rst_n_wr is asserted.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-009",
+   "kind": "assertion",
+   "group": "wr",
+   "title": "Write block term forces o_full and o_full_thr",
+   "rules": [
+    "SF-3-35",
+    "SF-3-36",
+    "SF-10.6-03",
+    "SF-10.7-01",
+    "SF-10.1-02",
+    "SF-15.3-13"
+   ],
+   "behavior": "Let BLOCK_W = (i_rst_n_sw=0) OR (o_sw_rst_busy=1). At every rising edge of i_clk_wr with i_rst_n_wr=1 and i_rst_n_rd=1, and also right after any change of i_rst_n_sw: if BLOCK_W=1 then o_full=1 and o_full_thr = (i_full_thr == 0). This holds from the same cycle in which i_rst_n_sw goes to 0, with no clock delay, and for as long as o_sw_rst_busy=1. Because o_full=1, no write is accepted at an edge where BLOCK_W=1 (the scoreboard of CHK-006 pushes nothing).",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-010",
+   "kind": "assertion",
+   "group": "wr",
+   "title": "Write-view occupancy model for o_full and o_full_thr",
+   "rules": [
+    "SF-1.3-02",
+    "SF-1.3-03",
+    "SF-3-05",
+    "SF-3-14",
+    "SF-3-45",
+    "SF-3-53",
+    "SF-3-54",
+    "SF-5.1-01",
+    "SF-5.3-05",
+    "SF-5.4-03",
+    "SF-9-03",
+    "SF-9-05",
+    "SF-9-06",
+    "SF-10.2-01",
+    "SF-10.2-04",
+    "SF-10.2-07",
+    "SF-10.4-07",
+    "SF-10.6-02",
+    "SF-10.6-03",
+    "SF-10.7-07",
+    "SF-13-04"
+   ],
+   "behavior": "Reference counters built from ports only: WA counts i_clk_wr rising edges with i_wr_en=1 and o_full=0. RA counts i_clk_rd rising edges with i_rd_en=1 and o_empty=0. Both counters are cleared while i_rst_n_wr=0 or i_rst_n_rd=0, and at the i_clk_wr rising edge after which o_sw_rst_busy goes from 1 to 0 (the occupancy computed at that edge is 0). At each i_clk_wr rising edge t: OCC_W(t) = WA (including an accept at t) minus RA counted only over i_clk_rd edges strictly earlier than t. A read edge at the same time as t is not counted. At each i_clk_wr rising edge t' where i_rst_n_sw=1 and o_sw_rst_busy=0, with t the previous i_clk_wr edge: o_full == (OCC_W(t) == PARA_SFIFO_DEPTH) and o_full_thr == (OCC_W(t) >= i_full_thr, zero-extended). The o_full check applies from the first edge after release of i_rst_n_wr (OCC_W=0 before any edge). The o_full_thr check applies from the second edge (see CHK-021). Consequences: o_full=1 in the cycle after the write that stores the 8th word; o_full falls right after the first i_clk_wr edge strictly later than the read edge that frees a place; with i_full_thr > PARA_SFIFO_DEPTH, o_full_thr is never 1.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-011",
+   "kind": "assertion",
+   "group": "wr",
+   "title": "o_overflow exact one-cycle pulse",
+   "rules": [
+    "SF-1.3-04",
+    "SF-3-17",
+    "SF-3-37",
+    "SF-6.2-06",
+    "SF-6.3-06",
+    "SF-6.3-08",
+    "SF-6.3-11",
+    "SF-10.2-05",
+    "SF-10.6-04",
+    "SF-12-01",
+    "SF-12-07",
+    "SF-12-10",
+    "SF-12-11",
+    "SF-15.3-10",
+    "SF-15.3-13"
+   ],
+   "behavior": "At every rising edge of i_clk_wr with i_rst_n_wr=1: after the edge, o_overflow == (i_wr_en=1 AND o_full=1 AND i_rst_n_sw=1 AND o_sw_rst_busy=0), using the values sampled at that edge. It holds for exactly one i_clk_wr cycle and changes only at the next edge. So: no pulse for an accepted write, no pulse for a write blocked by the software reset, one pulse per rejected unblocked write (N consecutive rejected writes give N consecutive cycles of o_overflow=1), and no sticky state. o_overflow=0 while i_rst_n_wr=0.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-012",
+   "kind": "test",
+   "group": "clk",
+   "title": "Strictly-later edge latency of o_empty and o_full fall at 3:2 ratio",
+   "rules": [
+    "SF-1.1-03",
+    "SF-1.3-01",
+    "SF-3-23",
+    "SF-3-52",
+    "SF-3-53",
+    "SF-5.3-02",
+    "SF-5.3-05",
+    "SF-10.2-02",
+    "SF-10.2-04",
+    "SF-10.3-13",
+    "SF-13-03",
+    "SF-13-04",
+    "SF-15.2-06"
+   ],
+   "behavior": "Directed latency check at every edge alignment of a 3:2 ratio, including coincident edges.",
+   "stimulus": "One generator: i_clk_wr period 8 ns, i_clk_rd period 12 ns, rising edges coincide at t = 24k ns. Write edges are at 24k, 24k+8 and 24k+16; read edges are at 24k and 24k+12. Empty-FIFO cases, each starting from an empty FIFO and reading the word afterwards: (A) single write at write edge 24k; (B) single write at 24k+8; (C) single write at 24k+16. Full-FIFO cases, each starting from 8 stored words with the writer idle, refilling to full between cases: (D) single read at read edge 24k; (E) single read at 24k+12.",
+   "expected": "(A): o_empty=1 sampled at read edge 24k+12, o_empty=0 sampled at 24k+24 with o_rd_data = the written word (o_empty falls after 24k+12). (B): o_empty falls after read edge 24k+12, so it is sampled 0 at 24k+24. (C): o_empty falls after read edge 24k+24, so it is sampled 0 at 24k+36. (D): o_full falls after write edge 24k+8, so it is sampled 0 at 24k+16. (E): o_full falls after write edge 24k+16, so it is sampled 0 at 24k+24. Scoreboard and all assertions pass."
+  },
+  {
+   "id": "CHK-013",
+   "kind": "test",
+   "group": "cross",
+   "title": "Constrained-random scoreboard traffic over clock ratios and reset release phases",
+   "rules": [
+    "SF-1.1-01",
+    "SF-1.1-02",
+    "SF-1.1-03",
+    "SF-1.1-05",
+    "SF-1.3-01",
+    "SF-3-04",
+    "SF-3-23",
+    "SF-3-32",
+    "SF-7.3-04",
+    "SF-12-02",
+    "SF-12-05",
+    "SF-15.1-02",
+    "SF-15.2-02",
+    "SF-15.2-09"
+   ],
+   "behavior": "Random traffic with all assertions (CHK-001..CHK-011) active, over the clock ratios of the plan, in one simulation of the default configuration.",
+   "stimulus": "One clock generator. The ratio is changed only while both hardware resets are asserted, over half-period ratios equal (1:1), 3:2, 2:3, 1:2, 2:1, 3:7, 7:3 and 9:2, with coincident edges. For each ratio, the resets are released synchronously in different orders and phases (write first, read first, coincident). Random i_wr_en and i_rd_en densities from 10% to 100%, random i_wr_data, and occasional i_rst_n_sw low levels of 1..10 cycles that end before o_sw_rst_busy falls. Static thresholds are chosen at random during reset. No request is driven before both resets are released. At the end of each ratio the FIFO is drained.",
+   "expected": "No assertion fails. Every accepted word that is not discarded by a software reset is read exactly once and in order. At the end of each ratio the scoreboard is empty and o_empty=1. No operation is lost at coincident edges."
+  },
+  {
+   "id": "CHK-014",
+   "kind": "test",
+   "group": "func",
+   "title": "First word latency, show-ahead and back-to-back reads with equal clocks",
+   "rules": [
+    "SF-1.1-01",
+    "SF-1.1-05",
+    "SF-3-01",
+    "SF-3-02",
+    "SF-3-03",
+    "SF-3-52",
+    "SF-3-54",
+    "SF-5.3-01",
+    "SF-5.3-02",
+    "SF-5.3-03",
+    "SF-5.3-04",
+    "SF-6.3-04",
+    "SF-6.3-07",
+    "SF-6.3-09",
+    "SF-10.2-01",
+    "SF-10.2-02",
+    "SF-10.2-03",
+    "SF-10.3-13",
+    "SF-10.4-04",
+    "SF-10.4-06"
+   ],
+   "behavior": "Directed write and read with equal, coincident clocks. Checks the strict-later rule, show-ahead without a bubble, and o_empty in the cycle after the last read.",
+   "stimulus": "Equal clocks, 10 ns, coincident edges E0, E1, ... after both resets are released. i_empty_thr=0, i_full_thr=8. Drive i_wr_en=1 with D0 at E0 only, and i_rd_en=1 at E2 only. Then drive i_wr_en=1 with D1, D2, D3, D4 at E5, E6, E7, E8, and i_rd_en=1 at E7, E8, E9, E10. i_rd_en=0 otherwise.",
+   "expected": "o_empty=1 sampled at E0 and E1. o_empty=0 sampled at E2 with o_rd_data=D0 (the coincident edge E0 does not count). o_empty_thr=0 sampled at E2. The read at E2 is accepted, and o_empty=1 and o_empty_thr=1 sampled at E3. Reads are accepted at E7, E8, E9 and E10 with o_rd_data = D1, D2, D3, D4 respectively, with o_empty=0 at each of these edges (no bubble). o_empty=1 sampled at E11. o_full=0 and o_overflow=0 throughout. o_underflow=0 throughout."
+  },
+  {
+   "id": "CHK-015",
+   "kind": "test",
+   "group": "func",
+   "title": "Fill to full, overflow pulses, drain to empty, underflow pulses",
+   "rules": [
+    "SF-3-05",
+    "SF-3-07",
+    "SF-3-17",
+    "SF-3-18",
+    "SF-3-19",
+    "SF-3-53",
+    "SF-3-54",
+    "SF-6.3-06",
+    "SF-6.3-08",
+    "SF-6.3-10",
+    "SF-10.2-05",
+    "SF-10.2-06",
+    "SF-10.3-08",
+    "SF-10.4-07",
+    "SF-12-01",
+    "SF-12-02",
+    "SF-12-04",
+    "SF-12-05",
+    "SF-12-10",
+    "SF-12-11",
+    "SF-15.2-03",
+    "SF-15.2-04"
+   ],
+   "behavior": "Directed boundary test for full and empty, with rejected requests on both sides.",
+   "stimulus": "Equal clocks, 10 ns, coincident edges E0, E1, ...; i_full_thr=8, i_empty_thr=0. Write D0..D7 at E0..E7 with the reader idle. Keep i_wr_en=1 with D8..D12 at E8..E12, then i_wr_en=0. Set i_rd_en=1 at E15..E22 (drain), and again at E23, E24, E25 (empty FIFO), then 0. Write D13 at E27, and read it when it becomes visible.",
+   "expected": "o_full=0 sampled at E0..E7; o_full=1 sampled at E8 (cycle after the 8th write) through E16. o_overflow=1 in exactly the 5 cycles after E8..E12 (sampled 1 at E9..E13, 0 at E14). Reads at E15..E22 return D0..D7 in order. D8..D12 are never read. o_full=0 sampled at E17 (it falls after E16, the first write edge strictly after the read edge E15). o_empty=1 sampled at E23. o_underflow=1 sampled at E24, E25 and E26, and 0 at E27. D13 gives o_empty=0 sampled at E29 with o_rd_data=D13 and is read correctly: the next request is independent of the errors. o_underflow=0 during E15..E23."
+  },
+  {
+   "id": "CHK-016",
+   "kind": "test",
+   "group": "func",
+   "title": "No full-FIFO bypass; simultaneous accepted write and read",
+   "rules": [
+    "SF-20.2-05",
+    "SF-10.4-01",
+    "SF-5.4-02",
+    "SF-15.3-05"
+   ],
+   "behavior": "A write into a full FIFO is rejected even if a read is accepted at the same edge. A simultaneous write and read are both accepted when the flags allow.",
+   "stimulus": "Equal clocks, 10 ns, coincident edges. Write D0..D7 at E0..E7 (FIFO full, o_full=1 at E8). At E9 drive i_wr_en=1 with X1 and i_rd_en=1. At E10 drive i_wr_en=1 with X2 and i_rd_en=0. At E11 drive i_wr_en=1 with X3. Then read until the occupancy is 4, idle 4 cycles, then hold i_wr_en=1 and i_rd_en=1 for 6 consecutive edges with new words Y0..Y5, then drain completely.",
+   "expected": "At E9 the read is accepted (o_rd_data=D0) and X1 is rejected: o_overflow=1 sampled at E10. o_full=1 sampled at E10, so X2 is rejected: o_overflow=1 sampled at E11. o_full=0 sampled at E11 and X3 is accepted. X1 and X2 are never read; the read order is D0..D7, X3. During the 6 simultaneous edges, every write and every read is accepted (o_full=0 and o_empty=0 sampled at each), with no o_overflow and no o_underflow. The drain returns the remaining words, then Y0..Y5, in order."
+  },
+  {
+   "id": "CHK-017",
+   "kind": "test",
+   "group": "func",
+   "title": "Pointer wrap: order and flags over many wraps",
+   "rules": [
+    "SF-3-04",
+    "SF-3-13",
+    "SF-9-01",
+    "SF-15.2-08"
+   ],
+   "behavior": "Observable effect of the modulo-2xDEPTH pointer and modulo-DEPTH address counting, checked through the flags and the data order.",
+   "stimulus": "Equal clocks, then the 3:2 ratio after a hardware reset. For L = 1..8, repeated so that more than 20 x 2 x PARA_SFIFO_DEPTH = 320 words pass: write L words, then read L words. Also do 10 cycles of fill to full followed by drain to empty, and random fill levels with random data.",
+   "expected": "CHK-010, CHK-004, CHK-006 and CHK-007 hold at every wrap. o_full=1 in the cycle after each fill to 8 words. o_empty=1 in the cycle after each drain. Every word is read once, in order, across all wraps."
+  },
+  {
+   "id": "CHK-018",
+   "kind": "test",
+   "group": "perf",
+   "title": "Gap-free streaming with equal clocks",
+   "rules": [
+    "SF-1.1-13",
+    "SF-3-50",
+    "SF-3-51",
+    "SF-10.3-01",
+    "SF-10.4-02",
+    "SF-10.4-04",
+    "SF-10.4-08",
+    "SF-10.4-09",
+    "SF-13-01",
+    "SF-13-02",
+    "SF-15.2-07",
+    "SF-20.2-03"
+   ],
+   "behavior": "Continuous write and continuous read with equal clocks (PARA_SFIFO_DEPTH=8 >= 4 + 2 x PARA_SFIFO_PTR_RETIME = 4).",
+   "stimulus": "Equal clocks, 10 ns, coincident edges. After both resets are released, raise i_wr_en=1 and i_rd_en=1 together so that they are first sampled at E0, and hold both at 1 for 200 cycles with an incrementing data word.",
+   "expected": "o_full=0 at every write edge, so every edge accepts a write and o_overflow is never 1. o_empty=1 sampled at E0 and E1, so o_underflow=1 sampled at E1 and E2. o_empty=0 at every read edge from E2 to the end, so a read is accepted at every edge from E2 with no gap: the first read is accepted 2 cycles after the first write edge. o_underflow=0 from E3. The read data is the incrementing sequence with no loss or duplicate."
+  },
+  {
+   "id": "CHK-019",
+   "kind": "test",
+   "group": "perf",
+   "title": "Continuous traffic, write clock faster (WF-010)",
+   "rules": [
+    "SF-1.1-03",
+    "SF-3-50",
+    "SF-3-51",
+    "SF-10.3-02",
+    "SF-10.4-09",
+    "SF-13-02"
+   ],
+   "behavior": "The slower reader never stalls; the faster writer is held back only by o_full.",
+   "stimulus": "One generator: i_clk_wr period 8 ns, i_clk_rd period 12 ns (coincident every 24 ns). i_wr_en=1 and i_rd_en=1 held after both resets are released, for at least 300 read cycles, with incrementing data.",
+   "expected": "After the first read edge at which o_empty=0 is sampled, o_empty=0 at every following read edge (a read is accepted at every read edge) and o_underflow stays 0. o_full is 1 at some write edges, and each such edge gives o_overflow=1 in the next write cycle (CHK-011). The scoreboard passes."
+  },
+  {
+   "id": "CHK-020",
+   "kind": "test",
+   "group": "perf",
+   "title": "Continuous traffic, read clock faster (WF-011)",
+   "rules": [
+    "SF-1.1-03",
+    "SF-3-51",
+    "SF-10.3-03",
+    "SF-10.4-09",
+    "SF-13-02"
+   ],
+   "behavior": "The slower writer never stalls; the faster reader waits through o_empty and o_underflow.",
+   "stimulus": "One generator: i_clk_wr period 12 ns, i_clk_rd period 8 ns (coincident every 24 ns). i_wr_en=1 and i_rd_en=1 held after both resets are released, for at least 300 write cycles, with incrementing data.",
+   "expected": "o_full=0 at every write edge (every write accepted) and o_overflow is never 1. o_empty is 1 at some read edges, with an o_underflow pulse after each of them. Every written word is read once, in order."
+  },
+  {
+   "id": "CHK-021",
+   "kind": "test",
+   "group": "reset",
+   "title": "Hardware reset values, asynchronous assertion, release and clearing of pulses",
+   "rules": [
+    "SF-3-29",
+    "SF-3-30",
+    "SF-3-31",
+    "SF-3-32",
+    "SF-6.2-04",
+    "SF-7.3-01",
+    "SF-7.3-02",
+    "SF-7.3-04",
+    "SF-7.3-05",
+    "SF-10.2-09",
+    "SF-10.6-10",
+    "SF-12-03",
+    "SF-12-06",
+    "SF-15.2-01"
+   ],
+   "behavior": "Directed check of the hardware reset values, the asynchronous assertion and the synchronous release, including reset in the middle of traffic and while a pulse is active.",
+   "stimulus": "Equal clocks: i_clk_wr and i_clk_rd both 10 ns from one generator, rising edges coincide. i_rst_n_sw=1 throughout, i_full_thr=0, i_empty_thr=0. (1) Power-up: i_rst_n_wr and i_rst_n_rd low together from time 0 for at least 3 edges of each clock. Release each just after a rising edge of its own clock: first i_rst_n_wr one cycle before i_rst_n_rd, then on a second pass the reverse order. i_wr_en=i_rd_en=0 until both are released. (2) Write words N0..N7 at 8 consecutive write edges, then keep i_wr_en=1 one more edge, so that o_overflow=1. Assert i_rst_n_wr and i_rst_n_rd together 5 ns after an edge (mid-cycle), hold them for 3 cycles, and release them synchronously. (3) With the FIFO empty, set i_rd_en=1 for one edge so that o_underflow=1, then assert both resets mid-cycle. (4) After each release, write word M0 at the first write edge, then read it.",
+   "expected": "Right after each assertion, before any clock edge, and at every edge while asserted: o_full=0, o_full_thr=0, o_overflow=0, o_sw_rst_busy=0, o_empty=1, o_empty_thr=1, o_underflow=0. An active o_overflow or o_underflow pulse goes to 0 at the assertion. After release with no traffic: o_full=0 and o_empty=1 at every edge. o_full_thr stays 0 until the first i_clk_wr edge after release and is 1 after that edge (occupancy 0 >= i_full_thr=0). o_empty_thr=1. M0, written at write edge Ek, gives o_empty=0 sampled at Ek+2 with o_rd_data=M0. No word N0..N7 is ever read after the reset. o_overflow and o_underflow stay 0 until a new rejected request."
+  },
+  {
+   "id": "CHK-022",
+   "kind": "test",
+   "group": "srst",
+   "title": "Software reset sequence with low levels of 1, 3 and 10 cycles and traffic",
+   "rules": [
+    "SF-1.1-14",
+    "SF-3-33",
+    "SF-3-34",
+    "SF-3-35",
+    "SF-3-36",
+    "SF-3-37",
+    "SF-3-38",
+    "SF-3-39",
+    "SF-3-42",
+    "SF-3-44",
+    "SF-3-45",
+    "SF-3-48",
+    "SF-6.3-11",
+    "SF-7.3-03",
+    "SF-10.1-02",
+    "SF-10.1-05",
+    "SF-10.2-08",
+    "SF-10.7-01",
+    "SF-10.7-02",
+    "SF-10.7-03",
+    "SF-10.7-04",
+    "SF-10.7-06",
+    "SF-10.7-07",
+    "SF-10.7-08",
+    "SF-12-07",
+    "SF-12-08",
+    "SF-15.1-03",
+    "SF-15.3-13"
+   ],
+   "behavior": "Directed software reset test: blocking, busy timing, hold, completion, FIFO empty, and correct data afterwards.",
+   "stimulus": "Equal clocks, 10 ns. i_full_thr=4, i_empty_thr=1. Write D0..D4 with the reader idle. Drive i_rst_n_sw=0 just after write edge Es so that it is sampled 0 at Es+1..Es+N, with N = 1, 3 and 10 in successive iterations. During the low cycles, drive i_wr_en=1 with words Z and i_rd_en=1; set i_rd_en=0 once i_rst_n_sw is 1 again. After o_sw_rst_busy is sampled 0, write N0..N3 at consecutive edges and read them. Repeat the whole set after a hardware reset with i_clk_wr 8 ns / i_clk_rd 12 ns, and again with 12 ns / 8 ns.",
+   "expected": "Right after i_rst_n_sw falls, before Es+1: o_full=1 and o_full_thr=0 (= (i_full_thr==0)). No Z word is accepted, and o_overflow stays 0. o_sw_rst_busy=1 after Es+1. From the first read edge at which o_sw_rst_busy=1 is sampled: o_empty=1, o_empty_thr=1, and no read is accepted. o_underflow=0 after every read edge at which o_sw_rst_busy=1 and i_rst_n_sw=0 are sampled. For N=10, o_sw_rst_busy stays 1 at every write edge while i_rst_n_sw is 0. o_sw_rst_busy returns to 0 within 64 write cycles after i_rst_n_sw returns to 1. After that, with i_rst_n_sw=1: o_full=0, o_full_thr=0 (occupancy 0 < 4), o_empty=1 and o_empty_thr=1. D0..D4 and Z are never read. N0, written at edge Ek, is shown with o_empty=0 at the second read edge strictly after Ek (equal clocks), and N0..N3 are read in order (writes retried after o_sw_rst_busy=0 succeed)."
+  },
+  {
+   "id": "CHK-023",
+   "kind": "test",
+   "group": "srst",
+   "title": "Hardware reset has priority at every step of the software reset sequence",
+   "rules": [
+    "SF-3-46",
+    "SF-7.3-08",
+    "SF-10.7-09",
+    "SF-15.1-03"
+   ],
+   "behavior": "A hardware reset asserted at each cycle of a running software reset sequence clears it.",
+   "stimulus": "Equal clocks, 10 ns. Measure the length K (in write cycles) of the o_sw_rst_busy=1 interval for a one-cycle i_rst_n_sw low pulse with 3 stored words. Then, for k = 0..K: store 3 words, apply a one-cycle i_rst_n_sw low pulse, and k write edges after o_sw_rst_busy rises assert i_rst_n_wr and i_rst_n_rd together mid-cycle (i_rst_n_sw=1). Hold for 3 cycles, release synchronously, then write one word and read it.",
+   "expected": "For every k, right at the assertion: o_sw_rst_busy=0, o_full=0, o_full_thr=0, o_overflow=0, o_empty=1, o_empty_thr=1, o_underflow=0. After release with i_rst_n_sw=1, o_sw_rst_busy stays 0 at every write edge (no resumed or pending sequence) and the FIFO is empty (o_empty=1). The first write after release is accepted (o_full=0) and read back correctly. The 3 old words never appear."
+  },
+  {
+   "id": "CHK-024",
+   "kind": "test",
+   "group": "srst",
+   "title": "Software reset while full, and a new request during the sequence",
+   "rules": [
+    "SF-3-47",
+    "SF-3-48",
+    "SF-10.7-10",
+    "SF-15.1-03"
+   ],
+   "behavior": "A request present when the sequence ends is served as a new complete sequence. A pulse while the FIFO is full empties it.",
+   "stimulus": "Equal clocks, 10 ns. (a) Fill 8 words (o_full=1), then apply a one-cycle i_rst_n_sw low pulse with i_wr_en=1 held from that cycle until o_sw_rst_busy=0. (b) Apply a one-cycle low pulse. For j = 1..12 (one iteration per j, each from an idle FIFO), j write cycles after i_rst_n_sw returns to 1, drive i_rst_n_sw=0 again for 20 write cycles, then 1. Pulses that start and end before o_sw_rst_busy falls are not driven.",
+   "expected": "(a) o_full stays 1 and o_overflow stays 0 during the sequence. After o_sw_rst_busy=0: o_full=0, o_empty=1, and the 8 old words are never read. (b) In every iteration: whenever o_sw_rst_busy=0 and i_rst_n_sw=0 are sampled at a write edge, o_sw_rst_busy=1 after that edge (a new sequence starts). o_sw_rst_busy is 0 again within 64 write cycles after i_rst_n_sw finally returns to 1. After that the FIFO is empty, and a following write and read work correctly."
+  },
+  {
+   "id": "CHK-025",
+   "kind": "test",
+   "group": "thr",
+   "title": "Threshold flags (WF-005) and threshold sweep including values above DEPTH",
+   "rules": [
+    "SF-1.3-03",
+    "SF-3-14",
+    "SF-3-15",
+    "SF-3-16",
+    "SF-6.2-08",
+    "SF-9-05",
+    "SF-9-06",
+    "SF-10.2-07",
+    "SF-10.3-07",
+    "SF-10.6-10",
+    "SF-15.2-05"
+   ],
+   "behavior": "Directed check of o_full_thr and o_empty_thr against static thresholds.",
+   "stimulus": "Equal clocks, 10 ns, coincident edges. The thresholds are changed only while both hardware resets are asserted and stay constant otherwise. Phase 1: i_full_thr=6, i_empty_thr=2. Write D0..D7 at E0..E7 with the reader idle, then read one per cycle at E10..E17 with the writer idle. Phase 2: for each value v in 0..9 and 15, reset, set i_full_thr=v and i_empty_thr=v, fill to 8 words at one per cycle, then drain to 0 at one per cycle.",
+   "expected": "Phase 1: o_full_thr=0 sampled at E1..E5 and 1 sampled at E6 (cycle after the 6th write) until E13. o_full_thr=0 sampled at E14 (write-view occupancy 5 after E13). o_empty_thr=1 sampled at E1..E3 and 0 sampled from E4 (read-view occupancy 3 after E3). o_empty_thr=1 sampled at E16 (read-view occupancy 2 after E15). Phase 2: CHK-010 and CHK-004 hold at every edge. For v=9 and v=15, o_full_thr=0 at every write edge and o_empty_thr=1 at every read edge. For v=0, o_full_thr=1 from the first write edge after release, and o_empty_thr=1 only while the read-view occupancy is 0."
+  }
+ ],
+ "not_verified": [
+  {
+   "rule": "SF-1.1-04",
+   "reason": "static_or_structural",
+   "note": "No synchronizer, crossings closed by STA: structural/STA item."
+  },
+  {
+   "rule": "SF-1.1-06",
+   "reason": "covered_by_other_check",
+   "note": "Feature list; each feature is checked by CHK-001..CHK-025 (requests/flags CHK-010/CHK-004, thresholds CHK-025, pulses CHK-011/CHK-005, show-ahead CHK-006/CHK-014, resets CHK-021/CHK-022)."
+  },
+  {
+   "rule": "SF-1.1-11",
+   "reason": "static_or_structural",
+   "note": "Any depth/width requires a parameter sweep; this run is DEPTH 8, DATA_W 32."
+  },
+  {
+   "rule": "SF-1.1-12",
+   "reason": "not_applicable_to_dut",
+   "note": "PARA_SFIFO_PTR_RETIME=1 is CFG-RETIME, another run."
+  },
+  {
+   "rule": "SF-1.2-01",
+   "reason": "not_applicable_to_dut",
+   "note": "SRAM macro branch (CFG-MACRO) not present with PARA_SFIFO_MEM_USE_MACRO=0."
+  },
+  {
+   "rule": "SF-2.1-01",
+   "reason": "static_or_structural",
+   "note": "Coding rule baseline (lint/rule check)."
+  },
+  {
+   "rule": "SF-2.2-01",
+   "reason": "design_guideline",
+   "note": "Document precedence; nothing to observe."
+  },
+  {
+   "rule": "SF-2.2-02",
+   "reason": "design_guideline",
+   "note": "Conflict-resolution process; nothing to observe."
+  },
+  {
+   "rule": "SF-3-06",
+   "reason": "covered_by_other_check",
+   "note": "Allowed conservative o_full is part of the exact write-view model of CHK-010 and the safe-lag check of CHK-007."
+  },
+  {
+   "rule": "SF-3-09",
+   "reason": "covered_by_other_check",
+   "note": "Allowed conservative o_empty is part of the exact read-view model of CHK-004 and CHK-007."
+  },
+  {
+   "rule": "SF-3-12",
+   "reason": "static_or_structural",
+   "note": "Depth range needs elaboration sweep."
+  },
+  {
+   "rule": "SF-3-20",
+   "reason": "static_or_structural",
+   "note": "Port-list review."
+  },
+  {
+   "rule": "SF-3-21",
+   "reason": "static_or_structural",
+   "note": "Flop-driven outputs and single block gate: structural check (TEST-014)."
+  },
+  {
+   "rule": "SF-3-22",
+   "reason": "static_or_structural",
+   "note": "No logic after the memory register and no reset: inspection. The one-cycle read latency is visible in CHK-014."
+  },
+  {
+   "rule": "SF-3-24",
+   "reason": "static_or_structural",
+   "note": "Absence of synchronizers: structural."
+  },
+  {
+   "rule": "SF-3-25",
+   "reason": "static_or_structural",
+   "note": "STA constraint item."
+  },
+  {
+   "rule": "SF-3-26",
+   "reason": "static_or_structural",
+   "note": "Direct pointer path is structural; its observable latency is checked by CHK-012 and CHK-014."
+  },
+  {
+   "rule": "SF-3-27",
+   "reason": "not_applicable_to_dut",
+   "note": "PARA_SFIFO_PTR_RETIME=1 only."
+  },
+  {
+   "rule": "SF-3-28",
+   "reason": "static_or_structural",
+   "note": "Needs comparison of two parameter configurations (sweep)."
+  },
+  {
+   "rule": "SF-3-40",
+   "reason": "not_observable_at_interface",
+   "note": "Internal order of pointer resets and FSM releases. The end result (empty FIFO, busy timing) is checked by CHK-022."
+  },
+  {
+   "rule": "SF-3-41",
+   "reason": "not_observable_at_interface",
+   "note": "Four-phase request/acknowledge signals are internal."
+  },
+  {
+   "rule": "SF-3-43",
+   "reason": "not_observable_at_interface",
+   "note": "Memory content is visible only on o_rd_data, which is not meaningful while o_empty=1."
+  },
+  {
+   "rule": "SF-3-49",
+   "reason": "static_or_structural",
+   "note": "Elaboration of legal ranges."
+  },
+  {
+   "rule": "SF-3-55",
+   "reason": "static_or_structural",
+   "note": "Lint and hierarchy."
+  },
+  {
+   "rule": "SF-3-56",
+   "reason": "not_applicable_to_dut",
+   "note": "CFG-MACRO only."
+  },
+  {
+   "rule": "SF-3-57",
+   "reason": "static_or_structural",
+   "note": "Inspection."
+  },
+  {
+   "rule": "SF-3-58",
+   "reason": "static_or_structural",
+   "note": "Waveform deliverables file check."
+  },
+  {
+   "rule": "SF-3-59",
+   "reason": "static_or_structural",
+   "note": "Regression across depths and PARA_SFIFO_PTR_RETIME values is a parameter sweep."
+  },
+  {
+   "rule": "SF-4-01",
+   "reason": "covered_by_other_check",
+   "note": "This whole plan is the CFG-BASE run; by designer decision only the CFG-BASE tests apply (CHK-001..CHK-025)."
+  },
+  {
+   "rule": "SF-4-02",
+   "reason": "not_applicable_to_dut",
+   "note": "CFG-RETIME is another run."
+  },
+  {
+   "rule": "SF-4-03",
+   "reason": "not_applicable_to_dut",
+   "note": "CFG-MACRO is another run."
+  },
+  {
+   "rule": "SF-4-04",
+   "reason": "not_applicable_to_dut",
+   "note": "CFG-ODD (depth 5/12) is another run."
+  },
+  {
+   "rule": "SF-4-05",
+   "reason": "not_applicable_to_dut",
+   "note": "CFG-MIN is another run."
+  },
+  {
+   "rule": "SF-4-06",
+   "reason": "static_or_structural",
+   "note": "Elaboration-time selection."
+  },
+  {
+   "rule": "SF-4-07",
+   "reason": "static_or_structural",
+   "note": "Port list across configurations."
+  },
+  {
+   "rule": "SF-6.1-01",
+   "reason": "static_or_structural",
+   "note": "Interface declaration."
+  },
+  {
+   "rule": "SF-6.1-02",
+   "reason": "static_or_structural",
+   "note": "Interface declaration."
+  },
+  {
+   "rule": "SF-6.1-03",
+   "reason": "static_or_structural",
+   "note": "Interface declaration."
+  },
+  {
+   "rule": "SF-6.1-04",
+   "reason": "static_or_structural",
+   "note": "Interface declaration."
+  },
+  {
+   "rule": "SF-6.2-01",
+   "reason": "static_or_structural",
+   "note": "Port list independent of parameters."
+  },
+  {
+   "rule": "SF-7.2-01",
+   "reason": "static_or_structural",
+   "note": "SDC clock declaration."
+  },
+  {
+   "rule": "SF-8-03",
+   "reason": "static_or_structural",
+   "note": "Parameter range."
+  },
+  {
+   "rule": "SF-8-04",
+   "reason": "static_or_structural",
+   "note": "Parameter range."
+  },
+  {
+   "rule": "SF-8-05",
+   "reason": "static_or_structural",
+   "note": "Parameter range."
+  },
+  {
+   "rule": "SF-8-07",
+   "reason": "static_or_structural",
+   "note": "Parameter range."
+  },
+  {
+   "rule": "SF-8-08",
+   "reason": "not_applicable_to_dut",
+   "note": "Macro model, CFG-MACRO only."
+  },
+  {
+   "rule": "SF-8-09",
+   "reason": "static_or_structural",
+   "note": "Derived width."
+  },
+  {
+   "rule": "SF-8-10",
+   "reason": "static_or_structural",
+   "note": "Derived width."
+  },
+  {
+   "rule": "SF-8-11",
+   "reason": "static_or_structural",
+   "note": "Derived width (i_full_thr/i_empty_thr are 4 bits here)."
+  },
+  {
+   "rule": "SF-8-12",
+   "reason": "not_applicable_to_dut",
+   "note": "CFG-MIN elaboration/lint."
+  },
+  {
+   "rule": "SF-8-13",
+   "reason": "static_or_structural",
+   "note": "Illegal parameters are not simulated."
+  },
+  {
+   "rule": "SF-8-14",
+   "reason": "not_applicable_to_dut",
+   "note": "Depth 8 >= 4: gap-free is guaranteed in this configuration."
+  },
+  {
+   "rule": "SF-10.1-03",
+   "reason": "not_observable_at_interface",
+   "note": "Unused write FSM encodings cannot be produced from the ports."
+  },
+  {
+   "rule": "SF-10.1-04",
+   "reason": "not_observable_at_interface",
+   "note": "Internal PTR state; effect covered by CHK-022."
+  },
+  {
+   "rule": "SF-10.1-06",
+   "reason": "not_observable_at_interface",
+   "note": "Internal read FSM encoding and states."
+  },
+  {
+   "rule": "SF-10.1-07",
+   "reason": "not_observable_at_interface",
+   "note": "Internal RST state and acknowledge; read blocking covered by CHK-003."
+  },
+  {
+   "rule": "SF-10.1-08",
+   "reason": "not_observable_at_interface",
+   "note": "Internal ACK state; effect covered by CHK-003 and CHK-022."
+  },
+  {
+   "rule": "SF-10.3-04",
+   "reason": "not_applicable_to_dut",
+   "note": "Depth 5 (CFG-ODD); wrap at depth 8 is checked by CHK-017."
+  },
+  {
+   "rule": "SF-10.4-10",
+   "reason": "not_applicable_to_dut",
+   "note": "Depth below the gap-free limit is another configuration."
+  },
+  {
+   "rule": "SF-10.7-05",
+   "reason": "not_observable_at_interface",
+   "note": "Request drop and flush check are internal; completion checked by CHK-022."
+  },
+  {
+   "rule": "SF-14.1-01",
+   "reason": "static_or_structural",
+   "note": "RTL rules."
+  },
+  {
+   "rule": "SF-14.1-02",
+   "reason": "static_or_structural",
+   "note": "Naming and coding rules."
+  },
+  {
+   "rule": "SF-14.1-03",
+   "reason": "static_or_structural",
+   "note": "Reset coding."
+  },
+  {
+   "rule": "SF-14.1-04",
+   "reason": "static_or_structural",
+   "note": "File list."
+  },
+  {
+   "rule": "SF-14.1-05",
+   "reason": "static_or_structural",
+   "note": "File location."
+  },
+  {
+   "rule": "SF-14.2-01",
+   "reason": "static_or_structural",
+   "note": "Hierarchy."
+  },
+  {
+   "rule": "SF-14.2-02",
+   "reason": "static_or_structural",
+   "note": "Conditional instance (CFG-MACRO)."
+  },
+  {
+   "rule": "SF-14.2-03",
+   "reason": "static_or_structural",
+   "note": "State ownership."
+  },
+  {
+   "rule": "SF-14.2.1-01",
+   "reason": "not_applicable_to_dut",
+   "note": "Retiming flops exist only with PARA_SFIFO_PTR_RETIME=1."
+  },
+  {
+   "rule": "SF-14.2.1-02",
+   "reason": "not_observable_at_interface",
+   "note": "Submodule port o_wr_ptr; effect covered by CHK-010/CHK-004."
+  },
+  {
+   "rule": "SF-14.2.1-03",
+   "reason": "not_observable_at_interface",
+   "note": "Submodule memory write enable; effect covered by CHK-006."
+  },
+  {
+   "rule": "SF-14.2.1-04",
+   "reason": "not_observable_at_interface",
+   "note": "Submodule memory address; effect covered by CHK-006/CHK-017."
+  },
+  {
+   "rule": "SF-14.2.1-05",
+   "reason": "not_observable_at_interface",
+   "note": "Submodule write data; effect covered by CHK-006."
+  },
+  {
+   "rule": "SF-14.2.1-06",
+   "reason": "not_observable_at_interface",
+   "note": "Internal request flop."
+  },
+  {
+   "rule": "SF-14.2.1-07",
+   "reason": "not_observable_at_interface",
+   "note": "Submodule port o_rd_ptr; effect covered by CHK-010."
+  },
+  {
+   "rule": "SF-14.2.1-08",
+   "reason": "not_observable_at_interface",
+   "note": "Submodule read address; show-ahead effect covered by CHK-006/CHK-014."
+  },
+  {
+   "rule": "SF-14.2.1-09",
+   "reason": "not_observable_at_interface",
+   "note": "Submodule memory read data; covered by CHK-014."
+  },
+  {
+   "rule": "SF-14.2.1-10",
+   "reason": "not_observable_at_interface",
+   "note": "Internal acknowledge flop."
+  },
+  {
+   "rule": "SF-14.2.1-11",
+   "reason": "not_observable_at_interface",
+   "note": "Memory submodule write port."
+  },
+  {
+   "rule": "SF-14.2.1-12",
+   "reason": "not_observable_at_interface",
+   "note": "Memory submodule read port."
+  },
+  {
+   "rule": "SF-14.2.1-13",
+   "reason": "not_observable_at_interface",
+   "note": "Memory submodule; same-edge old-word effect hidden by flags, covered by CHK-006."
+  },
+  {
+   "rule": "SF-14.2.1-15",
+   "reason": "not_applicable_to_dut",
+   "note": "CFG-MACRO only."
+  },
+  {
+   "rule": "SF-14.2.1-16",
+   "reason": "not_applicable_to_dut",
+   "note": "CFG-MACRO only."
+  },
+  {
+   "rule": "SF-14.2.1-17",
+   "reason": "not_applicable_to_dut",
+   "note": "CFG-MACRO only."
+  },
+  {
+   "rule": "SF-15.1-01",
+   "reason": "not_applicable_to_dut",
+   "note": "Testbench requirement (seed recording), not a DUT property."
+  },
+  {
+   "rule": "SF-15.2-10",
+   "reason": "not_applicable_to_dut",
+   "note": "Array vs SRAM equivalence needs CFG-MACRO."
+  },
+  {
+   "rule": "SF-15.2-11",
+   "reason": "static_or_structural",
+   "note": "Elaboration of parameter extremes."
+  },
+  {
+   "rule": "SF-15.2-12",
+   "reason": "static_or_structural",
+   "note": "Lint/structure."
+  },
+  {
+   "rule": "SF-15.2-13",
+   "reason": "static_or_structural",
+   "note": "STA review."
+  },
+  {
+   "rule": "SF-15.2-14",
+   "reason": "static_or_structural",
+   "note": "Regression over depths and parameter options is a sweep."
+  },
+  {
+   "rule": "SF-15.3-01",
+   "reason": "static_or_structural",
+   "note": "File list organisation."
+  },
+  {
+   "rule": "SF-16-01",
+   "reason": "static_or_structural",
+   "note": "DFT structure."
+  },
+  {
+   "rule": "SF-16-02",
+   "reason": "static_or_structural",
+   "note": "No DFT ports: port list."
+  },
+  {
+   "rule": "SF-17.1.1-01",
+   "reason": "static_or_structural",
+   "note": "SDC."
+  },
+  {
+   "rule": "SF-17.1.2-01",
+   "reason": "static_or_structural",
+   "note": "STA item per designer decision."
+  },
+  {
+   "rule": "SF-17.1.3-03",
+   "reason": "static_or_structural",
+   "note": "SDC."
+  },
+  {
+   "rule": "SF-17.2-01",
+   "reason": "design_guideline",
+   "note": "Floorplan advice."
+  },
+  {
+   "rule": "SF-18-01",
+   "reason": "not_observable_at_interface",
+   "note": "Memory not erased: memory is visible only through o_rd_data, not meaningful while o_empty=1."
+  }
+ ],
+ "assumptions": [
+  "This simulation is CFG-BASE: PARA_SFIFO_DEPTH=8, PARA_SFIFO_DATA_W=32, PARA_SFIFO_PTR_RETIME=0, PARA_SFIFO_MEM_USE_MACRO=0, so i_full_thr and i_empty_thr are 4 bits wide (LPARA_OCC_W=clog2(9)).",
+  "Clock periods are not parameters: each test picks its clock periods from one generator. A test that uses several ratios changes them only while both hardware resets are asserted.",
+  "i_full_thr and i_empty_thr count as 'not in use' while both hardware resets are asserted, so the threshold sweep changes them only then.",
+  "Testbench inputs (i_wr_en, i_wr_data, i_rst_n_sw, i_rd_en) change just after a rising edge of their own clock. Checkers sample the values just before each rising edge; at coincident edges they use pre-edge values.",
+  "o_sw_rst_busy is 1 exactly in the cycles in which the write reset FSM is not in RUN. Because the request rises with busy and the read FSM returns to RUN before the write FSM leaves REL, every read-side block interval lies inside an o_sw_rst_busy=1 interval. CHK-003 and CHK-005(b) rely on this; it is derived from Sections 10.1, 10.6, 10.7 and 14.2.1.",
+  "i_rst_n_sw is held at 1 while the hardware resets are asserted in the reset tests, so the reset values o_full=0 and o_full_thr=0 are not masked by the block term.",
+  "The specification gives no exact length for the software reset sequence ('a few cycles'), so a bounded wait of 64 write cycles is used for o_sw_rst_busy to fall.",
+  "The two hardware resets are always asserted together, as required by REQ-RESET-002.",
+  "DEC-021 (no full-FIFO bypass) is verified as written. Its confirmation by the designer is still an open item of the specification."
+ ],
+ "decisions": [
+  {
+   "rules": [
+    "SF-3-51"
+   ],
+   "question": "What counts as 'the writer/reader is not the limit' in the no-gap rule, and how is it measured in a scenario check?",
+   "answer": "Operational definition for the run configuration: with i_wr_en and i_rd_en held at 1 and depth >= 4 + 2*PARA_SFIFO_PTR_RETIME, after the first word is visible (o_empty=0) every read-clock edge with i_rd_en=1 accepts a read (o_empty=0) and every write-clock edge with i_wr_en=1 accepts a write (o_full=0). With equal clock periods neither side is the limit, so both are checked; with unequal periods only the slower side is checked. Other clock ratios are other runs.",
+   "by": "Claude (delegated by GabrielHCMUT)",
+   "at": "2026-11-08T05:14:13+00:00"
+  },
+  {
+   "rules": [
+    "SF-3-47",
+    "SF-3-46"
+   ],
+   "question": "When a request arrives in REL, or a second pulse arrives, is it queued as one new sequence or one per pulse? Does a hardware reset clear a pending request?",
+   "answer": "A hardware reset clears a pending request (stated: it clears all FSMs, the request and the acknowledge). i_rst_n_sw is a level: a low level present when the write FSM is back in RUN starts one new complete sequence. Whether a pulse that starts and ends inside REL, or several pulses before RUN, are remembered or merged is not specified: tests must not rely on it and drive only requests that are still low when o_sw_rst_busy falls.",
+   "by": "Claude (delegated by GabrielHCMUT)",
+   "at": "2026-11-08T05:14:14+00:00"
+  },
+  {
+   "rules": [
+    "SF-4-01"
+   ],
+   "question": "CFG-BASE says it is verified by all tests, but some tests (e.g. those requiring FEAT-007 or FEAT-010) may not apply to it; confirm.",
+   "answer": "Only the tests whose configuration column lists CFG-BASE apply to the default run. One simulation is one configuration; tests of CFG-RETIME, CFG-MACRO, CFG-ODD and CFG-MIN are other runs and are not verified by this run.",
+   "by": "Claude (delegated by GabrielHCMUT)",
+   "at": "2026-11-08T05:14:14+00:00"
+  },
+  {
+   "rules": [
+    "SF-9-01",
+    "SF-9-02",
+    "SF-9-03",
+    "SF-9-04"
+   ],
+   "question": "Pointers and occupancy are internal signals. Should assertions bind to internal RTL signals, or be derived from interface observables?",
+   "answer": "Black-box: checks use only the top-level ports. Pointer, occupancy and FSM invariants are checked through their observable effects (flags, data order, busy) with a reference occupancy model built from accepted writes and reads; no internal signal is bound.",
+   "by": "Claude (delegated by GabrielHCMUT)",
+   "at": "2026-11-08T05:14:14+00:00"
+  },
+  {
+   "rules": [
+    "SF-10.7-10",
+    "SF-10.7-08"
+   ],
+   "question": "Is the new i_rst_n_sw low level during REL queued, and is a pulse shorter than the FSM time ever lost? The wording 'served after RUN' needs a precise latency.",
+   "answer": "Same as decision 2: the latency is not specified, so tests use a bounded wait (no exact cycle count) and check that the new sequence completes (o_sw_rst_busy returns to 0, FIFO empty); a pulse that ends before RUN is not tested.",
+   "by": "Claude (delegated by GabrielHCMUT)",
+   "at": "2026-11-08T05:14:14+00:00"
+  },
+  {
+   "rules": [
+    "SF-17.1.2-01"
+   ],
+   "question": "Which clock ratios count as making the launch-to-capture interval 'very small'? Please give a number or threshold for SF-17.1.2-01.",
+   "answer": "Static timing (STA) item, not observable in simulation: not verifiable by simulation.",
+   "by": "Claude (delegated by GabrielHCMUT)",
+   "at": "2026-11-08T05:14:14+00:00"
+  },
+  {
+   "rules": [
+    "SF-20.2-04",
+    "SF-20.2-05"
+   ],
+   "question": "DEC-021 is the author's choice and is still to be confirmed by the designer. Should the strict own-domain-flag acceptance with no full-FIFO bypass be treated as final before checks are built?",
+   "answer": "Verify the requirement text as written (DEC-021): a write is accepted only when i_wr_en=1 and o_full=0, a read only when i_rd_en=1 and o_empty=0, with no full-FIFO bypass. The designer's confirmation of DEC-021 stays an open item of the specification and is reported.",
+   "by": "Claude (delegated by GabrielHCMUT)",
+   "at": "2026-11-08T05:14:15+00:00"
+  }
+ ],
+ "coverage": {
+  "rules": 272,
+  "in_checks": 174,
+  "not_verified": 98,
+  "uncovered_after_first_pass": 0,
+  "uncovered": [],
+  "unknown_ids": []
+ },
+ "contract": {
+  "prompt_version": "contract-v1",
+  "model": "opus",
+  "date": "2026-11-08T10:37:07+00:00",
+  "usage": {
+   "calls": 1,
+   "cached": 1,
+   "cost_usd": 0.0,
+   "input_tokens": 0,
+   "output_tokens": 0,
+   "cache_creation_input_tokens": 0,
+   "cache_read_input_tokens": 0
+  },
+  "rules_sha_source": [
+   "rules_SyncFIFO_Design_Specification.json"
+  ],
+  "unreviewed_gates": []
+ }
+}

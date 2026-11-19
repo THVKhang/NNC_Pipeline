@@ -68,6 +68,27 @@
   - internal FIFOs checked only through the ports.
 - **Formal environment.** Some counterexample traces contain AHB manager behaviour that AHB5 forbids (address and control changed while HREADY=0). Should `nnc_env.sv` assume address/control stability? The faults above occur without such behaviour too.
 
+### Designs whose RTL the flow generated (design half)
+
+These have two more gates, D1 (parameter values) and D2 (generated RTL). Both were approved on delegation, except D2 of gen_sync_fifo. Results: [EVALUATION.md §6](EVALUATION.md).
+
+| Design | Packet | State | Main questions for you |
+|---|---|---|---|
+| gen_apb_tlul_bridge | [packet](../designs/gen_apb_tlul_bridge/work/review_packet.md), [RTL report](../designs/gen_apb_tlul_bridge/work/rtl_gen.md) | 17/17 tests, 17/17 formal proven, mutation 36/36, upstream testbench passes | Are A15's 4 open points the intended readings (spec over the generic TL-UL text)? Is the RTL acceptable to you under RR-03/24/32/33/41/44, which code does not check? |
+| gen_sync_fifo | [packet](../designs/gen_sync_fifo/work/review_packet.md), [RTL report](../designs/gen_sync_fifo/work/rtl_gen.md), [formal triage](../designs/gen_sync_fifo/work/formal_triage.md) | 24/25 tests; CHK-008 fails in simulation and formal; D2 open | See below |
+| uart_lite | [packet](../designs/uart_lite/work/review_packet.md), [spec](../designs/uart_lite/spec/uart_lite_Design_Specification.md) | 20/20 tests, 13/13 assertions in 4 configurations; no formal counterexample; mutation 35/36 | Are the delegated spec decisions D-001..D-012 and answers OQ-001..003 sound for a UART? Are the 2 hand fixes ([NOTICE](../designs/uart_lite/NOTICE.md)) corrections, not relaxations? Is M19 really equivalent? |
+
+**gen_sync_fifo, CHK-008.** A second software-reset pulse can arrive while a reset sequence is running. In that case:
+- **the generated RTL** remembers the pulse and starts a new sequence after one RUN cycle (REQ-SRST-008);
+- **the approved check** expects `o_sw_rst_busy` to stay 0;
+- **the contract** says tests must not drive such pulses, but the generated stimulus does;
+- **the delivered RTL** passes, so the two RTLs differ in a case the specification leaves open.
+
+Which reading binds? There are three options:
+- an environment rule that forbids the pulse (formal triage, E);
+- a checker with a pending-request model, which would be stricter (B);
+- a specification change (C).
+
 ## What the evidence is, and is not
 
 - **It is:**
@@ -78,7 +99,7 @@
   - a bug benchmark.
 
   Overall numbers: [EVALUATION.md](EVALUATION.md).
-- **It is not:** CDC/RDC analysis, STA, synthesis, DFT or gate-level checks. Metastability is only simulated through the RTL's own model.
+- **It is not:** CDC/RDC analysis, STA, DFT or gate-level checks. Synthesis of generated RTL gives only area and an ABC delay estimate. Metastability is only simulated through the RTL's own model.
 - **The generated tests and checkers can be wrong.** That is why the hit counters, triage and mutation results are in the packet.
 
 Thank you. Comments by issue or e-mail to the repository owner are welcome even without a signature.

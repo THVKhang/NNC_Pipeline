@@ -1,0 +1,76 @@
+{
+  "config": {
+    "coverage_metric": "functional",
+    "coverage_rounds": "2",
+    "coverage_target": "100.0",
+    "derived_from": "apb_tlul_bridge",
+    "documents": [
+      {
+        "file": "spec/m_apb_tlul_bridge_Design_Specification.md",
+        "role": "ip_spec",
+        "sections": [],
+        "skip": [],
+        "tag": "BR"
+      },
+      {
+        "file": "spec/standards/vlsit_tilelink_ul_opentitan_tlul.md",
+        "role": "standard",
+        "sections": [],
+        "skip": [
+          "Bus Primitives",
+          "Bus Integrity Scheme"
+        ],
+        "tag": "TL"
+      }
+    ],
+    "formal": "on",
+    "rtl_origin": "generated",
+    "top": "m_apb_tlul_bridge"
+  },
+  "created": "2026-11-17T10:08:20+00:00",
+  "design": "gen_apb_tlul_bridge",
+  "gates": {
+    "D1_config": {
+      "at": "2026-11-17T10:08:20+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "work/final_config.json": "f77a6ea8d32bf1d5cafb9d4a79ed87526fe60cc4613f7b45e940745edc9faa73"
+      },
+      "note": "Delegated: default parameter values of the specification; all legal by code check."
+    },
+    "D2_rtl": {
+      "at": "2026-11-18T15:43:44+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "rtl": "a6be3e04724fca799da2a3f4af0984f09652e22b2f8e9c768f03aab457ef6246",
+        "work/rtl_gen.json": "db94290412d8b41e795441340745b781e38c99dd458aa4af118c362e35110700"
+      },
+      "note": "Delegated review (the designer is not a hardware engineer). work/rtl_gen.md: rtl-check clean (0 errors/warnings), 2 waivers for spec-declared unused inputs (DEC-006/007), synthesis 12789 um2 / 18.9 ns at SS. Spot-checked RR-03 headers, RR-24 FSMs (enum + default branch), RR-32 async active-low reset in every always_ff. The 4 open points follow the bridge spec over the generic TL-UL text, as the spec's own decisions say. Verification on this RTL: sim 17/17, formal 17/17 PROVEN, mutation 36/36, upstream hand-written TB passes. Not reviewed by a hardware engineer."
+    },
+    "G1_rules": {
+      "at": "2026-11-07T18:06:13+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "work/rules.json": "a5fcdfc62279bd0c663ada7a4ce88d281e97821826b8463b21a458f7b97a5505"
+      },
+      "note": "[carried over from apb_tlul_bridge at 2026-11-17T10:08:20+00:00: identical artifacts] Delegated review: rules.md read by Claude at the user's request; 5 open questions decided by Claude; not an engineer's review."
+    },
+    "G2_contract": {
+      "at": "2026-11-08T10:00:45+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "work/contract.json": "abaa49b881692bf7e996deae18c9ec3447676227be551137c35738cc23bc28b3"
+      },
+      "note": "[carried over from apb_tlul_bridge at 2026-11-17T10:08:20+00:00: identical artifacts] Re-approved after the renumber fix: cross-references inside CHK-011, CHK-012, CHK-025, CHK-028 and in not_verified notes/assumptions now name the renumbered checks (ranges expanded). Interface gains clock/reset typing; checks, kinds and rule coverage (232 rules, 169 in checks, 63 not verified) unchanged."
+    },
+    "G3_verif_sources": {
+      "at": "2026-11-11T15:38:44+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "verif": "ee3a515e3ffcbc9eee9888f130a05fefdbc0b8e13db7a539c449ddc7202ac75f"
+      },
+      "note": "[carried over from apb_tlul_bridge at 2026-11-17T10:08:20+00:00: identical artifacts] Added verif/formal/nnc_env.sv (agent A13, from the spec only): 5 environment assumptions, read one by one: requester idle in reset (ENV-01), APB Setup->Access sequencing and PSEL/PENABLE held until PREADY (ENV-02/03), request fields stable until PREADY (ENV-04), TL-UL D beat held until accepted (ENV-05). Orphan responses and error responses stay allowed (the spec makes them legal inputs). Tests and checkers unchanged. A person should confirm the assumptions."
+    }
+  },
+  "version": 1
+}

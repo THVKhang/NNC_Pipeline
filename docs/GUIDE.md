@@ -227,6 +227,68 @@ Vì vậy mặc định vẫn là một khối.
 
 **Usage limit | Hết quota.** When the Claude account's usage limit stops a call ("You've hit your 5-hour limit · resets 6:50am"), the call waits until the stated reset and runs again (at most `NNC_LIMIT_WAIT` seconds in total, default 21600; `0` fails at once). The money already spent by the interrupted call is lost: the report shows it under *failed calls*. — **VI:** khi hết quota, lời gọi agent tự đợi tới giờ reset rồi chạy lại (tối đa `NNC_LIMIT_WAIT` giây, mặc định 6 giờ; `0` = báo lỗi ngay). Tiền đã tốn cho lần gọi bị ngắt thì không lấy lại được; report ghi khoản này ở mục *failed calls*.
 
+## 6. Design half: the flow writes the RTL | Nửa thiết kế: flow viết RTL
+
+Gates of a design whose RTL the flow generates (`rtl_origin=generated`):
+
+```
+G1_rules -> G2_contract -> G3_verif_sources ----------> G4_signoff
+                       `-> D1_config -> D2_rtl -------'
+```
+
+The RTL and the verification are both generated from G2 and never see each other; G4 needs both.
+
+```bash
+# from a short description (agent A0 drafts the specification in the shape of docs/SPEC_TEMPLATE.md)
+python -m nnc spec-draft my_ip description.md --top m_my_ip --tag MY   # -> spec/, work/spec_draft.md
+python -m nnc spec-check my_ip                     # can the flow read it? (port/parameter tables, legal values, IDs)
+# ... edit the draft, then the usual flow up to G2:
+python -m nnc flow my_ip                           # ingest .. review (G1), contract (G2), gen-sva/tests (G3)
+
+# D1: the configuration of the RTL
+python -m nnc params my_ip                         # parameters, defaults, legal values (parsed from the contract)
+python -m nnc params my_ip --choose PARA_X_DEPTH=16 --by "Your Name"   # illegal values are refused
+python -m nnc gate approve my_ip D1_config --by "Your Name"
+
+# D2: the RTL (agent A15: spec, approved rules, interface, configuration, docs/RTL_RULES.md; never the verification)
+python -m nnc gen-rtl my_ip                        # -> rtl/, work/rtl_gen.md (findings, synthesis, open points)
+python -m nnc gate approve my_ip D2_rtl --by "Your Name"     # after reading work/rtl_gen.md
+
+# verification of the generated RTL, with repair of faults judged A
+python -m nnc close-loop my_ip --rounds 3          # sim -> triage -> fix-rtl, until no failure or the budget
+```
+
+- **Code checks of the RTL** (`nnc rtl-check`, run after every A15 answer): file and filelist rules, the synthesizable subset, `always_ff`/`always_comb` discipline, clock and reset names, Verilator `-Wall`, Yosys latches/loops/drivers, the ports of the contract for the chosen configuration, `// REQ:` tags, and Yosys synthesis on the GF180MCU 7-track library (typical and slow corner: area, estimated delay). The liberty files are downloaded once into `/opt/pdk` on the simulation host; without them only generic synthesis runs.
+- **Repair** (`fix-rtl`, `--from sim|formal|all`): A15 receives the current RTL and, per fault that triage judged *A: RTL wrong* (simulation triage, formal counterexample triage, or both), only what the specification says and what the RTL does; any sentence that names a test, a checker or a file in `verif/` is removed. It never sees a test. Every revision is kept in `work/rtl_history/`, and D2 becomes STALE.
+- **Trying it on a verified design** (`nnc derive <src> <new>`): copies the specification, rules, contract, verification and baseline testbench, carries G1–G3 over (identical hashes), leaves the RTL behind. Then `params --choose`, D1, `gen-rtl`, `close-loop`, `baseline`.
+- **Golden manifest:** a G1 approval records the SHA-256 of every registered document; when the specification changes, G1 becomes STALE.
+
+**VI:** với thiết kế mà flow tự viết RTL, có thêm hai gate:
+- **D1_config:** chọn tham số. Code kiểm tra giá trị hợp lệ theo bảng của spec.
+- **D2_rtl:** duyệt RTL.
+
+Cách làm việc:
+- **Sinh RTL:** agent A15 viết RTL chỉ từ spec, luật đã duyệt, interface, cấu hình và quy tắc RTL, không bao giờ thấy bộ kiểm chứng. Code kiểm tra RTL sau mỗi lần sinh (lint, cấu trúc, cổng, synthesis GF180) và trả lỗi về cho agent sửa.
+- **Vòng khép kín `close-loop`:** chạy mô phỏng bằng bộ kiểm chứng đã duyệt. Lỗi nào triage kết luận "RTL sai" thì agent sửa RTL, nhưng chỉ nhận mô tả lỗi ở mức spec, không nhận code test.
+- **Ai quyết:** người duyệt quyết định ở D2 và G4.
+
+### Restyle an existing RTL | Viết lại RTL có sẵn theo quy tắc
+
+```bash
+python -m nnc rtl-check my_ip                      # rule findings of the delivered RTL (nothing is written)
+python -m nnc restyle my_ip                        # agent A16 -> restyle/rtl, restyle/restyle.md
+```
+
+A16 rewrites the RTL to follow `docs/RTL_RULES.md` without changing behaviour and reports suspected bugs instead of fixing them. Each rewrite is checked by the code checks and then by **formal sequential equivalence** with the original (`nnc/equiv.py`: a Yosys miter of both versions, every reset asserted in the first step, then SymbiYosys BMC and a PDR proof). PROVEN means every output is equal in every cycle for every input sequence, for that configuration. `rtl/` is never touched: adopting the rewrite is the designer's decision. — **VI:** A16 viết lại RTL cho đúng quy tắc mà không đổi hành vi. Chỗ nghi là lỗi thì agent chỉ báo lại, không tự sửa. Mỗi bản viết lại được chứng minh tương đương với bản gốc bằng formal: mọi output bằng nhau ở mọi chu kỳ, với mọi chuỗi input. Kết quả nằm trong `restyle/`; `rtl/` không bị đụng tới.
+
+### Documents | Xuất tài liệu
+
+```bash
+python -m nnc export my_ip --what spec,rules,contract,rtl,report,packet --format docx,html,pdf   # -> export/
+```
+
+Pandoc (`pip install -e .[docs]`, or `pandoc` on PATH) writes DOCX and HTML; a headless Edge/Chrome/Chromium prints the PDF (`NNC_BROWSER` to choose). Standards are never exported. — **VI:** xuất spec và các báo cáo ra DOCX/HTML/PDF. Tài liệu chuẩn có bản quyền không bao giờ được xuất.
+
 ## Exploratory run | Chạy thăm dò
 
 ```bash
@@ -241,6 +303,7 @@ python -m nnc flow my_ip --unreviewed
 
 | Change / Thay đổi | Effect / Hệ quả |
 |---|---|
-| Specification edited | G1 becomes STALE, later gates BLOCKED; re-run from `ingest`; only changed batches cost tokens |
-| RTL edited | gates stay valid (the oracle does not depend on the RTL); re-run from `sim` |
+| Specification edited | G1 becomes STALE (its approval records the hash of every registered document), later gates BLOCKED; re-run from `ingest`; only changed batches cost tokens |
+| RTL edited | delivered RTL: gates stay valid (the oracle does not depend on the RTL); re-run from `sim`. Generated RTL: D2 becomes STALE |
+| Chosen configuration changed (`params --choose`) | D1 becomes STALE, then D2 BLOCKED; regenerate or check the RTL |
 | Test or checker edited by hand | G3 becomes STALE; review and approve again |

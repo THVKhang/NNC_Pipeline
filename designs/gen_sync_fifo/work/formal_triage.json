@@ -1,0 +1,45 @@
+{
+ "analyses": [
+  {
+   "check": "CHK-008 (a_CHK_008, verif/sva/nnc_chk_srst.sv:34)",
+   "what_happens": "Step 0: both hardware resets low. Step 1: i_rst_n_wr=1, o_sw_rst_busy=0, i_rst_n_sw=0, so a software reset starts and o_sw_rst_busy=1 at step 2 (clause (a) holds). i_rst_n_sw goes back to 1 at steps 2-4. At step 5, while o_sw_rst_busy=1 (the sequence is still running), i_rst_n_sw is driven low for ONE cycle and is 1 again at step 6. That is a second request that starts and ends inside the running sequence. The first sequence ends: o_sw_rst_busy=0 at step 9, with i_rst_n_sw=1 sampled at that edge. At step 10 o_sw_rst_busy is 1 again (a new sequence starts), with no low level of i_rst_n_sw at step 9. Clause (b) of a_CHK_008 fails here: busy==0 and i_rst_n_sw==1 at step 9 means the checker expects busy==0 at step 10. (The helper nnc_fv_s_CHK_008=1 at steps 2 and 10 marks the cycle after each antecedent hit, steps 1 and 9.) Steps 11-12 are a hardware reset and do not matter. o_full=0 only at step 9, which matches block = busy | ~sw = 0 there.",
+   "spec_says": "REQ-SRST-008, spec/SyncFIFO_Design_Specification.md:156 (rules.json:1756 SF-3-47, :1782 SF-3-48, MUST): \"A request that arrives while a sequence is running (a low pulse in REL, or a second pulse) shall be served as a new sequence when the write FSM is back in RUN.\" Section 10.7, spec:565 (SF-10.7-10, rules.json:5144): \"A new low level during REL is served after the write FSM is back in RUN.\" REQ-SRST-006, spec:154 (SF-3-44): busy is \"1 from the cycle after the write FSM takes the request until the cycle in which the write FSM is back in RUN.\" The open point was settled in rules.json:8063-8066 (rules SF-3-47/SF-3-46): \"Whether a pulse that starts and ends inside REL, or several pulses before RUN, are remembered or merged is not specified: tests must not rely on it and drive only requests that are still low when o_sw_rst_busy falls.\" rules.json:8104-8106 (SF-10.7-10/SF-10.7-08) says the same: \"a pulse that ends before RUN is not tested.\" contract.json:783 (CHK-024 stimulus): \"Pulses that start and end before o_sw_rst_busy falls are not driven.\" The FSM table at spec:388 gives only \"i_rst_n_sw = 0: REQ\" as the RUN exit.",
+   "rtl_does": "rtl/m_vlsit_sfifo_wr.sv:233-256 records a new request that arrives during a sequence in reg_sw_rst_pend. In REQ/PTR it is set by a falling edge, w_sw_rst_fall = ~i_rst_n_sw & ~reg_sw_rst_req_d (line 235, line 244). In REL it is set by any low level (line 250). It is held in HOLD (line 247) and cleared in RUN (line 241). In RUN the FSM goes to REQ if (!i_rst_n_sw || reg_sw_rst_pend) (line 203). reg_sw_rst_busy <= (w_fsm_srst_nxt_state != ENUM_ST_RUN) (line 270). The low at step 5 falls in REQ/PTR (req_d=0 at step 5, so a falling edge is seen) or in REL. In both cases pend=1. A low that only held HOLD would not let the FSM reach RUN by step 9 and then restart. So at step 9 the FSM is in RUN with pend=1 and goes to REQ, and busy=1 at step 10. This is the REQ-SRST-008 behavior the code comments name (lines 232-234, 'REQ: SF-3-47, SF-10.7-10'). Busy is still a flop and still 1 exactly while the FSM is not in RUN (SVA-010).",
+   "checker_does": "verif/sva/nnc_chk_srst.sv:34: assert property (@(posedge i_clk_wr) disable iff (!i_rst_n_wr) (o_sw_rst_busy == 1'b0) |=> (o_sw_rst_busy == !$past(i_rst_n_sw))). At every write edge with busy=0, the checker requires busy in the next cycle to equal the inverse of i_rst_n_sw sampled at that edge. It does not model a request remembered from inside the running sequence. verif/formal/nnc_env.sv:43-74 holds only ENV-01 (resets together), ENV-02/ENV-03 (no requests before release) and ENV-04 (static thresholds). Nothing limits i_rst_n_sw while o_sw_rst_busy=1.",
+   "candidates": [
+    {
+     "cause": "E_environment_missing",
+     "evidence_for": "The designer decision at rules.json:8066 (SF-3-47/SF-3-46) and rules.json:8106 (SF-10.7-10) puts an obligation on the stimulus: \"drive only requests that are still low when o_sw_rst_busy falls\" and \"a pulse that ends before RUN is not tested\". contract.json:783 (CHK-024) also says such pulses \"are not driven\". The counterexample breaks this obligation: i_rst_n_sw=0 at step 5 while busy=1, and back to 1 at step 6, before busy falls at step 9. nnc_env.sv (lines 43-74) has no assumption for it. That is why the formal tool found the sequence and simulation, which follows the decision, never did.",
+     "evidence_against": "REQ-SRST-008 (spec:156) does specify one outcome for 'a second pulse': it is served as a new sequence, and that is what the RTL does. So one could argue the input is legal and only the checker is incomplete. The decision says only that remembering short pulses is 'not specified'. It does not formally forbid the input for the DUT."
+    },
+    {
+     "cause": "B_checker_wrong",
+     "evidence_for": "Clause (b) of the behavior (contract.json:414) and the SVA (nnc_chk_srst.sv:34) ignore REQ-SRST-008 (spec:156, MUST) and spec:565. Busy may rise after RUN with i_rst_n_sw=1 because a request that arrived during the sequence is served. The RTL result (busy 1 at step 10) is the spec-required result for 'a second pulse'. Clause (b) as written contradicts the spec for any request made during busy.",
+     "evidence_against": "The designer decision (rules.json:8066) says pulses that end before RUN must not be relied on and are not driven. Under that obligation clause (b) is correct: every request is either sampled with busy=0 (clause (a)) or still low when busy falls (clause (a) again at that edge). The rules.json decision supports fixing this in the environment. It does not support relaxing the check."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "rules.json:8064 and :8104 say the documents do not state whether a short pulse inside a sequence is remembered or merged, or with what latency it is served. spec:565 mentions only 'during REL'. spec:156 says 'a second pulse' without a duration. The FSM table spec:388 lists only 'i_rst_n_sw = 0' as the RUN exit and has no pending term.",
+     "evidence_against": "The gap was already resolved by a recorded decision (rules.json:8066, :8106), which restricts the stimulus. No new spec question is needed."
+    },
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "Seen only from the ports: busy rises at step 10 although i_rst_n_sw=1 at step 9 and o_sw_rst_busy=0. The RUN exit in the FSM table (spec:388) names only i_rst_n_sw = 0.",
+     "evidence_against": "REQ-SRST-008 (spec:156) and spec:565 require a request made during a sequence to be served after RUN. The RTL does this on purpose (m_vlsit_sfifo_wr.sv:203, 232-256). Busy remains a flop that is 1 exactly while the FSM is not in RUN (line 270, SVA-010/SF-15.3-14). The block term and o_full also behave per spec (o_full=0 only at step 9, line 286). No rule is broken by the DUT."
+    }
+   ],
+   "most_likely": "E_environment_missing",
+   "options": "(1) E, recommended. Add the stimulus obligation from rules.json:8066 / :8106 (SF-3-47, SF-3-46, SF-10.7-10, SF-10.7-08; contract.json:783) to verif/formal/nnc_env.sv as ENV-05. A new request made while a software reset sequence runs must still be low when o_sw_rst_busy falls. Example form, only from ports, on posedge i_clk_wr with disable iff (!i_rst_n_wr): assume property (o_sw_rst_busy && $past(i_rst_n_sw) && !i_rst_n_sw |-> !i_rst_n_sw until_with !o_sw_rst_busy). until_with also keeps i_rst_n_sw low at the first edge where busy=0 is sampled, so clause (a) covers the new sequence. This assumption allows a low level held from the original request (no fall while busy) and its release in HOLD (REQ-SRST-001). Re-run and confirm a_CHK_008 passes. Also confirm with a cover that one-cycle requests (busy=0) and held levels can still be reached. (2) B, only if the designer instead wants REQ-SRST-008 checked formally with any pulse. Add a helper flag to the checker, set when i_rst_n_sw=0 is sampled at an edge with o_sw_rst_busy=1 and cleared when busy is sampled 0 and by the hardware reset. Exempt clause (b) at the first busy=0 edge when the flag is set, or require busy=1 there to check REQ-SRST-008. Because rules.json:8066 says remembering short pulses is unspecified, requiring busy=1 would also go beyond the decision, so only the exemption is supported. (3) C: if neither is wanted, ask the designer to confirm the decision at rules.json:8066 against REQ-SRST-008 ('a second pulse shall be served'). No RTL change is suggested."
+  }
+ ],
+ "checks": 1,
+ "usage": {
+  "calls": 1,
+  "cached": 0,
+  "cost_usd": 0.7461,
+  "input_tokens": 14,
+  "output_tokens": 10456,
+  "cache_creation_input_tokens": 61889,
+  "cache_read_input_tokens": 208382
+ }
+}

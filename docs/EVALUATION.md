@@ -1,4 +1,4 @@
-# Evaluation — phases 1 to 4 (2026-11-15)
+# Evaluation — phases 1 to 10 (2026-11-15; design half 2026-11-18)
 
 This page collects the measurements of four steps taken after the first five designs:
 
@@ -162,3 +162,94 @@ See [G4_REVIEW_REQUEST.md](G4_REVIEW_REQUEST.md). In short:
 - the FIFO specification contradiction and the one-domain-reset exclusion (ASM-005);
 - the ahb2axi RTL findings and fix candidates;
 - the CHK-020 reset-value question.
+
+## 6. The design half (phases 5 to 10, 2026-11-16 to 2026-11-18)
+
+Phases 5 to 10 add the design half of the flow (see [ARCHITECTURE.md §19](ARCHITECTURE.md) and [GUIDE.md §6](GUIDE.md)):
+- **Phase 5:** checked parameter values and a final configuration (gate D1);
+- **Phase 6:** RTL written by agent A15, which never sees the verification. The RTL then goes through code rule checks, Verilator lint and Yosys synthesis on GF180MCU (gate D2);
+- **Phase 7:** a closed loop. Simulation or formal failures that triage judges A (RTL wrong) go back to A15 as specification-level text;
+- **Phase 8:** `restyle` with a formal equivalence proof;
+- **Phase 9:** a specification draft from a short description, and DOCX/PDF export;
+- **Phase 10:** a design made from scratch.
+
+### 6.1 Regenerating two verified designs from their specification
+
+`nnc derive <ip> gen_<ip>` copies a verified design without its RTL: the specification, the approved rules, contract and verification (G1–G3), and the upstream hand-written testbench. A15 then writes a new RTL from the specification alone. The same approved verification runs on it unchanged, and so does the upstream testbench.
+
+| | gen_apb_tlul_bridge | gen_sync_fifo |
+|---|---|---|
+| RTL generation | clean after 2 attempts, US$2.44 | clean after 1 attempt, US$2.11 |
+| Synthesis GF180 (cell area; ABC delay at SS) | 12 789 µm²; 18.9 ns | 36 864 µm² (with a stand-in RAM macro) |
+| Rules tagged in the RTL | 74.6 % | — |
+| Simulation (approved NNC verification) | 17/17 tests, 0/17 assertions failing, line 95.1 % | 24/25 tests, 0/11 assertions failing, line 97.3 % (after repair) |
+| Formal (depth 20) | 17 PROVEN | 6 PROVEN, 2 BOUNDED, **1 CEX** (CHK-008), 1 timeout, 1 sim-only |
+| Mutation (NNC) | 36/36 | 36/36 |
+| Upstream hand-written testbench | passes; mutants 36/36 (NNC 36/36) | passes (8 runs); mutants **31/35 (NNC 35/35)** |
+| Closed loop | no failure | 1 repair from formal results (US$0.66), then stopped on a question for the specification owner |
+
+Sources: `designs/gen_*/work/` (`rtl_gen.md`, `results.json`, `formal.md`, `mutation.json`, `baseline.md`, `close_loop.json`, `rtl_history/`).
+
+**The formal check found two RTL faults that simulation missed (gen_sync_fifo).**
+- **The fault.** The first RTL added a third input to the write "block" term: a software-reset request that arrives during a running sequence. The specification (§10.6) defines the term with two inputs only, busy flop OR `i_rst_n_sw` = 0. So in the one RUN cycle between two sequences, `o_full` was 1 on an empty FIFO.
+- **What caught it.** Simulation saw one assertion failure in 16 543 samples, and triage called it a specification question (C). Formal produced counterexamples for CHK-010 and CHK-011, and formal triage judged both A (RTL wrong) with the spec lines.
+- **The repair.** `nnc fix-rtl gen_sync_fifo --from formal` gave A15 only the specification-level text of the two faults. It removed the extra term in one attempt (`work/rtl_history/rev01` keeps the first RTL). After the repair, CHK-010 and CHK-011 no longer give a counterexample and the simulation assertion failure is gone.
+
+**What is left on gen_sync_fifo** is CHK-008 (test `chk_024` part b, and the formal counterexample): a second software-reset pulse during a running sequence.
+- The generated RTL remembers the pulse and starts a new sequence after one RUN cycle, which is what REQ-SRST-008 asks for.
+- The approved check expects `o_sw_rst_busy` to stay 0. Its contract says tests must not drive such pulses, but the generated stimulus does.
+- Simulation triage judges C (specification unclear) and formal triage judges E (an environment assumption is missing).
+- The delivered upstream RTL passes this check, so the two RTLs differ in a case the specification leaves open.
+
+The loop stops here by design. Changing the check, the contract or the specification is the specification owner's decision, and nothing was changed. D2 of gen_sync_fifo stays open for the same reason.
+
+**Limits.**
+- The two specifications prescribe their microarchitecture in detail (state machines, flop lists, the block term), so a generated RTL is close to the original by construction. This shows the flow can rebuild a specified design. It does not show that A15 designs well from a loose specification. §6.3 is the test of that.
+- On both designs the upstream hand-written testbench killed no mutant that NNC missed. NNC killed 4 more on gen_sync_fifo, the same pattern as the delivered RTL (§4).
+
+### 6.2 Restyle with equivalence (apb_tlul_bridge)
+
+`nnc restyle apb_tlul_bridge` asked agent A16 to rewrite the delivered RTL to `docs/RTL_RULES.md` without changing behaviour.
+- **Rule findings:** 6 warnings before, 0 after.
+- **Equivalence:** a Yosys miter with SymbiYosys gives **PROVEN** (BMC and PDR, depth 20): every output is equal in every cycle for every input sequence after reset, in this configuration.
+- **Cost:** 1 attempt, US$0.93.
+- **Suspected bugs:** A16 reported 2 in the original (`restyle/restyle.md`); both are robustness observations, and it kept the behaviour.
+- **Where it lives:** the rewrite is in `designs/apb_tlul_bridge/restyle/rtl/`. `rtl/` is unchanged, and adopting the rewrite is the designer's decision.
+- **Checking the checker:** a hand-made one-line change (a `pstrb` comparison) gave **CEX** with the first differing output named: "outputs differ at step 4: o_apb_pready (original 1, rewritten 0)".
+
+### 6.3 A design from scratch: uart_lite
+
+**Input.** A 30-line description (`spec/design_description.md`): an 8N1 UART with valid/ready byte streams, a 2-flop synchronizer, an overrun pulse and a bit period of 4 to 65 535 clocks. Target: GF180MCU at 50 MHz.
+
+| Step | Result | Cost |
+|---|---|---|
+| `spec-draft` (A0) | 1 attempt; 12 ports, 77 requirement IDs, 15 assumptions, 7 open questions; then 12 decisions and 3 answers made on delegation | US$0.72 |
+| extract + review (G1) | 168 rules, 154 after review | US$0.94 |
+| contract (G2) | 32 checks (13 assertions, 19 tests); 22 rules not verifiable by simulation | US$1.08 |
+| params (D1) | 4 configurations: N = 16 (default), 4 (min), 5 (odd), 1024 (wide) | — |
+| `gen-rtl` (A15, D2) | clean in 1 attempt; 3 files, 367 lines; 6 553 µm², 7.7 ns at SS (budget 20 ns) | US$0.91 |
+| verification (G3) | 13 assertions, 40 cover points, 20 tests, 1 environment assumption | US$6.73 |
+| closed loop, round 0 | 20/20 tests; 6 assertion failures, all judged B (verification wrong); no RTL repair | US$1.73 |
+| after 2 hand fixes (B) | **20/20 tests, 13/13 assertions, 7 runs in 4 configurations**, line 98.7 % | — |
+| formal (depth 64, 4 configurations) | no counterexample; 4 PROVEN, 6 BOUNDED, 2 VACUOUS, 1 sim-only | — |
+| mutation | **35/36** (M19, the reset value of the start-detect flop, claimed equivalent) | — |
+
+Sources: `designs/uart_lite/work/` (`spec_draft.md`, `rules.md`, `contract.md`, `rtl_gen.md`, `triage.md`, `formal.md`, `mutation.json`, `report.md`), `designs/uart_lite/NOTICE.md`.
+
+**What the design shows.**
+- **The RTL was right first time.** Every failure was in the generated verification, not in the RTL:
+  - the test harness clocked an un-reset design for three edges;
+  - the SVA receiver model started a frame on any low sample instead of a falling edge.
+- **Triage named both causes with the lines to change.** Both fixes make the checks follow the specification. Neither relaxes one. They are recorded as hand fixes (`NOTICE.md`, G3 note).
+- **Two independent agents met in the middle.** The RTL writer and the verification writer never saw each other's output, and they now agree on all 32 checks. That is the evidence the flow is built to produce. It is not a sign-off.
+- **Cost.** About US$12 for the whole design, not counting the delegated decisions.
+
+**Limits.**
+- The formal depth of 64 cycles covers a whole frame only for N = 4 and 5. Checks that need two frames (CHK-004, CHK-005) are VACUOUS there and rest on simulation.
+- The specification and every open-question answer were decided on delegation, not by a hardware designer.
+- G4 is open.
+
+### 6.4 Two faults of the infrastructure
+
+- **WSL crash.** During the uart_lite runs WSL stopped ("Catastrophic failure"). The next formal run reported every check ERROR, and the mutation run reported 36/36 "not compiled", which looked like design results. Both commands now stop with a message naming the tool host instead of writing such results. The runs were repeated after `wsl --shutdown`.
+- **Derived designs and the bug benchmark.** The benchmark faults (`bugs/`) are one-line patches of the delivered RTL, so they cannot apply to a generated RTL. `derive` no longer copies them, and `baseline` skips the bug comparison when a design has no benchmark (the mutant comparison still runs).

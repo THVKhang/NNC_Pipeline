@@ -1,0 +1,367 @@
+# Requirements (approved rules, gate G1)
+
+Each rule cites the specification. Tag the RTL that implements a rule with `// REQ: <id>`.
+
+- **UL-1.1-01** [MUST] (uart_lite_Design_Specification.md 1.1) Serial frames use 8N1: one start bit (0), eight data bits LSB first, no parity, one stop bit (1).
+  - quote: "It sends and receives bytes on a serial line in 8N1 format. 8N1 framing: one start bit (0), eight data bits with the least significant bit first, no parity, one stop bit (1)."
+- **UL-1.1-02** [MUST] (uart_lite_Design_Specification.md 1.1) Each bit period lasts PARA_UART_CLKS_PER_BIT i_clk cycles.
+  - quote: "The bit period is a fixed number of i_clk cycles, set by a parameter. Bit period of PARA_UART_CLKS_PER_BIT clock cycles."
+- **UL-1.2-01** [MUST] (uart_lite_Design_Specification.md 1.2) The serial line is held high when idle. Condition: When the serial line is idle.
+  - quote: "The line is high when idle."
+- **UL-1.2-02** [MUST] (uart_lite_Design_Specification.md 1.2) PARA_UART_CLKS_PER_BIT is fixed at elaboration and must be within the legal range 4 to 65535.
+  - quote: "The parameter is fixed at elaboration and its legal range is 4 to 65535."
+- **UL-1.2-04** [MUST] (uart_lite_Design_Specification.md 1.2) No idle bit is inserted between the stop bit and the next start bit. Condition: When bytes are sent back to back.
+  - quote: "Bytes sent back to back have no idle bit between the stop bit and the next start bit."
+- **UL-1.2-05** [MUST] (uart_lite_Design_Specification.md 1.2) A one-byte holding register keeps each received byte until it is taken. Condition: After a byte is received.
+  - quote: "A one-byte holding register keeps each received byte until it is taken."
+- **UL-1.2-07** [MUST] (uart_lite_Design_Specification.md 1.2) The receiver detects a start bit on a falling edge and rechecks the start bit in the middle of the bit, rejecting glitches.
+  - quote: "Start-bit detection on a falling edge, a second start-bit check in the middle of the bit (glitch rejection), and sampling of every data bit and the stop bit in the middle of the bit."
+- **UL-1.2-08** [MUST] (uart_lite_Design_Specification.md 1.2) The receiver samples each data bit and the stop bit in the middle of the bit.
+  - quote: "Start-bit detection on a falling edge, a second start-bit check in the middle of the bit (glitch rejection), and sampling of every data bit and the stop bit in the middle of the bit."
+- **UL-1.2-09** [MUST] (uart_lite_Design_Specification.md 1.2) o_rx_frame_err is set and delivered together with the received byte. Condition: When the stop bit is sampled as 0.
+  - quote: "A frame error flag (stop bit sampled as 0), delivered together with the byte."
+- **UL-1.2-10** [MUST] (uart_lite_Design_Specification.md 1.2) o_rx_overrun pulses. Condition: When a received byte is dropped because the previous byte has not been taken.
+  - quote: "An overrun pulse (o_rx_overrun) when a received byte is dropped because the previous byte has not been taken."
+- **UL-1.2-11** [MUST] (uart_lite_Design_Specification.md 1.2) The transmitter and receiver operate simultaneously and independently of each other (full duplex).
+  - quote: "Full duplex: the transmitter and the receiver work at the same time and do not depend on each other."
+- **UL-4-01** [MUST] (uart_lite_Design_Specification.md 4) PARA_UART_CLKS_PER_BIT defines the bit period N in i_clk cycles for both transmitter and receiver, default 16, legal range 4 to 65535.
+  - quote: "Parameter: PARA_UART_CLKS_PER_BIT; Default: 16; Legal values: 4 to 65535; Description: Bit period in i_clk cycles (N), used by the transmitter and the receiver"
+- **UL-4-02** [MUST] (uart_lite_Design_Specification.md 4) LPARA_UART_HALF_BIT shall equal floor(PARA_UART_CLKS_PER_BIT / 2), the middle-of-bit sampling offset H, using integer division.
+  - quote: "Parameter: LPARA_UART_HALF_BIT; Default: Derived; Legal values: -; Description: PARA_UART_CLKS_PER_BIT / 2 with integer division (floor); the middle-of-bit sampling offset H [REQ-PAR-002] LPARA_UART_HALF_BIT shall equal floor(PARA_UART_CLKS_PER_BIT / 2)."
+- **UL-4-03** [MUST] (uart_lite_Design_Specification.md 4) The block shall behave as specified for every PARA_UART_CLKS_PER_BIT value from 4 to 65535, both odd and even. Condition: PARA_UART_CLKS_PER_BIT is any value from 4 to 65535 inclusive, odd or even.
+  - quote: "[REQ-PAR-001] The block shall behave as specified for every value of PARA_UART_CLKS_PER_BIT from 4 to 65535 inclusive, both odd and even."
+- **UL-4-04** [SHOULD] (uart_lite_Design_Specification.md 4) The block should stop elaboration with an error message when PARA_UART_CLKS_PER_BIT is outside 4 to 65535. Condition: PARA_UART_CLKS_PER_BIT is less than 4 or greater than 65535.
+  - quote: "[REQ-PAR-003] The block should stop elaboration with an error message when PARA_UART_CLKS_PER_BIT is less than 4 or greater than 65535."
+- **UL-5-01** [MUST] (uart_lite_Design_Specification.md 5) i_rst_n is an active-low reset that asserts asynchronously and releases synchronously to i_clk. Condition: i_rst_n is asserted (low).
+  - quote: "Port: i_rst_n; Direction: input; Width: 1; Signal type: Reset (asynchronous assertion, synchronous release); Reset value: Not applicable; Clock domain: CLK; Meaning: Active-low reset"
+- **UL-5-02** [MUST] (uart_lite_Design_Specification.md 5) When o_tx_ready is 1, the transmitter must accept the byte on i_tx_data at the next i_clk edge. Condition: o_tx_ready is high and i_tx_valid is high at a clock edge.
+  - quote: "Port: i_tx_valid; Direction: input; Width: 1; Signal type: Data; Reset value: Not applicable; Clock domain: CLK; Meaning: Transmit stream: i_tx_data holds a byte to send Port: o_tx_ready; Direction: output; Width: 1; Signal type: Data; Reset value: 1; Clock domain: CLK; Meaning: Transmit stream: the transmitter can accept a byte at the next edge"
+- **UL-5-03** [MUST] (uart_lite_Design_Specification.md 5) o_tx_ready must reset to 1. Condition: after reset.
+  - quote: "Port: o_tx_ready; Direction: output; Width: 1; Signal type: Data; Reset value: 1; Clock domain: CLK; Meaning: Transmit stream: the transmitter can accept a byte at the next edge"
+- **UL-5-04** [MUST] (uart_lite_Design_Specification.md 5) Bit 0 of i_tx_data must be sent first on o_txd. Condition: transmitting a byte.
+  - quote: "Port: i_tx_data; Direction: input; Width: 8; Signal type: Data; Reset value: Not applicable; Clock domain: CLK; Meaning: Transmit stream: byte to send; bit 0 is sent first"
+- **UL-5-05** [MUST] (uart_lite_Design_Specification.md 5) o_rx_valid must reset to 0. Condition: after reset.
+  - quote: "Port: o_rx_valid; Direction: output; Width: 1; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Receive stream: the holding register holds a byte"
+- **UL-5-06** [MUST] (uart_lite_Design_Specification.md 5) o_rx_valid must be 1 when the holding register holds a byte. Condition: holding register holds a byte.
+  - quote: "Port: o_rx_valid; Direction: output; Width: 1; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Receive stream: the holding register holds a byte"
+- **UL-5-07** [MUST] (uart_lite_Design_Specification.md 5) The held byte is taken by the consumer at the edge where i_rx_ready is 1. Condition: i_rx_ready is high at a clock edge with o_rx_valid high.
+  - quote: "Port: i_rx_ready; Direction: input; Width: 1; Signal type: Data; Reset value: Not applicable; Clock domain: CLK; Meaning: Receive stream: the consumer takes the held byte at this edge"
+- **UL-5-08** [MUST] (uart_lite_Design_Specification.md 5) o_rx_data must reset to 0. Condition: after reset.
+  - quote: "Port: o_rx_data; Direction: output; Width: 8; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Receive stream: received byte; bit 0 was received first; qualified by o_rx_valid"
+- **UL-5-09** [MUST] (uart_lite_Design_Specification.md 5) o_rx_data must present the received byte with bit 0 received first, qualified by o_rx_valid. Condition: o_rx_valid is high.
+  - quote: "Port: o_rx_data; Direction: output; Width: 8; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Receive stream: received byte; bit 0 was received first; qualified by o_rx_valid"
+- **UL-5-10** [MUST] (uart_lite_Design_Specification.md 5) o_rx_frame_err must reset to 0. Condition: after reset.
+  - quote: "Port: o_rx_frame_err; Direction: output; Width: 1; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Receive stream: 1 when the stop bit of the held byte was sampled as 0; qualified by o_rx_valid"
+- **UL-5-11** [MUST] (uart_lite_Design_Specification.md 5) o_rx_frame_err must be 1 when the stop bit of the held byte was sampled as 0, qualified by o_rx_valid. Condition: o_rx_valid is high.
+  - quote: "Port: o_rx_frame_err; Direction: output; Width: 1; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Receive stream: 1 when the stop bit of the held byte was sampled as 0; qualified by o_rx_valid"
+- **UL-5-12** [MUST] (uart_lite_Design_Specification.md 5) o_rx_overrun must reset to 0. Condition: after reset.
+  - quote: "Port: o_rx_overrun; Direction: output; Width: 1; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: One-cycle pulse: a received byte was dropped because the holding register was full"
+- **UL-5-13** [MUST] (uart_lite_Design_Specification.md 5) o_rx_overrun must pulse for one cycle when a received byte is dropped because the holding register is full. Condition: a received byte is dropped because the holding register is full.
+  - quote: "Port: o_rx_overrun; Direction: output; Width: 1; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: One-cycle pulse: a received byte was dropped because the holding register was full"
+- **UL-5-14** [MUST] (uart_lite_Design_Specification.md 5) o_txd must reset to 1 and be high when idle. Condition: after reset or idle.
+  - quote: "Port: o_txd; Direction: output; Width: 1; Signal type: Data; Reset value: 1; Clock domain: CLK; Meaning: Serial transmit line, idle high"
+- **UL-5-15** [MUST] (uart_lite_Design_Specification.md 5) i_rxd, asynchronous to i_clk and idle high, must be synchronised inside the block.
+  - quote: "Port: i_rxd; Direction: input; Width: 1; Signal type: Data (asynchronous); Reset value: Not applicable; Clock domain: ASYNC; Meaning: Serial receive line, idle high, asynchronous to i_clk, synchronised inside the block"
+- **UL-6.1-01** [MUST] (uart_lite_Design_Specification.md 6.1) All state elements shall be clocked only by the rising edge of i_clk, with no other clock, no gated clock and no latch.
+  - quote: "[REQ-CLK-001] All state elements of the block shall be clocked by the rising edge of i_clk only, with no other clock, no gated clock and no latch."
+- **UL-6.2-01** [MUST] (uart_lite_Design_Specification.md 6.2) Every flip-flop shall take its reset value at once, without waiting for an i_clk edge. Condition: When i_rst_n becomes 0.
+  - quote: "[REQ-RST-001] When i_rst_n becomes 0, every flip-flop of the block shall take its reset value at once, without waiting for an edge of i_clk."
+- **UL-6.2-02** [MUST] (uart_lite_Design_Specification.md 6.2) Outputs shall be o_txd = 1, o_tx_ready = 1, o_rx_valid = 0, o_rx_data = 0, o_rx_frame_err = 0, o_rx_overrun = 0. Condition: While i_rst_n is 0.
+  - quote: "[REQ-RST-002] While i_rst_n is 0, the outputs shall have these values: o_txd = 1, o_tx_ready = 1, o_rx_valid = 0, o_rx_data = 0, o_rx_frame_err = 0, o_rx_overrun = 0."
+- **UL-6.2-03** [MUST_NOT] (uart_lite_Design_Specification.md 6.2) No transmit byte shall be accepted. Condition: While i_rst_n is 0, even when i_tx_valid = 1 and o_tx_ready = 1.
+  - quote: "[REQ-RST-003] While i_rst_n is 0, no transmit byte shall be accepted, even when i_tx_valid = 1 and o_tx_ready = 1."
+- **UL-6.2-04** [MUST_NOT] (uart_lite_Design_Specification.md 6.2) The receiver shall not detect a start bit and shall not deliver a byte. Condition: While i_rst_n is 0.
+  - quote: "[REQ-RST-004] While i_rst_n is 0, the receiver shall not detect a start bit and shall not deliver a byte."
+- **UL-6.2-05** [MUST] (uart_lite_Design_Specification.md 6.2) Both i_rxd synchronizer flip-flops and any flip-flop holding the previous synchronised line value shall reset to 1. Condition: On reset.
+  - quote: "[REQ-RST-005] Both i_rxd synchronizer flip-flops, and any flip-flop that holds the previous synchronised line value, shall reset to 1."
+- **UL-6.2-06** [MUST] (uart_lite_Design_Specification.md 6.2) The frame shall be abandoned and o_txd shall become 1 at once. Condition: Reset asserted during a transmission.
+  - quote: "[REQ-RST-006] If reset is asserted during a transmission, the frame shall be abandoned: o_txd shall become 1 at once, and the rest of the frame and the byte shall not be sent after the release."
+- **UL-6.2-08** [MUST_NOT] (uart_lite_Design_Specification.md 6.2) The partly received frame shall be discarded and shall not produce o_rx_valid, o_rx_frame_err or o_rx_overrun after the release. Condition: Reset asserted during a reception.
+  - quote: "[REQ-RST-007] If reset is asserted during a reception, the partly received frame shall be discarded and shall not produce o_rx_valid, o_rx_frame_err or o_rx_overrun after the release."
+- **UL-6.2-09** [MUST] (uart_lite_Design_Specification.md 6.2) The held byte shall be discarded. Condition: Reset asserted while o_rx_valid = 1.
+  - quote: "[REQ-RST-008] If reset is asserted while o_rx_valid = 1, the held byte shall be discarded."
+- **UL-6.2-10** [MUST] (uart_lite_Design_Specification.md 6.2) The transmitter shall be idle with o_tx_ready = 1 and shall accept a byte at the first edge after the release. Condition: After release of i_rst_n.
+  - quote: "[REQ-RST-009] After the release of i_rst_n, the transmitter shall be idle with o_tx_ready = 1, and it shall be able to accept a byte at the first edge after the release."
+- **UL-6.2-11** [MUST] (uart_lite_Design_Specification.md 6.2) The receiver shall be idle. Condition: After release of i_rst_n.
+  - quote: "[REQ-RST-010] After the release of i_rst_n, the receiver shall be idle."
+- **UL-6.2-12** [MUST] (uart_lite_Design_Specification.md 6.2) The previous synchronised value s(R1-1) shall be taken as 1, so s(R1) = 0 is detected as T0. Condition: First edge R1 after reset release.
+  - quote: "For the first edge R1 after the release, s(R1-1) shall be taken as 1 (the reset value of the synchronizer). So if s(R1) = 0, R1 is detected as T0 (Section 10.5)."
+- **UL-7.1-01** [MUST] (uart_lite_Design_Specification.md 7.1) Frames shall be sent and received in 8N1 format: start bit 0, eight data bits LSB first, stop bit 1, no parity bit.
+  - quote: "[REQ-GEN-001] The block shall send and receive frames in 8N1 format: a start bit of value 0, then eight data bits with the least significant bit first, then a stop bit of value 1, with no parity bit."
+- **UL-7.1-02** [MUST] (uart_lite_Design_Specification.md 7.1) The transmitter and receiver shall operate simultaneously and independently.
+  - quote: "[REQ-GEN-002] The transmitter and the receiver shall work at the same time and independently."
+- **UL-7.1-03** [MUST_NOT] (uart_lite_Design_Specification.md 7.1) Activity of the transmitter shall not change the timing or outputs of the receiver, and vice versa.
+  - quote: "No activity of one shall change the timing or the outputs of the other."
+- **UL-7.1-04** [MUST] (uart_lite_Design_Specification.md 7.1) Every output port shall be driven directly by a flip-flop clocked by i_clk, with no combinational path from any input to any output.
+  - quote: "[REQ-GEN-003] Every output port shall be driven directly by a flip-flop clocked by i_clk, so there is no combinational path from any input port to any output port."
+- **UL-7.2-01** [MUST_NOT] (uart_lite_Design_Specification.md 7.2) The transmitter shall accept a byte at an edge only when i_tx_valid = 1, o_tx_ready = 1 and i_rst_n = 1. Condition: at a clock edge.
+  - quote: "[REQ-TX-001] The transmitter shall accept a byte at an edge only when, at that edge, i_tx_valid = 1, o_tx_ready = 1 and i_rst_n = 1."
+- **UL-7.2-02** [MUST] (uart_lite_Design_Specification.md 7.2) The transmitter shall capture i_tx_data at the accepting edge E0; i_tx_data at any other edge shall have no effect. Condition: accepting edge E0.
+  - quote: "[REQ-TX-002] The transmitter shall capture i_tx_data at the accepting edge E0. The value of i_tx_data at any other edge shall have no effect."
+- **UL-7.2-03** [MUST] (uart_lite_Design_Specification.md 7.2) o_tx_ready shall be 1 while the transmitter is idle. Condition: transmitter idle, no frame in progress.
+  - quote: "[REQ-TX-003] While the transmitter is idle (no frame in progress), o_tx_ready shall be 1."
+- **UL-7.2-04** [MUST] (uart_lite_Design_Specification.md 7.2) o_tx_ready shall be 0 in the cycles after edges E0 to E0+10N-2 inclusive. Condition: after accepting edge E0.
+  - quote: "[REQ-TX-004] After an accepting edge E0, o_tx_ready shall be 0 in the cycles after edges E0 to E0+10N-2 inclusive."
+- **UL-7.2-05** [MUST] (uart_lite_Design_Specification.md 7.2) o_tx_ready shall become 1 at edge E0+10N-1, the last cycle of the stop bit. Condition: after accepting edge E0.
+  - quote: "[REQ-TX-005] After an accepting edge E0, o_tx_ready shall become 1 at edge E0+10N-1, which is the last cycle of the stop bit."
+- **UL-7.2-06** [MUST_NOT] (uart_lite_Design_Specification.md 7.2) The transmitter shall not accept a byte and its state shall not depend on i_tx_data. Condition: i_tx_valid is 0 or o_tx_ready is 0 at an edge.
+  - quote: "[REQ-TX-006] If i_tx_valid is 0 at an edge, or o_tx_ready is 0 at that edge, the transmitter shall not accept a byte and its state shall not depend on i_tx_data."
+- **UL-7.2-07** [MUST_NOT] (uart_lite_Design_Specification.md 7.2) The transmitter shall not require i_tx_valid to stay 1 until a handshake; if it returns to 0 before a handshake, nothing is sent.
+  - quote: "[REQ-TX-007] The transmitter shall not require i_tx_valid to stay 1 until a handshake. If i_tx_valid returns to 0 before a handshake, nothing is sent."
+- **UL-7.2-08** [MUST] (uart_lite_Design_Specification.md 7.2) The transmitter shall hold at most one byte, the one being sent, with no additional transmit buffer.
+  - quote: "[REQ-TX-008] The transmitter shall hold at most one byte, the byte being sent, and shall have no transmit buffer beyond it."
+- **UL-7.3-01** [MUST] (uart_lite_Design_Specification.md 7.3) o_txd in the cycle after edge E0+k shall equal frame bit floor(k/N) of D (bit0=0, bit j=D[j-1], bit9=1) for k from 0 to 10N-1. Condition: byte D accepted at edge E0.
+  - quote: "Frame bit j (j = 0 to 9) of a byte D is: bit 0 = 0 (start bit); bit j = D[j-1] for j = 1 to 8; bit 9 = 1 (stop bit). [REQ-TX-010] For a byte D accepted at edge E0, o_txd in the cycle after edge E0+k shall equal frame bit floor(k / N) of D, for every k from 0 to 10N-1."
+- **UL-7.3-03** [MUST] (uart_lite_Design_Specification.md 7.3) The start bit of the new frame shall begin at edge E0+10N with no idle cycle after the previous stop bit. Condition: new byte accepted at edge E0+10N.
+  - quote: "[REQ-TX-012] If a new byte is accepted at edge E0+10N, its start bit shall begin at edge E0+10N, with no idle cycle between the stop bit of the previous frame and the new start bit."
+- **UL-7.3-04** [MUST] (uart_lite_Design_Specification.md 7.3) o_txd shall be 1 from edge E0+10N until the edge after which the next accepted frame starts. Condition: no byte accepted at edge E0+10N.
+  - quote: "[REQ-TX-013] If no byte is accepted at edge E0+10N, o_txd shall be 1 from edge E0+10N until the edge after which the next accepted frame starts."
+- **UL-7.3-05** [MUST] (uart_lite_Design_Specification.md 7.3) o_txd shall be 1 while the transmitter is idle. Condition: transmitter idle.
+  - quote: "[REQ-TX-014] While the transmitter is idle, o_txd shall be 1."
+- **UL-7.4-01** [MUST] (uart_lite_Design_Specification.md 7.4) i_rxd shall pass through a synchronizer of exactly two flip-flops clocked by i_clk, with no logic between them, before other logic uses it.
+  - quote: "[REQ-RX-001] i_rxd shall go through a synchronizer of exactly two flip-flops clocked by i_clk, with no logic between them, before any other logic of the block uses it."
+- **UL-7.4-02** [MUST] (uart_lite_Design_Specification.md 7.4) The receiver shall be either idle or receiving, and shall be idle after reset, after a glitch and after the stop-bit sample of a frame.
+  - quote: "[REQ-RX-002] The receiver shall be in one of two conditions, idle or receiving. It shall be idle after reset, after a glitch (REQ-RX-005) and after the stop-bit sample of a frame (REQ-RX-013)."
+- **UL-7.4-03** [MUST] (uart_lite_Design_Specification.md 7.4) The receiver shall detect a start bit at edge T0 if and only if s(T0-1)=1 and s(T0)=0. Condition: receiver idle.
+  - quote: "[REQ-RX-003] While idle, the receiver shall detect a start bit at edge T0 if and only if s(T0-1) = 1 and s(T0) = 0."
+- **UL-7.4-04** [MUST_NOT] (uart_lite_Design_Specification.md 7.4) The receiver shall not need the line high longer than the single sample s(T0-1)=1 before a start bit.
+  - quote: "[REQ-RX-004] The receiver shall not need the line to be high for longer than the single sample s(T0-1) = 1 before a start bit."
+- **UL-7.4-05** [MUST] (uart_lite_Design_Specification.md 7.4) At T0+H the receiver shall check the start bit; if s(T0+H)=1 it shall treat it as a glitch, return to idle and receive no byte. Condition: start bit detected at T0.
+  - quote: "[REQ-RX-005] At edge T0+H the receiver shall check the start bit. If s(T0+H) = 1, the receiver shall treat the event as a glitch, return to idle and receive no byte."
+- **UL-7.4-06** [MUST_NOT] (uart_lite_Design_Specification.md 7.4) A glitch shall not change o_rx_valid, o_rx_data or o_rx_frame_err, and shall not make o_rx_overrun pulse. Condition: glitch.
+  - quote: "[REQ-RX-006] A glitch shall not change o_rx_valid, o_rx_data or o_rx_frame_err, and it shall not make o_rx_overrun pulse."
+- **UL-7.4-07** [MUST] (uart_lite_Design_Specification.md 7.4) The receiver shall detect a new start bit at any edge T0' > T0+H at which the start condition holds. Condition: after a glitch checked at T0+H.
+  - quote: "[REQ-RX-007] After a glitch checked at edge T0+H, the receiver shall detect a new start bit at any edge T0' > T0+H at which REQ-RX-003 holds."
+- **UL-7.4-08** [MUST] (uart_lite_Design_Specification.md 7.4) The receiver shall go on to receive the frame. Condition: s(T0+H)=0.
+  - quote: "[REQ-RX-008] If s(T0+H) = 0, the receiver shall go on to receive the frame."
+- **UL-7.5-01** [MUST] (uart_lite_Design_Specification.md 7.5) Data bit i (0 to 7) shall be sampled at edge T0+H+(i+1)N, and received byte bit i shall equal s(T0+H+(i+1)N). Condition: frame detected at T0 and confirmed at T0+H.
+  - quote: "[REQ-RX-010] For a frame detected at T0 and confirmed at T0+H, the receiver shall sample data bit i (i = 0 to 7) at edge T0+H+(i+1)N. The received byte bit i shall be s(T0+H+(i+1)N)."
+- **UL-7.5-02** [MUST] (uart_lite_Design_Specification.md 7.5) The receiver shall sample the stop bit at edge M = T0+H+9N.
+  - quote: "[REQ-RX-011] The receiver shall sample the stop bit at edge M = T0+H+9N."
+- **UL-7.5-03** [MUST] (uart_lite_Design_Specification.md 7.5) Only s(T0-1), s(T0), s(T0+H), the eight data samples and s(M) shall affect a frame result; i_rxd at other edges between T0 and M shall be ignored.
+  - quote: "[REQ-RX-012] Only the samples s(T0-1), s(T0), s(T0+H), the eight data-bit samples and s(M) shall affect the result of a frame. Values of i_rxd at all other edges between T0 and M shall be ignored."
+- **UL-7.5-04** [MUST] (uart_lite_Design_Specification.md 7.5) The receiver shall be idle after sampling at M and shall detect a new start bit at any T0' > M where the start condition holds, including M+1. Condition: after stop-bit sample at M.
+  - quote: "[REQ-RX-013] Once it has sampled the stop bit at M, the receiver shall be idle. It shall detect a new start bit at any edge T0' > M at which REQ-RX-003 holds, including T0' = M+1 when s(M) = 1 and s(M+1) = 0."
+- **UL-7.5-05** [MUST] (uart_lite_Design_Specification.md 7.5) Every confirmed frame shall complete at M regardless of the value of s(M). Condition: frame confirmed at T0+H.
+  - quote: "[REQ-RX-014] Every frame confirmed at T0+H shall complete at M, whatever the value of s(M)."
+- **UL-7.5-06** [MUST] (uart_lite_Design_Specification.md 7.5) The receiver shall keep sampling and receiving frames; a low i_rx_ready shall not stall or delay it. Condition: byte waiting in holding register.
+  - quote: "[REQ-RX-015] The receiver shall keep sampling and receiving frames while a byte is waiting in the holding register. A low i_rx_ready shall not stall or delay the receiver."
+- **UL-7.6-01** [MUST] (uart_lite_Design_Specification.md 7.6) The block shall load the frame: o_rx_valid becomes 1, o_rx_data the received byte, o_rx_frame_err the inverse of s(M). Condition: at delivery edge V=M+2 with o_rx_valid=0.
+  - quote: "[REQ-RX-020] At the delivery edge V = M+2 of a completed frame, if o_rx_valid = 0, the block shall load the frame into the holding register. o_rx_valid then becomes 1, o_rx_data becomes the received byte and o_rx_frame_err becomes the inverse of s(M)."
+- **UL-7.6-02** [MUST] (uart_lite_Design_Specification.md 7.6) The held byte shall be taken and the new frame loaded at the same edge; o_rx_valid stays 1 and no overrun is reported. Condition: at delivery edge V with o_rx_valid=1 and i_rx_ready=1.
+  - quote: "[REQ-RX-021] At the delivery edge V of a completed frame, if o_rx_valid = 1 and i_rx_ready = 1, the block shall take the held byte and load the new frame into the holding register at the same edge. o_rx_valid stays 1 and no overrun is reported."
+- **UL-7.6-03** [MUST] (uart_lite_Design_Specification.md 7.6) o_rx_valid shall become 0 at that edge. Condition: held byte taken (o_rx_valid=1, i_rx_ready=1, i_rst_n=1) and no new byte loaded.
+  - quote: "[REQ-RX-022] The consumer takes a held byte at an edge where o_rx_valid = 1, i_rx_ready = 1 and i_rst_n = 1. [REQ-RX-023] If a held byte is taken at an edge and no new byte is loaded at that edge, o_rx_valid shall become 0 at that edge."
+- **UL-7.6-04** [MUST] (uart_lite_Design_Specification.md 7.6) o_rx_valid, o_rx_data and o_rx_frame_err shall keep their values. Condition: o_rx_valid=1 and byte not taken.
+  - quote: "[REQ-RX-024] While o_rx_valid = 1 and the byte is not taken, o_rx_valid, o_rx_data and o_rx_frame_err shall keep their values."
+- **UL-7.6-05** [MUST] (uart_lite_Design_Specification.md 7.6) o_rx_data and o_rx_frame_err shall change only when a new byte is loaded or on reset, keeping the last loaded values (0 after reset) while o_rx_valid=0.
+  - quote: "[REQ-RX-025] o_rx_data and o_rx_frame_err shall change only at an edge where a new byte is loaded, or on reset. While o_rx_valid = 0 they shall keep the values of the last loaded byte, or 0 if no byte has been loaded since reset."
+- **UL-7.6-06** [MUST_NOT] (uart_lite_Design_Specification.md 7.6) i_rx_ready shall have no effect while o_rx_valid=0. Condition: o_rx_valid=0.
+  - quote: "[REQ-RX-026] i_rx_ready shall have no effect while o_rx_valid = 0."
+- **UL-7.6-07** [MUST] (uart_lite_Design_Specification.md 7.6) Bytes shall be delivered in the order in which their frames completed.
+  - quote: "[REQ-RX-027] Bytes shall be delivered on the receive stream in the order in which their frames completed."
+- **UL-7.7-01** [MUST] (uart_lite_Design_Specification.md 7.7) o_rx_frame_err shall be 1 with a loaded byte if and only if s(M) of that frame was 0. Condition: byte loaded.
+  - quote: "[REQ-FE-001] o_rx_frame_err shall be 1 with a loaded byte if and only if the stop-bit sample s(M) of that frame was 0."
+- **UL-7.7-02** [MUST] (uart_lite_Design_Specification.md 7.7) The byte shall be delivered, held and taken like any other byte, and o_rx_data shall hold its sampled data bits. Condition: frame with frame error.
+  - quote: "[REQ-FE-002] A byte with a frame error shall be delivered, held and taken like any other byte, and o_rx_data shall hold its sampled data bits."
+- **UL-7.7-03** [MUST_NOT] (uart_lite_Design_Specification.md 7.7) The receiver shall not detect a new start bit until s is 1 at one edge and 0 at the next, so a line held at 0 produces exactly one frame. Condition: after a frame with frame error.
+  - quote: "[REQ-FE-003] After a frame with a frame error, the receiver shall not detect a new start bit until s has been 1 at one edge and 0 at the next edge (REQ-RX-003), so a line held at 0 produces exactly one frame."
+- **UL-7.8-01** [MUST] (uart_lite_Design_Specification.md 7.8) The block shall drop the new byte and its frame-error flag. Condition: at delivery edge V with o_rx_valid=1 and i_rx_ready=0.
+  - quote: "[REQ-OVR-001] At the delivery edge V of a completed frame, if o_rx_valid = 1 and i_rx_ready = 0, the block shall drop the new byte and its frame-error flag."
+- **UL-7.8-02** [MUST] (uart_lite_Design_Specification.md 7.8) o_rx_overrun shall become 1 at edge V and return to 0 at V+1, being 1 for exactly one cycle. Condition: byte dropped at edge V.
+  - quote: "[REQ-OVR-002] When a byte is dropped at edge V, o_rx_overrun shall become 1 at edge V and return to 0 at edge V+1, so it is 1 for exactly one cycle."
+- **UL-7.8-03** [MUST] (uart_lite_Design_Specification.md 7.8) o_rx_valid, o_rx_data and o_rx_frame_err shall keep the held byte unchanged. Condition: byte dropped.
+  - quote: "[REQ-OVR-003] When a byte is dropped, o_rx_valid, o_rx_data and o_rx_frame_err shall keep the held byte unchanged."
+- **UL-7.8-04** [MUST] (uart_lite_Design_Specification.md 7.8) o_rx_overrun shall be 0 in every cycle except the cycle after an edge at which a byte is dropped.
+  - quote: "[REQ-OVR-004] o_rx_overrun shall be 0 in every cycle except the cycle after an edge at which a byte is dropped."
+- **UL-7.8-05** [MUST_NOT] (uart_lite_Design_Specification.md 7.8) o_rx_overrun shall not be qualified by o_rx_valid and shall not need a handshake.
+  - quote: "[REQ-OVR-005] o_rx_overrun shall not be qualified by o_rx_valid and shall not need a handshake."
+- **UL-7.8-06** [MUST_NOT] (uart_lite_Design_Specification.md 7.8) o_rx_overrun shall not pulse. Condition: glitch or frame cut short by reset.
+  - quote: "[REQ-OVR-006] A glitch, and a frame cut short by reset, shall not make o_rx_overrun pulse."
+- **UL-8.1-01** [MUST] (uart_lite_Design_Specification.md 8.1) The start bit must appear on o_txd in the first cycle after the accepting handshake edge E0. Condition: a byte is accepted at edge E0 (handshake).
+  - quote: "Latency: the start bit starts on o_txd at the accepting edge E0, which means in the first cycle after the handshake."
+- **UL-8.1-02** [MUST] (uart_lite_Design_Specification.md 8.1) The transmit frame must last 10N cycles, with the stop bit ending at edge E0+10N. Condition: a byte is accepted at edge E0.
+  - quote: "Frame length: 10N cycles. The stop bit ends at edge E0+10N."
+- **UL-8.1-03** [MUST] (uart_lite_Design_Specification.md 8.1) o_tx_ready must be 0 for 10N-1 cycles after E0 and become 1 in the last cycle of the stop bit. Condition: a byte is accepted at edge E0.
+  - quote: "o_tx_ready is 0 for 10N-1 cycles after E0 and becomes 1 in the last cycle of the stop bit (REQ-TX-004, REQ-TX-005)."
+- **UL-8.1-04** [MUST_NOT] (uart_lite_Design_Specification.md 8.1) The block must never drop an offered byte while o_tx_ready = 0; the upstream block waits. Condition: o_tx_ready = 0 while a byte is offered.
+  - quote: "Back-pressure: while o_tx_ready = 0, the upstream block waits; the block never drops an offered byte."
+- **UL-8.1-05** [MUST] (uart_lite_Design_Specification.md 8.1) The transmitter must accept one byte every 10N cycles and produce a continuous stream of frames with no idle cycle between them. Condition: i_tx_valid is held at 1.
+  - quote: "[REQ-TIM-001] While i_tx_valid is held at 1, the transmitter shall accept one byte every 10N cycles and shall produce a continuous stream of frames with no idle cycle between them."
+- **UL-8.1-06** [MUST] (uart_lite_Design_Specification.md 8.1) Bytes must be sent on o_txd in the order in which they were accepted.
+  - quote: "[REQ-TIM-002] Bytes shall be sent on o_txd in the order in which they were accepted."
+- **UL-8.2-01** [MUST] (uart_lite_Design_Specification.md 8.2) Delivery must occur at V = T0 + H + 9N + 2 edges, which is 2 edges after the stop-bit sample M. Condition: start bit detected at T0.
+  - quote: "Latency: from start-bit detection T0 to delivery V = T0 + H + 9N + 2 edges. Measured from the stop-bit sample M, this is 2 edges: the synchronizer latency."
+- **UL-8.2-03** [MUST] (uart_lite_Design_Specification.md 8.2) The receiver must accept frames back to back with no idle bit between them. Condition: a stop bit is followed at once by the next start bit, each bit N cycles long.
+  - quote: "[REQ-TIM-003] The receiver shall accept frames back to back with no idle bit between them: a stop bit followed at once by the next start bit, each bit N cycles long."
+- **UL-8.4-01** [MUST] (uart_lite_Design_Specification.md 8.4) After V, o_rx_overrun must be 1 for one cycle and the held byte must remain unchanged. Condition: at delivery V the holding register is full and i_rx_ready = 0.
+  - quote: "If at V the holding register was full and i_rx_ready = 0, then after V o_rx_overrun = 1 for one cycle and the held byte is unchanged."
+- **UL-10.1-01** [MUST] (uart_lite_Design_Specification.md 10.1) When the stop-bit sample s(M) is 0, the byte is delivered with o_rx_frame_err = 1. Condition: stop-bit sample s(M) is 0.
+  - quote: "Detection: the stop-bit sample s(M) is 0. Response: the byte is delivered with o_rx_frame_err = 1 (REQ-FE-001, REQ-FE-002)."
+- **UL-10.2-01** [MUST] (uart_lite_Design_Specification.md 10.2) The new byte is dropped, o_rx_overrun pulses for one cycle and the held byte stays. Condition: a frame completes at delivery edge V with o_rx_valid = 1 and i_rx_ready = 0.
+  - quote: "Detection: a frame completes and, at its delivery edge V, o_rx_valid = 1 and i_rx_ready = 0. Response: the new byte is dropped, o_rx_overrun pulses for one cycle and the held byte stays (REQ-OVR-001 to REQ-OVR-003)."
+- **UL-10.2-02** [MUST_NOT] (uart_lite_Design_Specification.md 10.2) No overrun occurs if the held byte is taken at V itself. Condition: held byte is taken at delivery edge V itself.
+  - quote: "If the held byte is taken at V itself, there is no overrun (REQ-RX-021)."
+- **UL-10.2-03** [MUST_NOT] (uart_lite_Design_Specification.md 10.2) The frame-error flag of a dropped byte is not reported. Condition: byte dropped due to overrun.
+  - quote: "The frame-error flag of a dropped byte is not reported."
+- **UL-10.3-01** [MUST] (uart_lite_Design_Specification.md 10.3) On a start-bit glitch, no byte, no flag and no pulse is produced. Condition: s(T0+H) = 1 after a start-bit detection.
+  - quote: "Detection: s(T0+H) = 1. Response: no byte, no flag and no pulse (REQ-RX-005, REQ-RX-006)."
+- **UL-10.3-02** [MUST] (uart_lite_Design_Specification.md 10.3) A low pulse on i_rxd sampled at fewer than H+1 consecutive edges starting at T0 is always rejected. Condition: low pulse on i_rxd sampled at fewer than H+1 edges in a row, starting at T0.
+  - quote: "A low pulse on i_rxd that is sampled at fewer than H+1 edges in a row, starting at T0, is always rejected."
+- **UL-10.4-01** [MUST] (uart_lite_Design_Specification.md 10.4) The receiver delivers byte 0x00 with o_rx_frame_err = 1, or drops it with an overrun pulse under Section 7.8 rules. Condition: i_rxd stays 0 from a start bit through the whole frame.
+  - quote: "[REQ-ERR-001] If i_rxd stays 0 from a start bit through the whole frame, the receiver shall deliver the byte 0x00 with o_rx_frame_err = 1, or drop it with an overrun pulse under the rules of Section 7.8."
+- **UL-10.4-02** [MUST_NOT] (uart_lite_Design_Specification.md 10.4) The receiver receives no further frame until the line has been sampled as 1 and then as 0. Condition: after a frame with i_rxd held low, until line sampled as 1 then 0.
+  - quote: "After that it shall receive no further frame until the line has been sampled as 1 and then as 0."
+- **UL-10.4-03** [MUST] (uart_lite_Design_Specification.md 10.4) The receiver stays idle and delivers nothing. Condition: i_rxd stays 1.
+  - quote: "[REQ-ERR-002] If i_rxd stays 1, the receiver shall stay idle and deliver nothing."
+- **UL-10.5-01** [MUST] (uart_lite_Design_Specification.md 10.5) The receiver detects R1 as T0 and processes the frame under Sections 7.4 to 7.8; a line staying low yields one byte 0x00 with o_rx_frame_err = 1. Condition: s(R1) = 0 at first edge R1 after release of i_rst_n.
+  - quote: "[REQ-ERR-003] If s(R1) = 0 at the first edge R1 after the release of i_rst_n, the receiver shall detect R1 as T0 (REQ-RST-010) and process the frame under Sections 7.4 to 7.8. A line that stays low therefore produces one byte 0x00 with o_rx_frame_err = 1."
+- **UL-10.7-01** [MUST_NOT] (uart_lite_Design_Specification.md 10.7) The transmitter shall not accept the byte and shall not record it. Condition: i_tx_valid = 1 while o_tx_ready = 0.
+  - quote: "[REQ-ERR-004] When i_tx_valid = 1 while o_tx_ready = 0, the transmitter shall not accept the byte and shall not record it."
+- **UL-10.7-02** [MUST] (uart_lite_Design_Specification.md 10.7) The block shall do nothing. Condition: i_rx_ready = 1 while o_rx_valid = 0.
+  - quote: "[REQ-ERR-005] When i_rx_ready = 1 while o_rx_valid = 0, the block shall do nothing (REQ-RX-026)."
+- **UL-10.7-03** [MUST] (uart_lite_Design_Specification.md 10.7) Transmit handshake and receive delivery or take in the same cycle shall be handled independently. Condition: transmit handshake and receive delivery or take in the same cycle.
+  - quote: "[REQ-ERR-006] A transmit handshake and a receive delivery or take in the same cycle shall be handled independently (REQ-GEN-002)."
+- **UL-10.8-01** [MUST] (uart_lite_Design_Specification.md 10.8) Bit-period and sample-offset counting shall not overflow or wrap early at N = 65535. Condition: N = 65535.
+  - quote: "A frame lasts 655350 cycles. [REQ-ERR-007] Bit-period and sample-offset counting shall not overflow or wrap early at N = 65535."
+- **UL-10.8-02** [MUST_NOT] (uart_lite_Design_Specification.md 10.8) Values of N outside 4 to 65535 are illegal and must not be used.
+  - quote: "Values outside 4 to 65535 are illegal (REQ-PAR-003)."
+- **UL-11-01** [MUST] (uart_lite_Design_Specification.md 11) CFG-MIN with PARA_UART_CLKS_PER_BIT=4 is the smallest legal bit period and must be verified for minimum sampling margins. Condition: PARA_UART_CLKS_PER_BIT=4 (CFG-MIN).
+  - quote: "ID: CFG-MIN; Parameter values: PARA_UART_CLKS_PER_BIT=4; Purpose: Smallest legal bit period; minimum sampling margins"
+- **UL-12.1-01** [MUST] (uart_lite_Design_Specification.md 12.1) The environment shall release i_rst_n synchronously to i_clk, meeting recovery and removal times. Condition: when releasing reset (0 to 1).
+  - quote: "[ENV-001] The environment shall release i_rst_n (0 to 1) synchronously to i_clk, meeting recovery and removal times."
+- **UL-12.1-02** [MUST] (uart_lite_Design_Specification.md 12.1) The environment shall hold i_rst_n at 0 for at least 2 cycles of i_clk at the start of simulation. Condition: at the start of a simulation.
+  - quote: "[ENV-002] The environment shall hold i_rst_n at 0 for at least 2 cycles of i_clk at the start of a simulation."
+- **UL-12.1-03** [MUST] (uart_lite_Design_Specification.md 12.1) The environment shall drive i_tx_valid, i_tx_data and i_rx_ready synchronously to i_clk with no X or Z values. Condition: after release of i_rst_n.
+  - quote: "[ENV-003] After the release of i_rst_n, the environment shall drive i_tx_valid, i_tx_data and i_rx_ready synchronously to i_clk, with no X or Z values."
+- **UL-12.1-04** [MUST] (uart_lite_Design_Specification.md 12.1) The testbench shall change i_rxd away from rising edges of i_clk, e.g. on the falling edge or at a non-coincident random offset. Condition: in simulation.
+  - quote: "[ENV-004] In simulation, the testbench shall change i_rxd away from rising edges of i_clk (for example on the falling edge or at a random offset that does not coincide with a rising edge), so that s(E) is well defined. i_rxd shall not be X or Z after reset release."
+- **UL-12.1-05** [MUST] (uart_lite_Design_Specification.md 12.1) i_rxd shall not be X or Z after reset release. Condition: after reset release.
+  - quote: "[ENV-004] In simulation, the testbench shall change i_rxd away from rising edges of i_clk (for example on the falling edge or at a random offset that does not coincide with a rising edge), so that s(E) is well defined. i_rxd shall not be X or Z after reset release."
+- **UL-12.2-02** [MUST] (uart_lite_Design_Specification.md 12.2) The synchronizer structure (exactly two flip-flops, no logic between them, REQ-RX-001) shall be checked by lint or structural review.
+  - quote: "Its structure (exactly two flip-flops with no logic between them, REQ-RX-001) shall be checked by lint or a structural review."
+- **UL-12.2-04** [MUST] (uart_lite_Design_Specification.md 12.2) The reference model shall compute s(E) from i_rxd and apply Sections 7.4 to 7.8 exactly.
+  - quote: "The reference model shall compute s(E) from i_rxd and apply Sections 7.4 to 7.8 exactly."
+- **UL-12.2-06** [MUST] (uart_lite_Design_Specification.md 12.2) The checker shall check REQ-TX-004, REQ-TX-005 and REQ-TX-010 cycle by cycle.
+  - quote: "The checker shall check REQ-TX-004, REQ-TX-005 and REQ-TX-010 cycle by cycle."
+- **UL-12.3-01** [MUST] (uart_lite_Design_Specification.md 12.3) Sampling-point test: drive i_rxd so each bit is correct only at its sampling edge T0+H+(i+1)N and M, wrong at edges just before and after. Condition: where N allows.
+  - quote: "Sampling-point test: drive i_rxd so that each bit has its correct value only at the specified sampling edge and the wrong value at the edges just before and after it, where N allows that. This checks the exact sampling edges T0+H+(i+1)N and M."
+- **UL-12.3-02** [MUST] (uart_lite_Design_Specification.md 12.3) Glitch test: low pulses on i_rxd of 1 to H samples are rejected and H+1 samples are accepted as a start bit.
+  - quote: "Glitch test: low pulses on i_rxd lasting 1 to H samples (rejected) and H+1 samples (accepted as a start bit)."
+- **UL-12.3-03** [MUST] (uart_lite_Design_Specification.md 12.3) Loopback test: connect o_txd to i_rxd and check the Section 8.5 latency and byte integrity.
+  - quote: "Loopback test: connect o_txd to i_rxd and check the latency in Section 8.5 and the byte integrity."
+- **UL-12.3-04** [MUST] (uart_lite_Design_Specification.md 12.3) Reset tests: assert i_rst_n asynchronously between clock edges in mid-transmit frame, mid-receive frame and while o_rx_valid = 1.
+  - quote: "Reset tests: assert i_rst_n in the middle of a transmit frame, in the middle of a receive frame and while o_rx_valid = 1, with an asynchronous assertion between clock edges."
+- **UL-12.3-05** [MUST] (uart_lite_Design_Specification.md 12.3) Test line low at reset release (REQ-ERR-003) and break (REQ-ERR-001).
+  - quote: "Line low at reset release (REQ-ERR-003) and break (REQ-ERR-001)."
+- **UL-12.4-01** [MUST] (uart_lite_Design_Specification.md 12.4) Cover data bytes 0x00, 0xFF, 0x55, 0xAA and random bytes in both directions.
+  - quote: "Data bytes 0x00, 0xFF, 0x55, 0xAA and random bytes, in both directions."
+- **UL-12.4-02** [MUST] (uart_lite_Design_Specification.md 12.4) Cover back-to-back transmit with i_tx_valid held at 1, and transmit with idle gaps of various lengths.
+  - quote: "Back-to-back transmit with i_tx_valid held at 1, and transmit with idle gaps of various lengths."
+- **UL-12.4-03** [MUST] (uart_lite_Design_Specification.md 12.4) Cover back-to-back receive frames with the next start bit right after the stop bit.
+  - quote: "Back-to-back receive frames with the next start bit right after the stop bit."
+- **UL-12.4-04** [MUST] (uart_lite_Design_Specification.md 12.4) Cover frame error with o_rx_valid = 0, and frame error with the byte dropped by overrun.
+  - quote: "Frame error with o_rx_valid = 0, and frame error with the byte dropped by overrun."
+- **UL-12.4-05** [MUST] (uart_lite_Design_Specification.md 12.4) Cover overrun, and the case where the held byte is taken at delivery edge V itself (no overrun).
+  - quote: "Overrun, and the case where the held byte is taken at the delivery edge V itself (no overrun)."
+- **UL-12.4-06** [MUST] (uart_lite_Design_Specification.md 12.4) Cover i_rx_ready held at 1, toggling at random, and held at 0 for several frames.
+  - quote: "i_rx_ready held at 1, toggling at random, and held at 0 for several frames."
+- **UL-12.4-07** [MUST] (uart_lite_Design_Specification.md 12.4) Cover i_tx_valid dropping before a handshake.
+  - quote: "i_tx_valid that drops before a handshake."
+- **UL-12.4-08** [MUST] (uart_lite_Design_Specification.md 12.4) Cover transmit and receive active at the same time.
+  - quote: "Transmit and receive active at the same time."
+- **UL-13-01** [MUST] (uart_lite_Design_Specification.md 13) The block shall meet timing at 50 MHz (20 ns period) on GF180MCU for every legal value of PARA_UART_CLKS_PER_BIT. Condition: for every legal value of PARA_UART_CLKS_PER_BIT.
+  - quote: "[REQ-IMP-001] The block shall meet timing at 50 MHz (20 ns period) on GF180MCU for every legal value of PARA_UART_CLKS_PER_BIT."
+- **UL-13-02** [MUST] (uart_lite_Design_Specification.md 13) The RTL shall follow docs/RTL_RULES.md.
+  - quote: "[REQ-IMP-002] The RTL shall follow docs/RTL_RULES.md."
+- **UL-13-03** [MUST] (uart_lite_Design_Specification.md 13) The RTL shall be synthesizable, contain no latches and pass Verilator lint with no warnings.
+  - quote: "[REQ-IMP-003] The RTL shall be synthesizable, contain no latches and pass Verilator lint with no warnings."
+- **UL-13-04** [MUST] (uart_lite_Design_Specification.md 13) All flip-flops shall use the asynchronous active-low reset i_rst_n.
+  - quote: "[REQ-IMP-004] All flip-flops shall use the asynchronous active-low reset i_rst_n."
+- **UL-13-05** [SHOULD] (uart_lite_Design_Specification.md 13) The two i_rxd synchronizer flip-flops should be marked so synthesis does not merge, duplicate or retime them.
+  - quote: "[REQ-IMP-005] The two i_rxd synchronizer flip-flops should be marked so that synthesis does not merge, duplicate or retime them."
+- **UL-13-06** [SHOULD] (uart_lite_Design_Specification.md 13) The bit-period counters should be only as wide as PARA_UART_CLKS_PER_BIT needs, at most 16 bits.
+  - quote: "[REQ-IMP-006] The bit-period counters should be only as wide as PARA_UART_CLKS_PER_BIT needs (16 bits at most)."
+- **UL-13-07** [SHOULD] (uart_lite_Design_Specification.md 13) The block should use only the storage the specification requires: transmit shift register, receive shift register, holding register, counters and flags.
+  - quote: "The block should use only the storage this specification requires: the transmit shift register, the receive shift register, the holding register, counters and flags."
+- **UL-14-01** [MUST] (uart_lite_Design_Specification.md 14) o_tx_ready must be 1 (its idle value) while i_rst_n = 0, since no handshake is possible during reset. Condition: while i_rst_n = 0.
+  - quote: "ID: D-001; Question: Value of o_tx_ready while i_rst_n = 0; Decision: 1 (its idle value); no handshake is possible during reset (REQ-RST-003); By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17"
+- **UL-14-02** [MUST] (uart_lite_Design_Specification.md 14) The receiver samples the middle of each bit H = floor(N/2) edges after T0, then every N edges. Condition: receiving a frame after start detection at T0.
+  - quote: "ID: D-002; Question: Exact middle-of-bit sampling point; Decision: H = floor(N/2) edges after T0, then every N edges; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17"
+- **UL-14-03** [MUST] (uart_lite_Design_Specification.md 14) o_rx_valid is delivered at V = M + 2, where M is the sample edge of i_rxd and 2 is the synchronizer latency. Condition: stop bit sampled at edge M.
+  - quote: "ID: D-003; Question: Exact cycle of o_rx_valid "the cycle after the middle of the stop bit"; Decision: Delivery at V = M + 2, where M is the sample edge of i_rxd and 2 is the synchronizer latency; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17"
+- **UL-14-04** [MUST] (uart_lite_Design_Specification.md 14) The new byte is loaded and no overrun occurs. Condition: held byte is taken at the same edge at which a new byte completes.
+  - quote: "ID: D-004; Question: Held byte taken at the same edge at which a new byte completes; Decision: The new byte is loaded and there is no overrun; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17"
+- **UL-14-05** [MUST] (uart_lite_Design_Specification.md 14) A new start requires a 1-to-0 transition on i_rxd, so a break yields only one byte. Condition: after a frame error with the line still low.
+  - quote: "ID: D-005; Question: Start detection after a frame error with the line still low; Decision: A 1-to-0 transition is required, so a break gives one byte; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17"
+- **UL-14-06** [MUST] (uart_lite_Design_Specification.md 14) The synchronizer resets to 1; a low i_rxd at reset release is detected as a start bit. Condition: reset and reset release.
+  - quote: "ID: D-006; Question: Synchronizer reset value and a low line at reset release; Decision: Reset to 1; a low line at release is detected as a start bit; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17"
+- **UL-14-07** [MUST] (uart_lite_Design_Specification.md 14) o_rx_data and o_rx_frame_err keep the last loaded values, and are 0 after reset. Condition: while o_rx_valid = 0.
+  - quote: "ID: D-007; Question: o_rx_data and o_rx_frame_err while o_rx_valid = 0; Decision: Keep the last loaded values; 0 after reset; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17"
+- **UL-14-08** [MUST] (uart_lite_Design_Specification.md 14) The frame is abandoned, o_txd goes to 1 at once and the byte is lost. Condition: reset asserted during a transmission.
+  - quote: "ID: D-009; Question: Reset during a transmission; Decision: Frame abandoned, o_txd = 1 at once, byte lost; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17"
+- **UL-14-09** [MUST_NOT] (uart_lite_Design_Specification.md 14) The frame-error flag of a dropped byte is not reported. Condition: a byte is dropped.
+  - quote: "ID: D-010; Question: Frame-error flag of a dropped byte; Decision: Not reported; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17"
+- **UL-14-10** [SHOULD] (uart_lite_Design_Specification.md 14) An elaboration error should be raised for illegal parameter values; this is not verified. Condition: illegal parameter values.
+  - quote: "ID: D-011; Question: Illegal parameter values; Decision: Elaboration error recommended (should); not verified; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17"
+- **UL-14-11** [MUST] (uart_lite_Design_Specification.md 14) CFG-ODD (5) and CFG-WIDE (1024) are simulated; CFG-MAX (65535) is not simulated and is covered by elaboration and synthesis only. Condition: configurations beyond default and minimum.
+  - quote: "ID: D-012; Question: Configurations beyond default and minimum; Decision: CFG-ODD (5) and CFG-WIDE (1024) are simulated. CFG-MAX (65535) is not simulated (655350 cycles per frame); the largest value is covered by elaboration and synthesis only; By: Claude (delegated by GabrielHCMUT); Date: 2026-11-17"
+- **UL-14-12** [MUST_NOT] (uart_lite_Design_Specification.md 14) No area budget is required for GF180MCU; area is reported, not checked.
+  - quote: "ID: OQ-001; Question: Is an area budget required for GF180MCU?; Decision: No area budget; area is reported, not checked; By: Claude (delegated by GabrielHCMUT); Date: 2026-11-17"
+- **UL-14-13** [MUST] (uart_lite_Design_Specification.md 14) The 50 MHz target applies at the slow corner (GF180MCU SS, 125 C, 4.5 V). Condition: 50 MHz target.
+  - quote: "ID: OQ-002; Question: Which PVT corner does the 50 MHz target apply to?; Decision: The slow corner (GF180MCU SS, 125 C, 4.5 V); By: Claude (delegated by GabrielHCMUT); Date: 2026-11-17"
+
+## Decisions on questions the specification left open
+
+- Rules UL-12.1-04, UL-12.3-03: ENV-004 requires i_rxd to change away from rising clock edges. The loopback test (UL-12.3-03) connects o_txd to i_rxd, and o_txd changes synchronously with the clock. Is the loopback exempt from ENV-004, or is a delay or falling-edge offset required?
+  - **Decision:** Not exempt. In the loopback test o_txd reaches i_rxd through a half-cycle delay (i_rxd changes at the falling edge of i_clk), so ENV-004 holds; no other delay is required.
+- Rules UL-12.2-02: UL-12.2-02 asks for lint or structural review of the synchronizer. Who owns that check, and how does it fit the simulation verification flow?
+  - **Decision:** The synchronizer structure (two flip-flops in series on i_rxd, nothing else in between) is checked on the RTL at gate D2 (docs/RTL_RULES.md RR-33, with nnc rtl-check), not by simulation. Simulation checks only its port-visible effect (the receive latency of D-003).
+- Rules UL-1.2-05, UL-1.2-10: When a received byte is dropped due to overrun, is the holding register's existing byte and its frame_err kept unchanged, and is the new byte entirely discarded?
+  - **Answer from the text:** Yes. The new byte and its frame-error flag are dropped. The held byte, o_rx_data and o_rx_frame_err stay unchanged.
+- Rules UL-1.2-10, UL-1.1-04: Is o_rx_overrun a one-cycle pulse, and is it a primary output not listed in the interface rule for the receive stream?
+  - **Answer from the text:** Yes, o_rx_overrun is 1 for exactly one cycle. It is a separate output port, listed in the port table and in the features, and not part of the receive-stream tuple. It is not qualified by o_rx_valid.
+- Rules UL-1.2-09: Is a byte with a frame error still delivered with o_rx_valid asserted (quote says delivered together with the byte)?
+  - **Answer from the text:** Yes. A frame-error byte is delivered with o_rx_valid=1, held and taken like any other byte. o_rx_frame_err=1 is delivered with it.
+- Rules UL-4-01, UL-4-04: UL-4-01 gives the legal range 4 to 65535 while UL-4-04 only says SHOULD stop elaboration outside it. What is the defined behavior for out-of-range values if the elaboration check is absent? Also, is the 16-bit upper bound consistent with the counter width used for N?
+  - **Answer from the text:** Behaviour for illegal values is unspecified and not verified. The elaboration error is only recommended (should). The range 4 to 65535 fits within a 16-bit counter, and the counters need be at most 16 bits wide.
+- Rules UL-4-02, UL-4-03: For odd N, floor(N/2) puts the sample point one cycle before the true bit center. Is that acceptable for the receiver's timing and tolerance?
+  - **Answer from the text:** Yes. H=floor(N/2) is the defined sampling offset. For odd N it is a defined point (N=5 gives H=2). No tolerance beyond what follows from the sampling points is claimed.
+- Rules UL-5-05, UL-5-08, UL-5-10: Is o_rx_valid/o_rx_data/o_rx_frame_err reset-value assertion meaningful when the reset is asserted asynchronously, and does reset clear them immediately?
+  - **Answer from the text:** Yes. Reset assertion is asynchronous. Every flip-flop takes its reset value at once, without waiting for a clock edge. While reset is low, o_rx_valid, o_rx_data and o_rx_frame_err are 0.
+- Rules UL-5-02, UL-5-06, UL-5-07: Are the master/slave/source/destination roles for the tx and rx streams defined (which side drives valid and which drives ready)?
+  - **Answer from the text:** Yes. For transmit, the upstream side drives i_tx_valid and i_tx_data, and the block drives o_tx_ready. For receive, the block drives o_rx_valid and the data, and the consumer drives i_rx_ready.
+- Rules UL-5-11: Does o_rx_frame_err hold its value while o_rx_valid is low, or is it don't-care?
+  - **Answer from the text:** It holds. While o_rx_valid=0, o_rx_data and o_rx_frame_err keep the values of the last loaded byte, or 0 if none has been loaded since reset.
+- Rules UL-6.2-01, UL-6.2-10, UL-6.2-12: REQ-RST-001 says every flip-flop resets asynchronously, but REQ-RST-005/RST-009 and 'first edge after release' imply synchronous release handling. Is i_rst_n release synchronised internally or asserted/released asynchronously relative to i_clk?
+  - **Answer from the text:** Reset assertion is asynchronous. Release is synchronised outside the block by the environment (ENV-001). The block has no reset synchronizer.
+- Rules UL-6.2-03, UL-6.2-02: Does 'no transmit byte accepted while i_rst_n = 0' with o_tx_ready = 1 conflict with the handshake definition that a transfer happens when i_tx_valid and o_tx_ready are both 1?
+  - **Answer from the text:** No conflict. The handshake definition itself includes i_rst_n=1, so no handshake can occur while reset is low even though o_tx_ready=1.
+- Rules UL-7.2-04, UL-7.2-05, UL-7.3-03: o_tx_ready is 0 in the cycles after E0..E0+10N-2 and 'becomes 1 at edge E0+10N-1'. Is ready first 1 in the cycle after edge E0+10N-1, so a new accept at E0+10N gives back-to-back frames? State the cycle convention precisely.
+  - **Answer from the text:** A registered output that becomes X at edge E has value X in the cycle after edge E. o_tx_ready is 0 in the cycles after E0 to E0+10N-2. It becomes 1 at edge E0+10N-1, so it is 1 in the cycle after that edge, which is the last stop-bit cycle. A new byte can then be accepted at E0+10N, with its start bit beginning there and no idle cycle.
+- Rules UL-7.4-05, UL-7.5-01, UL-7.5-02: What are the value and constraints of H (half-bit) relative to N, e.g. for odd N or N=1? Does N=1 still work with the 2-flop synchronizer and the delivery at M+2?
+  - **Answer from the text:** H=floor(N/2). For odd N it rounds down (N=5 gives H=2). N=1 is illegal, since the legal range is 4 to 65535, so it is not supported. Delivery is at V=M+2.
+- Rules UL-7.8-06, UL-7.6-05, UL-7.2-01: What happens to a frame in progress and to the holding register when i_rst_n is asserted? The spec only says a frame cut short by reset must not pulse overrun. Is the TX frame also aborted, and does o_txd return to 1?
+  - **Answer from the text:** A TX frame in progress is abandoned. o_txd becomes 1 at once and the byte is lost. A partly received frame is discarded and gives no valid, frame_err or overrun after release. A held byte is discarded.
+- Rules UL-7.6-01, UL-7.6-07, UL-7.5-04: If the next frame completes at M' before the previous frame's delivery edge V=M+2 (possible for small N), is delivery of both frames still ordered and each checked at its own V?
+  - **Answer from the text:** Yes. Each frame is delivered at its own V=M+2, in completion order. After M the receiver is idle, so the next start is at T0'>M and the spacing between starts is at least H+9N+1 cycles. With N at least 4, the next frame's M' therefore falls well after V.
+- Rules UL-8.1-01, UL-8.2-01: Are 'master' and 'slave' the correct actor labels for the UART transmitter and receiver? UL-8.1-xx and UL-8.2-xx describe a transmitter and a receiver, not bus master and slave roles.
+  - **Answer from the text:** No. The spec uses transmitter and receiver, with valid/ready streams. Neither master nor slave appears as a role.
+- Rules UL-8.1-01, UL-8.1-02: UL-8.1-01 says the start bit starts at E0 and also that this is the first cycle after the handshake. Is the start bit visible on o_txd during the cycle that follows E0, or is it visible at E0 itself?
+  - **Answer from the text:** The start bit is on o_txd in the cycle after edge E0 (k=0), which is the first cycle after the handshake. It is a registered output, not visible at E0 itself.
+- Rules UL-8.2-01, UL-8.2-02: What are H and M? The quotes don't define H, the half-bit offset, or M, the stop-bit sample point. For odd N, how is H rounded?
+  - **Answer from the text:** H=floor(N/2), the offset of the middle-of-bit sample, so odd N rounds down. M=T0+H+9N is the stop-bit sampling edge.
+- Rules UL-10.2-03, UL-10.4-01: Is a dropped byte's frame error never reported on o_rx_frame_err, and is the overrun-with-frame-error case in the stuck-low scenario consistent with it?
+  - **Answer from the text:** Yes. The frame error of a dropped byte is not reported. In the stuck-low case the spec allows either delivery of 0x00 with frame_err=1 or a drop with an overrun pulse, so it is consistent.
+- Rules UL-10.4-02: What is the exact definition of 'sampled as 1 then as 0' for re-arming after a stuck-low frame, e.g. is a single 1 sample enough?
+  - **Answer from the text:** A start bit needs s=1 at one edge and s=0 at the next. A single sample of 1 followed by 0 is enough, and no longer high time is needed.
+- Rules UL-12.3-01: The sampling-point test (UL-12.3-01) needs the wrong value at the edges just before and after the sampling edge. For small N, such as N=1 or 2, does this apply, or are some bits skipped? The spec only says 'where N allows that'.
+  - **Answer from the text:** N=1 and N=2 are illegal, since N is at least 4, so they are not tested. At N=4 the sample is 2 edges after the first edge of the bit and 1 edge before its last, so edges just before and after exist.
+- Rules UL-13-04, UL-13-05: Does 'all flip-flops use asynchronous reset' also cover the two i_rxd synchronizer flops, and is reset deassertion assumed to be synchronized externally?
+  - **Answer from the text:** Yes. All flip-flops use the asynchronous active-low reset, including both synchronizer flops, which reset to 1. Reset release is synchronised externally by the environment.
+- Rules UL-13-01, UL-13-06: What does 'legal value' of PARA_UART_CLKS_PER_BIT mean (the minimum and maximum)? The quotes don't give the range.
+  - **Answer from the text:** The legal range is 4 to 65535 inclusive. The default is 16.
+- Rules UL-14-09, UL-14-07, UL-14-04: UL-14-09: what does 'a byte is dropped' mean (overrun when the held byte is not taken?), and how is the frame-error of a dropped byte observed, since the output holds the last loaded values (UL-14-07)?
+  - **Answer from the text:** A byte is dropped when a frame completes at V while o_rx_valid=1 and i_rx_ready=0, which gives an overrun. The frame-error flag of a dropped byte is not reported, so it is not observable.
+- Rules UL-14-01, UL-14-08: UL-14-01 and UL-14-08: is o_tx_ready 1 immediately on reset assertion (asynchronous) or only after the next clock edge? Likewise for o_txd=1 'at once'.
+  - **Answer from the text:** Yes, both are immediate. On reset assertion every flip-flop takes its reset value at once, without a clock edge. So o_tx_ready=1 and o_txd=1 immediately.

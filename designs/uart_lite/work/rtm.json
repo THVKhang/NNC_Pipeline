@@ -1,0 +1,3903 @@
+[
+ {
+  "rule": "UL-1.1-01",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "1.1",
+  "sentences": [
+   "1.1:s2",
+   "1.2:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Serial frames use 8N1: one start bit (0), eight data bits LSB first, no parity, one stop bit (1).",
+  "checks": [
+   "CHK-011",
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-1.1-02",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "1.1",
+  "sentences": [
+   "1.1:s3",
+   "1.2:s3"
+  ],
+  "strength": "MUST",
+  "statement": "Each bit period lasts PARA_UART_CLKS_PER_BIT i_clk cycles.",
+  "checks": [
+   "CHK-011",
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-1.2-01",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "1.2",
+  "sentences": [
+   "1.2:s2"
+  ],
+  "strength": "MUST",
+  "statement": "The serial line is held high when idle.",
+  "checks": [
+   "CHK-010",
+   "CHK-013"
+  ],
+  "check_status": {
+   "CHK-010": "PASS",
+   "CHK-013": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-1.2-02",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "1.2",
+  "sentences": [
+   "1.2:s4"
+  ],
+  "strength": "MUST",
+  "statement": "PARA_UART_CLKS_PER_BIT is fixed at elaboration and must be within the legal range 4 to 65535.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "UL-1.2-02",
+   "reason": "static_or_structural",
+   "note": "Parameter range fixed at elaboration; not a simulation property."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "UL-1.2-04",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "1.2",
+  "sentences": [
+   "1.2:s7"
+  ],
+  "strength": "MUST",
+  "statement": "No idle bit is inserted between the stop bit and the next start bit.",
+  "checks": [
+   "CHK-013",
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-013": "PASS",
+   "CHK-030": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-1.2-05",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "1.2",
+  "sentences": [
+   "1.2:s9"
+  ],
+  "strength": "MUST",
+  "statement": "A one-byte holding register keeps each received byte until it is taken.",
+  "checks": [
+   "CHK-008",
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-008": "PASS",
+   "CHK-026": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-1.2-07",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "1.2",
+  "sentences": [
+   "1.2:s11"
+  ],
+  "strength": "MUST",
+  "statement": "The receiver detects a start bit on a falling edge and rechecks the start bit in the middle of the bit, rejecting glitches.",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-1.2-08",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "1.2",
+  "sentences": [
+   "1.2:s11"
+  ],
+  "strength": "MUST",
+  "statement": "The receiver samples each data bit and the stop bit in the middle of the bit.",
+  "checks": [
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-023": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-1.2-09",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "1.2",
+  "sentences": [
+   "1.2:s12"
+  ],
+  "strength": "MUST",
+  "statement": "o_rx_frame_err is set and delivered together with the received byte.",
+  "checks": [
+   "CHK-003",
+   "CHK-027"
+  ],
+  "check_status": {
+   "CHK-003": "PASS",
+   "CHK-027": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-1.2-10",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "1.2",
+  "sentences": [
+   "1.2:s13"
+  ],
+  "strength": "MUST",
+  "statement": "o_rx_overrun pulses.",
+  "checks": [
+   "CHK-005",
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-005": "PASS",
+   "CHK-026": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-1.2-11",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "1.2",
+  "sentences": [
+   "1.2:s14"
+  ],
+  "strength": "MUST",
+  "statement": "The transmitter and receiver operate simultaneously and independently of each other (full duplex).",
+  "checks": [
+   "CHK-017"
+  ],
+  "check_status": {
+   "CHK-017": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-4-01",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "4",
+  "sentences": [
+   "4:s1"
+  ],
+  "strength": "MUST",
+  "statement": "PARA_UART_CLKS_PER_BIT defines the bit period N in i_clk cycles for both transmitter and receiver, default 16, legal range 4 to 65535.",
+  "checks": [
+   "CHK-011",
+   "CHK-016",
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-016": "PASS",
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-4-02",
+  "spec_refs": [
+   "REQ-PAR-002"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "4",
+  "sentences": [
+   "4:s2",
+   "4:s4"
+  ],
+  "strength": "MUST",
+  "statement": "LPARA_UART_HALF_BIT shall equal floor(PARA_UART_CLKS_PER_BIT / 2), the middle-of-bit sampling offset H, using integer division.",
+  "checks": [
+   "CHK-015",
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-015": "PASS",
+   "CHK-023": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-4-03",
+  "spec_refs": [
+   "REQ-PAR-001"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "4",
+  "sentences": [
+   "4:s3"
+  ],
+  "strength": "MUST",
+  "statement": "The block shall behave as specified for every PARA_UART_CLKS_PER_BIT value from 4 to 65535, both odd and even.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "UL-4-03",
+   "reason": "static_or_structural",
+   "note": "A sweep over all values 4..65535 is not one simulation. The checks are parameterised and run at N=16, 4 (CHK-014), 5 (CHK-015) and 1024 (CHK-016). The full range is covered by elaboration and synthesis."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "UL-4-04",
+  "spec_refs": [
+   "REQ-PAR-003"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "4",
+  "sentences": [
+   "4:s5"
+  ],
+  "strength": "SHOULD",
+  "statement": "The block should stop elaboration with an error message when PARA_UART_CLKS_PER_BIT is outside 4 to 65535.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "UL-4-04",
+   "reason": "static_or_structural",
+   "note": "Elaboration error for an illegal parameter; not a simulation test (D-011: not verified)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "UL-5-01",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s3"
+  ],
+  "strength": "MUST",
+  "statement": "i_rst_n is an active-low reset that asserts asynchronously and releases synchronously to i_clk.",
+  "checks": [
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-5-02",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s4",
+   "5:s5"
+  ],
+  "strength": "MUST",
+  "statement": "When o_tx_ready is 1, the transmitter must accept the byte on i_tx_data at the next i_clk edge.",
+  "checks": [
+   "CHK-010"
+  ],
+  "check_status": {
+   "CHK-010": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-5-03",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s5"
+  ],
+  "strength": "MUST",
+  "statement": "o_tx_ready must reset to 1.",
+  "checks": [
+   "CHK-002"
+  ],
+  "check_status": {
+   "CHK-002": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-5-04",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s6"
+  ],
+  "strength": "MUST",
+  "statement": "Bit 0 of i_tx_data must be sent first on o_txd.",
+  "checks": [
+   "CHK-011"
+  ],
+  "check_status": {
+   "CHK-011": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-5-05",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s7"
+  ],
+  "strength": "MUST",
+  "statement": "o_rx_valid must reset to 0.",
+  "checks": [
+   "CHK-002"
+  ],
+  "check_status": {
+   "CHK-002": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-5-06",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s7"
+  ],
+  "strength": "MUST",
+  "statement": "o_rx_valid must be 1 when the holding register holds a byte.",
+  "checks": [
+   "CHK-003"
+  ],
+  "check_status": {
+   "CHK-003": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-5-07",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s8"
+  ],
+  "strength": "MUST",
+  "statement": "The held byte is taken by the consumer at the edge where i_rx_ready is 1.",
+  "checks": [
+   "CHK-007"
+  ],
+  "check_status": {
+   "CHK-007": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-5-08",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s9"
+  ],
+  "strength": "MUST",
+  "statement": "o_rx_data must reset to 0.",
+  "checks": [
+   "CHK-002"
+  ],
+  "check_status": {
+   "CHK-002": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-5-09",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s9"
+  ],
+  "strength": "MUST",
+  "statement": "o_rx_data must present the received byte with bit 0 received first, qualified by o_rx_valid.",
+  "checks": [
+   "CHK-003",
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-003": "PASS",
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-5-10",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s10"
+  ],
+  "strength": "MUST",
+  "statement": "o_rx_frame_err must reset to 0.",
+  "checks": [
+   "CHK-002"
+  ],
+  "check_status": {
+   "CHK-002": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-5-11",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s10"
+  ],
+  "strength": "MUST",
+  "statement": "o_rx_frame_err must be 1 when the stop bit of the held byte was sampled as 0, qualified by o_rx_valid.",
+  "checks": [
+   "CHK-003"
+  ],
+  "check_status": {
+   "CHK-003": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-5-12",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s11"
+  ],
+  "strength": "MUST",
+  "statement": "o_rx_overrun must reset to 0.",
+  "checks": [
+   "CHK-002"
+  ],
+  "check_status": {
+   "CHK-002": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-5-13",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s11"
+  ],
+  "strength": "MUST",
+  "statement": "o_rx_overrun must pulse for one cycle when a received byte is dropped because the holding register is full.",
+  "checks": [
+   "CHK-005"
+  ],
+  "check_status": {
+   "CHK-005": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-5-14",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s12"
+  ],
+  "strength": "MUST",
+  "statement": "o_txd must reset to 1 and be high when idle.",
+  "checks": [
+   "CHK-002",
+   "CHK-010"
+  ],
+  "check_status": {
+   "CHK-002": "PASS",
+   "CHK-010": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-5-15",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s13"
+  ],
+  "strength": "MUST",
+  "statement": "i_rxd, asynchronous to i_clk and idle high, must be synchronised inside the block.",
+  "checks": [
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-6.1-01",
+  "spec_refs": [
+   "REQ-CLK-001"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "6.1",
+  "sentences": [
+   "6.1:s7"
+  ],
+  "strength": "MUST",
+  "statement": "All state elements shall be clocked only by the rising edge of i_clk, with no other clock, no gated clock and no latch.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "UL-6.1-01",
+   "reason": "static_or_structural",
+   "note": "Single clock, no gated clocks and no latches: checked by lint and synthesis."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "UL-6.2-01",
+  "spec_refs": [
+   "REQ-RST-001"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "6.2",
+  "sentences": [
+   "6.2:s4"
+  ],
+  "strength": "MUST",
+  "statement": "Every flip-flop shall take its reset value at once, without waiting for an i_clk edge.",
+  "checks": [
+   "CHK-002",
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-002": "PASS",
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 5,
+   "killed": 5,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-6.2-02",
+  "spec_refs": [
+   "REQ-RST-002"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "6.2",
+  "sentences": [
+   "6.2:s5"
+  ],
+  "strength": "MUST",
+  "statement": "Outputs shall be o_txd = 1, o_tx_ready = 1, o_rx_valid = 0, o_rx_data = 0, o_rx_frame_err = 0, o_rx_overrun = 0.",
+  "checks": [
+   "CHK-002"
+  ],
+  "check_status": {
+   "CHK-002": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 7,
+   "killed": 7,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-6.2-03",
+  "spec_refs": [
+   "REQ-RST-003"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "6.2",
+  "sentences": [
+   "6.2:s6"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "No transmit byte shall be accepted.",
+  "checks": [
+   "CHK-020"
+  ],
+  "check_status": {
+   "CHK-020": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-6.2-04",
+  "spec_refs": [
+   "REQ-RST-004"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "6.2",
+  "sentences": [
+   "6.2:s7"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The receiver shall not detect a start bit and shall not deliver a byte.",
+  "checks": [
+   "CHK-020"
+  ],
+  "check_status": {
+   "CHK-020": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-6.2-05",
+  "spec_refs": [
+   "REQ-RST-005"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "6.2",
+  "sentences": [
+   "6.2:s8"
+  ],
+  "strength": "MUST",
+  "statement": "Both i_rxd synchronizer flip-flops and any flip-flop holding the previous synchronised line value shall reset to 1.",
+  "checks": [
+   "CHK-021"
+  ],
+  "check_status": {
+   "CHK-021": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 4,
+   "killed": 3,
+   "survived": [
+    "M19"
+   ],
+   "claimed_equivalent": [
+    "M19"
+   ],
+   "score": 75.0,
+   "meets_threshold": false
+  }
+ },
+ {
+  "rule": "UL-6.2-06",
+  "spec_refs": [
+   "REQ-RST-006"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "6.2",
+  "sentences": [
+   "6.2:s9"
+  ],
+  "strength": "MUST",
+  "statement": "The frame shall be abandoned and o_txd shall become 1 at once.",
+  "checks": [
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-6.2-08",
+  "spec_refs": [
+   "REQ-RST-007"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "6.2",
+  "sentences": [
+   "6.2:s10"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The partly received frame shall be discarded and shall not produce o_rx_valid, o_rx_frame_err or o_rx_overrun after the release.",
+  "checks": [
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 5,
+   "killed": 5,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-6.2-09",
+  "spec_refs": [
+   "REQ-RST-008"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "6.2",
+  "sentences": [
+   "6.2:s11"
+  ],
+  "strength": "MUST",
+  "statement": "The held byte shall be discarded.",
+  "checks": [
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-6.2-10",
+  "spec_refs": [
+   "REQ-RST-009"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "6.2",
+  "sentences": [
+   "6.2:s12"
+  ],
+  "strength": "MUST",
+  "statement": "The transmitter shall be idle with o_tx_ready = 1 and shall accept a byte at the first edge after the release.",
+  "checks": [
+   "CHK-020"
+  ],
+  "check_status": {
+   "CHK-020": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-6.2-11",
+  "spec_refs": [
+   "REQ-RST-010"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "6.2",
+  "sentences": [
+   "6.2:s13"
+  ],
+  "strength": "MUST",
+  "statement": "The receiver shall be idle.",
+  "checks": [
+   "CHK-020"
+  ],
+  "check_status": {
+   "CHK-020": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-6.2-12",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "6.2",
+  "sentences": [
+   "6.2:s14",
+   "6.2:s15"
+  ],
+  "strength": "MUST",
+  "statement": "The previous synchronised value s(R1-1) shall be taken as 1, so s(R1) = 0 is detected as T0.",
+  "checks": [
+   "CHK-021"
+  ],
+  "check_status": {
+   "CHK-021": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 4,
+   "killed": 3,
+   "survived": [
+    "M19"
+   ],
+   "claimed_equivalent": [
+    "M19"
+   ],
+   "score": 75.0,
+   "meets_threshold": false
+  }
+ },
+ {
+  "rule": "UL-7.1-01",
+  "spec_refs": [
+   "REQ-GEN-001"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.1",
+  "sentences": [
+   "7.1:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Frames shall be sent and received in 8N1 format: start bit 0, eight data bits LSB first, stop bit 1, no parity bit.",
+  "checks": [
+   "CHK-011",
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.1-02",
+  "spec_refs": [
+   "REQ-GEN-002"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.1",
+  "sentences": [
+   "7.1:s2"
+  ],
+  "strength": "MUST",
+  "statement": "The transmitter and receiver shall operate simultaneously and independently.",
+  "checks": [
+   "CHK-017"
+  ],
+  "check_status": {
+   "CHK-017": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-7.1-03",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.1",
+  "sentences": [
+   "7.1:s3"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "Activity of the transmitter shall not change the timing or outputs of the receiver, and vice versa.",
+  "checks": [
+   "CHK-017"
+  ],
+  "check_status": {
+   "CHK-017": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-7.1-04",
+  "spec_refs": [
+   "REQ-GEN-003"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.1",
+  "sentences": [
+   "7.1:s4"
+  ],
+  "strength": "MUST",
+  "statement": "Every output port shall be driven directly by a flip-flop clocked by i_clk, with no combinational path from any input to any output.",
+  "checks": [
+   "CHK-001"
+  ],
+  "check_status": {
+   "CHK-001": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-7.2-01",
+  "spec_refs": [
+   "REQ-TX-001"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.2",
+  "sentences": [
+   "7.2:s1"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The transmitter shall accept a byte at an edge only when i_tx_valid = 1, o_tx_ready = 1 and i_rst_n = 1.",
+  "checks": [
+   "CHK-010"
+  ],
+  "check_status": {
+   "CHK-010": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.2-02",
+  "spec_refs": [
+   "REQ-TX-002"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.2",
+  "sentences": [
+   "7.2:s2",
+   "7.2:s3"
+  ],
+  "strength": "MUST",
+  "statement": "The transmitter shall capture i_tx_data at the accepting edge E0; i_tx_data at any other edge shall have no effect.",
+  "checks": [
+   "CHK-011",
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-031": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.2-03",
+  "spec_refs": [
+   "REQ-TX-003"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.2",
+  "sentences": [
+   "7.2:s4"
+  ],
+  "strength": "MUST",
+  "statement": "o_tx_ready shall be 1 while the transmitter is idle.",
+  "checks": [
+   "CHK-010"
+  ],
+  "check_status": {
+   "CHK-010": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.2-04",
+  "spec_refs": [
+   "REQ-TX-004"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.2",
+  "sentences": [
+   "7.2:s5"
+  ],
+  "strength": "MUST",
+  "statement": "o_tx_ready shall be 0 in the cycles after edges E0 to E0+10N-2 inclusive.",
+  "checks": [
+   "CHK-012"
+  ],
+  "check_status": {
+   "CHK-012": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 7,
+   "killed": 7,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.2-05",
+  "spec_refs": [
+   "REQ-TX-005"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.2",
+  "sentences": [
+   "7.2:s6"
+  ],
+  "strength": "MUST",
+  "statement": "o_tx_ready shall become 1 at edge E0+10N-1, the last cycle of the stop bit.",
+  "checks": [
+   "CHK-012"
+  ],
+  "check_status": {
+   "CHK-012": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 6,
+   "killed": 6,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.2-06",
+  "spec_refs": [
+   "REQ-TX-006"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.2",
+  "sentences": [
+   "7.2:s7"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The transmitter shall not accept a byte and its state shall not depend on i_tx_data.",
+  "checks": [
+   "CHK-010",
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-010": "PASS",
+   "CHK-031": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.2-07",
+  "spec_refs": [
+   "REQ-TX-007"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.2",
+  "sentences": [
+   "7.2:s8",
+   "7.2:s9"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The transmitter shall not require i_tx_valid to stay 1 until a handshake; if it returns to 0 before a handshake, nothing is sent.",
+  "checks": [
+   "CHK-032"
+  ],
+  "check_status": {
+   "CHK-032": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-7.2-08",
+  "spec_refs": [
+   "REQ-TX-008"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.2",
+  "sentences": [
+   "7.2:s10"
+  ],
+  "strength": "MUST",
+  "statement": "The transmitter shall hold at most one byte, the one being sent, with no additional transmit buffer.",
+  "checks": [
+   "CHK-032"
+  ],
+  "check_status": {
+   "CHK-032": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.3-01",
+  "spec_refs": [
+   "REQ-TX-010"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.3",
+  "sentences": [
+   "7.3:s1",
+   "7.3:s2"
+  ],
+  "strength": "MUST",
+  "statement": "o_txd in the cycle after edge E0+k shall equal frame bit floor(k/N) of D (bit0=0, bit j=D[j-1], bit9=1) for k from 0 to 10N-1.",
+  "checks": [
+   "CHK-011"
+  ],
+  "check_status": {
+   "CHK-011": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.3-03",
+  "spec_refs": [
+   "REQ-TX-012"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.3",
+  "sentences": [
+   "7.3:s4"
+  ],
+  "strength": "MUST",
+  "statement": "The start bit of the new frame shall begin at edge E0+10N with no idle cycle after the previous stop bit.",
+  "checks": [
+   "CHK-013"
+  ],
+  "check_status": {
+   "CHK-013": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-7.3-04",
+  "spec_refs": [
+   "REQ-TX-013"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.3",
+  "sentences": [
+   "7.3:s5"
+  ],
+  "strength": "MUST",
+  "statement": "o_txd shall be 1 from edge E0+10N until the edge after which the next accepted frame starts.",
+  "checks": [
+   "CHK-013"
+  ],
+  "check_status": {
+   "CHK-013": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.3-05",
+  "spec_refs": [
+   "REQ-TX-014"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.3",
+  "sentences": [
+   "7.3:s6"
+  ],
+  "strength": "MUST",
+  "statement": "o_txd shall be 1 while the transmitter is idle.",
+  "checks": [
+   "CHK-010"
+  ],
+  "check_status": {
+   "CHK-010": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.4-01",
+  "spec_refs": [
+   "REQ-RX-001"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.4",
+  "sentences": [
+   "7.4:s1"
+  ],
+  "strength": "MUST",
+  "statement": "i_rxd shall pass through a synchronizer of exactly two flip-flops clocked by i_clk, with no logic between them, before other logic uses it.",
+  "checks": [
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.4-02",
+  "spec_refs": [
+   "REQ-RX-002",
+   "REQ-RX-005",
+   "REQ-RX-013"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.4",
+  "sentences": [
+   "7.4:s2",
+   "7.4:s3"
+  ],
+  "strength": "MUST",
+  "statement": "The receiver shall be either idle or receiving, and shall be idle after reset, after a glitch and after the stop-bit sample of a frame.",
+  "checks": [
+   "CHK-024",
+   "CHK-025"
+  ],
+  "check_status": {
+   "CHK-024": "PASS",
+   "CHK-025": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.4-03",
+  "spec_refs": [
+   "REQ-RX-003"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.4",
+  "sentences": [
+   "7.4:s4"
+  ],
+  "strength": "MUST",
+  "statement": "The receiver shall detect a start bit at edge T0 if and only if s(T0-1)=1 and s(T0)=0.",
+  "checks": [
+   "CHK-024",
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-024": "PASS",
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.4-04",
+  "spec_refs": [
+   "REQ-RX-004"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.4",
+  "sentences": [
+   "7.4:s5"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The receiver shall not need the line high longer than the single sample s(T0-1)=1 before a start bit.",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-7.4-05",
+  "spec_refs": [
+   "REQ-RX-005"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.4",
+  "sentences": [
+   "7.4:s6",
+   "7.4:s7"
+  ],
+  "strength": "MUST",
+  "statement": "At T0+H the receiver shall check the start bit; if s(T0+H)=1 it shall treat it as a glitch, return to idle and receive no byte.",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.4-06",
+  "spec_refs": [
+   "REQ-RX-006"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.4",
+  "sentences": [
+   "7.4:s8"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "A glitch shall not change o_rx_valid, o_rx_data or o_rx_frame_err, and shall not make o_rx_overrun pulse.",
+  "checks": [
+   "CHK-006",
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-006": "PASS",
+   "CHK-024": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.4-07",
+  "spec_refs": [
+   "REQ-RX-003",
+   "REQ-RX-007"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.4",
+  "sentences": [
+   "7.4:s9"
+  ],
+  "strength": "MUST",
+  "statement": "The receiver shall detect a new start bit at any edge T0' > T0+H at which the start condition holds.",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-7.4-08",
+  "spec_refs": [
+   "REQ-RX-008"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.4",
+  "sentences": [
+   "7.4:s10"
+  ],
+  "strength": "MUST",
+  "statement": "The receiver shall go on to receive the frame.",
+  "checks": [
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-7.5-01",
+  "spec_refs": [
+   "REQ-RX-010"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.5",
+  "sentences": [
+   "7.5:s1",
+   "7.5:s2"
+  ],
+  "strength": "MUST",
+  "statement": "Data bit i (0 to 7) shall be sampled at edge T0+H+(i+1)N, and received byte bit i shall equal s(T0+H+(i+1)N).",
+  "checks": [
+   "CHK-003",
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-003": "PASS",
+   "CHK-023": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.5-02",
+  "spec_refs": [
+   "REQ-RX-011"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.5",
+  "sentences": [
+   "7.5:s3"
+  ],
+  "strength": "MUST",
+  "statement": "The receiver shall sample the stop bit at edge M = T0+H+9N.",
+  "checks": [
+   "CHK-003",
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-003": "PASS",
+   "CHK-023": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.5-03",
+  "spec_refs": [
+   "REQ-RX-012"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.5",
+  "sentences": [
+   "7.5:s4",
+   "7.5:s5"
+  ],
+  "strength": "MUST",
+  "statement": "Only s(T0-1), s(T0), s(T0+H), the eight data samples and s(M) shall affect a frame result; i_rxd at other edges between T0 and M shall be ignored.",
+  "checks": [
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-023": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.5-04",
+  "spec_refs": [
+   "REQ-RX-003",
+   "REQ-RX-013"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.5",
+  "sentences": [
+   "7.5:s6",
+   "7.5:s7"
+  ],
+  "strength": "MUST",
+  "statement": "The receiver shall be idle after sampling at M and shall detect a new start bit at any T0' > M where the start condition holds, including M+1.",
+  "checks": [
+   "CHK-025"
+  ],
+  "check_status": {
+   "CHK-025": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-7.5-05",
+  "spec_refs": [
+   "REQ-RX-014"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.5",
+  "sentences": [
+   "7.5:s8"
+  ],
+  "strength": "MUST",
+  "statement": "Every confirmed frame shall complete at M regardless of the value of s(M).",
+  "checks": [
+   "CHK-025",
+   "CHK-027"
+  ],
+  "check_status": {
+   "CHK-025": "PASS",
+   "CHK-027": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.5-06",
+  "spec_refs": [
+   "REQ-RX-015"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.5",
+  "sentences": [
+   "7.5:s9",
+   "7.5:s10"
+  ],
+  "strength": "MUST",
+  "statement": "The receiver shall keep sampling and receiving frames; a low i_rx_ready shall not stall or delay it.",
+  "checks": [
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-026": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-7.6-01",
+  "spec_refs": [
+   "REQ-RX-020"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.6",
+  "sentences": [
+   "7.6:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The block shall load the frame: o_rx_valid becomes 1, o_rx_data the received byte, o_rx_frame_err the inverse of s(M).",
+  "checks": [
+   "CHK-003"
+  ],
+  "check_status": {
+   "CHK-003": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.6-02",
+  "spec_refs": [
+   "REQ-RX-021"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.6",
+  "sentences": [
+   "7.6:s2"
+  ],
+  "strength": "MUST",
+  "statement": "The held byte shall be taken and the new frame loaded at the same edge; o_rx_valid stays 1 and no overrun is reported.",
+  "checks": [
+   "CHK-004"
+  ],
+  "check_status": {
+   "CHK-004": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.6-03",
+  "spec_refs": [
+   "REQ-RX-022",
+   "REQ-RX-023"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.6",
+  "sentences": [
+   "7.6:s3",
+   "7.6:s4"
+  ],
+  "strength": "MUST",
+  "statement": "o_rx_valid shall become 0 at that edge.",
+  "checks": [
+   "CHK-007"
+  ],
+  "check_status": {
+   "CHK-007": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.6-04",
+  "spec_refs": [
+   "REQ-RX-024"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.6",
+  "sentences": [
+   "7.6:s5"
+  ],
+  "strength": "MUST",
+  "statement": "o_rx_valid, o_rx_data and o_rx_frame_err shall keep their values.",
+  "checks": [
+   "CHK-008"
+  ],
+  "check_status": {
+   "CHK-008": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-7.6-05",
+  "spec_refs": [
+   "REQ-RX-025"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.6",
+  "sentences": [
+   "7.6:s6",
+   "7.6:s7"
+  ],
+  "strength": "MUST",
+  "statement": "o_rx_data and o_rx_frame_err shall change only when a new byte is loaded or on reset, keeping the last loaded values (0 after reset) while o_rx_valid=0.",
+  "checks": [
+   "CHK-009"
+  ],
+  "check_status": {
+   "CHK-009": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.6-06",
+  "spec_refs": [
+   "REQ-RX-026"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.6",
+  "sentences": [
+   "7.6:s8"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "i_rx_ready shall have no effect while o_rx_valid=0.",
+  "checks": [
+   "CHK-009"
+  ],
+  "check_status": {
+   "CHK-009": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-7.6-07",
+  "spec_refs": [
+   "REQ-RX-027"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.6",
+  "sentences": [
+   "7.6:s9"
+  ],
+  "strength": "MUST",
+  "statement": "Bytes shall be delivered in the order in which their frames completed.",
+  "checks": [
+   "CHK-025",
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-025": "PASS",
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-7.7-01",
+  "spec_refs": [
+   "REQ-FE-001"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.7",
+  "sentences": [
+   "7.7:s1"
+  ],
+  "strength": "MUST",
+  "statement": "o_rx_frame_err shall be 1 with a loaded byte if and only if s(M) of that frame was 0.",
+  "checks": [
+   "CHK-003"
+  ],
+  "check_status": {
+   "CHK-003": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-7.7-02",
+  "spec_refs": [
+   "REQ-FE-002"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.7",
+  "sentences": [
+   "7.7:s2"
+  ],
+  "strength": "MUST",
+  "statement": "The byte shall be delivered, held and taken like any other byte, and o_rx_data shall hold its sampled data bits.",
+  "checks": [
+   "CHK-027"
+  ],
+  "check_status": {
+   "CHK-027": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-7.7-03",
+  "spec_refs": [
+   "REQ-FE-003",
+   "REQ-RX-003"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.7",
+  "sentences": [
+   "7.7:s3"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The receiver shall not detect a new start bit until s is 1 at one edge and 0 at the next, so a line held at 0 produces exactly one frame.",
+  "checks": [
+   "CHK-028"
+  ],
+  "check_status": {
+   "CHK-028": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.8-01",
+  "spec_refs": [
+   "REQ-OVR-001"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.8",
+  "sentences": [
+   "7.8:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The block shall drop the new byte and its frame-error flag.",
+  "checks": [
+   "CHK-005"
+  ],
+  "check_status": {
+   "CHK-005": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-7.8-02",
+  "spec_refs": [
+   "REQ-OVR-002"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.8",
+  "sentences": [
+   "7.8:s2"
+  ],
+  "strength": "MUST",
+  "statement": "o_rx_overrun shall become 1 at edge V and return to 0 at V+1, being 1 for exactly one cycle.",
+  "checks": [
+   "CHK-005"
+  ],
+  "check_status": {
+   "CHK-005": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-7.8-03",
+  "spec_refs": [
+   "REQ-OVR-003"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.8",
+  "sentences": [
+   "7.8:s3"
+  ],
+  "strength": "MUST",
+  "statement": "o_rx_valid, o_rx_data and o_rx_frame_err shall keep the held byte unchanged.",
+  "checks": [
+   "CHK-005"
+  ],
+  "check_status": {
+   "CHK-005": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.8-04",
+  "spec_refs": [
+   "REQ-OVR-004"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.8",
+  "sentences": [
+   "7.8:s4"
+  ],
+  "strength": "MUST",
+  "statement": "o_rx_overrun shall be 0 in every cycle except the cycle after an edge at which a byte is dropped.",
+  "checks": [
+   "CHK-006"
+  ],
+  "check_status": {
+   "CHK-006": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-7.8-05",
+  "spec_refs": [
+   "REQ-OVR-005"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.8",
+  "sentences": [
+   "7.8:s5"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "o_rx_overrun shall not be qualified by o_rx_valid and shall not need a handshake.",
+  "checks": [
+   "CHK-006"
+  ],
+  "check_status": {
+   "CHK-006": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-7.8-06",
+  "spec_refs": [
+   "REQ-OVR-006"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "7.8",
+  "sentences": [
+   "7.8:s6"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "o_rx_overrun shall not pulse.",
+  "checks": [
+   "CHK-006",
+   "CHK-019",
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-006": "PASS",
+   "CHK-019": "PASS",
+   "CHK-024": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-8.1-01",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "8.1",
+  "sentences": [
+   "8.1:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The start bit must appear on o_txd in the first cycle after the accepting handshake edge E0.",
+  "checks": [
+   "CHK-010",
+   "CHK-011"
+  ],
+  "check_status": {
+   "CHK-010": "PASS",
+   "CHK-011": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-8.1-02",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "8.1",
+  "sentences": [
+   "8.1:s2",
+   "8.1:s3"
+  ],
+  "strength": "MUST",
+  "statement": "The transmit frame must last 10N cycles, with the stop bit ending at edge E0+10N.",
+  "checks": [
+   "CHK-011"
+  ],
+  "check_status": {
+   "CHK-011": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-8.1-03",
+  "spec_refs": [
+   "REQ-TX-004",
+   "REQ-TX-005"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "8.1",
+  "sentences": [
+   "8.1:s4"
+  ],
+  "strength": "MUST",
+  "statement": "o_tx_ready must be 0 for 10N-1 cycles after E0 and become 1 in the last cycle of the stop bit.",
+  "checks": [
+   "CHK-012"
+  ],
+  "check_status": {
+   "CHK-012": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 7,
+   "killed": 7,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-8.1-04",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "8.1",
+  "sentences": [
+   "8.1:s5"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The block must never drop an offered byte while o_tx_ready = 0; the upstream block waits.",
+  "checks": [
+   "CHK-032"
+  ],
+  "check_status": {
+   "CHK-032": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-8.1-05",
+  "spec_refs": [
+   "REQ-TIM-001"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "8.1",
+  "sentences": [
+   "8.1:s6"
+  ],
+  "strength": "MUST",
+  "statement": "The transmitter must accept one byte every 10N cycles and produce a continuous stream of frames with no idle cycle between them.",
+  "checks": [
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-030": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-8.1-06",
+  "spec_refs": [
+   "REQ-TIM-002"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "8.1",
+  "sentences": [
+   "8.1:s7"
+  ],
+  "strength": "MUST",
+  "statement": "Bytes must be sent on o_txd in the order in which they were accepted.",
+  "checks": [
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-030": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-8.2-01",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "8.2",
+  "sentences": [
+   "8.2:s1",
+   "8.2:s2"
+  ],
+  "strength": "MUST",
+  "statement": "Delivery must occur at V = T0 + H + 9N + 2 edges, which is 2 edges after the stop-bit sample M.",
+  "checks": [
+   "CHK-003",
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-003": "PASS",
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 6,
+   "killed": 6,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-8.2-03",
+  "spec_refs": [
+   "REQ-TIM-003"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "8.2",
+  "sentences": [
+   "8.2:s7"
+  ],
+  "strength": "MUST",
+  "statement": "The receiver must accept frames back to back with no idle bit between them.",
+  "checks": [
+   "CHK-025"
+  ],
+  "check_status": {
+   "CHK-025": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-8.4-01",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "8.4",
+  "sentences": [
+   "8.4:s15"
+  ],
+  "strength": "MUST",
+  "statement": "After V, o_rx_overrun must be 1 for one cycle and the held byte must remain unchanged.",
+  "checks": [
+   "CHK-005"
+  ],
+  "check_status": {
+   "CHK-005": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-10.1-01",
+  "spec_refs": [
+   "REQ-FE-001",
+   "REQ-FE-002"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "10.1",
+  "sentences": [
+   "10.1:s1",
+   "10.1:s2"
+  ],
+  "strength": "MUST",
+  "statement": "When the stop-bit sample s(M) is 0, the byte is delivered with o_rx_frame_err = 1.",
+  "checks": [
+   "CHK-027"
+  ],
+  "check_status": {
+   "CHK-027": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-10.2-01",
+  "spec_refs": [
+   "REQ-OVR-001",
+   "REQ-OVR-003"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "10.2",
+  "sentences": [
+   "10.2:s1",
+   "10.2:s2"
+  ],
+  "strength": "MUST",
+  "statement": "The new byte is dropped, o_rx_overrun pulses for one cycle and the held byte stays.",
+  "checks": [
+   "CHK-005",
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-005": "PASS",
+   "CHK-026": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-10.2-02",
+  "spec_refs": [
+   "REQ-RX-021"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "10.2",
+  "sentences": [
+   "10.2:s3"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "No overrun occurs if the held byte is taken at V itself.",
+  "checks": [
+   "CHK-004",
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-004": "PASS",
+   "CHK-026": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-10.2-03",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "10.2",
+  "sentences": [
+   "10.2:s4"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The frame-error flag of a dropped byte is not reported.",
+  "checks": [
+   "CHK-027"
+  ],
+  "check_status": {
+   "CHK-027": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-10.3-01",
+  "spec_refs": [
+   "REQ-RX-005",
+   "REQ-RX-006"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "10.3",
+  "sentences": [
+   "10.3:s1",
+   "10.3:s2"
+  ],
+  "strength": "MUST",
+  "statement": "On a start-bit glitch, no byte, no flag and no pulse is produced.",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-10.3-02",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "10.3",
+  "sentences": [
+   "10.3:s3"
+  ],
+  "strength": "MUST",
+  "statement": "A low pulse on i_rxd sampled at fewer than H+1 consecutive edges starting at T0 is always rejected.",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-10.4-01",
+  "spec_refs": [
+   "REQ-ERR-001"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "10.4",
+  "sentences": [
+   "10.4:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The receiver delivers byte 0x00 with o_rx_frame_err = 1, or drops it with an overrun pulse under Section 7.8 rules.",
+  "checks": [
+   "CHK-028"
+  ],
+  "check_status": {
+   "CHK-028": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-10.4-02",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "10.4",
+  "sentences": [
+   "10.4:s2"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The receiver receives no further frame until the line has been sampled as 1 and then as 0.",
+  "checks": [
+   "CHK-028"
+  ],
+  "check_status": {
+   "CHK-028": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-10.4-03",
+  "spec_refs": [
+   "REQ-ERR-002"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "10.4",
+  "sentences": [
+   "10.4:s3"
+  ],
+  "strength": "MUST",
+  "statement": "The receiver stays idle and delivers nothing.",
+  "checks": [
+   "CHK-028"
+  ],
+  "check_status": {
+   "CHK-028": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-10.5-01",
+  "spec_refs": [
+   "REQ-ERR-003",
+   "REQ-RST-010"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "10.5",
+  "sentences": [
+   "10.5:s1",
+   "10.5:s2"
+  ],
+  "strength": "MUST",
+  "statement": "The receiver detects R1 as T0 and processes the frame under Sections 7.4 to 7.8; a line staying low yields one byte 0x00 with o_rx_frame_err = 1.",
+  "checks": [
+   "CHK-021"
+  ],
+  "check_status": {
+   "CHK-021": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-10.7-01",
+  "spec_refs": [
+   "REQ-ERR-004"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "10.7",
+  "sentences": [
+   "10.7:s1"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The transmitter shall not accept the byte and shall not record it.",
+  "checks": [
+   "CHK-032"
+  ],
+  "check_status": {
+   "CHK-032": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-10.7-02",
+  "spec_refs": [
+   "REQ-ERR-005",
+   "REQ-RX-026"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "10.7",
+  "sentences": [
+   "10.7:s3"
+  ],
+  "strength": "MUST",
+  "statement": "The block shall do nothing.",
+  "checks": [
+   "CHK-009"
+  ],
+  "check_status": {
+   "CHK-009": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-10.7-03",
+  "spec_refs": [
+   "REQ-ERR-006",
+   "REQ-GEN-002"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "10.7",
+  "sentences": [
+   "10.7:s4"
+  ],
+  "strength": "MUST",
+  "statement": "Transmit handshake and receive delivery or take in the same cycle shall be handled independently.",
+  "checks": [
+   "CHK-017"
+  ],
+  "check_status": {
+   "CHK-017": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-10.8-01",
+  "spec_refs": [
+   "REQ-ERR-007"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "10.8",
+  "sentences": [
+   "10.8:s6"
+  ],
+  "strength": "MUST",
+  "statement": "Bit-period and sample-offset counting shall not overflow or wrap early at N = 65535.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "UL-10.8-01",
+   "reason": "static_or_structural",
+   "note": "N=65535 is not simulated (D-012, 655350 cycles per frame). Counter width and wrap are covered by elaboration and synthesis. Wide-N counting is exercised at N=1024 by CHK-016."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "UL-10.8-02",
+  "spec_refs": [
+   "REQ-PAR-003"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "10.8",
+  "sentences": [
+   "10.8:s7"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "Values of N outside 4 to 65535 are illegal and must not be used.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "UL-10.8-02",
+   "reason": "static_or_structural",
+   "note": "Illegal parameter values are excluded at elaboration; no simulation configuration uses them."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "UL-11-01",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "11",
+  "sentences": [
+   "11:s2"
+  ],
+  "strength": "MUST",
+  "statement": "CFG-MIN with PARA_UART_CLKS_PER_BIT=4 is the smallest legal bit period and must be verified for minimum sampling margins.",
+  "checks": [
+   "CHK-014"
+  ],
+  "check_status": {
+   "CHK-014": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-12.1-01",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "12.1",
+  "sentences": [
+   "12.1:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The environment shall release i_rst_n synchronously to i_clk, meeting recovery and removal times.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "UL-12.1-01",
+   "reason": "not_applicable_to_dut",
+   "note": "Environment rule (ENV-001). Applied as a stimulus constraint in all tests: i_rst_n is released synchronously to i_clk."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "UL-12.1-02",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "12.1",
+  "sentences": [
+   "12.1:s3"
+  ],
+  "strength": "MUST",
+  "statement": "The environment shall hold i_rst_n at 0 for at least 2 cycles of i_clk at the start of simulation.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "UL-12.1-02",
+   "reason": "not_applicable_to_dut",
+   "note": "Environment rule (ENV-002). Applied as a stimulus constraint: every simulation starts with i_rst_n=0 for at least 2 i_clk cycles."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "UL-12.1-03",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "12.1",
+  "sentences": [
+   "12.1:s4"
+  ],
+  "strength": "MUST",
+  "statement": "The environment shall drive i_tx_valid, i_tx_data and i_rx_ready synchronously to i_clk with no X or Z values.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "UL-12.1-03",
+   "reason": "not_applicable_to_dut",
+   "note": "Environment rule (ENV-003). Applied as a stimulus constraint: i_tx_valid, i_tx_data and i_rx_ready are driven just after rising edges with no X or Z."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "UL-12.1-04",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "12.1",
+  "sentences": [
+   "12.1:s5"
+  ],
+  "strength": "MUST",
+  "statement": "The testbench shall change i_rxd away from rising edges of i_clk, e.g. on the falling edge or at a non-coincident random offset.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "UL-12.1-04",
+   "reason": "not_applicable_to_dut",
+   "note": "Environment rule (ENV-004). Applied as a stimulus constraint: i_rxd changes only at falling edges of i_clk, including the loopback (designer decision)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "UL-12.1-05",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "12.1",
+  "sentences": [
+   "12.1:s5"
+  ],
+  "strength": "MUST",
+  "statement": "i_rxd shall not be X or Z after reset release.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "UL-12.1-05",
+   "reason": "not_applicable_to_dut",
+   "note": "Environment rule (ENV-004). Applied as a stimulus constraint: i_rxd is never X or Z after reset release."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "UL-12.2-02",
+  "spec_refs": [
+   "REQ-RX-001"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "12.2",
+  "sentences": [
+   "12.2:s2"
+  ],
+  "strength": "MUST",
+  "statement": "The synchronizer structure (exactly two flip-flops, no logic between them, REQ-RX-001) shall be checked by lint or structural review.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "UL-12.2-02",
+   "reason": "static_or_structural",
+   "note": "Per the designer decision, the synchronizer structure is checked on the RTL at gate D2 (RR-33, nnc rtl-check). Its port-visible latency is checked by CHK-003 and CHK-022."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "UL-12.2-04",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "12.2",
+  "sentences": [
+   "12.2:s4"
+  ],
+  "strength": "MUST",
+  "statement": "The reference model shall compute s(E) from i_rxd and apply Sections 7.4 to 7.8 exactly.",
+  "checks": [
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-12.2-06",
+  "spec_refs": [
+   "REQ-TX-004",
+   "REQ-TX-005",
+   "REQ-TX-010"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "12.2",
+  "sentences": [
+   "12.2:s6"
+  ],
+  "strength": "MUST",
+  "statement": "The checker shall check REQ-TX-004, REQ-TX-005 and REQ-TX-010 cycle by cycle.",
+  "checks": [
+   "CHK-011",
+   "CHK-012"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-012": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-12.3-01",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "12.3",
+  "sentences": [
+   "12.3:s1",
+   "12.3:s2"
+  ],
+  "strength": "MUST",
+  "statement": "Sampling-point test: drive i_rxd so each bit is correct only at its sampling edge T0+H+(i+1)N and M, wrong at edges just before and after.",
+  "checks": [
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-023": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-12.3-02",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "12.3",
+  "sentences": [
+   "12.3:s3"
+  ],
+  "strength": "MUST",
+  "statement": "Glitch test: low pulses on i_rxd of 1 to H samples are rejected and H+1 samples are accepted as a start bit.",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-12.3-03",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "12.3",
+  "sentences": [
+   "12.3:s4"
+  ],
+  "strength": "MUST",
+  "statement": "Loopback test: connect o_txd to i_rxd and check the Section 8.5 latency and byte integrity.",
+  "checks": [
+   "CHK-018"
+  ],
+  "check_status": {
+   "CHK-018": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-12.3-04",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "12.3",
+  "sentences": [
+   "12.3:s5"
+  ],
+  "strength": "MUST",
+  "statement": "Reset tests: assert i_rst_n asynchronously between clock edges in mid-transmit frame, mid-receive frame and while o_rx_valid = 1.",
+  "checks": [
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-12.3-05",
+  "spec_refs": [
+   "REQ-ERR-001",
+   "REQ-ERR-003"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "12.3",
+  "sentences": [
+   "12.3:s6"
+  ],
+  "strength": "MUST",
+  "statement": "Test line low at reset release (REQ-ERR-003) and break (REQ-ERR-001).",
+  "checks": [
+   "CHK-021",
+   "CHK-028"
+  ],
+  "check_status": {
+   "CHK-021": "PASS",
+   "CHK-028": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-12.4-01",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "12.4",
+  "sentences": [
+   "12.4:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Cover data bytes 0x00, 0xFF, 0x55, 0xAA and random bytes in both directions.",
+  "checks": [
+   "CHK-022",
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-022": "PASS",
+   "CHK-030": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-12.4-02",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "12.4",
+  "sentences": [
+   "12.4:s2"
+  ],
+  "strength": "MUST",
+  "statement": "Cover back-to-back transmit with i_tx_valid held at 1, and transmit with idle gaps of various lengths.",
+  "checks": [
+   "CHK-030",
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-030": "PASS",
+   "CHK-031": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-12.4-03",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "12.4",
+  "sentences": [
+   "12.4:s3"
+  ],
+  "strength": "MUST",
+  "statement": "Cover back-to-back receive frames with the next start bit right after the stop bit.",
+  "checks": [
+   "CHK-025"
+  ],
+  "check_status": {
+   "CHK-025": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-12.4-04",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "12.4",
+  "sentences": [
+   "12.4:s4"
+  ],
+  "strength": "MUST",
+  "statement": "Cover frame error with o_rx_valid = 0, and frame error with the byte dropped by overrun.",
+  "checks": [
+   "CHK-027"
+  ],
+  "check_status": {
+   "CHK-027": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-12.4-05",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "12.4",
+  "sentences": [
+   "12.4:s5"
+  ],
+  "strength": "MUST",
+  "statement": "Cover overrun, and the case where the held byte is taken at delivery edge V itself (no overrun).",
+  "checks": [
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-026": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-12.4-06",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "12.4",
+  "sentences": [
+   "12.4:s6"
+  ],
+  "strength": "MUST",
+  "statement": "Cover i_rx_ready held at 1, toggling at random, and held at 0 for several frames.",
+  "checks": [
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-026": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-12.4-07",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "12.4",
+  "sentences": [
+   "12.4:s7"
+  ],
+  "strength": "MUST",
+  "statement": "Cover i_tx_valid dropping before a handshake.",
+  "checks": [
+   "CHK-032"
+  ],
+  "check_status": {
+   "CHK-032": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-12.4-08",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "12.4",
+  "sentences": [
+   "12.4:s8"
+  ],
+  "strength": "MUST",
+  "statement": "Cover transmit and receive active at the same time.",
+  "checks": [
+   "CHK-017"
+  ],
+  "check_status": {
+   "CHK-017": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-13-01",
+  "spec_refs": [
+   "REQ-IMP-001"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "13",
+  "sentences": [
+   "13:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The block shall meet timing at 50 MHz (20 ns period) on GF180MCU for every legal value of PARA_UART_CLKS_PER_BIT.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "UL-13-01",
+   "reason": "static_or_structural",
+   "note": "Timing closure at 50 MHz on GF180MCU: synthesis/STA."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "UL-13-02",
+  "spec_refs": [
+   "REQ-IMP-002"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "13",
+  "sentences": [
+   "13:s2"
+  ],
+  "strength": "MUST",
+  "statement": "The RTL shall follow docs/RTL_RULES.md.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "UL-13-02",
+   "reason": "static_or_structural",
+   "note": "RTL coding rules compliance: rtl-check/lint."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "UL-13-03",
+  "spec_refs": [
+   "REQ-IMP-003"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "13",
+  "sentences": [
+   "13:s3"
+  ],
+  "strength": "MUST",
+  "statement": "The RTL shall be synthesizable, contain no latches and pass Verilator lint with no warnings.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "UL-13-03",
+   "reason": "static_or_structural",
+   "note": "Synthesizability, no latches, clean Verilator lint."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "UL-13-04",
+  "spec_refs": [
+   "REQ-IMP-004"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "13",
+  "sentences": [
+   "13:s4"
+  ],
+  "strength": "MUST",
+  "statement": "All flip-flops shall use the asynchronous active-low reset i_rst_n.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "UL-13-04",
+   "reason": "static_or_structural",
+   "note": "Every flip-flop using the async reset is structural. Its port-visible effect is covered by CHK-002 and CHK-019."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "UL-13-05",
+  "spec_refs": [
+   "REQ-IMP-005"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "13",
+  "sentences": [
+   "13:s5"
+  ],
+  "strength": "SHOULD",
+  "statement": "The two i_rxd synchronizer flip-flops should be marked so synthesis does not merge, duplicate or retime them.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "UL-13-05",
+   "reason": "static_or_structural",
+   "note": "Synthesis attributes on the synchronizer flops."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "UL-13-06",
+  "spec_refs": [
+   "REQ-IMP-006"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "13",
+  "sentences": [
+   "13:s6"
+  ],
+  "strength": "SHOULD",
+  "statement": "The bit-period counters should be only as wide as PARA_UART_CLKS_PER_BIT needs, at most 16 bits.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "UL-13-06",
+   "reason": "design_guideline",
+   "note": "Counter width advice; nothing to observe at the ports."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "UL-13-07",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "13",
+  "sentences": [
+   "13:s8"
+  ],
+  "strength": "SHOULD",
+  "statement": "The block should use only the storage the specification requires: transmit shift register, receive shift register, holding register, counters and flags.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "UL-13-07",
+   "reason": "design_guideline",
+   "note": "Storage-minimisation advice. The port-visible 'no extra transmit buffer' behaviour is checked by CHK-032."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "UL-14-01",
+  "spec_refs": [
+   "REQ-RST-003"
+  ],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "14",
+  "sentences": [
+   "14:s1"
+  ],
+  "strength": "MUST",
+  "statement": "o_tx_ready must be 1 (its idle value) while i_rst_n = 0, since no handshake is possible during reset.",
+  "checks": [
+   "CHK-002"
+  ],
+  "check_status": {
+   "CHK-002": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-14-02",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "14",
+  "sentences": [
+   "14:s2"
+  ],
+  "strength": "MUST",
+  "statement": "The receiver samples the middle of each bit H = floor(N/2) edges after T0, then every N edges.",
+  "checks": [
+   "CHK-015",
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-015": "PASS",
+   "CHK-023": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-14-03",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "14",
+  "sentences": [
+   "14:s3"
+  ],
+  "strength": "MUST",
+  "statement": "o_rx_valid is delivered at V = M + 2, where M is the sample edge of i_rxd and 2 is the synchronizer latency.",
+  "checks": [
+   "CHK-003"
+  ],
+  "check_status": {
+   "CHK-003": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-14-04",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "14",
+  "sentences": [
+   "14:s4"
+  ],
+  "strength": "MUST",
+  "statement": "The new byte is loaded and no overrun occurs.",
+  "checks": [
+   "CHK-004",
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-004": "PASS",
+   "CHK-026": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-14-05",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "14",
+  "sentences": [
+   "14:s5"
+  ],
+  "strength": "MUST",
+  "statement": "A new start requires a 1-to-0 transition on i_rxd, so a break yields only one byte.",
+  "checks": [
+   "CHK-028"
+  ],
+  "check_status": {
+   "CHK-028": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-14-06",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "14",
+  "sentences": [
+   "14:s6"
+  ],
+  "strength": "MUST",
+  "statement": "The synchronizer resets to 1; a low i_rxd at reset release is detected as a start bit.",
+  "checks": [
+   "CHK-021"
+  ],
+  "check_status": {
+   "CHK-021": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-14-07",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "14",
+  "sentences": [
+   "14:s7"
+  ],
+  "strength": "MUST",
+  "statement": "o_rx_data and o_rx_frame_err keep the last loaded values, and are 0 after reset.",
+  "checks": [
+   "CHK-009"
+  ],
+  "check_status": {
+   "CHK-009": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-14-08",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "14",
+  "sentences": [
+   "14:s9"
+  ],
+  "strength": "MUST",
+  "statement": "The frame is abandoned, o_txd goes to 1 at once and the byte is lost.",
+  "checks": [
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "UL-14-09",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "14",
+  "sentences": [
+   "14:s10"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The frame-error flag of a dropped byte is not reported.",
+  "checks": [
+   "CHK-027"
+  ],
+  "check_status": {
+   "CHK-027": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-14-10",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "14",
+  "sentences": [
+   "14:s11"
+  ],
+  "strength": "SHOULD",
+  "statement": "An elaboration error should be raised for illegal parameter values; this is not verified.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "UL-14-10",
+   "reason": "static_or_structural",
+   "note": "Elaboration error for illegal parameters is recommended but not verified (D-011)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "UL-14-11",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "14",
+  "sentences": [
+   "14:s12"
+  ],
+  "strength": "MUST",
+  "statement": "CFG-ODD (5) and CFG-WIDE (1024) are simulated; CFG-MAX (65535) is not simulated and is covered by elaboration and synthesis only.",
+  "checks": [
+   "CHK-015",
+   "CHK-016"
+  ],
+  "check_status": {
+   "CHK-015": "PASS",
+   "CHK-016": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "UL-14-12",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "14",
+  "sentences": [
+   "14:s13"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "No area budget is required for GF180MCU; area is reported, not checked.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "UL-14-12",
+   "reason": "static_or_structural",
+   "note": "Area is reported from synthesis, not checked."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "UL-14-13",
+  "spec_refs": [],
+  "doc": "uart_lite_Design_Specification.md",
+  "section": "14",
+  "sentences": [
+   "14:s14"
+  ],
+  "strength": "MUST",
+  "statement": "The 50 MHz target applies at the slow corner (GF180MCU SS, 125 C, 4.5 V).",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "UL-14-13",
+   "reason": "static_or_structural",
+   "note": "PVT corner for STA (SS, 125 C, 4.5 V)."
+  },
+  "mutation": null
+ }
+]

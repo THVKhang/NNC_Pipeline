@@ -1,0 +1,211 @@
+{
+ "status": "clean",
+ "equivalence": {
+  "status": "PROVEN",
+  "bmc": "PASS",
+  "prove": "PASS",
+  "depth": 20,
+  "detail": "",
+  "trace": null
+ },
+ "attempts": 1,
+ "history": [
+  {
+   "attempt": 0,
+   "counts": {
+    "error": 0,
+    "warning": 0,
+    "info": 0
+   },
+   "cost_usd": 0.9316039,
+   "equivalence": "PROVEN"
+  }
+ ],
+ "findings": [],
+ "counts": {
+  "error": 0,
+  "warning": 0,
+  "info": 0
+ },
+ "trace": {
+  "tagged": [
+   "BR-1.3-03",
+   "BR-1.3-04",
+   "BR-1.3-05",
+   "BR-10.1-01",
+   "BR-10.1-02",
+   "BR-10.1-03",
+   "BR-10.1-04",
+   "BR-10.1-05",
+   "BR-10.1-06",
+   "BR-12-01",
+   "BR-12-04",
+   "BR-14.1-03",
+   "BR-14.2-01",
+   "BR-14.2-02",
+   "BR-14.2-03",
+   "BR-14.2-04",
+   "BR-2.3-01",
+   "BR-2.3-02",
+   "BR-2.3-03",
+   "BR-2.3-04",
+   "BR-2.3-05",
+   "BR-20-08",
+   "BR-20-10",
+   "BR-20-11",
+   "BR-20-12",
+   "BR-3-01",
+   "BR-3-02",
+   "BR-3-03",
+   "BR-3-04",
+   "BR-3-05",
+   "BR-3-06",
+   "BR-3-07",
+   "BR-3-08",
+   "BR-3-09",
+   "BR-3-10",
+   "BR-3-11",
+   "BR-3-12",
+   "BR-3-15",
+   "BR-3-16",
+   "BR-3-17",
+   "BR-3-18",
+   "BR-3-19",
+   "BR-3-20",
+   "BR-3-21",
+   "BR-3-22",
+   "BR-3-23",
+   "BR-3-24",
+   "BR-3-25",
+   "BR-3-26",
+   "BR-3-27",
+   "BR-3-28",
+   "BR-3-29",
+   "BR-3-30",
+   "BR-3-31",
+   "BR-3-32",
+   "BR-5.1-02",
+   "BR-5.1-03",
+   "BR-5.3-01",
+   "BR-5.3-02",
+   "BR-5.3-06",
+   "BR-5.3-07",
+   "BR-5.3-08",
+   "BR-5.3-10",
+   "BR-5.3-11",
+   "BR-5.4-01",
+   "BR-5.4-02",
+   "BR-5.4-03",
+   "BR-5.4-04",
+   "BR-5.4-05",
+   "BR-5.4-06",
+   "BR-6.2-03",
+   "BR-6.2-04",
+   "BR-6.2-07",
+   "BR-6.2-08",
+   "BR-6.2-09",
+   "BR-6.2-10",
+   "BR-6.2-11",
+   "BR-6.2-12",
+   "BR-6.2-13",
+   "BR-6.2-14",
+   "BR-6.2-15",
+   "BR-6.3-04",
+   "BR-6.3-08",
+   "BR-6.3-09",
+   "BR-6.3-14",
+   "BR-6.3-15",
+   "BR-7.3-02",
+   "BR-7.3-03",
+   "BR-8-04",
+   "BR-8-06",
+   "BR-8-07",
+   "BR-8-08",
+   "BR-9-03",
+   "BR-9-04",
+   "BR-9-05",
+   "BR-9-09",
+   "BR-9-10",
+   "BR-T1-03",
+   "BR-T1-04",
+   "BR-T1-05"
+  ],
+  "unknown": [],
+  "waivers": [
+   {
+    "file": "m_apb_tlul_bridge.sv",
+    "line": 52,
+    "text": "// WAIVER: PPROT is accepted and ignored by the bridge (DEC-007), so the input is unused. // verilator lint_off UNUSEDSIGNAL"
+   },
+   {
+    "file": "m_apb_tlul_bridge.sv",
+    "line": 59,
+    "text": "// WAIVER: d_param and d_size are present as ports but unused by the response check (DEC-006). // verilator lint_off UNUSEDSIGNAL"
+   },
+   {
+    "file": "m_apb_tlul_bridge.sv",
+    "line": 65,
+    "text": "// WAIVER: d_sink is present as a port but has no behavioral effect (DEC-006). // verilator lint_off UNUSEDSIGNAL"
+   },
+   {
+    "file": "m_apb_tlul_bridge.sv",
+    "line": 70,
+    "text": "// WAIVER: d_user is present as a port but has no behavioral effect (DEC-006). // verilator lint_off UNUSEDSIGNAL"
+   }
+  ],
+  "coverage": 43.1
+ },
+ "synth": {
+  "liberty": true,
+  "corners": {
+   "tt": {
+    "library": "gf180mcu_fd_sc_mcu7t5v0__tt_025C_5v00.lib",
+    "area_um2": 11919.936,
+    "comb_delay_ps": 8334.42
+   },
+   "ss": {
+    "library": "gf180mcu_fd_sc_mcu7t5v0__ss_125C_4v50.lib",
+    "area_um2": 11919.936,
+    "comb_delay_ps": 15672.23
+   }
+  },
+  "generic_cells": 190
+ },
+ "suspected_bugs": [
+  {
+   "where": "original/m_tlul_if.sv:89 (with original/m_apb_if.sv:69, 90-91)",
+   "what": "Not a bug in normal use, reported for the reviewer. w_load is gated by the TL-UL FSM being IDLE, but the APB FSM goes to BUSY on w_req_launch whether or not the TL-UL side loaded the request. If a launch ever came while the TL-UL FSM was not IDLE, the APB FSM would wait in BUSY for a response to a request that was never issued, and the transfer would hang. The invariant 'TL-UL FSM is idle whenever the APB FSM is idle' (BR-5.4-06) should make this case unreachable, so I kept it unchanged."
+  },
+  {
+   "where": "original/m_apb_if.sv:95-97, 115",
+   "what": "Observation only. BUSY -> DONE (and so PREADY) depends only on i_resp_valid; i_apb_psel and i_apb_penable are not checked. BR-3-18 (PREADY only in an Access cycle) therefore holds only if the APB requester keeps to the protocol. I kept the behaviour as it is."
+  }
+ ],
+ "open_points": [
+  "RR-40: PARA_SRC_ID is a 32-bit typed parameter, and only bits [PARA_SRC_W-1:0] are used (now through localparam LPARA_SRC_ID). The original does the same. If some Verilator version reports the unused upper bits of the parameter, the only fixes are a lint waiver or a change to how the parameter is compared. Comparing the full 32 bits would change behaviour for out-of-range PARA_SRC_ID values, so I kept the bit-select.",
+  "BR-3-33 / BR-8-09 (illegal parameter values reported at elaboration) is not in the original RTL, and I did not add it. An elaboration check would have to be simulation-only code or $error, and RR-11 forbids system tasks in synthesizable RTL; it belongs in the verification source set."
+ ],
+ "usage": {
+  "calls": 1,
+  "cached": 0,
+  "cost_usd": 0.9316,
+  "input_tokens": 10,
+  "output_tokens": 22525,
+  "cache_creation_input_tokens": 57705,
+  "cache_read_input_tokens": 96474
+ },
+ "model": "opus",
+ "prompt_version": "restyle-v1",
+ "macros": [],
+ "files": [
+  "filelist.f",
+  "m_apb_if.sv",
+  "m_apb_tlul_bridge.sv",
+  "m_tlul_if.sv"
+ ],
+ "original_counts": {
+  "error": 0,
+  "warning": 6,
+  "info": 0
+ }
+}

@@ -1,0 +1,176 @@
+rm -f results.xml
+"make" -f Makefile results.xml
+make[1]: Entering directory '/root/nnc_runs/runset_91a8b51c/C04'
+make[1]: warning: -j3 forced in makefile: resetting jobserver mode.
+mkdir -p sim_build
+/opt/oss-cad-suite/bin/verilator -cc --exe -Mdir sim_build --top-module nnc_tb_top --timescale 1ns/1ps --vpi --public-flat-rw --prefix Vtop -o Vtop -LDFLAGS "-Wl,-rpath,/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/libs -L/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/libs -lcocotbvpi_verilator" --assert --timing -Wno-fatal -Wno-WIDTH -Wno-UNOPTFLAT -GPARA_UART_CLKS_PER_BIT=1024 --coverage-line --coverage-toggle --coverage-expr /root/nnc_runs/runset_91a8b51c/C04/rtl/m_uart_lite_tx.sv /root/nnc_runs/runset_91a8b51c/C04/rtl/m_uart_lite_rx.sv /root/nnc_runs/runset_91a8b51c/C04/rtl/m_uart_lite.sv /root/nnc_runs/runset_91a8b51c/C04/sva/nnc_chk_gen.sv /root/nnc_runs/runset_91a8b51c/C04/sva/nnc_chk_reset.sv /root/nnc_runs/runset_91a8b51c/C04/sva/nnc_chk_rx.sv /root/nnc_runs/runset_91a8b51c/C04/sva/nnc_chk_tx.sv /root/nnc_runs/runset_91a8b51c/C04/sva/nnc_cov.sv /root/nnc_runs/runset_91a8b51c/C04/nnc_tb_top.sv /opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/share/lib/verilator/verilator.cpp
+- V e r i l a t i o n   R e p o r t: Verilator 5.055 devel rev v5.054-94-g4d23f6ea0 (mod)
+- Verilator: Built from 0.302 MB sources in 11 modules, into 0.951 MB in 6 C++ files needing 0.000 MB
+- Verilator: Walltime 0.062 s (elab=0.005, cvt=0.036, bld=0.000); cpu 0.066 s on 1 threads; allocated 25.375 MB
+make -C sim_build  -f Vtop.mk
+make[2]: Entering directory '/root/nnc_runs/runset_91a8b51c/C04/sim_build'
+g++  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"     -Os  -c -o verilator.o /opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/share/lib/verilator/verilator.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o verilated.o /opt/oss-cad-suite/share/verilator/include/verilated.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o verilated_dpi.o /opt/oss-cad-suite/share/verilator/include/verilated_dpi.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o verilated_vpi.o /opt/oss-cad-suite/share/verilator/include/verilated_vpi.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o verilated_cov.o /opt/oss-cad-suite/share/verilator/include/verilated_cov.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o verilated_covergroup.o /opt/oss-cad-suite/share/verilator/include/verilated_covergroup.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o verilated_threads.o /opt/oss-cad-suite/share/verilator/include/verilated_threads.cpp
+python3 /opt/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__Dpi.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o Vtop__ALL.o Vtop__ALL.cpp
+g++    -rdynamic verilator.o verilated.o verilated_dpi.o verilated_vpi.o verilated_cov.o verilated_covergroup.o verilated_threads.o Vtop__ALL.a   -Wl,-rpath,/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/libs -L/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/libs -lcocotbvpi_verilator  -pthread -lpthread -latomic -ldl   -o Vtop
+rm Vtop__ALL.verilator_deplist.tmp
+make[2]: Leaving directory '/root/nnc_runs/runset_91a8b51c/C04/sim_build'
+rm -f results.xml
+COCOTB_TEST_MODULES=test_uart_lite COCOTB_TESTCASE= COCOTB_TEST_FILTER= COCOTB_TOPLEVEL=nnc_tb_top TOPLEVEL_LANG=verilog \
+         sim_build/Vtop  --assert --timing -Wno-fatal -Wno-WIDTH -Wno-UNOPTFLAT -GPARA_UART_CLKS_PER_BIT=1024 --coverage-line --coverage-toggle --coverage-expr   
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:216  in gpi_load_users                  Running entry func 'initialize' from loaded library '/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/libs/libcocotb.so'
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:96   in initialize                      Using Python 3.11.6 interpreter at /opt/oss-cad-suite/bin/tabbypy3
+     0.00ns INFO     cocotb                             Running on Verilator version 5.055 devel
+     0.00ns INFO     cocotb                             Seeding Python random module with supplied seed 1
+     0.00ns INFO     cocotb                             Initialized cocotb v2.1.0.dev0+41564633 from /opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_uart_lite.test_chk_014_cfg_min (1/20)
+                                                            CHK-014: CFG-MIN (N=4, H=2): CHK-030, CHK-023, CHK-024 (L=1..3), CHK-025(a), CHK-026(a,b).
+     0.00ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-014 needs PARA_UART_CLKS_PER_BIT=4, this run has 1024
+     0.00ns INFO     cocotb.regression                  test_uart_lite.test_chk_014_cfg_min passed
+     0.00ns INFO     cocotb.regression                  running test_uart_lite.test_chk_015_cfg_odd (2/20)
+                                                            CHK-015: CFG-ODD (N=5, H=floor(5/2)=2): CHK-030, CHK-023, CHK-024 (L=1..3), CHK-025(a).
+     0.00ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-015 needs PARA_UART_CLKS_PER_BIT=5, this run has 1024
+     0.00ns INFO     cocotb.regression                  test_uart_lite.test_chk_015_cfg_odd passed
+     0.00ns INFO     cocotb.regression                  running test_uart_lite.test_chk_016_cfg_wide (3/20)
+                                                            CHK-016: CFG-WIDE (N=1024): transmit, pattern-A receive, glitch H / pulse H+1, loopback.
+1209050.00ns INFO     cocotb.regression                  test_uart_lite.test_chk_016_cfg_wide passed
+1209050.00ns INFO     cocotb.regression                  running test_uart_lite.test_chk_017_full_duplex (4/20)
+                                                            CHK-017: full duplex, transmit back to back while receive deliveries/takes/overruns run, aligned edges.
+2089400.01ns INFO     cocotb.regression                  test_uart_lite.test_chk_017_full_duplex passed
+2089400.01ns INFO     cocotb.regression                  running test_uart_lite.test_chk_018_loopback (5/20)
+                                                            CHK-018: o_txd looped to i_rxd through a half-cycle delay; V=E0+H+9N+3, bytes intact and in order.
+3308490.01ns INFO     cocotb.regression                  test_uart_lite.test_chk_018_loopback passed
+3308490.01ns INFO     cocotb.regression                  running test_uart_lite.test_chk_019_async_reset (6/20)
+                                                            CHK-019: asynchronous reset mid transmit frame, mid receive frame and while a byte is held.
+4589020.01ns INFO     cocotb.regression                  test_uart_lite.test_chk_019_async_reset passed
+4589020.01ns INFO     cocotb.regression                  running test_uart_lite.test_chk_020_reset_idle (7/20)
+                                                            CHK-020: no activity during reset; transmitter accepts at R1; receiver idle after release.
+5285850.02ns INFO     cocotb.regression                  test_uart_lite.test_chk_020_reset_idle passed
+5285850.02ns INFO     cocotb.regression                  running test_uart_lite.test_chk_021_low_at_release (8/20)
+                                                            CHK-021: line low at reset release is detected as a start at R1; one 8'h00 with frame error.
+5798160.02ns INFO     cocotb.regression                  test_uart_lite.test_chk_021_low_at_release passed
+5798160.02ns INFO     cocotb.regression                  running test_uart_lite.test_chk_022_rx_basic (9/20)
+                                                            CHK-022: directed and random receive frames, V=T0+H+9N+2, taken at V+1.
+7642270.02ns INFO     cocotb.regression                  test_uart_lite.test_chk_022_rx_basic passed
+7642270.02ns INFO     cocotb.regression                  running test_uart_lite.test_chk_023_sampling_points (10/20)
+                                                            CHK-023: sampling-point test (patterns A and B) at T0, T0+H, T0+H+(i+1)N and M.
+11197220.03ns INFO     cocotb.regression                  test_uart_lite.test_chk_023_sampling_points passed
+11197220.03ns INFO     cocotb.regression                  running test_uart_lite.test_chk_024_glitch (11/20)
+                                                            CHK-024: start-bit glitches of 1..H rejected, H+1 accepted, restart right after a glitch.
+80798930.03ns INFO     cocotb.regression                  test_uart_lite.test_chk_024_glitch passed
+80798930.03ns INFO     cocotb.regression                  running test_uart_lite.test_chk_025_rx_back_to_back (12/20)
+                                                            CHK-025: back-to-back receive frames and a new start at M+1.
+82386660.03ns INFO     cocotb.regression                  test_uart_lite.test_chk_025_rx_back_to_back passed
+82386660.03ns INFO     cocotb.regression                  running test_uart_lite.test_chk_026_rx_ready (13/20)
+                                                            CHK-026: i_rx_ready held 0/1/random, overrun, take at V and at V-1.
+85359490.03ns INFO     cocotb.regression                  test_uart_lite.test_chk_026_rx_ready passed
+85359490.03ns INFO     cocotb.regression                  running test_uart_lite.test_chk_027_frame_error (14/20)
+                                                            CHK-027: frame error with an empty register and with the byte dropped by overrun.
+86650160.04ns INFO     cocotb.regression                  test_uart_lite.test_chk_027_frame_error passed
+86650160.04ns INFO     cocotb.regression                  running test_uart_lite.test_chk_028_idle_break (15/20)
+                                                            CHK-028: idle line delivers nothing; a break gives exactly one frame (or one overrun).
+88002290.04ns INFO     cocotb.regression                  test_uart_lite.test_chk_028_idle_break passed
+88002290.04ns INFO     cocotb.regression                  running test_uart_lite.test_chk_029_rx_random (16/20)
+                                                            CHK-029: random receive regression (gaps, stop errors, glitches, random i_rx_ready) vs the model.
+90202740.04ns INFO     cocotb.regression                  test_uart_lite.test_chk_029_rx_random passed
+90202740.04ns INFO     cocotb.regression                  running test_uart_lite.test_chk_030_tx_back_to_back (17/20)
+                                                            CHK-030: back-to-back transmit with i_tx_valid held at 1, one byte every 10N cycles.
+91227150.05ns INFO     cocotb.regression                  test_uart_lite.test_chk_030_tx_back_to_back passed
+91227150.05ns INFO     cocotb.regression                  running test_uart_lite.test_chk_031_tx_gaps (18/20)
+                                                            CHK-031: transmit with idle gaps; i_tx_data changes every cycle; only the accepting edge counts.
+91734200.05ns INFO     cocotb.regression                  test_uart_lite.test_chk_031_tx_gaps passed
+91734200.05ns INFO     cocotb.regression                  running test_uart_lite.test_chk_032_tx_valid_drop (19/20)
+                                                            CHK-032: offers while o_tx_ready=0 are not recorded; held offer accepted at E0+10N; one-cycle pulse.
+93168550.05ns INFO     cocotb.regression                  test_uart_lite.test_chk_032_tx_valid_drop passed
+93168550.05ns INFO     cocotb.regression                  running test_uart_lite.test_regression_random (20/20)
+                                                            CHK-001..CHK-013 (all assertion checks): random full-duplex traffic with random gaps, back pressure,
+96735080.06ns INFO     cocotb.regression                  test_uart_lite.test_regression_random passed
+96735080.06ns INFO     cocotb.regression                  *****************************************************************************************************
+                                                        ** TEST                                         STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *****************************************************************************************************
+                                                        ** test_uart_lite.test_chk_014_cfg_min           PASS           0.00           0.00          0.00  **
+                                                        ** test_uart_lite.test_chk_015_cfg_odd           PASS           0.00           0.00          0.00  **
+                                                        ** test_uart_lite.test_chk_016_cfg_wide          PASS     1209050.00           4.48     270018.39  **
+                                                        ** test_uart_lite.test_chk_017_full_duplex       PASS      880350.00           3.67     240189.14  **
+                                                        ** test_uart_lite.test_chk_018_loopback          PASS     1219090.00           5.84     208580.57  **
+                                                        ** test_uart_lite.test_chk_019_async_reset       PASS     1280530.00           3.77     339334.60  **
+                                                        ** test_uart_lite.test_chk_020_reset_idle        PASS      696830.00           1.93     360570.17  **
+                                                        ** test_uart_lite.test_chk_021_low_at_release    PASS      512310.00           1.48     346464.33  **
+                                                        ** test_uart_lite.test_chk_022_rx_basic          PASS     1844110.00           5.60     329424.90  **
+                                                        ** test_uart_lite.test_chk_023_sampling_points   PASS     3554950.00          10.12     351409.40  **
+                                                        ** test_uart_lite.test_chk_024_glitch            PASS    69601710.00         175.03     397645.89  **
+                                                        ** test_uart_lite.test_chk_025_rx_back_to_back   PASS     1587730.00           4.36     364350.09  **
+                                                        ** test_uart_lite.test_chk_026_rx_ready          PASS     2972830.00           8.53     348648.81  **
+                                                        ** test_uart_lite.test_chk_027_frame_error       PASS     1290670.00           3.53     366039.54  **
+                                                        ** test_uart_lite.test_chk_028_idle_break        PASS     1352130.00           3.79     356626.49  **
+                                                        ** test_uart_lite.test_chk_029_rx_random         PASS     2200450.00           6.77     325014.92  **
+                                                        ** test_uart_lite.test_chk_030_tx_back_to_back   PASS     1024410.00           2.79     366591.78  **
+                                                        ** test_uart_lite.test_chk_031_tx_gaps           PASS      507050.00           1.53     331108.30  **
+                                                        ** test_uart_lite.test_chk_032_tx_valid_drop     PASS     1434350.00           5.14     278989.83  **
+                                                        ** test_uart_lite.test_regression_random         PASS     3566530.00          11.49     310418.53  **
+                                                        *****************************************************************************************************
+                                                        ** TESTS=20 PASS=20 FAIL=0 SKIP=0                        96735080.06         259.88     372236.90  **
+                                                        *****************************************************************************************************
+- (null):0: Verilog $finish
+NNC_COVER COVP-001 hits=36
+NNC_COVER COVP-002 hits=3
+NNC_COVER COVP-003 hits=2
+NNC_COVER COVP-004 hits=4
+NNC_COVER COVP-005 hits=13
+NNC_COVER COVP-006 hits=4
+NNC_COVER COVP-007 hits=8
+NNC_COVER COVP-008 hits=11
+NNC_COVER COVP-009 hits=24
+NNC_COVER COVP-010 hits=12
+NNC_COVER COVP-011 hits=72281
+NNC_COVER COVP-012 hits=20
+NNC_COVER COVP-013 hits=3
+NNC_COVER COVP-014 hits=3
+NNC_COVER COVP-015 hits=8
+NNC_COVER COVP-016 hits=1
+NNC_COVER COVP-017 hits=2
+NNC_COVER COVP-018 hits=1130
+NNC_COVER COVP-019 hits=1039
+NNC_COVER COVP-020 hits=10
+NNC_COVER COVP-021 hits=5
+NNC_COVER COVP-022 hits=3
+NNC_COVER COVP-023 hits=6
+NNC_COVER COVP-024 hits=80
+NNC_COVER COVP-025 hits=1
+NNC_COVER COVP-026 hits=7
+NNC_COVER COVP-027 hits=13
+NNC_COVER COVP-028 hits=2
+NNC_COVER COVP-029 hits=0
+NNC_COVER COVP-030 hits=9
+NNC_COVER COVP-031 hits=11
+NNC_COVER COVP-032 hits=12
+NNC_COVER COVP-033 hits=72
+NNC_COVER COVP-034 hits=1879120
+NNC_COVER COVP-035 hits=2465685
+NNC_COVER COVP-036 hits=1
+NNC_COVER COVP-037 hits=30
+NNC_COVER COVP-038 hits=3
+NNC_COVER COVP-039 hits=15
+NNC_COVER COVP-040 hits=9
+NNC_CHECK CHK-010 hits=4487253 fails=0
+NNC_CHECK CHK-011 hits=349298 fails=0
+NNC_CHECK CHK-012 hits=349298 fails=0
+NNC_CHECK CHK-013 hits=36 fails=0
+NNC_CHECK CHK-003 hits=80 fails=0
+NNC_CHECK CHK-004 hits=1 fails=0
+NNC_CHECK CHK-005 hits=7 fails=0
+NNC_CHECK CHK-006 hits=4836462 fails=0
+NNC_CHECK CHK-007 hits=72 fails=0
+NNC_CHECK CHK-008 hits=1879120 fails=0
+NNC_CHECK CHK-009 hits=2957235 fails=0
+NNC_CHECK CHK-002 hits=248 fails=0
+NNC_CHECK CHK-001 hits=4836515 fails=0
+make[1]: Leaving directory '/root/nnc_runs/runset_91a8b51c/C04'
+NNC_MAKE_RC=0

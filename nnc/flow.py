@@ -11,20 +11,23 @@ artifact and the report is marked UNREVIEWED.
 from __future__ import annotations
 
 import json
+import shutil
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from nnc import contract as contract_mod
 from nnc import extract as extract_mod
-from nnc import closure, formal, gen_cov, gen_env, gen_sva, gen_tests, mutate, packet, report, review, runset, sim, triage
+from nnc import closure, formal, gen_cov, gen_env, gen_rtl, gen_sva, gen_tests, mutate, packet, report, review, runset, sim, triage
 from nnc.agents.runtime import make_backend
 from nnc.ingest import build_index, save_index
 from nnc.project import Design, ProjectError
 from nnc.simhost import default_host
 
-STAGES = ("ingest", "extract", "review", "contract", "gen-sva", "gen-tests", "gen-env", "sim", "cover", "triage",
-          "mutate", "formal", "report")
-GATE_BEFORE = {"contract": "G1_rules", "gen-sva": "G2_contract", "gen-tests": "G2_contract", "gen-env": "G2_contract",
+STAGES = ("ingest", "extract", "review", "contract", "gen-sva", "gen-tests", "gen-env", "gen-rtl", "sim", "cover",
+          "triage", "mutate", "formal", "report")
+# Stages of the design half: run only for a design whose RTL the flow generates (rtl_origin=generated).
+DESIGN_STAGES = ("gen-rtl",)
+GATE_BEFORE = {"contract": "G1_rules", "gen-rtl": "D1_config", "fix-rtl": "G3_verif_sources", "gen-sva": "G2_contract", "gen-tests": "G2_contract", "gen-env": "G2_contract",
                "formal": "G3_verif_sources", "sim": "G3_verif_sources",
                "cover": "G3_verif_sources", "triage": "G3_verif_sources", "mutate": "G3_verif_sources", "report": "G3_verif_sources"}
 
@@ -39,6 +42,8 @@ class Options:
     sva_model: str = "sonnet"
     tests_model: str = "opus"
     triage_model: str = "opus"
+    rtl_model: str = "opus"
+    rtl_rounds: int = 3
     workers: int = 4
     seed: int = 1
     mutants: int = 12
@@ -153,8 +158,14 @@ def stage_gen_sva(d: Design, o: Options) -> None:
                                              if cov["status"] == "failed" else ""))
 
 
+def verif_name(d: Design) -> str:
+    """Name in the verification file names: the design, or the design it was derived from (nnc derive), whose
+    approved verification it carries unchanged."""
+    return d.config().get("derived_from") or d.name
+
+
 def test_file(d: Design) -> Path:
-    return d.root / "verif" / "tests" / f"test_{d.name}.py"
+    return d.root / "verif" / "tests" / f"test_{verif_name(d)}.py"
 
 
 def split_mode(d: Design) -> bool:
@@ -165,13 +176,13 @@ def split_mode(d: Design) -> bool:
 def test_files(d: Design) -> list[Path]:
     """The generated test module(s), then the coverage-closure modules (one per closure round)."""
     tdir = d.root / "verif" / "tests"
-    main = sorted(tdir.glob(f"test_{d.name}_g*.py")) if split_mode(d) else [test_file(d)]
-    return main + sorted(tdir.glob(f"test_{d.name}_cov*.py"))
+    main = sorted(tdir.glob(f"test_{verif_name(d)}_g*.py")) if split_mode(d) else [test_file(d)]
+    return main + sorted(tdir.glob(f"test_{verif_name(d)}_cov*.py"))
 
 
 def tests_base(d: Design) -> Path:
     """The module closure tests import as `base`: the library in split mode, else the test module."""
-    return d.root / "verif" / "tests" / f"tb_{d.name}.py" if split_mode(d) else test_file(d)
+    return d.root / "verif" / "tests" / f"tb_{verif_name(d)}.py" if split_mode(d) else test_file(d)
 
 
 def test_map(d: Design) -> dict[str, list[str]]:
@@ -266,7 +277,7 @@ def stage_sim(d: Design, o: Options) -> None:
                 if f.is_file() and "_cov" not in f.stem:
                     owner.update({n: f.name for n in gen_tests.test_check_map(f.read_text(encoding="utf-8"))})
             bad = {e.split(":")[0] for e in errs}
-            pairs = [(gen_tests.error_module(t, owner, f"tb_{d.name}.py"), e) for t in res["tests"]
+            pairs = [(gen_tests.error_module(t, owner, f"tb_{verif_name(d)}.py"), e) for t in res["tests"]
                      for e in errs if t["name"] in bad and e.startswith(t["name"] + ":")]
             rep = gen_tests.repair_split(contract_mod.selected(contract), _read(d.work / "rules.json"), _backend(d, o),
                                          _logs(d), d.root / "verif" / "tests", d.name, pairs, model=o.tests_model,
@@ -462,7 +473,7 @@ def stage_cover(d: Design, o: Options) -> None:
             entry["note"] = f"closure module invalid: {problems[:3]}"
             o.say(f"[cover] round {rnd}: {entry['note']}")
             break
-        mod = d.root / "verif" / "tests" / f"test_{d.name}_cov{rnd}.py"
+        mod = d.root / "verif" / "tests" / f"test_{verif_name(d)}_cov{rnd}.py"
         mod.write_text(code, encoding="utf-8")
         entry["tests"] = sorted(n for n in gen_tests.test_check_map(code))
         res = _regression(d, o, contract, d.root / "rtl")
@@ -675,6 +686,12 @@ def stage_mutate(d: Design, o: Options) -> None:
         o.say(f"[mutate] run set: {len(runs)} runs; each mutant runs where its line is executed (primary first)")
     res = mutate.run(default_host(), _read(d.work / "contract.json"), d.root / "rtl", d.root / "verif" / "sva",
                      test_files(d), count=o.mutants, seed=o.seed, **kw)
+    if res["count"] and res["not_compiled"] == res["count"]:
+        # a one-operator change rarely breaks the build; all of them failing means the simulator host failed
+        # (e.g. WSL stopped), and a score of "None" with every mutant "not compiled" would mislead the reader
+        raise ProjectError(f"none of the {res['count']} mutants compiled: the simulator host probably failed "
+                           "(check with 'nnc doctor'; on Windows 'wsl --shutdown' restarts WSL); "
+                           "work/mutation.json was not written")
     ex = res.get("excluded_uncovered") or {}
     o.say(f"[mutate] {res['count']} mutants: killed {res['killed']}, survived {res['survived']}, "
           f"not compiled {res['not_compiled']}; score {res['score']} % (candidates on executed lines only; "
@@ -693,6 +710,112 @@ def stage_mutate(d: Design, o: Options) -> None:
     _write(d.work / "mutation.json", res)
     o.say(f"[mutate] per-requirement: {len(res['rule_scores'])} rules with attributed mutants, "
           f"{len(weak)} below the {threshold:g} % threshold{': ' + ', '.join(weak[:8]) if weak else ''}")
+
+
+# ------------------------------------------------------------------------------- design half (RTL)
+def _require_generated(d: Design) -> None:
+    if not d.rtl_generated():
+        raise ProjectError(f"the RTL of {d.name} is delivered, and the flow never writes a delivered RTL; for a design "
+                           f"whose RTL the flow generates, set 'nnc config {d.name} rtl_origin=generated'")
+
+
+def _rtl_inputs(d: Design) -> tuple[dict, dict, dict, list[Path]]:
+    contract, rules_doc = _read(d.work / "contract.json"), _read(d.work / "rules.json")
+    final = _read(d.work / "final_config.json")
+    return contract, rules_doc, final, [d.root / doc["file"] for doc in d.documents()]
+
+
+def _save_rtl(d: Design, rep: dict, o: Options, label: str) -> None:
+    rtl_dir = d.root / "rtl"
+    old = sorted(rtl_dir.glob("*.sv"))
+    if old:                                   # keep every earlier revision for the reviewer
+        n = len([p for p in (d.work / "rtl_history").glob("rev*") if p.is_dir()]) + 1 \
+            if (d.work / "rtl_history").is_dir() else 1
+        keep = d.work / "rtl_history" / f"rev{n:02d}"
+        keep.mkdir(parents=True, exist_ok=True)
+        for f in old + [rtl_dir / "filelist.f"]:
+            if f.is_file():
+                shutil.copyfile(f, keep / f.name)
+        if (d.work / "rtl_gen.md").is_file():
+            shutil.copyfile(d.work / "rtl_gen.md", keep / "rtl_gen.md")
+    gen_rtl.write_rtl(rtl_dir, rep["files"])
+    _write(d.work / "rtl_gen.json", gen_rtl.report_json(rep))
+    (d.work / "rtl_gen.md").write_text(gen_rtl.to_markdown(rep, d.name, _read(d.work / "rules.json")), encoding="utf-8")
+    s = (rep.get("synth") or {}).get("corners", {}).get("tt") or {}
+    o.say(f"[{label}] {rep['status']} after {rep['attempts']} attempt(s): {rep['counts']}, "
+          f"{len([n for n in rep['files'] if n.endswith('.sv')])} files"
+          + (f", area {s.get('area_um2')} um^2 (GF180 TT)" if s else "")
+          + f", US${rep['usage'].get('cost_usd', 0):.2f} -> rtl/, work/rtl_gen.md (gate D2_rtl)")
+
+
+def stage_gen_rtl(d: Design, o: Options) -> None:
+    """Agent A15 writes the RTL from the specification, rules, interface and chosen configuration."""
+    _require_generated(d)
+    _gate(d, "gen-rtl", o)
+    contract, rules_doc, final, docs = _rtl_inputs(d)
+    rep = gen_rtl.generate(d.root, contract, rules_doc, final, docs, _backend(d, o), _logs(d), default_host(),
+                           model=o.rtl_model, rounds=o.rtl_rounds)
+    _save_rtl(d, rep, o, "gen-rtl")
+
+
+def stage_fix_rtl(d: Design, o: Options, source: str = "sim") -> int:
+    """Repair the generated RTL from the faults triage judged A (RTL wrong); returns the number of faults.
+    `source`: "sim" (work/triage.json), "formal" (work/formal_triage.json) or "all"."""
+    _require_generated(d)
+    _gate(d, "fix-rtl", o)
+    analyses = []
+    if source in ("sim", "all"):
+        analyses += _read(d.work / "triage.json").get("analyses", [])
+    if source in ("formal", "all"):
+        analyses += _read(d.work / "formal_triage.json").get("analyses", [])
+    fixes = gen_rtl.fault_text(analyses)
+    if not fixes:
+        o.say("[fix-rtl] triage judged no failure an RTL fault: nothing to repair")
+        return 0
+    contract, rules_doc, final, docs = _rtl_inputs(d)
+    current = {f.name: f.read_text(encoding="utf-8") for f in sim.rtl_files(d.root / "rtl")}
+    if (d.root / "rtl" / "filelist.f").is_file():
+        current["filelist.f"] = (d.root / "rtl" / "filelist.f").read_text(encoding="utf-8")
+    rep = gen_rtl.generate(d.root, contract, rules_doc, final, docs, _backend(d, o), _logs(d), default_host(),
+                           model=o.rtl_model, rounds=o.rtl_rounds, current=current, fixes=fixes)
+    _save_rtl(d, rep, o, "fix-rtl")
+    return len(fixes)
+
+
+def close_loop(d: Design, o: Options, rounds: int = 3) -> dict:
+    """sim -> triage -> fix-rtl until no failure, no RTL fault left, or `rounds` repairs. Every revision is
+    kept in work/rtl_history; the loop never edits the verification (a failure judged B or C stops it and
+    waits for a person)."""
+    _require_generated(d)
+    log = []
+    for r in range(rounds + 1):
+        stage_sim(d, o)
+        res = _read(d.work / "results.json")
+        fails = [t["name"] for t in res.get("tests", []) if t.get("status") == "fail"] + \
+                [k for k, a in (res.get("assertions") or {}).items() if a.get("fails")]
+        entry = {"round": r, "failures": len(fails)}
+        log.append(entry)
+        if not fails:
+            o.say(f"[close-loop] round {r}: no failure")
+            break
+        stage_triage(d, o)
+        tri = _read(d.work / "triage.json")
+        verdicts = [a.get("most_likely") for a in tri.get("analyses", [])]
+        entry["verdicts"] = {v: verdicts.count(v) for v in set(verdicts)}
+        if r == rounds:
+            o.say(f"[close-loop] round {r}: {len(fails)} failure(s) left, repair budget used")
+            break
+        if not stage_fix_rtl(d, o):
+            o.say(f"[close-loop] round {r}: {len(fails)} failure(s), none judged an RTL fault: a person decides "
+                  f"(work/triage.md)")
+            break
+    _write(d.work / "close_loop.json", {"rounds": log, "at": report_time()})
+    return {"rounds": log}
+
+
+def report_time() -> str:
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
 def agent_costs(d: Design) -> dict:
@@ -735,7 +858,7 @@ def stage_report(d: Design, o: Options) -> None:
           f"work/review_packet.md (for the G4 reviewer)")
 
 
-RUNNERS = {"ingest": stage_ingest, "extract": stage_extract, "review": stage_review, "contract": stage_contract,
+RUNNERS = {"gen-rtl": stage_gen_rtl, "ingest": stage_ingest, "extract": stage_extract, "review": stage_review, "contract": stage_contract,
            "gen-sva": stage_gen_sva, "gen-tests": stage_gen_tests, "gen-env": stage_gen_env, "formal": stage_formal,
            "sim": stage_sim, "cover": stage_cover,
            "triage": stage_triage,
@@ -748,6 +871,8 @@ def run_flow(d: Design, o: Options, start: str = "ingest", stop: str = "report")
     names = STAGES[STAGES.index(start): STAGES.index(stop) + 1]
     done = ""
     for name in names:
+        if name in DESIGN_STAGES and not d.rtl_generated():
+            continue
         gate = GATE_BEFORE.get(name)
         if gate and not o.unreviewed and not d.gate_approved(gate):
             o.say(f"[flow] stopped before '{name}': {gate} needs review. Read the review sheet, then "

@@ -1,0 +1,2043 @@
+{
+ "mutants": [
+  {
+   "id": "M01",
+   "file": "m_apb_if.sv",
+   "line": 80,
+   "operator": "or_to_and",
+   "original": "&& (!i_apb_pwrite || (i_apb_pstrb == 4'b1111));",
+   "mutated": "                 && (!i_apb_pwrite && (i_apb_pstrb == 4'b1111));",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-006",
+    "CHK-011"
+   ]
+  },
+  {
+   "id": "M02",
+   "file": "m_tlul_if.sv",
+   "line": 196,
+   "operator": "zero_to_one",
+   "original": "reg_a_valid <= 1'b0;",
+   "mutated": "      reg_a_valid <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-016",
+    "CHK-008"
+   ]
+  },
+  {
+   "id": "M03",
+   "file": "m_apb_if.sv",
+   "line": 168,
+   "operator": "one_to_zero",
+   "original": "reg_pready  <= 1'b1;",
+   "mutated": "      reg_pready  <= 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_025_ignored_inputs",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard"
+   ],
+   "killed_by_checks": [
+    "CHK-007",
+    "CHK-003",
+    "CHK-004"
+   ]
+  },
+  {
+   "id": "M04",
+   "file": "m_tlul_if.sv",
+   "line": 117,
+   "operator": "eq_to_ne",
+   "original": "&& (w_a_accept || (reg_fsm_tlul_current_state == ENUM_ST_WAIT));",
+   "mutated": "                    && (w_a_accept || (reg_fsm_tlul_current_state != ENUM_ST_WAIT));",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M05",
+   "file": "m_apb_if.sv",
+   "line": 177,
+   "operator": "zero_to_one",
+   "original": "reg_pslverr <= 1'b0;",
+   "mutated": "      reg_pslverr <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-003"
+   ]
+  },
+  {
+   "id": "M06",
+   "file": "m_apb_if.sv",
+   "line": 167,
+   "operator": "negate_if",
+   "original": "end else if (w_local_err) begin",
+   "mutated": "    end else if (!(w_local_err)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M07",
+   "file": "m_apb_if.sv",
+   "line": 92,
+   "operator": "and_to_or",
+   "original": "assign w_resp_done = (reg_fsm_apb_current_state == ENUM_ST_BUSY) && i_resp_valid;",
+   "mutated": "  assign w_resp_done = (reg_fsm_apb_current_state == ENUM_ST_BUSY) || i_resp_valid;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-009",
+    "CHK-011"
+   ]
+  },
+  {
+   "id": "M08",
+   "file": "m_tlul_if.sv",
+   "line": 127,
+   "operator": "ne_to_eq",
+   "original": "|| (i_tlul_d_source != LPARA_SRC_ID);",
+   "mutated": "                    || (i_tlul_d_source == LPARA_SRC_ID);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M09",
+   "file": "m_apb_if.sv",
+   "line": 92,
+   "operator": "eq_to_ne",
+   "original": "assign w_resp_done = (reg_fsm_apb_current_state == ENUM_ST_BUSY) && i_resp_valid;",
+   "mutated": "  assign w_resp_done = (reg_fsm_apb_current_state != ENUM_ST_BUSY) && i_resp_valid;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M10",
+   "file": "m_tlul_if.sv",
+   "line": 117,
+   "operator": "and_to_or",
+   "original": "&& (w_a_accept || (reg_fsm_tlul_current_state == ENUM_ST_WAIT));",
+   "mutated": "                    || (w_a_accept || (reg_fsm_tlul_current_state == ENUM_ST_WAIT));",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-011"
+   ]
+  },
+  {
+   "id": "M11",
+   "file": "m_tlul_if.sv",
+   "line": 127,
+   "operator": "or_to_and",
+   "original": "|| (i_tlul_d_source != LPARA_SRC_ID);",
+   "mutated": "                    && (i_tlul_d_source != LPARA_SRC_ID);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_029_random_scoreboard"
+   ],
+   "killed_by_checks": [
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M12",
+   "file": "m_tlul_if.sv",
+   "line": 194,
+   "operator": "one_to_zero",
+   "original": "reg_a_valid <= 1'b1;",
+   "mutated": "      reg_a_valid <= 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-006"
+   ]
+  },
+  {
+   "id": "M13",
+   "file": "m_tlul_if.sv",
+   "line": 163,
+   "operator": "negate_if",
+   "original": "if (w_resp_hit) begin",
+   "mutated": "        if (!(w_resp_hit)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_029_random_scoreboard",
+    "test_regression_random",
+    "test_cov_101_long_response_delay"
+   ],
+   "killed_by_checks": [
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M14",
+   "file": "m_tlul_if.sv",
+   "line": 209,
+   "operator": "zero_to_one",
+   "original": "reg_a_rd   <= 1'b0;",
+   "mutated": "      reg_a_rd   <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-012"
+   ]
+  },
+  {
+   "id": "M15",
+   "file": "m_apb_if.sv",
+   "line": 169,
+   "operator": "one_to_zero",
+   "original": "reg_pslverr <= 1'b1;",
+   "mutated": "      reg_pslverr <= 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_025_ignored_inputs",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard"
+   ],
+   "killed_by_checks": [
+    "CHK-007"
+   ]
+  },
+  {
+   "id": "M16",
+   "file": "m_tlul_if.sv",
+   "line": 106,
+   "operator": "eq_to_ne",
+   "original": "assign w_a_load   = i_req_launch && (reg_fsm_tlul_current_state == ENUM_ST_IDLE);",
+   "mutated": "  assign w_a_load   = i_req_launch && (reg_fsm_tlul_current_state != ENUM_ST_IDLE);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-006"
+   ]
+  },
+  {
+   "id": "M17",
+   "file": "m_apb_if.sv",
+   "line": 164,
+   "operator": "zero_to_one",
+   "original": "reg_pready  <= 1'b0;",
+   "mutated": "      reg_pready  <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-012"
+   ]
+  },
+  {
+   "id": "M18",
+   "file": "m_apb_if.sv",
+   "line": 163,
+   "operator": "negate_if",
+   "original": "if (!i_rst_n_core) begin",
+   "mutated": "    if (!(!i_rst_n_core)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-007",
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M19",
+   "file": "m_apb_if.sv",
+   "line": 88,
+   "operator": "and_to_or",
+   "original": "assign w_local_err = w_setup && !w_legal;",
+   "mutated": "  assign w_local_err = w_setup || !w_legal;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M20",
+   "file": "m_apb_if.sv",
+   "line": 80,
+   "operator": "eq_to_ne",
+   "original": "&& (!i_apb_pwrite || (i_apb_pstrb == 4'b1111));",
+   "mutated": "                 && (!i_apb_pwrite || (i_apb_pstrb != 4'b1111));",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-014",
+    "CHK-006",
+    "CHK-007",
+    "CHK-011"
+   ]
+  },
+  {
+   "id": "M21",
+   "file": "m_tlul_if.sv",
+   "line": 106,
+   "operator": "and_to_or",
+   "original": "assign w_a_load   = i_req_launch && (reg_fsm_tlul_current_state == ENUM_ST_IDLE);",
+   "mutated": "  assign w_a_load   = i_req_launch || (reg_fsm_tlul_current_state == ENUM_ST_IDLE);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-014",
+    "CHK-009"
+   ]
+  },
+  {
+   "id": "M22",
+   "file": "m_tlul_if.sv",
+   "line": 117,
+   "operator": "or_to_and",
+   "original": "&& (w_a_accept || (reg_fsm_tlul_current_state == ENUM_ST_WAIT));",
+   "mutated": "                    && (w_a_accept && (reg_fsm_tlul_current_state == ENUM_ST_WAIT));",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M23",
+   "file": "m_tlul_if.sv",
+   "line": 227,
+   "operator": "one_to_zero",
+   "original": "reg_d_ready <= 1'b1;",
+   "mutated": "      reg_d_ready <= 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-013",
+    "CHK-006"
+   ]
+  },
+  {
+   "id": "M24",
+   "file": "m_tlul_if.sv",
+   "line": 208,
+   "operator": "negate_if",
+   "original": "if (!i_rst_n_core) begin",
+   "mutated": "    if (!(!i_rst_n_core)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-006"
+   ]
+  },
+  {
+   "id": "M25",
+   "file": "m_tlul_if.sv",
+   "line": 192,
+   "operator": "zero_to_one",
+   "original": "reg_a_valid <= 1'b0;",
+   "mutated": "      reg_a_valid <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-012"
+   ]
+  },
+  {
+   "id": "M26",
+   "file": "m_apb_if.sv",
+   "line": 172,
+   "operator": "one_to_zero",
+   "original": "reg_pready  <= 1'b1;",
+   "mutated": "      reg_pready  <= 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-010",
+    "CHK-003",
+    "CHK-004"
+   ]
+  },
+  {
+   "id": "M27",
+   "file": "m_tlul_if.sv",
+   "line": 108,
+   "operator": "eq_to_ne",
+   "original": "assign w_a_accept = (reg_fsm_tlul_current_state == ENUM_ST_REQ) && i_tlul_a_ready;",
+   "mutated": "  assign w_a_accept = (reg_fsm_tlul_current_state != ENUM_ST_REQ) && i_tlul_a_ready;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-016",
+    "CHK-008",
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M28",
+   "file": "m_apb_if.sv",
+   "line": 176,
+   "operator": "zero_to_one",
+   "original": "reg_pready  <= 1'b0;",
+   "mutated": "      reg_pready  <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M29",
+   "file": "m_apb_if.sv",
+   "line": 115,
+   "operator": "negate_if",
+   "original": "end else if (w_local_err) begin",
+   "mutated": "        end else if (!(w_local_err)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-006",
+    "CHK-007"
+   ]
+  },
+  {
+   "id": "M30",
+   "file": "m_apb_if.sv",
+   "line": 74,
+   "operator": "and_to_or",
+   "original": "&& i_apb_psel && !i_apb_penable;",
+   "mutated": "                 && i_apb_psel || !i_apb_penable;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-014",
+    "CHK-009"
+   ]
+  },
+  {
+   "id": "M31",
+   "file": "m_tlul_if.sv",
+   "line": 108,
+   "operator": "and_to_or",
+   "original": "assign w_a_accept = (reg_fsm_tlul_current_state == ENUM_ST_REQ) && i_tlul_a_ready;",
+   "mutated": "  assign w_a_accept = (reg_fsm_tlul_current_state == ENUM_ST_REQ) || i_tlul_a_ready;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_029_random_scoreboard",
+    "test_regression_random",
+    "test_cov_101_long_response_delay"
+   ],
+   "killed_by_checks": [
+    "CHK-015",
+    "CHK-011"
+   ]
+  },
+  {
+   "id": "M32",
+   "file": "m_tlul_if.sv",
+   "line": 193,
+   "operator": "negate_if",
+   "original": "end else if (w_a_load) begin",
+   "mutated": "    end else if (!(w_a_load)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-014",
+    "CHK-006",
+    "CHK-009"
+   ]
+  },
+  {
+   "id": "M33",
+   "file": "m_tlul_if.sv",
+   "line": 225,
+   "operator": "zero_to_one",
+   "original": "reg_d_ready <= 1'b0;",
+   "mutated": "      reg_d_ready <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-012"
+   ]
+  },
+  {
+   "id": "M34",
+   "file": "m_apb_if.sv",
+   "line": 165,
+   "operator": "zero_to_one",
+   "original": "reg_pslverr <= 1'b0;",
+   "mutated": "      reg_pslverr <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-012",
+    "CHK-003"
+   ]
+  },
+  {
+   "id": "M35",
+   "file": "m_apb_if.sv",
+   "line": 142,
+   "operator": "negate_if",
+   "original": "if (!i_rst_n_core) begin",
+   "mutated": "    if (!(!i_rst_n_core)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-010"
+   ]
+  },
+  {
+   "id": "M36",
+   "file": "m_apb_if.sv",
+   "line": 74,
+   "operator": "and_to_or",
+   "original": "&& i_apb_psel && !i_apb_penable;",
+   "mutated": "                 || i_apb_psel && !i_apb_penable;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_local_error",
+    "test_chk_019_device_error",
+    "test_chk_020_wrong_opcode_source",
+    "test_chk_021_orphan_responses",
+    "test_chk_022_no_response_no_timeout",
+    "test_chk_023_prompt_write",
+    "test_chk_024_prompt_read",
+    "test_chk_025_ignored_inputs",
+    "test_chk_026_backpressure_delay",
+    "test_chk_027_same_cycle_response",
+    "test_chk_028_back_to_back",
+    "test_chk_029_random_scoreboard",
+    "test_chk_030_reset",
+    "test_chk_031_reset_abandons_transfer",
+    "test_regression_random",
+    "test_cov_101_long_response_delay",
+    "test_cov_102_stale_response_at_reset_release"
+   ],
+   "killed_by_checks": [
+    "CHK-014",
+    "CHK-009"
+   ]
+  }
+ ],
+ "candidates": 50,
+ "count": 36,
+ "killed": 36,
+ "survived": 0,
+ "not_compiled": 0,
+ "score": 100.0,
+ "seed": 1,
+ "excluded_uncovered": {
+  "files": [],
+  "lines": 5
+ },
+ "baseline_failing": {
+  "tests": [],
+  "checks": []
+ },
+ "threshold": 85.0,
+ "attribution": {
+  "mutants": {
+   "M01": {
+    "rules": [
+     "BR-T1-04",
+     "BR-T1-03",
+     "BR-3-24",
+     "BR-3-05",
+     "BR-6.3-04"
+    ],
+    "equivalent": false,
+    "reason": "Legality for writes becomes AND instead of OR: aligned full-strobe writes only legal if pwrite=0 (never), reads with any strobe are illegal; legal requests get PSLVERR locally instead of a TL-UL request."
+   },
+   "M02": {
+    "rules": [
+     "BR-6.2-06",
+     "BR-10.1-04",
+     "BR-5.4-06",
+     "BR-3-06",
+     "BR-5.4-01"
+    ],
+    "equivalent": false,
+    "reason": "a_valid is set to 1 instead of cleared on a_accept, so a_valid is not dropped after the handshake and the request is repeated."
+   },
+   "M03": {
+    "rules": [
+     "BR-3-24",
+     "BR-12-01",
+     "BR-10.3-01",
+     "BR-3-25",
+     "BR-3-36"
+    ],
+    "equivalent": false,
+    "reason": "On local error PREADY is not raised, so the illegal transfer has no completion in the first Access cycle."
+   },
+   "M04": {
+    "rules": [
+     "BR-10.1-05",
+     "BR-10.1-06",
+     "BR-3-11",
+     "BR-6.3-08",
+     "BR-6.3-09"
+    ],
+    "equivalent": false,
+    "reason": "State condition inverted: responses in WAIT are no longer counted, and orphan d_valid in IDLE/REQ without accept would be counted."
+   },
+   "M05": {
+    "rules": [
+     "BR-3-19",
+     "BR-6.2-05",
+     "BR-5.4-04",
+     "BR-3-18",
+     "BR-6.2-03"
+    ],
+    "equivalent": false,
+    "reason": "PSLVERR is set to 1 in idle/non-completion cycles, so PSLVERR is high without PREADY."
+   },
+   "M06": {
+    "rules": [
+     "BR-3-24",
+     "BR-12-01",
+     "BR-12-02",
+     "BR-10.3-01",
+     "BR-T1-03"
+    ],
+    "equivalent": false,
+    "reason": "Local-error branch condition inverted: illegal Setup gets no local error, while every other cycle loads pready/pslverr=1 and prdata=0."
+   },
+   "M07": {
+    "rules": [
+     "BR-10.1-03",
+     "BR-3-11",
+     "BR-6.3-08",
+     "BR-10.1-06",
+     "BR-3-32"
+    ],
+    "equivalent": false,
+    "reason": "w_resp_done uses OR, so orphan i_resp_valid outside BUSY, or BUSY with no response, produces a spurious PREADY completion."
+   },
+   "M08": {
+    "rules": [
+     "BR-3-28",
+     "BR-6.3-15",
+     "BR-12-07",
+     "BR-20-10",
+     "BR-8-04"
+    ],
+    "equivalent": false,
+    "reason": "Source check inverted: a response with the correct source is flagged as error and a wrong source is accepted without error."
+   },
+   "M09": {
+    "rules": [
+     "BR-10.1-03",
+     "BR-3-26",
+     "BR-3-09",
+     "BR-5.3-06",
+     "BR-5.3-08"
+    ],
+    "equivalent": false,
+    "reason": "w_resp_done is true only outside BUSY, so a real response in BUSY gives no APB completion (transfer hangs)."
+   },
+   "M10": {
+    "rules": [
+     "BR-10.1-05",
+     "BR-10.1-06",
+     "BR-3-11",
+     "BR-6.3-08",
+     "BR-6.3-09"
+    ],
+    "equivalent": false,
+    "reason": "AND with the state term becomes OR: any d_valid with d_ready counts as a response, so orphans produce a completion."
+   },
+   "M11": {
+    "rules": [
+     "BR-3-28",
+     "BR-6.3-15",
+     "BR-12-07",
+     "BR-20-10",
+     "BR-8-04"
+    ],
+    "equivalent": false,
+    "reason": "Error OR becomes AND on the source term: a wrong source alone no longer raises an error."
+   },
+   "M12": {
+    "rules": [
+     "BR-5.3-02",
+     "BR-3-02",
+     "BR-1.1-02",
+     "BR-5.3-01",
+     "BR-3-01"
+    ],
+    "equivalent": false,
+    "reason": "a_valid is not set at the Setup edge load, so no TL-UL request is launched and the transfer hangs."
+   },
+   "M13": {
+    "rules": [
+     "BR-10.1-05",
+     "BR-3-06",
+     "BR-5.4-01",
+     "BR-6.3-06",
+     "BR-3-07"
+    ],
+    "equivalent": false,
+    "reason": "In WAIT the FSM leaves to IDLE when there is no response and stays when there is one, so the single-outstanding-request tracking breaks and the FSM returns to IDLE early."
+   },
+   "M14": {
+    "rules": [
+     "BR-7.3-02",
+     "BR-7.3-03",
+     "BR-3-31",
+     "BR-6.2-07",
+     "BR-14.1-03"
+    ],
+    "equivalent": false,
+    "reason": "The opcode flop resets to 1 instead of 0, so o_tlul_a_opcode is 3'b100 during reset."
+   },
+   "M15": {
+    "rules": [
+     "BR-3-25",
+     "BR-3-24",
+     "BR-12-01",
+     "BR-12-04",
+     "BR-3-36"
+    ],
+    "equivalent": false,
+    "reason": "Local error completes with PSLVERR=0 instead of 1, so the illegal transfer is not flagged."
+   },
+   "M16": {
+    "rules": [
+     "BR-3-06",
+     "BR-5.4-01",
+     "BR-6.3-06",
+     "BR-1.1-04",
+     "BR-5.4-06"
+    ],
+    "equivalent": false,
+    "reason": "Load condition inverted to a non-IDLE TL-UL state, so a Setup launch in IDLE never loads the payload or a_valid."
+   },
+   "M17": {
+    "rules": [
+     "BR-3-31",
+     "BR-7.3-02",
+     "BR-6.2-03",
+     "BR-3-30",
+     "BR-14.1-03"
+    ],
+    "equivalent": false,
+    "reason": "PREADY resets to 1, so o_apb_pready is high during reset."
+   },
+   "M18": {
+    "rules": [
+     "BR-3-30",
+     "BR-7.3-01",
+     "BR-7.3-02",
+     "BR-3-31",
+     "BR-14.1-03"
+    ],
+    "equivalent": false,
+    "reason": "Reset branch inverted: the reset values are applied in normal operation and not in reset."
+   },
+   "M19": {
+    "rules": [
+     "BR-T1-03",
+     "BR-3-24",
+     "BR-12-01",
+     "BR-5.4-05",
+     "BR-9-04"
+    ],
+    "equivalent": false,
+    "reason": "w_local_err uses OR, so any Setup (even legal) or any illegal-looking inputs yield a local error/PSLVERR."
+   },
+   "M20": {
+    "rules": [
+     "BR-T1-04",
+     "BR-T1-03",
+     "BR-3-24",
+     "BR-3-05",
+     "BR-6.3-04"
+    ],
+    "equivalent": false,
+    "reason": "Strobe comparison inverted: full-strobe writes are rejected and partial-strobe writes are accepted as legal."
+   },
+   "M21": {
+    "rules": [
+     "BR-3-06",
+     "BR-5.4-01",
+     "BR-6.3-06",
+     "BR-1.1-04",
+     "BR-5.4-06"
+    ],
+    "equivalent": false,
+    "reason": "Load uses OR: the channel A flops load whenever the TL-UL FSM is IDLE, even without a launch, so a_valid is raised without a legal Setup."
+   },
+   "M22": {
+    "rules": [
+     "BR-10.1-05",
+     "BR-10.1-06",
+     "BR-3-11",
+     "BR-6.3-08",
+     "BR-6.3-09"
+    ],
+    "equivalent": false,
+    "reason": "OR changed to AND: a_accept and WAIT are never both true, so no response is ever counted."
+   },
+   "M23": {
+    "rules": [
+     "BR-3-22",
+     "BR-3-21",
+     "BR-6.2-15",
+     "BR-20-11",
+     "BR-5.3-04"
+    ],
+    "equivalent": false,
+    "reason": "d_ready is held at 0 after reset, so no response is ever accepted."
+   },
+   "M24": {
+    "rules": [
+     "BR-7.3-02",
+     "BR-7.3-03",
+     "BR-3-31",
+     "BR-14.1-03",
+     "BR-3-30"
+    ],
+    "equivalent": false,
+    "reason": "Reset branch inverted on the payload flops: they are cleared during operation and not reset (and load never happens), so opcode/address/data are wrong."
+   },
+   "M25": {
+    "rules": [
+     "BR-3-31",
+     "BR-7.3-03",
+     "BR-6.2-06",
+     "BR-3-32",
+     "BR-7.3-02"
+    ],
+    "equivalent": false,
+    "reason": "a_valid resets to 1, so o_tlul_a_valid is high during reset."
+   },
+   "M26": {
+    "rules": [
+     "BR-3-34",
+     "BR-5.3-08",
+     "BR-3-35",
+     "BR-13-01",
+     "BR-10.1-03"
+    ],
+    "equivalent": false,
+    "reason": "On response completion PREADY is not set, so the APB transfer never completes."
+   },
+   "M27": {
+    "rules": [
+     "BR-10.1-04",
+     "BR-6.3-09",
+     "BR-10.1-05",
+     "BR-3-08",
+     "BR-6.2-06"
+    ],
+    "equivalent": false,
+    "reason": "Accept is true outside REQ, so a_valid and FSM progress follow a_ready in the wrong states and the request is not accepted correctly in REQ."
+   },
+   "M28": {
+    "rules": [
+     "BR-5.4-04",
+     "BR-3-18",
+     "BR-6.2-03",
+     "BR-15.3-01",
+     "BR-6.2-05"
+    ],
+    "equivalent": false,
+    "reason": "PREADY stays 1 in non-completion cycles, so it is not a one-cycle pulse and is high outside an Access phase."
+   },
+   "M29": {
+    "rules": [
+     "BR-10.1-02",
+     "BR-3-24",
+     "BR-12-01",
+     "BR-10.3-01",
+     "BR-5.4-05"
+    ],
+    "equivalent": false,
+    "reason": "FSM goes to DONE when there is no local error and not launch, and stays IDLE on an illegal Setup; the FSM sequencing disagrees with PREADY."
+   },
+   "M30": {
+    "rules": [
+     "BR-3-01",
+     "BR-3-12",
+     "BR-5.3-10",
+     "BR-20-12",
+     "BR-1.3-05"
+    ],
+    "equivalent": false,
+    "reason": "Setup detection becomes (IDLE && psel) || !penable, so Setup is recognised without psel or during Access."
+   },
+   "M31": {
+    "rules": [
+     "BR-10.1-04",
+     "BR-6.3-09",
+     "BR-10.1-05",
+     "BR-3-08",
+     "BR-6.2-06"
+    ],
+    "equivalent": false,
+    "reason": "Accept uses OR: a_valid drops or a response counts when a_ready is high in any state or in REQ without a_ready, so handshake tracking is wrong."
+   },
+   "M32": {
+    "rules": [
+     "BR-5.3-02",
+     "BR-3-02",
+     "BR-1.1-02",
+     "BR-5.3-01",
+     "BR-3-01"
+    ],
+    "equivalent": false,
+    "reason": "a_valid is set when load is not asserted instead of on load, so the request is not launched at Setup and a_valid is raised spuriously."
+   },
+   "M33": {
+    "rules": [
+     "BR-3-21",
+     "BR-3-31",
+     "BR-6.2-15",
+     "BR-20-11",
+     "BR-3-30"
+    ],
+    "equivalent": false,
+    "reason": "d_ready resets to 1, so o_tlul_d_ready is high during reset."
+   },
+   "M34": {
+    "rules": [
+     "BR-3-31",
+     "BR-7.3-02",
+     "BR-6.2-05",
+     "BR-3-19",
+     "BR-3-30"
+    ],
+    "equivalent": false,
+    "reason": "PSLVERR resets to 1 without PREADY, so it is high during reset."
+   },
+   "M35": {
+    "rules": [
+     "BR-3-30",
+     "BR-7.3-01",
+     "BR-7.3-02",
+     "BR-3-32",
+     "BR-14.1-03"
+    ],
+    "equivalent": false,
+    "reason": "APB FSM reset branch inverted: it is forced to IDLE in operation and not reset, so transfers never reach BUSY/DONE correctly."
+   },
+   "M36": {
+    "rules": [
+     "BR-3-01",
+     "BR-3-12",
+     "BR-5.3-10",
+     "BR-20-12",
+     "BR-1.3-05"
+    ],
+    "equivalent": false,
+    "reason": "Setup detection becomes IDLE || (psel && !penable), so Setup is recognised in every IDLE cycle regardless of psel/penable."
+   }
+  },
+  "unknown_ids": [],
+  "model": "sonnet",
+  "cost_usd": 0.24932379999999998
+ },
+ "rule_scores": {
+  "BR-1.1-02": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-1.1-04": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-1.3-05": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-10.1-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-10.1-03": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-10.1-04": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-10.1-05": {
+   "relevant": 6,
+   "killed": 6,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-10.1-06": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-10.3-01": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-12-01": {
+   "relevant": 5,
+   "killed": 5,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-12-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-12-04": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-12-07": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-13-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-14.1-03": {
+   "relevant": 5,
+   "killed": 5,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-15.3-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-20-10": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-20-11": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-20-12": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-3-01": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-3-02": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-3-05": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-3-06": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-3-07": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-3-08": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-3-09": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-3-11": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-3-12": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-3-18": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-3-19": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-3-21": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-3-22": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-3-24": {
+   "relevant": 7,
+   "killed": 7,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-3-25": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-3-26": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-3-28": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-3-30": {
+   "relevant": 6,
+   "killed": 6,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-3-31": {
+   "relevant": 7,
+   "killed": 7,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-3-32": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-3-34": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-3-35": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-3-36": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-5.3-01": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-5.3-02": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-5.3-04": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-5.3-06": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-5.3-08": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-5.3-10": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-5.4-01": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-5.4-04": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-5.4-05": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-5.4-06": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-6.2-03": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-6.2-05": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-6.2-06": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-6.2-07": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-6.2-15": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-6.3-04": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-6.3-06": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-6.3-08": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-6.3-09": {
+   "relevant": 5,
+   "killed": 5,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-6.3-15": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-7.3-01": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-7.3-02": {
+   "relevant": 7,
+   "killed": 7,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-7.3-03": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-8-04": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-9-04": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-T1-03": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "BR-T1-04": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ }
+}

@@ -1,0 +1,518 @@
+{
+ "module": "nnc_cov",
+ "file": "nnc_cov.sv",
+ "points": [
+  {
+   "id": "COVP-001",
+   "title": "TX byte accepted",
+   "rules": [
+    "UL-5-02",
+    "UL-7.2-01"
+   ],
+   "checks": [
+    "CHK-010"
+   ],
+   "condition": "i_tx_valid=1 and o_tx_ready=1 at an edge"
+  },
+  {
+   "id": "COVP-002",
+   "title": "TX data 0x00 accepted",
+   "rules": [
+    "UL-12.4-01",
+    "UL-7.2-02"
+   ],
+   "checks": [
+    "CHK-011"
+   ],
+   "condition": "Acceptance edge with i_tx_data=0x00"
+  },
+  {
+   "id": "COVP-003",
+   "title": "TX data 0xFF accepted",
+   "rules": [
+    "UL-12.4-01",
+    "UL-7.2-02"
+   ],
+   "checks": [
+    "CHK-011"
+   ],
+   "condition": "Acceptance edge with i_tx_data=0xFF"
+  },
+  {
+   "id": "COVP-004",
+   "title": "TX data 0x55 or 0xAA accepted",
+   "rules": [
+    "UL-12.4-01",
+    "UL-5-04"
+   ],
+   "checks": [
+    "CHK-011"
+   ],
+   "condition": "Acceptance edge with i_tx_data=0x55 or 0xAA"
+  },
+  {
+   "id": "COVP-005",
+   "title": "TX back-to-back acceptance at E0+10N",
+   "rules": [
+    "UL-7.3-03",
+    "UL-8.1-05"
+   ],
+   "checks": [
+    "CHK-013",
+    "CHK-030"
+   ],
+   "condition": "Acceptance at an edge where the previous sampled o_tx_ready was 0"
+  },
+  {
+   "id": "COVP-006",
+   "title": "TX back-to-back chain of 3 or more frames",
+   "rules": [
+    "UL-8.1-05",
+    "UL-8.1-06",
+    "UL-12.4-02"
+   ],
+   "checks": [
+    "CHK-030"
+   ],
+   "condition": "Back-to-back acceptance with at least two earlier back-to-back acceptances in the chain"
+  },
+  {
+   "id": "COVP-007",
+   "title": "TX acceptance after a short idle gap",
+   "rules": [
+    "UL-12.4-02",
+    "UL-7.3-04"
+   ],
+   "checks": [
+    "CHK-013",
+    "CHK-031"
+   ],
+   "condition": "Acceptance from idle after 1 to 3 idle ready cycles without i_tx_valid"
+  },
+  {
+   "id": "COVP-008",
+   "title": "TX acceptance after a long idle gap",
+   "rules": [
+    "UL-12.4-02",
+    "UL-7.3-05"
+   ],
+   "checks": [
+    "CHK-013",
+    "CHK-031"
+   ],
+   "condition": "Acceptance from idle after 20 or more idle ready cycles"
+  },
+  {
+   "id": "COVP-009",
+   "title": "TX offer withdrawn while busy",
+   "rules": [
+    "UL-7.2-07",
+    "UL-12.4-07"
+   ],
+   "checks": [
+    "CHK-032"
+   ],
+   "condition": "o_tx_ready=0, i_tx_valid was 1 previous cycle and is 0 now"
+  },
+  {
+   "id": "COVP-010",
+   "title": "TX offer held through back-pressure then accepted",
+   "rules": [
+    "UL-8.1-04",
+    "UL-7.2-08"
+   ],
+   "checks": [
+    "CHK-032"
+   ],
+   "condition": "Acceptance right at the end of a frame with i_tx_valid held from the previous cycle"
+  },
+  {
+   "id": "COVP-011",
+   "title": "TX i_tx_data changes during a frame",
+   "rules": [
+    "UL-7.2-02",
+    "UL-7.2-06"
+   ],
+   "checks": [
+    "CHK-031"
+   ],
+   "condition": "o_tx_ready=0 and i_tx_data differs from previous cycle"
+  },
+  {
+   "id": "COVP-012",
+   "title": "TX frame finished, transmitter idle",
+   "rules": [
+    "UL-7.2-03",
+    "UL-7.3-04"
+   ],
+   "checks": [
+    "CHK-012",
+    "CHK-013"
+   ],
+   "condition": "o_tx_ready=1 after a cycle with o_tx_ready=0 and no offer"
+  },
+  {
+   "id": "COVP-013",
+   "title": "Reset during a transmit frame",
+   "rules": [
+    "UL-6.2-06",
+    "UL-12.3-04",
+    "UL-14-08"
+   ],
+   "checks": [
+    "CHK-019"
+   ],
+   "condition": "Reset release after reset began while a transmit frame was active"
+  },
+  {
+   "id": "COVP-014",
+   "title": "Reset during a receive frame",
+   "rules": [
+    "UL-6.2-08",
+    "UL-12.3-04"
+   ],
+   "checks": [
+    "CHK-019"
+   ],
+   "condition": "Reset release after reset began while a receive frame was in progress"
+  },
+  {
+   "id": "COVP-015",
+   "title": "Reset while a byte is held",
+   "rules": [
+    "UL-6.2-09",
+    "UL-12.3-04"
+   ],
+   "checks": [
+    "CHK-019"
+   ],
+   "condition": "Reset release after reset began while o_rx_valid=1"
+  },
+  {
+   "id": "COVP-016",
+   "title": "TX byte accepted at first edge after release",
+   "rules": [
+    "UL-6.2-10",
+    "UL-6.2-03"
+   ],
+   "checks": [
+    "CHK-020"
+   ],
+   "condition": "Acceptance at the first edge with i_rst_n=1 after reset"
+  },
+  {
+   "id": "COVP-017",
+   "title": "i_rxd low at reset release",
+   "rules": [
+    "UL-6.2-12",
+    "UL-10.5-01",
+    "UL-14-06"
+   ],
+   "checks": [
+    "CHK-021"
+   ],
+   "condition": "First edge after reset release with i_rxd=0"
+  },
+  {
+   "id": "COVP-018",
+   "title": "RX start bit detected",
+   "rules": [
+    "UL-7.4-03"
+   ],
+   "checks": [
+    "CHK-022"
+   ],
+   "condition": "Model start edge T0 with s(T0-1)=1 and s(T0)=0 while idle"
+  },
+  {
+   "id": "COVP-019",
+   "title": "Start-bit glitch rejected",
+   "rules": [
+    "UL-7.4-05",
+    "UL-10.3-01"
+   ],
+   "checks": [
+    "CHK-024"
+   ],
+   "condition": "Model check edge T0+H with s=1"
+  },
+  {
+   "id": "COVP-020",
+   "title": "Glitch of one low sample",
+   "rules": [
+    "UL-10.3-02",
+    "UL-12.3-02"
+   ],
+   "checks": [
+    "CHK-024"
+   ],
+   "condition": "Glitch rejected with line high at T0+1"
+  },
+  {
+   "id": "COVP-021",
+   "title": "Glitch of maximum length H low samples",
+   "rules": [
+    "UL-10.3-02",
+    "UL-12.3-02"
+   ],
+   "checks": [
+    "CHK-024"
+   ],
+   "condition": "Glitch rejected where all samples T0..T0+H-1 were low"
+  },
+  {
+   "id": "COVP-022",
+   "title": "Start pulse of H+1 low samples accepted",
+   "rules": [
+    "UL-7.4-05",
+    "UL-12.3-02"
+   ],
+   "checks": [
+    "CHK-024"
+   ],
+   "condition": "s low at T0+H with every sample from T0 low, one edge after the check"
+  },
+  {
+   "id": "COVP-023",
+   "title": "New start right after glitch",
+   "rules": [
+    "UL-7.4-07"
+   ],
+   "checks": [
+    "CHK-024"
+   ],
+   "condition": "Start detected the edge after a glitch rejection"
+  },
+  {
+   "id": "COVP-024",
+   "title": "Delivery into empty holding register",
+   "rules": [
+    "UL-7.6-01",
+    "UL-8.2-01"
+   ],
+   "checks": [
+    "CHK-003"
+   ],
+   "condition": "Delivery edge with o_rx_valid=0"
+  },
+  {
+   "id": "COVP-025",
+   "title": "Delivery edge with take at V (no overrun)",
+   "rules": [
+    "UL-7.6-02",
+    "UL-10.2-02",
+    "UL-12.4-05"
+   ],
+   "checks": [
+    "CHK-004",
+    "CHK-026"
+   ],
+   "condition": "Delivery edge with o_rx_valid=1 and i_rx_ready=1"
+  },
+  {
+   "id": "COVP-026",
+   "title": "Overrun drop at delivery edge",
+   "rules": [
+    "UL-7.8-01",
+    "UL-7.8-02",
+    "UL-10.2-01"
+   ],
+   "checks": [
+    "CHK-005",
+    "CHK-006"
+   ],
+   "condition": "Delivery edge with o_rx_valid=1 and i_rx_ready=0"
+  },
+  {
+   "id": "COVP-027",
+   "title": "Frame error delivered into empty register",
+   "rules": [
+    "UL-7.7-01",
+    "UL-10.1-01",
+    "UL-12.4-04"
+   ],
+   "checks": [
+    "CHK-027"
+   ],
+   "condition": "Delivery into empty register with s(M)=0"
+  },
+  {
+   "id": "COVP-028",
+   "title": "Frame error byte dropped by overrun",
+   "rules": [
+    "UL-10.2-03",
+    "UL-14-09",
+    "UL-12.4-04"
+   ],
+   "checks": [
+    "CHK-027"
+   ],
+   "condition": "Overrun drop with s(M)=0"
+  },
+  {
+   "id": "COVP-029",
+   "title": "Frame error with take at V",
+   "rules": [
+    "UL-7.7-02",
+    "UL-7.6-02"
+   ],
+   "checks": [
+    "CHK-004",
+    "CHK-027"
+   ],
+   "condition": "Delivery with held byte taken at V and s(M)=0"
+  },
+  {
+   "id": "COVP-030",
+   "title": "Back-to-back RX start at M+1",
+   "rules": [
+    "UL-7.5-04",
+    "UL-8.2-03",
+    "UL-12.4-03"
+   ],
+   "checks": [
+    "CHK-025"
+   ],
+   "condition": "Start detected the edge after the stop-bit sample M"
+  },
+  {
+   "id": "COVP-031",
+   "title": "Loaded byte 0x00 or 0xFF without frame error",
+   "rules": [
+    "UL-12.4-01",
+    "UL-7.6-01"
+   ],
+   "checks": [
+    "CHK-022"
+   ],
+   "condition": "Cycle after a load with valid byte 0x00 or 0xFF and no frame error"
+  },
+  {
+   "id": "COVP-032",
+   "title": "Loaded byte 0x55 or 0xAA",
+   "rules": [
+    "UL-12.4-01",
+    "UL-5-09"
+   ],
+   "checks": [
+    "CHK-022"
+   ],
+   "condition": "Cycle after a load with valid byte 0x55 or 0xAA"
+  },
+  {
+   "id": "COVP-033",
+   "title": "Consumer take outside a delivery edge",
+   "rules": [
+    "UL-5-07",
+    "UL-7.6-03"
+   ],
+   "checks": [
+    "CHK-007"
+   ],
+   "condition": "o_rx_valid=1 and i_rx_ready=1 at a non-delivery edge"
+  },
+  {
+   "id": "COVP-034",
+   "title": "Held byte stable with i_rx_ready low",
+   "rules": [
+    "UL-7.6-04",
+    "UL-12.4-06"
+   ],
+   "checks": [
+    "CHK-008"
+   ],
+   "condition": "o_rx_valid=1 and i_rx_ready=0 at a non-delivery edge"
+  },
+  {
+   "id": "COVP-035",
+   "title": "i_rx_ready high with empty register",
+   "rules": [
+    "UL-7.6-06",
+    "UL-7.6-05"
+   ],
+   "checks": [
+    "CHK-009"
+   ],
+   "condition": "o_rx_valid=0 and i_rx_ready=1 at a non-delivery edge"
+  },
+  {
+   "id": "COVP-036",
+   "title": "Three or more consecutive overrun drops",
+   "rules": [
+    "UL-7.8-04",
+    "UL-7.5-06",
+    "UL-12.4-06"
+   ],
+   "checks": [
+    "CHK-026",
+    "CHK-006"
+   ],
+   "condition": "Drop with at least two earlier consecutive drops"
+  },
+  {
+   "id": "COVP-037",
+   "title": "i_rx_ready toggles while a byte is held",
+   "rules": [
+    "UL-12.4-06"
+   ],
+   "checks": [
+    "CHK-026",
+    "CHK-029"
+   ],
+   "condition": "o_rx_valid=1 and i_rx_ready differs from previous cycle"
+  },
+  {
+   "id": "COVP-038",
+   "title": "Break: line low for 12 bit periods",
+   "rules": [
+    "UL-7.7-03",
+    "UL-10.4-01",
+    "UL-10.4-02"
+   ],
+   "checks": [
+    "CHK-028"
+   ],
+   "condition": "Synchronised line low for 12N consecutive samples"
+  },
+  {
+   "id": "COVP-039",
+   "title": "Delivery while transmitter is busy (full duplex)",
+   "rules": [
+    "UL-7.1-02",
+    "UL-7.1-03",
+    "UL-12.4-08"
+   ],
+   "checks": [
+    "CHK-017"
+   ],
+   "condition": "Delivery edge with o_tx_ready=0"
+  },
+  {
+   "id": "COVP-040",
+   "title": "TX acceptance while receiver is mid frame (full duplex)",
+   "rules": [
+    "UL-1.2-11",
+    "UL-10.7-03",
+    "UL-12.4-08"
+   ],
+   "checks": [
+    "CHK-017"
+   ],
+   "condition": "Acceptance edge while receiver is busy"
+  }
+ ],
+ "status": "lint_clean",
+ "attempts": 2,
+ "problems": [],
+ "lint_errors": "",
+ "usage": {
+  "calls": 2,
+  "cached": 0,
+  "cost_usd": 0.4357,
+  "input_tokens": 4,
+  "output_tokens": 30707,
+  "cache_creation_input_tokens": 31373,
+  "cache_read_input_tokens": 718
+ },
+ "prompt_version": "cov-v1"
+}

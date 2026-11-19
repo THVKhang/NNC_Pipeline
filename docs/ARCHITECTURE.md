@@ -469,3 +469,105 @@ Số đo đầy đủ: [EVALUATION.md](EVALUATION.md). Lời nhờ người ký 
   - chỉ 3 thiết kế có testbench gốc;
   - bug benchmark do chính trợ lý viết, biết RTL, nên mutant là thước đo tốt hơn;
   - không so được công sức (giờ người so với tiền agent).
+
+## 19. Nửa thiết kế: cấu hình, sinh RTL, vòng sửa khép kín, restyle, soạn spec (2026-11-18)
+
+Số đo đầy đủ: [EVALUATION.md §6](EVALUATION.md). Cách dùng: [GUIDE.md §6](GUIDE.md). Luật RTL: [RTL_RULES.md](RTL_RULES.md). Mẫu spec: [SPEC_TEMPLATE.md](SPEC_TEMPLATE.md).
+
+**Gate mới và thứ tự (giai đoạn 5).**
+- Hai gate thiết kế chỉ có khi cấu hình `rtl_origin=generated`:
+  - **D1_config**: giá trị tham số cuối cùng (`work/final_config.json`);
+  - **D2_rtl**: RTL đã sinh cùng báo cáo của nó (`rtl/`, `work/rtl_gen.json`).
+- Thứ tự là một đồ thị: `G1 → G2 → G3 → G4` và `G2 → D1 → D2 → G4`. Một gate bị chặn nếu bất kỳ gate nào phía trước chưa duyệt.
+- **Golden manifest:** khi duyệt G1, mã băm SHA-256 của mọi tài liệu đã đăng ký được ghi lại. Spec đổi sau đó thì G1 thành STALE.
+- **`nnc params`** đọc cột "Legal values" của spec. Các dạng đọc được:
+  - tập giá trị;
+  - khoảng có biên là biểu thức (`2^W - 1`);
+  - lũy thừa của 2;
+  - ghi chú sau dấu `;`.
+  
+  Giá trị không hợp lệ bị từ chối, ở `params --choose` lẫn trong run set. Dạng không đọc được thì báo "unchecked", và người duyệt phải chấp nhận rõ ràng.
+
+**Sinh RTL (giai đoạn 6).**
+- Agent **A15** đọc spec, các luật đã duyệt, interface và cấu hình, rồi viết RTL.
+  - Nó chạy trong sandbox chỉ có Read/Glob/Grep.
+  - `verif/` nằm trong danh sách cấm. Đối xứng với phía verification: người viết test không thấy RTL, người viết RTL không thấy test.
+- **`rtl-check`** kiểm RTL bằng code. Các phần:
+  - **Luật:** 44 luật RR-01..RR-44, phần kiểm được bằng code:
+    - tên clock/reset của top khớp contract;
+    - module con nhận clock qua cổng;
+    - thẻ `// REQ:` phải là ID có thật;
+    - có waiver cho mọi chỗ tắt lint.
+  - **Lint:** Verilator `--lint-only -Wall` theo đúng tham số.
+  - **Cấu trúc:** Yosys (`proc`, `check`, không có latch), và cổng của top khớp contract.
+  - **Tổng hợp:** Yosys + ABC với thư viện GF180MCU 7-track ở hai góc TT 25 °C và SS 125 °C. Kết quả là diện tích cell và trễ tổ hợp dài nhất. Trễ này là con số để so sánh, không phải STA.
+
+  Lỗi được trả lại A15 để sửa, tối đa `--rtl-rounds` lần.
+- Mã chỉ dùng cho mô phỏng được phép nếu nằm trong `` `ifndef *SYNTHESIS ``. Yosys đọc với macro đó được định nghĩa.
+
+**Vòng sửa khép kín (giai đoạn 7).**
+- `close-loop`: mô phỏng → triage → `fix-rtl`, cho đến khi không còn lỗi, hết lượt, hoặc không lỗi nào là A.
+- `fix-rtl --from sim|formal|all`: A15 chỉ nhận phần "spec nói gì / RTL làm gì" của các lỗi bị xếp A, không có câu nào nhắc tới test hay checker (`gen_rtl.fault_text`).
+- Mỗi bản RTL cũ được giữ trong `work/rtl_history/revNN`.
+- Lỗi B hoặc C thì vòng dừng lại: verification và spec không bao giờ do vòng này sửa.
+- `nnc derive <ip> gen_<ip>` tạo bài thí nghiệm: giữ spec, luật, contract, verification đã duyệt (G1–G3, mang theo vì giống hệt từng byte) và testbench gốc, bỏ RTL đi.
+
+**Kết quả của thí nghiệm sinh lại.**
+- **gen_apb_tlul_bridge:** RTL sạch sau 2 lần, và mọi kiểm tra đều đạt:
+  - mô phỏng 17/17;
+  - formal 17/17 PROVEN;
+  - mutation 36/36;
+  - testbench gốc pass.
+- **gen_sync_fifo:**
+  - Lần đầu, mô phỏng chỉ thấy một lỗi assertion trong 16 543 mẫu, và triage xếp nó vào C.
+  - **Formal** tìm ra phản ví dụ ở CHK-010/011, và triage xếp A: RTL thêm vào "block term" của phía ghi một đầu vào mà spec §10.6 không có.
+  - `fix-rtl --from formal` sửa được trong 1 lần (US$0.66). Sau đó lỗi assertion trong mô phỏng cũng mất.
+  - Còn lại CHK-008: một xung software reset thứ hai đến khi đang có chuỗi reset chạy. Mô phỏng xếp C, formal xếp E. Đây là câu hỏi cho người viết spec, nên vòng dừng và không sửa gì.
+  - Mutation 36/36. Testbench gốc 31/35, NNC 35/35.
+- **Giới hạn:** hai spec này mô tả vi kiến trúc rất chi tiết, nên RTL sinh ra giống bản gốc là điều dễ hiểu. Thí nghiệm này không chứng minh A15 thiết kế tốt khi spec lỏng.
+
+**Restyle với chứng minh tương đương (giai đoạn 8).**
+- `nnc restyle <ip>`: agent A16 viết lại RTL theo RTL_RULES mà không đổi hành vi.
+- Code kiểm tra bằng miter Yosys và SymbiYosys:
+  - wrapper giả định reset ở chu kỳ đầu;
+  - chạy BMC, rồi `abc pdr`;
+  - kết quả là PROVEN, BOUNDED, CEX hoặc ERROR.
+
+  Nếu có CEX, đầu ra đầu tiên khác nhau được gửi lại cho A16.
+- Kết quả ghi ở `restyle/`, còn `rtl/` không đổi.
+- apb_tlul_bridge:
+  - 6 cảnh báo → 0;
+  - **PROVEN** ở độ sâu 20;
+  - 2 nghi vấn bug được báo nhưng không sửa;
+  - US$0.93.
+
+**Soạn spec và xuất tài liệu (giai đoạn 9).**
+- `spec-draft`: agent A0 soạn spec theo SPEC_TEMPLATE từ một mô tả ngắn. `spec-check` kiểm bằng code:
+  - các mục bắt buộc có đủ;
+  - bảng cổng và tham số đúng dạng;
+  - legal values đọc được;
+  - ID REQ không trùng.
+- `export`: pandoc ra DOCX/HTML, trình duyệt headless ra PDF. Chuẩn có bản quyền không bao giờ được xuất.
+
+**Thiết kế làm từ đầu: uart_lite (giai đoạn 10).**
+- Đầu vào: 30 dòng mô tả một UART 8N1. A0 soạn ra spec có 77 ID yêu cầu và 7 câu hỏi mở; các câu hỏi được trả lời theo uỷ quyền.
+- Kết quả từng bước:
+  - **G1:** 154 luật;
+  - **G2:** 32 check;
+  - **D1:** 4 cấu hình (N = 16, 4, 5, 1024);
+  - **D2:** RTL sạch ngay lần đầu, 6 553 µm², 7,7 ns ở góc SS (ngân sách 20 ns);
+  - **G3:** 20 test, 13 assertion.
+- Vòng đầu: 20/20 test pass, nhưng 6 assertion fail, và triage xếp **cả 6 vào B**: lỗi nằm ở verification, không ở RTL. Hai nguyên nhân:
+  - harness cho clock chạy khi DUT chưa reset;
+  - model RX trong checker bắt đầu frame ở mọi mẫu mức thấp, thay vì ở cạnh xuống.
+- Sau 2 chỗ sửa tay (ghi trong NOTICE và ghi chú G3):
+  - **20/20 test, 13/13 assertion** trên 7 lần chạy;
+  - formal độ sâu 64 không có phản ví dụ ở cả 4 cấu hình;
+  - mutation 35/36: M19 là giá trị reset của flop phát hiện cạnh, agent cho là tương đương.
+- Tổng chi phí khoảng US$12.
+
+**Sự cố hạ tầng.** WSL bị sập giữa chừng. Kết quả là formal báo ERROR cho mọi check và mutation báo "36 not compiled", trông như kết quả của thiết kế. Bây giờ cả hai lệnh dừng lại và báo lỗi về máy chạy công cụ, không ghi kết quả nữa.
+
+**Duyệt.**
+- D1 và D2 được duyệt theo uỷ quyền và ghi rõ như vậy, trừ D2 của gen_sync_fifo, vẫn mở vì CHK-008.
+- **G4 chưa ký trên mọi thiết kế.**
