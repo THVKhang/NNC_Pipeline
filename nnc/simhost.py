@@ -11,12 +11,15 @@ import os
 import shutil
 import subprocess
 import tempfile
+import time
 import uuid
 from dataclasses import dataclass
 from pathlib import Path
 
 DEFAULT_DISTRO = os.environ.get("NNC_WSL_DISTRO", "Ubuntu-24.04")
 PROFILE = "/etc/profile.d/nnc.sh"
+HOST_ERROR = "NNC_HOST_ERROR"
+HOST_RETRY_WAIT_S = 15
 
 
 @dataclass
@@ -24,6 +27,16 @@ class RunResult:
     returncode: int
     output: str
     out_dir: Path        # local folder holding the files brought back
+    host_error: bool = False    # the host never ran the script (no run log): not a result of the design
+    attempts: int = 1
+
+
+class HostError(RuntimeError):
+    """The tool host failed (for example WSL stopped): no tool ran, so nothing may be recorded as a result."""
+
+
+def host_hint() -> str:
+    return "check with 'nnc doctor'" + ("; on Windows 'wsl --shutdown' restarts WSL" if os.name == "nt" else "")
 
 
 def _stage_base() -> Path:
@@ -92,6 +105,20 @@ class WslHost(SimHost):
             "exit $RC\n"
         )
         (stage / "run.sh").write_text(wrapper, encoding="utf-8", newline="\n")
+        res = self._launch(stage, timeout_s)
+        if res.host_error:
+            # WSL can fail to start a session under load ("Catastrophic failure", E_UNEXPECTED). The script
+            # never ran, so running it again cannot hide a design result: one retry after a pause.
+            time.sleep(HOST_RETRY_WAIT_S)
+            res = self._launch(stage, timeout_s)
+            res.attempts = 2
+            if res.host_error:
+                raise HostError(f"the tool host failed twice ({tag}): WSL distribution {self.distro} ran no "
+                                f"command, so no result was recorded; {host_hint()}\n"
+                                + res.output.splitlines()[0][:300])
+        return res
+
+    def _launch(self, stage: Path, timeout_s: int) -> RunResult:
         try:
             proc = subprocess.run(["wsl.exe", "-d", self.distro, "-u", "root", "--", "bash", to_wsl_path(stage / "run.sh")],
                                   capture_output=True, timeout=timeout_s)
@@ -105,7 +132,8 @@ class WslHost(SimHost):
         else:
             # The wrapper never reached its copy-back (WSL failed to start or was killed):
             # keep wsl.exe's own output so the failure is not an empty log.
-            text = f"NNC_HOST_ERROR wsl.exe rc={rc} produced no run log\n{host_out}"
+            text = f"{HOST_ERROR} wsl.exe rc={rc} produced no run log\n{host_out}"
+            return RunResult(rc, text, stage / "out", host_error=rc != 124)
         return RunResult(rc, text, stage / "out")
 
 

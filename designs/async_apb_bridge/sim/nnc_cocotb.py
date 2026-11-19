@@ -14,7 +14,9 @@ import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import ClockCycles, FallingEdge, RisingEdge, Timer
 
-_CFG = json.loads((Path(__file__).with_name("nnc_interface.json")).read_text(encoding="utf-8"))
+# NNC_INTERFACE: the interface of another configuration of the run set (sim/configs/<name>/ of the kit)
+_CFG = json.loads(Path(os.environ.get("NNC_INTERFACE") or Path(__file__).with_name("nnc_interface.json"))
+                  .read_text(encoding="utf-8"))
 CLOCK = _CFG["clock"]
 RESET = _CFG["reset"]                       # {"name": ..., "active_low": bool} or None
 PORTS = _CFG["ports"]                       # [{"name", "direction", "width"}]

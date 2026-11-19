@@ -9,7 +9,7 @@ This packet is for the person who decides gate **G4 (sign-off)**: *is this desig
 - **Tests:** {'pass': 15}
 - **Simulated configuration:** one (parameters {'PARA_AXI_ID_W': 4}, seed 1)
 - **Code coverage:** line 98.9 %, block 95.9 %, expression 96.2 %, toggle 74.8 %, functional 97.5 %
-- **Mutation score:** 88.9 % (32 of 36 injected faults detected)
+- **Mutation score:** 88.9 % (32 of 36 injected faults detected); 2 survivor(s) proven equivalent by formal, 94.1 % without them; formal on the survivors: {'CEX': 2, 'PROVEN': 2}
 
 ## 2. Decisions taken for you
 
@@ -58,10 +58,10 @@ Outside this flow in every case: formal proof, CDC/RDC analysis, static timing, 
 
 Mutation testing changed one RTL line at a time (36 faults). A fault no check notices is a gap, unless it changes nothing visible (an *equivalent* mutant, claimed below by an agent).
 
-- M09 `m_axi2apb_apb_ctrl.sv:165` zero_to_one: claimed equivalent: This is the default assignment at the top of the always_comb. The following case on the APB state overwrites o_apb_pwrite in every branch: SETUP and ACCESS set it from reg_apb_wr, and the default bra…
-- M13 `m_axi2apb_wr_seq.sv:183` or_to_and: claimed equivalent: The OR becomes an AND, so the result differs only for a WRAP burst with exactly one fault: a bad length (not 2/4/8/16) with an aligned address, or a good length with a misaligned address. Both are il…
-- M14 `m_axi2apb_apb_ctrl.sv:223` and_to_or: claimed equivalent: The mutant clears reg_turn_rd while in ACTRD even without rd_done. The value is used only in the IDLE state, and ACTRD always ends with rd_done, which clears it anyway. rd_done can only be high while…
-- M21 `m_axi2apb_rd_seq.sv:182` or_to_and: claimed equivalent: The OR becomes an AND, so the result differs only for a WRAP read with exactly one fault: a bad length with an aligned address, or a good length with a misaligned address. Both are illegal AXI4 WRAP …
+- M09 `m_axi2apb_apb_ctrl.sv:165` zero_to_one: **equivalent, proven by formal** (no input sequence changes an output); claimed equivalent: This is the default assignment at the top of the always_comb. The following case on the APB state overwrites o_apb_pwrite in every branch: SETUP and ACCESS set it from reg_apb_wr, and the default bra…
+- M13 `m_axi2apb_wr_seq.sv:183` or_to_and: **not equivalent (formal counterexample: outputs differ at step 6 after reset: o_axi_bresp (original 10, mutant 00))** — a change of behaviour no check noticed, unless the input sequence breaks an environment rule; agent: claimed equivalent: The OR becomes an AND, so the result differs only for a WRAP burst with exactly one fault: a bad length (not 2/4/8/16) with an aligned address, or a good length with a misaligned address. Both are il…
+- M14 `m_axi2apb_apb_ctrl.sv:223` and_to_or: **equivalent, proven by formal** (no input sequence changes an output); claimed equivalent: The mutant clears reg_turn_rd while in ACTRD even without rd_done. The value is used only in the IDLE state, and ACTRD always ends with rd_done, which clears it anyway. rd_done can only be high while…
+- M21 `m_axi2apb_rd_seq.sv:182` or_to_and: **not equivalent (formal counterexample: outputs differ at step 6 after reset: o_axi_rlast (original 1, mutant 0), o_axi_rresp (original 10, mutant 00), o_axi_rvalid (original 1, mutant 0))** — a change of behaviour no check noticed, unless the input sequence breaks an environment rule; agent: claimed equivalent: The OR becomes an AND, so the result differs only for a WRAP read with exactly one fault: a bad length with an aligned address, or a good length with a misaligned address. Both are illegal AXI4 WRAP …
 
 Code or cover points never reached (first ones):
 
@@ -77,7 +77,7 @@ Code or cover points never reached (first ones):
 
 ### Formal check (SymbiYosys)
 
-Every input sequence of up to 20 cycles was searched (one global clock); result {'BOUNDED': 7, 'PROVEN': 9, 'TIMEOUT': 1}. PROVEN holds for every cycle; BOUNDED found no counterexample within the depth. Details: `work/formal.md`.
+Every input sequence of up to 20 cycles was searched (one global clock); result {'BOUNDED': 4, 'PROVEN': 12, 'TIMEOUT': 1}. PROVEN holds for every cycle; BOUNDED found no counterexample within the depth. Details: `work/formal.md`.
 
 
 Environment assumptions (the formal results hold only for inputs that respect them; an assumption the specification does not require would hide bugs):

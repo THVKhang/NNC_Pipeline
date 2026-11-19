@@ -283,6 +283,11 @@ def to_markdown(rep: dict, contract: dict, mutation: dict | None) -> str:
         for m in mutation["mutants"]:
             a = attr.get(m["id"], {})
             eq = ("claimed: " + a.get("reason", "")[:160]) if a.get("equivalent") else ""
+            fe = m.get("equivalence")
+            if fe:
+                diff = next((v.get("first_difference") for v in fe["per_config"].values() if v.get("first_difference")), "")
+                eq = (f"formal {fe['status']}" + (f": {diff[:160]}" if diff else "")
+                      + (f" ({eq})" if eq else ""))
             out.append(f"| {m['id']} | {m['file']}:{m['line']} | {m['operator']} | {m['status']} | "
                        f"{', '.join(m['killed_by_checks'] + m['killed_by_tests'])[:120]} | {', '.join(a.get('rules', []))} | {eq} |")
     out += ["", "## Not verified by this run", "",

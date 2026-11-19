@@ -1,6 +1,6 @@
 # Verification report — axi2apb_bridge
 
-Generated 2026-11-12T07:27:23+00:00 by NNC Pipeline.
+Generated 2026-11-19T06:11:18+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -17,7 +17,7 @@ Generated 2026-11-12T07:27:23+00:00 by NNC Pipeline.
 | Code coverage (RTL), functional | 97.5 % (39/40 cover points of the specification) |
 | Mutation score | 88.9 % (32 killed / 4 survived / 0 not compiled) |
 | Coverage target | not requested (`nnc cover <design> --target <n> --metric <m>`) |
-| Formal (SymbiYosys, depth 20) | {'BOUNDED': 7, 'PROVEN': 9, 'TIMEOUT': 1} — reset assumptions + verif/formal/nnc_env.sv, work/formal.md |
+| Formal (SymbiYosys, depth 20) | {'BOUNDED': 4, 'PROVEN': 12, 'TIMEOUT': 1} — reset assumptions + verif/formal/nnc_env.sv, work/formal.md |
 | Triage | no failure to analyse |
 | Agent cost | US$14.7937 in 66 calls (A1 0.6369, A12 2.1642, A13 0.2963, A2 0.5175, A3 0.2907, A4 1.1562, A5 0.4376, A6 0.3396, A7 4.7164, A9 4.2382); of which US$0.1096 in 1 failed calls (usage limit, timeout, invalid answer) |
 
@@ -32,7 +32,7 @@ Generated 2026-11-12T07:27:23+00:00 by NNC Pipeline.
 | Every rule in a check or declared not verifiable | met |
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | met — 69 rules with attributed mutants |
-| Formal: no counterexample, no vacuous or failed proof | met — {'BOUNDED': 7, 'PROVEN': 9, 'TIMEOUT': 1} (work/formal.md) |
+| Formal: no counterexample, no vacuous or failed proof | met — {'BOUNDED': 4, 'PROVEN': 12, 'TIMEOUT': 1} (work/formal.md) |
 
 ## Gates
 
@@ -58,10 +58,10 @@ Generated 2026-11-12T07:27:23+00:00 by NNC Pipeline.
 | CHK-009 | assertion | R channel hold under RREADY backpressure | **PASS** | hits 21885, fails 0; formal PROVEN |
 | CHK-010 | assertion | RID echo, RLAST position and R beat count | **PASS** | hits 44851, fails 0; formal BOUNDED |
 | CHK-011 | assertion | Legal read beat data and response from the APB completion | **PASS** | hits 44293, fails 0; formal BOUNDED |
-| CHK-012 | assertion | Unsupported read beats are SLVERR with zero data | **PASS** | hits 558, fails 0; formal BOUNDED |
+| CHK-012 | assertion | Unsupported read beats are SLVERR with zero data | **PASS** | hits 558, fails 0; formal PROVEN |
 | CHK-013 | assertion | WREADY gated by AW acceptance; W beats never exceed AWLEN+1 | **PASS** | hits 22033, fails 0; formal BOUNDED |
-| CHK-014 | assertion | Transaction tracker: one global owner, actions only after the handshake | **PASS** | hits 206035, fails 0; formal BOUNDED |
-| CHK-015 | assertion | No APB activity for unsupported requests | **PASS** | hits 1466, fails 0; formal BOUNDED |
+| CHK-014 | assertion | Transaction tracker: one global owner, actions only after the handshake | **PASS** | hits 206035, fails 0; formal PROVEN |
+| CHK-015 | assertion | No APB activity for unsupported requests | **PASS** | hits 1466, fails 0; formal PROVEN |
 | CHK-016 | assertion | APB transfer sequence matches AXI beats (direction, address, PPROT, data, strobes, count) | **PASS** | hits 108998, fails 0; formal TIMEOUT |
 | CHK-017 | assertion | Synchronous reset values of all outputs | **PASS** | hits 83, fails 0; formal PROVEN |
 | CHK-018 | test | Long APB wait: access held indefinitely, no timeout | **PASS** | test_chk_018_long_apb_wait |
@@ -247,19 +247,19 @@ Generated 2026-11-12T07:27:23+00:00 by NNC Pipeline.
 | M06 | m_axi2apb_apb_ctrl.sv:181 | negate_if | killed | CHK-016, test_chk_018_long_apb_wait, test_chk_019_arbitration_round_robin, test_chk_020_wvalid_before_aw, test_chk_021_r | AB-6.3-07, AB-10.2-01, AB-10.2-02, AB-5.4-03, AB-6.2-01 |  |
 | M07 | m_axi2apb_apb_ctrl.sv:265 | eq_to_ne | killed | test_chk_018_long_apb_wait, test_chk_019_arbitration_round_robin, test_chk_020_wvalid_before_aw, test_chk_021_response_b | AB-6.3-09, AB-3-41, AB-10.2-05, AB-10.2-06, AB-6.2-01 |  |
 | M08 | m_axi2apb_wr_seq.sv:342 | and_to_or | killed | CHK-016, CHK-013, test_chk_018_long_apb_wait, test_chk_019_arbitration_round_robin, test_chk_020_wvalid_before_aw, test_ | AB-5.4-05, AB-10.2-02, AB-3-11, AB-9-11, AB-5.3-05 |  |
-| M09 | m_axi2apb_apb_ctrl.sv:165 | zero_to_one | survived |  |  | claimed: This is the default assignment at the top of the always_comb. The following case on the APB state overwrites o_apb_pwrite in every branch: SETUP and ACCESS set  |
+| M09 | m_axi2apb_apb_ctrl.sv:165 | zero_to_one | survived |  |  | formal PROVEN (claimed: This is the default assignment at the top of the always_comb. The following case on the APB state overwrites o_apb_pwrite in every branch: SETUP and ACCESS set ) |
 | M10 | m_axi2apb_rd_seq.sv:123 | one_to_zero | killed | CHK-011, test_chk_018_long_apb_wait, test_chk_019_arbitration_round_robin, test_chk_021_response_backpressure, test_chk_ | AB-6.3-01, AB-10.2-01, AB-3-01, AB-3-07, AB-3-17 |  |
 | M11 | m_axi2apb_apb_ctrl.sv:259 | one_to_zero | killed | CHK-016, CHK-005, test_chk_018_long_apb_wait, test_chk_019_arbitration_round_robin, test_chk_020_wvalid_before_aw, test_ | AB-10.2-02, AB-5.3-05, AB-3-11, AB-3-12, AB-6.2-12 |  |
 | M12 | m_axi2apb_rd_seq.sv:312 | zero_to_one | killed | CHK-017, CHK-014, test_chk_018_long_apb_wait, test_chk_019_arbitration_round_robin, test_chk_020_wvalid_before_aw, test_ | AB-3-27, AB-7.3-01, AB-5.3-01, AB-10.2-01, AB-3-02 |  |
-| M13 | m_axi2apb_wr_seq.sv:183 | or_to_and | survived |  |  | claimed: The OR becomes an AND, so the result differs only for a WRAP burst with exactly one fault: a bad length (not 2/4/8/16) with an aligned address, or a good length |
-| M14 | m_axi2apb_apb_ctrl.sv:223 | and_to_or | survived |  |  | claimed: The mutant clears reg_turn_rd while in ACTRD even without rd_done. The value is used only in the IDLE state, and ACTRD always ends with rd_done, which clears it |
+| M13 | m_axi2apb_wr_seq.sv:183 | or_to_and | survived |  |  | formal CEX: outputs differ at step 6 after reset: o_axi_bresp (original 10, mutant 00) (claimed: The OR becomes an AND, so the result differs only for a WRAP burst with exactly one fault: a bad length (not 2/4/8/16) with an aligned address, or a good length) |
+| M14 | m_axi2apb_apb_ctrl.sv:223 | and_to_or | survived |  |  | formal PROVEN (claimed: The mutant clears reg_turn_rd while in ACTRD even without rd_done. The value is used only in the IDLE state, and ACTRD always ends with rd_done, which clears it) |
 | M15 | m_axi2apb_apb_ctrl.sv:137 | or_to_and | killed | test_chk_018_long_apb_wait, test_chk_019_arbitration_round_robin, test_chk_020_wvalid_before_aw, test_chk_021_response_b | AB-6.2-01, AB-10.3-04, AB-6.3-07, AB-10.2-01, AB-10.2-02 |  |
 | M16 | m_axi2apb_rd_seq.sv:376 | ne_to_eq | killed | CHK-016, CHK-010, test_chk_019_arbitration_round_robin, test_chk_021_response_backpressure, test_chk_022_unsupported_rea | AB-6.2-06, AB-5.4-05, AB-10.2-01, AB-3-31, AB-5.3-01 |  |
 | M17 | m_axi2apb_rd_seq.sv:321 | eq_to_ne | killed | CHK-014, CHK-015, CHK-016, test_chk_018_long_apb_wait, test_chk_019_arbitration_round_robin, test_chk_021_response_backp | AB-3-32, AB-12-02, AB-6.3-02, AB-10.2-01, AB-6.3-07 |  |
 | M18 | m_axi2apb_rd_seq.sv:267 | negate_if | killed | CHK-015, CHK-011, test_chk_018_long_apb_wait, test_chk_019_arbitration_round_robin, test_chk_021_response_backpressure,  | AB-6.3-01, AB-6.3-02, AB-12-02, AB-3-30, AB-10.2-03 |  |
 | M19 | m_axi2apb_rd_seq.sv:332 | and_to_or | killed | CHK-014, test_chk_019_arbitration_round_robin, test_chk_021_response_backpressure, test_chk_022_unsupported_reads, test_ | AB-10.4-02, AB-5.1-04, AB-5.1-03, AB-3-02, AB-10.2-01 |  |
 | M20 | m_axi2apb_wr_seq.sv:311 | one_to_zero | killed | CHK-014, CHK-013, test_chk_018_long_apb_wait, test_chk_019_arbitration_round_robin, test_chk_020_wvalid_before_aw, test_ | AB-10.2-02, AB-3-37, AB-5.3-05, AB-12-04, AB-3-14 |  |
-| M21 | m_axi2apb_rd_seq.sv:182 | or_to_and | survived |  |  | claimed: The OR becomes an AND, so the result differs only for a WRAP read with exactly one fault: a bad length with an aligned address, or a good length with a misalign |
+| M21 | m_axi2apb_rd_seq.sv:182 | or_to_and | survived |  |  | formal CEX: outputs differ at step 6 after reset: o_axi_rlast (original 1, mutant 0), o_axi_rresp (original 10, mutant 00), o_axi_rvalid (original 1, mutant 0) (claimed: The OR becomes an AND, so the result differs only for a WRAP read with exactly one fault: a bad length with an aligned address, or a good length with a misalign) |
 | M22 | m_axi2apb_wr_seq.sv:301 | eq_to_ne | killed | CHK-014, CHK-016, test_chk_019_arbitration_round_robin, test_chk_021_response_backpressure, test_chk_023_unsupported_wri | AB-10.1-01, AB-10.4-02, AB-3-02, AB-5.3-02, AB-3-06 |  |
 | M23 | m_axi2apb_wr_seq.sv:133 | zero_to_one | killed | test_chk_021_response_backpressure, test_chk_023_unsupported_writes, test_chk_027_random_legal_bursts, test_chk_030_id_e | AB-9-02, AB-3-09, AB-3-07, AB-10.2-02, AB-6.3-03 |  |
 | M24 | m_axi2apb_wr_seq.sv:308 | negate_if | killed | CHK-015, CHK-016, test_chk_018_long_apb_wait, test_chk_019_arbitration_round_robin, test_chk_020_wvalid_before_aw, test_ | AB-3-36, AB-12-05, AB-6.3-05, AB-10.2-02, AB-6.3-07 |  |

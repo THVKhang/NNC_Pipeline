@@ -1,6 +1,6 @@
 # Verification report — async_apb_bridge
 
-Generated 2026-11-14T15:58:08+00:00 by NNC Pipeline.
+Generated 2026-11-19T06:11:18+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -381,7 +381,7 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 | M04 | m_vlsit_apbcdc_cell_sync.sv:168 | one_to_zero | killed | test_chk_031_single_write_read, test_chk_032_wait_states, test_chk_033_error_response, test_chk_034_back_to_back/clocks= | AB2-1.3-01, AB2-10.2-01, AB2-1.3-03, AB2-3-01, AB2-3-09 |  |
 | M05 | m_vlsit_apbcdc_mst.sv:214 | ne_to_eq | killed | test_chk_020_apb5_wakeup | AB2-1.3-06, AB2-3-42, AB2-10.2-06, AB2-6.3-13, AB2-6.3-14 |  |
 | M06 | m_vlsit_apbcdc_cell_sync.sv:154 | zero_to_one | killed | test_chk_032_wait_states, test_chk_033_error_response, test_chk_034_back_to_back/clocks=run, test_chk_034_back_to_back/c | AB2-7.3-04, AB2-7.2-04, AB2-10.2-08, AB2-15.3-18, AB2-3-37 |  |
-| M07 | m_vlsit_apbcdc_cell_sync.sv:171 | eq_to_ne | survived |  | AB2-1.3-01, AB2-1.3-03, AB2-1.3-05 |  |
+| M07 | m_vlsit_apbcdc_cell_sync.sv:171 | eq_to_ne | survived |  | AB2-1.3-01, AB2-1.3-03, AB2-1.3-05 | formal SIM_ONLY |
 | M08 | m_vlsit_apbcdc_mst.sv:208 | negate_if | killed | CHK-009, test_chk_031_single_write_read, test_chk_032_wait_states, test_chk_033_error_response, test_chk_034_back_to_bac | AB2-7.3-01, AB2-3-37, AB2-15.3-17, AB2-1.3-01, AB2-3-01 |  |
 | M09 | m_vlsit_apbcdc_slv.sv:207 | ne_to_eq | killed | CHK-001, test_chk_031_single_write_read, test_chk_032_wait_states, test_chk_033_error_response, test_chk_034_back_to_bac | AB2-3-45, AB2-20.2-08, AB2-8-04, AB2-3-44, AB2-6.3-13 |  |
 | M10 | m_vlsit_apbcdc_slv.sv:179 | eq_to_ne | killed | test_chk_031_single_write_read, test_chk_032_wait_states, test_chk_033_error_response, test_chk_034_back_to_back/clocks= | AB2-1.3-01, AB2-3-13, AB2-10.2-05, AB2-3-50, AB2-6.3-23 |  |

@@ -1,6 +1,6 @@
 # Verification report — uart_lite
 
-Generated 2026-11-18T19:24:52+00:00 by NNC Pipeline.
+Generated 2026-11-19T06:11:17+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -279,7 +279,7 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 | M16 | m_uart_lite_rx.sv:178 | zero_to_one | killed | CHK-002, test_chk_017_full_duplex, test_chk_018_loopback, test_chk_019_async_reset, test_chk_020_reset_idle, test_chk_02 | UL-5-05, UL-6.2-02, UL-6.2-09, UL-6.2-04, UL-6.2-08 |  |
 | M17 | m_uart_lite_rx.sv:99 | negate_if | killed | CHK-003, CHK-004, CHK-005, CHK-006, CHK-009, test_chk_017_full_duplex, test_chk_018_loopback, test_chk_019_async_reset,  | UL-7.4-03, UL-7.4-02, UL-1.2-07, UL-7.7-03, UL-14-05 |  |
 | M18 | m_uart_lite_tx.sv:86 | one_to_zero | killed | CHK-011, CHK-013, test_chk_017_full_duplex, test_chk_018_loopback, test_chk_020_reset_idle, test_chk_030_tx_back_to_back | UL-7.3-01, UL-1.1-01, UL-7.1-01, UL-1.2-04 |  |
-| M19 | m_uart_lite_rx.sv:74 | one_to_zero | survived |  | UL-6.2-05, UL-6.2-12 | claimed: r_rxd_prev is reset to 0 instead of 1, but r_rxd_sync is still reset to 1. So w_rx_start_fall = prev & ~sync is 0 while in reset or in the cycle just after rele |
+| M19 | m_uart_lite_rx.sv:74 | one_to_zero | survived |  | UL-6.2-05, UL-6.2-12 | formal BOUNDED (claimed: r_rxd_prev is reset to 0 instead of 1, but r_rxd_sync is still reset to 1. So w_rx_start_fall = prev & ~sync is 0 while in reset or in the cycle just after rele) |
 | M20 | m_uart_lite_tx.sv:66 | negate_if | killed | CHK-010, CHK-011, CHK-012, CHK-013, test_chk_017_full_duplex, test_chk_018_loopback, test_chk_019_async_reset, test_chk_ | UL-7.3-04, UL-1.2-01, UL-7.3-05, UL-7.2-03, UL-7.2-04 |  |
 | M21 | m_uart_lite_rx.sv:181 | zero_to_one | killed | CHK-002, test_chk_017_full_duplex, test_chk_018_loopback, test_chk_019_async_reset, test_chk_020_reset_idle, test_chk_02 | UL-5-12, UL-6.2-02, UL-6.2-08, UL-7.8-04 |  |
 | M22 | m_uart_lite_rx.sv:125 | negate_if | killed | CHK-003, CHK-004, CHK-005, CHK-006, CHK-009, test_chk_017_full_duplex, test_chk_018_loopback, test_chk_019_async_reset,  | UL-7.5-02, UL-7.5-01, UL-1.1-01, UL-8.2-01 |  |

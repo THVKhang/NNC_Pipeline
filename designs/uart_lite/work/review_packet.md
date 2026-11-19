@@ -9,7 +9,7 @@ This packet is for the person who decides gate **G4 (sign-off)**: *is this desig
 - **Tests:** {'pass': 20}
 - **Simulated configurations:** 7 runs in 4 configurations (base, min, odd, wide); see `run_set.json` and the *Run set* table of the report
 - **Code coverage:** line 98.7 %, block 97.3 %, expression 100.0 %, toggle 100.0 %, functional 97.5 %
-- **Mutation score:** 97.2 % (35 of 36 injected faults detected)
+- **Mutation score:** 97.2 % (35 of 36 injected faults detected); 0 survivor(s) proven equivalent by formal, 97.2 % without them; formal on the survivors: {'BOUNDED': 1}
 
 ## 2. Decisions taken for you
 
@@ -62,7 +62,7 @@ Outside this flow in every case: formal proof, CDC/RDC analysis, static timing, 
 
 Mutation testing changed one RTL line at a time (36 faults; each in the run that executes its line, a survivor again in every other configuration). A fault no check notices is a gap, unless it changes nothing visible (an *equivalent* mutant, claimed below by an agent).
 
-- M19 `m_uart_lite_rx.sv:74` one_to_zero (survived in base.s1, min.s1, odd.s1, wide.s1): claimed equivalent: r_rxd_prev is reset to 0 instead of 1, but r_rxd_sync is still reset to 1. So w_rx_start_fall = prev & ~sync is 0 while in reset or in the cycle just after release. At the first edge R1 prev reloads …
+- M19 `m_uart_lite_rx.sv:74` one_to_zero (survived in base.s1, min.s1, odd.s1, wide.s1): formal BOUNDED (nothing concluded); claimed equivalent: r_rxd_prev is reset to 0 instead of 1, but r_rxd_sync is still reset to 1. So w_rx_start_fall = prev & ~sync is 0 while in reset or in the cycle just after release. At the first edge R1 prev reloads …
 
 2 requirement(s) below the mutation threshold of 85.0 %: UL-6.2-05, UL-6.2-12
 

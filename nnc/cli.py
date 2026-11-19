@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import sys
 from pathlib import Path
@@ -51,6 +52,24 @@ def cmd_doctor(args) -> int:
     if not next(c for c in checks if c.name == "python").found:
         print("RESULT: FAIL - Python version too old")
         return 1
+    if args.host or os.name == "nt":
+        from nnc.tools import host_checks
+        name, found, problem = host_checks()
+        print(f"\nsimulation host: {name}")
+        if problem:
+            print(f"RESULT: FAIL - {problem}")
+            return 1
+        width = max([len(c.name) for c in found] + [4])
+        for c in found:
+            line = f"[{'OK  ' if c.found else 'MISS'}] {c.name:<{width}}  {c.role:<10}  {c.version or '-'}"
+            print(line + (f"   ({c.note})" if c.note else ""))
+        missing = [c.name for c in found if c.role == "required" and not c.found]
+        if missing:
+            print(f"RESULT: FAIL - the simulation host lacks {', '.join(missing)}")
+            return 1
+        optional = [c.name for c in found if c.role != "required" and not c.found]
+        print("RESULT: PASS" + (f" (without {', '.join(optional)}: the stages that need them will fail)" if optional else ""))
+        return 0
     missing = [c.name for c in checks if c.name in ("verilator", "make", "cocotb") and not c.found]
     if missing:
         print(f"RESULT: simulation tools not on this host ({', '.join(missing)}); on Windows they run in WSL")
@@ -314,9 +333,32 @@ def cmd_baseline(args) -> int:
 def cmd_kit_check(args) -> int:
     from nnc import kitcheck
     d = _open(args)
-    ok, lines = kitcheck.check(d.root, Path(args.kit) if args.kit else None)
+    ok, lines = kitcheck.check(d.root, Path(args.kit) if args.kit else None, args.run)
     print("\n".join(lines))
     return 0 if ok else 1
+
+
+def cmd_formal_check(args) -> int:
+    d = _open(args)
+    o = flow.Options(workers=args.workers, single=args.single_run)
+    ok, lines = flow.formal_check(d, o)
+    print("\n".join(lines))
+    return 0 if ok else 1
+
+
+def cmd_mutate_equiv(args) -> int:
+    d = _open(args)
+    flow.mutate_equiv(d, flow.Options(), depth=args.depth, timeout_s=args.timeout)
+    return 0
+
+
+def cmd_kit(args) -> int:
+    d = _open(args)
+    files = flow.write_kit(d)
+    configs = sorted({f.split("/")[2] for f in files if f.startswith("sim/configs/") and f.count("/") >= 3})
+    print(f"rewrote the reproduction kit of {d.name} from work/results.json: {len(files)} files"
+          + (f"; configurations {', '.join(configs)} in sim/configs/ (runs in sim/configs/runs.tsv)" if configs else ""))
+    return 0
 
 
 def cmd_inject(args) -> int:
@@ -492,6 +534,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     s = sub.add_parser("doctor", help="report the tools the flow needs")
     s.add_argument("--require-sim", action="store_true", help="fail when the simulation tools are missing")
+    s.add_argument("--host", action="store_true", help="also probe the simulation host (always on Windows, where "
+                                                       "the tools run in WSL)")
     s.set_defaults(func=cmd_doctor)
 
     s = sub.add_parser("init", help="create a design workspace")
@@ -610,8 +654,30 @@ def build_parser() -> argparse.ArgumentParser:
 
     s = sub.add_parser("kit-check", help="compare a run of the reproduction kit (designs/<ip>/sim) with the recorded results")
     s.add_argument("design")
-    s.add_argument("--kit", help="kit folder holding results.xml and sim.log (default designs/<ip>/sim)")
+    s.add_argument("--kit", help="kit folder holding results.xml and sim.log (default designs/<ip>/sim, or the "
+                                 "folder of --run)")
+    s.add_argument("--run", help="compare with this recorded run of the run set (a label of sim/configs/runs.tsv, "
+                                 "e.g. min.s2) instead of the primary run")
     s.set_defaults(func=cmd_kit_check)
+
+    s = sub.add_parser("formal-check", help="run formal again with the recorded configuration (no agent, writes "
+                                            "nothing) and compare every check with work/formal.json (used by CI)")
+    s.add_argument("design")
+    s.add_argument("--workers", type=int, default=4, help="parallel SymbiYosys checks (default 4)")
+    s.add_argument("--single-run", action="store_true", help="ignore run_set.json (only if the recorded run did)")
+    s.set_defaults(func=cmd_formal_check)
+
+    s = sub.add_parser("mutate-equiv", help="formal equivalence of each surviving mutant with the RTL (Yosys miter, "
+                                            "no agent): PROVEN equivalent, or CEX with the first differing outputs")
+    s.add_argument("design")
+    s.add_argument("--depth", type=int, help="BMC depth (default: config formal_depth, else 20)")
+    s.add_argument("--timeout", type=int, default=900, help="seconds per SymbiYosys task (default 900)")
+    s.set_defaults(func=cmd_mutate_equiv)
+
+    s = sub.add_parser("kit", help="rewrite the reproduction kit designs/<ip>/sim (and sim/configs/ for a run set) "
+                                   "from the recorded results, without simulating")
+    s.add_argument("design")
+    s.set_defaults(func=cmd_kit)
 
     s = sub.add_parser("inject", help="run the approved verification on a patched copy of the RTL (bug injection)")
     s.add_argument("design")
@@ -716,8 +782,12 @@ def main(argv: list[str] | None = None) -> int:
         if hasattr(stream, "reconfigure"):
             stream.reconfigure(encoding="utf-8", errors="replace")
     args = build_parser().parse_args(argv)
+    from nnc.simhost import HostError
     try:
         return args.func(args)
+    except HostError as e:
+        print(f"host error: {e}", file=sys.stderr)
+        return 3
     except (ProjectError, ValueError, RuntimeError) as e:
         print(f"error: {e}", file=sys.stderr)
         return 2

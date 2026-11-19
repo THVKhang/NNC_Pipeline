@@ -86,4 +86,64 @@ def check_all() -> list[ToolCheck]:
         checks.append(ToolCheck("wsl", "simulation", wsl, None,
                                 "simulation host: tools live in the WSL distro, not on Windows "
                                 "(docs/ARCHITECTURE.md section 8)"))
+    from nnc.export import pandoc_path  # local import: export imports nothing from here
+    pandoc = pandoc_path()
+    checks.append(ToolCheck("pandoc", "export", pandoc, _first_line([pandoc, "--version"]) if pandoc else None,
+                            "" if pandoc else "needed by 'nnc export' only"))
     return checks
+
+
+# Tools on the simulation host (WSL distribution or this machine), probed by running a script there:
+# name, role, version command. "required" tools make 'nnc doctor --host' fail when missing.
+HOST_TOOLS = [
+    ("verilator", "required", "verilator --version"),
+    ("verilator_coverage", "required", "verilator_coverage --version"),
+    ("make", "required", "make --version"),
+    ("python3", "required", "python3 --version"),
+    ("cocotb-config", "required", "cocotb-config --version"),
+    ("yosys", "rtl/formal", "yosys -V"),
+    ("sby", "formal", "sby --help >/dev/null 2>&1 && echo SymbiYosys"),
+    ("yosys-abc", "formal", "yosys-abc -q 'version' 2>&1"),
+    ("yices-smt2", "formal", "yices-smt2 --version"),
+]
+
+
+def host_probe_script(pdk_dir: str, liberty: list[str]) -> str:
+    lines = ["echo NNC_PROBE_START"]
+    for name, _, cmd in HOST_TOOLS:
+        lines.append(f'p=$(command -v {name}); if [ -n "$p" ]; then v=$({cmd} 2>&1 | head -1); '
+                     f'echo "NNC_TOOL|{name}|$p|$v"; else echo "NNC_TOOL|{name}||"; fi')
+    for lib in liberty:
+        lines.append(f'if [ -f {pdk_dir}/{lib} ]; then echo "NNC_TOOL|{lib}|{pdk_dir}/{lib}|present"; '
+                     f'else echo "NNC_TOOL|{lib}||"; fi')
+    lines.append("echo NNC_PROBE_END")
+    return "\n".join(lines) + "\n"
+
+
+def parse_probe(output: str) -> list[ToolCheck]:
+    roles = {n: r for n, r, _ in HOST_TOOLS}
+    out = []
+    for line in output.splitlines():
+        if not line.startswith("NNC_TOOL|"):
+            continue
+        _, name, path, version = (line.split("|", 3) + ["", "", ""])[:4]
+        role = roles.get(name, "synthesis")
+        note = "" if path else ("GF180MCU liberty: gen-rtl synthesis falls back to generic cells"
+                                if role == "synthesis" else "")
+        out.append(ToolCheck(name, role, path or None, version.strip() or None, note))
+    return out
+
+
+def host_checks(host=None) -> tuple[str, list[ToolCheck], str]:
+    """(host name, tools found on the simulation host, problem or ""). Runs one short script there, so
+    a WSL that cannot start a session shows up here and not in the middle of a regression."""
+    from nnc.rtlcheck import CORNERS, PDK_DIR
+    from nnc.simhost import HostError, default_host
+    host = host or default_host()
+    try:
+        res = host.run({}, host_probe_script(PDK_DIR, list(CORNERS.values())), [], timeout_s=120, tag="doctor")
+    except HostError as e:
+        return host.name, [], str(e)
+    if "NNC_PROBE_END" not in res.output:
+        return host.name, [], "the probe script did not finish: " + " | ".join(res.output.splitlines()[-5:])
+    return host.name, parse_probe(res.output), ""

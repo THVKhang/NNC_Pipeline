@@ -74,7 +74,7 @@ Specifications and RTL from [VLSIT_ASIC_SOC_AI_SKILLS](https://github.com/nguyen
 | Rules VERIFIED / FAILED | 169 / 0 | 114 / 0 | 174 / 0 |
 | Agent cost | ≈ US$6–7 for a clean run | US$11.9 | US$15.0 |
 
-A mutant counts as killed only by a test or check that passes on the unmutated RTL. Before this rule the failing first run of axi2apb_bridge reported a meaningless 100 %; on the fixed RTL the 4 survivors point at checks still worth adding (or at equivalent mutants). Mutants are drawn only from lines the regression executed (lcov count > 0): a line inside an inactive `` `ifdef`` or an unselected generate branch is not part of the simulated design.
+A mutant counts as killed only by a test or check that passes on the unmutated RTL. Before this rule the failing first run of axi2apb_bridge reported a meaningless 100 %; on the fixed RTL the 4 survivors point at checks still worth adding (or at equivalent mutants). `nnc mutate-equiv` now settles that with formal: M09 and M14 are proven equivalent, and M13 and M21 are not. They change the response to a WRAP burst with a misaligned start address, which the RTL must reject and no test drives ([EVALUATION.md §7](docs/EVALUATION.md)). Mutants are drawn only from lines the regression executed (lcov count > 0): a line inside an inactive `` `ifdef`` or an unselected generate branch is not part of the simulated design.
 
 - **axi2apb_bridge — a bug in the delivered RTL, found and fixed.** Every AXI write issued its first APB transfer at AWADDR + size; the last beat landed outside the burst. Found by an SVA checker and 12 tests that never saw the RTL, traced by triage to `m_axi2apb_wr_seq.sv:344`, and confirmed by the specification's own waveform WF-005 (upstream `rtl_v2/` has the same line). The one-line fix was checked on a copy with `nnc inject`, then applied. The remaining failure exposed an ambiguous arbitration sentence; the decision is round-robin (what the RTL does), so the contract and test were regenerated, not the RTL. A last failure was the test bench's reference model ignoring APB writes that a reset cut short (triage: *test wrong*); fixed without relaxing the check. → [fix_candidate/README.md](designs/axi2apb_bridge/fix_candidate/README.md)
 - **sync_fifo — a wrong checker, caught and fixed.** All tests passed; one generated SVA scoreboard cleared its queue one clock edge late after a software reset. Triage said *B: checker wrong* with evidence (the RTL matches the specification and three other checks). The scoreboard now clears in the same cycle; CHK-007 has 0 fails and mutation stays at 100 %. → [work/triage.md](designs/sync_fifo/work/triage.md)
@@ -131,7 +131,7 @@ Formal runs once per distinct parameter set of the run set (a counterexample in 
 - **axi2apb: a generated checker was wrong three times**, invisible to simulation because no test drove those requests: a FIXED burst above 16 beats, a 4-KiB range taken from an unaligned start, an unaligned WRAP start. The RTL rejected all three as the specification requires; the checker's classification was fixed (G3, NOTICE).
 - **The CDC designs needed environment rounds:** 13 counterexamples came from free clocks and resets (a reset pulse between two clock edges, a reset of one domain only). A14 named the rules; A13 added them (reset released on its own clock, resets asserted together, no traffic after a one-domain reset until both are reset). The two FIFO counterexamples left are in the state the specification calls *inconsistent and not detected* after a one-domain reset: whether the threshold checks should exclude it is a specification question, left to the reviewer.
 
-CI (`.github/workflows/ci.yml`) runs the unit tests, then each design's reproduction kit with `make` only, and `nnc kit-check` compares its outcome with the committed results. No agent runs in CI. The kit matrix holds the 6 verified designs and the 3 of the design half (gen_apb_tlul_bridge, gen_sync_fifo, uart_lite). On ahb2axi_bridge (20 of 21 tests fail on the delivered RTL) and gen_sync_fifo (the open CHK-008) the recorded outcome includes failures, so CI checks that the outcome stays the same, not that it passes.
+CI (`.github/workflows/ci.yml`) runs the unit tests, then each design's reproduction kit with `make` only, and `nnc kit-check` compares its outcome with the committed results. No agent runs in CI. The kit matrix holds the 6 verified designs and the 3 of the design half (gen_apb_tlul_bridge, gen_sync_fifo, uart_lite). On ahb2axi_bridge (20 of 21 tests fail on the delivered RTL) and gen_sync_fifo (the open CHK-008) the recorded outcome includes failures, so CI checks that the outcome stays the same, not that it passes. On `main`, on pull requests and weekly, two more jobs run: every other recorded run of each run set from its kit folder `sim/configs/<config>/` (`nnc kit-check --run`), and SymbiYosys again on every design (`nnc formal-check`: a counterexample that appears or disappears, a vacuous proof or a tool error fails).
 
 `nnc report` also writes `work/review_packet.md` for the person who signs G4: the delegated decisions, failures with their triage, hand edits, what is not verified and a checklist. **G4 is open on every design**; a request for a qualified reviewer is in [docs/G4_REVIEW_REQUEST.md](docs/G4_REVIEW_REQUEST.md).
 
@@ -186,12 +186,15 @@ nnc/                 orchestrator: ingest, extract, review, contract, gen_sva, g
                      kitcheck (CI comparison), packet (G4 reviewer packet), formal + gen_env (SymbiYosys)
                      design half: params (legal values, D1), gen_rtl + rtlcheck (A15, lint, Yosys/GF180, D2),
                      derive, equiv + restyle (A16, equivalence proof), specdraft (A0), export (DOCX/PDF)
+                     mutequiv (formal equivalence of surviving mutants), simhost (WSL/local host, retry), tools (doctor)
 nnc/agents/          Claude Code backend (inline worker / sandboxed deep agent), manual backend, cache, schema validator
 nnc/simlib/          helper library copied next to generated cocotb tests (clocks, resets, multi-clock helpers)
 .claude/commands/    /nnc-flow, /nnc-gate
 designs/<ip>/        spec/, rtl/, work/ (artifacts, review sheets), verif/ (generated checkers, cover points, tests),
-                     sim/ (Makefile kit to reproduce the regression), run_set.json, bugs/ (benchmark faults)
-.github/workflows/   CI: unit tests and the reproduction kit of every design
+                     sim/ (Makefile kit to reproduce the regression; sim/configs/ for the other run-set configurations),
+                     run_set.json, bugs/ (benchmark faults)
+.github/workflows/   CI: unit tests, the reproduction kit of every design and configuration, formal reruns
+.github/kit_runs.sh  runs the recorded runs of a kit with make only and compares each one
 tests/               unit tests (no tokens, no simulator) and sim_smoke/ (cocotb + Verilator smoke test)
 docs/                ARCHITECTURE.md, GUIDE.md
 ```

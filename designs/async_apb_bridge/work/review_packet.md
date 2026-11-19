@@ -9,7 +9,7 @@ This packet is for the person who decides gate **G4 (sign-off)**: *is this desig
 - **Tests:** {'pass': 28}
 - **Simulated configurations:** 14 runs in 12 configurations (apb4, model_off, syn, 4ph, 4ph_off, apb5, user, sync3, sync4, min, slv_fast, slv_slow); see `run_set.json` and the *Run set* table of the report
 - **Code coverage:** line 91.9 %, block 88.8 %, expression 74.8 %, toggle 98.6 %, functional 97.5 %
-- **Mutation score:** 91.7 % (11 of 12 injected faults detected)
+- **Mutation score:** 91.7 % (11 of 12 injected faults detected); 0 survivor(s) proven equivalent by formal, 91.7 % without them; formal on the survivors: {'SIM_ONLY': 1}
 
 ## 2. Decisions taken for you
 
@@ -58,7 +58,7 @@ Outside this flow in every case: formal proof, CDC/RDC analysis, static timing, 
 
 Mutation testing changed one RTL line at a time (12 faults; each in the run that executes its line, a survivor again in every other configuration). A fault no check notices is a gap, unless it changes nothing visible (an *equivalent* mutant, claimed below by an agent).
 
-- M07 `m_vlsit_apbcdc_cell_sync.sv:171` eq_to_ne (survived in apb4.s1, model_off.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1): **gap** — The extra-latency counter test is inverted: an extra delay of 1 is applied one cycle late and an extra delay of 2 is applied one cycle early, so the random crossing latency changes cycle by cycle but…
+- M07 `m_vlsit_apbcdc_cell_sync.sv:171` eq_to_ne (survived in apb4.s1, model_off.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1): formal SIM_ONLY (nothing concluded); **gap** — The extra-latency counter test is inverted: an extra delay of 1 is applied one cycle late and an extra delay of 2 is applied one cycle early, so the random crossing latency changes cycle by cycle but…
 
 3 requirement(s) below the mutation threshold of 85.0 %: AB2-1.3-01, AB2-1.3-03, AB2-1.3-05
 

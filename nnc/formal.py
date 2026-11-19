@@ -498,6 +498,40 @@ def merge_configs(per: dict[str, dict]) -> dict:
             "checks": checks, "by_status": dict(sorted(counts.items()))}
 
 
+# Statuses a rerun must reproduce exactly: they do not depend on how fast the machine is.
+_EXACT = {"CEX", "VACUOUS", "UNSUPPORTED", "ERROR"}
+
+
+def compare_recorded(recorded: dict, got: dict) -> tuple[list[str], list[str]]:
+    """Compare a formal rerun with the recorded result, per check and per configuration.
+    Differences (a failure): a different set of checks; any change to or from CEX, VACUOUS, UNSUPPORTED
+    or ERROR (a counterexample appears or disappears, a proof becomes vacuous, a check no longer
+    translates, a tool error). Notes only: changes among PROVEN, BOUNDED and TIMEOUT, and between CEX
+    and TIMEOUT, which depend on the solver time limit and the machine (BOUNDED still means no
+    counterexample within the depth; TIMEOUT concludes nothing either way)."""
+    fails, notes = [], []
+    want, have = recorded.get("checks", {}), got.get("checks", {})
+    if set(want) != set(have):
+        fails.append(f"checks: recorded only {sorted(set(want) - set(have))}, rerun only {sorted(set(have) - set(want))}")
+    for cid in sorted(set(want) & set(have)):
+        w, h = want[cid], have[cid]
+        pairs = ([(n, s, (h.get("per_config") or {}).get(n)) for n, s in w["per_config"].items()]
+                 if w.get("per_config") and h.get("per_config") else [("", w["status"], h["status"])])
+        for name, ws, hs in pairs:
+            where = f"{cid}{' [' + name + ']' if name else ''}"
+            if ws == hs:
+                continue
+            if hs is None:
+                fails.append(f"{where}: recorded {ws}, not run")
+            elif "TIMEOUT" in (ws, hs) and not ({ws, hs} & (_EXACT - {"CEX"})):
+                notes.append(f"{where}: recorded {ws}, rerun {hs} (solver time limit: inconclusive)")
+            elif ws in _EXACT or hs in _EXACT:
+                fails.append(f"{where}: recorded {ws}, rerun {hs}")
+            else:
+                notes.append(f"{where}: recorded {ws}, rerun {hs} (proof strength depends on the time limit)")
+    return fails, notes
+
+
 def to_markdown(name: str, res: dict, contract: dict) -> str:
     titles = {c["id"]: c["title"] for c in contract["checks"]}
     out = [f"# Formal check — {name}", "",

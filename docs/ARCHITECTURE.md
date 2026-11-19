@@ -571,3 +571,52 @@ Số đo đầy đủ: [EVALUATION.md §6](EVALUATION.md). Cách dùng: [GUIDE.m
 **Duyệt.**
 - D1 và D2 được duyệt theo uỷ quyền và ghi rõ như vậy, trừ D2 của gen_sync_fifo, vẫn mở vì CHK-008.
 - **G4 chưa ký trên mọi thiết kế.**
+
+## 20. Hạ tầng bền hơn, CI chạy mọi cấu hình và formal, chứng minh mutant tương đương (2026-11-19)
+
+Số đo: [EVALUATION.md §7](EVALUATION.md). Cách dùng: [GUIDE.md §4–5](GUIDE.md).
+
+**Máy chạy công cụ (giai đoạn 12).**
+- **Nhận biết lỗi máy:** nếu WSL không chạy được lệnh nào (không có run log), `WslHost` đợi 15 giây rồi thử lại 1 lần. Lỗi máy là lỗi chưa hề chạy công cụ, nên chạy lại không thể che kết quả của thiết kế.
+- **Nếu vẫn lỗi:** báo `HostError`. CLI in `host error` với mã thoát 3, và không stage nào ghi kết quả.
+- **`nnc doctor`:** trên Windows, kiểm tra luôn bên trong WSL bằng một script ngắn: Verilator, verilator_coverage, make, python3, cocotb, Yosys, SymbiYosys, ABC, Yices và 2 file liberty GF180. Trên Linux thì dùng `--host`.
+
+**Kit cho mọi cấu hình.**
+- Mỗi cấu hình khác của run set có thư mục kit `sim/configs/<config>/`, gồm `Makefile`, `Makefile.cocotb` và `nnc_interface.json`. Thư mục này dùng chung test bench và `nnc_cocotb.py` của `sim/`, và chỉ trỏ tới interface của mình qua biến `NNC_INTERFACE`.
+- `sim/configs/runs.tsv` liệt kê mọi lần chạy đã lưu: nhãn, thư mục, seed.
+- `nnc kit` sinh lại kit từ `work/results.json` mà không mô phỏng. `nnc sim` cũng viết kit sau mỗi lần chạy.
+- `kit-check --run <nhãn>` so với kết quả của đúng lần chạy đó.
+
+**Formal chạy lại (`nnc formal-check`).** Lệnh này chạy lại SymbiYosys với cấu hình đã lưu, không ghi gì, rồi so từng check (từng cấu hình) với `work/formal.json`.
+- **Phải giống hệt:** CEX, VACUOUS, UNSUPPORTED và ERROR. Các trạng thái này không phụ thuộc tốc độ máy.
+- **Chỉ ghi chú:** đổi giữa PROVEN, BOUNDED và TIMEOUT, và giữa CEX và TIMEOUT. Đây là chuyện giới hạn thời gian của solver: BOUNDED vẫn có nghĩa là không có phản ví dụ trong độ sâu đã xét, còn TIMEOUT thì không kết luận gì.
+
+**CI.**
+- **Mỗi lần push:** `unit` và `kit` như trước.
+- **Trên `main`, PR, mỗi thứ Hai và khi bấm tay:**
+  - `kit-configs` (`.github/kit_runs.sh <ip> --skip-primary`) với 4 thiết kế có run set;
+  - `formal` (`nnc formal-check`) với 9 thiết kế.
+- Vẫn không gọi agent nào và không dùng secret.
+
+**Kết quả thử trên máy.**
+- 12 lần chạy kit theo cấu hình đều cho SAME OUTCOME, gồm:
+  - cấu hình có plusargs, cấu hình dùng macro tổng hợp, cấu hình hai miền clock;
+  - 6 lần chạy phụ của uart_lite;
+  - một cấu hình của ahb2axi_bridge, nơi 20/21 test fail đúng như đã lưu.
+- `formal-check` cho SAME OUTCOME trên gen_apb_tlul_bridge (12 giây) và gen_sync_fifo (10,5 phút; phản ví dụ CHK-008 vẫn còn, như đã lưu).
+
+**Mutant tương đương, chứng minh bằng formal (giai đoạn 13).**
+- **Trước đây:** agent A12 chỉ *cho là* một mutant sống sót là tương đương.
+- **Bây giờ:** `nnc mutate-equiv` so mutant với RTL bằng miter Yosys của `restyle`, ở mọi cấu hình mà mutant sống sót.
+  - Dòng nằm trong code chỉ dùng cho mô phỏng (`ifndef *SYNTHESIS`) thì báo SIM_ONLY, vì formal đọc nhánh tổng hợp.
+  - Kết quả ghi vào `mutation.json` (trường `equivalence`). Kết quả killed/survived đã lưu không đổi.
+- **Báo cáo và gói người duyệt:** ghi kết quả formal cạnh lời agent, kèm điểm số không tính các mutant đã được chứng minh tương đương.
+- **Kết quả trên 6 mutant sống sót:**
+  - **axi2apb_bridge M09, M14:** PROVEN, đúng như agent nói.
+  - **axi2apb_bridge M13, M21:** agent nói tương đương, nhưng formal tìm ra **phản ví dụ**.
+    - Đầu vào là một burst WRAP bắt đầu ở địa chỉ `0x2`, không chia hết cho kích thước beat 4 byte. RTL từ chối nó bằng SLVERR, đúng như spec yêu cầu (AB-1.1-03); mutant thì nhận.
+    - Không test nào gửi burst như vậy, nên đây là **lỗ hổng thật của verification** mà lời agent đã che đi.
+    - Test plan không bị sửa. Việc bổ sung là quyết định ở G3, và đã ghi vào yêu cầu duyệt G4.
+  - **uart_lite M19:** PROVEN ở N = 16, 4, 5. Với N = 1024 thì BOUNDED: chứng minh chưa xong trong 900 giây.
+  - **async_apb_bridge M07:** SIM_ONLY (dòng nằm trong mô hình metastability).
+- **Giới hạn:** đầu vào tự do sau reset; môi trường formal `nnc_env.sv` không được áp dụng. Một phản ví dụ có thể dùng đầu vào bị cấm, nên người duyệt phải đọc nó.

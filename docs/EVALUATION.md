@@ -1,4 +1,4 @@
-# Evaluation — phases 1 to 10 (2026-11-15; design half 2026-11-18)
+# Evaluation — phases 1 to 13 (2026-11-15; design half 2026-11-18; hardening 2026-11-19)
 
 This page collects the measurements of four steps taken after the first five designs:
 
@@ -253,3 +253,56 @@ Sources: `designs/uart_lite/work/` (`spec_draft.md`, `rules.md`, `contract.md`, 
 
 - **WSL crash.** During the uart_lite runs WSL stopped ("Catastrophic failure"). The next formal run reported every check ERROR, and the mutation run reported 36/36 "not compiled", which looked like design results. Both commands now stop with a message naming the tool host instead of writing such results. The runs were repeated after `wsl --shutdown`.
 - **Derived designs and the bug benchmark.** The benchmark faults (`bugs/`) are one-line patches of the delivered RTL, so they cannot apply to a generated RTL. `derive` no longer copies them, and `baseline` skips the bug comparison when a design has no benchmark (the mutant comparison still runs).
+
+## 7. Hardening and formal checks of the mutants (phases 12 and 13, 2026-11-19)
+
+### 7.1 Every recorded run reproduces, and formal reruns
+
+Before phase 12, CI reproduced only the primary run of each design. Every other configuration of a run set existed only as a recorded result.
+
+**Kits per configuration.** `nnc kit` now writes `sim/configs/<config>/` for each other configuration. `sim/configs/runs.tsv` lists every recorded run. The primary kits it rewrites are byte-identical to the committed ones, apart from the shared `nnc_cocotb.py`, which now reads `NNC_INTERFACE`.
+
+**Local runs (WSL, make only, `nnc kit-check --run`).** Every run below gave **SAME OUTCOME**:
+
+| Design | Runs |
+|---|---|
+| uart_lite | base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1 (all 6 non-primary runs) |
+| async_apb_bridge | model_off.s1 (plusargs), syn.s1 (synthesis macro), apb5.s1 |
+| async_gray_fifo | macro.s1, base.s3 |
+| ahb2axi_bridge | ids8.s1 (20 of 21 tests fail on the delivered RTL; the same tests failed) |
+
+**`nnc formal-check`** reruns SymbiYosys with the recorded configuration and writes nothing.
+
+| Design | Result | Time |
+|---|---|---|
+| gen_apb_tlul_bridge | 17 PROVEN: SAME OUTCOME | 12 s |
+| gen_sync_fifo | the CHK-008 counterexample, 1 TIMEOUT, 2 BOUNDED, 6 PROVEN: SAME OUTCOME | 10.5 min |
+
+CI now runs both checks on `main`, on pull requests and weekly:
+- `kit-configs`: 4 designs;
+- `formal`: 9 designs.
+
+**Tool host.** A WSL that runs no command is now retried once, after 15 s. If it fails again, the stage stops with `host error` and records nothing. `nnc doctor` probes the tools inside WSL: Verilator 5.055, cocotb 2.1, Yosys 0.70, SymbiYosys, ABC, Yices 2.7 and both GF180 liberty files were found.
+
+### 7.2 Surviving mutants, checked by formal
+
+`nnc mutate-equiv` compares each surviving mutant with the RTL (Yosys miter, BMC and PDR, depth = the design's formal depth). The 6 surviving mutants of all designs were checked:
+
+| Design | Mutant | Agent A12 said | Formal | Meaning |
+|---|---|---|---|---|
+| axi2apb_bridge | M09 `apb_ctrl.sv:165` default `pwrite` | equivalent | **PROVEN** | equivalent |
+| axi2apb_bridge | M14 `apb_ctrl.sv:223` `&&`→`\|\|` | equivalent | **PROVEN** | equivalent |
+| axi2apb_bridge | M13 `wr_seq.sv:183` `\|\|`→`&&` | equivalent | **CEX** | `o_axi_bresp` SLVERR → OKAY at step 6 |
+| axi2apb_bridge | M21 `rd_seq.sv:182` `\|\|`→`&&` | equivalent | **CEX** | `o_axi_rresp` SLVERR → OKAY, `rlast` and `rvalid` change |
+| uart_lite | M19 `rx.sv:74` reset value of `r_rxd_prev` | equivalent | PROVEN for N = 16, 4, 5; BOUNDED for N = 1024 | equivalent where proven; the N = 1024 proof did not close within 900 s |
+| async_apb_bridge | M07 `cell_sync.sv:171` | gap | SIM_ONLY | the metastability model: formal reads the synthesis branch |
+
+Sources: `designs/<ip>/work/mutation.json` (field `equivalence`), traces in `designs/axi2apb_bridge/work/mutation_equiv/`.
+
+**What the formal check found.** Agent A12 called M13 and M21 equivalent. Its reason: they differ only for a WRAP burst that has a bad length or a misaligned address, which is "illegal AXI". The counterexample is a WRAP burst of 16 beats of 4 bytes that starts at address `0x2`:
+- the delivered RTL rejects it with SLVERR, the defensive rejection the specification asks for (AB-1.1-03; AXI A3.4: a WRAP burst starts size-aligned);
+- the mutant accepts it.
+
+No test drives such a burst, so the verification has a real gap here. The agent's claim hid it. With M09 and M14 proven equivalent, the axi2apb score without equivalent mutants is 94.1 % (recorded 88.9 %). The test plan was not changed: closing the gap is a G3 decision, and it is now in [G4_REVIEW_REQUEST.md](G4_REVIEW_REQUEST.md).
+
+**Limit.** In this check the inputs are free after reset; the formal environment (`verif/formal/nnc_env.sv`) is not applied. So a CEX may use an input sequence the environment forbids, and a reviewer must read it. Here the input is one the specification says the bridge must reject, so it is legal stimulus for a test.

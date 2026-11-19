@@ -158,6 +158,16 @@ python -m nnc config my_ip mutation_threshold=85            # per-rule mutation 
 
 **VI:** Test lỗi do code Python của test được tự sửa (tối đa 2 lần) mà không cho xem RTL; một check thất bại thì không bao giờ được "sửa". Chỉ ký `G4_signoff` sau khi đọc báo cáo: bảng *Sign-off conditions* cho biết điều kiện nào đạt (mọi check PASS, mọi luật có ánh xạ, mutation từng luật ≥ ngưỡng, mục tiêu coverage).
 
+**Surviving mutants, checked by formal | Mutant sống sót, kiểm bằng formal.** `python -m nnc mutate-equiv my_ip` compares each surviving mutant with the RTL using the Yosys miter that `restyle` uses. It runs in every configuration in which the mutant survived, calls no agent, and adds the results to `work/mutation.json`.
+- **PROVEN:** no input sequence after reset changes an output. The mutant is equivalent, and the packet also shows the score without such mutants.
+- **CEX:** the first differing outputs are named, and the trace is kept in `work/mutation_equiv/`. This is a change of behaviour that no check noticed, unless the input sequence breaks an environment rule: in this check, inputs are free after reset.
+- **SIM_ONLY:** the line is simulation-only code, so formal cannot judge it.
+- **BOUNDED:** nothing is concluded.
+
+Run `nnc report` afterwards. — **VI:**
+- `mutate-equiv` chứng minh bằng formal xem mutant còn sống có thật sự tương đương không, thay cho lời "cho là tương đương" của agent.
+- Kết quả CEX kèm đầu ra khác nhau đầu tiên và chuỗi tín hiệu, để người duyệt xem đó là lỗ hổng thật hay đầu vào vi phạm luật môi trường.
+
 **Reviewer packet | Gói cho người duyệt.** `nnc report` also writes `work/review_packet.md`: the delegated gate decisions to confirm, each failure with its triage verdict, hand edits of generated code, what was not verified and why, surviving mutants, and a checklist to answer before `G4_signoff`. Give it to the person who signs. — **VI:** `nnc report` còn tạo `work/review_packet.md`. Đây là tài liệu đưa cho người ký G4: nó chỉ gom những điểm cần con người phán đoán, kèm một danh sách câu hỏi phải trả lời trước khi ký.
 - Các quyết định gate do agent đưa ra theo uỷ quyền.
 - Từng lỗi, kèm kết luận của triage.
@@ -224,6 +234,37 @@ Vì vậy mặc định vẫn là một khối.
 - **Unit test:** chạy trên Python 3.11 và 3.12.
 - **Bộ tái lập:** với từng thiết kế, CI chạy bộ tái lập bằng `make` thuần, rồi `nnc kit-check` so kết quả với kết quả đã commit: cùng test fail, cùng assertion fail hoặc không hit.
 - Phiên bản Verilator và cocotb được cố định.
+
+**Every configuration, and formal | Mọi cấu hình, và formal.** Two more jobs run on `main`, on pull requests, every Monday and by hand (not on every push to a feature branch, because they take long):
+- **kit-configs:** a run set's other configurations each have a kit folder `designs/<ip>/sim/configs/<config>/`. The file `sim/configs/runs.tsv` lists every recorded run (label, folder, seed). `.github/kit_runs.sh <ip> --skip-primary` runs each one with `make` only, and `nnc kit-check <ip> --run <label>` compares it with its own recorded result.
+- **formal:** `nnc formal-check <ip>` runs SymbiYosys again with the recorded configuration. It calls no agent and writes nothing. It fails when:
+  - a counterexample appears or disappears;
+  - a proof becomes or stops being VACUOUS;
+  - a check stops translating (UNSUPPORTED);
+  - a tool reports an ERROR.
+
+  Changes among PROVEN, BOUNDED and TIMEOUT are printed as notes. They depend on the solver time limit and on how fast the machine is.
+
+`nnc kit <ip>` rewrites the kit (`sim/` and `sim/configs/`) from `work/results.json` without simulating. `nnc sim` also writes it after every regression.
+
+```
+python -m nnc kit uart_lite
+bash .github/kit_runs.sh uart_lite --only min.s2      # Linux or inside WSL
+python -m nnc kit-check uart_lite --run min.s2
+python -m nnc formal-check gen_apb_tlul_bridge
+```
+
+**VI:**
+- **kit-configs:** mỗi cấu hình khác của run set có một thư mục kit riêng trong `sim/configs/`. CI chạy từng lần chạy đã lưu bằng `make` thuần, rồi so với đúng kết quả đã lưu của lần đó.
+- **formal:** `formal-check` chạy lại formal và so với kết quả đã lưu. CI fail khi:
+  - phản ví dụ xuất hiện hoặc biến mất;
+  - một chứng minh trở thành VACUOUS, hoặc thôi VACUOUS;
+  - một check không dịch được nữa;
+  - công cụ báo lỗi.
+
+  Đổi giữa PROVEN, BOUNDED và TIMEOUT chỉ được ghi chú, vì nó phụ thuộc giới hạn thời gian của solver và tốc độ máy.
+
+**Tool host | Máy chạy công cụ.** On Windows, `nnc doctor` also runs a short probe inside WSL. It lists Verilator, cocotb, Yosys, SymbiYosys, ABC, Yices and the GF180 liberty files. On Linux, use `--host` to run the same probe. When WSL runs no command at all (no run log), NNC waits 15 s and tries once more. If that also fails, the stage stops with `host error` (exit code 3) and records nothing. **VI:** trên Windows, `doctor` kiểm tra luôn các công cụ bên trong WSL. Khi WSL không chạy được lệnh nào, NNC đợi 15 giây rồi thử lại 1 lần. Nếu vẫn lỗi thì dừng với `host error`, không ghi kết quả nào.
 
 **Usage limit | Hết quota.** When the Claude account's usage limit stops a call ("You've hit your 5-hour limit · resets 6:50am"), the call waits until the stated reset and runs again (at most `NNC_LIMIT_WAIT` seconds in total, default 21600; `0` fails at once). The money already spent by the interrupted call is lost: the report shows it under *failed calls*. — **VI:** khi hết quota, lời gọi agent tự đợi tới giờ reset rồi chạy lại (tối đa `NNC_LIMIT_WAIT` giây, mặc định 6 giờ; `0` = báo lỗi ngay). Tiền đã tốn cho lần gọi bị ngắt thì không lấy lại được; report ghi khoản này ở mục *failed calls*.
 

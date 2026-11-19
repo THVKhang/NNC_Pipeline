@@ -1,21 +1,29 @@
 # CI of NNC Pipeline: no LLM call, no secret.
-#   unit  the unit tests of every stage (deterministic parts, no simulator)
-#   kit   the reproduction kit designs/<ip>/sim of each design, run with make only (no NNC), and its
-#         outcome compared with the committed results (nnc kit-check): same tests, same failing tests,
-#         same failing and never-hit assertions, same NOT_VERIFIABLE checks.
-# Simulator versions are pinned to the ones the committed results were produced with.
+#   unit         the unit tests of every stage (deterministic parts, no simulator)
+#   kit          the reproduction kit designs/<ip>/sim of each design, run with make only (no NNC), and its
+#                outcome compared with the committed results (nnc kit-check): same tests, same failing tests,
+#                same failing and never-hit assertions, same NOT_VERIFIABLE checks.
+#   kit-configs  the other recorded runs of each run set (sim/configs/<config>/, every seed), make only,
+#                each compared with its own recorded result (nnc kit-check --run).
+#   formal       SymbiYosys again with the recorded configuration (nnc formal-check): a counterexample that
+#                appears or disappears, a vacuous proof, an untranslated check or a tool error fails;
+#                PROVEN / BOUNDED / TIMEOUT changes are reported (they depend on the solver time limit).
+# kit-configs and formal take long: they run on main, on pull requests, weekly and by hand, not on every
+# push to a feature branch. Tool versions are pinned to the ones the committed results were produced with.
 name: CI
 
 on:
   push:
   pull_request:
   workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * 1"
 
 permissions:
   contents: read
 
 env:
-  OSS_CAD_SUITE: "2026-11-07"     # Verilator 5.055
+  OSS_CAD_SUITE: "2026-11-07"     # Verilator 5.055, Yosys 0.70+, SymbiYosys, Yices 2.7
   COCOTB: "2.1.0"
 
 jobs:
@@ -72,3 +80,64 @@ jobs:
             designs/${{ matrix.design }}/sim/sim.log
             designs/${{ matrix.design }}/sim/results.xml
           if-no-files-found: ignore
+
+  kit-configs:
+    if: github.event_name != 'push' || github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      matrix:
+        design: [async_gray_fifo, async_apb_bridge, ahb2axi_bridge, uart_lite]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Verilator (OSS CAD Suite) and cocotb
+        run: |
+          tag="${OSS_CAD_SUITE}"
+          curl -fsSL -o "$RUNNER_TEMP/ocs.tgz" \
+            "https://github.com/YosysHQ/oss-cad-suite-build/releases/download/${tag}/oss-cad-suite-linux-x64-${tag//-/}.tgz"
+          tar -xzf "$RUNNER_TEMP/ocs.tgz" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/oss-cad-suite/bin" >> "$GITHUB_PATH"
+          python -m pip install "cocotb==${COCOTB}"
+      - name: Every other recorded run (make only), each compared with its recorded result
+        env:
+          PYTHON: python
+        run: bash .github/kit_runs.sh ${{ matrix.design }} --skip-primary
+      - name: Keep the simulation logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sim-configs-${{ matrix.design }}
+          path: designs/${{ matrix.design }}/sim/runlogs/
+          if-no-files-found: ignore
+
+  formal:
+    if: github.event_name != 'push' || github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      matrix:
+        design: [sync_fifo, apb_tlul_bridge, axi2apb_bridge, async_gray_fifo, async_apb_bridge,
+                 ahb2axi_bridge, gen_apb_tlul_bridge, gen_sync_fifo, uart_lite]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Yosys and SymbiYosys (OSS CAD Suite)
+        run: |
+          tag="${OSS_CAD_SUITE}"
+          curl -fsSL -o "$RUNNER_TEMP/ocs.tgz" \
+            "https://github.com/YosysHQ/oss-cad-suite-build/releases/download/${tag}/oss-cad-suite-linux-x64-${tag//-/}.tgz"
+          tar -xzf "$RUNNER_TEMP/ocs.tgz" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/oss-cad-suite/bin" >> "$GITHUB_PATH"
+      - name: Tool versions
+        run: |
+          yosys -V
+          yices-smt2 --version | head -1
+      - name: Formal again, compared with the committed results (no agent, writes nothing)
+        run: python -m nnc formal-check ${{ matrix.design }} --workers 4

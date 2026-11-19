@@ -40,17 +40,43 @@ def compare(recorded: dict, reproduced: dict) -> list[str]:
     return diffs
 
 
-def recorded_result(work: Path) -> tuple[dict, str]:
-    """The recorded result of the configuration the kit reproduces, and its name."""
+def recorded_result(work: Path, run: str | None = None) -> tuple[dict, str]:
+    """The recorded result of the configuration the kit reproduces (or of run `run`, a label of the run
+    set such as min.s2), and its name."""
     res = json.loads((work / "results.json").read_text(encoding="utf-8"))
     rs = res.get("run_set")
+    if run:
+        if not rs:
+            raise ValueError(f"--run {run}: this design has no run set (one recorded run)")
+        labels = [r["label"] for r in rs["runs"]]
+        if run not in labels:
+            raise ValueError(f"--run {run}: not a recorded run; recorded: {', '.join(labels)}")
+        return json.loads((work / "runs" / f"{run}.json").read_text(encoding="utf-8"))["result"], run
     if rs:
         prim = rs["primary"]
         return json.loads((work / "runs" / f"{prim}.json").read_text(encoding="utf-8"))["result"], prim
     return res, f"seed {res.get('seed')}"
 
 
-def check(design_root: Path, kit_dir: Path | None = None) -> tuple[bool, list[str]]:
+def runs(design_root: Path) -> list[tuple[str, str, int]]:
+    """(label, kit folder relative to sim/, seed) of every recorded run, from sim/configs/runs.tsv
+    (a design without a run set: its one run in sim/)."""
+    tsv = design_root / "sim" / "configs" / "runs.tsv"
+    if not tsv.is_file():
+        res = json.loads((design_root / "work" / "results.json").read_text(encoding="utf-8"))
+        return [("", ".", int(res.get("seed") or 1))]
+    out = []
+    for line in tsv.read_text(encoding="utf-8").splitlines():
+        if line.strip() and not line.startswith("#"):
+            label, folder, seed = line.split("\t")
+            out.append((label, folder, int(seed)))
+    return out
+
+
+def check(design_root: Path, kit_dir: Path | None = None, run: str | None = None) -> tuple[bool, list[str]]:
+    if run and kit_dir is None:
+        folder = next((f for lab, f, _ in runs(design_root) if lab == run), None)
+        kit_dir = design_root / "sim" / folder if folder else None
     kit = kit_dir or design_root / "sim"
     if not (kit / "results.xml").is_file():
         return False, [f"{kit / 'results.xml'} is missing: run `make regression 2>&1 | tee sim.log` in {kit}"]
@@ -58,7 +84,7 @@ def check(design_root: Path, kit_dir: Path | None = None) -> tuple[bool, list[st
         return False, [f"{kit / 'sim.log'} is missing: tee the make output into sim.log (the checkers print there)"]
     rtl = [f.name for f in sim.rtl_files(design_root / "rtl")]
     got = sim.parse_results(kit, rtl)
-    want, name = recorded_result(design_root / "work")
+    want, name = recorded_result(design_root / "work", run)
     diffs = compare(want, got)
     head = f"{design_root.name}: kit run vs recorded {name}: {len(got['tests'])} tests, " \
            f"{len(got['assertions'])} assertions"

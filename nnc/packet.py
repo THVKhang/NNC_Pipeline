@@ -67,8 +67,11 @@ def build(d) -> str:
         out.append("- **Code coverage:** " + ", ".join(f"{k} {v['percent']} %" for k, v in cov.items() if v.get("total")))
     if rep.get("mutation"):
         m = rep["mutation"]
+        eqs = mut.get("equivalence") or {}
         out.append(f"- **Mutation score:** {m['score']} % ({m['killed']} of {m['killed'] + m['survived']} injected "
-                   f"faults detected)")
+                   f"faults detected)" + (f"; {eqs['proven_equivalent']} survivor(s) proven equivalent by formal, "
+                                          f"{eqs['score_without_equivalent']} % without them; formal on the survivors: "
+                                          f"{eqs['by_status']}" if eqs else ""))
     out.append("")
 
     # ------------------------------------------------------------------ 2. delegated decisions
@@ -162,6 +165,15 @@ def build(d) -> str:
             a = attr.get(m["id"], {})
             tag = "claimed equivalent: " + _cut(a.get("reason"), 200) if a.get("equivalent") else \
                 "**gap** — " + _cut(a.get("reason"), 200)
+            fe = m.get("equivalence")
+            if fe and fe["status"] == "PROVEN":
+                tag = "**equivalent, proven by formal** (no input sequence changes an output); " + tag
+            elif fe and fe["status"] == "CEX":
+                diff = next((v.get("first_difference") for v in fe["per_config"].values() if v.get("first_difference")), "")
+                tag = (f"**not equivalent (formal counterexample: {_cut(diff, 200)})** — a change of behaviour no "
+                       f"check noticed, unless the input sequence breaks an environment rule; agent: " + tag)
+            elif fe:
+                tag = f"formal {fe['status']} (nothing concluded); " + tag
             where = ", ".join([m["run"]] + m.get("also_run", [])) if m.get("run") else ""
             out.append(f"- {m['id']} `{m['file']}:{m['line']}` {m['operator']}"
                        + (f" (survived in {where})" if where else "") + f": {tag}")

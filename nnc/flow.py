@@ -291,24 +291,45 @@ def stage_sim(d: Design, o: Options) -> None:
     _save_sim(d, res)
 
 
-def _write_kit(d: Design, contract: dict, params: dict | None, kw: dict | None = None) -> None:
+def _write_kit(d: Design, contract: dict, params: dict | None, kw: dict | None = None,
+               run_set: dict | None = None) -> None:
     """designs/<ip>/sim/: Makefile and inputs that reproduce the regression without NNC (the primary run
-    of a run set)."""
+    of a run set), and sim/configs/<config>/ for the other configurations of the run set."""
     kw = kw or _simkw(d)
-    kit = sim.kit_files(contract, sim.rtl_files(d.root / "rtl"), sim.checker_files(d.root / "verif" / "sva"),
-                        test_files(d), params if params is not None else sim.param_values(contract),
+    rtl, sva = sim.rtl_files(d.root / "rtl"), sim.checker_files(d.root / "verif" / "sva")
+    kit = sim.kit_files(contract, rtl, sva, test_files(d), params if params is not None else sim.param_values(contract),
                         kw["clock_periods"], kw["opts"])
+    configs = d.root / "sim" / "configs"
+    if configs.is_dir():
+        shutil.rmtree(configs)          # configurations removed from the run set must not stay in the kit
+    if run_set and run_set.get("runs"):
+        kit.update(sim.config_kit_files(contract, rtl, sva, test_files(d), run_set["runs"], run_set["primary"]))
     for rel, text in kit.items():
         p = d.root / rel
         p.parent.mkdir(parents=True, exist_ok=True)
         p.write_bytes(text.encode("utf-8"))
 
 
+def write_kit(d: Design) -> list[str]:
+    """`nnc kit`: rewrite designs/<ip>/sim/ from the recorded results (work/results.json) and the approved
+    sources, without simulating. Returns the files written, relative to the design."""
+    for need in (d.work / "contract.json", d.work / "results.json"):
+        if not need.is_file():
+            raise ProjectError(f"{need.relative_to(d.root)} is missing: run 'nnc sim {d.name}' first")
+    res = _read(d.work / "results.json")
+    prim = _primary(res)
+    _write_kit(d, _read(d.work / "contract.json"), res.get("params"),
+               prim and {"clock_periods": prim["clock_periods"], "opts": prim["opts"]}, res.get("run_set"))
+    return sorted(p.relative_to(d.root).as_posix() for p in (d.root / "sim").rglob("*")
+                  if p.is_file() and p.suffix in (".sv", ".json", ".py", ".tsv", "") and "sim_build" not in p.parts
+                  and p.name not in ("sim.log", "results.xml"))
+
+
 def _save_sim(d: Design, res: dict) -> None:
     if (d.work / "contract.json").is_file():
         prim = _primary(res)
         _write_kit(d, _read(d.work / "contract.json"), res.get("params"),
-                   prim and {"clock_periods": prim["clock_periods"], "opts": prim["opts"]})
+                   prim and {"clock_periods": prim["clock_periods"], "opts": prim["opts"]}, res.get("run_set"))
     res["unreviewed_gates"] = d.require_gate("G3_verif_sources", True)
     logs = _run_logs(res)
     detail = res.pop("runs_detail", None)
@@ -528,13 +549,9 @@ def stage_gen_env(d: Design, o: Options) -> None:
           + " -> verif/formal/nnc_env.sv (review it at G3)")
 
 
-def stage_formal(d: Design, o: Options) -> None:
-    """SymbiYosys on the approved assertions with the approved environment (no agent)."""
-    if not formal_enabled(d):
-        o.say(f"[formal] skipped: formal is off (nnc config {d.name} formal=on)")
-        return
-    _gate(d, "formal", o)
-    contract = _read(d.work / "contract.json")
+def _formal_runs(d: Design, o: Options, contract: dict, tdir: Path | None) -> tuple[dict, int]:
+    """SymbiYosys on every formal configuration of the design configuration; the merged result and the
+    depth. Counterexample traces are copied to `tdir` (None: not kept)."""
     cfg = d.config()
     defines = [x.strip() for x in str(cfg.get("formal_defines", ",".join(sim.sim_options(cfg)["defines"])))
                .replace(";", ",").split(",") if x.strip()]
@@ -542,10 +559,6 @@ def stage_formal(d: Design, o: Options) -> None:
     # formal_configs: "all" (every parameter set of the run set, the default when there is one) or "default"
     which = str(cfg.get("formal_configs", "all")).strip().lower()
     confs = formal.formal_configs(_runs(d, o, contract)) if which != "default" else [{"name": "default", "params": {}}]
-    tdir = d.work / "formal"
-    if tdir.is_dir():
-        for old in tdir.glob("*.vcd"):
-            old.unlink()
     per: dict[str, dict] = {}
     for conf in confs:
         r = formal.run(default_host(), contract, d.root / "rtl", d.root / "verif" / "sva", env_file(d),
@@ -554,6 +567,8 @@ def stage_formal(d: Design, o: Options) -> None:
         out = Path(r.pop("out_dir"))
         for cid, v in r["checks"].items():
             for t in v.get("traces", [])[:1]:
+                if tdir is None:
+                    continue
                 tdir.mkdir(parents=True, exist_ok=True)
                 dst = tdir / (f"{cid}.vcd" if len(confs) == 1 else f"{cid}_{conf['name']}.vcd")
                 dst.write_bytes((out / t).read_bytes())
@@ -561,7 +576,37 @@ def stage_formal(d: Design, o: Options) -> None:
         per[conf["name"]] = r
         if len(confs) > 1:
             o.say(f"[formal] {conf['name']} {conf['params'] or '(default parameters)'}: {r['by_status']}")
-    res = per[confs[0]["name"]] if len(confs) == 1 else formal.merge_configs(per)
+    return (per[confs[0]["name"]] if len(confs) == 1 else formal.merge_configs(per)), depth
+
+
+def formal_check(d: Design, o: Options) -> tuple[bool, list[str]]:
+    """`nnc formal-check` (CI): run formal again with the recorded configuration, write nothing, and
+    compare every check with work/formal.json (formal.compare_recorded)."""
+    if not formal_enabled(d):
+        return True, [f"{d.name}: formal is off; nothing to compare"]
+    rec_path = d.work / "formal.json"
+    if not rec_path.is_file():
+        raise ProjectError(f"{d.name}: work/formal.json is missing: run 'nnc formal {d.name}' first")
+    contract = _read(d.work / "contract.json")
+    got, depth = _formal_runs(d, o, contract, None)
+    fails, notes = formal.compare_recorded(_read(rec_path), got)
+    head = (f"{d.name}: formal run (depth {depth}) vs recorded: {got['by_status']} — "
+            + ("SAME OUTCOME" if not fails else "DIFFERENT"))
+    return not fails, [head] + [f"  DIFFERENT {x}" for x in fails] + [f"  note {x}" for x in notes]
+
+
+def stage_formal(d: Design, o: Options) -> None:
+    """SymbiYosys on the approved assertions with the approved environment (no agent)."""
+    if not formal_enabled(d):
+        o.say(f"[formal] skipped: formal is off (nnc config {d.name} formal=on)")
+        return
+    _gate(d, "formal", o)
+    contract = _read(d.work / "contract.json")
+    tdir = d.work / "formal"
+    if tdir.is_dir():
+        for old in tdir.glob("*.vcd"):
+            old.unlink()
+    res, depth = _formal_runs(d, o, contract, tdir)
     res["unreviewed_gates"] = d.require_gate("G3_verif_sources", True)
     formal.write(d.work, d.name, res, contract)
     o.say(f"[formal] depth {depth}: {res['by_status']} -> work/formal.md")
@@ -570,7 +615,7 @@ def stage_formal(d: Design, o: Options) -> None:
     for stale in (d.work / "formal_triage.json", d.work / "formal_triage.md"):
         if stale.is_file():
             stale.unlink()          # a triage belongs to the counterexamples of this run only
-    if traces and str(cfg.get("formal_triage", "on")).lower() not in ("0", "off", "no", "false"):
+    if traces and str(d.config().get("formal_triage", "on")).lower() not in ("0", "off", "no", "false"):
         files: dict[str, Path] = {"contract.json": d.work / "contract.json", "rules.json": d.work / "rules.json"}
         for doc in d.documents():
             files[f"spec/{Path(doc['file']).name}"] = d.root / doc["file"]
@@ -710,6 +755,33 @@ def stage_mutate(d: Design, o: Options) -> None:
     _write(d.work / "mutation.json", res)
     o.say(f"[mutate] per-requirement: {len(res['rule_scores'])} rules with attributed mutants, "
           f"{len(weak)} below the {threshold:g} % threshold{': ' + ', '.join(weak[:8]) if weak else ''}")
+
+
+def mutate_equiv(d: Design, o: Options, depth: int | None = None, timeout_s: int = 900) -> dict:
+    """`nnc mutate-equiv`: formal equivalence of every surviving mutant of work/mutation.json with the RTL
+    (nnc/mutequiv.py, no agent). Adds the results to work/mutation.json; kill/survive is not changed."""
+    from nnc import mutequiv
+    path = d.work / "mutation.json"
+    if not path.is_file():
+        raise ProjectError(f"work/mutation.json is missing: run 'nnc mutate {d.name}' first")
+    mutation = _read(path)
+    run_set = (_read(d.work / "results.json") if (d.work / "results.json").is_file() else {}).get("run_set")
+    tdir = d.work / "mutation_equiv"
+    if tdir.is_dir():
+        for old in tdir.glob("*.vcd"):
+            old.unlink()
+    depth = depth or int(d.config().get("formal_depth", formal.DEFAULT_DEPTH))
+    mutequiv.run(default_host(), _read(d.work / "contract.json"), d.root / "rtl", mutation, run_set,
+                 depth=depth, timeout_s=timeout_s, trace_dir=tdir, say=o.say)
+    for m in mutation["mutants"]:
+        for v in (m.get("equivalence") or {}).get("per_config", {}).values():
+            if v.get("trace"):
+                v["trace"] = Path(v["trace"]).relative_to(d.root).as_posix()
+    _write(path, mutation)
+    s = mutation["equivalence"]
+    o.say(f"[mutate-equiv] depth {depth}: {s['by_status']}; score without proven-equivalent mutants: "
+          f"{s['score_without_equivalent']} % (recorded score {mutation.get('score')} %) -> work/mutation.json")
+    return mutation
 
 
 # ------------------------------------------------------------------------------- design half (RTL)
