@@ -1,4 +1,4 @@
-# Evaluation — phases 1 to 13 (2026-11-15; design half 2026-11-18; hardening 2026-11-19)
+# Evaluation — phases 1 to 14 (2026-11-15; design half 2026-11-18; hardening 2026-11-19)
 
 This page collects the measurements of four steps taken after the first five designs:
 
@@ -254,7 +254,7 @@ Sources: `designs/uart_lite/work/` (`spec_draft.md`, `rules.md`, `contract.md`, 
 - **WSL crash.** During the uart_lite runs WSL stopped ("Catastrophic failure"). The next formal run reported every check ERROR, and the mutation run reported 36/36 "not compiled", which looked like design results. Both commands now stop with a message naming the tool host instead of writing such results. The runs were repeated after `wsl --shutdown`.
 - **Derived designs and the bug benchmark.** The benchmark faults (`bugs/`) are one-line patches of the delivered RTL, so they cannot apply to a generated RTL. `derive` no longer copies them, and `baseline` skips the bug comparison when a design has no benchmark (the mutant comparison still runs).
 
-## 7. Hardening and formal checks of the mutants (phases 12 and 13, 2026-11-19)
+## 7. Hardening, formal checks of the mutants, verification fixes by an agent (phases 12 to 14, 2026-11-19)
 
 ### 7.1 Every recorded run reproduces, and formal reruns
 
@@ -306,3 +306,31 @@ Sources: `designs/<ip>/work/mutation.json` (field `equivalence`), traces in `des
 No test drives such a burst, so the verification has a real gap here. The agent's claim hid it. With M09 and M14 proven equivalent, the axi2apb score without equivalent mutants is 94.1 % (recorded 88.9 %). The test plan was not changed: closing the gap is a G3 decision, and it is now in [G4_REVIEW_REQUEST.md](G4_REVIEW_REQUEST.md).
 
 **Limit.** In this check the inputs are free after reset; the formal environment (`verif/formal/nnc_env.sv`) is not applied. So a CEX may use an input sequence the environment forbids, and a reviewer must read it. Here the input is one the specification says the bridge must reject, so it is legal stimulus for a test.
+
+### 7.3 Verification faults fixed by an agent (phase 14)
+
+**Why.** On uart_lite, round 0 gave 6 assertion failures, all judged B (the verification was wrong). Until now a person fixed them by hand (§6.3). `nnc fix-verif` gives the same job to agent A17.
+
+**How the test was set up.** The two hand fixes were removed again: `work/fix_verif_experiment/rebuild_prefix.py` strips the marked hunks. The result is byte-identical to the output of the generating agents A7 and A5 recorded in the agent logs. In a copy of the design with that verification:
+- the regression reproduced the 6 failures: 20/20 tests, CHK-002, -003, -005, -006, -009 and -010 failing in the 7 runs;
+- `nnc fix-verif` then ran with the original triage.
+
+**What A17 received.**
+- **6 faults.** For each: what the specification says, what the verification does, and what to change. No sentence names an RTL file, module or "the RTL", and the backend refused `rtl/` as an input.
+- **Inputs:** the specification, rules, contract and verification files.
+
+| Attempt | A17 changed | Candidate on the RTL (7 runs) | Cost |
+|---|---|---|---|
+| 0 | `nnc_chk_rx.sv`: the model register `mdl_prev`, reset 1, start on `mdl_prev && !i_rxd` (REQ-RX-003). `test_uart_lite.py`: reset before the clock starts, but only `if sim time == 0` | CHK-003/005/006/009 fixed; CHK-002 and CHK-010 still fail at 0, 20 and 40 ns | US$1.62 |
+| 1 (with the feedback "CHK-002: 1 failure, first at 0 ps; ...") | the condition becomes "first `Env.start()` of the simulation". A17 explained why: tests that end as not verifiable for some N let time move on before the first real start | **20/20 tests, 0 failing assertions in all 7 runs** | US$1.17 |
+
+The code check found no weakening and gave no warning. `--apply` copied the 2 files, wrote NOTICE.md and left G3 STALE. Evidence: `designs/uart_lite/work/fix_verif_experiment/` (`verif_fix.md`, `verif_fix.json`, `FAULTS.json`, `results_before.json`).
+
+**Compared with the hand fixes.**
+- **The checker fix is the same:** the same register, the same reset value, the same start condition.
+- **The harness fix differs.** The hand fix resets before the clock at every `Env.start()`; A17 does it only at the first start. Both satisfy ENV-002, and both make all 32 checks pass.
+- **Cost:** about US$2.8 and no person, against two hand edits after reading the triage.
+
+**Limits.**
+- One design, with a triage that had already named the causes.
+- A17's rule against weakening is checked by code only for structural signs: removed checks, assumptions, skips. An expected value changed to the wrong one would pass the code check. That is why `--apply` reopens G3 and a person reads the diff.

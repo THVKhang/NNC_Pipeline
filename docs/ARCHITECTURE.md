@@ -572,7 +572,7 @@ Số đo đầy đủ: [EVALUATION.md §6](EVALUATION.md). Cách dùng: [GUIDE.m
 - D1 và D2 được duyệt theo uỷ quyền và ghi rõ như vậy, trừ D2 của gen_sync_fifo, vẫn mở vì CHK-008.
 - **G4 chưa ký trên mọi thiết kế.**
 
-## 20. Hạ tầng bền hơn, CI chạy mọi cấu hình và formal, chứng minh mutant tương đương (2026-11-19)
+## 20. Hạ tầng bền hơn, CI chạy mọi cấu hình và formal, chứng minh mutant tương đương, agent sửa verification (2026-11-19)
 
 Số đo: [EVALUATION.md §7](EVALUATION.md). Cách dùng: [GUIDE.md §4–5](GUIDE.md).
 
@@ -620,3 +620,21 @@ Số đo: [EVALUATION.md §7](EVALUATION.md). Cách dùng: [GUIDE.md §4–5](GU
   - **uart_lite M19:** PROVEN ở N = 16, 4, 5. Với N = 1024 thì BOUNDED: chứng minh chưa xong trong 900 giây.
   - **async_apb_bridge M07:** SIM_ONLY (dòng nằm trong mô hình metastability).
 - **Giới hạn:** đầu vào tự do sau reset; môi trường formal `nnc_env.sv` không được áp dụng. Một phản ví dụ có thể dùng đầu vào bị cấm, nên người duyệt phải đọc nó.
+
+**Sửa verification bằng agent (giai đoạn 14, `nnc fix-verif`).**
+- **Vì sao.** Khi triage xếp một lỗi vào B (test hoặc checker sai), trước đây phải có người sửa tay. Giờ agent **A17** đề xuất bản sửa.
+- **A17 không bao giờ thấy RTL:**
+  - phần mô tả lỗi chỉ giữ "spec nói gì" và "verification làm gì";
+  - câu nào nhắc tên file hoặc module RTL hay chữ "RTL" thì bị code bỏ đi;
+  - backend từ chối mọi đầu vào nằm trong `rtl/`.
+- **A17 không được nới lỏng.** Code chặn các thay đổi sau:
+  - bớt assertion, cover point, test hoặc tham chiếu CHK;
+  - thêm assume hoặc `$assertoff`;
+  - skip một test, hoặc đánh dấu test là sẽ fail;
+  - sửa môi trường formal hoặc `nnc_cocotb.py`.
+- **Bản sửa được chạy thử trên RTL.** Nếu lỗi còn, A17 nhận lại tên check, số lần fail và thời điểm fail đầu tiên, rồi sửa tiếp trên bản của chính nó.
+- **`--apply`** mới chép bản sửa vào `verif/` và ghi NOTICE.md. G3 thành STALE, nên người duyệt phải xem diff và duyệt lại.
+- **Thử trên uart_lite.** Mình gỡ 2 chỗ sửa tay, nên bản dựng lại giống hệt từng byte output của agent sinh mã. Kết quả:
+  - **Lượt 0:** A17 sửa checker giống hệt bản sửa tay, nên hết 4/6 lỗi.
+  - **Lượt 1:** nhờ nhận lại kết quả mô phỏng, A17 tìm ra vì sao bản sửa harness chưa có tác dụng. Các test "not verifiable" làm thời gian trôi trước lần start đầu tiên.
+  - **Cuối cùng:** 0 assertion fail trên cả 7 lần chạy, không có cảnh báo nới lỏng nào. Chi phí khoảng US$2,8.

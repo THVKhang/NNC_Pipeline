@@ -115,12 +115,14 @@ def build(d) -> str:
     # ------------------------------------------------------------------ 4. hand edits
     notice = d.root / "NOTICE.md"
     edits = [ln.strip() for ln in notice.read_text(encoding="utf-8").splitlines()
-             if "hand fix" in ln.lower() or "sửa tay" in ln.lower()] if notice.is_file() else []
+             if "hand fix" in ln.lower() or "sửa tay" in ln.lower() or "verification fix (fix-verif" in ln.lower()] \
+        if notice.is_file() else []
     g3 = gates.get("G3_verif_sources", {}).get("note", "")
     if edits or "hand fix" in g3.lower():
         out += ["## 4. Hand edits of generated verification code", "",
-                "Generated tests or checkers were edited by hand after triage found them wrong. An edit must "
-                "correct the test, never weaken it to hide a design fault.", ""]
+                "Generated tests or checkers were edited after triage found them wrong, by hand or by agent A17 "
+                "(`nnc fix-verif`, which never sees the RTL; code refused any removed or relaxed check; the diff "
+                "is in work/verif_fix/). An edit must correct the test, never weaken it to hide a design fault.", ""]
         out += [f"- {_cut(e, 2500)}" for e in edits]
         if "hand fix" in g3.lower():
             out.append(f"- Last G3 approval note: {_cut(g3, 700)}")

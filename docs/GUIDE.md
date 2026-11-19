@@ -158,6 +158,26 @@ python -m nnc config my_ip mutation_threshold=85            # per-rule mutation 
 
 **VI:** Test lỗi do code Python của test được tự sửa (tối đa 2 lần) mà không cho xem RTL; một check thất bại thì không bao giờ được "sửa". Chỉ ký `G4_signoff` sau khi đọc báo cáo: bảng *Sign-off conditions* cho biết điều kiện nào đạt (mọi check PASS, mọi luật có ánh xạ, mutation từng luật ≥ ngưỡng, mục tiêu coverage).
 
+**Verification faults (triage B) | Lỗi của verification (triage B).** When triage judges a failure B (the test or the checker does not follow the specification), agent A17 can propose the fix:
+
+```
+python -m nnc fix-verif my_ip                      # --from formal|all to read work/formal_triage.json too
+# read work/verif_fix/verif_fix.md: the faults as A17 saw them, the diff, the weakening check, before/after
+python -m nnc fix-verif my_ip --apply --by "Name"  # copies the candidate into verif/, NOTICE.md; G3 becomes STALE
+python -m nnc gate approve my_ip G3_verif_sources --by "Name" --note "fix-verif reviewed: ..."
+```
+
+How A17 is kept honest:
+- **It never sees the RTL.** The fault text keeps only what the specification says and what the verification does. Code drops every sentence that names an RTL file or module, and the backend refuses inputs from `rtl/`.
+- **It cannot weaken a check.** Code refuses a removed assertion, cover point, test or CHK reference, a new assumption, `$assertoff`, and a skipped or expected-to-fail test. It also refuses any change to the formal environment or to `nnc_cocotb.py`. A changed `disable iff` or a lost `assert` statement is shown as a warning.
+- **The candidate is simulated on the RTL.** When a fault still fails, A17 gets the check, the number of failures and the first failure time, and tries again on its own candidate (`--rounds`, default 2).
+- **Nothing changes in `verif/` before `--apply`**, and then G3 must be approved again.
+
+**VI:**
+- `fix-verif`: agent A17 sửa test hoặc checker bị triage xếp B. Nó không bao giờ thấy RTL, và code chặn mọi cách nới lỏng check.
+- Bản sửa được chạy thử trên RTL. Nếu còn fail, A17 nhận lại kết quả (tên check, số lần fail, thời điểm) và sửa tiếp.
+- `--apply` mới chép bản sửa vào `verif/`. Sau đó G3 phải được người duyệt lại.
+
 **Surviving mutants, checked by formal | Mutant sống sót, kiểm bằng formal.** `python -m nnc mutate-equiv my_ip` compares each surviving mutant with the RTL using the Yosys miter that `restyle` uses. It runs in every configuration in which the mutant survived, calls no agent, and adds the results to `work/mutation.json`.
 - **PROVEN:** no input sequence after reset changes an output. The mutant is equivalent, and the packet also shows the score without such mutants.
 - **CEX:** the first differing outputs are named, and the trace is kept in `work/mutation_equiv/`. This is a change of behaviour that no check noticed, unless the input sequence breaks an environment rule: in this check, inputs are free after reset.

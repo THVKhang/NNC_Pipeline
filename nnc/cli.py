@@ -346,6 +346,19 @@ def cmd_formal_check(args) -> int:
     return 0 if ok else 1
 
 
+def cmd_fix_verif(args) -> int:
+    d = _open(args)
+    if args.apply:
+        if not args.by:
+            raise ProjectError("--apply needs --by <name>: who reviewed the candidate")
+        files = flow.fix_verif_apply(d, args.by)
+        print(f"applied to verif/: {', '.join(files)}; recorded in NOTICE.md. Gate G3_verif_sources is now STALE: "
+              f"review the change and approve it again (nnc gate approve {d.name} G3_verif_sources --by ... --note ...)")
+        return 0
+    rep = flow.fix_verif(d, _options(args), source=args.source, rounds=args.rounds, run=not args.no_run)
+    return 0 if rep["status"] in ("candidate", "nothing", "no_change") else 1
+
+
 def cmd_mutate_equiv(args) -> int:
     d = _open(args)
     flow.mutate_equiv(d, flow.Options(), depth=args.depth, timeout_s=args.timeout)
@@ -666,6 +679,22 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--workers", type=int, default=4, help="parallel SymbiYosys checks (default 4)")
     s.add_argument("--single-run", action="store_true", help="ignore run_set.json (only if the recorded run did)")
     s.set_defaults(func=cmd_formal_check)
+
+    s = sub.add_parser("fix-verif", help="agent A17 (no RTL) corrects the checkers/tests where triage judged the "
+                                         "verification wrong (B) -> candidate in work/verif_fix/; --apply copies it "
+                                         "into verif/ and G3 must be approved again")
+    s.add_argument("design")
+    s.add_argument("--from", dest="source", choices=["sim", "formal", "all"], default="sim",
+                   help="triage to read: work/triage.json (sim), work/formal_triage.json (formal) or both")
+    s.add_argument("--rounds", type=int, default=2, help="new attempts after a refused (weakening) answer (default 2)")
+    s.add_argument("--no-run", action="store_true", help="do not simulate the candidate")
+    s.add_argument("--apply", action="store_true", help="copy the reviewed candidate into verif/ (G3 becomes STALE)")
+    s.add_argument("--by", help="who reviewed the candidate (with --apply)")
+    s.add_argument("--unreviewed", action="store_true", help="run past an unapproved gate (results marked UNREVIEWED)")
+    s.add_argument("--seed", type=int, default=1)
+    s.add_argument("--single-run", action="store_true", help="ignore run_set.json when simulating the candidate")
+    _agent_args(s)
+    s.set_defaults(func=cmd_fix_verif)
 
     s = sub.add_parser("mutate-equiv", help="formal equivalence of each surviving mutant with the RTL (Yosys miter, "
                                             "no agent): PROVEN equivalent, or CEX with the first differing outputs")

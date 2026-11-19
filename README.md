@@ -187,6 +187,7 @@ nnc/                 orchestrator: ingest, extract, review, contract, gen_sva, g
                      design half: params (legal values, D1), gen_rtl + rtlcheck (A15, lint, Yosys/GF180, D2),
                      derive, equiv + restyle (A16, equivalence proof), specdraft (A0), export (DOCX/PDF)
                      mutequiv (formal equivalence of surviving mutants), simhost (WSL/local host, retry), tools (doctor)
+                     fix_verif (A17: corrects verification judged B by triage, never sees the RTL, no weakening)
 nnc/agents/          Claude Code backend (inline worker / sandboxed deep agent), manual backend, cache, schema validator
 nnc/simlib/          helper library copied next to generated cocotb tests (clocks, resets, multi-clock helpers)
 .claude/commands/    /nnc-flow, /nnc-gate

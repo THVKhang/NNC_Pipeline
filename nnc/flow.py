@@ -11,8 +11,10 @@ artifact and the report is marked UNREVIEWED.
 from __future__ import annotations
 
 import json
+import re
 import shutil
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
 
 from nnc import contract as contract_mod
@@ -27,7 +29,8 @@ STAGES = ("ingest", "extract", "review", "contract", "gen-sva", "gen-tests", "ge
           "triage", "mutate", "formal", "report")
 # Stages of the design half: run only for a design whose RTL the flow generates (rtl_origin=generated).
 DESIGN_STAGES = ("gen-rtl",)
-GATE_BEFORE = {"contract": "G1_rules", "gen-rtl": "D1_config", "fix-rtl": "G3_verif_sources", "gen-sva": "G2_contract", "gen-tests": "G2_contract", "gen-env": "G2_contract",
+GATE_BEFORE = {"contract": "G1_rules", "gen-rtl": "D1_config", "fix-rtl": "G3_verif_sources",
+               "fix-verif": "G2_contract", "gen-sva": "G2_contract", "gen-tests": "G2_contract", "gen-env": "G2_contract",
                "formal": "G3_verif_sources", "sim": "G3_verif_sources",
                "cover": "G3_verif_sources", "triage": "G3_verif_sources", "mutate": "G3_verif_sources", "report": "G3_verif_sources"}
 
@@ -173,10 +176,11 @@ def split_mode(d: Design) -> bool:
     return str(d.config().get("tests_mode", "")).strip().lower() == "split"
 
 
-def test_files(d: Design) -> list[Path]:
-    """The generated test module(s), then the coverage-closure modules (one per closure round)."""
-    tdir = d.root / "verif" / "tests"
-    main = sorted(tdir.glob(f"test_{verif_name(d)}_g*.py")) if split_mode(d) else [test_file(d)]
+def test_files(d: Design, verif: Path | None = None) -> list[Path]:
+    """The generated test module(s), then the coverage-closure modules (one per closure round). `verif`: another
+    verification folder of the same layout (the candidate of nnc fix-verif)."""
+    tdir = (verif or d.root / "verif") / "tests"
+    main = sorted(tdir.glob(f"test_{verif_name(d)}_g*.py")) if split_mode(d) else [tdir / f"test_{verif_name(d)}.py"]
     return main + sorted(tdir.glob(f"test_{verif_name(d)}_cov*.py"))
 
 
@@ -380,16 +384,16 @@ def _runs(d: Design, o: Options, contract: dict) -> list[dict] | None:
         raise ProjectError(str(e)) from e
 
 
-def _regression(d: Design, o: Options, contract: dict, rtl_dir: Path) -> dict:
-    """The regression on rtl_dir: every run of the run set (merged), else one run with --seed."""
+def _regression(d: Design, o: Options, contract: dict, rtl_dir: Path, verif: Path | None = None) -> dict:
+    """The regression on rtl_dir: every run of the run set (merged), else one run with --seed. `verif`: another
+    verification folder (default designs/<ip>/verif)."""
     runs = _runs(d, o, contract)
+    sva = (verif or d.root / "verif") / "sva"
     if runs is None:
-        return sim.run(default_host(), contract, rtl_dir, d.root / "verif" / "sva", test_files(d), seed=o.seed,
-                       **_simkw(d))
+        return sim.run(default_host(), contract, rtl_dir, sva, test_files(d, verif), seed=o.seed, **_simkw(d))
     o.say(f"[sim] run set: {len(runs)} run(s) in {len({r['config'] for r in runs})} configuration(s): "
           + ", ".join(r["label"] for r in runs))
-    return runset.run(default_host(), contract, rtl_dir, d.root / "verif" / "sva", test_files(d), runs,
-                      parallel=o.workers)
+    return runset.run(default_host(), contract, rtl_dir, sva, test_files(d, verif), runs, parallel=o.workers)
 
 
 def _primary(res: dict | None) -> dict | None:
@@ -755,6 +759,150 @@ def stage_mutate(d: Design, o: Options) -> None:
     _write(d.work / "mutation.json", res)
     o.say(f"[mutate] per-requirement: {len(res['rule_scores'])} rules with attributed mutants, "
           f"{len(weak)} below the {threshold:g} % threshold{': ' + ', '.join(weak[:8]) if weak else ''}")
+
+
+def fix_verif(d: Design, o: Options, source: str = "sim", rounds: int = 2, run: bool = True) -> dict:
+    """`nnc fix-verif`: agent A17 proposes a correction of the verification for the failures triage judged B
+    (nnc/fix_verif.py). The candidate goes to work/verif_fix/candidate/verif and, with `run`, is simulated on the
+    RTL; verif/ is not touched (see fix_verif_apply)."""
+    from nnc import fix_verif as fv
+    _gate(d, "fix-verif", o)
+    analyses = []
+    if source in ("sim", "all") and (d.work / "triage.json").is_file():
+        analyses += _read(d.work / "triage.json").get("analyses", [])
+    if source in ("formal", "all") and (d.work / "formal_triage.json").is_file():
+        analyses += _read(d.work / "formal_triage.json").get("analyses", [])
+    rtl = sim.rtl_files(d.root / "rtl")
+    modules = {m for f in rtl for m in re.findall(r"^\s*module\s+(\w+)", f.read_text(encoding="utf-8", errors="replace"), re.M)}
+    faults = fv.fault_text(analyses, [f.name for f in rtl] + sorted(modules))
+    out_dir = d.work / "verif_fix"
+    if not faults:
+        o.say("[fix-verif] triage judged no failure a fault of the verification (B): nothing to correct")
+        return {"status": "nothing", "faults": []}
+    verif = d.root / "verif"
+    old = {p.relative_to(verif).as_posix(): p.read_text(encoding="utf-8")
+           for p in sorted(verif.rglob("*")) if p.is_file() and p.suffix in (".sv", ".py") and "__pycache__" not in p.parts
+           and not p.relative_to(verif).as_posix().startswith("formal/")}
+    inputs: dict[str, Path] = {"contract.json": d.work / "contract.json", "rules.json": d.work / "rules.json"}
+    for doc in d.documents():
+        inputs[f"spec/{Path(doc['file']).name}"] = d.root / doc["file"]
+    for p in sorted(verif.rglob("*")):
+        if p.is_file() and p.suffix in (".sv", ".py") and "__pycache__" not in p.parts:
+            inputs[f"verif/{p.relative_to(verif).as_posix()}"] = p
+    inputs["verif/tests/nnc_cocotb.py"] = sim.SIMLIB
+    if out_dir.is_dir():
+        shutil.rmtree(out_dir)
+    out_dir.mkdir(parents=True)
+    from nnc import kitcheck
+    contract = _read(d.work / "contract.json")
+    before = _read(d.work / "results.json") if (d.work / "results.json").is_file() else {}
+
+    def summ(r: dict) -> dict:
+        oc = kitcheck.outcome(r) if r else {"failing_tests": [], "failing_assertions": [], "tests": [], "assertions": []}
+        return {"failing_tests": oc["failing_tests"], "failing_assertions": oc["failing_assertions"],
+                "n_tests": len(oc["tests"]), "n_assertions": len(oc["assertions"])}
+
+    cand = out_dir / "candidate" / "verif"
+    usage, retry, new, block, warn, answer, changes, history = None, "", {}, [], [], {}, {}, []
+    candidate_run = None
+    for attempt in range(rounds + 1):
+        answer, u = fv.propose(contract["top"], faults, inputs, _backend(d, o), _logs(d), out_dir,
+                               forbidden=tuple(d.dut_dirs()), model=o.tests_model, retry=retry, tag=f"r{attempt}")
+        if usage is None:
+            usage = u
+        else:
+            usage.merge(u)
+        step = fv.changed_files(answer, old)
+        trial = {**new, **step}              # cumulative: a later attempt builds on the earlier candidate
+        block, warn = fv.weakening(old, trial)
+        for path, text in step.items():
+            if path.endswith(".py"):
+                try:
+                    compile(text, path, "exec")
+                except SyntaxError as e:
+                    block.append(f"{path}: Python syntax error line {e.lineno}: {e.msg}")
+        entry = {"attempt": attempt, "files": sorted(step), "refused": block, "not_fixed": answer.get("not_fixed", [])}
+        history.append(entry)
+        o.say(f"[fix-verif] attempt {attempt}: {len(step)} file(s) changed, {len(answer.get('not_fixed', []))} not fixed, "
+              f"{len(block)} refused, {len(warn)} warning(s)")
+        if block:
+            retry = ("\n\nYOUR PREVIOUS ANSWER WAS REFUSED by the code checks:\n" + "\n".join(f"- {b}" for b in block)
+                     + "\nCorrect it without weakening any check.")
+            continue
+        new = trial
+        for c in answer.get("changes", []):
+            changes[fv.norm_path(c["file"])] = {"file": fv.norm_path(c["file"]), "faults": c["faults"], "why": c["why"],
+                                                "spec_refs": c["spec_refs"]}
+        if not new or not run:
+            break
+        if cand.parent.is_dir():
+            shutil.rmtree(cand.parent)
+        shutil.copytree(verif, cand, ignore=shutil.ignore_patterns("__pycache__"))
+        for path, text in new.items():
+            (cand / path).write_bytes(text.encode("utf-8"))
+        after = _regression(d, o, contract, d.root / "rtl", cand)
+        candidate_run = {"before": summ(before), "after": summ(after)}
+        entry["after"] = candidate_run["after"]
+        o.say(f"[fix-verif] candidate on the RTL: failing tests {candidate_run['before']['failing_tests']} -> "
+              f"{candidate_run['after']['failing_tests']}; failing assertions "
+              f"{candidate_run['before']['failing_assertions']} -> {candidate_run['after']['failing_assertions']}")
+        left = fv.still_failing(faults, after)
+        if not left or attempt == rounds:
+            break
+        # Feedback is what the verification itself reported (check, count, first time): nothing of the RTL.
+        retry = ("\n\nYOUR PREVIOUS CHANGES ARE NOW IN verif/ OF THIS FOLDER and were simulated. These faults "
+                 "still fail:\n" + "\n".join(f"- fault {x['id']}: {x['report']}" for x in left)
+                 + "\nFind why your change did not take effect and correct it. Return the full content of every file "
+                   "you change in this answer.")
+        for path in new:                      # the next attempt reads the candidate, not the original
+            inputs[f"verif/{path}"] = cand / path
+    status = "refused" if block and not new else ("no_change" if not new else "candidate")
+    rep = {"status": status, "source": source, "faults": faults, "blocking": block if status == "refused" else [],
+           "warnings": fv.weakening(old, new)[1] if new else warn, "not_fixed": answer.get("not_fixed", []),
+           "changes": list(changes.values()), "attempts": history, "diff": fv.diff(old, new),
+           "usage": usage.as_dict() if usage else {}, "prompt_version": fv.PROMPT_VERSION,
+           "date": datetime.now(timezone.utc).isoformat(timespec="seconds")}
+    if candidate_run:
+        rep["candidate_run"] = candidate_run
+        rep["still_failing"] = [x["id"] for x in fv.still_failing(faults, {"assertions": {
+            k: {"fails": 1} for k in candidate_run["after"]["failing_assertions"]}, "tests": [
+            {"name": t, "status": "fail"} for t in candidate_run["after"]["failing_tests"]]})]
+    elif status == "candidate":
+        cand.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(verif, cand, ignore=shutil.ignore_patterns("__pycache__"), dirs_exist_ok=True)
+        for path, text in new.items():
+            (cand / path).write_bytes(text.encode("utf-8"))
+    _write(out_dir / "verif_fix.json", rep)
+    (out_dir / "verif_fix.md").write_text(fv.to_markdown(d.name, rep), encoding="utf-8")
+    o.say(f"[fix-verif] {rep['status']} -> work/verif_fix/verif_fix.md"
+          + (f"; apply with 'nnc fix-verif {d.name} --apply --by <name>' (G3 must then be approved again)"
+             if rep["status"] == "candidate" else ""))
+    return rep
+
+
+def fix_verif_apply(d: Design, by: str) -> list[str]:
+    """Copy the reviewed candidate of nnc fix-verif into verif/ and record it in NOTICE.md; G3 becomes STALE."""
+    path = d.work / "verif_fix" / "verif_fix.json"
+    if not path.is_file():
+        raise ProjectError(f"no candidate: run 'nnc fix-verif {d.name}' first")
+    rep = _read(path)
+    if rep.get("status") != "candidate" or rep.get("blocking"):
+        raise ProjectError(f"the last fix-verif result is '{rep.get('status')}', not an applicable candidate")
+    if rep.get("applied"):
+        raise ProjectError(f"this candidate was already applied by {rep['applied']['by']} at {rep['applied']['at']}")
+    cand = d.work / "verif_fix" / "candidate" / "verif"
+    files = [c["file"] for c in rep["changes"]]
+    for f in files:
+        shutil.copyfile(cand / f, d.root / "verif" / f)
+    notice = d.root / "NOTICE.md"
+    lines = ["", f"## Verification fixes by agent A17 (nnc fix-verif, {rep['date'][:10]}, applied by {by})", ""]
+    lines += [f"- `verif/{c['file']}`: NNC verification fix (fix-verif, triage B): {c['why']} "
+              f"({', '.join(c['spec_refs'])})" for c in rep["changes"]]
+    with notice.open("a", encoding="utf-8") as fh:
+        fh.write("\n".join(lines) + "\n")
+    rep["applied"] = {"by": by, "at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "files": files}
+    _write(path, rep)
+    return files
 
 
 def mutate_equiv(d: Design, o: Options, depth: int | None = None, timeout_s: int = 900) -> dict:
