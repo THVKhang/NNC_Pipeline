@@ -1,4 +1,4 @@
-# Evaluation — phases 1 to 14 (2026-11-15; design half 2026-11-18; hardening 2026-11-19)
+# Evaluation — phases 1 to 15 (2026-11-15; design half 2026-11-18; hardening 2026-11-19; formal depth and spec-lint 2026-11-20)
 
 This page collects the measurements of four steps taken after the first five designs:
 
@@ -334,3 +334,35 @@ The code check found no weakening and gave no warning. `--apply` copied the 2 fi
 **Limits.**
 - One design, with a triage that had already named the causes.
 - A17's rule against weakening is checked by code only for structural signs: removed checks, assumptions, skips. An expected value changed to the wrong one would pass the code check. That is why `--apply` reopens G3 and a person reads the diff.
+
+### 7.4 Deeper formal where a check is vacuous (phase 15)
+
+**Why.** On uart_lite, CHK-004 and CHK-005 were VACUOUS at depth 64: their antecedent is a byte delivered while the previous one is still held. That needs two UART frames, and one frame alone takes 10 × `PARA_UART_CLKS_PER_BIT` cycles. A vacuous check proves nothing.
+
+**What changed.** `formal_max_depth=N` (design config). Each check that is VACUOUS at `formal_depth` is run again alone at twice the depth, and again, up to N. Only those checks pay the extra time. uart_lite: `formal_depth=64`, `formal_max_depth=128`.
+
+| | Before (depth 64) | After (escalation to 128) |
+|---|---|---|
+| Merged over the 4 configurations | 4 PROVEN, 6 BOUNDED, **2 VACUOUS**, 1 sim-only | 4 PROVEN, 8 BOUNDED, **0 VACUOUS**, 1 sim-only |
+| CHK-004, CHK-005 | VACUOUS | BOUNDED (no counterexample within 128 cycles, in `min` and `odd`) |
+
+Sources: `designs/uart_lite/work/formal.json`, `formal.md` (rows marked `[depth 128]`).
+
+**What is still vacuous, per configuration.** In `base` (16 cycles per bit) and `wide` (1024) five receive checks (CHK-003/004/005/007/008) stay VACUOUS even at 128 cycles: one frame does not fit. They are covered by `min` (4) and `odd` (5), where a frame is 40 or 50 cycles. The merged result counts a check as vacuous only if it is vacuous everywhere. Reaching them at 16 cycles per bit would need about 400 cycles, which BMC with this solver does not finish in the time limit; simulation covers those configurations.
+
+**CI.** The full rerun of uart_lite (4 configurations, escalation) lost its GitHub-hosted runner after 96 minutes. `nnc formal-check --config NAME` now reruns one configuration and compares only its recorded statuses; CI runs uart_lite as 4 jobs.
+
+### 7.5 Specification gaps before any code (phase 15, `nnc spec-lint`)
+
+**Why.** The gen_sync_fifo counterexample on CHK-008 (§6.1) came from a question the specification never answered: what happens to a second software-reset pulse during a running sequence. It was found after spec, RTL, tests and formal had all been generated.
+
+**What it does.** Agent A18 reads only the specification and lists scenarios it leaves open or states twice in conflicting ways: simultaneous events, a request while busy, reset during an operation, back-pressure, parameter extremes, errors, the initial state, contradictions. Each gap gives a scenario, quotes, the question and the possible readings, with `file:line` references that code checks (a gap without a valid reference is marked). Nothing is changed: the answers are decisions before G1.
+
+| Design | Gaps (high / medium / low) | Notable | Cost |
+|---|---|---|---|
+| gen_sync_fifo (spec written by hand earlier) | 4 / 7 / 1 | **GAP-002 is the CHK-008 question**, found from the specification alone | US$0.97 |
+| spi_master (new, phase 16) | 0 / 2 / 3 | simultaneous events, the initial state, 2 contradictions; answered before G1 | US$0.71 |
+| axil_regfile (new, phase 16) | 0 / 2 / 3 | reset ending held states, behaviour before the first reset, "from edge n"; answered as D-014..D-018 and REQ-VER-006/007 | US$0.51 |
+
+**Limit.** A18 finds questions, not answers: a person (here Claude on delegation, labelled) still decides each one, and a gap A18 misses is not reported.
+

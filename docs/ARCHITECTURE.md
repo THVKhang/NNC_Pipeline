@@ -638,3 +638,24 @@ Số đo: [EVALUATION.md §7](EVALUATION.md). Cách dùng: [GUIDE.md §4–5](GU
   - **Lượt 0:** A17 sửa checker giống hệt bản sửa tay, nên hết 4/6 lỗi.
   - **Lượt 1:** nhờ nhận lại kết quả mô phỏng, A17 tìm ra vì sao bản sửa harness chưa có tác dụng. Các test "not verifiable" làm thời gian trôi trước lần start đầu tiên.
   - **Cuối cùng:** 0 assertion fail trên cả 7 lần chạy, không có cảnh báo nới lỏng nào. Chi phí khoảng US$2,8.
+
+## 21. Formal sâu hơn khi check bị rỗng, tìm lỗ hổng spec trước khi viết code (2026-11-20)
+
+Số đo: [EVALUATION.md §7.4–7.5](EVALUATION.md).
+
+**Tăng độ sâu formal (giai đoạn 15).**
+- **Vấn đề.** Một check là VACUOUS (rỗng) khi điều kiện kích hoạt của nó không xảy ra được trong số chu kỳ formal xét. Ví dụ với UART, nhận 2 byte liên tiếp cần 2 frame, mỗi frame dài 10 × số chu kỳ mỗi bit, nên không vừa trong 64 chu kỳ.
+- **Cách làm.** Đặt `formal_max_depth=N`. Check nào rỗng thì được chạy lại **riêng** với độ sâu gấp đôi, lặp lại tới N. Chỉ những check đó tốn thêm thời gian. Bảng `formal.md` ghi độ sâu đã dùng (`[depth 128]`).
+- **Kết quả trên uart_lite.** CHK-004 và CHK-005 hết rỗng, thành BOUNDED: không có phản ví dụ trong 128 chu kỳ. Ở cấu hình 16 và 1024 chu kỳ mỗi bit vẫn còn 5 check rỗng, vì một frame dài hơn 128 chu kỳ; các cấu hình 4 và 5 chu kỳ mỗi bit đã phủ chúng.
+- **`formal-check --config NAME`.** Chạy lại formal cho một cấu hình và chỉ so với kết quả đã lưu của cấu hình đó. CI dùng nó để tách uart_lite thành 4 job, vì một job chạy cả 4 cấu hình làm máy GitHub mất kết nối sau 96 phút.
+
+**Tìm lỗ hổng spec (`nnc spec-lint`, agent A18).**
+- **Vì sao.** Phản ví dụ CHK-008 của gen_sync_fifo bắt nguồn từ một câu hỏi spec chưa trả lời: xung reset mềm thứ hai đến khi chuỗi reset đang chạy thì sao. Lỗi này chỉ lộ ra sau khi đã sinh xong RTL, test và formal.
+- **Cách làm.** A18 chỉ đọc spec và liệt kê những tình huống spec bỏ ngỏ hoặc nói hai cách mâu thuẫn: sự kiện đồng thời, yêu cầu khi đang bận, reset giữa chừng, back-pressure, tham số ở giá trị biên, lỗi và phục hồi, trạng thái ban đầu, mâu thuẫn.
+  - Mỗi lỗ hổng có tình huống, câu trích, câu hỏi và các cách hiểu.
+  - Tham chiếu `file:dòng` được code kiểm tra lại.
+  - Không sửa gì: các câu trả lời là quyết định trước khi duyệt G1.
+- **Kết quả.**
+  - Trên gen_sync_fifo, GAP-002 **chính là câu hỏi CHK-008**, tìm được chỉ từ spec, tốn US$0,97.
+  - Trên 2 thiết kế mới spi_master và axil_regfile, các lỗ hổng được trả lời (theo uỷ quyền, có ghi rõ) trước G1.
+

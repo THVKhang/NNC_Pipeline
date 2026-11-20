@@ -31,6 +31,7 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -335,8 +336,10 @@ setundef -zero -init {checkers}
 
 def build(contract: dict, rtl_dir: Path, sva_dir: Path, env_file: Path | None, *, depth: int = DEFAULT_DEPTH,
           defines: list[str] | None = None, solver: str = "yices", params: dict | None = None,
-          task_timeout_s: int = DEFAULT_TIMEOUT_S, prove_engines: str = PROVE_ENGINES) -> tuple[dict, list[Prop]]:
-    """Input files of the formal run: per supported check an .sby project, plus the shared sources."""
+          task_timeout_s: int = DEFAULT_TIMEOUT_S, prove_engines: str = PROVE_ENGINES,
+          only: set[str] | None = None) -> tuple[dict, list[Prop]]:
+    """Input files of the formal run: per supported check an .sby project (only the checks in `only`, when
+    given), plus the shared sources."""
     rtl = rtl_files(rtl_dir)
     chk = [f for f in checker_files(sva_dir) if f.name.startswith("nnc_chk_")]
     files: dict[str, object] = {f"src/{f.name}": f for f in rtl}
@@ -365,6 +368,8 @@ def build(contract: dict, rtl_dir: Path, sva_dir: Path, env_file: Path | None, *
     # Checker variables start at 0 as in simulation (2-state int/bit); DUT flops keep a free initial value.
     checker_sel = " ".join(f"*{f.stem}*" for f in used) or "nnc_fv_top"
     for cid in sorted({p.check for p in props if not p.unsupported}):
+        if only is not None and cid not in only:
+            continue
         tag = cid.replace("-", "_")
         read = f"read_verilog -sv -formal {defs} -DNNC_FV_{tag} " + " ".join(srcs)
         if gen:
@@ -413,7 +418,7 @@ def parse_status(out_dir: Path, tag: str) -> dict:
 
 def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, env_file: Path | None = None, *,
         depth: int = DEFAULT_DEPTH, defines: list[str] | None = None, parallel: int = 4,
-        task_timeout_s: int = DEFAULT_TIMEOUT_S, params: dict | None = None) -> dict:
+        task_timeout_s: int = DEFAULT_TIMEOUT_S, params: dict | None = None, max_depth: int = 0) -> dict:
     files, props = build(contract, rtl_dir, sva_dir, env_file, depth=depth, defines=defines,
                          task_timeout_s=task_timeout_s, params=params)
     n = len([k for k in files if k.endswith(".sby")])
@@ -435,6 +440,34 @@ def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, env_file: P
         if bad:      # some assertions of the check could not be translated: the result covers the others
             checks[cid]["reason"] = "not translated: " + "; ".join(bad)
             checks[cid]["partial"] = True
+    # Depth escalation: a VACUOUS check (its antecedent is never reached within `depth`, so the proof says
+    # nothing) is run again alone at twice the depth, up to max_depth. The other checks keep `depth`.
+    cur = depth
+    while max_depth and cur < max_depth:
+        vac = {cid for cid, v in checks.items() if v["status"] == "VACUOUS"}
+        if not vac:
+            break
+        cur = min(cur * 2, max_depth)
+        f2, _ = build(contract, rtl_dir, sva_dir, env_file, depth=cur, defines=defines,
+                      task_timeout_s=task_timeout_s, params=params, only=vac)
+        r2 = host.run(f2, RUN.format(parallel=parallel),
+                      ["CHK_*.log", "CHK_*_bmc/status", "CHK_*_prove/status", "CHK_*_bmc/engine_*/trace*.vcd",
+                       "CHK_*_cover/status", "CHK_*_bmc/logfile.txt", "CHK_*_prove/logfile.txt"],
+                      timeout_s=600 + 3 * task_timeout_s * max(1, -(-len(vac) // max(1, parallel))), tag="formal_deep")
+        for cid in vac:
+            tag = cid.replace("-", "_")
+            for p in list(Path(r2.out_dir).glob(f"{tag}_*")) + list(Path(r2.out_dir).glob(f"{tag}.log")):
+                dst = Path(res.out_dir) / p.name
+                if p.is_dir():
+                    shutil.copytree(p, dst, dirs_exist_ok=True)
+                else:
+                    shutil.copyfile(p, dst)
+            rec = parse_status(Path(res.out_dir), tag)
+            rec["depth"] = cur
+            rec["escalated_from"] = depth
+            if checks[cid].get("partial"):
+                rec["reason"], rec["partial"] = checks[cid]["reason"], True
+            checks[cid] = rec
     tried = [v for v in checks.values() if v["status"] != "UNSUPPORTED"]
     if tried and all(v["status"] == "ERROR" and not v.get("bmc") and not v.get("prove") and not v.get("errors")
                      for v in tried):
@@ -444,7 +477,7 @@ def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, env_file: P
     counts: dict[str, int] = {}
     for v in checks.values():
         counts[v["status"]] = counts.get(v["status"], 0) + 1
-    return {"depth": depth, "task_timeout_s": task_timeout_s, "clocks": "multiclock (free clocks)" if is_async(contract["interface"]) else "one global clock",
+    return {"depth": depth, **({"max_depth": max_depth} if max_depth else {}), "task_timeout_s": task_timeout_s, "clocks": "multiclock (free clocks)" if is_async(contract["interface"]) else "one global clock",
             "defines": defines or [], "environment": "reset assumptions" + (" + verif/formal/nnc_env.sv" if env_file and env_file.is_file() else ""),
             "checks": dict(sorted(checks.items())), "by_status": dict(sorted(counts.items())),
             "out_dir": str(res.out_dir)}
@@ -493,8 +526,25 @@ def merge_configs(per: dict[str, dict]) -> dict:
     for v in checks.values():
         counts[v["status"]] = counts.get(v["status"], 0) + 1
     first = per[names[0]]
-    return {**{k: first[k] for k in ("depth", "task_timeout_s", "clocks", "defines", "environment") if k in first},
+    return {**{k: first[k] for k in ("depth", "max_depth", "task_timeout_s", "clocks", "defines", "environment") if k in first},
             "configs": {n: {"by_status": r["by_status"]} for n, r in per.items()},
+            "checks": checks, "by_status": dict(sorted(counts.items()))}
+
+
+def one_config(res: dict, name: str) -> dict:
+    """The result of one configuration, as compare_recorded reads it: a merged result (per_config) is cut
+    down to that configuration; the result of a single run is taken as that configuration."""
+    checks: dict[str, dict] = {}
+    for cid, v in res.get("checks", {}).items():
+        pc = v.get("per_config")
+        if pc is None:
+            checks[cid] = {"status": v["status"], "per_config": {name: v["status"]}}
+        elif name in pc:
+            checks[cid] = {"status": pc[name], "per_config": {name: pc[name]}}
+    counts: dict[str, int] = {}
+    for v in checks.values():
+        counts[v["status"]] = counts.get(v["status"], 0) + 1
+    return {**{k: v for k, v in res.items() if k not in ("checks", "by_status", "configs")},
             "checks": checks, "by_status": dict(sorted(counts.items()))}
 
 
@@ -537,7 +587,9 @@ def to_markdown(name: str, res: dict, contract: dict) -> str:
     out = [f"# Formal check — {name}", "",
            f"SymbiYosys on the generated assertions, translated to immediate form by `nnc/formal.py`. Depth "
            f"{res['depth']} cycles, {res['clocks']}, environment: {res['environment']}"
-           + (f", defines {', '.join(res['defines'])}" if res["defines"] else "") + ".", "",
+           + (f", defines {', '.join(res['defines'])}" if res["defines"] else "") + "."
+           + (f" A check VACUOUS at that depth was run again alone at twice the depth, up to {res['max_depth']} "
+              "cycles (its row gives the depth used)." if res.get("max_depth") else ""), "",
            "- **PROVEN**: holds in every reachable state (k-induction).",
            f"- **BOUNDED**: no counterexample within {res['depth']} cycles from reset; induction inconclusive.",
            "- **CEX**: a counterexample exists. Either a design bug, or an input sequence the environment "
@@ -557,6 +609,8 @@ def to_markdown(name: str, res: dict, contract: dict) -> str:
     for cid, v in res["checks"].items():
         det = v.get("reason") or ("trace: " + ", ".join(v["traces"][:1]) if v.get("traces") else "") \
             or ("; ".join(v.get("errors", [])[:2]))
+        if v.get("escalated_from"):
+            det = (det + " " if det else "") + f"[depth {v['depth']}]"
         if v.get("per_config") and len(v["per_config"]) > 1:
             det = (det + " " if det else "") + "(" + ", ".join(f"{n} {st}" for n, st in v["per_config"].items()) + ")"
         out.append(f"| {cid} | {titles.get(cid, '')} | **{v['status']}** | {det.replace('|', '/')[:200]} |")

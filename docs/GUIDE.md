@@ -226,6 +226,12 @@ The environment: resets are asserted in the initial state (code), and `verif/for
 - **prove:** chứng minh cho mọi chu kỳ.
 - **cover:** điều kiện kích hoạt có xảy ra được không; nếu không thì check là **VACUOUS** (rỗng).
 
+**Depth escalation | Tăng độ sâu.** A check whose antecedent cannot happen within `formal_depth` cycles is VACUOUS, although it may happen later (a UART frame of 16 × 10 cycles does not fit in 64). With `formal_max_depth=N`, every VACUOUS check is run again alone at twice the depth, then twice again, up to N cycles. Its row in `formal.md` gives the depth used (`[depth 128]`). A check still VACUOUS at N stays VACUOUS. Only the vacuous checks are run again, so the cost is theirs alone. **VI:** check VACUOUS có thể chỉ vì độ sâu quá ngắn. Đặt `formal_max_depth=N` thì check đó được chạy lại riêng với độ sâu gấp đôi, cho tới N; bảng ghi rõ độ sâu đã dùng.
+
+```bash
+python -m nnc config my_ip formal_max_depth=128
+```
+
 Giả định môi trường (`nnc_env.sv`) do A13 viết từ spec và **phải được người duyệt G3 đọc**, vì một giả định spec không đòi hỏi sẽ che bug. Mỗi phản ví dụ được agent A14 phân loại: A (RTL sai), B (checker sai), C (spec không rõ) hoặc **E (môi trường thiếu giả định)**.
 
 ### Baseline: the hand-written testbench | So với testbench viết tay
@@ -265,6 +271,8 @@ Vì vậy mặc định vẫn là một khối.
 
   Changes among PROVEN, BOUNDED and TIMEOUT are printed as notes. They depend on the solver time limit and on how fast the machine is.
 
+  `--config <name>` reruns one formal configuration and compares it with the recorded result of that configuration only. CI runs uart_lite this way, one job per configuration (base, min, odd, wide): run as one job, its rerun starved a hosted runner for 96 minutes until the runner lost contact. **VI:** `--config` chỉ chạy lại một cấu hình. CI chia uart_lite thành 4 job như vậy, vì chạy chung một job thì máy CI bị quá tải và mất kết nối sau 96 phút.
+
 `nnc kit <ip>` rewrites the kit (`sim/` and `sim/configs/`) from `work/results.json` without simulating. `nnc sim` also writes it after every regression.
 
 ```
@@ -303,6 +311,7 @@ The RTL and the verification are both generated from G2 and never see each other
 # from a short description (agent A0 drafts the specification in the shape of docs/SPEC_TEMPLATE.md)
 python -m nnc spec-draft my_ip description.md --top m_my_ip --tag MY   # -> spec/, work/spec_draft.md
 python -m nnc spec-check my_ip                     # can the flow read it? (port/parameter tables, legal values, IDs)
+python -m nnc spec-lint my_ip                      # agent A18: gaps a reader would fill differently -> work/spec_lint.md
 # ... edit the draft, then the usual flow up to G2:
 python -m nnc flow my_ip                           # ingest .. review (G1), contract (G2), gen-sva/tests (G3)
 
@@ -322,6 +331,7 @@ python -m nnc close-loop my_ip --rounds 3          # sim -> triage -> fix-rtl, u
 - **Code checks of the RTL** (`nnc rtl-check`, run after every A15 answer): file and filelist rules, the synthesizable subset, `always_ff`/`always_comb` discipline, clock and reset names, Verilator `-Wall`, Yosys latches/loops/drivers, the ports of the contract for the chosen configuration, `// REQ:` tags, and Yosys synthesis on the GF180MCU 7-track library (typical and slow corner: area, estimated delay). The liberty files are downloaded once into `/opt/pdk` on the simulation host; without them only generic synthesis runs.
 - **Repair** (`fix-rtl`, `--from sim|formal|all`): A15 receives the current RTL and, per fault that triage judged *A: RTL wrong* (simulation triage, formal counterexample triage, or both), only what the specification says and what the RTL does; any sentence that names a test, a checker or a file in `verif/` is removed. It never sees a test. Every revision is kept in `work/rtl_history/`, and D2 becomes STALE.
 - **Trying it on a verified design** (`nnc derive <src> <new>`): copies the specification, rules, contract, verification and baseline testbench, carries G1–G3 over (identical hashes), leaves the RTL behind. Then `params --choose`, D1, `gen-rtl`, `close-loop`, `baseline`.
+- **Specification gaps** (`nnc spec-lint`, agent A18, `--lint-model`, default opus): A18 reads only the specification and the standards. It lists the places where two careful readers, say the RTL writer and the checker writer, could build different things. Each gap has a category (events in the same cycle, a request while busy, reset during operation, back-pressure, parameter extremes, error and recovery, initial state, contradiction, other), a severity, the readings it allows, and `file:line` references; code checks every reference and counts the gaps without a valid one. Nothing is changed: the designer answers each gap in the specification (a DEC row or a new requirement) before G1. On gen_sync_fifo it found the cause of the open CHK-008 as GAP-002 (US$0.97); on spi_master, a simulation that starts without a reset (the same kind of fault as the uart_lite hand fix), answered by ENV-008 before any RTL was written.
 - **Golden manifest:** a G1 approval records the SHA-256 of every registered document; when the specification changes, G1 becomes STALE.
 
 **VI:** với thiết kế mà flow tự viết RTL, có thêm hai gate:
@@ -332,6 +342,7 @@ Cách làm việc:
 - **Sinh RTL:** agent A15 viết RTL chỉ từ spec, luật đã duyệt, interface, cấu hình và quy tắc RTL, không bao giờ thấy bộ kiểm chứng. Code kiểm tra RTL sau mỗi lần sinh (lint, cấu trúc, cổng, synthesis GF180) và trả lỗi về cho agent sửa.
 - **Vòng khép kín `close-loop`:** chạy mô phỏng bằng bộ kiểm chứng đã duyệt. Lỗi nào triage kết luận "RTL sai" thì agent sửa RTL, nhưng chỉ nhận mô tả lỗi ở mức spec, không nhận code test.
 - **Ai quyết:** người duyệt quyết định ở D2 và G4.
+- **Tìm lỗ hổng spec `spec-lint`:** agent A18 chỉ đọc spec, liệt kê chỗ mà người viết RTL và người viết checker có thể hiểu khác nhau, kèm các cách hiểu và dòng trích dẫn (code kiểm tra trích dẫn). Không sửa gì; người thiết kế trả lời từng chỗ trong spec trước G1.
 
 ### Restyle an existing RTL | Viết lại RTL có sẵn theo quy tắc
 

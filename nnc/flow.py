@@ -553,9 +553,11 @@ def stage_gen_env(d: Design, o: Options) -> None:
           + " -> verif/formal/nnc_env.sv (review it at G3)")
 
 
-def _formal_runs(d: Design, o: Options, contract: dict, tdir: Path | None) -> tuple[dict, int]:
+def _formal_runs(d: Design, o: Options, contract: dict, tdir: Path | None,
+                 only_config: str | None = None) -> tuple[dict, int]:
     """SymbiYosys on every formal configuration of the design configuration; the merged result and the
-    depth. Counterexample traces are copied to `tdir` (None: not kept)."""
+    depth. Counterexample traces are copied to `tdir` (None: not kept). `only_config`: run that formal
+    configuration alone (formal-check --config, to split a long rerun over several CI jobs)."""
     cfg = d.config()
     defines = [x.strip() for x in str(cfg.get("formal_defines", ",".join(sim.sim_options(cfg)["defines"])))
                .replace(";", ",").split(",") if x.strip()]
@@ -563,10 +565,16 @@ def _formal_runs(d: Design, o: Options, contract: dict, tdir: Path | None) -> tu
     # formal_configs: "all" (every parameter set of the run set, the default when there is one) or "default"
     which = str(cfg.get("formal_configs", "all")).strip().lower()
     confs = formal.formal_configs(_runs(d, o, contract)) if which != "default" else [{"name": "default", "params": {}}]
+    if only_config is not None:
+        names = [c["name"] for c in confs]
+        if only_config not in names:
+            raise ProjectError(f"{d.name}: no formal configuration '{only_config}' (configurations: {', '.join(names)})")
+        confs = [c for c in confs if c["name"] == only_config]
     per: dict[str, dict] = {}
     for conf in confs:
         r = formal.run(default_host(), contract, d.root / "rtl", d.root / "verif" / "sva", env_file(d),
                        depth=depth, defines=defines, parallel=o.workers, params=conf["params"],
+                       max_depth=int(cfg.get("formal_max_depth", 0) or 0),
                        task_timeout_s=int(cfg.get("formal_timeout", formal.DEFAULT_TIMEOUT_S)))
         out = Path(r.pop("out_dir"))
         for cid, v in r["checks"].items():
@@ -583,18 +591,23 @@ def _formal_runs(d: Design, o: Options, contract: dict, tdir: Path | None) -> tu
     return (per[confs[0]["name"]] if len(confs) == 1 else formal.merge_configs(per)), depth
 
 
-def formal_check(d: Design, o: Options) -> tuple[bool, list[str]]:
+def formal_check(d: Design, o: Options, only_config: str | None = None) -> tuple[bool, list[str]]:
     """`nnc formal-check` (CI): run formal again with the recorded configuration, write nothing, and
-    compare every check with work/formal.json (formal.compare_recorded)."""
+    compare every check with work/formal.json (formal.compare_recorded). `only_config`: one formal
+    configuration, compared with the recorded result of that configuration only."""
     if not formal_enabled(d):
         return True, [f"{d.name}: formal is off; nothing to compare"]
     rec_path = d.work / "formal.json"
     if not rec_path.is_file():
         raise ProjectError(f"{d.name}: work/formal.json is missing: run 'nnc formal {d.name}' first")
     contract = _read(d.work / "contract.json")
-    got, depth = _formal_runs(d, o, contract, None)
-    fails, notes = formal.compare_recorded(_read(rec_path), got)
-    head = (f"{d.name}: formal run (depth {depth}) vs recorded: {got['by_status']} — "
+    got, depth = _formal_runs(d, o, contract, None, only_config)
+    recorded = _read(rec_path)
+    if only_config is not None:
+        recorded, got = formal.one_config(recorded, only_config), formal.one_config(got, only_config)
+    fails, notes = formal.compare_recorded(recorded, got)
+    head = (f"{d.name}{' [' + only_config + ']' if only_config else ''}: formal run (depth {depth}) vs recorded: "
+            f"{got['by_status']} — "
             + ("SAME OUTCOME" if not fails else "DIFFERENT"))
     return not fails, [head] + [f"  DIFFERENT {x}" for x in fails] + [f"  note {x}" for x in notes]
 

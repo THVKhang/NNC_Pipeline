@@ -341,7 +341,7 @@ def cmd_kit_check(args) -> int:
 def cmd_formal_check(args) -> int:
     d = _open(args)
     o = flow.Options(workers=args.workers, single=args.single_run)
-    ok, lines = flow.formal_check(d, o)
+    ok, lines = flow.formal_check(d, o, only_config=args.config)
     print("\n".join(lines))
     return 0 if ok else 1
 
@@ -433,6 +433,26 @@ def cmd_spec_check(args) -> int:
     for f in res["findings"]:
         print(f"  {f['severity']:<7} {f['message']}")
     return 1 if any(f["severity"] == "error" for f in res["findings"]) else 0
+
+
+def cmd_spec_lint(args) -> int:
+    """A18 lists the gaps of the specification (no change) -> work/spec_lint.md for the G1 reviewer."""
+    from nnc import speclint
+    d = _open(args)
+    docs = [d.root / x["file"] for x in d.documents() if x["role"] == "ip_spec"]
+    if not docs:
+        raise ProjectError("no ip_spec document registered")
+    stds = [d.root / x["file"] for x in d.documents() if x["role"] == "standard"
+            and (d.root / x["file"]).suffix.lower() in (".md", ".txt")]
+    o = _options(args)
+    rep = speclint.lint(d.name, docs, stds, flow._backend(d, o), flow._logs(d), model=args.lint_model)
+    (d.work / "spec_lint.json").write_text(json.dumps(rep, indent=1) + "\n", encoding="utf-8")
+    (d.work / "spec_lint.md").write_text(speclint.to_markdown(d.name, rep), encoding="utf-8")
+    print(f"[spec-lint] {len(rep['gaps'])} gap(s) {rep['by_severity']}, {rep['unsupported']} without a valid "
+          f"reference; US${rep['usage'].get('cost_usd', 0):.2f} -> work/spec_lint.md")
+    for g in rep["gaps"][:12]:
+        print(f"  {g['id']} [{g['severity']}] {g['category']}: {g['scenario'][:140]}")
+    return 0
 
 
 def cmd_spec_draft(args) -> int:
@@ -678,6 +698,8 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("design")
     s.add_argument("--workers", type=int, default=4, help="parallel SymbiYosys checks (default 4)")
     s.add_argument("--single-run", action="store_true", help="ignore run_set.json (only if the recorded run did)")
+    s.add_argument("--config", help="run one formal configuration of the run set and compare it alone (to split "
+                                    "a long rerun over several CI jobs)")
     s.set_defaults(func=cmd_formal_check)
 
     s = sub.add_parser("fix-verif", help="agent A17 (no RTL) corrects the checkers/tests where triage judged the "
@@ -742,6 +764,13 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("design")
     s.add_argument("file", nargs="?", help="a specification file (default: the registered ip_spec)")
     s.set_defaults(func=cmd_spec_check)
+
+    s = sub.add_parser("spec-lint", help="agent A18 lists what the specification leaves open (same-cycle events, "
+                                         "requests while busy, reset mid-sequence, extremes) -> work/spec_lint.md (G1)")
+    s.add_argument("design")
+    s.add_argument("--lint-model", default="opus", help="model alias for A18 (default opus)")
+    _agent_args(s)
+    s.set_defaults(func=cmd_spec_lint)
 
     s = sub.add_parser("spec-draft", help="draft a specification in the shape of docs/SPEC_TEMPLATE.md from a design "
                                           "description (agent A0); creates the design if needed (RTL generated)")

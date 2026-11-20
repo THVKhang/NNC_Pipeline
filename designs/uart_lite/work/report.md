@@ -1,6 +1,6 @@
 # Verification report — uart_lite
 
-Generated 2026-11-19T06:11:17+00:00 by NNC Pipeline.
+Generated 2026-11-20T05:08:46+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -18,7 +18,7 @@ Generated 2026-11-19T06:11:17+00:00 by NNC Pipeline.
 | Code coverage (RTL), functional | 97.5 % (39/40 cover points of the specification) |
 | Mutation score | 97.2 % (35 killed / 1 survived / 0 not compiled) |
 | Coverage target | not requested (`nnc cover <design> --target <n> --metric <m>`) |
-| Formal (SymbiYosys, depth 64) | {'BOUNDED': 6, 'PROVEN': 4, 'UNSUPPORTED': 1, 'VACUOUS': 2} — reset assumptions + verif/formal/nnc_env.sv, work/formal.md |
+| Formal (SymbiYosys, depth 64) | {'BOUNDED': 8, 'PROVEN': 4, 'UNSUPPORTED': 1} — reset assumptions + verif/formal/nnc_env.sv, work/formal.md |
 | Triage | 6 failure(s), 6 analysed: work/triage.md |
 | Agent cost | US$15.2195 in 43 calls (A0 0.7241, A1 0.4287, A12 0.3706, A13 0.1366, A15 0.9103, A2 0.3682, A3 0.1444, A4 1.0818, A5 0.2327, A6 0.4358, A7 8.6598, A9 1.7268); of which US$2.742 in 1 failed calls (usage limit, timeout, invalid answer) |
 
@@ -34,7 +34,7 @@ Generated 2026-11-19T06:11:17+00:00 by NNC Pipeline.
 | Every run of the run set built and ran | met — 7 runs |
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | **not met** — 2 rule(s) below: UL-6.2-05, UL-6.2-12 |
-| Formal: no counterexample, no vacuous or failed proof | **not met** — VACUOUS 2 |
+| Formal: no counterexample, no vacuous or failed proof | met — {'BOUNDED': 8, 'PROVEN': 4, 'UNSUPPORTED': 1} (work/formal.md) |
 
 ## Run set
 
@@ -68,8 +68,8 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 | CHK-001 | assertion | Outputs change only at i_clk rising edges or reset assertion | **PASS** | hits 5335012, fails 0; hit in 7/7 runs; formal UNSUPPORTED |
 | CHK-002 | assertion | Output values while reset is asserted, including immediately after asynchronous assertion | **PASS** | hits 1789, fails 0; hit in 7/7 runs; formal PROVEN |
 | CHK-003 | assertion | Delivery into an empty holding register at V=M+2 | **PASS** | hits 4535, fails 0; hit in 7/7 runs; formal BOUNDED |
-| CHK-004 | assertion | Held byte taken at the delivery edge itself loads the new byte, no overrun | **PASS** | hits 14, fails 0; hit in 7/7 runs; formal VACUOUS |
-| CHK-005 | assertion | Overrun drop at V keeps the held byte; one-cycle pulse | **PASS** | hits 63, fails 0; hit in 7/7 runs; formal VACUOUS |
+| CHK-004 | assertion | Held byte taken at the delivery edge itself loads the new byte, no overrun | **PASS** | hits 14, fails 0; hit in 7/7 runs; formal BOUNDED |
+| CHK-005 | assertion | Overrun drop at V keeps the held byte; one-cycle pulse | **PASS** | hits 63, fails 0; hit in 7/7 runs; formal BOUNDED |
 | CHK-006 | assertion | o_rx_overrun only after a drop edge, independent of o_rx_valid | **PASS** | hits 5334619, fails 0; hit in 7/7 runs; formal BOUNDED |
 | CHK-007 | assertion | Consumer take empties the holding register | **PASS** | hits 4479, fails 0; hit in 7/7 runs; formal PROVEN |
 | CHK-008 | assertion | Held byte is stable until taken | **PASS** | hits 1901815, fails 0; hit in 7/7 runs; formal PROVEN |

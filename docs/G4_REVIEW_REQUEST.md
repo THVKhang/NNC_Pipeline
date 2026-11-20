@@ -76,7 +76,7 @@ These have two more gates, D1 (parameter values) and D2 (generated RTL). Both we
 |---|---|---|---|
 | gen_apb_tlul_bridge | [packet](../designs/gen_apb_tlul_bridge/work/review_packet.md), [RTL report](../designs/gen_apb_tlul_bridge/work/rtl_gen.md) | 17/17 tests, 17/17 formal proven, mutation 36/36, upstream testbench passes | Are A15's 4 open points the intended readings (spec over the generic TL-UL text)? Is the RTL acceptable to you under RR-03/24/32/33/41/44, which code does not check? |
 | gen_sync_fifo | [packet](../designs/gen_sync_fifo/work/review_packet.md), [RTL report](../designs/gen_sync_fifo/work/rtl_gen.md), [formal triage](../designs/gen_sync_fifo/work/formal_triage.md) | 24/25 tests; CHK-008 fails in simulation and formal; D2 open | See below |
-| uart_lite | [packet](../designs/uart_lite/work/review_packet.md), [spec](../designs/uart_lite/spec/uart_lite_Design_Specification.md) | 20/20 tests, 13/13 assertions in 4 configurations; no formal counterexample; mutation 35/36 | Are the delegated spec decisions D-001..D-012 and answers OQ-001..003 sound for a UART? Are the 2 hand fixes ([NOTICE](../designs/uart_lite/NOTICE.md)) corrections, not relaxations? M19 is proven equivalent by formal for N = 16, 4 and 5; for N = 1024 the proof did not close within the time limit (no difference within 64 cycles). Is that enough? |
+| uart_lite | [packet](../designs/uart_lite/work/review_packet.md), [spec](../designs/uart_lite/spec/uart_lite_Design_Specification.md) | 20/20 tests, 13/13 assertions in 4 configurations; no formal counterexample (4 proven, 8 bounded; CHK-004/005 reached only at 128 cycles with 4 or 5 cycles per bit, and 5 receive checks are vacuous with 16 or 1024 cycles per bit, where one frame is longer than the depth); mutation 35/36 | Are the delegated spec decisions D-001..D-012 and answers OQ-001..003 sound for a UART? Are the 2 hand fixes ([NOTICE](../designs/uart_lite/NOTICE.md)) corrections, not relaxations? M19 is proven equivalent by formal for N = 16, 4 and 5; for N = 1024 the proof did not close within the time limit (no difference within 64 cycles). Is that enough? |
 
 **gen_sync_fifo, CHK-008.** A second software-reset pulse can arrive while a reset sequence is running. In that case:
 - **the generated RTL** remembers the pulse and starts a new sequence after one RUN cycle (REQ-SRST-008);
@@ -88,6 +88,8 @@ Which reading binds? There are three options:
 - an environment rule that forbids the pulse (formal triage, E);
 - a checker with a pending-request model, which would be stricter (B);
 - a specification change (C).
+
+`nnc spec-lint gen_sync_fifo` (agent A18, specification only, US$0.97) lists this case as GAP-002 [high], with three readings: a pending flop latches the pulse, a short pulse is lost, or a pulse in REQ/PTR merges into the running sequence. The generated RTL took the first reading; the delivered RTL and the checker took the second. See [spec_lint.md](../designs/gen_sync_fifo/work/spec_lint.md) for this and 11 other gaps.
 
 ## What the evidence is, and is not
 

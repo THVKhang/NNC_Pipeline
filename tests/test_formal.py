@@ -93,6 +93,70 @@ class FormalTest(unittest.TestCase):
         m = formal.merge_configs({"a": r(CHK_001="VACUOUS"), "b": r(CHK_001="VACUOUS")})
         self.assertEqual(m["checks"]["CHK-001"]["status"], "VACUOUS")
 
+    def test_one_config(self):
+        rec = {"depth": 20, "by_status": {}, "configs": {}, "checks": {
+            "CHK-001": {"status": "BOUNDED", "per_config": {"base": "VACUOUS", "min": "BOUNDED"}},
+            "CHK-002": {"status": "PROVEN", "per_config": {"min": "PROVEN"}}}}
+        base = formal.one_config(rec, "base")
+        self.assertEqual(base["checks"], {"CHK-001": {"status": "VACUOUS", "per_config": {"base": "VACUOUS"}}})
+        self.assertEqual((base["by_status"], base["depth"]), ({"VACUOUS": 1}, 20))
+        single = {"depth": 20, "by_status": {}, "checks": {"CHK-001": {"status": "PROVEN"}}}  # a run of one config
+        got = formal.one_config(single, "base")
+        fails, notes = formal.compare_recorded(base, got)
+        self.assertEqual(fails, ["CHK-001 [base]: recorded VACUOUS, rerun PROVEN"])
+        got["checks"]["CHK-001"] = {"status": "VACUOUS", "per_config": {"base": "VACUOUS"}}
+        self.assertEqual(formal.compare_recorded(base, got), ([], []))
+
+    def test_depth_escalation_of_vacuous_checks(self):
+        from nnc.simhost import RunResult, SimHost
+
+        class DepthHost(SimHost):
+            """CHK-001 is reachable only from depth 80; CHK-002 at any depth."""
+            def __init__(self):
+                self.depths = []
+
+            def run(self, files, script, outputs, timeout_s=1800, tag="run"):
+                out = Path(tempfile.mkdtemp())
+                for name, text in files.items():
+                    if not name.endswith(".sby"):
+                        continue
+                    tag_ = name[:-4]
+                    depth = int(next(l.split()[1] for l in str(text).splitlines() if l.startswith("depth ")))
+                    self.depths.append((tag_, depth))
+                    cover = "PASS" if tag_ != "CHK_001" or depth >= 80 else "FAIL"
+                    for task, st in (("bmc", "PASS"), ("prove", "PASS"), ("cover", cover)):
+                        (out / f"{tag_}_{task}").mkdir()
+                        (out / f"{tag_}_{task}" / "status").write_text(st)
+                return RunResult(0, "", out)
+
+        contract = {"top": "m_demo", "checks": [], "interface": {
+            "clock": "clk", "reset": {"name": "rst_n", "active_low": True}, "parameters": [],
+            "ports": [{"name": n, "direction": "input", "width": "1"} for n in ("clk", "rst_n", "a", "b")]}}
+        with tempfile.TemporaryDirectory() as tmp:
+            rtl, sva = Path(tmp) / "rtl", Path(tmp) / "sva"
+            rtl.mkdir()
+            sva.mkdir()
+            (rtl / "m_demo.sv").write_text("module m_demo(input logic clk, rst_n, a, b); endmodule\n")
+            (sva / "nnc_chk_demo.sv").write_text(CHK)
+            host = DepthHost()
+            res = formal.run(host, contract, rtl, sva, None, depth=20, max_depth=100)
+            self.assertEqual(res["checks"]["CHK-001"]["status"], "PROVEN")
+            self.assertEqual((res["checks"]["CHK-001"]["depth"], res["checks"]["CHK-001"]["escalated_from"]), (80, 20))
+            self.assertNotIn("depth", res["checks"]["CHK-002"])
+            self.assertEqual(sorted(d for t, d in host.depths if t == "CHK_001"), [20, 40, 80])
+            self.assertEqual([d for t, d in host.depths if t == "CHK_002"], [20])        # only the vacuous one again
+            res = formal.run(DepthHost(), contract, rtl, sva, None, depth=20)            # default: no escalation
+            self.assertEqual(res["checks"]["CHK-001"]["status"], "VACUOUS")
+
+    def test_spec_lint_references(self):
+        from nnc import speclint
+        files = {"Spec.md": ["l1", "l2", "l3"]}
+        self.assertTrue(speclint.ref_ok("spec/Spec.md:2", files))
+        self.assertTrue(speclint.ref_ok("Spec.md:1-3", files))
+        self.assertFalse(speclint.ref_ok("spec/Spec.md:9", files))
+        self.assertFalse(speclint.ref_ok("spec/Other.md:1", files))
+        self.assertFalse(speclint.ref_ok("section 10.7", files))
+
     def test_env_validation(self):
         good = "  // ENV-01: idle in reset (R-1)\n  always @(*) if (!rst_n) assume (!a);\n"
         self.assertEqual(gen_env.validate_body(good), [])
