@@ -1,0 +1,3659 @@
+{
+ "version": 1,
+ "doc": {
+  "file": "spi_master_Design_Specification.md",
+  "sha256": "e1b90af335f5f1cdcf23ecb560e5500de1cd47e24119cf01bc03c6e96d0b4591",
+  "length": 546,
+  "location": "line"
+ },
+ "sections": [
+  {
+   "id": "front",
+   "title": "Front matter",
+   "level": 0,
+   "parent": null,
+   "page_start": 1,
+   "page_end": 1,
+   "sentences": []
+  },
+  {
+   "id": "T1",
+   "title": "spi_master Design Specification",
+   "level": 1,
+   "parent": null,
+   "page_start": 1,
+   "page_end": 3,
+   "sentences": [
+    {
+     "id": "T1:s1",
+     "text": "Revision: 0.1, 2026-11-19.",
+     "page": 3,
+     "normative": false
+    },
+    {
+     "id": "T1:s2",
+     "text": "Top module: m_spi_master.",
+     "page": 3,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "1",
+   "title": "Overview",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 5,
+   "page_end": 5,
+   "sentences": []
+  },
+  {
+   "id": "1.1",
+   "title": "Purpose",
+   "level": 3,
+   "parent": "1",
+   "page_start": 7,
+   "page_end": 9,
+   "sentences": [
+    {
+     "id": "1.1:s1",
+     "text": "spi_master is a single-clock SPI master with one slave select.",
+     "page": 9,
+     "normative": false
+    },
+    {
+     "id": "1.1:s2",
+     "text": "Each transfer shifts one byte out on o_mosi and one byte in from i_miso.",
+     "page": 9,
+     "normative": false
+    },
+    {
+     "id": "1.1:s3",
+     "text": "Software sends the bytes to transmit through a valid/ready command stream and gets back each received byte through a valid/ready response stream, in order.",
+     "page": 9,
+     "normative": false
+    },
+    {
+     "id": "1.1:s4",
+     "text": "The block never drops a received byte: when the response stream is back-pressured, the master stops starting new transfers.",
+     "page": 9,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "1.2",
+   "title": "Features",
+   "level": 3,
+   "parent": "1",
+   "page_start": 11,
+   "page_end": 20,
+   "sentences": [
+    {
+     "id": "1.2:s1",
+     "text": "One 8-bit transfer per command, MSB first, full duplex.",
+     "page": 13,
+     "normative": false
+    },
+    {
+     "id": "1.2:s2",
+     "text": "Bursts of any length: i_cmd_last = 1 marks the last byte of a burst. o_cs_n stays low for the whole burst.",
+     "page": 14,
+     "normative": false
+    },
+    {
+     "id": "1.2:s3",
+     "text": "SPI modes 0 to 3 are selected by i_cpol and i_cpha.",
+     "page": 15,
+     "normative": false
+    },
+    {
+     "id": "1.2:s4",
+     "text": "They are captured when a burst starts.",
+     "page": 15,
+     "normative": false
+    },
+    {
+     "id": "1.2:s5",
+     "text": "SCLK frequency is f(i_clk) / (2 x PARA_SPI_CLK_DIV), with PARA_SPI_CLK_DIV from 1 to 255 (fixed at elaboration).",
+     "page": 16,
+     "normative": false
+    },
+    {
+     "id": "1.2:s6",
+     "text": "Slave-select timing in half periods: lead time, trail time and minimum high time between bursts.",
+     "page": 17,
+     "normative": false
+    },
+    {
+     "id": "1.2:s7",
+     "text": "Back-to-back bytes inside a burst have no SCLK gap when the next command is ready in time.",
+     "page": 18,
+     "normative": false
+    },
+    {
+     "id": "1.2:s8",
+     "text": "Otherwise SCLK pauses at its idle level and o_cs_n stays low.",
+     "page": 18,
+     "normative": false
+    },
+    {
+     "id": "1.2:s9",
+     "text": "No received byte is lost under back-pressure: one byte is shown on the response stream and at most one more is held inside the master.",
+     "page": 19,
+     "normative": false
+    },
+    {
+     "id": "1.2:s10",
+     "text": "Asynchronous active-low reset.",
+     "page": 20,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "1.3",
+   "title": "Out of scope",
+   "level": 3,
+   "parent": "1",
+   "page_start": 22,
+   "page_end": 30,
+   "sentences": [
+    {
+     "id": "1.3:s1",
+     "text": "More than one slave select, word lengths other than 8 bits, LSB-first order.",
+     "page": 24,
+     "normative": false
+    },
+    {
+     "id": "1.3:s2",
+     "text": "3-wire, dual, quad or DDR SPI, and SPI slave operation.",
+     "page": 25,
+     "normative": false
+    },
+    {
+     "id": "1.3:s3",
+     "text": "Changing the SCLK divider at run time, and programmable CS lead, trail or gap times.",
+     "page": 26,
+     "normative": false
+    },
+    {
+     "id": "1.3:s4",
+     "text": "Timeouts, error reporting outputs, interrupts, a register interface and DMA.",
+     "page": 27,
+     "normative": false
+    },
+    {
+     "id": "1.3:s5",
+     "text": "Synchronising i_miso or handling metastability on i_miso.",
+     "page": 28,
+     "normative": false
+    },
+    {
+     "id": "1.3:s6",
+     "text": "The slave drives i_miso from SCLK, which this block derives from i_clk.",
+     "page": 28,
+     "normative": false
+    },
+    {
+     "id": "1.3:s7",
+     "text": "Tri-stating or turning around o_mosi, and read-only or write-only transfer types.",
+     "page": 29,
+     "normative": false
+    },
+    {
+     "id": "1.3:s8",
+     "text": "Every transfer is full duplex.",
+     "page": 29,
+     "normative": false
+    },
+    {
+     "id": "1.3:s9",
+     "text": "Glitch checks at gate level and DFT/scan insertion.",
+     "page": 30,
+     "normative": false
+    },
+    {
+     "id": "1.3:s10",
+     "text": "These belong to the implementation flow, not to this verification.",
+     "page": 30,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "title": "References",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 32,
+   "page_end": 39,
+   "sentences": [
+    {
+     "id": "2:s1",
+     "text": "ID: REF-001; Document: Motorola/Freescale SPI Block Guide (S12SPIV4); Revision: V04.01; Used for: Meaning of CPOL/CPHA and SPI modes 0 to 3 (leading/trailing edge, sample/shift)",
+     "page": 36,
+     "normative": false
+    },
+    {
+     "id": "2:s2",
+     "text": "ID: REF-002; Document: ARM IHI 0051, AMBA 4 AXI4-Stream Protocol Specification; Revision: Issue A; Used for: Valid/ready handshake meaning only: a transfer happens at an edge where valid and ready are both 1. The rule that TVALID stays 1 until the handshake does NOT apply to the command stream (REQ-CMD-004, GAP-004)",
+     "page": 37,
+     "normative": false
+    },
+    {
+     "id": "2:s3",
+     "text": "ID: REF-003; Document: docs/RTL_RULES.md (project coding rules); Revision: Current in repository; Used for: RTL coding rules",
+     "page": 38,
+     "normative": false
+    },
+    {
+     "id": "2:s4",
+     "text": "ID: REF-004; Document: spi_master design description (input of nnc spec-draft); Revision: 2026-11-19; Used for: Source of this specification",
+     "page": 39,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "title": "Terms",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 41,
+   "page_end": 63,
+   "sentences": [
+    {
+     "id": "3:s1",
+     "text": "Term: D; Meaning: Value of PARA_SPI_CLK_DIV: the number of i_clk cycles in one SCLK half period.",
+     "page": 45,
+     "normative": false
+    },
+    {
+     "id": "3:s2",
+     "text": "Term: Edge; Meaning: A rising edge of i_clk. Edge E + n is the n-th rising edge after edge E.",
+     "page": 46,
+     "normative": false
+    },
+    {
+     "id": "3:s3",
+     "text": "Term: Cycle starting at edge E; Meaning: The i_clk period between edge E and edge E + 1. \"After edge E\" means in that cycle.",
+     "page": 47,
+     "normative": false
+    },
+    {
+     "id": "3:s4",
+     "text": "Term: Command handshake; Meaning: An edge at which i_rst_n = 1, i_cmd_valid = 1 and o_cmd_ready = 1. The command is accepted at that edge.",
+     "page": 48,
+     "normative": false
+    },
+    {
+     "id": "3:s5",
+     "text": "Term: Response handshake; Meaning: An edge at which i_rst_n = 1, o_rsp_valid = 1 and i_rsp_ready = 1. The shown response is taken at that edge.",
+     "page": 49,
+     "normative": false
+    },
+    {
+     "id": "3:s6",
+     "text": "Term: Transfer; Meaning: Shifting one byte out and one byte in for one accepted command. A transfer whose command is accepted at edge A covers the 16·D cycles starting at edges A to A + 16·D − 1.",
+     "page": 50,
+     "normative": false
+    },
+    {
+     "id": "3:s7",
+     "text": "Term: A; Meaning: The acceptance edge of the transfer being described.",
+     "page": 51,
+     "normative": false
+    },
+    {
+     "id": "3:s8",
+     "text": "Term: SCLK edge k; Meaning: For a transfer with acceptance edge A, the k-th transition of o_sclk (k = 1 to 16). It happens at edge A + k·D.",
+     "page": 52,
+     "normative": false
+    },
+    {
+     "id": "3:s9",
+     "text": "Term: Leading / trailing edge; Meaning: The odd SCLK edges (k = 1, 3, …, 15) are leading edges, which leave the idle level. The even SCLK edges (k = 2, 4, …, 16) are trailing edges, which return to the idle level.",
+     "page": 53,
+     "normative": false
+    },
+    {
+     "id": "3:s10",
+     "text": "Term: Sampling edge / shift edge; Meaning: The SCLK edges at which the receiver samples data / the transmitter changes data. They depend on CPHA (section 7.3).",
+     "page": 54,
+     "normative": false
+    },
+    {
+     "id": "3:s11",
+     "text": "Term: Last cycle of a transfer; Meaning: The cycle starting at edge A + 16·D − 1, which ends at SCLK edge 16.",
+     "page": 55,
+     "normative": false
+    },
+    {
+     "id": "3:s12",
+     "text": "Term: Burst; Meaning: The sequence of transfers from the command that drives o_cs_n low up to and including the command with i_cmd_last = 1.",
+     "page": 56,
+     "normative": false
+    },
+    {
+     "id": "3:s13",
+     "text": "Term: CPOL_b, CPHA_b; Meaning: The values of i_cpol and i_cpha captured at the first acceptance edge of the current burst.",
+     "page": 57,
+     "normative": false
+    },
+    {
+     "id": "3:s14",
+     "text": "Term: Idle; Meaning: Phase with o_cs_n = 1.",
+     "page": 58,
+     "normative": false
+    },
+    {
+     "id": "3:s15",
+     "text": "Term: Pause; Meaning: Phase inside a burst after a transfer with i_cmd_last = 0 ended, when no command was accepted at its SCLK edge 16. o_cs_n = 0 and o_sclk is at the idle level.",
+     "page": 59,
+     "normative": false
+    },
+    {
+     "id": "3:s16",
+     "text": "Term: Trail; Meaning: The D cycles after SCLK edge 16 of the last transfer of a burst, before o_cs_n goes high.",
+     "page": 60,
+     "normative": false
+    },
+    {
+     "id": "3:s17",
+     "text": "Term: Gap; Meaning: The time o_cs_n stays 1 between two bursts.",
+     "page": 61,
+     "normative": false
+    },
+    {
+     "id": "3:s18",
+     "text": "Term: Shown byte; Meaning: The byte on o_rsp_data while o_rsp_valid = 1.",
+     "page": 62,
+     "normative": false
+    },
+    {
+     "id": "3:s19",
+     "text": "Term: Held byte; Meaning: A received byte that is complete but not yet loaded into o_rsp_data, because the shown byte has not been taken.",
+     "page": 63,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "4",
+   "title": "Parameters",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 65,
+   "page_end": 75,
+   "sentences": [
+    {
+     "id": "4:s1",
+     "text": "Parameter: PARA_SPI_CLK_DIV; Default: 4; Legal values: 1 to 255; Description: Number of i_clk cycles in one SCLK half period (D). SCLK frequency = f(i_clk) / (2·D).",
+     "page": 69,
+     "normative": true
+    },
+    {
+     "id": "4:s2",
+     "text": "The block has no derived parameter visible at its interface.",
+     "page": 71,
+     "normative": false
+    },
+    {
+     "id": "4:s3",
+     "text": "[REQ-PAR-001] Elaboration of m_spi_master shall fail with an error message when PARA_SPI_CLK_DIV is less than 1 or greater than 255.",
+     "page": 73,
+     "normative": true
+    },
+    {
+     "id": "4:s4",
+     "text": "[REQ-PAR-002] Every value of PARA_SPI_CLK_DIV from 1 to 255 shall give the behaviour of this specification without any other change to the RTL.",
+     "page": 75,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "5",
+   "title": "Interface",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 77,
+   "page_end": 97,
+   "sentences": [
+    {
+     "id": "5:s1",
+     "text": "m_spi_master: all ports (CLK)",
+     "page": 79,
+     "normative": false
+    },
+    {
+     "id": "5:s2",
+     "text": "Port: i_clk; Direction: input; Width: 1; Signal type: Clock; Reset value: Not applicable; Clock domain: CLK; Meaning: Clock, rising edge",
+     "page": 83,
+     "normative": false
+    },
+    {
+     "id": "5:s3",
+     "text": "Port: i_rst_n; Direction: input; Width: 1; Signal type: Reset (asynchronous assertion, synchronous release); Reset value: Not applicable; Clock domain: CLK; Meaning: Active-low reset",
+     "page": 84,
+     "normative": false
+    },
+    {
+     "id": "5:s4",
+     "text": "Port: i_cmd_valid; Direction: input; Width: 1; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Command stream valid. The environment keeps it 0 while i_rst_n = 0",
+     "page": 85,
+     "normative": false
+    },
+    {
+     "id": "5:s5",
+     "text": "Port: o_cmd_ready; Direction: output; Width: 1; Signal type: Data; Reset value: 1; Clock domain: CLK; Meaning: Command stream ready. Does not depend combinationally on any input",
+     "page": 86,
+     "normative": false
+    },
+    {
+     "id": "5:s6",
+     "text": "Port: i_cmd_data; Direction: input; Width: 8; Signal type: Data; Reset value: Not applicable; Clock domain: CLK; Meaning: Byte to send. Captured at the command handshake",
+     "page": 87,
+     "normative": false
+    },
+    {
+     "id": "5:s7",
+     "text": "Port: i_cmd_last; Direction: input; Width: 1; Signal type: Data; Reset value: Not applicable; Clock domain: CLK; Meaning: 1 = this byte ends the burst, and o_cs_n is released after it. Captured at the command handshake",
+     "page": 88,
+     "normative": false
+    },
+    {
+     "id": "5:s8",
+     "text": "Port: o_rsp_valid; Direction: output; Width: 1; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Response stream valid",
+     "page": 89,
+     "normative": false
+    },
+    {
+     "id": "5:s9",
+     "text": "Port: i_rsp_ready; Direction: input; Width: 1; Signal type: Data; Reset value: Not applicable; Clock domain: CLK; Meaning: Response stream ready",
+     "page": 90,
+     "normative": false
+    },
+    {
+     "id": "5:s10",
+     "text": "Port: o_rsp_data; Direction: output; Width: 8; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Byte received during the transfer of the matching command",
+     "page": 91,
+     "normative": false
+    },
+    {
+     "id": "5:s11",
+     "text": "Port: o_sclk; Direction: output; Width: 1; Signal type: Data (SPI serial clock; not used as a clock inside the block); Reset value: Equal to i_cpol (follows it combinationally); Clock domain: CLK; Meaning: SPI serial clock",
+     "page": 92,
+     "normative": false
+    },
+    {
+     "id": "5:s12",
+     "text": "Port: o_mosi; Direction: output; Width: 1; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: SPI master-out slave-in data",
+     "page": 93,
+     "normative": false
+    },
+    {
+     "id": "5:s13",
+     "text": "Port: i_miso; Direction: input; Width: 1; Signal type: Data; Reset value: Not applicable; Clock domain: CLK; Meaning: SPI master-in slave-out data. Sampled by i_clk without a synchroniser",
+     "page": 94,
+     "normative": false
+    },
+    {
+     "id": "5:s14",
+     "text": "Port: o_cs_n; Direction: output; Width: 1; Signal type: Data; Reset value: 1; Clock domain: CLK; Meaning: SPI slave select, active low",
+     "page": 95,
+     "normative": false
+    },
+    {
+     "id": "5:s15",
+     "text": "Port: i_cpol; Direction: input; Width: 1; Signal type: Data (quasi-static configuration); Reset value: Not applicable; Clock domain: CLK; Meaning: SPI clock polarity (SCLK idle level). May change only while o_cs_n = 1",
+     "page": 96,
+     "normative": false
+    },
+    {
+     "id": "5:s16",
+     "text": "Port: i_cpha; Direction: input; Width: 1; Signal type: Data (quasi-static configuration); Reset value: Not applicable; Clock domain: CLK; Meaning: SPI clock phase. 0 = sample on leading edges, 1 = sample on trailing edges. May change only while o_cs_n = 1",
+     "page": 97,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "6",
+   "title": "Clocks and resets",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 99,
+   "page_end": 99,
+   "sentences": []
+  },
+  {
+   "id": "6.1",
+   "title": "Clocks",
+   "level": 3,
+   "parent": "6",
+   "page_start": 101,
+   "page_end": 109,
+   "sentences": [
+    {
+     "id": "6.1:s1",
+     "text": "[REQ-CLK-001] All state elements of m_spi_master shall be clocked by the rising edge of i_clk, which is the only clock of the block (domain CLK).",
+     "page": 103,
+     "normative": true
+    },
+    {
+     "id": "6.1:s2",
+     "text": "[REQ-CLK-002] o_sclk shall be produced as a data output timed by i_clk and shall not clock any state element inside the block.",
+     "page": 105,
+     "normative": true
+    },
+    {
+     "id": "6.1:s3",
+     "text": "[REQ-CLK-003] i_miso shall be treated as synchronous to i_clk and shall be sampled without a synchroniser, because the slave launches it from o_sclk, which is derived from i_clk.",
+     "page": 107,
+     "normative": true
+    },
+    {
+     "id": "6.1:s4",
+     "text": "All inputs are synchronous to i_clk.",
+     "page": 109,
+     "normative": false
+    },
+    {
+     "id": "6.1:s5",
+     "text": "The block has no clock-domain crossing.",
+     "page": 109,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "6.2",
+   "title": "Resets",
+   "level": 3,
+   "parent": "6",
+   "page_start": 111,
+   "page_end": 135,
+   "sentences": [
+    {
+     "id": "6.2:s1",
+     "text": "[REQ-RST-001] When i_rst_n changes to 0, all outputs shall take their reset values at once, without waiting for an edge of i_clk.",
+     "page": 113,
+     "normative": true
+    },
+    {
+     "id": "6.2:s2",
+     "text": "[REQ-RST-002] While i_rst_n = 0, o_cs_n shall be 1.",
+     "page": 115,
+     "normative": true
+    },
+    {
+     "id": "6.2:s3",
+     "text": "[REQ-RST-003] While i_rst_n = 0, o_sclk shall be equal to the current value of i_cpol and shall follow every change of i_cpol combinationally.",
+     "page": 117,
+     "normative": true
+    },
+    {
+     "id": "6.2:s4",
+     "text": "[REQ-RST-004] While i_rst_n = 0, o_mosi shall be 0.",
+     "page": 119,
+     "normative": true
+    },
+    {
+     "id": "6.2:s5",
+     "text": "[REQ-RST-005] While i_rst_n = 0, o_rsp_valid shall be 0 and o_rsp_data shall be 8'h00.",
+     "page": 121,
+     "normative": true
+    },
+    {
+     "id": "6.2:s6",
+     "text": "[REQ-RST-006] While i_rst_n = 0, o_cmd_ready shall be 1.",
+     "page": 123,
+     "normative": true
+    },
+    {
+     "id": "6.2:s7",
+     "text": "[REQ-RST-007] While i_rst_n = 0, the master shall not accept a command, whatever the values of i_cmd_valid and o_cmd_ready.",
+     "page": 125,
+     "normative": true
+    },
+    {
+     "id": "6.2:s8",
+     "text": "[REQ-RST-008] Reset asserted during a burst shall abort the transfer in progress, and no response shall be produced for that transfer.",
+     "page": 127,
+     "normative": true
+    },
+    {
+     "id": "6.2:s9",
+     "text": "[REQ-RST-009] Reset asserted while a shown byte or a held byte exists shall discard that byte without a response handshake.",
+     "page": 129,
+     "normative": true
+    },
+    {
+     "id": "6.2:s10",
+     "text": "[REQ-RST-010] After i_rst_n returns to 1, the master shall be in Idle with the gap requirement met: it can accept a command at the first edge at which i_rst_n is 1.",
+     "page": 131,
+     "normative": true
+    },
+    {
+     "id": "6.2:s11",
+     "text": "[REQ-RST-011] The minimum o_cs_n high time of REQ-CS-005 shall not be required across a reset: the high time of o_cs_n after an aborted burst is the reset duration plus the time until the next acceptance.",
+     "page": 133,
+     "normative": true
+    },
+    {
+     "id": "6.2:s12",
+     "text": "i_rst_n is released synchronously to i_clk by the environment (ENV-001).",
+     "page": 135,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "7",
+   "title": "Functional description",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 137,
+   "page_end": 159,
+   "sentences": [
+    {
+     "id": "7:s1",
+     "text": "This section uses the terms of section 3.",
+     "page": 139,
+     "normative": false
+    },
+    {
+     "id": "7:s2",
+     "text": "D = PARA_SPI_CLK_DIV.",
+     "page": 139,
+     "normative": false
+    },
+    {
+     "id": "7:s3",
+     "text": "The phases of the block are:",
+     "page": 139,
+     "normative": false
+    },
+    {
+     "id": "7:s4",
+     "text": "Phase: Reset (i_rst_n = 0); o_cs_n: 1; o_sclk: i_cpol (combinational); o_mosi: 0; o_cmd_ready: 1",
+     "page": 143,
+     "normative": false
+    },
+    {
+     "id": "7:s5",
+     "text": "Phase: Idle; o_cs_n: 1; o_sclk: i_cpol (combinational); o_mosi: Holds last value; o_cmd_ready: 0 in the first D − 1 cycles after o_cs_n rose, otherwise NOT o_rsp_valid",
+     "page": 144,
+     "normative": false
+    },
+    {
+     "id": "7:s6",
+     "text": "Phase: Transfer; o_cs_n: 0; o_sclk: Toggles at edges A + k·D, k = 1 to 16; o_mosi: Section 7.5; o_cmd_ready: 0, except in the last cycle: 1 if i_cmd_last of this transfer = 0 and o_rsp_valid = 0",
+     "page": 145,
+     "normative": false
+    },
+    {
+     "id": "7:s7",
+     "text": "Phase: Pause; o_cs_n: 0; o_sclk: CPOL_b; o_mosi: Holds last value; o_cmd_ready: NOT o_rsp_valid",
+     "page": 146,
+     "normative": false
+    },
+    {
+     "id": "7:s8",
+     "text": "Phase: Trail; o_cs_n: 0; o_sclk: CPOL_b; o_mosi: Holds last value; o_cmd_ready: 0",
+     "page": 147,
+     "normative": false
+    },
+    {
+     "id": "7:s9",
+     "text": "Phase changes (all at edges, except reset):",
+     "page": 149,
+     "normative": false
+    },
+    {
+     "id": "7:s10",
+     "text": "From: Idle; Condition: Command handshake at edge A; To: Transfer (first of a burst)",
+     "page": 153,
+     "normative": false
+    },
+    {
+     "id": "7:s11",
+     "text": "From: Transfer; Condition: Edge A + 16·D, command handshake at this edge; To: Transfer (next byte, no gap)",
+     "page": 154,
+     "normative": false
+    },
+    {
+     "id": "7:s12",
+     "text": "From: Transfer; Condition: Edge A + 16·D, no handshake, i_cmd_last of this transfer = 0; To: Pause",
+     "page": 155,
+     "normative": false
+    },
+    {
+     "id": "7:s13",
+     "text": "From: Transfer; Condition: Edge A + 16·D, i_cmd_last of this transfer = 1; To: Trail",
+     "page": 156,
+     "normative": false
+    },
+    {
+     "id": "7:s14",
+     "text": "From: Pause; Condition: Command handshake; To: Transfer",
+     "page": 157,
+     "normative": false
+    },
+    {
+     "id": "7:s15",
+     "text": "From: Trail; Condition: Edge A + 17·D; To: Idle",
+     "page": 158,
+     "normative": false
+    },
+    {
+     "id": "7:s16",
+     "text": "From: Any; Condition: i_rst_n = 0; To: Reset",
+     "page": 159,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "7.1",
+   "title": "Command stream",
+   "level": 3,
+   "parent": "7",
+   "page_start": 161,
+   "page_end": 185,
+   "sentences": [
+    {
+     "id": "7.1:s1",
+     "text": "[REQ-CMD-001] The master shall accept a command at an edge only when i_rst_n = 1, i_cmd_valid = 1 and o_cmd_ready = 1 at that edge.",
+     "page": 163,
+     "normative": true
+    },
+    {
+     "id": "7.1:s2",
+     "text": "[REQ-CMD-002] At the acceptance edge the master shall capture i_cmd_data as the byte to send and i_cmd_last as the end-of-burst flag of that transfer.",
+     "page": 165,
+     "normative": true
+    },
+    {
+     "id": "7.1:s3",
+     "text": "[REQ-CMD-003] The values of i_cmd_data and i_cmd_last at edges without a command handshake shall have no effect.",
+     "page": 167,
+     "normative": true
+    },
+    {
+     "id": "7.1:s4",
+     "text": "[REQ-CMD-004] If i_cmd_valid goes from 1 to 0 without a command handshake, the master shall behave as if the command had never been presented.",
+     "page": 169,
+     "normative": true
+    },
+    {
+     "id": "7.1:s5",
+     "text": "[REQ-CMD-005] o_cmd_ready shall change only at an edge of i_clk or when i_rst_n is asserted, and shall not depend combinationally on any input.",
+     "page": 171,
+     "normative": true
+    },
+    {
+     "id": "7.1:s6",
+     "text": "[REQ-CMD-006] While i_rst_n = 1, o_cmd_ready shall be 0 in every cycle in which o_rsp_valid = 1.",
+     "page": 173,
+     "normative": true
+    },
+    {
+     "id": "7.1:s7",
+     "text": "[REQ-CMD-007] When o_cs_n changes from 0 to 1 at edge R, o_cmd_ready shall be 0 in every cycle that starts at an edge from R to R + D − 2.",
+     "page": 175,
+     "normative": true
+    },
+    {
+     "id": "7.1:s8",
+     "text": "When D = 1 there is no such cycle.",
+     "page": 175,
+     "normative": false
+    },
+    {
+     "id": "7.1:s9",
+     "text": "[REQ-CMD-008] In Idle, o_cmd_ready shall be 1 when o_rsp_valid = 0 in every cycle that starts at edge R + D − 1 or later, and in every cycle after reset release until the next acceptance.",
+     "page": 177,
+     "normative": true
+    },
+    {
+     "id": "7.1:s10",
+     "text": "[REQ-CMD-009] During a transfer, o_cmd_ready shall be 0 in every cycle except the last cycle of the transfer.",
+     "page": 179,
+     "normative": true
+    },
+    {
+     "id": "7.1:s11",
+     "text": "[REQ-CMD-010] In the last cycle of a transfer, o_cmd_ready shall be 1 if the i_cmd_last captured for that transfer is 0 and o_rsp_valid is 0, and 0 otherwise.",
+     "page": 181,
+     "normative": true
+    },
+    {
+     "id": "7.1:s12",
+     "text": "[REQ-CMD-011] In Pause, o_cmd_ready shall be 1 when o_rsp_valid = 0 and 0 when o_rsp_valid = 1.",
+     "page": 183,
+     "normative": true
+    },
+    {
+     "id": "7.1:s13",
+     "text": "[REQ-CMD-012] In Trail, o_cmd_ready shall be 0.",
+     "page": 185,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "7.2",
+   "title": "Burst framing and slave select",
+   "level": 3,
+   "parent": "7",
+   "page_start": 187,
+   "page_end": 203,
+   "sentences": [
+    {
+     "id": "7.2:s1",
+     "text": "[REQ-CS-001] A command accepted in Idle at edge A shall start a burst: o_cs_n shall change from 1 to 0 at edge A.",
+     "page": 189,
+     "normative": true
+    },
+    {
+     "id": "7.2:s2",
+     "text": "[REQ-CS-002] o_cs_n shall stay 0 from the start of a burst until edge A + 17·D, where A is the acceptance edge of the transfer whose captured i_cmd_last is 1.",
+     "page": 191,
+     "normative": true
+    },
+    {
+     "id": "7.2:s3",
+     "text": "At that edge o_cs_n shall change to 1.",
+     "page": 191,
+     "normative": true
+    },
+    {
+     "id": "7.2:s4",
+     "text": "[REQ-CS-003] o_cs_n shall change only at the edges given in REQ-CS-001 and REQ-CS-002, and at the assertion of i_rst_n.",
+     "page": 193,
+     "normative": true
+    },
+    {
+     "id": "7.2:s5",
+     "text": "[REQ-CS-004] The first SCLK edge of a burst shall come exactly D cycles after o_cs_n falls (edge A + D), so the lead time is one SCLK half period.",
+     "page": 195,
+     "normative": true
+    },
+    {
+     "id": "7.2:s6",
+     "text": "[REQ-CS-005] Between two bursts with no reset in between, o_cs_n shall stay 1 for at least D cycles.",
+     "page": 197,
+     "normative": true
+    },
+    {
+     "id": "7.2:s7",
+     "text": "[REQ-CS-006] o_cs_n shall rise exactly D cycles after SCLK edge 16 of the last transfer of the burst, so the trail time is one SCLK half period.",
+     "page": 199,
+     "normative": true
+    },
+    {
+     "id": "7.2:s8",
+     "text": "[REQ-CS-007] The rise of o_cs_n at the end of a burst shall not depend on the state of the response stream (o_rsp_valid, i_rsp_ready, a held byte).",
+     "page": 201,
+     "normative": true
+    },
+    {
+     "id": "7.2:s9",
+     "text": "REQ-CS-005 follows from REQ-CMD-007: the earliest acceptance after o_cs_n rises at edge R is edge R + D.",
+     "page": 203,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "7.3",
+   "title": "SPI mode selection",
+   "level": 3,
+   "parent": "7",
+   "page_start": 205,
+   "page_end": 224,
+   "sentences": [
+    {
+     "id": "7.3:s1",
+     "text": "[REQ-MODE-001] At the acceptance edge of the first command of a burst, the master shall capture i_cpol as CPOL_b and i_cpha as CPHA_b.",
+     "page": 207,
+     "normative": true
+    },
+    {
+     "id": "7.3:s2",
+     "text": "[REQ-MODE-002] CPOL_b and CPHA_b shall control o_sclk, o_mosi and the sampling of i_miso for the whole burst, including Pause and Trail.",
+     "page": 209,
+     "normative": true
+    },
+    {
+     "id": "7.3:s3",
+     "text": "[REQ-MODE-003] Changes of i_cpol or i_cpha while o_cs_n = 0 shall have no effect on o_sclk, o_mosi, o_cs_n, the sampling of i_miso or the response data.",
+     "page": 211,
+     "normative": true
+    },
+    {
+     "id": "7.3:s4",
+     "text": "[REQ-MODE-004] With CPHA_b = 0, the leading SCLK edges (odd k) shall be the sampling edges and the trailing SCLK edges (even k) shall be the shift edges.",
+     "page": 213,
+     "normative": true
+    },
+    {
+     "id": "7.3:s5",
+     "text": "[REQ-MODE-005] With CPHA_b = 1, the leading SCLK edges (odd k) shall be the shift edges and the trailing SCLK edges (even k) shall be the sampling edges.",
+     "page": 215,
+     "normative": true
+    },
+    {
+     "id": "7.3:s6",
+     "text": "Mode: 0; i_cpol: 0; i_cpha: 0; Idle o_sclk: 0; Leading edges (k odd): Rising, sample; Trailing edges (k even): Falling, shift; o_mosi bit 7 launched at: Acceptance edge A; i_miso sampled at: Edges A + (2j+1)·D",
+     "page": 219,
+     "normative": false
+    },
+    {
+     "id": "7.3:s7",
+     "text": "Mode: 1; i_cpol: 0; i_cpha: 1; Idle o_sclk: 0; Leading edges (k odd): Rising, shift; Trailing edges (k even): Falling, sample; o_mosi bit 7 launched at: SCLK edge 1 (A + D); i_miso sampled at: Edges A + (2j+2)·D",
+     "page": 220,
+     "normative": false
+    },
+    {
+     "id": "7.3:s8",
+     "text": "Mode: 2; i_cpol: 1; i_cpha: 0; Idle o_sclk: 1; Leading edges (k odd): Falling, sample; Trailing edges (k even): Rising, shift; o_mosi bit 7 launched at: Acceptance edge A; i_miso sampled at: Edges A + (2j+1)·D",
+     "page": 221,
+     "normative": false
+    },
+    {
+     "id": "7.3:s9",
+     "text": "Mode: 3; i_cpol: 1; i_cpha: 1; Idle o_sclk: 1; Leading edges (k odd): Falling, shift; Trailing edges (k even): Rising, sample; o_mosi bit 7 launched at: SCLK edge 1 (A + D); i_miso sampled at: Edges A + (2j+2)·D",
+     "page": 222,
+     "normative": false
+    },
+    {
+     "id": "7.3:s10",
+     "text": "(j = 0 to 7.",
+     "page": 224,
+     "normative": false
+    },
+    {
+     "id": "7.3:s11",
+     "text": "Bit 7 − j is transmitted and received in step j.)",
+     "page": 224,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "7.4",
+   "title": "SCLK generation",
+   "level": 3,
+   "parent": "7",
+   "page_start": 226,
+   "page_end": 240,
+   "sentences": [
+    {
+     "id": "7.4:s1",
+     "text": "[REQ-SCLK-001] For a transfer with acceptance edge A, o_sclk shall toggle at each of the 16 edges A + k·D, k = 1 to 16.",
+     "page": 228,
+     "normative": true
+    },
+    {
+     "id": "7.4:s2",
+     "text": "[REQ-SCLK-002] While o_cs_n = 0, o_sclk shall not change at any edge other than those of REQ-SCLK-001.",
+     "page": 230,
+     "normative": true
+    },
+    {
+     "id": "7.4:s3",
+     "text": "[REQ-SCLK-003] While o_cs_n = 0 and no transfer is between its SCLK edges 1 and 16, o_sclk shall equal CPOL_b.",
+     "page": 232,
+     "normative": true
+    },
+    {
+     "id": "7.4:s4",
+     "text": "This covers the lead half period, Pause and Trail.",
+     "page": 232,
+     "normative": false
+    },
+    {
+     "id": "7.4:s5",
+     "text": "[REQ-SCLK-004] After SCLK edge k of a transfer, o_sclk shall equal NOT CPOL_b for odd k and CPOL_b for even k.",
+     "page": 234,
+     "normative": true
+    },
+    {
+     "id": "7.4:s6",
+     "text": "[REQ-SCLK-005] While o_cs_n = 1, o_sclk shall equal i_cpol and shall follow changes of i_cpol combinationally.",
+     "page": 236,
+     "normative": true
+    },
+    {
+     "id": "7.4:s7",
+     "text": "[REQ-SCLK-006] When o_cs_n rises at edge R, o_sclk shall take the value of i_cpol from edge R on.",
+     "page": 238,
+     "normative": true
+    },
+    {
+     "id": "7.4:s8",
+     "text": "[REQ-SCLK-007] When a transfer starts at SCLK edge 16 of the previous transfer of the same burst, the SCLK period over the joint shall be 2·D cycles with each half period equal to D cycles.",
+     "page": 240,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "7.5",
+   "title": "MOSI transmission",
+   "level": 3,
+   "parent": "7",
+   "page_start": 242,
+   "page_end": 260,
+   "sentences": [
+    {
+     "id": "7.5:s1",
+     "text": "The byte to send is d[7:0] = the captured i_cmd_data.",
+     "page": 244,
+     "normative": false
+    },
+    {
+     "id": "7.5:s2",
+     "text": "[REQ-MOSI-001] The bits of each byte shall be sent in the order d[7], d[6], …, d[0] (MSB first).",
+     "page": 246,
+     "normative": true
+    },
+    {
+     "id": "7.5:s3",
+     "text": "[REQ-MOSI-002] With CPHA_b = 0, o_mosi shall take the value d[7] at the acceptance edge A.",
+     "page": 248,
+     "normative": true
+    },
+    {
+     "id": "7.5:s4",
+     "text": "[REQ-MOSI-003] With CPHA_b = 0, o_mosi shall take the value d[7 − j] at edge A + 2·j·D for j = 1 to 7 (SCLK edges 2, 4, …, 14).",
+     "page": 250,
+     "normative": true
+    },
+    {
+     "id": "7.5:s5",
+     "text": "[REQ-MOSI-004] With CPHA_b = 1, o_mosi shall take the value d[7 − j] at edge A + (2·j + 1)·D for j = 0 to 7 (SCLK edges 1, 3, …, 15).",
+     "page": 252,
+     "normative": true
+    },
+    {
+     "id": "7.5:s6",
+     "text": "[REQ-MOSI-005] o_mosi shall not change at any edge other than those of REQ-MOSI-002 to REQ-MOSI-004, except at the assertion of i_rst_n.",
+     "page": 254,
+     "normative": true
+    },
+    {
+     "id": "7.5:s7",
+     "text": "[REQ-MOSI-006] In Idle, Pause and Trail, o_mosi shall keep the last value it was given.",
+     "page": 256,
+     "normative": true
+    },
+    {
+     "id": "7.5:s8",
+     "text": "That value is 0 after reset.",
+     "page": 256,
+     "normative": false
+    },
+    {
+     "id": "7.5:s9",
+     "text": "[REQ-MOSI-007] o_mosi shall be stable in the cycle before each sampling edge and shall not change at any sampling edge, in all four modes.",
+     "page": 258,
+     "normative": true
+    },
+    {
+     "id": "7.5:s10",
+     "text": "With CPHA_b = 0, o_mosi keeps d[0] after SCLK edge 16 unless the next command is accepted at that edge, in which case it takes the next d[7] at that edge (REQ-MOSI-002).",
+     "page": 260,
+     "normative": false
+    },
+    {
+     "id": "7.5:s11",
+     "text": "With CPHA_b = 1, o_mosi keeps its previous value from the acceptance edge until SCLK edge 1.",
+     "page": 260,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "7.6",
+   "title": "MISO reception",
+   "level": 3,
+   "parent": "7",
+   "page_start": 262,
+   "page_end": 272,
+   "sentences": [
+    {
+     "id": "7.6:s1",
+     "text": "[REQ-MISO-001] With CPHA_b = 0, the master shall capture i_miso as received bit r[7 − j] at edge A + (2·j + 1)·D for j = 0 to 7.",
+     "page": 264,
+     "normative": true
+    },
+    {
+     "id": "7.6:s2",
+     "text": "[REQ-MISO-002] With CPHA_b = 1, the master shall capture i_miso as received bit r[7 − j] at edge A + (2·j + 2)·D for j = 0 to 7.",
+     "page": 266,
+     "normative": true
+    },
+    {
+     "id": "7.6:s3",
+     "text": "[REQ-MISO-003] The value captured at a sampling edge shall be the value of i_miso in the cycle that ends at that edge, which is the value just before o_sclk makes the sampling transition.",
+     "page": 268,
+     "normative": true
+    },
+    {
+     "id": "7.6:s4",
+     "text": "[REQ-MISO-004] i_miso shall have no effect at any edge other than the sampling edges of a transfer.",
+     "page": 270,
+     "normative": true
+    },
+    {
+     "id": "7.6:s5",
+     "text": "[REQ-MISO-005] The received byte r[7:0] of a transfer shall be made of the 8 bits captured during that transfer only.",
+     "page": 272,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "7.7",
+   "title": "Response stream",
+   "level": 3,
+   "parent": "7",
+   "page_start": 274,
+   "page_end": 300,
+   "sentences": [
+    {
+     "id": "7.7:s1",
+     "text": "[REQ-RSP-001] Each accepted command shall produce exactly one response carrying the byte received during its transfer.",
+     "page": 276,
+     "normative": true
+    },
+    {
+     "id": "7.7:s2",
+     "text": "[REQ-RSP-002] Responses shall be delivered in the order in which the commands were accepted, across burst boundaries.",
+     "page": 278,
+     "normative": true
+    },
+    {
+     "id": "7.7:s3",
+     "text": "[REQ-RSP-003] At edge A + 16·D of a transfer, the master shall load the received byte into o_rsp_data and set o_rsp_valid to 1 if o_rsp_valid was 0 in the cycle ending at that edge or a response handshake occurs at that edge.",
+     "page": 280,
+     "normative": true
+    },
+    {
+     "id": "7.7:s4",
+     "text": "[REQ-RSP-004] If neither condition of REQ-RSP-003 holds at edge A + 16·D, the received byte shall become the held byte.",
+     "page": 282,
+     "normative": true
+    },
+    {
+     "id": "7.7:s5",
+     "text": "[REQ-RSP-005] At the edge where the response handshake of the shown byte occurs, the held byte shall be loaded into o_rsp_data and o_rsp_valid shall stay 1.",
+     "page": 284,
+     "normative": true
+    },
+    {
+     "id": "7.7:s6",
+     "text": "[REQ-RSP-006] At a response handshake where no byte is loaded at the same edge, o_rsp_valid shall change to 0.",
+     "page": 286,
+     "normative": true
+    },
+    {
+     "id": "7.7:s7",
+     "text": "[REQ-RSP-007] While o_rsp_valid = 1 and no response handshake has occurred, o_rsp_valid shall stay 1 and o_rsp_data shall not change.",
+     "page": 288,
+     "normative": true
+    },
+    {
+     "id": "7.7:s8",
+     "text": "[REQ-RSP-008] While o_rsp_valid = 0, o_rsp_data shall keep the last byte loaded into it, or 8'h00 after reset.",
+     "page": 290,
+     "normative": true
+    },
+    {
+     "id": "7.7:s9",
+     "text": "[REQ-RSP-009] o_rsp_valid and o_rsp_data shall change only at edges of i_clk or at the assertion of i_rst_n.",
+     "page": 292,
+     "normative": true
+    },
+    {
+     "id": "7.7:s10",
+     "text": "[REQ-RSP-010] i_rsp_ready shall have no effect while o_rsp_valid = 0.",
+     "page": 294,
+     "normative": true
+    },
+    {
+     "id": "7.7:s11",
+     "text": "[REQ-RSP-011] The master shall never overwrite a shown byte or a held byte before it has been taken, and shall never deliver a byte twice.",
+     "page": 296,
+     "normative": true
+    },
+    {
+     "id": "7.7:s12",
+     "text": "[REQ-RSP-012] At any time, at most two received bytes shall be pending: one shown byte and at most one held byte.",
+     "page": 298,
+     "normative": true
+    },
+    {
+     "id": "7.7:s13",
+     "text": "The pending-byte limit holds because REQ-CMD-006 blocks the start of a transfer while o_rsp_valid = 1.",
+     "page": 300,
+     "normative": false
+    },
+    {
+     "id": "7.7:s14",
+     "text": "A new transfer therefore starts only when every earlier received byte has been taken, except the byte of the transfer that ends at the same edge.",
+     "page": 300,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "7.8",
+   "title": "Continuation, pause and end of burst",
+   "level": 3,
+   "parent": "7",
+   "page_start": 302,
+   "page_end": 316,
+   "sentences": [
+    {
+     "id": "7.8:s1",
+     "text": "[REQ-FLOW-001] When a command is accepted at edge A + 16·D of a transfer whose captured i_cmd_last is 0, the new transfer shall use that edge as its acceptance edge.",
+     "page": 304,
+     "normative": true
+    },
+    {
+     "id": "7.8:s2",
+     "text": "Its SCLK edge 1 then comes D cycles after SCLK edge 16 of the previous transfer, with no gap.",
+     "page": 304,
+     "normative": false
+    },
+    {
+     "id": "7.8:s3",
+     "text": "[REQ-FLOW-002] When a transfer with captured i_cmd_last = 0 ends at edge A + 16·D without a command handshake at that edge, the master shall enter Pause.",
+     "page": 306,
+     "normative": true
+    },
+    {
+     "id": "7.8:s4",
+     "text": "[REQ-FLOW-003] In Pause, o_cs_n shall stay 0, o_sclk shall stay at CPOL_b and o_mosi shall keep its value.",
+     "page": 308,
+     "normative": true
+    },
+    {
+     "id": "7.8:s5",
+     "text": "[REQ-FLOW-004] Pause shall last until a command is accepted, without any time limit.",
+     "page": 310,
+     "normative": true
+    },
+    {
+     "id": "7.8:s6",
+     "text": "[REQ-FLOW-005] A command accepted in Pause at edge P shall start a transfer with acceptance edge A = P, in the same burst and with the same CPOL_b and CPHA_b.",
+     "page": 312,
+     "normative": true
+    },
+    {
+     "id": "7.8:s7",
+     "text": "[REQ-FLOW-006] When a transfer with captured i_cmd_last = 1 ends at edge A + 16·D, the master shall enter Trail, and o_cs_n shall rise at edge A + 17·D (REQ-CS-002).",
+     "page": 314,
+     "normative": true
+    },
+    {
+     "id": "7.8:s8",
+     "text": "[REQ-FLOW-007] The master shall not start a transfer while a received byte is held.",
+     "page": 316,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "8",
+   "title": "Timing and protocol",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 318,
+   "page_end": 390,
+   "sentences": [
+    {
+     "id": "8:s1",
+     "text": "Latency and throughput (D = PARA_SPI_CLK_DIV, all numbers in i_clk cycles):",
+     "page": 320,
+     "normative": false
+    },
+    {
+     "id": "8:s2",
+     "text": "Item: Command acceptance to o_cs_n low (first byte of a burst); Value: 0 (same edge A)",
+     "page": 324,
+     "normative": false
+    },
+    {
+     "id": "8:s3",
+     "text": "Item: Command acceptance to SCLK edge 1 (lead); Value: D",
+     "page": 325,
+     "normative": false
+    },
+    {
+     "id": "8:s4",
+     "text": "Item: Command acceptance to o_rsp_valid = 1 (response register free); Value: 16·D",
+     "page": 326,
+     "normative": false
+    },
+    {
+     "id": "8:s5",
+     "text": "Item: SCLK edge 16 of last byte to o_cs_n high (trail); Value: D",
+     "page": 327,
+     "normative": false
+    },
+    {
+     "id": "8:s6",
+     "text": "Item: Minimum o_cs_n high time between bursts (gap); Value: D",
+     "page": 328,
+     "normative": false
+    },
+    {
+     "id": "8:s7",
+     "text": "Item: Byte period inside a continuous burst; Value: 16·D",
+     "page": 329,
+     "normative": false
+    },
+    {
+     "id": "8:s8",
+     "text": "Item: o_cs_n low time of an n-byte continuous burst; Value: 16·n·D + D",
+     "page": 330,
+     "normative": false
+    },
+    {
+     "id": "8:s9",
+     "text": "Item: Minimum time between first acceptances of consecutive n-byte bursts; Value: 16·n·D + 2·D",
+     "page": 331,
+     "normative": false
+    },
+    {
+     "id": "8:s10",
+     "text": "Item: Minimum period of single-byte bursts (i_cmd_last always 1); Value: 18·D",
+     "page": 332,
+     "normative": true
+    },
+    {
+     "id": "8:s11",
+     "text": "At f(i_clk) = 50 MHz:",
+     "page": 334,
+     "normative": false
+    },
+    {
+     "id": "8:s12",
+     "text": "D: 1; SCLK: 25 MHz; Byte period: 0.32 µs",
+     "page": 338,
+     "normative": false
+    },
+    {
+     "id": "8:s13",
+     "text": "D: 4; SCLK: 6.25 MHz; Byte period: 1.28 µs",
+     "page": 339,
+     "normative": false
+    },
+    {
+     "id": "8:s14",
+     "text": "D: 255; SCLK: about 98.04 kHz; Byte period: 81.6 µs",
+     "page": 340,
+     "normative": false
+    },
+    {
+     "id": "8:s15",
+     "text": "Conditions for a continuous burst (no SCLK pause):",
+     "page": 342,
+     "normative": false
+    },
+    {
+     "id": "8:s16",
+     "text": "The next command must be valid in the last cycle of the current transfer.",
+     "page": 343,
+     "normative": true
+    },
+    {
+     "id": "8:s17",
+     "text": "o_rsp_valid must be 0 in that cycle.",
+     "page": 344,
+     "normative": true
+    },
+    {
+     "id": "8:s18",
+     "text": "This means the response of the previous transfer was taken within 16·D − 1 cycles of becoming valid, for example with i_rsp_ready held at 1.",
+     "page": 344,
+     "normative": false
+    },
+    {
+     "id": "8:s19",
+     "text": "Back-pressure:",
+     "page": 346,
+     "normative": false
+    },
+    {
+     "id": "8:s20",
+     "text": "If o_rsp_valid = 1 in the last cycle of a transfer, the next transfer is not started at its SCLK edge 16.",
+     "page": 347,
+     "normative": false
+    },
+    {
+     "id": "8:s21",
+     "text": "The burst enters Pause (or Trail if it was the last byte).",
+     "page": 347,
+     "normative": false
+    },
+    {
+     "id": "8:s22",
+     "text": "If the shown byte has still not been taken at the end of a running transfer, that transfer's byte becomes the held byte.",
+     "page": 348,
+     "normative": false
+    },
+    {
+     "id": "8:s23",
+     "text": "No new transfer starts until both bytes have been taken.",
+     "page": 348,
+     "normative": false
+    },
+    {
+     "id": "8:s24",
+     "text": "Ordering: responses come out in command order (REQ-RSP-002).",
+     "page": 350,
+     "normative": false
+    },
+    {
+     "id": "8:s25",
+     "text": "Example 1: single-byte burst, D = 1, mode 0.",
+     "page": 352,
+     "normative": false
+    },
+    {
+     "id": "8:s26",
+     "text": "Command i_cmd_data = 8'hA5, i_cmd_last = 1.",
+     "page": 352,
+     "normative": false
+    },
+    {
+     "id": "8:s27",
+     "text": "The slave returns 8'h3C. i_rsp_ready = 1 throughout.",
+     "page": 352,
+     "normative": false
+    },
+    {
+     "id": "8:s28",
+     "text": "Cycle n is the cycle starting at edge n.",
+     "page": 352,
+     "normative": false
+    },
+    {
+     "id": "8:s29",
+     "text": "Edge 0 is the acceptance edge A. i_miso is driven by a mode-0 slave: bit 7 when o_cs_n falls, the next bit after each falling SCLK edge.",
+     "page": 352,
+     "normative": false
+    },
+    {
+     "id": "8:s30",
+     "text": "Cycle: −1; i_cmd_valid: 1; o_cmd_ready: 1; o_cs_n: 1; o_sclk: 0; o_mosi: 0; i_miso: 0; o_rsp_valid: 0; o_rsp_data: 00; Note: Command presented, handshake at edge 0",
+     "page": 356,
+     "normative": false
+    },
+    {
+     "id": "8:s31",
+     "text": "Cycle: 0; i_cmd_valid: 0; o_cmd_ready: 0; o_cs_n: 0; o_sclk: 0; o_mosi: 1 (d7); i_miso: 0 (r7); o_rsp_valid: 0; o_rsp_data: 00; Note: o_cs_n falls, d7 launched",
+     "page": 357,
+     "normative": false
+    },
+    {
+     "id": "8:s32",
+     "text": "Cycle: 1; i_cmd_valid: 0; o_cmd_ready: 0; o_cs_n: 0; o_sclk: 1; o_mosi: 1; i_miso: 0; o_rsp_valid: 0; o_rsp_data: 00; Note: SCLK edge 1 (rising): r7 = 0 captured at edge 1",
+     "page": 358,
+     "normative": false
+    },
+    {
+     "id": "8:s33",
+     "text": "Cycle: 2; i_cmd_valid: 0; o_cmd_ready: 0; o_cs_n: 0; o_sclk: 0; o_mosi: 0 (d6); i_miso: 0 (r6); o_rsp_valid: 0; o_rsp_data: 00; Note: SCLK edge 2 (falling, shift)",
+     "page": 359,
+     "normative": false
+    },
+    {
+     "id": "8:s34",
+     "text": "Cycle: 3; i_cmd_valid: 0; o_cmd_ready: 0; o_cs_n: 0; o_sclk: 1; o_mosi: 0; i_miso: 0; o_rsp_valid: 0; o_rsp_data: 00; Note: Edge 3: r6 = 0 captured",
+     "page": 360,
+     "normative": false
+    },
+    {
+     "id": "8:s35",
+     "text": "Cycle: 4; i_cmd_valid: 0; o_cmd_ready: 0; o_cs_n: 0; o_sclk: 0; o_mosi: 1 (d5); i_miso: 1 (r5); o_rsp_valid: 0; o_rsp_data: 00",
+     "page": 361,
+     "normative": false
+    },
+    {
+     "id": "8:s36",
+     "text": "Cycle: 5; i_cmd_valid: 0; o_cmd_ready: 0; o_cs_n: 0; o_sclk: 1; o_mosi: 1; i_miso: 1; o_rsp_valid: 0; o_rsp_data: 00; Note: Edge 5: r5 = 1 captured",
+     "page": 362,
+     "normative": false
+    },
+    {
+     "id": "8:s37",
+     "text": "Cycle: 6; i_cmd_valid: 0; o_cmd_ready: 0; o_cs_n: 0; o_sclk: 0; o_mosi: 0 (d4); i_miso: 1 (r4); o_rsp_valid: 0; o_rsp_data: 00",
+     "page": 363,
+     "normative": false
+    },
+    {
+     "id": "8:s38",
+     "text": "Cycle: 7; i_cmd_valid: 0; o_cmd_ready: 0; o_cs_n: 0; o_sclk: 1; o_mosi: 0; i_miso: 1; o_rsp_valid: 0; o_rsp_data: 00; Note: Edge 7: r4 = 1 captured",
+     "page": 364,
+     "normative": false
+    },
+    {
+     "id": "8:s39",
+     "text": "Cycle: 8; i_cmd_valid: 0; o_cmd_ready: 0; o_cs_n: 0; o_sclk: 0; o_mosi: 0 (d3); i_miso: 1 (r3); o_rsp_valid: 0; o_rsp_data: 00",
+     "page": 365,
+     "normative": false
+    },
+    {
+     "id": "8:s40",
+     "text": "Cycle: 9; i_cmd_valid: 0; o_cmd_ready: 0; o_cs_n: 0; o_sclk: 1; o_mosi: 0; i_miso: 1; o_rsp_valid: 0; o_rsp_data: 00; Note: Edge 9: r3 = 1 captured",
+     "page": 366,
+     "normative": false
+    },
+    {
+     "id": "8:s41",
+     "text": "Cycle: 10; i_cmd_valid: 0; o_cmd_ready: 0; o_cs_n: 0; o_sclk: 0; o_mosi: 1 (d2); i_miso: 1 (r2); o_rsp_valid: 0; o_rsp_data: 00",
+     "page": 367,
+     "normative": false
+    },
+    {
+     "id": "8:s42",
+     "text": "Cycle: 11; i_cmd_valid: 0; o_cmd_ready: 0; o_cs_n: 0; o_sclk: 1; o_mosi: 1; i_miso: 1; o_rsp_valid: 0; o_rsp_data: 00; Note: Edge 11: r2 = 1 captured",
+     "page": 368,
+     "normative": false
+    },
+    {
+     "id": "8:s43",
+     "text": "Cycle: 12; i_cmd_valid: 0; o_cmd_ready: 0; o_cs_n: 0; o_sclk: 0; o_mosi: 0 (d1); i_miso: 0 (r1); o_rsp_valid: 0; o_rsp_data: 00",
+     "page": 369,
+     "normative": false
+    },
+    {
+     "id": "8:s44",
+     "text": "Cycle: 13; i_cmd_valid: 0; o_cmd_ready: 0; o_cs_n: 0; o_sclk: 1; o_mosi: 0; i_miso: 0; o_rsp_valid: 0; o_rsp_data: 00; Note: Edge 13: r1 = 0 captured",
+     "page": 370,
+     "normative": false
+    },
+    {
+     "id": "8:s45",
+     "text": "Cycle: 14; i_cmd_valid: 0; o_cmd_ready: 0; o_cs_n: 0; o_sclk: 0; o_mosi: 1 (d0); i_miso: 0 (r0); o_rsp_valid: 0; o_rsp_data: 00",
+     "page": 371,
+     "normative": false
+    },
+    {
+     "id": "8:s46",
+     "text": "Cycle: 15; i_cmd_valid: 0; o_cmd_ready: 0; o_cs_n: 0; o_sclk: 1; o_mosi: 1; i_miso: 0; o_rsp_valid: 0; o_rsp_data: 00; Note: Edge 15: r0 = 0 captured. Last cycle; o_cmd_ready = 0 because i_cmd_last = 1",
+     "page": 372,
+     "normative": false
+    },
+    {
+     "id": "8:s47",
+     "text": "Cycle: 16; i_cmd_valid: 0; o_cmd_ready: 0; o_cs_n: 0; o_sclk: 0; o_mosi: 1; i_miso: 0; o_rsp_valid: 1; o_rsp_data: 3C; Note: SCLK edge 16. Response loaded. Trail",
+     "page": 373,
+     "normative": false
+    },
+    {
+     "id": "8:s48",
+     "text": "Cycle: 17; i_cmd_valid: 0; o_cmd_ready: 1; o_cs_n: 1; o_sclk: 0; o_mosi: 1; i_miso: 0; o_rsp_valid: 0; o_rsp_data: 3C; Note: o_cs_n rises at edge 17 (A + 17·D). Response taken at edge 17. Gap requirement met for D = 1",
+     "page": 374,
+     "normative": false
+    },
+    {
+     "id": "8:s49",
+     "text": "Example 2: joining two bytes of one burst, D = 1, mode 0.",
+     "page": 376,
+     "normative": false
+    },
+    {
+     "id": "8:s50",
+     "text": "The transfer N has acceptance edge A and i_cmd_last = 0.",
+     "page": 376,
+     "normative": false
+    },
+    {
+     "id": "8:s51",
+     "text": "Command N+1 is valid and the earlier response has been taken.",
+     "page": 376,
+     "normative": false
+    },
+    {
+     "id": "8:s52",
+     "text": "Cycle: A+14; i_cmd_valid: 1; o_cmd_ready: 0; o_sclk: 0; o_mosi: d0 of N; o_rsp_valid: 0",
+     "page": 380,
+     "normative": false
+    },
+    {
+     "id": "8:s53",
+     "text": "Cycle: A+15; i_cmd_valid: 1; o_cmd_ready: 1; o_sclk: 1; o_mosi: d0 of N; o_rsp_valid: 0; Note: Last cycle of N. Handshake at edge A+16",
+     "page": 381,
+     "normative": false
+    },
+    {
+     "id": "8:s54",
+     "text": "Cycle: A+16; i_cmd_valid: x; o_cmd_ready: 0; o_sclk: 0; o_mosi: d7 of N+1; o_rsp_valid: 1; Note: SCLK edge 16 of N = acceptance edge of N+1. Byte N shown",
+     "page": 382,
+     "normative": false
+    },
+    {
+     "id": "8:s55",
+     "text": "Cycle: A+17; i_cmd_valid: x; o_cmd_ready: 0; o_sclk: 1; o_mosi: d7 of N+1; o_rsp_valid: 0; Note: SCLK edge 1 of N+1. Byte N taken at edge A+17",
+     "page": 383,
+     "normative": false
+    },
+    {
+     "id": "8:s56",
+     "text": "Cycle: A+18; i_cmd_valid: x; o_cmd_ready: 0; o_sclk: 0; o_mosi: d6 of N+1; o_rsp_valid: 0; Note: SCLK edge 2 of N+1",
+     "page": 384,
+     "normative": false
+    },
+    {
+     "id": "8:s57",
+     "text": "Example 3: back-pressure, any D.",
+     "page": 386,
+     "normative": false
+    },
+    {
+     "id": "8:s58",
+     "text": "Byte N is shown at edge A_N + 16·D.",
+     "page": 387,
+     "normative": false
+    },
+    {
+     "id": "8:s59",
+     "text": "Transfer N+1 starts at that edge.",
+     "page": 387,
+     "normative": false
+    },
+    {
+     "id": "8:s60",
+     "text": "i_rsp_ready stays 0.",
+     "page": 388,
+     "normative": false
+    },
+    {
+     "id": "8:s61",
+     "text": "At edge A_N + 32·D, byte N+1 becomes the held byte and the burst enters Pause (or Trail), because o_rsp_valid = 1 forced o_cmd_ready = 0 in the last cycle.",
+     "page": 388,
+     "normative": false
+    },
+    {
+     "id": "8:s62",
+     "text": "When i_rsp_ready goes to 1, byte N is taken at edge H.",
+     "page": 389,
+     "normative": false
+    },
+    {
+     "id": "8:s63",
+     "text": "Byte N+1 is loaded at H and o_rsp_valid stays 1.",
+     "page": 389,
+     "normative": false
+    },
+    {
+     "id": "8:s64",
+     "text": "Byte N+1 is taken at edge H + 1.",
+     "page": 390,
+     "normative": false
+    },
+    {
+     "id": "8:s65",
+     "text": "After that, o_cmd_ready returns to 1 in Pause.",
+     "page": 390,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "9",
+   "title": "Registers",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 392,
+   "page_end": 394,
+   "sentences": [
+    {
+     "id": "9:s1",
+     "text": "The block has no software-visible registers.",
+     "page": 394,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "10",
+   "title": "Errors and corner cases",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 396,
+   "page_end": 428,
+   "sentences": [
+    {
+     "id": "10:s1",
+     "text": "The block has no error output.",
+     "page": 398,
+     "normative": false
+    },
+    {
+     "id": "10:s2",
+     "text": "Every case below has a defined behaviour.",
+     "page": 398,
+     "normative": false
+    },
+    {
+     "id": "10:s3",
+     "text": "[REQ-ERR-001] When i_cpol or i_cpha changes while o_cs_n = 0 (an environment violation), the master shall not detect or report it and shall keep using CPOL_b and CPHA_b until the end of the burst (REQ-MODE-003).",
+     "page": 400,
+     "normative": true
+    },
+    {
+     "id": "10:s4",
+     "text": "[REQ-ERR-002] When i_cpol differs from CPOL_b at the edge where o_cs_n rises, o_sclk shall change to i_cpol at that edge (REQ-SCLK-006).",
+     "page": 402,
+     "normative": true
+    },
+    {
+     "id": "10:s5",
+     "text": "[REQ-ERR-003] When i_cmd_valid = 1 while o_cmd_ready = 0, the command shall wait without effect until a command handshake occurs.",
+     "page": 404,
+     "normative": true
+    },
+    {
+     "id": "10:s6",
+     "text": "[REQ-ERR-004] When i_cmd_valid = 1 while i_rst_n = 0, the master shall not accept the command (REQ-RST-007).",
+     "page": 406,
+     "normative": true
+    },
+    {
+     "id": "10:s7",
+     "text": "[REQ-ERR-005] When the response consumer never takes a response, the master shall keep o_rsp_valid = 1 with the same byte and shall not start any further transfer.",
+     "page": 408,
+     "normative": true
+    },
+    {
+     "id": "10:s8",
+     "text": "[REQ-ERR-006] When a burst is in Pause and no command ever arrives, o_cs_n shall stay 0 indefinitely.",
+     "page": 410,
+     "normative": true
+    },
+    {
+     "id": "10:s9",
+     "text": "[REQ-ERR-007] When i_rst_n is asserted during a transfer, o_cs_n shall go to 1 and o_sclk to i_cpol at once, even in the middle of an SCLK half period, and the partial byte shall be discarded (REQ-RST-008).",
+     "page": 412,
+     "normative": true
+    },
+    {
+     "id": "10:s10",
+     "text": "[REQ-ERR-008] When i_rst_n is asserted in Pause, Trail or the Idle gap, the master shall go to the reset state of REQ-RST-002 to REQ-RST-006, and pending bytes shall be discarded.",
+     "page": 414,
+     "normative": true
+    },
+    {
+     "id": "10:s11",
+     "text": "[REQ-ERR-009] A response handshake at exactly edge A + 16·D of a transfer shall make the received byte of that transfer load into o_rsp_data at that edge, with o_rsp_valid staying 1 (REQ-RSP-003).",
+     "page": 416,
+     "normative": true
+    },
+    {
+     "id": "10:s12",
+     "text": "[REQ-ERR-010] A timing violation on i_miso (data changing too close to a sampling edge) shall not be detected.",
+     "page": 418,
+     "normative": true
+    },
+    {
+     "id": "10:s13",
+     "text": "The captured bit is then undefined.",
+     "page": 418,
+     "normative": false
+    },
+    {
+     "id": "10:s14",
+     "text": "Other corner cases:",
+     "page": 420,
+     "normative": false
+    },
+    {
+     "id": "10:s15",
+     "text": "Case: i_cmd_last = 1 on every command; Behaviour: Every byte is its own burst. Minimum period 18·D cycles.",
+     "page": 424,
+     "normative": false
+    },
+    {
+     "id": "10:s16",
+     "text": "Case: i_cmd_last = 0 forever; Behaviour: The burst never ends. o_cs_n stays 0 and transfers continue as commands arrive.",
+     "page": 425,
+     "normative": true
+    },
+    {
+     "id": "10:s17",
+     "text": "Case: D = 1; Behaviour: Each SCLK half period is 1 cycle (SCLK = f(i_clk)/2). Lead, trail and minimum gap are 1 cycle. o_cmd_ready in Idle is NOT o_rsp_valid from the cycle in which o_cs_n rises (REQ-CMD-007 gives no blocked cycle; REQ-CMD-006 still holds). A shift edge and the next sampling edge are 1 cycle apart.",
+     "page": 426,
+     "normative": false
+    },
+    {
+     "id": "10:s18",
+     "text": "Case: D = 255; Behaviour: Each half period is 255 cycles and a byte takes 4080 cycles. The half-period count must reach 255 without overflow.",
+     "page": 427,
+     "normative": true
+    },
+    {
+     "id": "10:s19",
+     "text": "Case: Mode change between bursts; Behaviour: Allowed in any Idle cycle, including the cycle just before the acceptance edge. The new values are captured at the acceptance edge.",
+     "page": 428,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "11",
+   "title": "Configurations",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 430,
+   "page_end": 438,
+   "sentences": [
+    {
+     "id": "11:s1",
+     "text": "ID: CFG-BASE; Parameter values: defaults (PARA_SPI_CLK_DIV=4); Purpose: Main configuration, all four SPI modes",
+     "page": 434,
+     "normative": false
+    },
+    {
+     "id": "11:s2",
+     "text": "ID: CFG-MIN; Parameter values: PARA_SPI_CLK_DIV=1; Purpose: Smallest legal divider (SCLK = f(i_clk)/2), all four SPI modes",
+     "page": 435,
+     "normative": true
+    },
+    {
+     "id": "11:s3",
+     "text": "ID: CFG-MAX; Parameter values: PARA_SPI_CLK_DIV=255; Purpose: Largest legal divider (half-period count width), all four SPI modes with short bursts",
+     "page": 436,
+     "normative": true
+    },
+    {
+     "id": "11:s4",
+     "text": "The verification runs every configuration listed here (run_set.json).",
+     "page": 438,
+     "normative": false
+    },
+    {
+     "id": "11:s5",
+     "text": "The SPI mode is a run-time input, so each configuration runs all four modes.",
+     "page": 438,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "12",
+   "title": "Verification requirements",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 440,
+   "page_end": 496,
+   "sentences": [
+    {
+     "id": "12:s1",
+     "text": "Environment obligations (protocol duties of the blocks that drive the inputs):",
+     "page": 442,
+     "normative": false
+    },
+    {
+     "id": "12:s2",
+     "text": "[ENV-001] The environment shall release i_rst_n synchronously to i_clk.",
+     "page": 444,
+     "normative": true
+    },
+    {
+     "id": "12:s3",
+     "text": "Assertion may be asynchronous.",
+     "page": 444,
+     "normative": false
+    },
+    {
+     "id": "12:s4",
+     "text": "[ENV-002] The environment shall keep i_cmd_valid = 0 while i_rst_n = 0.",
+     "page": 446,
+     "normative": true
+    },
+    {
+     "id": "12:s5",
+     "text": "[ENV-003] The environment shall change i_cpol and i_cpha only while o_cs_n = 1.",
+     "page": 448,
+     "normative": true
+    },
+    {
+     "id": "12:s6",
+     "text": "Error tests may violate this rule on purpose to check REQ-ERR-001.",
+     "page": 448,
+     "normative": false
+    },
+    {
+     "id": "12:s7",
+     "text": "[ENV-004] The SPI slave (testbench model) shall drive i_miso from o_sclk and o_cs_n only.",
+     "page": 450,
+     "normative": true
+    },
+    {
+     "id": "12:s8",
+     "text": "With CPHA = 0 it puts bit 7 when o_cs_n falls and the next bit after each trailing SCLK edge.",
+     "page": 450,
+     "normative": false
+    },
+    {
+     "id": "12:s9",
+     "text": "With CPHA = 1 it puts bit 7 − j after leading SCLK edge 2·j + 1.",
+     "page": 450,
+     "normative": false
+    },
+    {
+     "id": "12:s10",
+     "text": "[ENV-005] The slave model shall change i_miso only after the i_clk edge at which o_sclk or o_cs_n changed, never in a way that changes the value seen at a sampling edge.",
+     "page": 452,
+     "normative": true
+    },
+    {
+     "id": "12:s11",
+     "text": "[ENV-007] The environment shall not assert i_rst_n at an edge of i_clk: assertion happens between edges (in silicon, outside the recovery/removal window of the reset flops).",
+     "page": 454,
+     "normative": true
+    },
+    {
+     "id": "12:s12",
+     "text": "An edge that coincides with the assertion is not a legal case and no check covers it (GAP-001).",
+     "page": 454,
+     "normative": true
+    },
+    {
+     "id": "12:s13",
+     "text": "[ENV-008] The environment shall drive i_rst_n = 0 from the start of operation (time zero in simulation), before the first rising edge of i_clk, for at least 2 cycles.",
+     "page": 456,
+     "normative": true
+    },
+    {
+     "id": "12:s14",
+     "text": "Before the first assertion of i_rst_n the outputs are undefined and no check applies. i_cpol, i_cpha and every other input shall always be 0 or 1, never X or Z (GAP-002).",
+     "page": 456,
+     "normative": true
+    },
+    {
+     "id": "12:s15",
+     "text": "[ENV-006] In silicon, i_miso shall meet setup and hold time to i_clk at each sampling edge.",
+     "page": 458,
+     "normative": true
+    },
+    {
+     "id": "12:s16",
+     "text": "With D = 1, the slave clock-to-output plus the board round trip must fit in one i_clk period minus setup time.",
+     "page": 458,
+     "normative": true
+    },
+    {
+     "id": "12:s17",
+     "text": "The command stream is not required to keep i_cmd_valid, i_cmd_data or i_cmd_last stable before acceptance (REQ-CMD-004).",
+     "page": 460,
+     "normative": true
+    },
+    {
+     "id": "12:s18",
+     "text": "The response consumer may drive i_rsp_ready with any pattern.",
+     "page": 460,
+     "normative": false
+    },
+    {
+     "id": "12:s19",
+     "text": "Checks and special setups:",
+     "page": 462,
+     "normative": false
+    },
+    {
+     "id": "12:s20",
+     "text": "[VER-001] The verification shall run all four modes in every configuration of section 11, with random bytes on i_cmd_data and from the slave model.",
+     "page": 464,
+     "normative": true
+    },
+    {
+     "id": "12:s21",
+     "text": "[VER-002] The verification shall use burst lengths 1, 2 and at least 16, and shall mix bursts with and without pauses (i_cmd_valid gaps of 0, 1 and many cycles).",
+     "page": 466,
+     "normative": true
+    },
+    {
+     "id": "12:s22",
+     "text": "[VER-003] A scoreboard shall check that each response equals the byte sent by the slave during the matching command, in order, with no loss or duplicate (REQ-RSP-001, REQ-RSP-002, REQ-RSP-011).",
+     "page": 468,
+     "normative": true
+    },
+    {
+     "id": "12:s23",
+     "text": "[VER-004] A slave-side monitor shall check MOSI data at every sampling edge and the SCLK edge times (A + k·D).",
+     "page": 470,
+     "normative": true
+    },
+    {
+     "id": "12:s24",
+     "text": "It shall also check the lead, trail and gap times, the SCLK idle level and that o_mosi never changes at a sampling edge.",
+     "page": 470,
+     "normative": true
+    },
+    {
+     "id": "12:s25",
+     "text": "[VER-005] The verification shall check o_cmd_ready cycle by cycle against REQ-CMD-006 to REQ-CMD-012, including the blocked first D − 1 Idle cycles.",
+     "page": 472,
+     "normative": true
+    },
+    {
+     "id": "12:s26",
+     "text": "[VER-006] Back-pressure tests shall hold i_rsp_ready = 0 for long periods so that a held byte is created.",
+     "page": 474,
+     "normative": true
+    },
+    {
+     "id": "12:s27",
+     "text": "They shall cover a response handshake exactly at edge A + 16·D (REQ-ERR-009) and random i_rsp_ready patterns.",
+     "page": 474,
+     "normative": true
+    },
+    {
+     "id": "12:s28",
+     "text": "[VER-007] Reset tests shall hold i_rsp_ready = 0 before the reset where a shown or held byte is wanted, and shall assert i_rst_n between i_clk edges in each phase (Transfer, Pause, Trail, Idle gap, with a held byte).",
+     "page": 476,
+     "normative": true
+    },
+    {
+     "id": "12:s29",
+     "text": "They shall check that outputs take reset values at once and that no response of the aborted transfer appears.",
+     "page": 476,
+     "normative": true
+    },
+    {
+     "id": "12:s30",
+     "text": "[VER-008] A test shall toggle i_cpol while i_rst_n = 0 and in Idle, and check that o_sclk follows it in the same cycle (REQ-SCLK-005, REQ-RST-003).",
+     "page": 478,
+     "normative": true
+    },
+    {
+     "id": "12:s31",
+     "text": "[VER-009] A test shall change i_cpol and i_cpha in the cycle just before a burst-start acceptance edge and check that the new values are used.",
+     "page": 480,
+     "normative": true
+    },
+    {
+     "id": "12:s32",
+     "text": "[VER-010] An error test shall change i_cpol and i_cpha during a burst and check that the burst finishes in the captured mode (REQ-ERR-001, REQ-ERR-002).",
+     "page": 482,
+     "normative": true
+    },
+    {
+     "id": "12:s33",
+     "text": "[VER-011] Coverage shall include:",
+     "page": 484,
+     "normative": true
+    },
+    {
+     "id": "12:s34",
+     "text": "Mode × configuration.",
+     "page": 485,
+     "normative": false
+    },
+    {
+     "id": "12:s35",
+     "text": "Continuous join (Example 2).",
+     "page": 486,
+     "normative": false
+    },
+    {
+     "id": "12:s36",
+     "text": "Pause entry and exit.",
+     "page": 487,
+     "normative": false
+    },
+    {
+     "id": "12:s37",
+     "text": "Held byte created and released.",
+     "page": 488,
+     "normative": false
+    },
+    {
+     "id": "12:s38",
+     "text": "Reset in each phase.",
+     "page": 489,
+     "normative": false
+    },
+    {
+     "id": "12:s39",
+     "text": "i_cmd_last = 1 on the first byte.",
+     "page": 490,
+     "normative": false
+    },
+    {
+     "id": "12:s40",
+     "text": "Behaviour visible only through the ports:",
+     "page": 492,
+     "normative": false
+    },
+    {
+     "id": "12:s41",
+     "text": "The held byte is seen only through response order and o_cmd_ready.",
+     "page": 493,
+     "normative": false
+    },
+    {
+     "id": "12:s42",
+     "text": "CPOL_b and CPHA_b are seen only through o_sclk, o_mosi and the received data when the inputs change during a burst.",
+     "page": 494,
+     "normative": false
+    },
+    {
+     "id": "12:s43",
+     "text": "REQ-PAR-001 is checked by elaborating once with an illegal value, not by simulation.",
+     "page": 496,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "13",
+   "title": "Implementation constraints",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 498,
+   "page_end": 518,
+   "sentences": [
+    {
+     "id": "13:s1",
+     "text": "[REQ-IMP-001] The block shall meet timing at 50 MHz i_clk (20 ns period) in the GF180MCU technology, at worst-case corner.",
+     "page": 500,
+     "normative": true
+    },
+    {
+     "id": "13:s2",
+     "text": "[REQ-IMP-002] The RTL shall follow docs/RTL_RULES.md (REF-003).",
+     "page": 502,
+     "normative": true
+    },
+    {
+     "id": "13:s3",
+     "text": "[REQ-IMP-003] All flip-flops shall be clocked on the rising edge of i_clk and reset asynchronously by i_rst_n.",
+     "page": 504,
+     "normative": true
+    },
+    {
+     "id": "13:s4",
+     "text": "The RTL shall contain no latches, no clock gating and no derived clocks.",
+     "page": 504,
+     "normative": true
+    },
+    {
+     "id": "13:s5",
+     "text": "[REQ-IMP-004] o_cs_n and o_mosi shall be driven directly by flip-flops.",
+     "page": 506,
+     "normative": true
+    },
+    {
+     "id": "13:s6",
+     "text": "[REQ-IMP-005] While o_cs_n = 0, o_sclk shall come from a flip-flop value.",
+     "page": 508,
+     "normative": true
+    },
+    {
+     "id": "13:s7",
+     "text": "The only combinational path from an input to o_sclk shall be the i_cpol path used while o_cs_n = 1 or during reset.",
+     "page": 508,
+     "normative": true
+    },
+    {
+     "id": "13:s8",
+     "text": "[REQ-IMP-006] o_sclk should be free of glitches when o_cs_n changes.",
+     "page": 510,
+     "normative": true
+    },
+    {
+     "id": "13:s9",
+     "text": "The selection between i_cpol and the internal SCLK value should be built so that equal inputs give no static hazard.",
+     "page": 510,
+     "normative": true
+    },
+    {
+     "id": "13:s10",
+     "text": "[REQ-IMP-007] o_cmd_ready, o_rsp_valid and o_rsp_data shall be driven by flip-flops or by logic of flip-flops only.",
+     "page": 512,
+     "normative": true
+    },
+    {
+     "id": "13:s11",
+     "text": "They shall have no combinational path from any input.",
+     "page": 512,
+     "normative": true
+    },
+    {
+     "id": "13:s12",
+     "text": "[REQ-IMP-008] i_miso shall be captured directly into a data flip-flop with no synchroniser.",
+     "page": 514,
+     "normative": true
+    },
+    {
+     "id": "13:s13",
+     "text": "The integrator shall constrain the input delay of i_miso.",
+     "page": 514,
+     "normative": true
+    },
+    {
+     "id": "13:s14",
+     "text": "[REQ-IMP-009] The half-period counter shall be wide enough for D = 255 (at least 8 bits).",
+     "page": 516,
+     "normative": true
+    },
+    {
+     "id": "13:s15",
+     "text": "The area budget has not been given (open question OQ-004).",
+     "page": 518,
+     "normative": false
+    },
+    {
+     "id": "13:s16",
+     "text": "The block is expected to be small: one byte each of shift-out, shift-in, response and held storage, plus counters.",
+     "page": 518,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "14",
+   "title": "Decisions and open questions",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 520,
+   "page_end": 546,
+   "sentences": [
+    {
+     "id": "14:s1",
+     "text": "ID: DEC-001; Question: Exact lead, trail and minimum gap (\"at least one half period\"); Decision: Exactly D cycles for lead and trail. Gap at least D cycles, exactly D when the next command is waiting; By: spec-draft (assumption); Date: 2026-11-19",
+     "page": 524,
+     "normative": false
+    },
+    {
+     "id": "14:s2",
+     "text": "ID: DEC-002; Question: When can a command be accepted; Decision: Idle (after D − 1 blocked cycles), Pause, or the last cycle of a non-last transfer, and only if o_rsp_valid = 0. o_cmd_ready has no combinational input path; By: spec-draft (assumption); Date: 2026-11-19",
+     "page": 525,
+     "normative": true
+    },
+    {
+     "id": "14:s3",
+     "text": "ID: DEC-003; Question: Meaning of \"does not start the next transfer if the response is not taken\" with no-gap bursts; Decision: A transfer starts only when o_rsp_valid = 0. The byte ending at the same edge is shown, and one more byte can be held inside the master, so nothing is lost; By: spec-draft (assumption); Date: 2026-11-19",
+     "page": 526,
+     "normative": true
+    },
+    {
+     "id": "14:s4",
+     "text": "ID: DEC-004; Question: When the response appears; Decision: At SCLK edge 16 (A + 16·D) in all modes, also for CPHA = 0 where the last bit is sampled at edge 15; By: spec-draft (assumption); Date: 2026-11-19",
+     "page": 527,
+     "normative": false
+    },
+    {
+     "id": "14:s5",
+     "text": "ID: DEC-005; Question: o_mosi outside transfers, and with CPHA = 1 before edge 1; Decision: Holds its last value. 0 after reset; By: spec-draft (assumption); Date: 2026-11-19",
+     "page": 528,
+     "normative": false
+    },
+    {
+     "id": "14:s6",
+     "text": "ID: DEC-006; Question: o_sclk idle level \"of the current i_cpol\" during reset and Idle; Decision: Combinational from i_cpol while o_cs_n = 1. Registered from CPOL_b while o_cs_n = 0; By: spec-draft (assumption); Date: 2026-11-19",
+     "page": 529,
+     "normative": false
+    },
+    {
+     "id": "14:s7",
+     "text": "ID: DEC-007; Question: Mode inputs changed during a burst; Decision: Ignored. Captured values are used until o_cs_n rises; By: spec-draft (assumption); Date: 2026-11-19",
+     "page": 530,
+     "normative": false
+    },
+    {
+     "id": "14:s8",
+     "text": "ID: DEC-008; Question: Reset in the middle of a burst; Decision: Immediate abort. Pending bytes discarded. Gap guarantee does not apply across reset; By: spec-draft (assumption); Date: 2026-11-19",
+     "page": 531,
+     "normative": false
+    },
+    {
+     "id": "14:s9",
+     "text": "ID: DEC-009; Question: Illegal PARA_SPI_CLK_DIV; Decision: Elaboration error; By: spec-draft (assumption); Date: 2026-11-19",
+     "page": 532,
+     "normative": true
+    },
+    {
+     "id": "14:s10",
+     "text": "ID: DEC-010; Question: Configurations; Decision: CFG-BASE and CFG-MIN as asked, plus CFG-MAX (D = 255) for the parameter extreme; By: spec-draft (assumption); Date: 2026-11-19",
+     "page": 533,
+     "normative": false
+    },
+    {
+     "id": "14:s11",
+     "text": "ID: DEC-011; Question: o_rsp_data reset value and value while not valid; Decision: 8'h00 after reset. Otherwise keeps the last loaded byte; By: spec-draft (assumption); Date: 2026-11-19",
+     "page": 534,
+     "normative": false
+    },
+    {
+     "id": "14:s12",
+     "text": "ID: DEC-012; Question: Reset asserted at an i_clk edge (spec-lint GAP-001); Decision: Not a legal case: ENV-007; By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19",
+     "page": 535,
+     "normative": true
+    },
+    {
+     "id": "14:s13",
+     "text": "ID: DEC-013; Question: Outputs and checks before the first reset; X on inputs (spec-lint GAP-002); Decision: Undefined before the first reset; inputs always 0 or 1: ENV-008; By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19",
+     "page": 536,
+     "normative": true
+    },
+    {
+     "id": "14:s14",
+     "text": "ID: DEC-014; Question: Unfinished VER-007 sentence (spec-lint GAP-003); Decision: Hold i_rsp_ready = 0 before reset where a held byte is wanted; By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19",
+     "page": 537,
+     "normative": false
+    },
+    {
+     "id": "14:s15",
+     "text": "ID: DEC-015; Question: Which AXI4-Stream rules apply (spec-lint GAP-004); Decision: Handshake meaning only; valid may be withdrawn (REQ-CMD-004); By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19",
+     "page": 538,
+     "normative": false
+    },
+    {
+     "id": "14:s16",
+     "text": "ID: DEC-016; Question: o_cmd_ready for D = 1 in Idle (spec-lint GAP-005); Decision: NOT o_rsp_valid from the cycle o_cs_n rises (REQ-CMD-006/008); By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19",
+     "page": 539,
+     "normative": false
+    },
+    {
+     "id": "14:s17",
+     "text": "ID: OQ-001; Question: Should a transfer also be allowed to start when the shown byte is taken in the last cycle (combinational i_rsp_ready to o_cmd_ready) to avoid a pause?; Decision: Decided: no. A transfer starts only when o_rsp_valid = 0 at the acceptance edge (DEC-002); no combinational path from i_rsp_ready; By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19",
+     "page": 540,
+     "normative": true
+    },
+    {
+     "id": "14:s18",
+     "text": "ID: OQ-002; Question: Is D = 1 (25 MHz SCLK at 50 MHz) meant for real slaves, given the 20 ns MISO round-trip budget?; Decision: Decided: D = 1 stays legal and verified in simulation. Silicon timing is an integrator duty (ENV-006); By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19",
+     "page": 541,
+     "normative": true
+    },
+    {
+     "id": "14:s19",
+     "text": "ID: OQ-003; Question: Should o_mosi be driven to 0 (or 1) in Idle instead of holding its last value?; Decision: Decided: o_mosi holds its last value outside transfers (DEC-005); By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19",
+     "page": 542,
+     "normative": true
+    },
+    {
+     "id": "14:s20",
+     "text": "ID: OQ-004; Question: What is the area budget on GF180MCU?; Decision: Decided: no area budget. Synthesis area is reported for information only; By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19",
+     "page": 543,
+     "normative": false
+    },
+    {
+     "id": "14:s21",
+     "text": "ID: OQ-005; Question: Should Pause have a timeout that releases o_cs_n?; Decision: Decided: no timeout; o_cs_n stays low in Pause until the next command; By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19",
+     "page": 544,
+     "normative": true
+    },
+    {
+     "id": "14:s22",
+     "text": "ID: OQ-006; Question: Should the master enforce o_cs_n high for at least D cycles after reset release?; Decision: Decided: no. The minimum gap is not guaranteed across a reset (REQ-RST-011); By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19",
+     "page": 545,
+     "normative": true
+    },
+    {
+     "id": "14:s23",
+     "text": "ID: OQ-007; Question: Should CFG-MAX stay in the run set (longer simulation)?; Decision: Decided: CFG-MAX (D = 255) stays in the run set; By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19",
+     "page": 546,
+     "normative": true
+    }
+   ]
+  }
+ ],
+ "tables": [
+  {
+   "section": "2",
+   "header": [
+    "ID",
+    "Document",
+    "Revision",
+    "Used for"
+   ],
+   "rows": [
+    [
+     "REF-001",
+     "Motorola/Freescale SPI Block Guide (S12SPIV4)",
+     "V04.01",
+     "Meaning of CPOL/CPHA and SPI modes 0 to 3 (leading/trailing edge, sample/shift)"
+    ],
+    [
+     "REF-002",
+     "ARM IHI 0051, AMBA 4 AXI4-Stream Protocol Specification",
+     "Issue A",
+     "Valid/ready handshake meaning only: a transfer happens at an edge where valid and ready are both 1. The rule that TVALID stays 1 until the handshake does NOT apply to the command stream (REQ-CMD-004, GAP-004)"
+    ],
+    [
+     "REF-003",
+     "docs/RTL_RULES.md (project coding rules)",
+     "Current in repository",
+     "RTL coding rules"
+    ],
+    [
+     "REF-004",
+     "spi_master design description (input of nnc spec-draft)",
+     "2026-11-19",
+     "Source of this specification"
+    ]
+   ],
+   "line": 34,
+   "units": [
+    "2:s1",
+    "2:s2",
+    "2:s3",
+    "2:s4"
+   ]
+  },
+  {
+   "section": "3",
+   "header": [
+    "Term",
+    "Meaning"
+   ],
+   "rows": [
+    [
+     "D",
+     "Value of PARA_SPI_CLK_DIV: the number of i_clk cycles in one SCLK half period."
+    ],
+    [
+     "Edge",
+     "A rising edge of i_clk. Edge E + n is the n-th rising edge after edge E."
+    ],
+    [
+     "Cycle starting at edge E",
+     "The i_clk period between edge E and edge E + 1. \"After edge E\" means in that cycle."
+    ],
+    [
+     "Command handshake",
+     "An edge at which i_rst_n = 1, i_cmd_valid = 1 and o_cmd_ready = 1. The command is accepted at that edge."
+    ],
+    [
+     "Response handshake",
+     "An edge at which i_rst_n = 1, o_rsp_valid = 1 and i_rsp_ready = 1. The shown response is taken at that edge."
+    ],
+    [
+     "Transfer",
+     "Shifting one byte out and one byte in for one accepted command. A transfer whose command is accepted at edge A covers the 16·D cycles starting at edges A to A + 16·D − 1."
+    ],
+    [
+     "A",
+     "The acceptance edge of the transfer being described."
+    ],
+    [
+     "SCLK edge k",
+     "For a transfer with acceptance edge A, the k-th transition of o_sclk (k = 1 to 16). It happens at edge A + k·D."
+    ],
+    [
+     "Leading / trailing edge",
+     "The odd SCLK edges (k = 1, 3, …, 15) are leading edges, which leave the idle level. The even SCLK edges (k = 2, 4, …, 16) are trailing edges, which return to the idle level."
+    ],
+    [
+     "Sampling edge / shift edge",
+     "The SCLK edges at which the receiver samples data / the transmitter changes data. They depend on CPHA (section 7.3)."
+    ],
+    [
+     "Last cycle of a transfer",
+     "The cycle starting at edge A + 16·D − 1, which ends at SCLK edge 16."
+    ],
+    [
+     "Burst",
+     "The sequence of transfers from the command that drives o_cs_n low up to and including the command with i_cmd_last = 1."
+    ],
+    [
+     "CPOL_b, CPHA_b",
+     "The values of i_cpol and i_cpha captured at the first acceptance edge of the current burst."
+    ],
+    [
+     "Idle",
+     "Phase with o_cs_n = 1."
+    ],
+    [
+     "Pause",
+     "Phase inside a burst after a transfer with i_cmd_last = 0 ended, when no command was accepted at its SCLK edge 16. o_cs_n = 0 and o_sclk is at the idle level."
+    ],
+    [
+     "Trail",
+     "The D cycles after SCLK edge 16 of the last transfer of a burst, before o_cs_n goes high."
+    ],
+    [
+     "Gap",
+     "The time o_cs_n stays 1 between two bursts."
+    ],
+    [
+     "Shown byte",
+     "The byte on o_rsp_data while o_rsp_valid = 1."
+    ],
+    [
+     "Held byte",
+     "A received byte that is complete but not yet loaded into o_rsp_data, because the shown byte has not been taken."
+    ]
+   ],
+   "line": 43,
+   "units": [
+    "3:s1",
+    "3:s2",
+    "3:s3",
+    "3:s4",
+    "3:s5",
+    "3:s6",
+    "3:s7",
+    "3:s8",
+    "3:s9",
+    "3:s10",
+    "3:s11",
+    "3:s12",
+    "3:s13",
+    "3:s14",
+    "3:s15",
+    "3:s16",
+    "3:s17",
+    "3:s18",
+    "3:s19"
+   ]
+  },
+  {
+   "section": "4",
+   "header": [
+    "Parameter",
+    "Default",
+    "Legal values",
+    "Description"
+   ],
+   "rows": [
+    [
+     "PARA_SPI_CLK_DIV",
+     "4",
+     "1 to 255",
+     "Number of i_clk cycles in one SCLK half period (D). SCLK frequency = f(i_clk) / (2·D)."
+    ]
+   ],
+   "line": 67,
+   "units": [
+    "4:s1"
+   ]
+  },
+  {
+   "section": "5",
+   "header": [
+    "Port",
+    "Direction",
+    "Width",
+    "Signal type",
+    "Reset value",
+    "Clock domain",
+    "Meaning"
+   ],
+   "rows": [
+    [
+     "i_clk",
+     "input",
+     "1",
+     "Clock",
+     "Not applicable",
+     "CLK",
+     "Clock, rising edge"
+    ],
+    [
+     "i_rst_n",
+     "input",
+     "1",
+     "Reset (asynchronous assertion, synchronous release)",
+     "Not applicable",
+     "CLK",
+     "Active-low reset"
+    ],
+    [
+     "i_cmd_valid",
+     "input",
+     "1",
+     "Data",
+     "0",
+     "CLK",
+     "Command stream valid. The environment keeps it 0 while i_rst_n = 0"
+    ],
+    [
+     "o_cmd_ready",
+     "output",
+     "1",
+     "Data",
+     "1",
+     "CLK",
+     "Command stream ready. Does not depend combinationally on any input"
+    ],
+    [
+     "i_cmd_data",
+     "input",
+     "8",
+     "Data",
+     "Not applicable",
+     "CLK",
+     "Byte to send. Captured at the command handshake"
+    ],
+    [
+     "i_cmd_last",
+     "input",
+     "1",
+     "Data",
+     "Not applicable",
+     "CLK",
+     "1 = this byte ends the burst, and o_cs_n is released after it. Captured at the command handshake"
+    ],
+    [
+     "o_rsp_valid",
+     "output",
+     "1",
+     "Data",
+     "0",
+     "CLK",
+     "Response stream valid"
+    ],
+    [
+     "i_rsp_ready",
+     "input",
+     "1",
+     "Data",
+     "Not applicable",
+     "CLK",
+     "Response stream ready"
+    ],
+    [
+     "o_rsp_data",
+     "output",
+     "8",
+     "Data",
+     "0",
+     "CLK",
+     "Byte received during the transfer of the matching command"
+    ],
+    [
+     "o_sclk",
+     "output",
+     "1",
+     "Data (SPI serial clock; not used as a clock inside the block)",
+     "Equal to i_cpol (follows it combinationally)",
+     "CLK",
+     "SPI serial clock"
+    ],
+    [
+     "o_mosi",
+     "output",
+     "1",
+     "Data",
+     "0",
+     "CLK",
+     "SPI master-out slave-in data"
+    ],
+    [
+     "i_miso",
+     "input",
+     "1",
+     "Data",
+     "Not applicable",
+     "CLK",
+     "SPI master-in slave-out data. Sampled by i_clk without a synchroniser"
+    ],
+    [
+     "o_cs_n",
+     "output",
+     "1",
+     "Data",
+     "1",
+     "CLK",
+     "SPI slave select, active low"
+    ],
+    [
+     "i_cpol",
+     "input",
+     "1",
+     "Data (quasi-static configuration)",
+     "Not applicable",
+     "CLK",
+     "SPI clock polarity (SCLK idle level). May change only while o_cs_n = 1"
+    ],
+    [
+     "i_cpha",
+     "input",
+     "1",
+     "Data (quasi-static configuration)",
+     "Not applicable",
+     "CLK",
+     "SPI clock phase. 0 = sample on leading edges, 1 = sample on trailing edges. May change only while o_cs_n = 1"
+    ]
+   ],
+   "line": 81,
+   "units": [
+    "5:s2",
+    "5:s3",
+    "5:s4",
+    "5:s5",
+    "5:s6",
+    "5:s7",
+    "5:s8",
+    "5:s9",
+    "5:s10",
+    "5:s11",
+    "5:s12",
+    "5:s13",
+    "5:s14",
+    "5:s15",
+    "5:s16"
+   ],
+   "caption": "m_spi_master: all ports (CLK)"
+  },
+  {
+   "section": "7",
+   "header": [
+    "Phase",
+    "o_cs_n",
+    "o_sclk",
+    "o_mosi",
+    "o_cmd_ready"
+   ],
+   "rows": [
+    [
+     "Reset (i_rst_n = 0)",
+     "1",
+     "i_cpol (combinational)",
+     "0",
+     "1"
+    ],
+    [
+     "Idle",
+     "1",
+     "i_cpol (combinational)",
+     "Holds last value",
+     "0 in the first D − 1 cycles after o_cs_n rose, otherwise NOT o_rsp_valid"
+    ],
+    [
+     "Transfer",
+     "0",
+     "Toggles at edges A + k·D, k = 1 to 16",
+     "Section 7.5",
+     "0, except in the last cycle: 1 if i_cmd_last of this transfer = 0 and o_rsp_valid = 0"
+    ],
+    [
+     "Pause",
+     "0",
+     "CPOL_b",
+     "Holds last value",
+     "NOT o_rsp_valid"
+    ],
+    [
+     "Trail",
+     "0",
+     "CPOL_b",
+     "Holds last value",
+     "0"
+    ]
+   ],
+   "line": 141,
+   "units": [
+    "7:s4",
+    "7:s5",
+    "7:s6",
+    "7:s7",
+    "7:s8"
+   ],
+   "caption": "This section uses the terms of section 3. D = PARA_SPI_CLK_DIV. The phases of the block are:"
+  },
+  {
+   "section": "7",
+   "header": [
+    "From",
+    "Condition",
+    "To"
+   ],
+   "rows": [
+    [
+     "Idle",
+     "Command handshake at edge A",
+     "Transfer (first of a burst)"
+    ],
+    [
+     "Transfer",
+     "Edge A + 16·D, command handshake at this edge",
+     "Transfer (next byte, no gap)"
+    ],
+    [
+     "Transfer",
+     "Edge A + 16·D, no handshake, i_cmd_last of this transfer = 0",
+     "Pause"
+    ],
+    [
+     "Transfer",
+     "Edge A + 16·D, i_cmd_last of this transfer = 1",
+     "Trail"
+    ],
+    [
+     "Pause",
+     "Command handshake",
+     "Transfer"
+    ],
+    [
+     "Trail",
+     "Edge A + 17·D",
+     "Idle"
+    ],
+    [
+     "Any",
+     "i_rst_n = 0",
+     "Reset"
+    ]
+   ],
+   "line": 151,
+   "units": [
+    "7:s10",
+    "7:s11",
+    "7:s12",
+    "7:s13",
+    "7:s14",
+    "7:s15",
+    "7:s16"
+   ],
+   "caption": "Phase changes (all at edges, except reset):"
+  },
+  {
+   "section": "7.3",
+   "header": [
+    "Mode",
+    "i_cpol",
+    "i_cpha",
+    "Idle o_sclk",
+    "Leading edges (k odd)",
+    "Trailing edges (k even)",
+    "o_mosi bit 7 launched at",
+    "i_miso sampled at"
+   ],
+   "rows": [
+    [
+     "0",
+     "0",
+     "0",
+     "0",
+     "Rising, sample",
+     "Falling, shift",
+     "Acceptance edge A",
+     "Edges A + (2j+1)·D"
+    ],
+    [
+     "1",
+     "0",
+     "1",
+     "0",
+     "Rising, shift",
+     "Falling, sample",
+     "SCLK edge 1 (A + D)",
+     "Edges A + (2j+2)·D"
+    ],
+    [
+     "2",
+     "1",
+     "0",
+     "1",
+     "Falling, sample",
+     "Rising, shift",
+     "Acceptance edge A",
+     "Edges A + (2j+1)·D"
+    ],
+    [
+     "3",
+     "1",
+     "1",
+     "1",
+     "Falling, shift",
+     "Rising, sample",
+     "SCLK edge 1 (A + D)",
+     "Edges A + (2j+2)·D"
+    ]
+   ],
+   "line": 217,
+   "units": [
+    "7.3:s6",
+    "7.3:s7",
+    "7.3:s8",
+    "7.3:s9"
+   ],
+   "caption": "[REQ-MODE-005] With CPHA_b = 1, the leading SCLK edges (odd k) shall be the shift edges and the trailing SCLK edges (even k) shall be the sampling edges."
+  },
+  {
+   "section": "8",
+   "header": [
+    "Item",
+    "Value"
+   ],
+   "rows": [
+    [
+     "Command acceptance to o_cs_n low (first byte of a burst)",
+     "0 (same edge A)"
+    ],
+    [
+     "Command acceptance to SCLK edge 1 (lead)",
+     "D"
+    ],
+    [
+     "Command acceptance to o_rsp_valid = 1 (response register free)",
+     "16·D"
+    ],
+    [
+     "SCLK edge 16 of last byte to o_cs_n high (trail)",
+     "D"
+    ],
+    [
+     "Minimum o_cs_n high time between bursts (gap)",
+     "D"
+    ],
+    [
+     "Byte period inside a continuous burst",
+     "16·D"
+    ],
+    [
+     "o_cs_n low time of an n-byte continuous burst",
+     "16·n·D + D"
+    ],
+    [
+     "Minimum time between first acceptances of consecutive n-byte bursts",
+     "16·n·D + 2·D"
+    ],
+    [
+     "Minimum period of single-byte bursts (i_cmd_last always 1)",
+     "18·D"
+    ]
+   ],
+   "line": 322,
+   "units": [
+    "8:s2",
+    "8:s3",
+    "8:s4",
+    "8:s5",
+    "8:s6",
+    "8:s7",
+    "8:s8",
+    "8:s9",
+    "8:s10"
+   ],
+   "caption": "Latency and throughput (D = PARA_SPI_CLK_DIV, all numbers in i_clk cycles):"
+  },
+  {
+   "section": "8",
+   "header": [
+    "D",
+    "SCLK",
+    "Byte period"
+   ],
+   "rows": [
+    [
+     "1",
+     "25 MHz",
+     "0.32 µs"
+    ],
+    [
+     "4",
+     "6.25 MHz",
+     "1.28 µs"
+    ],
+    [
+     "255",
+     "about 98.04 kHz",
+     "81.6 µs"
+    ]
+   ],
+   "line": 336,
+   "units": [
+    "8:s12",
+    "8:s13",
+    "8:s14"
+   ],
+   "caption": "At f(i_clk) = 50 MHz:"
+  },
+  {
+   "section": "8",
+   "header": [
+    "Cycle",
+    "i_cmd_valid",
+    "o_cmd_ready",
+    "o_cs_n",
+    "o_sclk",
+    "o_mosi",
+    "i_miso",
+    "o_rsp_valid",
+    "o_rsp_data",
+    "Note"
+   ],
+   "rows": [
+    [
+     "−1",
+     "1",
+     "1",
+     "1",
+     "0",
+     "0",
+     "0",
+     "0",
+     "00",
+     "Command presented, handshake at edge 0"
+    ],
+    [
+     "0",
+     "0",
+     "0",
+     "0",
+     "0",
+     "1 (d7)",
+     "0 (r7)",
+     "0",
+     "00",
+     "o_cs_n falls, d7 launched"
+    ],
+    [
+     "1",
+     "0",
+     "0",
+     "0",
+     "1",
+     "1",
+     "0",
+     "0",
+     "00",
+     "SCLK edge 1 (rising): r7 = 0 captured at edge 1"
+    ],
+    [
+     "2",
+     "0",
+     "0",
+     "0",
+     "0",
+     "0 (d6)",
+     "0 (r6)",
+     "0",
+     "00",
+     "SCLK edge 2 (falling, shift)"
+    ],
+    [
+     "3",
+     "0",
+     "0",
+     "0",
+     "1",
+     "0",
+     "0",
+     "0",
+     "00",
+     "Edge 3: r6 = 0 captured"
+    ],
+    [
+     "4",
+     "0",
+     "0",
+     "0",
+     "0",
+     "1 (d5)",
+     "1 (r5)",
+     "0",
+     "00",
+     ""
+    ],
+    [
+     "5",
+     "0",
+     "0",
+     "0",
+     "1",
+     "1",
+     "1",
+     "0",
+     "00",
+     "Edge 5: r5 = 1 captured"
+    ],
+    [
+     "6",
+     "0",
+     "0",
+     "0",
+     "0",
+     "0 (d4)",
+     "1 (r4)",
+     "0",
+     "00",
+     ""
+    ],
+    [
+     "7",
+     "0",
+     "0",
+     "0",
+     "1",
+     "0",
+     "1",
+     "0",
+     "00",
+     "Edge 7: r4 = 1 captured"
+    ],
+    [
+     "8",
+     "0",
+     "0",
+     "0",
+     "0",
+     "0 (d3)",
+     "1 (r3)",
+     "0",
+     "00",
+     ""
+    ],
+    [
+     "9",
+     "0",
+     "0",
+     "0",
+     "1",
+     "0",
+     "1",
+     "0",
+     "00",
+     "Edge 9: r3 = 1 captured"
+    ],
+    [
+     "10",
+     "0",
+     "0",
+     "0",
+     "0",
+     "1 (d2)",
+     "1 (r2)",
+     "0",
+     "00",
+     ""
+    ],
+    [
+     "11",
+     "0",
+     "0",
+     "0",
+     "1",
+     "1",
+     "1",
+     "0",
+     "00",
+     "Edge 11: r2 = 1 captured"
+    ],
+    [
+     "12",
+     "0",
+     "0",
+     "0",
+     "0",
+     "0 (d1)",
+     "0 (r1)",
+     "0",
+     "00",
+     ""
+    ],
+    [
+     "13",
+     "0",
+     "0",
+     "0",
+     "1",
+     "0",
+     "0",
+     "0",
+     "00",
+     "Edge 13: r1 = 0 captured"
+    ],
+    [
+     "14",
+     "0",
+     "0",
+     "0",
+     "0",
+     "1 (d0)",
+     "0 (r0)",
+     "0",
+     "00",
+     ""
+    ],
+    [
+     "15",
+     "0",
+     "0",
+     "0",
+     "1",
+     "1",
+     "0",
+     "0",
+     "00",
+     "Edge 15: r0 = 0 captured. Last cycle; o_cmd_ready = 0 because i_cmd_last = 1"
+    ],
+    [
+     "16",
+     "0",
+     "0",
+     "0",
+     "0",
+     "1",
+     "0",
+     "1",
+     "3C",
+     "SCLK edge 16. Response loaded. Trail"
+    ],
+    [
+     "17",
+     "0",
+     "1",
+     "1",
+     "0",
+     "1",
+     "0",
+     "0",
+     "3C",
+     "o_cs_n rises at edge 17 (A + 17·D). Response taken at edge 17. Gap requirement met for D = 1"
+    ]
+   ],
+   "line": 354,
+   "units": [
+    "8:s30",
+    "8:s31",
+    "8:s32",
+    "8:s33",
+    "8:s34",
+    "8:s35",
+    "8:s36",
+    "8:s37",
+    "8:s38",
+    "8:s39",
+    "8:s40",
+    "8:s41",
+    "8:s42",
+    "8:s43",
+    "8:s44",
+    "8:s45",
+    "8:s46",
+    "8:s47",
+    "8:s48"
+   ],
+   "caption": "Example 1: single-byte burst, D = 1, mode 0. Command i_cmd_data = 8'hA5, i_cmd_last = 1. The slave returns 8'h3C. i_rsp_ready = 1 throughout. Cycle n is the cycle starting at edge n. Edge 0 is the acceptance edge A. i_miso is driven by a mode-0 slave: bit 7 when o_cs_n falls, the next bit after each falling SCLK edge."
+  },
+  {
+   "section": "8",
+   "header": [
+    "Cycle",
+    "i_cmd_valid",
+    "o_cmd_ready",
+    "o_sclk",
+    "o_mosi",
+    "o_rsp_valid",
+    "Note"
+   ],
+   "rows": [
+    [
+     "A+14",
+     "1",
+     "0",
+     "0",
+     "d0 of N",
+     "0",
+     ""
+    ],
+    [
+     "A+15",
+     "1",
+     "1",
+     "1",
+     "d0 of N",
+     "0",
+     "Last cycle of N. Handshake at edge A+16"
+    ],
+    [
+     "A+16",
+     "x",
+     "0",
+     "0",
+     "d7 of N+1",
+     "1",
+     "SCLK edge 16 of N = acceptance edge of N+1. Byte N shown"
+    ],
+    [
+     "A+17",
+     "x",
+     "0",
+     "1",
+     "d7 of N+1",
+     "0",
+     "SCLK edge 1 of N+1. Byte N taken at edge A+17"
+    ],
+    [
+     "A+18",
+     "x",
+     "0",
+     "0",
+     "d6 of N+1",
+     "0",
+     "SCLK edge 2 of N+1"
+    ]
+   ],
+   "line": 378,
+   "units": [
+    "8:s52",
+    "8:s53",
+    "8:s54",
+    "8:s55",
+    "8:s56"
+   ],
+   "caption": "Example 2: joining two bytes of one burst, D = 1, mode 0. The transfer N has acceptance edge A and i_cmd_last = 0. Command N+1 is valid and the earlier response has been taken."
+  },
+  {
+   "section": "10",
+   "header": [
+    "Case",
+    "Behaviour"
+   ],
+   "rows": [
+    [
+     "i_cmd_last = 1 on every command",
+     "Every byte is its own burst. Minimum period 18·D cycles."
+    ],
+    [
+     "i_cmd_last = 0 forever",
+     "The burst never ends. o_cs_n stays 0 and transfers continue as commands arrive."
+    ],
+    [
+     "D = 1",
+     "Each SCLK half period is 1 cycle (SCLK = f(i_clk)/2). Lead, trail and minimum gap are 1 cycle. o_cmd_ready in Idle is NOT o_rsp_valid from the cycle in which o_cs_n rises (REQ-CMD-007 gives no blocked cycle; REQ-CMD-006 still holds). A shift edge and the next sampling edge are 1 cycle apart."
+    ],
+    [
+     "D = 255",
+     "Each half period is 255 cycles and a byte takes 4080 cycles. The half-period count must reach 255 without overflow."
+    ],
+    [
+     "Mode change between bursts",
+     "Allowed in any Idle cycle, including the cycle just before the acceptance edge. The new values are captured at the acceptance edge."
+    ]
+   ],
+   "line": 422,
+   "units": [
+    "10:s15",
+    "10:s16",
+    "10:s17",
+    "10:s18",
+    "10:s19"
+   ],
+   "caption": "Other corner cases:"
+  },
+  {
+   "section": "11",
+   "header": [
+    "ID",
+    "Parameter values",
+    "Purpose"
+   ],
+   "rows": [
+    [
+     "CFG-BASE",
+     "defaults (PARA_SPI_CLK_DIV=4)",
+     "Main configuration, all four SPI modes"
+    ],
+    [
+     "CFG-MIN",
+     "PARA_SPI_CLK_DIV=1",
+     "Smallest legal divider (SCLK = f(i_clk)/2), all four SPI modes"
+    ],
+    [
+     "CFG-MAX",
+     "PARA_SPI_CLK_DIV=255",
+     "Largest legal divider (half-period count width), all four SPI modes with short bursts"
+    ]
+   ],
+   "line": 432,
+   "units": [
+    "11:s1",
+    "11:s2",
+    "11:s3"
+   ]
+  },
+  {
+   "section": "14",
+   "header": [
+    "ID",
+    "Question",
+    "Decision",
+    "By",
+    "Date"
+   ],
+   "rows": [
+    [
+     "DEC-001",
+     "Exact lead, trail and minimum gap (\"at least one half period\")",
+     "Exactly D cycles for lead and trail. Gap at least D cycles, exactly D when the next command is waiting",
+     "spec-draft (assumption)",
+     "2026-11-19"
+    ],
+    [
+     "DEC-002",
+     "When can a command be accepted",
+     "Idle (after D − 1 blocked cycles), Pause, or the last cycle of a non-last transfer, and only if o_rsp_valid = 0. o_cmd_ready has no combinational input path",
+     "spec-draft (assumption)",
+     "2026-11-19"
+    ],
+    [
+     "DEC-003",
+     "Meaning of \"does not start the next transfer if the response is not taken\" with no-gap bursts",
+     "A transfer starts only when o_rsp_valid = 0. The byte ending at the same edge is shown, and one more byte can be held inside the master, so nothing is lost",
+     "spec-draft (assumption)",
+     "2026-11-19"
+    ],
+    [
+     "DEC-004",
+     "When the response appears",
+     "At SCLK edge 16 (A + 16·D) in all modes, also for CPHA = 0 where the last bit is sampled at edge 15",
+     "spec-draft (assumption)",
+     "2026-11-19"
+    ],
+    [
+     "DEC-005",
+     "o_mosi outside transfers, and with CPHA = 1 before edge 1",
+     "Holds its last value. 0 after reset",
+     "spec-draft (assumption)",
+     "2026-11-19"
+    ],
+    [
+     "DEC-006",
+     "o_sclk idle level \"of the current i_cpol\" during reset and Idle",
+     "Combinational from i_cpol while o_cs_n = 1. Registered from CPOL_b while o_cs_n = 0",
+     "spec-draft (assumption)",
+     "2026-11-19"
+    ],
+    [
+     "DEC-007",
+     "Mode inputs changed during a burst",
+     "Ignored. Captured values are used until o_cs_n rises",
+     "spec-draft (assumption)",
+     "2026-11-19"
+    ],
+    [
+     "DEC-008",
+     "Reset in the middle of a burst",
+     "Immediate abort. Pending bytes discarded. Gap guarantee does not apply across reset",
+     "spec-draft (assumption)",
+     "2026-11-19"
+    ],
+    [
+     "DEC-009",
+     "Illegal PARA_SPI_CLK_DIV",
+     "Elaboration error",
+     "spec-draft (assumption)",
+     "2026-11-19"
+    ],
+    [
+     "DEC-010",
+     "Configurations",
+     "CFG-BASE and CFG-MIN as asked, plus CFG-MAX (D = 255) for the parameter extreme",
+     "spec-draft (assumption)",
+     "2026-11-19"
+    ],
+    [
+     "DEC-011",
+     "o_rsp_data reset value and value while not valid",
+     "8'h00 after reset. Otherwise keeps the last loaded byte",
+     "spec-draft (assumption)",
+     "2026-11-19"
+    ],
+    [
+     "DEC-012",
+     "Reset asserted at an i_clk edge (spec-lint GAP-001)",
+     "Not a legal case: ENV-007",
+     "Claude (delegated by GabrielHCMUT)",
+     "2026-11-19"
+    ],
+    [
+     "DEC-013",
+     "Outputs and checks before the first reset; X on inputs (spec-lint GAP-002)",
+     "Undefined before the first reset; inputs always 0 or 1: ENV-008",
+     "Claude (delegated by GabrielHCMUT)",
+     "2026-11-19"
+    ],
+    [
+     "DEC-014",
+     "Unfinished VER-007 sentence (spec-lint GAP-003)",
+     "Hold i_rsp_ready = 0 before reset where a held byte is wanted",
+     "Claude (delegated by GabrielHCMUT)",
+     "2026-11-19"
+    ],
+    [
+     "DEC-015",
+     "Which AXI4-Stream rules apply (spec-lint GAP-004)",
+     "Handshake meaning only; valid may be withdrawn (REQ-CMD-004)",
+     "Claude (delegated by GabrielHCMUT)",
+     "2026-11-19"
+    ],
+    [
+     "DEC-016",
+     "o_cmd_ready for D = 1 in Idle (spec-lint GAP-005)",
+     "NOT o_rsp_valid from the cycle o_cs_n rises (REQ-CMD-006/008)",
+     "Claude (delegated by GabrielHCMUT)",
+     "2026-11-19"
+    ],
+    [
+     "OQ-001",
+     "Should a transfer also be allowed to start when the shown byte is taken in the last cycle (combinational i_rsp_ready to o_cmd_ready) to avoid a pause?",
+     "Decided: no. A transfer starts only when o_rsp_valid = 0 at the acceptance edge (DEC-002); no combinational path from i_rsp_ready",
+     "Claude (delegated by GabrielHCMUT)",
+     "2026-11-19"
+    ],
+    [
+     "OQ-002",
+     "Is D = 1 (25 MHz SCLK at 50 MHz) meant for real slaves, given the 20 ns MISO round-trip budget?",
+     "Decided: D = 1 stays legal and verified in simulation. Silicon timing is an integrator duty (ENV-006)",
+     "Claude (delegated by GabrielHCMUT)",
+     "2026-11-19"
+    ],
+    [
+     "OQ-003",
+     "Should o_mosi be driven to 0 (or 1) in Idle instead of holding its last value?",
+     "Decided: o_mosi holds its last value outside transfers (DEC-005)",
+     "Claude (delegated by GabrielHCMUT)",
+     "2026-11-19"
+    ],
+    [
+     "OQ-004",
+     "What is the area budget on GF180MCU?",
+     "Decided: no area budget. Synthesis area is reported for information only",
+     "Claude (delegated by GabrielHCMUT)",
+     "2026-11-19"
+    ],
+    [
+     "OQ-005",
+     "Should Pause have a timeout that releases o_cs_n?",
+     "Decided: no timeout; o_cs_n stays low in Pause until the next command",
+     "Claude (delegated by GabrielHCMUT)",
+     "2026-11-19"
+    ],
+    [
+     "OQ-006",
+     "Should the master enforce o_cs_n high for at least D cycles after reset release?",
+     "Decided: no. The minimum gap is not guaranteed across a reset (REQ-RST-011)",
+     "Claude (delegated by GabrielHCMUT)",
+     "2026-11-19"
+    ],
+    [
+     "OQ-007",
+     "Should CFG-MAX stay in the run set (longer simulation)?",
+     "Decided: CFG-MAX (D = 255) stays in the run set",
+     "Claude (delegated by GabrielHCMUT)",
+     "2026-11-19"
+    ]
+   ],
+   "line": 522,
+   "units": [
+    "14:s1",
+    "14:s2",
+    "14:s3",
+    "14:s4",
+    "14:s5",
+    "14:s6",
+    "14:s7",
+    "14:s8",
+    "14:s9",
+    "14:s10",
+    "14:s11",
+    "14:s12",
+    "14:s13",
+    "14:s14",
+    "14:s15",
+    "14:s16",
+    "14:s17",
+    "14:s18",
+    "14:s19",
+    "14:s20",
+    "14:s21",
+    "14:s22",
+    "14:s23"
+   ]
+  }
+ ],
+ "signals": {
+  "A_N": 2,
+  "CLK": 17,
+  "CPHA": 6,
+  "GF180MCU": 2,
+  "MSB": 2,
+  "PARA_SPI_CLK_DIV": 11,
+  "RTL": 4,
+  "RTL_RULES": 2,
+  "SCLK": 52,
+  "SPI": 15,
+  "i_clk": 30,
+  "i_cmd_data": 7,
+  "i_cmd_last": 22,
+  "i_cmd_valid": 34,
+  "i_cpha": 14,
+  "i_cpol": 26,
+  "i_miso": 41,
+  "i_rsp_ready": 14,
+  "i_rst_n": 32,
+  "o_cmd_ready": 52,
+  "o_cs_n": 78,
+  "o_mosi": 53,
+  "o_rsp_data": 31,
+  "o_rsp_valid": 57,
+  "o_sclk": 59
+ },
+ "warnings": [],
+ "stats": {
+  "sections": 28,
+  "sentences": 353,
+  "normative": 151,
+  "chars": 40752
+ }
+}

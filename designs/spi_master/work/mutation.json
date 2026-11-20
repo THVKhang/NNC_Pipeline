@@ -1,0 +1,2265 @@
+{
+ "mutants": [
+  {
+   "id": "M01",
+   "file": "m_spi_master.sv",
+   "line": 215,
+   "operator": "eq_to_ne",
+   "original": "if (r_edge_cnt == LP_EDGE_LAST) begin",
+   "mutated": "            if (r_edge_cnt != LP_EDGE_LAST) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_031_pause_and_endless_burst",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-023",
+    "CHK-025",
+    "CHK-020",
+    "CHK-022",
+    "CHK-011",
+    "CHK-012",
+    "CHK-014",
+    "CHK-010",
+    "CHK-007",
+    "CHK-004",
+    "CHK-005"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M02",
+   "file": "m_spi_master.sv",
+   "line": 129,
+   "operator": "and_to_or",
+   "original": "assign shift_edge      = sclk_edge && (r_edge_cnt[0] != r_cpha_b)",
+   "mutated": "  assign shift_edge      = sclk_edge || (r_edge_cnt[0] != r_cpha_b)",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_031_pause_and_endless_burst",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-011",
+    "CHK-012",
+    "CHK-013",
+    "CHK-014"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M03",
+   "file": "m_spi_master.sv",
+   "line": 129,
+   "operator": "ne_to_eq",
+   "original": "assign shift_edge      = sclk_edge && (r_edge_cnt[0] != r_cpha_b)",
+   "mutated": "  assign shift_edge      = sclk_edge && (r_edge_cnt[0] == r_cpha_b)",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_031_pause_and_endless_burst",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-011",
+    "CHK-012",
+    "CHK-013",
+    "CHK-014"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M04",
+   "file": "m_spi_master.sv",
+   "line": 253,
+   "operator": "negate_if",
+   "original": "if (div_tick) begin",
+   "mutated": "          if (!(div_tick)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-007"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M05",
+   "file": "m_spi_master.sv",
+   "line": 325,
+   "operator": "one_to_zero",
+   "original": "r_rsp_valid <= 1'b1;",
+   "mutated": "        r_rsp_valid <= 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_031_pause_and_endless_burst",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-020",
+    "CHK-022"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M06",
+   "file": "m_spi_master.sv",
+   "line": 187,
+   "operator": "zero_to_one",
+   "original": "r_last     <= 1'b0;",
+   "mutated": "      r_last     <= 1'b1;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "also_run": [
+    "min.s1",
+    "max.s1"
+   ],
+   "equivalence": {
+    "status": "PROVEN",
+    "depth": 32,
+    "per_config": {
+     "base.s1": {
+      "status": "PROVEN",
+      "overrides": {}
+     },
+     "min.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "PARA_SPI_CLK_DIV": 1
+      }
+     },
+     "max.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "PARA_SPI_CLK_DIV": 255
+      }
+     }
+    }
+   }
+  },
+  {
+   "id": "M07",
+   "file": "m_spi_master.sv",
+   "line": 323,
+   "operator": "or_to_and",
+   "original": "if (!r_rsp_valid || i_rsp_ready) begin",
+   "mutated": "      if (!r_rsp_valid && i_rsp_ready) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_040_continuous_bursts_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-020",
+    "CHK-022"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M08",
+   "file": "m_spi_master.sv",
+   "line": 117,
+   "operator": "eq_to_ne",
+   "original": "assign sclk_edge       = (r_state == ST_XFER) && div_tick;",
+   "mutated": "  assign sclk_edge       = (r_state != ST_XFER) && div_tick;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_031_pause_and_endless_burst",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-020",
+    "CHK-022",
+    "CHK-011",
+    "CHK-012",
+    "CHK-013",
+    "CHK-014",
+    "CHK-004"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M09",
+   "file": "m_spi_master.sv",
+   "line": 121,
+   "operator": "and_to_or",
+   "original": "assign xfer_last_cycle = sclk_edge && (r_edge_cnt == LP_EDGE_LAST);",
+   "mutated": "  assign xfer_last_cycle = sclk_edge || (r_edge_cnt == LP_EDGE_LAST);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_031_pause_and_endless_burst",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-023",
+    "CHK-025",
+    "CHK-020",
+    "CHK-021",
+    "CHK-022",
+    "CHK-011",
+    "CHK-012",
+    "CHK-013",
+    "CHK-014",
+    "CHK-007",
+    "CHK-004",
+    "CHK-005"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M10",
+   "file": "m_spi_master.sv",
+   "line": 130,
+   "operator": "ne_to_eq",
+   "original": "&& (r_edge_cnt != LP_EDGE_LAST);",
+   "mutated": "                           && (r_edge_cnt == LP_EDGE_LAST);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_031_pause_and_endless_burst",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-011",
+    "CHK-012",
+    "CHK-013",
+    "CHK-014"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M11",
+   "file": "m_spi_master.sv",
+   "line": 320,
+   "operator": "negate_if",
+   "original": "end else if (xfer_last_cycle) begin",
+   "mutated": "    end else if (!(xfer_last_cycle)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_031_pause_and_endless_burst",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-020",
+    "CHK-021",
+    "CHK-018"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M12",
+   "file": "m_spi_master.sv",
+   "line": 329,
+   "operator": "one_to_zero",
+   "original": "r_held_valid <= 1'b1;",
+   "mutated": "        r_held_valid <= 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_036_held_byte_backpressure"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M13",
+   "file": "m_spi_master.sv",
+   "line": 316,
+   "operator": "zero_to_one",
+   "original": "r_rsp_valid  <= 1'b0;",
+   "mutated": "      r_rsp_valid  <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_031_pause_and_endless_burst",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-020",
+    "CHK-015",
+    "CHK-016",
+    "CHK-018"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M14",
+   "file": "m_spi_master.sv",
+   "line": 113,
+   "operator": "eq_to_ne",
+   "original": "assign div_tick        = (r_div_cnt == LP_DIV_LAST);",
+   "mutated": "  assign div_tick        = (r_div_cnt != LP_DIV_LAST);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_031_pause_and_endless_burst",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-023",
+    "CHK-024",
+    "CHK-025",
+    "CHK-020",
+    "CHK-021",
+    "CHK-022",
+    "CHK-015",
+    "CHK-016",
+    "CHK-018",
+    "CHK-011",
+    "CHK-012",
+    "CHK-013",
+    "CHK-014",
+    "CHK-007",
+    "CHK-008",
+    "CHK-009",
+    "CHK-003",
+    "CHK-004",
+    "CHK-005"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M15",
+   "file": "m_spi_master.sv",
+   "line": 164,
+   "operator": "and_to_or",
+   "original": "ST_XFER:  cmd_ready = xfer_last_cycle && !r_last && !r_rsp_valid;",
+   "mutated": "      ST_XFER:  cmd_ready = xfer_last_cycle || !r_last && !r_rsp_valid;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_031_pause_and_endless_burst",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-023",
+    "CHK-024",
+    "CHK-025",
+    "CHK-020",
+    "CHK-021",
+    "CHK-022",
+    "CHK-011",
+    "CHK-012",
+    "CHK-013",
+    "CHK-014",
+    "CHK-007",
+    "CHK-004",
+    "CHK-005"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M16",
+   "file": "m_spi_master.sv",
+   "line": 315,
+   "operator": "negate_if",
+   "original": "if (!i_rst_n) begin",
+   "mutated": "    if (!(!i_rst_n)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_031_pause_and_endless_burst",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-020",
+    "CHK-021",
+    "CHK-022",
+    "CHK-015",
+    "CHK-016",
+    "CHK-018"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M17",
+   "file": "m_spi_master.sv",
+   "line": 205,
+   "operator": "one_to_zero",
+   "original": "r_div_cnt  <= r_div_cnt + 1'b1;",
+   "mutated": "            r_div_cnt  <= r_div_cnt + 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-003"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M18",
+   "file": "m_spi_master.sv",
+   "line": 159,
+   "operator": "zero_to_one",
+   "original": "cmd_ready = 1'b0;",
+   "mutated": "    cmd_ready = 1'b1;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "also_run": [
+    "min.s1",
+    "max.s1"
+   ],
+   "equivalence": {
+    "status": "PROVEN",
+    "depth": 32,
+    "per_config": {
+     "base.s1": {
+      "status": "PROVEN",
+      "overrides": {}
+     },
+     "min.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "PARA_SPI_CLK_DIV": 1
+      }
+     },
+     "max.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "PARA_SPI_CLK_DIV": 255
+      }
+     }
+    }
+   }
+  },
+  {
+   "id": "M19",
+   "file": "m_spi_master.sv",
+   "line": 140,
+   "operator": "eq_to_ne",
+   "original": "assign cpha_load       = (r_state == ST_IDLE) ? i_cpha : r_cpha_b;",
+   "mutated": "  assign cpha_load       = (r_state != ST_IDLE) ? i_cpha : r_cpha_b;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_031_pause_and_endless_burst",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-011",
+    "CHK-012",
+    "CHK-013",
+    "CHK-014"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M20",
+   "file": "m_spi_master.sv",
+   "line": 151,
+   "operator": "and_to_or",
+   "original": "assign rsp_hs          = r_rsp_valid && i_rsp_ready;",
+   "mutated": "  assign rsp_hs          = r_rsp_valid || i_rsp_ready;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_040_continuous_bursts_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-020",
+    "CHK-021",
+    "CHK-022"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M21",
+   "file": "m_spi_master.sv",
+   "line": 215,
+   "operator": "negate_if",
+   "original": "if (r_edge_cnt == LP_EDGE_LAST) begin",
+   "mutated": "            if (!(r_edge_cnt == LP_EDGE_LAST)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_031_pause_and_endless_burst",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-023",
+    "CHK-025",
+    "CHK-020",
+    "CHK-022",
+    "CHK-011",
+    "CHK-012",
+    "CHK-014",
+    "CHK-010",
+    "CHK-007",
+    "CHK-004",
+    "CHK-005"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M22",
+   "file": "m_spi_master.sv",
+   "line": 258,
+   "operator": "one_to_zero",
+   "original": "r_div_cnt <= r_div_cnt + 1'b1;",
+   "mutated": "            r_div_cnt <= r_div_cnt + 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-007"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M23",
+   "file": "m_spi_master.sv",
+   "line": 336,
+   "operator": "zero_to_one",
+   "original": "r_held_valid <= 1'b0;",
+   "mutated": "        r_held_valid <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_036_held_byte_backpressure"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M24",
+   "file": "m_spi_master.sv",
+   "line": 121,
+   "operator": "eq_to_ne",
+   "original": "assign xfer_last_cycle = sclk_edge && (r_edge_cnt == LP_EDGE_LAST);",
+   "mutated": "  assign xfer_last_cycle = sclk_edge && (r_edge_cnt != LP_EDGE_LAST);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_031_pause_and_endless_burst",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-023",
+    "CHK-025",
+    "CHK-020",
+    "CHK-021",
+    "CHK-022",
+    "CHK-011",
+    "CHK-012",
+    "CHK-013",
+    "CHK-014",
+    "CHK-007",
+    "CHK-004",
+    "CHK-005"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M25",
+   "file": "m_spi_master.sv",
+   "line": 125,
+   "operator": "and_to_or",
+   "original": "assign sample_edge     = sclk_edge && (r_edge_cnt[0] == r_cpha_b);",
+   "mutated": "  assign sample_edge     = sclk_edge || (r_edge_cnt[0] == r_cpha_b);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_031_pause_and_endless_burst",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-020"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M26",
+   "file": "m_spi_master.sv",
+   "line": 281,
+   "operator": "negate_if",
+   "original": "end else if (cmd_hs) begin",
+   "mutated": "    end else if (!(cmd_hs)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_031_pause_and_endless_burst",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-011",
+    "CHK-012",
+    "CHK-013",
+    "CHK-014",
+    "CHK-010"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M27",
+   "file": "m_spi_master.sv",
+   "line": 180,
+   "operator": "one_to_zero",
+   "original": "r_cs_n     <= 1'b1;",
+   "mutated": "      r_cs_n     <= 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_031_pause_and_endless_burst",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-015",
+    "CHK-016",
+    "CHK-017",
+    "CHK-018"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M28",
+   "file": "m_spi_master.sv",
+   "line": 318,
+   "operator": "zero_to_one",
+   "original": "r_held_valid <= 1'b0;",
+   "mutated": "      r_held_valid <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_031_pause_and_endless_burst",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-020"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M29",
+   "file": "m_spi_master.sv",
+   "line": 125,
+   "operator": "eq_to_ne",
+   "original": "assign sample_edge     = sclk_edge && (r_edge_cnt[0] == r_cpha_b);",
+   "mutated": "  assign sample_edge     = sclk_edge && (r_edge_cnt[0] != r_cpha_b);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_031_pause_and_endless_burst",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-020"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M30",
+   "file": "m_spi_master.sv",
+   "line": 164,
+   "operator": "and_to_or",
+   "original": "ST_XFER:  cmd_ready = xfer_last_cycle && !r_last && !r_rsp_valid;",
+   "mutated": "      ST_XFER:  cmd_ready = xfer_last_cycle && !r_last || !r_rsp_valid;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_031_pause_and_endless_burst",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-023",
+    "CHK-024",
+    "CHK-025",
+    "CHK-020",
+    "CHK-021",
+    "CHK-022",
+    "CHK-011",
+    "CHK-012",
+    "CHK-013",
+    "CHK-014",
+    "CHK-010",
+    "CHK-007",
+    "CHK-004",
+    "CHK-005"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M31",
+   "file": "m_spi_master.sv",
+   "line": 332,
+   "operator": "negate_if",
+   "original": "end else if (rsp_hs) begin",
+   "mutated": "    end else if (!(rsp_hs)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_031_pause_and_endless_burst",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-020",
+    "CHK-021",
+    "CHK-022"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M32",
+   "file": "m_spi_master.sv",
+   "line": 233,
+   "operator": "one_to_zero",
+   "original": "r_div_cnt <= r_div_cnt + 1'b1;",
+   "mutated": "            r_div_cnt <= r_div_cnt + 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_031_pause_and_endless_burst",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-023",
+    "CHK-020",
+    "CHK-011",
+    "CHK-012",
+    "CHK-014",
+    "CHK-007",
+    "CHK-009",
+    "CHK-004",
+    "CHK-005"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M33",
+   "file": "m_spi_master.sv",
+   "line": 181,
+   "operator": "zero_to_one",
+   "original": "r_sclk     <= 1'b0;",
+   "mutated": "      r_sclk     <= 1'b1;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "also_run": [
+    "min.s1",
+    "max.s1"
+   ],
+   "equivalence": {
+    "status": "PROVEN",
+    "depth": 32,
+    "per_config": {
+     "base.s1": {
+      "status": "PROVEN",
+      "overrides": {}
+     },
+     "min.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "PARA_SPI_CLK_DIV": 1
+      }
+     },
+     "max.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "PARA_SPI_CLK_DIV": 255
+      }
+     }
+    }
+   }
+  },
+  {
+   "id": "M34",
+   "file": "m_spi_master.sv",
+   "line": 150,
+   "operator": "and_to_or",
+   "original": "assign cmd_hs          = i_cmd_valid && cmd_ready;",
+   "mutated": "  assign cmd_hs          = i_cmd_valid || cmd_ready;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_031_pause_and_endless_burst",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-024",
+    "CHK-025",
+    "CHK-020",
+    "CHK-021",
+    "CHK-018",
+    "CHK-011",
+    "CHK-013",
+    "CHK-014",
+    "CHK-010",
+    "CHK-006",
+    "CHK-007",
+    "CHK-003",
+    "CHK-005"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M35",
+   "file": "m_spi_master.sv",
+   "line": 303,
+   "operator": "negate_if",
+   "original": "if (!i_rst_n) begin",
+   "mutated": "    if (!(!i_rst_n)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_031_pause_and_endless_burst",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-020"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M36",
+   "file": "m_spi_master.sv",
+   "line": 255,
+   "operator": "one_to_zero",
+   "original": "r_cs_n    <= 1'b1;",
+   "mutated": "            r_cs_n    <= 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_028_no_handshake_no_effect",
+    "test_chk_029_no_combinational_input_paths",
+    "test_chk_030_single_byte_bursts",
+    "test_chk_032_mode_change_before_burst_start",
+    "test_chk_033_mode_change_during_burst_ignored",
+    "test_chk_034_cpol_follow_in_reset_and_idle",
+    "test_chk_035_reset_in_each_phase",
+    "test_chk_036_held_byte_backpressure",
+    "test_chk_037_rsp_handshake_at_transfer_end_and_random_ready",
+    "test_chk_038_random_traffic_all_modes",
+    "test_chk_039_miso_sampling_edge_precision",
+    "test_chk_040_continuous_bursts_timing",
+    "test_chk_041_divider_timing",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-007"
+   ],
+   "run": "base.s1"
+  }
+ ],
+ "candidates": 60,
+ "count": 36,
+ "killed": 33,
+ "survived": 3,
+ "not_compiled": 0,
+ "score": 91.7,
+ "seed": 1,
+ "excluded_uncovered": {
+  "files": [],
+  "lines": 4
+ },
+ "baseline_failing": {
+  "tests": [],
+  "checks": []
+ },
+ "runs": {
+  "available": [
+   "base.s1",
+   "base.s2",
+   "min.s1",
+   "min.s2",
+   "max.s1"
+  ],
+  "used": [
+   "base.s1"
+  ],
+  "second_chance_sims": 6
+ },
+ "threshold": 85.0,
+ "attribution": {
+  "mutants": {
+   "M01": {
+    "rules": [
+     "SPI-3-01",
+     "SPI-7.8-01",
+     "SPI-7.8-06",
+     "SPI-7.8-02",
+     "SPI-3-02"
+    ],
+    "equivalent": false,
+    "reason": "Edge-16 end-of-transfer handling would run at the wrong edge count, so the transfer length, join, Trail and Pause entry would break."
+   },
+   "M02": {
+    "rules": [
+     "SPI-7.5-03",
+     "SPI-7.5-04",
+     "SPI-7.5-05",
+     "SPI-7.5-07",
+     "SPI-1.2-01"
+    ],
+    "equivalent": false,
+    "reason": "With OR, o_mosi would shift on every SCLK edge, not only on the shift edges, so MOSI bit timing would be wrong."
+   },
+   "M03": {
+    "rules": [
+     "SPI-7.5-03",
+     "SPI-7.5-04",
+     "SPI-7.5-07",
+     "SPI-7.3-04",
+     "SPI-7.3-05"
+    ],
+    "equivalent": false,
+    "reason": "The shift edge would move to the sampling edge, so MOSI would change at the sampling edge instead of a half period away."
+   },
+   "M04": {
+    "rules": [
+     "SPI-3-06",
+     "SPI-7.2-03",
+     "SPI-8-04",
+     "SPI-7.2-02",
+     "SPI-8-07"
+    ],
+    "equivalent": false,
+    "reason": "Trail would end on the wrong cycles, so o_cs_n would not rise exactly D cycles after SCLK edge 16."
+   },
+   "M05": {
+    "rules": [
+     "SPI-7.7-01",
+     "SPI-1.1-02",
+     "SPI-8-03",
+     "SPI-5-09",
+     "SPI-7.7-02"
+    ],
+    "equivalent": false,
+    "reason": "o_rsp_valid would not be raised at the end of a transfer, so the received byte is never shown."
+   },
+   "M06": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "r_last is always overwritten at the accepting handshake in Idle before any use. It only affects cmd_ready in XFER and the XFER end, and cmd_ready in Idle does not depend on it. The reset value is not observable at the ports."
+   },
+   "M07": {
+    "rules": [
+     "SPI-7.7-03",
+     "SPI-10-13",
+     "SPI-7.7-04",
+     "SPI-1.2-09",
+     "SPI-7.7-11"
+    ],
+    "equivalent": false,
+    "reason": "With AND, a new byte would be loaded into the shown register only when it is not valid and the consumer is ready, so the byte would go to held or be mishandled."
+   },
+   "M08": {
+    "rules": [
+     "SPI-3-02",
+     "SPI-7.4-01",
+     "SPI-7.4-02",
+     "SPI-3-01",
+     "SPI-1.2-05"
+    ],
+    "equivalent": false,
+    "reason": "SCLK edges would be generated outside the transfer state and none inside it, so o_sclk would never toggle in a transfer."
+   },
+   "M09": {
+    "rules": [
+     "SPI-3-01",
+     "SPI-7.1-10",
+     "SPI-7.7-01",
+     "SPI-7.8-06",
+     "SPI-7.8-02"
+    ],
+    "equivalent": false,
+    "reason": "xfer_last_cycle would be true at every SCLK edge, so responses would load and cmd_ready would assert early."
+   },
+   "M10": {
+    "rules": [
+     "SPI-7.5-03",
+     "SPI-7.5-08",
+     "SPI-7.5-06",
+     "SPI-7.5-09",
+     "SPI-7.8-03"
+    ],
+    "equivalent": false,
+    "reason": "MOSI would shift only at the final edge and not at the normal shift edges, so the data and the hold of d[0] would break."
+   },
+   "M11": {
+    "rules": [
+     "SPI-7.7-01",
+     "SPI-8-03",
+     "SPI-1.1-02",
+     "SPI-7.7-02",
+     "SPI-8-16"
+    ],
+    "equivalent": false,
+    "reason": "The response would be captured at every cycle except the last cycle of a transfer, so the received byte is lost or wrong."
+   },
+   "M12": {
+    "rules": [
+     "SPI-1.2-09",
+     "SPI-7.7-05",
+     "SPI-7.7-06",
+     "SPI-8-14",
+     "SPI-10-06"
+    ],
+    "equivalent": false,
+    "reason": "A byte received under back-pressure would not be marked held, so it would be lost."
+   },
+   "M13": {
+    "rules": [
+     "SPI-6.2-05",
+     "SPI-5-08",
+     "SPI-6.2-01",
+     "SPI-6.2-10",
+     "SPI-10-12"
+    ],
+    "equivalent": false,
+    "reason": "o_rsp_valid would be 1 in reset instead of 0."
+   },
+   "M14": {
+    "rules": [
+     "SPI-1.2-05",
+     "SPI-4-02",
+     "SPI-3-02",
+     "SPI-7.4-01",
+     "SPI-10-16"
+    ],
+    "equivalent": false,
+    "reason": "The half-period tick would fire on every count but the last, so SCLK timing would be wrong."
+   },
+   "M15": {
+    "rules": [
+     "SPI-7.1-10",
+     "SPI-7.1-09",
+     "SPI-7.1-06",
+     "SPI-8-12",
+     "SPI-14-03"
+    ],
+    "equivalent": false,
+    "reason": "cmd_ready in XFER would be 1 whenever the last cycle comes or the shown byte is absent, so commands would be accepted in mid-transfer."
+   },
+   "M16": {
+    "rules": [
+     "SPI-6.2-05",
+     "SPI-6.2-01",
+     "SPI-5-08",
+     "SPI-6.2-10",
+     "SPI-10-12"
+    ],
+    "equivalent": false,
+    "reason": "The response block would be in reset while i_rst_n=1 and run while in reset, so no response would be produced and reset would not clear the outputs."
+   },
+   "M17": {
+    "rules": [
+     "SPI-7.1-07",
+     "SPI-7.2-05",
+     "SPI-8-05",
+     "SPI-14-02",
+     "SPI-8-08"
+    ],
+    "equivalent": false,
+    "reason": "The Idle gap counter would never advance, so cmd_ready would stay blocked after o_cs_n rises for D>1."
+   },
+   "M18": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "The case covers all four r_state values and every branch overwrites cmd_ready, so the default assignment is never visible."
+   },
+   "M19": {
+    "rules": [
+     "SPI-7.3-01",
+     "SPI-7.3-04",
+     "SPI-7.5-04",
+     "SPI-7.3-03",
+     "SPI-1.2-04"
+    ],
+    "equivalent": false,
+    "reason": "The CPHA used to launch the first MOSI bit would be inverted in its source, so the first MOSI bit would be wrong when the mode changes just before a burst start or at a join."
+   },
+   "M20": {
+    "rules": [
+     "SPI-7.7-10",
+     "SPI-7.7-04",
+     "SPI-7.7-07",
+     "SPI-7.7-08",
+     "SPI-1.1-02"
+    ],
+    "equivalent": false,
+    "reason": "A response handshake would be seen when only one side is ready, so bytes would be dropped or o_rsp_valid cleared wrongly."
+   },
+   "M21": {
+    "rules": [
+     "SPI-3-01",
+     "SPI-7.8-01",
+     "SPI-7.8-06",
+     "SPI-7.8-02",
+     "SPI-3-02"
+    ],
+    "equivalent": false,
+    "reason": "The end-of-transfer branch would be taken at the wrong edge count, so the transfer length and phases would break."
+   },
+   "M22": {
+    "rules": [
+     "SPI-3-06",
+     "SPI-7.2-03",
+     "SPI-8-04",
+     "SPI-7.2-02",
+     "SPI-8-07"
+    ],
+    "equivalent": false,
+    "reason": "The Trail counter would not advance, so Trail would never end for D>1 and o_cs_n would not rise."
+   },
+   "M23": {
+    "rules": [
+     "SPI-7.7-06",
+     "SPI-7.7-05",
+     "SPI-1.2-09",
+     "SPI-8-14",
+     "SPI-7.7-12"
+    ],
+    "equivalent": false,
+    "reason": "The held flag would stay set after the held byte is promoted, so the byte would be duplicated and o_rsp_valid would not fall."
+   },
+   "M24": {
+    "rules": [
+     "SPI-3-01",
+     "SPI-7.8-06",
+     "SPI-7.8-02",
+     "SPI-7.1-10",
+     "SPI-7.7-01"
+    ],
+    "equivalent": false,
+    "reason": "xfer_last_cycle would fire at every SCLK edge except edge 16, so the transfer end and response load would break."
+   },
+   "M25": {
+    "rules": [
+     "SPI-7.6-01",
+     "SPI-7.6-02",
+     "SPI-7.3-04",
+     "SPI-7.3-05",
+     "SPI-5-15"
+    ],
+    "equivalent": false,
+    "reason": "i_miso would be sampled at every SCLK edge, so the received byte would be wrong."
+   },
+   "M26": {
+    "rules": [
+     "SPI-7.1-02",
+     "SPI-5-06",
+     "SPI-7.5-01",
+     "SPI-7.1-03",
+     "SPI-1.2-01"
+    ],
+    "equivalent": false,
+    "reason": "The MOSI data would be loaded when no handshake occurs and not at the handshake, so the transmitted byte would be wrong."
+   },
+   "M27": {
+    "rules": [
+     "SPI-6.2-02",
+     "SPI-5-13",
+     "SPI-6.2-01",
+     "SPI-10-09",
+     "SPI-10-11"
+    ],
+    "equivalent": false,
+    "reason": "o_cs_n would be 0 in reset instead of 1."
+   },
+   "M28": {
+    "rules": [
+     "SPI-6.2-10",
+     "SPI-10-12",
+     "SPI-6.2-05",
+     "SPI-6.2-01",
+     "SPI-10-10"
+    ],
+    "equivalent": false,
+    "reason": "A held byte would be set by reset and later appear as a spurious response."
+   },
+   "M29": {
+    "rules": [
+     "SPI-7.6-01",
+     "SPI-7.6-02",
+     "SPI-7.3-04",
+     "SPI-7.3-05",
+     "SPI-5-15"
+    ],
+    "equivalent": false,
+    "reason": "i_miso would be sampled on the wrong SCLK edges (the other phase), so the received byte would be wrong."
+   },
+   "M30": {
+    "rules": [
+     "SPI-7.1-10",
+     "SPI-7.1-09",
+     "SPI-7.1-06",
+     "SPI-8-12",
+     "SPI-14-03"
+    ],
+    "equivalent": false,
+    "reason": "cmd_ready in XFER would also be 1 whenever o_rsp_valid=0, so commands would be accepted in mid-transfer."
+   },
+   "M31": {
+    "rules": [
+     "SPI-7.7-04",
+     "SPI-7.7-06",
+     "SPI-7.7-07",
+     "SPI-7.7-10",
+     "SPI-1.1-02"
+    ],
+    "equivalent": false,
+    "reason": "The shown byte would be consumed or promoted when no response handshake occurs, and it would not be released at a handshake."
+   },
+   "M32": {
+    "rules": [
+     "SPI-1.2-05",
+     "SPI-4-02",
+     "SPI-3-02",
+     "SPI-7.4-01",
+     "SPI-10-16"
+    ],
+    "equivalent": false,
+    "reason": "The half-period counter would not advance during a transfer, so SCLK would stall for D>1."
+   },
+   "M33": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "r_sclk reset value 1 or 0 is hidden while o_cs_n=1, because o_sclk = i_cpol in that case. r_sclk is loaded with i_cpol at the burst-start handshake before o_cs_n falls, so the reset value never reaches o_sclk."
+   },
+   "M34": {
+    "rules": [
+     "SPI-7.1-01",
+     "SPI-6.2-07",
+     "SPI-10-05",
+     "SPI-7.1-03",
+     "SPI-7.1-04"
+    ],
+    "equivalent": false,
+    "reason": "A command would be accepted when only i_cmd_valid or only o_cmd_ready is 1."
+   },
+   "M35": {
+    "rules": [
+     "SPI-7.6-01",
+     "SPI-7.6-02",
+     "SPI-6.2-01",
+     "SPI-5-09",
+     "SPI-7.6-05"
+    ],
+    "equivalent": false,
+    "reason": "The rx shift register would be held at reset while i_rst_n=1 and would shift while in reset, so the received data would be wrong."
+   },
+   "M36": {
+    "rules": [
+     "SPI-7.2-03",
+     "SPI-3-06",
+     "SPI-8-04",
+     "SPI-7.2-02",
+     "SPI-8-07"
+    ],
+    "equivalent": false,
+    "reason": "o_cs_n would stay low after Trail and not be released at the end of a burst."
+   }
+  },
+  "unknown_ids": [],
+  "model": "sonnet",
+  "cost_usd": 0.3448335
+ },
+ "rule_scores": {
+  "SPI-1.1-02": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-1.2-01": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-1.2-04": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-1.2-05": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-1.2-09": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-10-05": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-10-06": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-10-09": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-10-10": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-10-11": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-10-12": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-10-13": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-10-16": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-14-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-14-03": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-3-01": {
+   "relevant": 5,
+   "killed": 5,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-3-02": {
+   "relevant": 5,
+   "killed": 5,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-3-06": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-4-02": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-5-06": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-5-08": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-5-09": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-5-13": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-5-15": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-6.2-01": {
+   "relevant": 5,
+   "killed": 5,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-6.2-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-6.2-05": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-6.2-07": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-6.2-10": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.1-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.1-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.1-03": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.1-04": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.1-06": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.1-07": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.1-09": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.1-10": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.2-02": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.2-03": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.2-05": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.3-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.3-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.3-04": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.3-05": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.4-01": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.4-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.5-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.5-03": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.5-04": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.5-05": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.5-06": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.5-07": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.5-08": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.5-09": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.6-01": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.6-02": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.6-05": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.7-01": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.7-02": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.7-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.7-04": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.7-05": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.7-06": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.7-07": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.7-08": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.7-10": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.7-11": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.7-12": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.8-01": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.8-02": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.8-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-7.8-06": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-8-03": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-8-04": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-8-05": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-8-07": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-8-08": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-8-12": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-8-14": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "SPI-8-16": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ "equivalence": {
+  "by_status": {
+   "PROVEN": 3
+  },
+  "proven_equivalent": 3,
+  "score_without_equivalent": 100.0
+ }
+}

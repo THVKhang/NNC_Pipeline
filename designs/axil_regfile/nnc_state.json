@@ -1,0 +1,67 @@
+{
+  "config": {
+    "documents": [
+      {
+        "file": "spec/axil_regfile_Design_Specification.md",
+        "role": "ip_spec",
+        "sections": [],
+        "skip": [],
+        "tag": "RF"
+      }
+    ],
+    "formal": "on",
+    "formal_depth": "32",
+    "formal_max_depth": "128",
+    "rtl_origin": "generated",
+    "top": "m_axil_regfile"
+  },
+  "created": "2026-11-19T10:42:45+00:00",
+  "design": "axil_regfile",
+  "gates": {
+    "D1_config": {
+      "at": "2026-11-19T11:01:14+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "work/final_config.json": "8cf126850653dddfc64c279efdaf2ac8cc30a58abf46fdac7068cf04142723db"
+      },
+      "note": "Delegated: final configuration = specification defaults (PARA_NUM_REGS=8, PARA_ADDR_W=8)."
+    },
+    "D2_rtl": {
+      "at": "2026-11-19T11:05:52+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "rtl": "a1c3ab4ee3b59528ca043d95bf300be11f93073cd69af2caeda4e29264363864",
+        "work/rtl_gen.json": "9d8fe0a1f5100f1cf3d40b1255c53224464bab4a5f744023e23ec513da688ad7"
+      },
+      "note": "Delegated review of work/rtl_gen.md: clean at the first attempt (0 errors, 0 warnings; 1 note: the simulation-only $error on illegal parameters; 1 waiver for the ignored prot and address bits). Registered outputs, every flop reset, single clock, no CDC; 141/193 rules tagged. The 7 open points follow the specification. OPEN, not resolved by this approval: REQ-IMP-001 timing. ABC estimates the longest combinational path at 16.9 ns (TT) and 31.5 ns (SS 125 C) against a 20 ns period; likely the serial OR-chain read mux and the 32-bit decode compare. Not a sign-off STA figure, but it must be decided by the designer at G4. Correctness is left to the verification. Not a hardware designer's review."
+    },
+    "G1_rules": {
+      "at": "2026-11-19T10:55:31+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "work/rules.json": "3df3e1eee03253820b261f43a73593ac548dee2ddf32150e1f6c24e653ccfec9"
+      },
+      "note": "Delegated review: 193 rules kept after A2 review (12 fixed, 3 merged, 5 rejected); 0 open questions (27 of 28 answered from the specification, 1 duplicate). Spec decisions Q-001..003 and the 5 spec-lint gaps (D-014..018) were made on delegation before ingest. Not a hardware designer's review.",
+      "sources": {
+        "spec/axil_regfile_Design_Specification.md": "041127eadff9346b128be8c4cfd8f87f7d55ef0ca1c49c4cf616c33c16738531"
+      }
+    },
+    "G2_contract": {
+      "at": "2026-11-19T11:01:13+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "work/contract.json": "cd5863d1372ef1cf608da41d3417faeed4eb6a7b496d1d893fe7bf543655c865"
+      },
+      "note": "Delegated review: 37 checks (17 assertions, 20 tests) over 171 of 193 rules; 22 not verifiable by simulation (14 static/structural, 6 environment obligations, 1 covered by another check, 1 design guideline). Every check selected. Not a hardware designer's review."
+    },
+    "G3_verif_sources": {
+      "at": "2026-11-20T05:35:47+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "verif": "72e5c3d9d88e4d68199285caf12414db54c249dcd756b640e0d9bbf733aaea86"
+      },
+      "note": "Delegated review: 5 SVA checkers + nnc_cov (40 cover points), test_axil_regfile.py (A7, valid at attempt 2), formal env with 4 assumptions: reset from time zero for 2 cycles (REQ-VER-006) and valid/payload stability on AW, W, AR until the transfer, ended by reset (REQ-VER-001, REQ-VER-007). Ready signals, status, addresses, strobes and prot are left free as the specification allows. Not a hardware designer's review."
+    }
+  },
+  "version": 1
+}

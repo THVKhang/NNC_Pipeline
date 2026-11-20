@@ -1,0 +1,164 @@
+rm -f results.xml
+"make" -f Makefile results.xml
+make[1]: Entering directory '/root/nnc_runs/runset_a315c28d/C02'
+make[1]: warning: -j3 forced in makefile: resetting jobserver mode.
+rm -f results.xml
+COCOTB_TEST_MODULES=test_spi_master COCOTB_TESTCASE= COCOTB_TEST_FILTER= COCOTB_TOPLEVEL=nnc_tb_top TOPLEVEL_LANG=verilog \
+         sim_build/Vtop  --assert --timing -Wno-fatal -Wno-WIDTH -Wno-UNOPTFLAT -GPARA_SPI_CLK_DIV=1 --coverage-line --coverage-toggle --coverage-expr   
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:216  in gpi_load_users                  Running entry func 'initialize' from loaded library '/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/libs/libcocotb.so'
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:96   in initialize                      Using Python 3.11.6 interpreter at /opt/oss-cad-suite/bin/tabbypy3
+     0.00ns INFO     cocotb                             Running on Verilator version 5.055 devel
+     0.00ns INFO     cocotb                             Seeding Python random module with supplied seed 2
+     0.00ns INFO     cocotb                             Initialized cocotb v2.1.0.dev0+41564633 from /opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_spi_master.test_chk_028_no_handshake_no_effect (1/15)
+                                                            CHK-028: commands without handshake (reset, o_cmd_ready=0, withdrawn, valid=0) have no effect.
+  5830.00ns INFO     cocotb.nnc_tb_top                  coverage: ('joint',), ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1))
+  5830.00ns INFO     cocotb.regression                  test_spi_master.test_chk_028_no_handshake_no_effect passed
+  5830.00ns INFO     cocotb.regression                  running test_spi_master.test_chk_029_no_combinational_input_paths (2/15)
+                                                            CHK-029: inputs toggled between edges never change registered outputs; o_sclk follows i_cpol only with o_cs_n=1.
+  9630.00ns INFO     cocotb.nnc_tb_top                  CHK-029 phases with o_rsp_valid=1: ['gap', 'idle', 'pause', 'trail', 'transfer']
+  9630.00ns INFO     cocotb.nnc_tb_top                  coverage: ('joint',), ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1)), ('pause_entry',), ('pause_exit',)
+  9630.00ns INFO     cocotb.regression                  test_spi_master.test_chk_029_no_combinational_input_paths passed
+  9630.00ns INFO     cocotb.regression                  running test_spi_master.test_chk_030_single_byte_bursts (3/15)
+                                                            CHK-030: i_cmd_last=1 on the first byte; o_cs_n rise independent of the response stream.
+ 16820.00ns INFO     cocotb.nnc_tb_top                  coverage: ('last_on_first_byte',), ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1))
+ 16820.00ns INFO     cocotb.regression                  test_spi_master.test_chk_030_single_byte_bursts passed
+ 16820.00ns INFO     cocotb.regression                  running test_spi_master.test_chk_031_pause_and_endless_burst (4/15)
+                                                            CHK-031: Pause entry/exit, long pause without timeout, endless burst (i_cmd_last=0 forever).
+ 45370.00ns INFO     cocotb.nnc_tb_top                  coverage: ('joint',), ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1)), ('pause',), ('pause_entry',), ('pause_exit',)
+ 45370.00ns INFO     cocotb.regression                  test_spi_master.test_chk_031_pause_and_endless_burst passed
+ 45370.00ns INFO     cocotb.regression                  running test_spi_master.test_chk_032_mode_change_before_burst_start (5/15)
+                                                            CHK-032: new i_cpol/i_cpha presented in the cycle before the burst-start acceptance edge are used.
+ 50480.00ns INFO     cocotb.nnc_tb_top                  coverage: ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1)), ('mode_change', (0, 0), (0, 1)), ('mode_change', (0, 0), (1, 0)), ('mode_change', (0, 0), (1, 1)), ('mode_change', (0, 1), (0, 0)), ('mode_change', (0, 1), (1, 0)), ('mode_change', (0, 1), (1, 1)), ('mode_change', (1, 0), (0, 0)), ('mode_change', (1, 0), (0, 1)), ('mode_change', (1, 0), (1, 1)), ('mode_change', (1, 1), (0, 0)), ('mode_change', (1, 1), (0, 1)), ('mode_change', (1, 1), (1, 0)), ('pause_entry',), ('pause_exit',)
+ 50480.00ns INFO     cocotb.regression                  test_spi_master.test_chk_032_mode_change_before_burst_start passed
+ 50480.00ns INFO     cocotb.regression                  running test_spi_master.test_chk_033_mode_change_during_burst_ignored (6/15)
+                                                            CHK-033: error test; i_cpol/i_cpha complemented during a burst are ignored until o_cs_n rises.
+ 55710.00ns INFO     cocotb.nnc_tb_top                  coverage: ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1)), ('pause_entry',), ('pause_exit',)
+ 55710.00ns INFO     cocotb.regression                  test_spi_master.test_chk_033_mode_change_during_burst_ignored passed
+ 55710.00ns INFO     cocotb.regression                  running test_spi_master.test_chk_034_cpol_follow_in_reset_and_idle (7/15)
+                                                            CHK-034: o_sclk follows i_cpol combinationally in reset, Idle and the Idle gap.
+ 56140.01ns INFO     cocotb.nnc_tb_top                  coverage: ('mode', (0, 0))
+ 56140.01ns INFO     cocotb.regression                  test_spi_master.test_chk_034_cpol_follow_in_reset_and_idle passed
+ 56140.01ns INFO     cocotb.regression                  running test_spi_master.test_chk_035_reset_in_each_phase (8/15)
+                                                            CHK-035: asynchronous reset in each phase aborts/discards; restart at first edge after release.
+ 59180.01ns INFO     cocotb.nnc_tb_top                  coverage: ('held_byte',), ('joint',), ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1)), ('pause_entry',), ('reset', 'idle_gap'), ('reset', 'pause'), ('reset', 'shown_and_held_byte'), ('reset', 'shown_byte'), ('reset', 'trail'), ('reset', 'xfer_after_sclk_edge'), ('reset', 'xfer_mid_half_period')
+ 59180.01ns INFO     cocotb.regression                  test_spi_master.test_chk_035_reset_in_each_phase passed
+ 59180.01ns INFO     cocotb.regression                  running test_spi_master.test_chk_036_held_byte_backpressure (9/15)
+                                                            CHK-036: held byte created and released; no transfer while held; consumer never takes.
+ 77930.01ns INFO     cocotb.nnc_tb_top                  coverage: ('held_byte',), ('held_released',), ('joint',), ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1)), ('pause_entry',), ('pause_exit',)
+ 77930.01ns INFO     cocotb.regression                  test_spi_master.test_chk_036_held_byte_backpressure passed
+ 77930.01ns INFO     cocotb.regression                  running test_spi_master.test_chk_037_rsp_handshake_at_transfer_end_and_random_ready (10/15)
+                                                            CHK-037: response handshake exactly at A+16D loads the new byte; random i_rsp_ready never loses data.
+ 95920.01ns INFO     cocotb.nnc_tb_top                  coverage: ('held_byte',), ('joint',), ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1)), ('pause_entry',), ('pause_exit',)
+ 95920.01ns INFO     cocotb.regression                  test_spi_master.test_chk_037_rsp_handshake_at_transfer_end_and_random_ready passed
+ 95920.01ns INFO     cocotb.regression                  running test_spi_master.test_chk_038_random_traffic_all_modes (11/15)
+                                                            CHK-038: all four modes, random data, burst lengths 1/2/>=16 and gaps 0/1/many, scoreboard.
+121230.01ns INFO     cocotb.nnc_tb_top                  coverage: ('cfg_mode', (0, 0)), ('cfg_mode', (0, 1)), ('cfg_mode', (1, 0)), ('cfg_mode', (1, 1)), ('gap', '0'), ('gap', '1'), ('gap', 'many'), ('joint',), ('len', 1), ('len', 16), ('len', 2), ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1)), ('pause_entry',), ('pause_exit',)
+121230.01ns INFO     cocotb.regression                  test_spi_master.test_chk_038_random_traffic_all_modes passed
+121230.01ns INFO     cocotb.regression                  running test_spi_master.test_chk_039_miso_sampling_edge_precision (12/15)
+                                                            CHK-039: i_miso is captured only in the single cycle ending at each sampling edge.
+125980.01ns INFO     cocotb.nnc_tb_top                  coverage: ('joint',), ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1))
+125980.01ns INFO     cocotb.regression                  test_spi_master.test_chk_039_miso_sampling_edge_precision passed
+125980.01ns INFO     cocotb.regression                  running test_spi_master.test_chk_040_continuous_bursts_timing (13/15)
+                                                            CHK-040: back-to-back commands give gapless SCLK, exact o_cs_n times and throughput; boundary variants.
+154130.01ns INFO     cocotb.nnc_tb_top                  coverage: ('continuous_join',), ('joint',), ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1)), ('pause_entry',), ('pause_exit',)
+154130.01ns INFO     cocotb.regression                  test_spi_master.test_chk_040_continuous_bursts_timing passed
+154130.01ns INFO     cocotb.regression                  running test_spi_master.test_chk_041_divider_timing (14/15)
+                                                            CHK-041: SCLK half period equals PARA_SPI_CLK_DIV; a byte takes 16*D cycles.
+158880.01ns INFO     cocotb.nnc_tb_top                  coverage: ('joint',), ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1))
+158880.01ns INFO     cocotb.regression                  test_spi_master.test_chk_041_divider_timing passed
+158880.01ns INFO     cocotb.regression                  running test_spi_master.test_regression_random (15/15)
+                                                            CHK-001..CHK-027, CHK-020, CHK-038: broad legal random traffic with random modes, gaps,
+665730.01ns INFO     cocotb.nnc_tb_top                  coverage: ('joint',), ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1)), ('pause_entry',), ('pause_exit',), ('regression_reset',)
+665730.01ns INFO     cocotb.regression                  test_spi_master.test_regression_random passed
+665730.01ns INFO     cocotb.regression                  *************************************************************************************************************************************
+                                                        ** TEST                                                                         STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *************************************************************************************************************************************
+                                                        ** test_spi_master.test_chk_028_no_handshake_no_effect                           PASS        5830.00           0.05     115808.23  **
+                                                        ** test_spi_master.test_chk_029_no_combinational_input_paths                     PASS        3800.00           0.07      58229.32  **
+                                                        ** test_spi_master.test_chk_030_single_byte_bursts                               PASS        7190.00           0.05     132676.25  **
+                                                        ** test_spi_master.test_chk_031_pause_and_endless_burst                          PASS       28550.00           0.20     144015.59  **
+                                                        ** test_spi_master.test_chk_032_mode_change_before_burst_start                   PASS        5110.00           0.03     150118.67  **
+                                                        ** test_spi_master.test_chk_033_mode_change_during_burst_ignored                 PASS        5230.00           0.04     145328.74  **
+                                                        ** test_spi_master.test_chk_034_cpol_follow_in_reset_and_idle                    PASS         430.00           0.00     124382.81  **
+                                                        ** test_spi_master.test_chk_035_reset_in_each_phase                              PASS        3040.00           0.04      75230.16  **
+                                                        ** test_spi_master.test_chk_036_held_byte_backpressure                           PASS       18750.00           0.13     140630.41  **
+                                                        ** test_spi_master.test_chk_037_rsp_handshake_at_transfer_end_and_random_ready   PASS       17990.00           0.16     113133.85  **
+                                                        ** test_spi_master.test_chk_038_random_traffic_all_modes                         PASS       25310.00           0.24     106632.88  **
+                                                        ** test_spi_master.test_chk_039_miso_sampling_edge_precision                     PASS        4750.00           0.04     125837.33  **
+                                                        ** test_spi_master.test_chk_040_continuous_bursts_timing                         PASS       28150.00           0.24     117066.17  **
+                                                        ** test_spi_master.test_chk_041_divider_timing                                   PASS        4750.00           0.04     125356.72  **
+                                                        ** test_spi_master.test_regression_random                                        PASS      506850.00           4.58     110601.59  **
+                                                        *************************************************************************************************************************************
+                                                        ** TESTS=15 PASS=15 FAIL=0 SKIP=0                                                          665730.01           5.93     112230.45  **
+                                                        *************************************************************************************************************************************
+- (null):0: Verilog $finish
+NNC_COVER COVP-001 hits=195
+NNC_COVER COVP-002 hits=236
+NNC_COVER COVP-003 hits=214
+NNC_COVER COVP-004 hits=200
+NNC_COVER COVP-005 hits=200
+NNC_COVER COVP-006 hits=48
+NNC_COVER COVP-007 hits=362
+NNC_COVER COVP-008 hits=308
+NNC_COVER COVP-009 hits=299
+NNC_COVER COVP-010 hits=150
+NNC_COVER COVP-011 hits=225
+NNC_COVER COVP-012 hits=97
+NNC_COVER COVP-013 hits=0
+NNC_COVER COVP-014 hits=0
+NNC_COVER COVP-015 hits=931
+NNC_COVER COVP-016 hits=210
+NNC_COVER COVP-017 hits=1350
+NNC_COVER COVP-018 hits=2036
+NNC_COVER COVP-019 hits=1020
+NNC_COVER COVP-020 hits=1343
+NNC_COVER COVP-021 hits=268
+NNC_COVER COVP-022 hits=0
+NNC_COVER COVP-023 hits=192
+NNC_COVER COVP-024 hits=89
+NNC_COVER COVP-025 hits=3250
+NNC_COVER COVP-026 hits=2745
+NNC_COVER COVP-027 hits=2349
+NNC_COVER COVP-028 hits=1340
+NNC_COVER COVP-029 hits=1860
+NNC_COVER COVP-030 hits=20
+NNC_COVER COVP-031 hits=567
+NNC_COVER COVP-032 hits=4947
+NNC_COVER COVP-033 hits=92
+NNC_COVER COVP-034 hits=7
+NNC_COVER COVP-035 hits=64
+NNC_COVER COVP-036 hits=8
+NNC_COVER COVP-037 hits=0
+NNC_COVER COVP-038 hits=14
+NNC_COVER COVP-039 hits=12
+NNC_CHECK CHK-023 hits=52725 fails=0
+NNC_CHECK CHK-024 hits=9236 fails=0
+NNC_CHECK CHK-025 hits=12564 fails=0
+NNC_CHECK CHK-026 hits=4612 fails=0
+NNC_CHECK CHK-027 hits=1141 fails=0
+NNC_CHECK CHK-019 hits=66303 fails=0
+NNC_CHECK CHK-020 hits=66211 fails=0
+NNC_CHECK CHK-021 hits=59693 fails=0
+NNC_CHECK CHK-022 hits=3329 fails=0
+NNC_CHECK CHK-015 hits=270 fails=0
+NNC_CHECK CHK-016 hits=269 fails=0
+NNC_CHECK CHK-017 hits=270 fails=0
+NNC_CHECK CHK-018 hits=458 fails=0
+NNC_CHECK CHK-011 hits=31919 fails=0
+NNC_CHECK CHK-012 hits=33926 fails=0
+NNC_CHECK CHK-013 hits=13677 fails=0
+NNC_CHECK CHK-014 hits=26362 fails=0
+NNC_CHECK CHK-010 hits=8461 fails=0
+NNC_CHECK CHK-006 hits=4342 fails=0
+NNC_CHECK CHK-007 hits=61961 fails=0
+NNC_CHECK CHK-008 hits=755 fails=0
+NNC_CHECK CHK-009 hits=1686 fails=0
+NNC_CHECK CHK-001 hits=9275 fails=0
+NNC_CHECK CHK-002 hits=6646 fails=0
+NNC_CHECK CHK-003 hits=3884 fails=0
+NNC_CHECK CHK-004 hits=52725 fails=0
+NNC_CHECK CHK-005 hits=9236 fails=0
+make[1]: Leaving directory '/root/nnc_runs/runset_a315c28d/C02'
+NNC_MAKE_RC=0

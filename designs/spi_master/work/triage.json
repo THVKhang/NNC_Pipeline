@@ -1,0 +1,192 @@
+{
+ "analyses": [
+  {
+   "failure": "test_chk_028_no_handshake_no_effect: [min.s1, min.s2] CHK-028: burst end expected at A+17D got rises [] (assert [] == [164]), test_spi_master.py:734",
+   "spec_says": "REQ-CS-002 (spec/spi_master_Design_Specification.md:191): \"o_cs_n shall stay 0 ... until edge A + 17·D ... At that edge o_cs_n shall change to 1.\" The D = 1 corner case (spec:426) says: \"o_cmd_ready in Idle is NOT o_rsp_valid from the cycle in which o_cs_n rises (REQ-CMD-007 gives no blocked cycle ...)\". REQ-CMD-007 (spec:175): \"When D = 1 there is no such cycle.\" REQ-CMD-008 (spec:177) and DEC-016 (spec:539) say the same. CHK-028 expected (contract.json:640): \"(b) the transferred byte and burst end are exactly i_cmd_data/i_cmd_last of the handshake edge.\"",
+   "rtl_does": "m_spi_master.sv:62 sets LP_DIV_LAST = D-1 = 0 when D=1, so div_tick (line 113) is always 1. At edge A+16 a transfer with r_last=1 goes to ST_TRAIL (lines 222-224). At edge A+17 ST_TRAIL sets r_state<=ST_IDLE and r_cs_n<=1 (lines 253-256). In cycle R=A+17, o_cmd_ready = div_tick && !r_rsp_valid (line 162) = 1, because the response loaded at A+16 is taken at A+17 with i_rsp_ready=1. So o_cs_n rises at A+17D and ready=1 in that same cycle, which matches spec:426. The SVA CHK-007 (\"o_cs_n ... rises at A_last+17D only\", contract.json:266) has 0 fails in min.s1 and min.s2 (results.json:375-399), and CHK-008 also has 0 fails.",
+   "test_does": "Part (b) (test_spi_master.py:698-737) drives random commands and then sets i_cmd_valid=0. It calls wait_idle (line 728) and then, for each handshaken x with last=1, expects env.cs_rise to contain exactly A+17D (lines 732-734). wait_idle/waitc (lines 485-501) evaluate the condition (cmd idle, o_cs_n=1, o_rsp_valid=0, o_cmd_ready=1) right after `await FallingEdge` and return in that same callback. env.cs_rise is appended only in _on_cycle (lines 413-414), which _cyc_mon (lines 315-319) runs after `await FallingEdge` followed by `await ReadOnly()`, so later in the same time step. With D=1 the wait_idle condition is already true in cycle R itself (the rise cycle), so the assertion at line 734 runs before the monitor has logged the rise at R. The failure time fits this: the test failed at 1635 ns ≈ cycle 163.5 at the 10 ns period (sim_runs/min.s1.log:35), and the expected rise is 164. With D>1, o_cmd_ready=0 in cycles R..R+D-2 (RTL line 162, spec:175), so wait_idle cannot return before the monitor has logged R. That is why base and max pass.",
+   "candidates": [
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "The failure happens only for D=1, the only value where the spec makes o_cmd_ready=1 in the rise cycle R (spec:426, :175). The test fails at ≈ cycle 163.5, exactly at expected R=164, so wait_idle returned in cycle R. The cs_rise list is filled at ReadOnly (lines 317-319, 413-414), which comes after the FallingEdge callback in which waitc returns (lines 486-489). SVA CHK-007 and CHK-008, which check the same o_cs_n timing independently, have 0 fails in min runs (results.json:375-426). Test 033 in min passes its own `R in env.cs_rise` check (line 1007) because it uses goto(R+2) (line 1006) and so gives the monitor time.",
+     "evidence_against": "The full Python monitor error list (env.errors) was never printed because the test aborted before env.finish(), so the monitor's own CHK-007 view of this burst cannot be seen."
+    },
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "The message literally says no o_cs_n rise was seen after A=147.",
+     "evidence_against": "wait_idle could only return if o_cs_n==1 was read on the DUT (line 499), so o_cs_n did rise. RTL lines 249-256 raise o_cs_n at A+17D for any D, and SVA CHK-007 has 0 fails in min. o_cmd_ready=1 in the rise cycle at D=1 is what spec:426 and DEC-016 (spec:539) require."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "None found. The D=1 Idle behaviour is stated explicitly (spec:426, REQ-CMD-007 spec:175, DEC-016 spec:539).",
+     "evidence_against": "The spec is explicit and the RTL matches it."
+    }
+   ],
+   "most_likely": "B_test_wrong",
+   "options": "Fix test (the RTL needs no change). Make the post-wait checks run after the monitor has processed the current cycle: (1) in wait_idle/waitc, `await ReadOnly()` before checking or before returning, then step on to the next falling edge; or (2) after wait_idle, `await tick(dut)` (or goto(edge+1)) before reading env.cs_rise; or (3) record cs rises in _edge_mon/_on_edge rather than in the ReadOnly cycle monitor. Keep the exact assertion rises == [A+17D]. Do not change the RTL or the spec."
+  },
+  {
+   "failure": "test_chk_030_single_byte_bursts: [min.s1, min.s2] CHK-030: o_cs_n low exactly 17 cycles expected got rise [] (A=64) (assert [] == [81]), test_spi_master.py:830",
+   "spec_says": "REQ-CS-002 (spec:191) and REQ-CS-006 (spec:199): \"o_cs_n shall rise exactly D cycles after SCLK edge 16 of the last transfer of the burst\". Timing table (spec:332): \"Minimum period of single-byte bursts (i_cmd_last always 1) | 18·D\". D=1 corner (spec:426): o_cmd_ready in Idle is NOT o_rsp_valid from the cycle in which o_cs_n rises. CHK-030 expected (contract.json:671): \"o_cs_n low exactly 17*D cycles per byte.\"",
+   "rtl_does": "With D=1, div_tick is always 1 (m_spi_master.sv:62,113). A single-byte burst with A=64 goes XFER→TRAIL at edge 80 (lines 215-224) and TRAIL→IDLE with r_cs_n<=1 at edge 81 (lines 253-256). In cycle 81, o_cmd_ready = !r_rsp_valid = 1 (line 162), because the response loaded at 80 is taken at 81 (i_rsp_ready=1). The next command (gap=0) would be accepted at 82. SVA CHK-007 has 0 fails in min runs (results.json:375-399).",
+   "test_does": "For each mode, the test pushes nb=4 single-byte commands with gap=0 (lines 821-823), calls wait_idle (line 824), and checks that the first cs_rise after each x.A equals x.A+17D (lines 827-830). len(xs)==4 passed (line 826), so A=64 is the 4th burst. With the 18-cycle period, the bursts were at about A=10, 28, 46, 64, and the first three passed the rise check. The test lasted 805 ns ≈ 80.5 cycles at the 10 ns period (sim_runs/min.s1.log:48-50, :117), so the assertion ran in cycle 81 = R of the last burst. This is the same race as in CHK-028: waitc returns in the FallingEdge callback (lines 485-490) before _cyc_mon's ReadOnly sample (lines 315-319) appends R to env.cs_rise (lines 413-414). For D=1 nothing blocks ready in cycle R, so the wait ends in that very cycle.",
+   "candidates": [
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "Only the LAST burst fails, and earlier bursts in the same list passed lines 828-830. The test ends ≈ cycle 80.5, the same cycle as the expected rise 81. The failure is D=1 only, where ready=1 in cycle R by spec:426. The independent SVA CHK-007 and CHK-008 have 0 fails in min (results.json:375-426). wait_idle needs o_cs_n==1 (line 499), so the DUT had already raised o_cs_n.",
+     "evidence_against": "env.errors (the Python CHK-007 monitor result) was not printed because the test aborted, so the per-cycle view of the 4th burst cannot be seen directly."
+    },
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "The message reports no o_cs_n rise after A=64.",
+     "evidence_against": "wait_idle returned only because the DUT showed o_cs_n=1 (line 499). The RTL raises o_cs_n at A+17D (lines 249-256). SVA CHK-007 passes in min. The three earlier bursts in the same test had correctly timed rises."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "None. The D=1 Idle-ready behaviour is explicit (spec:426, DEC-016 spec:539).",
+     "evidence_against": "The spec is explicit and the RTL matches it."
+    }
+   ],
+   "most_likely": "B_test_wrong",
+   "options": "Fix test (this is the same root cause as CHK-028). After wait_idle, let the cycle monitor run before reading env.cs_rise: add `await ReadOnly()` and a tick in wait_idle/waitc, add `await tick(dut)` after line 824, or log o_cs_n rises in the rising-edge monitor. Keep rise == [A+17D]. No RTL change is needed."
+  },
+  {
+   "failure": "test_chk_033_mode_change_during_burst_ignored: [all 5 runs] traces differ, e.g. base: ref (73, [(0,0,1)x4, (0,1,0),...]) vs err (73, [(0,0,0)x4, (0,1,0),...]); min: ref (22, [(0,0,1),(0,1,0),...]) vs err (22, [(0,0,0),(0,1,0),...]) (test_spi_master.py:1021)",
+   "spec_says": "REQ-MODE-003 (spec:211): \"Changes of i_cpol or i_cpha while o_cs_n = 0 shall have no effect on o_sclk, o_mosi, o_cs_n ...\". REQ-MOSI-004 (spec:252) and the note at spec:260: \"With CPHA_b = 1, o_mosi keeps its previous value from the acceptance edge until SCLK edge 1.\" CHK-012 (contract.json:367): \"in the cycles starting at A..A+D-1, o_mosi equals its value in the cycle ending at A\". So for CPHA=1 the lead-period MOSI depends on history: it is the last bit of whatever came before. CHK-033 expected (contract.json:726): waveforms \"identical to the reference run\".",
+   "rtl_does": "For CPHA=1, the acceptance in Idle uses cpha_load=i_cpha (m_spi_master.sv:140). Only r_tx_shift is loaded (lines 282-284) and r_mosi keeps its old value until the first shift_edge at SCLK edge 1 (lines 290-292). Each trace shows (cs=0, sclk=0, mosi=old) for D cycles, then (0,1,0) at A+D: sclk rises (CPOL=0) and mosi=d1[7]=0, which is the same in both runs. P-A matches (73 = 16·4+8+1 for D=4; 22 = 16+5+1 for D=1). The captured mode was not disturbed; only the leftover MOSI value before SCLK edge 1 differs.",
+   "test_does": "For each mode M, the test runs 'ref' (no flips) and then 'err' (i_cpol/i_cpha flipped at A+7D+D/2, at A+16D+G/2 and in Trail) with the same d1, d2, s1, s2 (lines 981-1008). It records (CS,SCLK,MOSI) from cycle A to R (line 1008) and requires ref == err (line 1021). There is no reset or identical warm-up traffic before each run. The ref run of M follows the err run of the previous mode, and the err run follows the ref run of M. So o_mosi at acceptance (the last bit of the previous burst, d2[0] of a different random byte for the previous mode) can differ. For CPHA=0, d[7] is driven at A, which hides this. The fail counts of CHK-010 (an unrelated checker that fires only in err-run pauses) show 2 err runs had executed, so the failing mode is M=(0,1), the first CPHA=1 mode. The shape (old MOSI for exactly D cycles: 4 for D=4, 1 for D=1) is CPHA=1 lead behaviour.",
+   "candidates": [
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "The difference is confined to the first D cycles (A..A+D-1). In those cycles, spec:260 and CHK-012 say o_mosi = previous value, and that value differs between ref and err because their preceding traffic differs (test lines 984-991 provide no common pre-condition). From A+D the entries match ((0,1,0) in both), and P-A is identical. Mode M=(0,1) is identified by the CHK-010 fail count of 2 err runs (base 8 = 2×4, min 4 = 2×2, max 258 = 2×129).",
+     "evidence_against": "The log truncates the trace lists ('...'), so it is not proven that no later entry differs. Re-running with a full diff would confirm it."
+    },
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "The test reports a waveform difference in an error test for REQ-MODE-003.",
+     "evidence_against": "The differing cycles are before SCLK edge 1, where the spec requires o_mosi to hold its previous value (spec:260). That previous value was set before the flips. The first flip is at A+7D+D/2, after the differing cycles, so the flips cannot cause the difference. The RTL uses r_cpha_b/r_cpol_b for the rest of the burst (lines 125-140, 196-198)."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "CHK-033's expected text (contract.json:726) says 'identical to the reference run' but does not say how the reference must be pre-conditioned, although o_mosi in the CPHA=1 lead is history-dependent by design (DEC-005, spec:528).",
+     "evidence_against": "The spec itself is clear about the lead-period MOSI value. Only the test plan wording is incomplete."
+    }
+   ],
+   "most_likely": "B_test_wrong",
+   "options": "Fix test (no RTL change): give the ref and err runs the same pre-condition. For example, pulse reset (o_mosi=0) or send an identical warm-up burst before each run, or preload the same last byte. Another way: compare the lead cycles A..A+D-1 against o_mosi in cycle A-1 of the same run and compare the rest exactly. Keep the full exact comparison for all other cycles. Optionally clarify the CHK-033 plan text (contract.json:725-726) to say the reference must start from the same o_mosi state."
+  },
+  {
+   "failure": "CHK-010 (Pause entry and Pause outputs) fails=282 / hits=178962; first fail 194345000 (base.s1, inside test_chk_033). Per run: base 8, min 4, max 258.",
+   "spec_says": "REQ-FLOW-003 (spec:308): \"In Pause, o_cs_n shall stay 0, o_sclk shall stay at CPOL_b and o_mosi shall keep its value.\" REQ-MODE-003 (spec:211) and REQ-ERR-001 (spec:400): changes of i_cpol/i_cpha while o_cs_n=0 have no effect, and the master \"shall keep using CPOL_b and CPHA_b until the end of the burst\". CHK-010 behaviour (contract.json:328): \"o_sclk=CPOL_b\". contract.json:1027/1037: the ENV-003 constraint is \"violated only in CHK-033\".",
+   "rtl_does": "In ST_PAUSE (m_spi_master.sv:237-247), r_sclk is not written, so it holds CPOL_b (it was set to sclk_next = r_cpol_b at even edge 16, lines 135, 213). o_sclk = ~r_cs_n & r_sclk (line 358) gives CPOL_b and ignores i_cpol while o_cs_n=0. This is the behaviour the spec requires.",
+   "test_does": "Checker verif/sva/nnc_chk_flow.sv:61-63 asserts flow_pause |-> (o_cs_n==0) && (o_sclk == i_cpol) && .... It compares to the CURRENT i_cpol input, not to a captured CPOL_b. test_chk_033 (test_spi_master.py:993-998) flips i_cpol at A+7D+D/2 and flips it back at A+16D+G/2 (G=4+D). So during the first G/2 Pause cycles, i_cpol != CPOL_b. Expected fails per err run = G//2 sampled edges: D=4 → 4, D=1 → 2, D=255 → 129. Two err runs ran before the test aborted, which gives 8 / 4 / 258, exactly the reported counts (results.json:453-480). The fail timestamps are consecutive cycles in two groups of 4 (sim.log:136-143), inside test 033 (192155-198060 ns).",
+   "candidates": [
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "The checker compares o_sclk with live i_cpol (nnc_chk_flow.sv:62), but its own contract text says CPOL_b (contract.json:328), and the spec says CPOL_b (spec:308, :211, :400). The fail counts match exactly the number of Pause cycles in which test 033 holds i_cpol inverted (2×G//2 for every D). There are no fails in any other test, although Pause is hit 178962 times.",
+     "evidence_against": "None found."
+    },
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "The assertion fires in Pause.",
+     "evidence_against": "If o_sclk followed i_cpol in Pause, it would violate REQ-MODE-003, REQ-ERR-001 and REQ-IMP-005 (spec:508: \"While o_cs_n = 0, o_sclk shall come from a flip-flop value\"). The RTL holding CPOL_b is correct."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "None. The spec and the contract both say CPOL_b.",
+     "evidence_against": "The text is explicit."
+    }
+   ],
+   "most_likely": "B_test_wrong",
+   "options": "Fix checker (no RTL change): in nnc_chk_flow.sv, capture cpol_b <= i_cpol at a burst-start handshake (flow_hs while o_cs_n==1) and assert o_sclk == cpol_b in Pause instead of o_sclk == i_cpol. This keeps the check exact, including during the ENV-003 error test. Do not exclude test 033 from the check."
+  },
+  {
+   "failure": "CHK-015 (Outputs take reset values at once on i_rst_n assertion) fails=287 / hits=924; first fail 20225000 (base.s1). Fails occur at test-start times (e.g. 20225000, 34240000, 61705000 = test boundaries in sim.log:35-53) and at in-test reset pulses (test_chk_031 reset_pulse at 89970000/118210000/146450000, test_chk_035 and test_regression_random resets).",
+   "spec_says": "REQ-RST-001 (spec:113): \"When i_rst_n changes to 0, all outputs shall take their reset values at once, without waiting for an edge of i_clk.\" CHK-015 behaviour (contract.json:411): \"On every 1->0 transition of i_rst_n, in the same time step (after combinational settling) and before any further rising edge of i_clk: o_cs_n=1, o_mosi=0, o_rsp_valid=0, o_rsp_data=8'h00, o_cmd_ready=1 and o_sclk=i_cpol.\" REQ-IMP-003/004 (spec:504-506): flops are reset asynchronously, and o_cs_n/o_mosi are driven directly by flip-flops.",
+   "rtl_does": "All state flops use always_ff @(posedge i_clk or negedge i_rst_n) with if (!i_rst_n) and non-blocking reset assignments (m_spi_master.sv:177-187, 277-280, 302-304, 314-319). In the same time step as the i_rst_n fall, after the NBA region: r_cs_n=1, r_mosi=0, r_rsp_valid=0, r_rsp_data=0, r_state=IDLE, r_div_cnt=LP_DIV_LAST. That gives o_cmd_ready=div_tick&&!r_rsp_valid=1 (line 162) and o_sclk = r_cs_n&i_cpol | ... = i_cpol (line 358). All values are correct once the time step has settled, with no clock edge needed. CHK-016 at the next clock edges in reset passes, except once per test start (see CHK-016).",
+   "test_does": "Checker verif/sva/nnc_chk_reset.sv:35 sets chk15_armed=1 on negedge i_rst_n. The immediate assertion at lines 45-50 lives in an always block sensitive to chk15_armed/i_rst_n/outputs. It is evaluated in the ACTIVE region as soon as i_rst_n falls, which is before the DUT's non-blocking reset assignments have updated the output flops. Any output not already at its reset value fails at that first evaluation and is counted (line 49). When the outputs then change, the block re-triggers and passes, but the fail has already been recorded. So the fails appear whenever an output differed from its reset value before the reset: at test starts after traffic, and at reset pulses during transfers or with a shown byte. The check does not wait for 'combinational settling' as its own contract text requires.",
+   "candidates": [
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "The contract (contract.json:411) says 'after combinational settling', but the checker uses a plain immediate assert in a level-sensitive always block (nnc_chk_reset.sv:45-49), which races with the RTL's NBA reset updates. Fails coincide with every reset assertion that occurs while some output is non-reset (test boundaries, reset_pulse in test 031, phases in test 035). The RTL reset branch sets every output in the same time step without a clock edge, as REQ-RST-001 requires. CHK-016 (checked at clock edges after the reset) passes in all in-test resets.",
+     "evidence_against": "No waveform is available to show the outputs settling within the time step. The conclusion is drawn from the checker construction and the RTL code."
+    },
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "REQ-RST-001 says 'at once', and the outputs reach reset values via NBA updates, not in zero delta.",
+     "evidence_against": "NBA-based asynchronous reset updates the outputs in the same simulation time step, which is 'at once' in RTL terms and what the contract defines ('same time step (after combinational settling)'). REQ-IMP-004 requires o_cs_n/o_mosi to come straight from flops, so forcing outputs combinationally from i_rst_n would conflict with it."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "'At once' in REQ-RST-001 (spec:113) does not define delta or region ordering. The contract wording 'after combinational settling' is the clarification, but the checker did not implement it.",
+     "evidence_against": "The contract wording is clear enough to implement: evaluate after settling."
+    }
+   ],
+   "most_likely": "B_test_wrong",
+   "options": "Fix checker (no RTL change): evaluate CHK-015 after the time step settles. Use a deferred immediate assertion (assert final (...)) or a #0 or $strobe/observed-region sample after the negedge of i_rst_n, and keep the 'before the next rising edge' bound. Keep the full output list and exact values. Optionally clarify REQ-RST-001 in the spec as 'in the same simulation time step, after delta settling'."
+  },
+  {
+   "failure": "CHK-016 (Output values held while in reset) fails=75 / hits=924; first fail at time 0. Exactly 15 fails in every run (base, min and max alike) at times equal to the start of each of the 15 cocotb tests (sim.log:121-168: @0, 20225000, 34240000, 61705000, 174690000, 192155000, 198060000, ...).",
+   "spec_says": "REQ-RST-002/004/005/006 (spec:115-123): while i_rst_n = 0, o_cs_n=1, o_mosi=0, o_rsp_valid=0, o_rsp_data=8'h00, o_cmd_ready=1. ENV-008 (spec:456): \"Before the first assertion of i_rst_n the outputs are undefined and no check applies.\" ENV-007 (spec:454): assertion must not happen at an i_clk edge, \"An edge that coincides with the assertion is not a legal case and no check covers it (GAP-001)\". Decision (rules.json:5911): \"Simulation asserts and releases i_rst_n at a falling edge of i_clk\". CHK-016 behaviour (contract.json:433): checked \"at every rising and falling edge of i_clk\".",
+   "rtl_does": "The reset branch is NBA-based (m_spi_master.sv:177-187, 277-280, 314-319). Outputs reach reset values in the same time step as the i_rst_n fall, after the NBA region. Inside tests (reset_pulse, test 035), CHK-016 passes at all clock edges during reset. The fail count is independent of D and of the reset count and equals the number of test starts (15).",
+   "test_does": "Checker nnc_chk_reset.sv:55-61 runs an immediate assert on `always @(posedge i_clk or negedge i_clk)` when !i_rst_n. Each test's setup() (test_spi_master.py:537-546) writes i_rst_n=0 together with every input at test start and calls start_clock() in the same time step. The rules.json:5911 decision makes reset assertion coincide with a FALLING clock edge, and a restarted clock may produce an edge in that same step (nnc_cocotb.start_clock is not in the directory, so this cannot be checked). An edge-triggered check then evaluates with i_rst_n=0 before the DUT's NBA reset updates land, and sees the pre-reset outputs. At t=0 the check fires before any reset has taken effect, which ENV-008 excludes from checking. In-test resets (reset_pulse, line 527-534) do not show CHK-016 fails, which suggests a race specific to setup()/clock start.",
+   "candidates": [
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "There are exactly 15 fails per run, one at each test start, including t=0, in every configuration. This is independent of RTL timing parameters. The @0 fail is in the window ENV-008 declares unchecked (spec:456, rules.json:6238). The checker's immediate assert at a clock edge in the same time step as the reset write samples pre-NBA values, and the outputs are correct at subsequent edges (no further fails during the reset). The decision to assert reset at a falling edge (rules.json:5911) puts the reset write on the very edge CHK-016 samples.",
+     "evidence_against": "start_clock (nnc_cocotb) and nnc_tb_top are not in the directory, so the exact edge/write ordering at test start cannot be confirmed from files."
+    },
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "The outputs were not at reset values at a sampled edge while i_rst_n=0.",
+     "evidence_against": "The fails occur only once per test start and never during in-test resets or later edges of the same reset. The RTL uses standard asynchronous reset for all output flops (lines 177-187, 277-280, 314-319). The @0 fail is before any reset can have taken effect."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "The decision in rules.json:5911 (assert reset at a falling edge) conflicts in practice with CHK-016 sampling at falling edges. GAP-001/ENV-007 (spec:454) says no check covers an edge that coincides with the assertion, but the CHK-016 text (contract.json:433) does not exclude that edge.",
+     "evidence_against": "ENV-007 already states the coinciding edge is not covered, so the intent is determinable."
+    }
+   ],
+   "most_likely": "B_test_wrong",
+   "options": "Fix checker and/or testbench (no RTL change): (1) make CHK-016 a deferred or observed-region check (assert final, or sample after #0/settling) so it sees post-NBA values; (2) skip the edge that coincides with the i_rst_n 1->0 transition (ENV-007/GAP-001) and the time before the first reset has taken effect (ENV-008), e.g. arm the check only after the first negedge i_rst_n has settled; (3) in setup(), assert i_rst_n at an offset from both clock edges (e.g. quarter period) instead of in the same step as the clock (re)start. Optionally clarify CHK-016's text to exclude the assertion edge, in line with GAP-001."
+  },
+  {
+   "failure": "CHK-017 (o_sclk follows i_cpol combinationally during reset) fails=10 / hits=924; 2 fails in every run, at 174690000 (start of test_chk_032, after test_chk_031) and 280745000 (start of test_chk_037, after test_chk_036) in base.s1.",
+   "spec_says": "REQ-RST-003 (spec:117): \"While i_rst_n = 0, o_sclk shall be equal to the current value of i_cpol and shall follow every change of i_cpol combinationally.\" REQ-SCLK-005 (spec:236). CHK-017 behaviour (contract.json:446): \"... in the same time step as every change of i_cpol (no clock edge needed), o_sclk equals the current value of i_cpol.\" ENV-007/GAP-001 (spec:454) and ENV-008 (spec:456) as for CHK-016.",
+   "rtl_does": "o_sclk = (r_cs_n & i_cpol) | (~r_cs_n & r_sclk) | (i_cpol & r_sclk) (m_spi_master.sv:358). Once r_cs_n=1 (async reset NBA, line 180), o_sclk = i_cpol combinationally. Test 031 ends in an endless burst in Pause in mode (1,1) with no final reset (test_spi_master.py:908-921: reset_pulse skipped for the last mode), so o_cs_n=0 and r_sclk=CPOL_b=1. Test 036 ends in the never-take variant (lines 1213-1230) with the burst in Pause, again o_cs_n=0 with the last mode (1,1). When the next test's setup writes i_cpol=0 and i_rst_n=0 together, r_cs_n becomes 1 only in the NBA region, so before that o_sclk still equals r_sclk=1.",
+   "test_does": "Checker nnc_chk_reset.sv:65-70: an immediate assert on `always @(posedge i_clk or negedge i_clk or i_cpol or o_sclk)` when !i_rst_n. setup() (test_spi_master.py:538-545) writes i_rst_n=0 and i_cpol=mode[0]=0 in the same time step. The i_cpol change triggers the check in the active region before the DUT's async-reset NBA has set r_cs_n=1, so o_sclk (still r_sclk=1) != i_cpol=0 and a fail is recorded. After the NBA, o_sclk changes to i_cpol, the block re-triggers and passes. The fails occur only at the two test boundaries where the previous test left o_cs_n=0 with CPOL_b=1 and the new test sets i_cpol=0. That is consistent with 2 fails per run in every configuration. Test 034, which toggles i_cpol during an established reset, passes.",
+   "candidates": [
+    {
+     "cause": "B_test_wrong",
+     "evidence_for": "There are 2 fails per run, at exactly the two test starts where the prior test ended with o_cs_n=0/CPOL_b=1 (tests 031 and 036 end in Pause in mode (1,1)) and setup() changes i_cpol and asserts i_rst_n in the same step. The checker samples before the NBA reset of r_cs_n lands (nnc_chk_reset.sv:65-69). test_chk_034 (i_cpol toggled during an established reset) passes, and so do the other 924 hits. The contract wording ('in the same time step') allows settling within the step.",
+     "evidence_against": "No waveform is available. The ordering argument comes from the code."
+    },
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "o_sclk briefly differs from i_cpol in the reset-assertion time step.",
+     "evidence_against": "The difference lasts only until the NBA region of the same time step. REQ-IMP-005 (spec:508) requires o_sclk to come from the r_sclk flop while o_cs_n=0, so the RTL cannot follow i_cpol until r_cs_n has been reset. The spec only requires the value in the same time step (REQ-RST-001 'at once'). Because the reset write coincides with a clock edge or clock restart and an i_cpol change, it also falls under ENV-007/GAP-001."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "REQ-RST-003 'combinationally' together with REQ-RST-001 'at once' does not say how simultaneous i_rst_n assertion and i_cpol change should be ordered within one time step.",
+     "evidence_against": "The CHK-017 contract text says 'in the same time step', which allows post-settling evaluation."
+    }
+   ],
+   "most_likely": "B_test_wrong",
+   "options": "Fix checker and/or testbench (no RTL change): (1) evaluate CHK-017 as a deferred/final assertion (assert final) or after #0 so it sees the settled o_sclk; (2) in setup(), assert i_rst_n first and change i_cpol in a later, separate time step (between edges), so the test does not change i_cpol in the same step as the reset assertion while o_cs_n=0. Keep the exact o_sclk === i_cpol check. Optionally clarify in the spec/contract that 'combinationally' means within the same simulation time step after settling."
+  }
+ ],
+ "clusters": 7,
+ "analysed": 7,
+ "usage": {
+  "calls": 1,
+  "cached": 0,
+  "cost_usd": 2.0724,
+  "input_tokens": 30,
+  "output_tokens": 35916,
+  "cache_creation_input_tokens": 139502,
+  "cache_read_input_tokens": 1189236
+ },
+ "prompt_version": "triage-v1",
+ "denials": []
+}

@@ -1,0 +1,573 @@
+{
+ "module": "nnc_cov",
+ "file": "nnc_cov.sv",
+ "points": [
+  {
+   "id": "COVP-001",
+   "title": "Write to read/write register answers OKAY",
+   "rules": [
+    "RF-7.4-06",
+    "RF-9-03",
+    "RF-7.1-02"
+   ],
+   "checks": [
+    "CHK-011",
+    "CHK-012"
+   ],
+   "condition": "A B transfer occurs with bresp 2'b00 for a write whose AW address selected a read/write register."
+  },
+  {
+   "id": "COVP-002",
+   "title": "Write to status register answers OKAY",
+   "rules": [
+    "RF-9-06",
+    "RF-10.1-03",
+    "RF-7.3-08"
+   ],
+   "checks": [
+    "CHK-028",
+    "CHK-011"
+   ],
+   "condition": "A B transfer occurs with bresp 2'b00 for a write whose AW address selected the status register (word index 16)."
+  },
+  {
+   "id": "COVP-003",
+   "title": "Write to unmapped gap below status answers SLVERR",
+   "rules": [
+    "RF-9-08",
+    "RF-10.1-01",
+    "RF-7.4-07"
+   ],
+   "checks": [
+    "CHK-029",
+    "CHK-011"
+   ],
+   "condition": "A B transfer with bresp 2'b10 for a write to a word index from PARA_NUM_REGS to 15."
+  },
+  {
+   "id": "COVP-004",
+   "title": "Write to unmapped region above status answers SLVERR",
+   "rules": [
+    "RF-9-11",
+    "RF-10.1-01"
+   ],
+   "checks": [
+    "CHK-029",
+    "CHK-027"
+   ],
+   "condition": "A B transfer with bresp 2'b10 for a write to a word index 17..31."
+  },
+  {
+   "id": "COVP-005",
+   "title": "Write with high address bit set answers SLVERR",
+   "rules": [
+    "RF-10.2-04",
+    "RF-7.1-05",
+    "RF-14-08"
+   ],
+   "checks": [
+    "CHK-023",
+    "CHK-011"
+   ],
+   "condition": "A B transfer with bresp 2'b10 for a write whose word index is 32 or more (a 1 in address bit 7 or above)."
+  },
+  {
+   "id": "COVP-006",
+   "title": "Read of read/write register answers OKAY",
+   "rules": [
+    "RF-9-04",
+    "RF-7.5-12",
+    "RF-7.5-09"
+   ],
+   "checks": [
+    "CHK-005",
+    "CHK-004"
+   ],
+   "condition": "An R transfer with rresp 2'b00 for a read whose AR address selected a read/write register."
+  },
+  {
+   "id": "COVP-007",
+   "title": "Read of status register",
+   "rules": [
+    "RF-1.1-04",
+    "RF-9-05",
+    "RF-7.5-10"
+   ],
+   "checks": [
+    "CHK-028",
+    "CHK-005"
+   ],
+   "condition": "An R transfer with rresp 2'b00 for a read whose AR address selected the status register."
+  },
+  {
+   "id": "COVP-008",
+   "title": "Read of unmapped gap below status",
+   "rules": [
+    "RF-9-07",
+    "RF-7.5-13",
+    "RF-10.1-02"
+   ],
+   "checks": [
+    "CHK-029",
+    "CHK-005"
+   ],
+   "condition": "An R transfer with rresp 2'b10 and rdata 0 for a read to a word index from PARA_NUM_REGS to 15."
+  },
+  {
+   "id": "COVP-009",
+   "title": "Read of unmapped region above status",
+   "rules": [
+    "RF-9-10",
+    "RF-7.5-13"
+   ],
+   "checks": [
+    "CHK-029",
+    "CHK-027"
+   ],
+   "condition": "An R transfer with rresp 2'b10 and rdata 0 for a read to a word index 17..31."
+  },
+  {
+   "id": "COVP-010",
+   "title": "Read with high address bit set",
+   "rules": [
+    "RF-10.2-04",
+    "RF-7.1-05",
+    "RF-14-08"
+   ],
+   "checks": [
+    "CHK-023",
+    "CHK-005"
+   ],
+   "condition": "An R transfer with rresp 2'b10 and rdata 0 for a read whose word index is 32 or more."
+  },
+  {
+   "id": "COVP-011",
+   "title": "Write with all strobes set to a register",
+   "rules": [
+    "RF-7.3-01",
+    "RF-12.4-01",
+    "RF-5-02"
+   ],
+   "checks": [
+    "CHK-032",
+    "CHK-012"
+   ],
+   "condition": "Edge Ec of a write to a read/write register with wstrb 4'b1111 taken at the W transfer."
+  },
+  {
+   "id": "COVP-012",
+   "title": "Write with partial strobes to a register",
+   "rules": [
+    "RF-7.3-02",
+    "RF-9-03",
+    "RF-5-02"
+   ],
+   "checks": [
+    "CHK-032",
+    "CHK-012"
+   ],
+   "condition": "Edge Ec of a write to a read/write register with wstrb neither 4'b0000 nor 4'b1111."
+  },
+  {
+   "id": "COVP-013",
+   "title": "Write with zero strobes to a register",
+   "rules": [
+    "RF-10.1-04",
+    "RF-7.3-02"
+   ],
+   "checks": [
+    "CHK-032",
+    "CHK-012"
+   ],
+   "condition": "Edge Ec of a write to a read/write register with wstrb 4'b0000."
+  },
+  {
+   "id": "COVP-014",
+   "title": "Write address before write data",
+   "rules": [
+    "RF-7.2-05",
+    "RF-12.4-02",
+    "RF-7.2-06"
+   ],
+   "checks": [
+    "CHK-019",
+    "CHK-006"
+   ],
+   "condition": "The W transfer occurs while the AW address is already held (Ec at the W transfer)."
+  },
+  {
+   "id": "COVP-015",
+   "title": "Write data before write address",
+   "rules": [
+    "RF-7.2-05",
+    "RF-12.4-02",
+    "RF-7.2-06"
+   ],
+   "checks": [
+    "CHK-019",
+    "CHK-007"
+   ],
+   "condition": "The AW transfer occurs while the W data is already held (Ec at the AW transfer)."
+  },
+  {
+   "id": "COVP-016",
+   "title": "AW and W at the same edge",
+   "rules": [
+    "RF-7.2-05",
+    "RF-8.1-01",
+    "RF-12.4-02"
+   ],
+   "checks": [
+    "CHK-019",
+    "CHK-008"
+   ],
+   "condition": "AW and W transfers occur at the same edge with nothing held."
+  },
+  {
+   "id": "COVP-017",
+   "title": "Long gap: write address held 4 or more edges before data",
+   "rules": [
+    "RF-12.4-02",
+    "RF-7.2-07",
+    "RF-7.2-06"
+   ],
+   "checks": [
+    "CHK-019",
+    "CHK-006"
+   ],
+   "condition": "The W transfer occurs after the AW address was held alone for at least 3 earlier checked edges (gap of 4 or more cycles)."
+  },
+  {
+   "id": "COVP-018",
+   "title": "B transfer without back-pressure",
+   "rules": [
+    "RF-7.4-01",
+    "RF-7.4-04",
+    "RF-12.4-03"
+   ],
+   "checks": [
+    "CHK-008",
+    "CHK-020"
+   ],
+   "condition": "A B transfer occurs in the first cycle bvalid is 1 (bready already 1)."
+  },
+  {
+   "id": "COVP-019",
+   "title": "B back-pressure of at least 1 cycle",
+   "rules": [
+    "RF-7.4-02",
+    "RF-8.2-01",
+    "RF-12.4-03"
+   ],
+   "checks": [
+    "CHK-009",
+    "CHK-020"
+   ],
+   "condition": "A B transfer occurs after bvalid was 1 with bready 0 for at least 1 earlier cycle."
+  },
+  {
+   "id": "COVP-020",
+   "title": "B back-pressure of 4 or more cycles",
+   "rules": [
+    "RF-8.2-01",
+    "RF-7.4-02",
+    "RF-12.4-03"
+   ],
+   "checks": [
+    "CHK-009",
+    "CHK-020"
+   ],
+   "condition": "A B transfer occurs after bvalid was 1 with bready 0 for at least 4 consecutive cycles."
+  },
+  {
+   "id": "COVP-021",
+   "title": "R transfer without back-pressure",
+   "rules": [
+    "RF-7.5-04",
+    "RF-7.5-07",
+    "RF-12.4-04"
+   ],
+   "checks": [
+    "CHK-002",
+    "CHK-018"
+   ],
+   "condition": "An R transfer occurs in the first cycle rvalid is 1 (rready already 1)."
+  },
+  {
+   "id": "COVP-022",
+   "title": "R back-pressure of at least 1 cycle",
+   "rules": [
+    "RF-7.5-05",
+    "RF-8.2-03",
+    "RF-12.4-04"
+   ],
+   "checks": [
+    "CHK-003",
+    "CHK-018"
+   ],
+   "condition": "An R transfer occurs after rvalid was 1 with rready 0 for at least 1 earlier cycle."
+  },
+  {
+   "id": "COVP-023",
+   "title": "R back-pressure of 4 or more cycles",
+   "rules": [
+    "RF-8.2-03",
+    "RF-7.5-05",
+    "RF-12.4-04"
+   ],
+   "checks": [
+    "CHK-003",
+    "CHK-018"
+   ],
+   "condition": "An R transfer occurs after rvalid was 1 with rready 0 for at least 4 consecutive cycles."
+  },
+  {
+   "id": "COVP-024",
+   "title": "New AW or W valid presented during stalled B",
+   "rules": [
+    "RF-8.2-02",
+    "RF-7.2-07",
+    "RF-7.2-08",
+    "RF-12.4-05"
+   ],
+   "checks": [
+    "CHK-020",
+    "CHK-006",
+    "CHK-007"
+   ],
+   "condition": "While a write response is pending with bready 0, awvalid or wvalid is 1."
+  },
+  {
+   "id": "COVP-025",
+   "title": "New AR valid presented during stalled R",
+   "rules": [
+    "RF-8.2-04",
+    "RF-7.5-03",
+    "RF-12.4-05"
+   ],
+   "checks": [
+    "CHK-018",
+    "CHK-001"
+   ],
+   "condition": "While read data is pending with rready 0, arvalid is 1."
+  },
+  {
+   "id": "COVP-026",
+   "title": "Back-to-back writes every 2 cycles",
+   "rules": [
+    "RF-8.1-01",
+    "RF-12.4-12"
+   ],
+   "checks": [
+    "CHK-024",
+    "CHK-008"
+   ],
+   "condition": "AW and W transfers occur at the same edge immediately after a B transfer at the previous edge."
+  },
+  {
+   "id": "COVP-027",
+   "title": "Back-to-back reads every 2 cycles",
+   "rules": [
+    "RF-8.1-02",
+    "RF-12.4-12"
+   ],
+   "checks": [
+    "CHK-024",
+    "CHK-002"
+   ],
+   "condition": "An AR transfer occurs at the edge immediately after an R transfer."
+  },
+  {
+   "id": "COVP-028",
+   "title": "Read and write of same register with Ear = Ec",
+   "rules": [
+    "RF-7.6-03",
+    "RF-14-06",
+    "RF-12.4-10"
+   ],
+   "checks": [
+    "CHK-025",
+    "CHK-005"
+   ],
+   "condition": "An AR transfer and the Ec of a write occur at the same edge, both for the same read/write register."
+  },
+  {
+   "id": "COVP-029",
+   "title": "Read and write of same register with Ear = Ec-1",
+   "rules": [
+    "RF-7.6-03",
+    "RF-12.4-10"
+   ],
+   "checks": [
+    "CHK-025"
+   ],
+   "condition": "Ec of a write occurs one edge after the AR transfer of a read of the same read/write register."
+  },
+  {
+   "id": "COVP-030",
+   "title": "Read and write of same register with Ear = Ec+1",
+   "rules": [
+    "RF-7.6-04",
+    "RF-7.6-06",
+    "RF-12.4-10"
+   ],
+   "checks": [
+    "CHK-025"
+   ],
+   "condition": "An AR transfer occurs one edge after the Ec of a write to the same read/write register."
+  },
+  {
+   "id": "COVP-031",
+   "title": "Status read while i_status changes",
+   "rules": [
+    "RF-1.2-04",
+    "RF-14-07",
+    "RF-12.4-07"
+   ],
+   "checks": [
+    "CHK-028"
+   ],
+   "condition": "An AR transfer to the status register occurs at an edge where i_status differs from its value at the previous edge."
+  },
+  {
+   "id": "COVP-032",
+   "title": "Reset with only write address held",
+   "rules": [
+    "RF-6.2-09",
+    "RF-6.2-10",
+    "RF-12.4-11"
+   ],
+   "checks": [
+    "CHK-035",
+    "CHK-015"
+   ],
+   "condition": "At R1, the state at the last edge before reset had a write address held and no write data held."
+  },
+  {
+   "id": "COVP-033",
+   "title": "Reset with only write data held",
+   "rules": [
+    "RF-6.2-09",
+    "RF-6.2-10",
+    "RF-12.4-11"
+   ],
+   "checks": [
+    "CHK-035",
+    "CHK-015"
+   ],
+   "condition": "At R1, the state at the last edge before reset had write data held and no write address held."
+  },
+  {
+   "id": "COVP-034",
+   "title": "Reset with B response pending",
+   "rules": [
+    "RF-6.2-10",
+    "RF-12.4-11",
+    "RF-14-12"
+   ],
+   "checks": [
+    "CHK-035",
+    "CHK-034"
+   ],
+   "condition": "At R1, a write response was pending at the last edge before reset."
+  },
+  {
+   "id": "COVP-035",
+   "title": "Reset with R response pending",
+   "rules": [
+    "RF-6.2-10",
+    "RF-12.4-11",
+    "RF-14-12"
+   ],
+   "checks": [
+    "CHK-035",
+    "CHK-002"
+   ],
+   "condition": "At R1, a read response was pending at the last edge before reset."
+  },
+  {
+   "id": "COVP-036",
+   "title": "Write valid held through reset taken as new request",
+   "rules": [
+    "RF-6.2-11",
+    "RF-14-14",
+    "RF-10.1-10"
+   ],
+   "checks": [
+    "CHK-036",
+    "CHK-016"
+   ],
+   "condition": "awvalid or wvalid was 1 at R1 and the matching transfer occurs at the following edge."
+  },
+  {
+   "id": "COVP-037",
+   "title": "Read valid held through reset taken as new request",
+   "rules": [
+    "RF-6.2-11",
+    "RF-14-14",
+    "RF-10.1-10"
+   ],
+   "checks": [
+    "CHK-036",
+    "CHK-016"
+   ],
+   "condition": "arvalid was 1 at R1 and the AR transfer occurs at the following edge."
+  },
+  {
+   "id": "COVP-038",
+   "title": "Unaligned address bits [1:0] on AW or AR",
+   "rules": [
+    "RF-7.1-01",
+    "RF-10.1-05",
+    "RF-10.1-06",
+    "RF-12.4-09"
+   ],
+   "checks": [
+    "CHK-031"
+   ],
+   "condition": "An AW or AR transfer with address bits [1:0] not zero."
+  },
+  {
+   "id": "COVP-039",
+   "title": "Non-zero AxPROT on AW or AR",
+   "rules": [
+    "RF-5-06",
+    "RF-13-02",
+    "RF-10.1-07",
+    "RF-12.4-09"
+   ],
+   "checks": [
+    "CHK-031"
+   ],
+   "condition": "An AW or AR transfer with awprot or arprot not zero."
+  },
+  {
+   "id": "COVP-040",
+   "title": "Register write completes while R is stalled",
+   "rules": [
+    "RF-8.2-06",
+    "RF-7.6-02",
+    "RF-7.6-05"
+   ],
+   "checks": [
+    "CHK-026",
+    "CHK-003"
+   ],
+   "condition": "Ec of a write to a read/write register occurs while read data is pending with rready 0."
+  }
+ ],
+ "status": "lint_clean",
+ "attempts": 1,
+ "problems": [],
+ "lint_errors": "",
+ "usage": {
+  "calls": 1,
+  "cached": 0,
+  "cost_usd": 0.2511,
+  "input_tokens": 2,
+  "output_tokens": 18932,
+  "cache_creation_input_tokens": 15017,
+  "cache_read_input_tokens": 718
+ },
+ "prompt_version": "cov-v1"
+}

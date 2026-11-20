@@ -1,0 +1,167 @@
+rm -f results.xml
+"make" -f Makefile results.xml
+make[1]: Entering directory '/root/nnc_runs/runset_44d16346/C02'
+make[1]: warning: -j3 forced in makefile: resetting jobserver mode.
+rm -f results.xml
+COCOTB_TEST_MODULES=test_axil_regfile COCOTB_TESTCASE= COCOTB_TEST_FILTER= COCOTB_TOPLEVEL=nnc_tb_top TOPLEVEL_LANG=verilog \
+         sim_build/Vtop  --assert --timing -Wno-fatal -Wno-WIDTH -Wno-UNOPTFLAT -GPARA_NUM_REGS=1 -GPARA_ADDR_W=7 --coverage-line --coverage-toggle --coverage-expr   
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:216  in gpi_load_users                  Running entry func 'initialize' from loaded library '/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/libs/libcocotb.so'
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:96   in initialize                      Using Python 3.11.6 interpreter at /opt/oss-cad-suite/bin/tabbypy3
+     0.00ns INFO     cocotb                             Running on Verilator version 5.055 devel
+     0.00ns INFO     cocotb                             Seeding Python random module with supplied seed 2
+     0.00ns INFO     cocotb                             Initialized cocotb v2.1.0.dev0+41564633 from /opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_axil_regfile.test_chk_033_power_on_reset (1/21)
+                                                            CHK-033: reset from time zero, reset values, readies from R1, idle response channels after release.
+   115.00ns INFO     cocotb.regression                  test_axil_regfile.test_chk_033_power_on_reset passed
+   115.00ns INFO     cocotb.regression                  running test_axil_regfile.test_chk_018_r_backpressure (2/21)
+                                                            CHK-018: R back-pressure (rready delay 0/1/6/dependent), data held, new AR blocked until Er+1.
+   480.00ns INFO     cocotb.regression                  test_axil_regfile.test_chk_018_r_backpressure passed
+   480.00ns INFO     cocotb.regression                  running test_axil_regfile.test_chk_019_write_ordering (3/21)
+                                                            CHK-019: AW first, W first and same-edge write ordering; answer one cycle after the later transfer.
+   855.00ns INFO     cocotb.regression                  test_axil_regfile.test_chk_019_write_ordering passed
+   855.00ns INFO     cocotb.regression                  running test_axil_regfile.test_chk_020_b_backpressure (4/21)
+                                                            CHK-020: B back-pressure (bready delay 0/1/6/dependent); new AW/W blocked until Eb+1.
+  1220.00ns INFO     cocotb.regression                  test_axil_regfile.test_chk_020_b_backpressure passed
+  1220.00ns INFO     cocotb.regression                  running test_axil_regfile.test_chk_021_cfg_min_map (5/21)
+                                                            CHK-021: CFG-MIN map: REG_0 and STATUS only, 0x00-0x7F.
+  3195.00ns INFO     cocotb.regression                  test_axil_regfile.test_chk_021_cfg_min_map passed
+  3195.00ns INFO     cocotb.regression                  running test_axil_regfile.test_chk_022_full_bank_map (6/21)
+                                                            CHK-022: PARA_NUM_REGS=16 map (CFG-FULL-A7, also CFG-MAX): no unmapped address below 0x44.
+  3250.01ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-022 needs PARA_NUM_REGS=16; this run has 1
+  3250.01ns INFO     cocotb.regression                  test_axil_regfile.test_chk_022_full_bank_map passed
+  3250.01ns INFO     cocotb.regression                  running test_axil_regfile.test_chk_023_high_bit_decode (7/21)
+                                                            CHK-023: PARA_ADDR_W=16: any 1 in bits 15..7 is unmapped (CFG-MAX).
+  3305.01ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-023 CFG-MAX only; this run has PARA_NUM_REGS=1, PARA_ADDR_W=7
+  3305.01ns INFO     cocotb.regression                  test_axil_regfile.test_chk_023_high_bit_decode passed
+  3305.01ns INFO     cocotb.regression                  running test_axil_regfile.test_chk_024_back_to_back (8/21)
+                                                            CHK-024: back-to-back writes and reads at full throughput, alone and together.
+  4560.01ns INFO     cocotb.regression                  test_axil_regfile.test_chk_024_back_to_back passed
+  4560.01ns INFO     cocotb.regression                  running test_axil_regfile.test_chk_025_concurrent_same_register (9/21)
+                                                            CHK-025: read of register k with Ear = Ec-1, Ec, Ec+1; different-register concurrency.
+  4835.01ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-025 different read/write register pair needs PARA_NUM_REGS>1 (status used instead)
+  4835.01ns INFO     cocotb.regression                  test_axil_regfile.test_chk_025_concurrent_same_register passed
+  4835.01ns INFO     cocotb.regression                  running test_axil_regfile.test_chk_026_backpressure_isolation (10/21)
+                                                            CHK-026: B back-pressure does not stall AR/R; R back-pressure does not stall AW/W/B or o_regs.
+  5460.01ns INFO     cocotb.regression                  test_axil_regfile.test_chk_026_backpressure_isolation passed
+  5460.01ns INFO     cocotb.regression                  running test_axil_regfile.test_chk_027_map_and_aliasing (11/21)
+                                                            CHK-027: unique value in every register and full word-address sweep (no aliasing).
+  6175.01ns INFO     cocotb.regression                  test_axil_regfile.test_chk_027_map_and_aliasing passed
+  6175.01ns INFO     cocotb.regression                  running test_axil_regfile.test_chk_028_status_register (12/21)
+                                                            CHK-028: status read samples i_status at Ear, held under back-pressure; status writes ignored, OKAY.
+  6650.01ns INFO     cocotb.regression                  test_axil_regfile.test_chk_028_status_register passed
+  6650.01ns INFO     cocotb.regression                  running test_axil_regfile.test_chk_029_unmapped_addresses (13/21)
+                                                            CHK-029: unmapped writes/reads answer SLVERR with normal timing, rdata 0, no register change.
+  7405.01ns INFO     cocotb.regression                  test_axil_regfile.test_chk_029_unmapped_addresses passed
+  7405.01ns INFO     cocotb.regression                  running test_axil_regfile.test_chk_030_unmapped_no_stall (14/21)
+                                                            CHK-030: unmapped access does not stall or disturb the other channels or the next transaction.
+  8020.01ns INFO     cocotb.regression                  test_axil_regfile.test_chk_030_unmapped_no_stall passed
+  8020.01ns INFO     cocotb.regression                  running test_axil_regfile.test_chk_031_addr_lsb_and_prot_ignored (15/21)
+                                                            CHK-031: addr[1:0] and AxPROT have no effect (run A vs run B, cycle for cycle).
+ 17075.01ns INFO     cocotb.regression                  test_axil_regfile.test_chk_031_addr_lsb_and_prot_ignored passed
+ 17075.01ns INFO     cocotb.regression                  running test_axil_regfile.test_chk_032_write_strobes (16/21)
+                                                            CHK-032: all 16 write-strobe values with byte-distinct data.
+ 18090.01ns INFO     cocotb.regression                  test_axil_regfile.test_chk_032_write_strobes passed
+ 18090.01ns INFO     cocotb.regression                  running test_axil_regfile.test_chk_034_async_reset_mid_cycle (17/21)
+                                                            CHK-034: asynchronous reset assertion between rising edges with transactions in progress.
+ 18325.02ns INFO     cocotb.regression                  test_axil_regfile.test_chk_034_async_reset_mid_cycle passed
+ 18325.02ns INFO     cocotb.regression                  running test_axil_regfile.test_chk_035_reset_discards_held_state (18/21)
+                                                            CHK-035: reset discards held AW, held W, pending B and pending R.
+ 18930.02ns WARNING  cocotb.nnc_tb_top                  NNC_NOT_VERIFIABLE CHK-035 REG_2/REG_3 data checks need PARA_NUM_REGS>3; this run has 1
+ 18930.02ns INFO     cocotb.regression                  test_axil_regfile.test_chk_035_reset_discards_held_state passed
+ 18930.02ns INFO     cocotb.regression                  running test_axil_regfile.test_chk_036_valids_through_reset (19/21)
+                                                            CHK-036: valids held at 1 through reset become new requests at R1+1.
+ 19085.02ns INFO     cocotb.regression                  test_axil_regfile.test_chk_036_valids_through_reset passed
+ 19085.02ns INFO     cocotb.regression                  running test_axil_regfile.test_chk_037_no_combinational_path (20/21)
+                                                            CHK-037 (and CHK-017): outputs change only at rising edges; readies do not depend on valids.
+ 19620.02ns INFO     cocotb.regression                  test_axil_regfile.test_chk_037_no_combinational_path passed
+ 19620.02ns INFO     cocotb.regression                  running test_axil_regfile.test_regression_random (21/21)
+                                                            CHK-001..CHK-017: broad random legal traffic with back-pressure and resets, scored by the reference model.
+ 39255.02ns INFO     cocotb.regression                  test_axil_regfile.test_regression_random passed
+ 39255.02ns INFO     cocotb.regression                  ******************************************************************************************************************
+                                                        ** TEST                                                      STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        ******************************************************************************************************************
+                                                        ** test_axil_regfile.test_chk_033_power_on_reset              PASS         115.00           0.00      51009.41  **
+                                                        ** test_axil_regfile.test_chk_018_r_backpressure              PASS         365.00           0.01      57104.74  **
+                                                        ** test_axil_regfile.test_chk_019_write_ordering              PASS         375.00           0.00     114157.64  **
+                                                        ** test_axil_regfile.test_chk_020_b_backpressure              PASS         365.00           0.00     131975.94  **
+                                                        ** test_axil_regfile.test_chk_021_cfg_min_map                 PASS        1975.00           0.01     140662.42  **
+                                                        ** test_axil_regfile.test_chk_022_full_bank_map               PASS          55.00           0.00     128230.53  **
+                                                        ** test_axil_regfile.test_chk_023_high_bit_decode             PASS          55.00           0.00     133190.95  **
+                                                        ** test_axil_regfile.test_chk_024_back_to_back                PASS        1255.00           0.01     134295.63  **
+                                                        ** test_axil_regfile.test_chk_025_concurrent_same_register    PASS         275.00           0.00     116098.00  **
+                                                        ** test_axil_regfile.test_chk_026_backpressure_isolation      PASS         625.00           0.01      96557.52  **
+                                                        ** test_axil_regfile.test_chk_027_map_and_aliasing            PASS         715.00           0.01      77993.48  **
+                                                        ** test_axil_regfile.test_chk_028_status_register             PASS         475.00           0.00     132308.04  **
+                                                        ** test_axil_regfile.test_chk_029_unmapped_addresses          PASS         755.00           0.01     135375.32  **
+                                                        ** test_axil_regfile.test_chk_030_unmapped_no_stall           PASS         615.00           0.01     112283.85  **
+                                                        ** test_axil_regfile.test_chk_031_addr_lsb_and_prot_ignored   PASS        9055.00           0.09     104689.09  **
+                                                        ** test_axil_regfile.test_chk_032_write_strobes               PASS        1015.00           0.01     123731.18  **
+                                                        ** test_axil_regfile.test_chk_034_async_reset_mid_cycle       PASS         235.00           0.00     107370.53  **
+                                                        ** test_axil_regfile.test_chk_035_reset_discards_held_state   PASS         605.00           0.00     164722.75  **
+                                                        ** test_axil_regfile.test_chk_036_valids_through_reset        PASS         155.00           0.00     143640.55  **
+                                                        ** test_axil_regfile.test_chk_037_no_combinational_path       PASS         535.00           0.01      41197.63  **
+                                                        ** test_axil_regfile.test_regression_random                   PASS       19635.00           0.19     105385.33  **
+                                                        ******************************************************************************************************************
+                                                        ** TESTS=21 PASS=21 FAIL=0 SKIP=0                                        39255.02           0.39      99532.34  **
+                                                        ******************************************************************************************************************
+- (null):0: Verilog $finish
+NNC_COVER COVP-001 hits=366
+NNC_COVER COVP-002 hits=220
+NNC_COVER COVP-003 hits=132
+NNC_COVER COVP-004 hits=128
+NNC_COVER COVP-005 hits=0
+NNC_COVER COVP-006 hits=314
+NNC_COVER COVP-007 hits=241
+NNC_COVER COVP-008 hits=154
+NNC_COVER COVP-009 hits=134
+NNC_COVER COVP-010 hits=0
+NNC_COVER COVP-011 hits=225
+NNC_COVER COVP-012 hits=137
+NNC_COVER COVP-013 hits=7
+NNC_COVER COVP-014 hits=121
+NNC_COVER COVP-015 hits=109
+NNC_COVER COVP-016 hits=620
+NNC_COVER COVP-017 hits=4
+NNC_COVER COVP-018 hits=498
+NNC_COVER COVP-019 hits=348
+NNC_COVER COVP-020 hits=97
+NNC_COVER COVP-021 hits=520
+NNC_COVER COVP-022 hits=323
+NNC_COVER COVP-023 hits=107
+NNC_COVER COVP-024 hits=753
+NNC_COVER COVP-025 hits=564
+NNC_COVER COVP-026 hits=500
+NNC_COVER COVP-027 hits=599
+NNC_COVER COVP-028 hits=36
+NNC_COVER COVP-029 hits=29
+NNC_COVER COVP-030 hits=20
+NNC_COVER COVP-031 hits=116
+NNC_COVER COVP-032 hits=3
+NNC_COVER COVP-033 hits=1
+NNC_COVER COVP-034 hits=4
+NNC_COVER COVP-035 hits=2
+NNC_COVER COVP-036 hits=3
+NNC_COVER COVP-037 hits=3
+NNC_COVER COVP-038 hits=741
+NNC_COVER COVP-039 hits=825
+NNC_COVER COVP-040 hits=83
+NNC_CHECK CHK-017 hits=3792 fails=0
+NNC_CHECK CHK-013 hits=144 fails=0
+NNC_CHECK CHK-014 hits=144 fails=0
+NNC_CHECK CHK-015 hits=33 fails=0
+NNC_CHECK CHK-016 hits=33 fails=0
+NNC_CHECK CHK-012 hits=3792 fails=0
+NNC_CHECK CHK-006 hits=3759 fails=0
+NNC_CHECK CHK-007 hits=3759 fails=0
+NNC_CHECK CHK-008 hits=3759 fails=0
+NNC_CHECK CHK-009 hits=884 fails=0
+NNC_CHECK CHK-010 hits=1730 fails=0
+NNC_CHECK CHK-011 hits=1730 fails=0
+NNC_CHECK CHK-001 hits=3759 fails=0
+NNC_CHECK CHK-002 hits=3759 fails=0
+NNC_CHECK CHK-003 hits=882 fails=0
+NNC_CHECK CHK-004 hits=1725 fails=0
+NNC_CHECK CHK-005 hits=1725 fails=0
+make[1]: Leaving directory '/root/nnc_runs/runset_44d16346/C02'
+NNC_MAKE_RC=0

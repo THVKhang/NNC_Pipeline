@@ -757,7 +757,7 @@ def stage_mutate(d: Design, o: Options) -> None:
     ex = res.get("excluded_uncovered") or {}
     o.say(f"[mutate] {res['count']} mutants: killed {res['killed']}, survived {res['survived']}, "
           f"not compiled {res['not_compiled']}; score {res['score']} % (candidates on executed lines only; "
-          f"excluded {ex.get('lines', 0)} on unexecuted lines, files not elaborated {ex.get('files') or 'none'})")
+          f"excluded {ex.get('lines', 0)} on unexecuted lines, files with no executed candidate {ex.get('files') or 'none'})")
     threshold = float(d.config().get("mutation_threshold", 85))
     res["threshold"] = threshold
     files: dict[str, Path] = {"contract.json": d.work / "contract.json", "rules.json": d.work / "rules.json"}

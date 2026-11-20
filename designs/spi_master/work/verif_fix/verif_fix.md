@@ -1,0 +1,84 @@
+# Verification fix candidate: spi_master
+
+Agent A17 (no RTL) proposed changes for 6 fault(s) judged B by triage. Status: **candidate**. Nothing in verif/ changes until `nnc fix-verif spi_master --apply`, and then gate G3 must be approved again.
+
+## Faults (as A17 saw them)
+
+1. **formal counterexample on CHK-011**
+   - specification: spec:57 "CPOL_b, CPHA_b | The values of `i_cpol` and `i_cpha` captured at the first acceptance edge of the current burst."; spec:207 [REQ-MODE-001] capture at the acceptance edge of the first command of a burst; spec:209 [REQ-MODE-002] "CPOL_b and CPHA_b shall control `o_sclk`, `o_mosi` ... for the whole burst"; spec:211 [REQ-MODE-003] "Changes of `i_cpol` or `i_cpha` while `o_cs_n` = 0 shall have no effect on `o_sclk`, `o_mosi`..."; spec:260 "With CPHA_b = 1, `o_mosi` keeps its previous value from the acceptance edge until SCLK edge 1."; spec:400 [REQ-ERR-001] a mode change while o_cs_n=0 is 
+   - verification: verif/sva/nnc_chk_mosi.sv:50-55 reloads ph_r <= i_cpha on every handshake hs (line 40: hs = i_cmd_valid && o_cmd_ready), including continuation handshakes while o_cs_n=0. Line 87 then applies the CPHA_b=0 expectation exp0 = d_r[7-j0] (lines 67, 69) to a transfer whose real CPHA_b is 1.
+
+2. **formal counterexample on CHK-012**
+   - specification: spec:248 [REQ-MOSI-002] "With CPHA_b = 0, `o_mosi` shall take the value d[7] at the acceptance edge A."; spec:260 "With CPHA_b = 0, `o_mosi` keeps d[0] after SCLK edge 16 unless the next command is accepted at that edge, in which case it takes the next d[7] at that edge"; spec:57 CPHA_b is captured at the first acceptance edge of the burst; spec:209-211 REQ-MODE-002/003; spec:400 REQ-ERR-001; spec:97 and spec:448 ENV-003 (i_cpha may change only while o_cs_n=1). contract.json:1071 says CPHA_b is captured only at a burst start.
+   - verification: nnc_chk_mosi.sv:54 sets ph_r <= i_cpha (=1) at the continuation handshake, and line 55 sets mp_r <= o_mosi. Line 70: exp1 = (cnt<DD) ? mp_r : ...; line 92 asserts o_mosi==exp1, i.e. it expects the CPHA=1 hold behavior.
+
+3. **formal counterexample on CHK-013**
+   - specification: spec:248 [REQ-MOSI-002] with CPHA_b=0 o_mosi takes d[7] at acceptance edge A; spec:260 the joint case, where the next d[7] is taken at that edge; spec:57 CPHA_b is captured at the first acceptance edge of the burst; spec:211 REQ-MODE-003; spec:400 REQ-ERR-001; spec:448 ENV-003. contract.json:382 (CHK-013) allows changes 'at the rising edges listed in CHK-011/CHK-012', which depend on CPHA_b.
+   - verification: nnc_chk_mosi.sv:54 sets ph_r <= i_cpha (1) on the continuation handshake. Line 73: a0 = !ph_r && (cnt==0 || ...) is disabled. Line 74: a1 is false at cnt=0. Lines 97-98 therefore treat the legal CPHA_b=0 launch as an illegal change.
+
+4. **formal counterexample on CHK-014**
+   - specification: spec:252 [REQ-MOSI-004] "With CPHA_b = 1, `o_mosi` shall take the value d[7 − j] at edge A + (2·j + 1)·D for j = 0 to 7 (SCLK edges 1, 3, …, 15)."; spec:260 with CPHA_b=1 o_mosi holds from the acceptance edge until SCLK edge 1; spec:215 [REQ-MODE-005] with CPHA_b=1 the leading edges are shift edges; spec:57 CPHA_b definition; spec:211 REQ-MODE-003; spec:400 REQ-ERR-001; spec:448 ENV-003. contract.json:397 (CHK-014) uses CPHA_b.
+   - verification: nnc_chk_mosi.sv:54 sets ph_r <= i_cpha (0) at the continuation handshake. Line 79: smp0 = busy && !ph_r && (cn1 % 2D == D) marks A+D as a sampling edge. Line 83: exp_s = d_r[7-js0] = d[7]. Lines 103-104 require o_mosi to be stable across that edge and equal to d[7]. Under CPHA_b=1, that edge is a shift edge.
+
+5. **formal counterexample on CHK-023**
+   - specification: spec:234 [REQ-SCLK-004] "After SCLK edge k of a transfer, `o_sclk` shall equal NOT CPOL_b for odd k and CPOL_b for even k."; spec:57 CPOL_b is the value captured at the first acceptance edge of the burst; spec:207-211 REQ-MODE-001/002/003 (SPI-7.3-02 is listed in CHK-023's rules, contract.json:559); spec:400 REQ-ERR-001; spec:304 [REQ-FLOW-001] the joint's SCLK edge 1 comes D cycles after edge 16; spec:96 i_cpol 'May change only while `o_cs_n` = 1'; spec:448 ENV-003. contract.json:561 (CHK-023) says 'burst value CPOL_b', and contract.json:1071 says CPOL_b is captured at a burst start only.
+   - verification: verif/sva/nnc_chk_sclk.sv:54-58 reloads t_cpol_b <= i_cpol on every hs_cmd (line 44: i_cmd_valid && o_cmd_ready), including continuation handshakes with o_cs_n=0. Line 46 computes t_exp_lvl from t_cpol_b, and line 67 compares o_sclk with it.
+
+6. **formal counterexample on CHK-025**
+   - specification: spec:232 [REQ-SCLK-003] "While `o_cs_n` = 0 and no transfer is between its SCLK edges 1 and 16, `o_sclk` shall equal CPOL_b. This covers the lead half period, Pause and Trail."; spec:57 CPOL_b definition; spec:209 REQ-MODE-002 (SPI-7.3-02, listed for CHK-025 at contract.json:587); spec:211 REQ-MODE-003; spec:400 REQ-ERR-001; spec:96 and spec:448 ENV-003. contract.json:620 (CHK-027) says o_sclk toggles to CPOL_b at A_p+16*D. contract.json:1071 says CPOL_b is captured only at a burst start.
+   - verification: nnc_chk_sclk.sv:57 sets t_cpol_b <= i_cpol on every hs_cmd, including the continuation handshake at col 18 with o_cs_n=0. Line 79 then requires o_sclk == t_cpol_b in the lead cycles (t_cnt < D_CYC).
+
+## Changes
+
+- `verif/sva/nnc_chk_mosi.sv` (faults [1, 2, 3, 4]): ph_r (the checker's CPHA_b) was reloaded from i_cpha at every command handshake, including continuation/Pause handshakes while o_cs_n=0. The spec defines CPHA_b as i_cpha captured at the first acceptance edge of the burst and requires it to be used for the whole burst; changes while o_cs_n=0 have no effect (REQ-ERR-001). ph_r is now loaded only on hs && o_cs_n (burst start) and held across continuation and Pause handshakes; d_r, cnt, mp_r and busy stay per-handshake. No assertion, expected value or hit counter was relaxed. — spec:57 CPOL_b, CPHA_b: values captured at the first acceptance edge of the current burst, REQ-MODE-001, REQ-MODE-002, REQ-MODE-003, REQ-FLOW-005, REQ-ERR-001, REQ-MOSI-002, REQ-MOSI-004, REQ-MOSI-007, contract.json assumptions[0] (burst start => CPOL_b/CPHA_b captured), CHK-011, CHK-012, CHK-013, CHK-014
+- `verif/sva/nnc_chk_sclk.sv` (faults [5, 6]): t_cpol_b (the checker's CPOL_b) was reloaded from i_cpol at every command handshake, including continuation/Pause handshakes while o_cs_n=0. The spec defines CPOL_b as i_cpol captured at the first acceptance edge of the burst and requires it to be used for the whole burst (including Pause and Trail); changes while o_cs_n=0 have no effect. t_cpol_b is now loaded only on hs_cmd && o_cs_n (burst start) and held for the burst; t_act, t_cnt and t_last_b stay per-handshake. This fixes CHK-023, CHK-025 and the CHK-027 use of t_cpol_b. No assertion was relaxed. — spec:57 CPOL_b, CPHA_b: values captured at the first acceptance edge of the current burst, REQ-MODE-001, REQ-MODE-002, REQ-MODE-003, REQ-FLOW-005, REQ-ERR-001, REQ-SCLK-003, REQ-SCLK-004, REQ-FLOW-001, contract.json assumptions[0] (burst start => CPOL_b/CPHA_b captured), CHK-023, CHK-025, CHK-027
+
+## Attempts
+
+- attempt 0: files sva/nnc_chk_mosi.sv, sva/nnc_chk_sclk.sv; after: failing assertions none, failing tests none
+
+## Weakening check (code)
+
+- no weakening found
+
+## Regression of the candidate on the RTL
+
+| | before | candidate |
+|---|---|---|
+| failing tests | none | none |
+| failing assertions | none | none |
+| tests / assertions | 15 / 27 | 15 / 27 |
+
+## Diff
+
+```diff
+--- a/verif/sva/nnc_chk_mosi.sv
++++ b/verif/sva/nnc_chk_mosi.sv
+@@ -52,5 +52,9 @@
+       cnt  <= 0;
+       d_r  <= i_cmd_data;
+-      ph_r <= i_cpha;
++      // NNC verification fix (fix-verif, triage B): CPHA_b is i_cpha captured at the first acceptance edge of the
++      // burst only (spec term CPHA_b, REQ-MODE-001); it controls o_mosi for the whole burst and changes of i_cpha
++      // while o_cs_n=0 have no effect (REQ-MODE-002/003, REQ-ERR-001). Load ph_r only at a burst-start handshake
++      // (o_cs_n=1 in the cycle ending at A, contract assumption) and keep it on continuation and Pause handshakes.
++      if (o_cs_n) ph_r <= i_cpha;
+       mp_r <= o_mosi;
+     end else if (busy && (cnt < TOT + 1)) begin
+--- a/verif/sva/nnc_chk_sclk.sv
++++ b/verif/sva/nnc_chk_sclk.sv
+@@ -55,5 +55,10 @@
+       t_act    <= 1'b1;
+       t_cnt    <= 0;
+-      t_cpol_b <= i_cpol;
++      // NNC verification fix (fix-verif, triage B): CPOL_b is i_cpol captured at the first acceptance edge of the
++      // burst only (spec term CPOL_b, REQ-MODE-001); it controls o_sclk for the whole burst including Pause and
++      // Trail, and changes of i_cpol while o_cs_n=0 have no effect (REQ-MODE-002/003, REQ-ERR-001). Load t_cpol_b
++      // only at a burst-start handshake (o_cs_n=1 in the cycle ending at A, contract assumption) and keep it on
++      // continuation and Pause handshakes. Used by CHK-023, CHK-025 and CHK-027.
++      if (o_cs_n) t_cpol_b <= i_cpol;
+       t_last_b <= i_cmd_last;
+     end else if (t_act) begin
+```
+
+Cost: US$0.73

@@ -659,3 +659,24 @@ Số đo: [EVALUATION.md §7.4–7.5](EVALUATION.md).
   - Trên gen_sync_fifo, GAP-002 **chính là câu hỏi CHK-008**, tìm được chỉ từ spec, tốn US$0,97.
   - Trên 2 thiết kế mới spi_master và axil_regfile, các lỗ hổng được trả lời (theo uỷ quyền, có ghi rõ) trước G1.
 
+
+## 22. Hai thiết kế mới từ mô tả ngắn, sửa lỗi chọn dòng của mutation (2026-11-20)
+
+Số đo: [EVALUATION.md §8](EVALUATION.md).
+
+**Vì sao.** Trước đây chỉ có uart_lite được làm từ đầu (từ một đoạn mô tả ngắn). Giai đoạn 16 thử lại với 2 thiết kế khác loại để xem kết quả có lặp lại không:
+- `spi_master`: SPI master, thời gian tính bằng số chu kỳ i_clk, có burst và tạm dừng;
+- `axil_regfile`: khối thanh ghi trên bus AXI4-Lite, 1–16 thanh ghi, byte strobe, trả SLVERR khi địa chỉ không có thanh ghi.
+
+**Quy trình (giống uart_lite).** Mô tả → `spec-draft` (A0) → `spec-lint` (A18) → rules (G1) → contract (G2) → tham số (D1) → `gen-rtl` (A15, D2) → sinh verification độc lập với RTL (G3) → mô phỏng mọi cấu hình, formal, mutation, báo cáo. G1–G3, D1, D2 do Claude duyệt theo uỷ quyền, có ghi rõ. G4 để trống.
+
+**Kết quả chính.**
+- Cả hai: mọi test và assertion pass ở mọi cấu hình, không còn phản ví dụ formal, mutant sống sót đều được formal chứng minh là tương đương (thực chất 100 %), không có sửa tay.
+- spi_master: 7 lỗi mô phỏng và 6 phản ví dụ formal, tất cả là lỗi của **verification** (B). Agent A17 (không thấy RTL) sửa qua 2 lượt `fix-verif`. Lượt formal sửa checker cho đúng định nghĩa CPOL_b/CPHA_b (chốt một lần ở đầu burst). Môi trường formal **không** bị thu hẹp để giấu phản ví dụ, nên yêu cầu "đổi mode giữa burst không có tác dụng" vẫn được formal kiểm.
+- Chi phí agent khoảng US$34 cho cả hai thiết kế.
+
+**Còn mở (ghi trong hồ sơ G4).**
+- spi_master: chưa test nào chạy hết một burst từ 17 byte trở lên (COVP-013, COVP-014). Spec chỉ đòi "ít nhất 16", và burst 16 byte đã được phủ.
+- axil_regfile: ước lượng của ABC cho đường tổ hợp dài nhất ở góc SS là 31,5 ns, dài hơn chu kỳ 20 ns mà REQ-IMP-001 đòi. Cần STA thật, flow này không có.
+
+**Sửa lỗi chọn dòng của mutation.** Từ giai đoạn 12, mutation chỉ đột biến dòng đã chạy. Nhưng Verilator ghi coverage của một lệnh `assign` trong module con được inline vào dòng **khai báo** tín hiệu đích, không phải dòng `assign`. Vì thế các dòng `assign` bị bỏ sót dù đã chạy. Nay `assign_lines` coi dòng `assign` là đã chạy khi dòng khai báo tín hiệu đích đã chạy (có unit test). Ở các thiết kế cũ, số ứng viên tăng từ 0 đến 13; điểm cũ chưa chạy lại.

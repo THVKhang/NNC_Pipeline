@@ -1,0 +1,473 @@
+# Requirements (approved rules, gate G1)
+
+Each rule cites the specification. Tag the RTL that implements a rule with `// REQ: <id>`.
+
+- **SPI-1.1-01** [MUST] (spi_master_Design_Specification.md 1.1) Each transfer shifts one byte out on o_mosi and one byte in from i_miso. Condition: during each transfer.
+  - quote: "Each transfer shifts one byte out on o_mosi and one byte in from i_miso."
+- **SPI-1.1-02** [MUST] (spi_master_Design_Specification.md 1.1) Received bytes are returned on the response stream in order, one per transmitted command byte.
+  - quote: "Software sends the bytes to transmit through a valid/ready command stream and gets back each received byte through a valid/ready response stream, in order."
+- **SPI-1.1-04** [MUST] (spi_master_Design_Specification.md 1.1) The master stops starting new transfers while the response stream is back-pressured. Condition: when the response stream is back-pressured.
+  - quote: "The block never drops a received byte: when the response stream is back-pressured, the master stops starting new transfers."
+- **SPI-1.2-01** [MUST] (spi_master_Design_Specification.md 1.2) Each command produces one 8-bit full-duplex transfer, MSB first.
+  - quote: "One 8-bit transfer per command, MSB first, full duplex."
+- **SPI-1.2-02** [MUST] (spi_master_Design_Specification.md 1.2) i_cmd_last = 1 marks the last byte of a burst, and o_cs_n stays low for the whole burst. Condition: during a burst.
+  - quote: "Bursts of any length: i_cmd_last = 1 marks the last byte of a burst. o_cs_n stays low for the whole burst."
+- **SPI-1.2-03** [MUST] (spi_master_Design_Specification.md 1.2) SPI modes 0 to 3 are selected by i_cpol and i_cpha.
+  - quote: "SPI modes 0 to 3 are selected by i_cpol and i_cpha."
+- **SPI-1.2-04** [MUST] (spi_master_Design_Specification.md 1.2) i_cpol and i_cpha are captured when a burst starts. Condition: when a burst starts.
+  - quote: "They are captured when a burst starts."
+- **SPI-1.2-05** [MUST] (spi_master_Design_Specification.md 1.2) SCLK frequency is f(i_clk) / (2 x PARA_SPI_CLK_DIV). Condition: PARA_SPI_CLK_DIV from 1 to 255, fixed at elaboration.
+  - quote: "SCLK frequency is f(i_clk) / (2 x PARA_SPI_CLK_DIV), with PARA_SPI_CLK_DIV from 1 to 255 (fixed at elaboration)."
+- **SPI-1.2-07** [MUST] (spi_master_Design_Specification.md 1.2) There is no SCLK gap between back-to-back bytes. Condition: back-to-back bytes inside a burst when the next command is ready in time.
+  - quote: "Back-to-back bytes inside a burst have no SCLK gap when the next command is ready in time."
+- **SPI-1.2-08** [MUST] (spi_master_Design_Specification.md 1.2) SCLK pauses at its idle level and o_cs_n stays low. Condition: inside a burst when the next command is not ready in time.
+  - quote: "Otherwise SCLK pauses at its idle level and o_cs_n stays low."
+- **SPI-1.2-09** [MUST] (spi_master_Design_Specification.md 1.2) No received byte is lost: one byte is shown on the response stream and at most one more is held inside the master. Condition: under response back-pressure.
+  - quote: "No received byte is lost under back-pressure: one byte is shown on the response stream and at most one more is held inside the master."
+- **SPI-1.2-10** [MUST] (spi_master_Design_Specification.md 1.2) Reset is asynchronous and active-low.
+  - quote: "Asynchronous active-low reset."
+- **SPI-3-01** [MUST] (spi_master_Design_Specification.md 3) A transfer whose command is accepted at edge A covers 16·D i_clk cycles, starting at edges A through A + 16·D − 1. Condition: A command is accepted at edge A.
+  - quote: "Term: Transfer; Meaning: Shifting one byte out and one byte in for one accepted command. A transfer whose command is accepted at edge A covers the 16·D cycles starting at edges A to A + 16·D − 1."
+- **SPI-3-02** [MUST] (spi_master_Design_Specification.md 3) The k-th transition of o_sclk (SCLK edge k) happens at edge A + k·D. Condition: During a transfer with acceptance edge A, for k = 1 to 16.
+  - quote: "Term: SCLK edge k; Meaning: For a transfer with acceptance edge A, the k-th transition of o_sclk (k = 1 to 16). It happens at edge A + k·D."
+- **SPI-3-03** [MUST] (spi_master_Design_Specification.md 3) Odd SCLK edges (k = 1, 3, …, 15) leave the idle level of o_sclk. Even SCLK edges (k = 2, 4, …, 16) return o_sclk to the idle level. Condition: During a transfer.
+  - quote: "Term: Leading / trailing edge; Meaning: The odd SCLK edges (k = 1, 3, …, 15) are leading edges, which leave the idle level. The even SCLK edges (k = 2, 4, …, 16) are trailing edges, which return to the idle level."
+- **SPI-3-04** [MUST] (spi_master_Design_Specification.md 3) The values of i_cpol and i_cpha captured at the first acceptance edge of the burst (CPOL_b, CPHA_b) apply for the current burst. Condition: Within a burst.
+  - quote: "Term: CPOL_b, CPHA_b; Meaning: The values of i_cpol and i_cpha captured at the first acceptance edge of the current burst."
+- **SPI-3-05** [MUST] (spi_master_Design_Specification.md 3) o_cs_n is 0 and o_sclk is at the idle level. Condition: In a pause: inside a burst after a transfer with i_cmd_last = 0 ended and no command was accepted at its SCLK edge 16.
+  - quote: "Term: Pause; Meaning: Phase inside a burst after a transfer with i_cmd_last = 0 ended, when no command was accepted at its SCLK edge 16. o_cs_n = 0 and o_sclk is at the idle level."
+- **SPI-3-06** [MUST] (spi_master_Design_Specification.md 3) o_cs_n stays low for a trail of D cycles after SCLK edge 16 before going high. Condition: After SCLK edge 16 of the last transfer of a burst.
+  - quote: "Term: Trail; Meaning: The D cycles after SCLK edge 16 of the last transfer of a burst, before o_cs_n goes high."
+- **SPI-4-02** [MUST] (spi_master_Design_Specification.md 4) SCLK frequency shall equal f(i_clk) / (2·D), where D is PARA_SPI_CLK_DIV i_clk cycles per SCLK half period.
+  - quote: "Parameter: PARA_SPI_CLK_DIV; Default: 4; Legal values: 1 to 255; Description: Number of i_clk cycles in one SCLK half period (D). SCLK frequency = f(i_clk) / (2·D)."
+- **SPI-4-03** [MUST] (spi_master_Design_Specification.md 4) Elaboration of m_spi_master shall fail with an error message. Condition: When PARA_SPI_CLK_DIV is less than 1 or greater than 255.
+  - quote: "[REQ-PAR-001] Elaboration of m_spi_master shall fail with an error message when PARA_SPI_CLK_DIV is less than 1 or greater than 255."
+- **SPI-4-04** [MUST] (spi_master_Design_Specification.md 4) m_spi_master shall exhibit the specified behaviour without any other RTL change. Condition: For every PARA_SPI_CLK_DIV value from 1 to 255.
+  - quote: "[REQ-PAR-002] Every value of PARA_SPI_CLK_DIV from 1 to 255 shall give the behaviour of this specification without any other change to the RTL."
+- **SPI-5-01** [MUST] (spi_master_Design_Specification.md 5) i_rst_n is active-low, asserted asynchronously and released synchronously to i_clk.
+  - quote: "Port: i_rst_n; Direction: input; Width: 1; Signal type: Reset (asynchronous assertion, synchronous release); Reset value: Not applicable; Clock domain: CLK; Meaning: Active-low reset"
+- **SPI-5-02** [MUST] (spi_master_Design_Specification.md 5) The environment keeps i_cmd_valid at 0 while i_rst_n = 0. Condition: while i_rst_n = 0.
+  - quote: "Port: i_cmd_valid; Direction: input; Width: 1; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Command stream valid. The environment keeps it 0 while i_rst_n = 0"
+- **SPI-5-04** [MUST] (spi_master_Design_Specification.md 5) o_cmd_ready has reset value 1. Condition: during reset.
+  - quote: "Port: o_cmd_ready; Direction: output; Width: 1; Signal type: Data; Reset value: 1; Clock domain: CLK; Meaning: Command stream ready. Does not depend combinationally on any input"
+- **SPI-5-05** [MUST_NOT] (spi_master_Design_Specification.md 5) o_cmd_ready must not depend combinationally on any input.
+  - quote: "Port: o_cmd_ready; Direction: output; Width: 1; Signal type: Data; Reset value: 1; Clock domain: CLK; Meaning: Command stream ready. Does not depend combinationally on any input"
+- **SPI-5-06** [MUST] (spi_master_Design_Specification.md 5) i_cmd_data is captured at the command handshake as the byte to send. Condition: at the command handshake.
+  - quote: "Port: i_cmd_data; Direction: input; Width: 8; Signal type: Data; Reset value: Not applicable; Clock domain: CLK; Meaning: Byte to send. Captured at the command handshake"
+- **SPI-5-07** [MUST] (spi_master_Design_Specification.md 5) i_cmd_last is captured at the command handshake; when 1, the byte ends the burst and o_cs_n is released after it. Condition: i_cmd_last = 1 captured at the command handshake.
+  - quote: "Port: i_cmd_last; Direction: input; Width: 1; Signal type: Data; Reset value: Not applicable; Clock domain: CLK; Meaning: 1 = this byte ends the burst, and o_cs_n is released after it. Captured at the command handshake"
+- **SPI-5-08** [MUST] (spi_master_Design_Specification.md 5) o_rsp_valid has reset value 0. Condition: during reset.
+  - quote: "Port: o_rsp_valid; Direction: output; Width: 1; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Response stream valid"
+- **SPI-5-09** [MUST] (spi_master_Design_Specification.md 5) o_rsp_data carries the byte received during the transfer of the matching command.
+  - quote: "Port: o_rsp_data; Direction: output; Width: 8; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Byte received during the transfer of the matching command"
+- **SPI-5-10** [MUST] (spi_master_Design_Specification.md 5) o_rsp_data has reset value 0. Condition: during reset.
+  - quote: "Port: o_rsp_data; Direction: output; Width: 8; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Byte received during the transfer of the matching command"
+- **SPI-5-11** [MUST] (spi_master_Design_Specification.md 5) o_sclk equals i_cpol, following it combinationally, in reset. Condition: during reset.
+  - quote: "Port: o_sclk; Direction: output; Width: 1; Signal type: Data (SPI serial clock; not used as a clock inside the block); Reset value: Equal to i_cpol (follows it combinationally); Clock domain: CLK; Meaning: SPI serial clock"
+- **SPI-5-12** [MUST] (spi_master_Design_Specification.md 5) o_mosi has reset value 0. Condition: during reset.
+  - quote: "Port: o_mosi; Direction: output; Width: 1; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: SPI master-out slave-in data"
+- **SPI-5-13** [MUST] (spi_master_Design_Specification.md 5) o_cs_n has reset value 1. Condition: during reset.
+  - quote: "Port: o_cs_n; Direction: output; Width: 1; Signal type: Data; Reset value: 1; Clock domain: CLK; Meaning: SPI slave select, active low"
+- **SPI-5-14** [MUST_NOT] (spi_master_Design_Specification.md 5) i_cpol may change only while o_cs_n = 1. Condition: o_cs_n = 0.
+  - quote: "Port: i_cpol; Direction: input; Width: 1; Signal type: Data (quasi-static configuration); Reset value: Not applicable; Clock domain: CLK; Meaning: SPI clock polarity (SCLK idle level). May change only while o_cs_n = 1"
+- **SPI-5-15** [MUST] (spi_master_Design_Specification.md 5) i_cpha = 0 samples on leading edges and i_cpha = 1 samples on trailing edges.
+  - quote: "Port: i_cpha; Direction: input; Width: 1; Signal type: Data (quasi-static configuration); Reset value: Not applicable; Clock domain: CLK; Meaning: SPI clock phase. 0 = sample on leading edges, 1 = sample on trailing edges. May change only while o_cs_n = 1"
+- **SPI-5-16** [MUST_NOT] (spi_master_Design_Specification.md 5) i_cpha may change only while o_cs_n = 1. Condition: o_cs_n = 0.
+  - quote: "Port: i_cpha; Direction: input; Width: 1; Signal type: Data (quasi-static configuration); Reset value: Not applicable; Clock domain: CLK; Meaning: SPI clock phase. 0 = sample on leading edges, 1 = sample on trailing edges. May change only while o_cs_n = 1"
+- **SPI-6.1-01** [MUST] (spi_master_Design_Specification.md 6.1) All state elements of m_spi_master shall be clocked by the rising edge of i_clk, the only clock of the block.
+  - quote: "[REQ-CLK-001] All state elements of m_spi_master shall be clocked by the rising edge of i_clk, which is the only clock of the block (domain CLK)."
+- **SPI-6.1-02** [MUST] (spi_master_Design_Specification.md 6.1) o_sclk shall be produced as a data output timed by i_clk.
+  - quote: "[REQ-CLK-002] o_sclk shall be produced as a data output timed by i_clk and shall not clock any state element inside the block."
+- **SPI-6.1-03** [MUST_NOT] (spi_master_Design_Specification.md 6.1) o_sclk shall not clock any state element inside the block.
+  - quote: "[REQ-CLK-002] o_sclk shall be produced as a data output timed by i_clk and shall not clock any state element inside the block."
+- **SPI-6.1-04** [MUST] (spi_master_Design_Specification.md 6.1) i_miso shall be treated as synchronous to i_clk and sampled without a synchroniser.
+  - quote: "[REQ-CLK-003] i_miso shall be treated as synchronous to i_clk and shall be sampled without a synchroniser, because the slave launches it from o_sclk, which is derived from i_clk."
+- **SPI-6.2-01** [MUST] (spi_master_Design_Specification.md 6.2) All outputs shall take their reset values at once, without waiting for an edge of i_clk. Condition: When i_rst_n changes to 0.
+  - quote: "[REQ-RST-001] When i_rst_n changes to 0, all outputs shall take their reset values at once, without waiting for an edge of i_clk."
+- **SPI-6.2-02** [MUST] (spi_master_Design_Specification.md 6.2) o_cs_n shall be 1. Condition: While i_rst_n = 0.
+  - quote: "[REQ-RST-002] While i_rst_n = 0, o_cs_n shall be 1."
+- **SPI-6.2-03** [MUST] (spi_master_Design_Specification.md 6.2) o_sclk shall equal the current value of i_cpol and follow every change of i_cpol combinationally. Condition: While i_rst_n = 0.
+  - quote: "[REQ-RST-003] While i_rst_n = 0, o_sclk shall be equal to the current value of i_cpol and shall follow every change of i_cpol combinationally."
+- **SPI-6.2-04** [MUST] (spi_master_Design_Specification.md 6.2) o_mosi shall be 0. Condition: While i_rst_n = 0.
+  - quote: "[REQ-RST-004] While i_rst_n = 0, o_mosi shall be 0."
+- **SPI-6.2-05** [MUST] (spi_master_Design_Specification.md 6.2) o_rsp_valid shall be 0 and o_rsp_data shall be 8'h00. Condition: While i_rst_n = 0.
+  - quote: "[REQ-RST-005] While i_rst_n = 0, o_rsp_valid shall be 0 and o_rsp_data shall be 8'h00."
+- **SPI-6.2-06** [MUST] (spi_master_Design_Specification.md 6.2) o_cmd_ready shall be 1. Condition: While i_rst_n = 0.
+  - quote: "[REQ-RST-006] While i_rst_n = 0, o_cmd_ready shall be 1."
+- **SPI-6.2-07** [MUST_NOT] (spi_master_Design_Specification.md 6.2) The master shall not accept a command. Condition: While i_rst_n = 0, whatever the values of i_cmd_valid and o_cmd_ready.
+  - quote: "[REQ-RST-007] While i_rst_n = 0, the master shall not accept a command, whatever the values of i_cmd_valid and o_cmd_ready."
+- **SPI-6.2-08** [MUST] (spi_master_Design_Specification.md 6.2) The transfer in progress shall be aborted. Condition: Reset asserted during a burst.
+  - quote: "[REQ-RST-008] Reset asserted during a burst shall abort the transfer in progress, and no response shall be produced for that transfer."
+- **SPI-6.2-10** [MUST] (spi_master_Design_Specification.md 6.2) That byte shall be discarded without a response handshake. Condition: Reset asserted while a shown byte or a held byte exists.
+  - quote: "[REQ-RST-009] Reset asserted while a shown byte or a held byte exists shall discard that byte without a response handshake."
+- **SPI-6.2-11** [MUST] (spi_master_Design_Specification.md 6.2) The master shall be in Idle with the gap requirement met and able to accept a command at the first edge at which i_rst_n is 1. Condition: After i_rst_n returns to 1.
+  - quote: "[REQ-RST-010] After i_rst_n returns to 1, the master shall be in Idle with the gap requirement met: it can accept a command at the first edge at which i_rst_n is 1."
+- **SPI-6.2-12** [MUST_NOT] (spi_master_Design_Specification.md 6.2) The minimum o_cs_n high time of REQ-CS-005 shall not be required; after an aborted burst the high time is the reset duration plus time until next acceptance. Condition: Across a reset.
+  - quote: "[REQ-RST-011] The minimum o_cs_n high time of REQ-CS-005 shall not be required across a reset: the high time of o_cs_n after an aborted burst is the reset duration plus the time until the next acceptance."
+- **SPI-7.1-01** [MUST] (spi_master_Design_Specification.md 7.1) The master accepts a command at an edge only when i_rst_n = 1, i_cmd_valid = 1 and o_cmd_ready = 1 at that edge.
+  - quote: "[REQ-CMD-001] The master shall accept a command at an edge only when i_rst_n = 1, i_cmd_valid = 1 and o_cmd_ready = 1 at that edge."
+- **SPI-7.1-02** [MUST] (spi_master_Design_Specification.md 7.1) The master captures i_cmd_data as the byte to send and i_cmd_last as the end-of-burst flag of that transfer. Condition: At the command acceptance edge.
+  - quote: "[REQ-CMD-002] At the acceptance edge the master shall capture i_cmd_data as the byte to send and i_cmd_last as the end-of-burst flag of that transfer."
+- **SPI-7.1-03** [MUST] (spi_master_Design_Specification.md 7.1) Values of i_cmd_data and i_cmd_last have no effect. Condition: At edges without a command handshake.
+  - quote: "[REQ-CMD-003] The values of i_cmd_data and i_cmd_last at edges without a command handshake shall have no effect."
+- **SPI-7.1-04** [MUST] (spi_master_Design_Specification.md 7.1) The master behaves as if the command had never been presented. Condition: i_cmd_valid goes from 1 to 0 without a command handshake.
+  - quote: "[REQ-CMD-004] If i_cmd_valid goes from 1 to 0 without a command handshake, the master shall behave as if the command had never been presented."
+- **SPI-7.1-05** [MUST] (spi_master_Design_Specification.md 7.1) o_cmd_ready changes only at an i_clk edge or when i_rst_n is asserted, and does not depend combinationally on any input.
+  - quote: "[REQ-CMD-005] o_cmd_ready shall change only at an edge of i_clk or when i_rst_n is asserted, and shall not depend combinationally on any input."
+- **SPI-7.1-06** [MUST] (spi_master_Design_Specification.md 7.1) o_cmd_ready is 0 in every cycle in which o_rsp_valid = 1. Condition: i_rst_n = 1 and o_rsp_valid = 1.
+  - quote: "[REQ-CMD-006] While i_rst_n = 1, o_cmd_ready shall be 0 in every cycle in which o_rsp_valid = 1."
+- **SPI-7.1-07** [MUST] (spi_master_Design_Specification.md 7.1) o_cmd_ready is 0 in every cycle starting at an edge from R to R + D − 2 (no such cycle when D = 1). Condition: o_cs_n changes from 0 to 1 at edge R.
+  - quote: "[REQ-CMD-007] When o_cs_n changes from 0 to 1 at edge R, o_cmd_ready shall be 0 in every cycle that starts at an edge from R to R + D − 2. When D = 1 there is no such cycle."
+- **SPI-7.1-08** [MUST] (spi_master_Design_Specification.md 7.1) o_cmd_ready is 1. Condition: In Idle with o_rsp_valid = 0, from edge R + D − 1 onward, and after reset release until the next acceptance.
+  - quote: "[REQ-CMD-008] In Idle, o_cmd_ready shall be 1 when o_rsp_valid = 0 in every cycle that starts at edge R + D − 1 or later, and in every cycle after reset release until the next acceptance."
+- **SPI-7.1-09** [MUST] (spi_master_Design_Specification.md 7.1) o_cmd_ready is 0. Condition: During a transfer, except its last cycle.
+  - quote: "[REQ-CMD-009] During a transfer, o_cmd_ready shall be 0 in every cycle except the last cycle of the transfer."
+- **SPI-7.1-10** [MUST] (spi_master_Design_Specification.md 7.1) o_cmd_ready is 1 if the captured i_cmd_last is 0 and o_rsp_valid is 0, and 0 otherwise. Condition: Last cycle of a transfer.
+  - quote: "[REQ-CMD-010] In the last cycle of a transfer, o_cmd_ready shall be 1 if the i_cmd_last captured for that transfer is 0 and o_rsp_valid is 0, and 0 otherwise."
+- **SPI-7.1-11** [MUST] (spi_master_Design_Specification.md 7.1) o_cmd_ready is 1 when o_rsp_valid = 0 and 0 when o_rsp_valid = 1. Condition: In Pause.
+  - quote: "[REQ-CMD-011] In Pause, o_cmd_ready shall be 1 when o_rsp_valid = 0 and 0 when o_rsp_valid = 1."
+- **SPI-7.1-12** [MUST] (spi_master_Design_Specification.md 7.1) o_cmd_ready is 0. Condition: In Trail.
+  - quote: "[REQ-CMD-012] In Trail, o_cmd_ready shall be 0."
+- **SPI-7.2-01** [MUST] (spi_master_Design_Specification.md 7.2) o_cs_n changes from 1 to 0 at edge A, starting a burst. Condition: Command accepted in Idle at edge A.
+  - quote: "[REQ-CS-001] A command accepted in Idle at edge A shall start a burst: o_cs_n shall change from 1 to 0 at edge A."
+- **SPI-7.2-02** [MUST] (spi_master_Design_Specification.md 7.2) o_cs_n stays 0 until edge A + 17·D, where it changes to 1. Condition: From burst start; A is the acceptance edge of the transfer with captured i_cmd_last = 1.
+  - quote: "[REQ-CS-002] o_cs_n shall stay 0 from the start of a burst until edge A + 17·D, where A is the acceptance edge of the transfer whose captured i_cmd_last is 1. At that edge o_cs_n shall change to 1."
+- **SPI-7.2-03** [MUST] (spi_master_Design_Specification.md 7.2) o_cs_n changes only at the edges given in REQ-CS-001 and REQ-CS-002 and at the assertion of i_rst_n.
+  - quote: "[REQ-CS-003] o_cs_n shall change only at the edges given in REQ-CS-001 and REQ-CS-002, and at the assertion of i_rst_n."
+- **SPI-7.2-04** [MUST] (spi_master_Design_Specification.md 7.2) The first SCLK edge of a burst comes exactly D cycles after o_cs_n falls (edge A + D). Condition: Burst start.
+  - quote: "[REQ-CS-004] The first SCLK edge of a burst shall come exactly D cycles after o_cs_n falls (edge A + D), so the lead time is one SCLK half period."
+- **SPI-7.2-05** [MUST] (spi_master_Design_Specification.md 7.2) o_cs_n stays 1 for at least D cycles. Condition: Between two bursts with no reset in between.
+  - quote: "[REQ-CS-005] Between two bursts with no reset in between, o_cs_n shall stay 1 for at least D cycles."
+- **SPI-7.2-07** [MUST_NOT] (spi_master_Design_Specification.md 7.2) The rise of o_cs_n does not depend on the response stream state (o_rsp_valid, i_rsp_ready, a held byte). Condition: End of burst.
+  - quote: "[REQ-CS-007] The rise of o_cs_n at the end of a burst shall not depend on the state of the response stream (o_rsp_valid, i_rsp_ready, a held byte)."
+- **SPI-7.3-01** [MUST] (spi_master_Design_Specification.md 7.3) The master captures i_cpol as CPOL_b and i_cpha as CPHA_b. Condition: Acceptance edge of the first command of a burst.
+  - quote: "[REQ-MODE-001] At the acceptance edge of the first command of a burst, the master shall capture i_cpol as CPOL_b and i_cpha as CPHA_b."
+- **SPI-7.3-02** [MUST] (spi_master_Design_Specification.md 7.3) CPOL_b and CPHA_b control o_sclk, o_mosi and the sampling of i_miso. Condition: Whole burst, including Pause and Trail.
+  - quote: "[REQ-MODE-002] CPOL_b and CPHA_b shall control o_sclk, o_mosi and the sampling of i_miso for the whole burst, including Pause and Trail."
+- **SPI-7.3-03** [MUST] (spi_master_Design_Specification.md 7.3) Changes of i_cpol or i_cpha have no effect on o_sclk, o_mosi, o_cs_n, i_miso sampling or response data. Condition: While o_cs_n = 0.
+  - quote: "[REQ-MODE-003] Changes of i_cpol or i_cpha while o_cs_n = 0 shall have no effect on o_sclk, o_mosi, o_cs_n, the sampling of i_miso or the response data."
+- **SPI-7.3-04** [MUST] (spi_master_Design_Specification.md 7.3) Leading SCLK edges (odd k) are sampling edges and trailing edges (even k) are shift edges. Condition: CPHA_b = 0.
+  - quote: "[REQ-MODE-004] With CPHA_b = 0, the leading SCLK edges (odd k) shall be the sampling edges and the trailing SCLK edges (even k) shall be the shift edges."
+- **SPI-7.3-05** [MUST] (spi_master_Design_Specification.md 7.3) Leading SCLK edges (odd k) are shift edges and trailing edges (even k) are sampling edges. Condition: CPHA_b = 1.
+  - quote: "[REQ-MODE-005] With CPHA_b = 1, the leading SCLK edges (odd k) shall be the shift edges and the trailing SCLK edges (even k) shall be the sampling edges."
+- **SPI-7.4-01** [MUST] (spi_master_Design_Specification.md 7.4) o_sclk toggles at each of the 16 edges A + k·D, k = 1 to 16. Condition: Transfer with acceptance edge A.
+  - quote: "[REQ-SCLK-001] For a transfer with acceptance edge A, o_sclk shall toggle at each of the 16 edges A + k·D, k = 1 to 16."
+- **SPI-7.4-02** [MUST_NOT] (spi_master_Design_Specification.md 7.4) o_sclk does not change at any edge other than A + k·D, k = 1 to 16. Condition: While o_cs_n = 0.
+  - quote: "[REQ-SCLK-002] While o_cs_n = 0, o_sclk shall not change at any edge other than those of REQ-SCLK-001."
+- **SPI-7.4-03** [MUST] (spi_master_Design_Specification.md 7.4) o_sclk equals CPOL_b (lead half period, Pause, Trail). Condition: o_cs_n = 0 and no transfer is between its SCLK edges 1 and 16.
+  - quote: "[REQ-SCLK-003] While o_cs_n = 0 and no transfer is between its SCLK edges 1 and 16, o_sclk shall equal CPOL_b. This covers the lead half period, Pause and Trail."
+- **SPI-7.4-04** [MUST] (spi_master_Design_Specification.md 7.4) o_sclk equals NOT CPOL_b for odd k and CPOL_b for even k. Condition: After SCLK edge k of a transfer.
+  - quote: "[REQ-SCLK-004] After SCLK edge k of a transfer, o_sclk shall equal NOT CPOL_b for odd k and CPOL_b for even k."
+- **SPI-7.4-05** [MUST] (spi_master_Design_Specification.md 7.4) o_sclk equals i_cpol and follows changes of i_cpol combinationally. Condition: While o_cs_n = 1.
+  - quote: "[REQ-SCLK-005] While o_cs_n = 1, o_sclk shall equal i_cpol and shall follow changes of i_cpol combinationally."
+- **SPI-7.4-06** [MUST] (spi_master_Design_Specification.md 7.4) o_sclk takes the value of i_cpol from edge R on. Condition: o_cs_n rises at edge R.
+  - quote: "[REQ-SCLK-006] When o_cs_n rises at edge R, o_sclk shall take the value of i_cpol from edge R on."
+- **SPI-7.4-07** [MUST] (spi_master_Design_Specification.md 7.4) The SCLK period over the joint is 2·D cycles with each half period D cycles. Condition: Transfer starts at SCLK edge 16 of the previous transfer of the same burst.
+  - quote: "[REQ-SCLK-007] When a transfer starts at SCLK edge 16 of the previous transfer of the same burst, the SCLK period over the joint shall be 2·D cycles with each half period equal to D cycles."
+- **SPI-7.5-01** [MUST] (spi_master_Design_Specification.md 7.5) Bits of each byte are sent MSB first: d[7], d[6], …, d[0].
+  - quote: "[REQ-MOSI-001] The bits of each byte shall be sent in the order d[7], d[6], …, d[0] (MSB first)."
+- **SPI-7.5-02** [MUST] (spi_master_Design_Specification.md 7.5) o_mosi takes the value d[7] at the acceptance edge A. Condition: CPHA_b = 0.
+  - quote: "[REQ-MOSI-002] With CPHA_b = 0, o_mosi shall take the value d[7] at the acceptance edge A."
+- **SPI-7.5-03** [MUST] (spi_master_Design_Specification.md 7.5) o_mosi takes the value d[7 − j] at edge A + 2·j·D for j = 1 to 7. Condition: CPHA_b = 0.
+  - quote: "[REQ-MOSI-003] With CPHA_b = 0, o_mosi shall take the value d[7 − j] at edge A + 2·j·D for j = 1 to 7 (SCLK edges 2, 4, …, 14)."
+- **SPI-7.5-04** [MUST] (spi_master_Design_Specification.md 7.5) o_mosi takes the value d[7 − j] at edge A + (2·j + 1)·D for j = 0 to 7. Condition: CPHA_b = 1.
+  - quote: "[REQ-MOSI-004] With CPHA_b = 1, o_mosi shall take the value d[7 − j] at edge A + (2·j + 1)·D for j = 0 to 7 (SCLK edges 1, 3, …, 15)."
+- **SPI-7.5-05** [MUST_NOT] (spi_master_Design_Specification.md 7.5) o_mosi does not change at any edge other than those of REQ-MOSI-002 to REQ-MOSI-004, except at the assertion of i_rst_n.
+  - quote: "[REQ-MOSI-005] o_mosi shall not change at any edge other than those of REQ-MOSI-002 to REQ-MOSI-004, except at the assertion of i_rst_n."
+- **SPI-7.5-06** [MUST] (spi_master_Design_Specification.md 7.5) o_mosi keeps the last value it was given, which is 0 after reset. Condition: In Idle, Pause and Trail.
+  - quote: "[REQ-MOSI-006] In Idle, Pause and Trail, o_mosi shall keep the last value it was given. That value is 0 after reset."
+- **SPI-7.5-07** [MUST] (spi_master_Design_Specification.md 7.5) o_mosi is stable in the cycle before each sampling edge and does not change at any sampling edge. Condition: All four modes.
+  - quote: "[REQ-MOSI-007] o_mosi shall be stable in the cycle before each sampling edge and shall not change at any sampling edge, in all four modes."
+- **SPI-7.5-08** [MUST] (spi_master_Design_Specification.md 7.5) o_mosi keeps d[0] unless the next command is accepted at that edge, in which case it takes the next d[7]. Condition: CPHA_b = 0, after SCLK edge 16.
+  - quote: "With CPHA_b = 0, o_mosi keeps d[0] after SCLK edge 16 unless the next command is accepted at that edge, in which case it takes the next d[7] at that edge (REQ-MOSI-002)."
+- **SPI-7.5-09** [MUST] (spi_master_Design_Specification.md 7.5) o_mosi keeps its previous value from the acceptance edge until SCLK edge 1. Condition: CPHA_b = 1.
+  - quote: "With CPHA_b = 1, o_mosi keeps its previous value from the acceptance edge until SCLK edge 1."
+- **SPI-7.6-01** [MUST] (spi_master_Design_Specification.md 7.6) The master captures i_miso as r[7 − j] at edge A + (2·j + 1)·D for j = 0 to 7. Condition: CPHA_b = 0.
+  - quote: "[REQ-MISO-001] With CPHA_b = 0, the master shall capture i_miso as received bit r[7 − j] at edge A + (2·j + 1)·D for j = 0 to 7."
+- **SPI-7.6-02** [MUST] (spi_master_Design_Specification.md 7.6) The master captures i_miso as r[7 − j] at edge A + (2·j + 2)·D for j = 0 to 7. Condition: CPHA_b = 1.
+  - quote: "[REQ-MISO-002] With CPHA_b = 1, the master shall capture i_miso as received bit r[7 − j] at edge A + (2·j + 2)·D for j = 0 to 7."
+- **SPI-7.6-03** [MUST] (spi_master_Design_Specification.md 7.6) The captured value is i_miso in the cycle ending at that edge, just before o_sclk makes the sampling transition. Condition: At a sampling edge.
+  - quote: "[REQ-MISO-003] The value captured at a sampling edge shall be the value of i_miso in the cycle that ends at that edge, which is the value just before o_sclk makes the sampling transition."
+- **SPI-7.6-04** [MUST_NOT] (spi_master_Design_Specification.md 7.6) i_miso has no effect. Condition: At edges other than sampling edges of a transfer.
+  - quote: "[REQ-MISO-004] i_miso shall have no effect at any edge other than the sampling edges of a transfer."
+- **SPI-7.6-05** [MUST] (spi_master_Design_Specification.md 7.6) The received byte r[7:0] of a transfer is made only of the 8 bits captured during that transfer.
+  - quote: "[REQ-MISO-005] The received byte r[7:0] of a transfer shall be made of the 8 bits captured during that transfer only."
+- **SPI-7.7-01** [MUST] (spi_master_Design_Specification.md 7.7) Each accepted command produces exactly one response carrying the byte received during its transfer.
+  - quote: "[REQ-RSP-001] Each accepted command shall produce exactly one response carrying the byte received during its transfer."
+- **SPI-7.7-02** [MUST] (spi_master_Design_Specification.md 7.7) Responses are delivered in command acceptance order, across burst boundaries.
+  - quote: "[REQ-RSP-002] Responses shall be delivered in the order in which the commands were accepted, across burst boundaries."
+- **SPI-7.7-03** [MUST] (spi_master_Design_Specification.md 7.7) The master loads the received byte into o_rsp_data and sets o_rsp_valid to 1. Condition: At edge A + 16·D, if o_rsp_valid was 0 in the cycle ending at that edge or a response handshake occurs.
+  - quote: "[REQ-RSP-003] At edge A + 16·D of a transfer, the master shall load the received byte into o_rsp_data and set o_rsp_valid to 1 if o_rsp_valid was 0 in the cycle ending at that edge or a response handshake occurs at that edge."
+- **SPI-7.7-04** [MUST] (spi_master_Design_Specification.md 7.7) The received byte becomes the held byte. Condition: At edge A + 16·D, neither condition of REQ-RSP-003 holds.
+  - quote: "[REQ-RSP-004] If neither condition of REQ-RSP-003 holds at edge A + 16·D, the received byte shall become the held byte."
+- **SPI-7.7-05** [MUST] (spi_master_Design_Specification.md 7.7) The held byte is loaded into o_rsp_data and o_rsp_valid stays 1. Condition: At the edge of the response handshake of the shown byte, with a held byte.
+  - quote: "[REQ-RSP-005] At the edge where the response handshake of the shown byte occurs, the held byte shall be loaded into o_rsp_data and o_rsp_valid shall stay 1."
+- **SPI-7.7-06** [MUST] (spi_master_Design_Specification.md 7.7) o_rsp_valid changes to 0. Condition: Response handshake with no byte loaded at the same edge.
+  - quote: "[REQ-RSP-006] At a response handshake where no byte is loaded at the same edge, o_rsp_valid shall change to 0."
+- **SPI-7.7-07** [MUST] (spi_master_Design_Specification.md 7.7) o_rsp_valid stays 1 and o_rsp_data does not change. Condition: o_rsp_valid = 1 and no response handshake.
+  - quote: "[REQ-RSP-007] While o_rsp_valid = 1 and no response handshake has occurred, o_rsp_valid shall stay 1 and o_rsp_data shall not change."
+- **SPI-7.7-08** [MUST] (spi_master_Design_Specification.md 7.7) o_rsp_data keeps the last byte loaded into it, or 8'h00 after reset. Condition: While o_rsp_valid = 0.
+  - quote: "[REQ-RSP-008] While o_rsp_valid = 0, o_rsp_data shall keep the last byte loaded into it, or 8'h00 after reset."
+- **SPI-7.7-09** [MUST] (spi_master_Design_Specification.md 7.7) o_rsp_valid and o_rsp_data change only at i_clk edges or at the assertion of i_rst_n.
+  - quote: "[REQ-RSP-009] o_rsp_valid and o_rsp_data shall change only at edges of i_clk or at the assertion of i_rst_n."
+- **SPI-7.7-10** [MUST] (spi_master_Design_Specification.md 7.7) i_rsp_ready has no effect. Condition: While o_rsp_valid = 0.
+  - quote: "[REQ-RSP-010] i_rsp_ready shall have no effect while o_rsp_valid = 0."
+- **SPI-7.7-11** [MUST_NOT] (spi_master_Design_Specification.md 7.7) The master never overwrites a shown or held byte before it has been taken and never delivers a byte twice.
+  - quote: "[REQ-RSP-011] The master shall never overwrite a shown byte or a held byte before it has been taken, and shall never deliver a byte twice."
+- **SPI-7.7-12** [MUST] (spi_master_Design_Specification.md 7.7) At most two received bytes are pending at any time: one shown byte and at most one held byte.
+  - quote: "[REQ-RSP-012] At any time, at most two received bytes shall be pending: one shown byte and at most one held byte."
+- **SPI-7.7-13** [MUST] (spi_master_Design_Specification.md 7.7) A new transfer starts only when every earlier received byte has been taken, except the byte of the transfer ending at the same edge.
+  - quote: "A new transfer therefore starts only when every earlier received byte has been taken, except the byte of the transfer that ends at the same edge."
+- **SPI-7.8-01** [MUST] (spi_master_Design_Specification.md 7.8) The new transfer uses that edge as its acceptance edge, with SCLK edge 1 D cycles after previous SCLK edge 16. Condition: Command accepted at edge A + 16·D of a transfer with captured i_cmd_last = 0.
+  - quote: "[REQ-FLOW-001] When a command is accepted at edge A + 16·D of a transfer whose captured i_cmd_last is 0, the new transfer shall use that edge as its acceptance edge. Its SCLK edge 1 then comes D cycles after SCLK edge 16 of the previous transfer, with no gap."
+- **SPI-7.8-02** [MUST] (spi_master_Design_Specification.md 7.8) The master enters Pause. Condition: Transfer with captured i_cmd_last = 0 ends at edge A + 16·D without a command handshake.
+  - quote: "[REQ-FLOW-002] When a transfer with captured i_cmd_last = 0 ends at edge A + 16·D without a command handshake at that edge, the master shall enter Pause."
+- **SPI-7.8-03** [MUST] (spi_master_Design_Specification.md 7.8) o_cs_n stays 0, o_sclk stays at CPOL_b and o_mosi keeps its value. Condition: In Pause.
+  - quote: "[REQ-FLOW-003] In Pause, o_cs_n shall stay 0, o_sclk shall stay at CPOL_b and o_mosi shall keep its value."
+- **SPI-7.8-04** [MUST] (spi_master_Design_Specification.md 7.8) Pause lasts until a command is accepted, without any time limit. Condition: In Pause.
+  - quote: "[REQ-FLOW-004] Pause shall last until a command is accepted, without any time limit."
+- **SPI-7.8-05** [MUST] (spi_master_Design_Specification.md 7.8) A transfer starts with acceptance edge A = P, in the same burst with the same CPOL_b and CPHA_b. Condition: Command accepted in Pause at edge P.
+  - quote: "[REQ-FLOW-005] A command accepted in Pause at edge P shall start a transfer with acceptance edge A = P, in the same burst and with the same CPOL_b and CPHA_b."
+- **SPI-7.8-06** [MUST] (spi_master_Design_Specification.md 7.8) The master enters Trail and o_cs_n rises at edge A + 17·D. Condition: Transfer with captured i_cmd_last = 1 ends at edge A + 16·D.
+  - quote: "[REQ-FLOW-006] When a transfer with captured i_cmd_last = 1 ends at edge A + 16·D, the master shall enter Trail, and o_cs_n shall rise at edge A + 17·D (REQ-CS-002)."
+- **SPI-7.8-07** [MUST_NOT] (spi_master_Design_Specification.md 7.8) The master does not start a transfer. Condition: A received byte is held.
+  - quote: "[REQ-FLOW-007] The master shall not start a transfer while a received byte is held."
+- **SPI-8-01** [MUST] (spi_master_Design_Specification.md 8) SCLK edge 1 (lead) must occur D i_clk cycles after command acceptance, where D = PARA_SPI_CLK_DIV. Condition: After command acceptance.
+  - quote: "Latency and throughput (D = PARA_SPI_CLK_DIV, all numbers in i_clk cycles): Item: Command acceptance to SCLK edge 1 (lead); Value: D"
+- **SPI-8-02** [MUST] (spi_master_Design_Specification.md 8) o_cs_n must go low at the acceptance edge itself (0 cycles after command acceptance) for the first byte of a burst. Condition: First byte of a burst.
+  - quote: "Latency and throughput (D = PARA_SPI_CLK_DIV, all numbers in i_clk cycles): Item: Command acceptance to o_cs_n low (first byte of a burst); Value: 0 (same edge A)"
+- **SPI-8-03** [MUST] (spi_master_Design_Specification.md 8) o_rsp_valid must become 1 16·D i_clk cycles after command acceptance. Condition: After command acceptance.
+  - quote: "Latency and throughput (D = PARA_SPI_CLK_DIV, all numbers in i_clk cycles): Item: Command acceptance to o_rsp_valid = 1 (response register free); Value: 16·D"
+- **SPI-8-04** [MUST] (spi_master_Design_Specification.md 8) o_cs_n must go high D i_clk cycles after SCLK edge 16 of the last byte (trail). Condition: After SCLK edge 16 of last byte.
+  - quote: "Latency and throughput (D = PARA_SPI_CLK_DIV, all numbers in i_clk cycles): Item: SCLK edge 16 of last byte to o_cs_n high (trail); Value: D"
+- **SPI-8-05** [MUST] (spi_master_Design_Specification.md 8) o_cs_n must stay high for at least D i_clk cycles between bursts. Condition: Between bursts.
+  - quote: "Latency and throughput (D = PARA_SPI_CLK_DIV, all numbers in i_clk cycles): Item: Minimum o_cs_n high time between bursts (gap); Value: D"
+- **SPI-8-06** [MUST] (spi_master_Design_Specification.md 8) Byte period inside a continuous burst must be 16·D i_clk cycles. Condition: Inside a continuous burst.
+  - quote: "Latency and throughput (D = PARA_SPI_CLK_DIV, all numbers in i_clk cycles): Item: Byte period inside a continuous burst; Value: 16·D"
+- **SPI-8-07** [MUST] (spi_master_Design_Specification.md 8) o_cs_n low time of an n-byte continuous burst must be 16·n·D + D i_clk cycles. Condition: n-byte continuous burst.
+  - quote: "Latency and throughput (D = PARA_SPI_CLK_DIV, all numbers in i_clk cycles): Item: o_cs_n low time of an n-byte continuous burst; Value: 16·n·D + D"
+- **SPI-8-08** [MUST] (spi_master_Design_Specification.md 8) Minimum time between first acceptances of consecutive n-byte bursts must be 16·n·D + 2·D i_clk cycles. Condition: Consecutive n-byte bursts.
+  - quote: "Latency and throughput (D = PARA_SPI_CLK_DIV, all numbers in i_clk cycles): Item: Minimum time between first acceptances of consecutive n-byte bursts; Value: 16·n·D + 2·D"
+- **SPI-8-09** [MUST] (spi_master_Design_Specification.md 8) The minimum period of single-byte bursts must be 18·D i_clk cycles. Condition: Single-byte bursts with i_cmd_last always 1.
+  - quote: "Item: Minimum period of single-byte bursts (i_cmd_last always 1); Value: 18·D"
+- **SPI-8-10** [MUST] (spi_master_Design_Specification.md 8) The next command must be valid in the last cycle of the current transfer. Condition: For a continuous burst without SCLK pause.
+  - quote: "Conditions for a continuous burst (no SCLK pause): The next command must be valid in the last cycle of the current transfer."
+- **SPI-8-11** [MUST] (spi_master_Design_Specification.md 8) o_rsp_valid must be 0 in the last cycle of the current transfer, so the previous response must be taken within 16·D − 1 cycles of becoming valid. Condition: For a continuous burst without SCLK pause.
+  - quote: "Conditions for a continuous burst (no SCLK pause): o_rsp_valid must be 0 in that cycle. This means the response of the previous transfer was taken within 16·D − 1 cycles of becoming valid, for example with i_rsp_ready held at 1."
+- **SPI-8-12** [MUST] (spi_master_Design_Specification.md 8) The next transfer must not start at SCLK edge 16. Condition: o_rsp_valid = 1 in the last cycle of a transfer.
+  - quote: "Back-pressure: If o_rsp_valid = 1 in the last cycle of a transfer, the next transfer is not started at its SCLK edge 16."
+- **SPI-8-13** [MUST] (spi_master_Design_Specification.md 8) The burst must enter Pause, or Trail if it was the last byte. Condition: o_rsp_valid = 1 in the last cycle of a transfer.
+  - quote: "The burst enters Pause (or Trail if it was the last byte)."
+- **SPI-8-14** [MUST] (spi_master_Design_Specification.md 8) That transfer's byte must become the held byte. Condition: Shown byte not yet taken at the end of a running transfer.
+  - quote: "If the shown byte has still not been taken at the end of a running transfer, that transfer's byte becomes the held byte."
+- **SPI-8-15** [MUST_NOT] (spi_master_Design_Specification.md 8) No new transfer may start until both bytes have been taken. Condition: Until both shown and held bytes have been taken.
+  - quote: "No new transfer starts until both bytes have been taken."
+- **SPI-8-16** [MUST] (spi_master_Design_Specification.md 8) Responses must come out in command order.
+  - quote: "Ordering: responses come out in command order (REQ-RSP-002)."
+- **SPI-10-02** [MUST] (spi_master_Design_Specification.md 10) The master shall keep using CPOL_b and CPHA_b until the end of the burst. Condition: i_cpol or i_cpha changes while o_cs_n = 0.
+  - quote: "[REQ-ERR-001] When i_cpol or i_cpha changes while o_cs_n = 0 (an environment violation), the master shall not detect or report it and shall keep using CPOL_b and CPHA_b until the end of the burst (REQ-MODE-003)."
+- **SPI-10-03** [MUST] (spi_master_Design_Specification.md 10) o_sclk shall change to i_cpol at the edge where o_cs_n rises. Condition: i_cpol differs from CPOL_b at the edge where o_cs_n rises.
+  - quote: "[REQ-ERR-002] When i_cpol differs from CPOL_b at the edge where o_cs_n rises, o_sclk shall change to i_cpol at that edge (REQ-SCLK-006)."
+- **SPI-10-04** [MUST] (spi_master_Design_Specification.md 10) The command shall wait without effect until a command handshake occurs. Condition: i_cmd_valid = 1 while o_cmd_ready = 0.
+  - quote: "[REQ-ERR-003] When i_cmd_valid = 1 while o_cmd_ready = 0, the command shall wait without effect until a command handshake occurs."
+- **SPI-10-05** [MUST_NOT] (spi_master_Design_Specification.md 10) The master shall not accept the command. Condition: i_cmd_valid = 1 while i_rst_n = 0.
+  - quote: "[REQ-ERR-004] When i_cmd_valid = 1 while i_rst_n = 0, the master shall not accept the command (REQ-RST-007)."
+- **SPI-10-06** [MUST] (spi_master_Design_Specification.md 10) The master shall keep o_rsp_valid = 1 with the same byte. Condition: the response consumer never takes a response.
+  - quote: "[REQ-ERR-005] When the response consumer never takes a response, the master shall keep o_rsp_valid = 1 with the same byte and shall not start any further transfer."
+- **SPI-10-07** [MUST_NOT] (spi_master_Design_Specification.md 10) The master shall not start any further transfer. Condition: the response consumer never takes a response.
+  - quote: "[REQ-ERR-005] When the response consumer never takes a response, the master shall keep o_rsp_valid = 1 with the same byte and shall not start any further transfer."
+- **SPI-10-08** [MUST] (spi_master_Design_Specification.md 10) o_cs_n shall stay 0 indefinitely. Condition: a burst is in Pause and no command ever arrives.
+  - quote: "[REQ-ERR-006] When a burst is in Pause and no command ever arrives, o_cs_n shall stay 0 indefinitely."
+- **SPI-10-09** [MUST] (spi_master_Design_Specification.md 10) o_cs_n shall go to 1 and o_sclk to i_cpol at once, even in the middle of an SCLK half period. Condition: i_rst_n is asserted during a transfer.
+  - quote: "[REQ-ERR-007] When i_rst_n is asserted during a transfer, o_cs_n shall go to 1 and o_sclk to i_cpol at once, even in the middle of an SCLK half period, and the partial byte shall be discarded (REQ-RST-008)."
+- **SPI-10-10** [MUST] (spi_master_Design_Specification.md 10) The partial byte shall be discarded. Condition: i_rst_n is asserted during a transfer.
+  - quote: "[REQ-ERR-007] When i_rst_n is asserted during a transfer, o_cs_n shall go to 1 and o_sclk to i_cpol at once, even in the middle of an SCLK half period, and the partial byte shall be discarded (REQ-RST-008)."
+- **SPI-10-11** [MUST] (spi_master_Design_Specification.md 10) The master shall go to the reset state of REQ-RST-002 to REQ-RST-006. Condition: i_rst_n is asserted in Pause, Trail or the Idle gap.
+  - quote: "[REQ-ERR-008] When i_rst_n is asserted in Pause, Trail or the Idle gap, the master shall go to the reset state of REQ-RST-002 to REQ-RST-006, and pending bytes shall be discarded."
+- **SPI-10-12** [MUST] (spi_master_Design_Specification.md 10) Pending bytes shall be discarded. Condition: i_rst_n is asserted in Pause, Trail or the Idle gap.
+  - quote: "[REQ-ERR-008] When i_rst_n is asserted in Pause, Trail or the Idle gap, the master shall go to the reset state of REQ-RST-002 to REQ-RST-006, and pending bytes shall be discarded."
+- **SPI-10-13** [MUST] (spi_master_Design_Specification.md 10) The received byte of that transfer shall load into o_rsp_data at that edge, with o_rsp_valid staying 1. Condition: a response handshake occurs at exactly edge A + 16·D of a transfer.
+  - quote: "[REQ-ERR-009] A response handshake at exactly edge A + 16·D of a transfer shall make the received byte of that transfer load into o_rsp_data at that edge, with o_rsp_valid staying 1 (REQ-RSP-003)."
+- **SPI-10-15** [MUST] (spi_master_Design_Specification.md 10) The burst never ends; o_cs_n stays 0 and transfers continue as commands arrive. Condition: i_cmd_last = 0 forever.
+  - quote: "Case: i_cmd_last = 0 forever; Behaviour: The burst never ends. o_cs_n stays 0 and transfers continue as commands arrive."
+- **SPI-10-16** [MUST] (spi_master_Design_Specification.md 10) The half-period count shall reach 255 without overflow, giving 255-cycle half periods and 4080 cycles per byte. Condition: D = 255.
+  - quote: "Case: D = 255; Behaviour: Each half period is 255 cycles and a byte takes 4080 cycles. The half-period count must reach 255 without overflow."
+- **SPI-11-01** [MUST] (spi_master_Design_Specification.md 11) Verification must run every listed configuration, and since SPI mode is a run-time input, each configuration must be exercised in all four SPI modes. Condition: for each configuration CFG-BASE, CFG-MIN, CFG-MAX.
+  - quote: "ID: CFG-BASE; Parameter values: defaults (PARA_SPI_CLK_DIV=4); Purpose: Main configuration, all four SPI modes The verification runs every configuration listed here (run_set.json). The SPI mode is a run-time input, so each configuration runs all four modes."
+- **SPI-11-02** [MUST] (spi_master_Design_Specification.md 11) With PARA_SPI_CLK_DIV=1, the smallest legal divider, SCLK must be f(i_clk)/2 and operate correctly in all four SPI modes. Condition: PARA_SPI_CLK_DIV=1 (CFG-MIN).
+  - quote: "ID: CFG-MIN; Parameter values: PARA_SPI_CLK_DIV=1; Purpose: Smallest legal divider (SCLK = f(i_clk)/2), all four SPI modes"
+- **SPI-11-03** [MUST] (spi_master_Design_Specification.md 11) With PARA_SPI_CLK_DIV=255, the largest legal divider, the half-period counter must work at full width and operate correctly in all four SPI modes with short bursts. Condition: PARA_SPI_CLK_DIV=255 (CFG-MAX).
+  - quote: "ID: CFG-MAX; Parameter values: PARA_SPI_CLK_DIV=255; Purpose: Largest legal divider (half-period count width), all four SPI modes with short bursts"
+- **SPI-12-01** [MUST] (spi_master_Design_Specification.md 12) The environment shall release i_rst_n synchronously to i_clk.
+  - quote: "[ENV-001] The environment shall release i_rst_n synchronously to i_clk."
+- **SPI-12-02** [MAY] (spi_master_Design_Specification.md 12) Assertion of i_rst_n may be asynchronous.
+  - quote: "Assertion may be asynchronous."
+- **SPI-12-03** [MUST] (spi_master_Design_Specification.md 12) The environment shall keep i_cmd_valid = 0 while i_rst_n = 0. Condition: while i_rst_n = 0.
+  - quote: "[ENV-002] The environment shall keep i_cmd_valid = 0 while i_rst_n = 0."
+- **SPI-12-04** [MUST] (spi_master_Design_Specification.md 12) The environment shall change i_cpol and i_cpha only while o_cs_n = 1.
+  - quote: "[ENV-003] The environment shall change i_cpol and i_cpha only while o_cs_n = 1."
+- **SPI-12-05** [MAY] (spi_master_Design_Specification.md 12) Error tests may deliberately violate the rule that i_cpol and i_cpha change only while o_cs_n = 1. Condition: error tests checking REQ-ERR-001.
+  - quote: "Error tests may violate this rule on purpose to check REQ-ERR-001."
+- **SPI-12-06** [MUST] (spi_master_Design_Specification.md 12) The SPI slave testbench model shall drive i_miso as a function of o_sclk and o_cs_n only.
+  - quote: "[ENV-004] The SPI slave (testbench model) shall drive i_miso from o_sclk and o_cs_n only."
+- **SPI-12-07** [MUST] (spi_master_Design_Specification.md 12) The slave shall put bit 7 on i_miso when o_cs_n falls and the next bit after each trailing SCLK edge. Condition: CPHA = 0.
+  - quote: "With CPHA = 0 it puts bit 7 when o_cs_n falls and the next bit after each trailing SCLK edge."
+- **SPI-12-08** [MUST] (spi_master_Design_Specification.md 12) The slave shall put bit 7 − j on i_miso after leading SCLK edge 2·j + 1. Condition: CPHA = 1.
+  - quote: "With CPHA = 1 it puts bit 7 − j after leading SCLK edge 2·j + 1."
+- **SPI-12-09** [MUST] (spi_master_Design_Specification.md 12) The slave model shall change i_miso only after the i_clk edge at which o_sclk or o_cs_n changed, never altering the value seen at a sampling edge.
+  - quote: "[ENV-005] The slave model shall change i_miso only after the i_clk edge at which o_sclk or o_cs_n changed, never in a way that changes the value seen at a sampling edge."
+- **SPI-12-10** [MUST_NOT] (spi_master_Design_Specification.md 12) The environment shall not assert i_rst_n at an i_clk edge; assertion happens between edges.
+  - quote: "[ENV-007] The environment shall not assert i_rst_n at an edge of i_clk: assertion happens between edges (in silicon, outside the recovery/removal window of the reset flops)."
+- **SPI-12-12** [MUST] (spi_master_Design_Specification.md 12) The environment shall drive i_rst_n = 0 from time zero, before the first rising i_clk edge, for at least 2 cycles. Condition: from start of operation.
+  - quote: "[ENV-008] The environment shall drive i_rst_n = 0 from the start of operation (time zero in simulation), before the first rising edge of i_clk, for at least 2 cycles."
+- **SPI-12-13** [MUST] (spi_master_Design_Specification.md 12) i_cpol, i_cpha and every other input shall always be 0 or 1, never X or Z.
+  - quote: "Before the first assertion of i_rst_n the outputs are undefined and no check applies. i_cpol, i_cpha and every other input shall always be 0 or 1, never X or Z (GAP-002)."
+- **SPI-12-15** [MUST] (spi_master_Design_Specification.md 12) i_miso shall meet setup and hold time to i_clk at each sampling edge; with D = 1, slave clock-to-output plus board round trip must fit in one period minus setup. Condition: in silicon, at each sampling edge.
+  - quote: "[ENV-006] In silicon, i_miso shall meet setup and hold time to i_clk at each sampling edge. With D = 1, the slave clock-to-output plus the board round trip must fit in one i_clk period minus setup time."
+- **SPI-12-16** [MAY] (spi_master_Design_Specification.md 12) The command stream may change i_cmd_valid, i_cmd_data and i_cmd_last before acceptance; stability is not required. Condition: before acceptance.
+  - quote: "The command stream is not required to keep i_cmd_valid, i_cmd_data or i_cmd_last stable before acceptance (REQ-CMD-004)."
+- **SPI-12-17** [MAY] (spi_master_Design_Specification.md 12) The response consumer may drive i_rsp_ready with any pattern.
+  - quote: "The response consumer may drive i_rsp_ready with any pattern."
+- **SPI-12-18** [MUST] (spi_master_Design_Specification.md 12) Verification shall run all four modes in every configuration of section 11, with random bytes on i_cmd_data and from the slave model.
+  - quote: "[VER-001] The verification shall run all four modes in every configuration of section 11, with random bytes on i_cmd_data and from the slave model."
+- **SPI-12-19** [MUST] (spi_master_Design_Specification.md 12) Verification shall use burst lengths 1, 2 and at least 16, mixing bursts with and without pauses (i_cmd_valid gaps of 0, 1 and many cycles).
+  - quote: "[VER-002] The verification shall use burst lengths 1, 2 and at least 16, and shall mix bursts with and without pauses (i_cmd_valid gaps of 0, 1 and many cycles)."
+- **SPI-12-20** [MUST] (spi_master_Design_Specification.md 12) A scoreboard shall check each response equals the byte sent by the slave during the matching command, in order, with no loss or duplicate.
+  - quote: "[VER-003] A scoreboard shall check that each response equals the byte sent by the slave during the matching command, in order, with no loss or duplicate (REQ-RSP-001, REQ-RSP-002, REQ-RSP-011)."
+- **SPI-12-21** [MUST] (spi_master_Design_Specification.md 12) A slave-side monitor shall check MOSI data at every sampling edge and the SCLK edge times (A + k·D).
+  - quote: "[VER-004] A slave-side monitor shall check MOSI data at every sampling edge and the SCLK edge times (A + k·D)."
+- **SPI-12-22** [MUST] (spi_master_Design_Specification.md 12) The monitor shall also check lead, trail and gap times, the SCLK idle level and that o_mosi never changes at a sampling edge.
+  - quote: "It shall also check the lead, trail and gap times, the SCLK idle level and that o_mosi never changes at a sampling edge."
+- **SPI-12-23** [MUST] (spi_master_Design_Specification.md 12) Verification shall check o_cmd_ready cycle by cycle against REQ-CMD-006 to REQ-CMD-012, including the blocked first D − 1 Idle cycles.
+  - quote: "[VER-005] The verification shall check o_cmd_ready cycle by cycle against REQ-CMD-006 to REQ-CMD-012, including the blocked first D − 1 Idle cycles."
+- **SPI-12-24** [MUST] (spi_master_Design_Specification.md 12) Back-pressure tests shall hold i_rsp_ready = 0 for long periods so that a held byte is created.
+  - quote: "[VER-006] Back-pressure tests shall hold i_rsp_ready = 0 for long periods so that a held byte is created."
+- **SPI-12-25** [MUST] (spi_master_Design_Specification.md 12) Back-pressure tests shall cover a response handshake exactly at edge A + 16·D (REQ-ERR-009) and random i_rsp_ready patterns.
+  - quote: "They shall cover a response handshake exactly at edge A + 16·D (REQ-ERR-009) and random i_rsp_ready patterns."
+- **SPI-12-26** [MUST] (spi_master_Design_Specification.md 12) Reset tests shall hold i_rsp_ready = 0 before reset where a shown or held byte is wanted, and assert i_rst_n between i_clk edges in each phase (Transfer, Pause, Trail, Idle gap, held byte).
+  - quote: "[VER-007] Reset tests shall hold i_rsp_ready = 0 before the reset where a shown or held byte is wanted, and shall assert i_rst_n between i_clk edges in each phase (Transfer, Pause, Trail, Idle gap, with a held byte)."
+- **SPI-12-27** [MUST] (spi_master_Design_Specification.md 12) Reset tests shall check that outputs take reset values at once and no response of the aborted transfer appears. Condition: reset tests.
+  - quote: "They shall check that outputs take reset values at once and that no response of the aborted transfer appears."
+- **SPI-12-28** [MUST] (spi_master_Design_Specification.md 12) A test shall toggle i_cpol while i_rst_n = 0 and in Idle, and check o_sclk follows it in the same cycle.
+  - quote: "[VER-008] A test shall toggle i_cpol while i_rst_n = 0 and in Idle, and check that o_sclk follows it in the same cycle (REQ-SCLK-005, REQ-RST-003)."
+- **SPI-12-29** [MUST] (spi_master_Design_Specification.md 12) A test shall change i_cpol and i_cpha in the cycle just before a burst-start acceptance edge and check the new values are used.
+  - quote: "[VER-009] A test shall change i_cpol and i_cpha in the cycle just before a burst-start acceptance edge and check that the new values are used."
+- **SPI-12-30** [MUST] (spi_master_Design_Specification.md 12) An error test shall change i_cpol and i_cpha during a burst and check the burst finishes in the captured mode.
+  - quote: "[VER-010] An error test shall change i_cpol and i_cpha during a burst and check that the burst finishes in the captured mode (REQ-ERR-001, REQ-ERR-002)."
+- **SPI-12-31** [MUST] (spi_master_Design_Specification.md 12) Coverage shall include mode × configuration, continuous join, pause entry and exit, held byte created and released, reset in each phase, and i_cmd_last = 1 on the first byte.
+  - quote: "[VER-011] Coverage shall include: Mode × configuration. Continuous join (Example 2). Pause entry and exit. Held byte created and released. Reset in each phase. i_cmd_last = 1 on the first byte."
+- **SPI-12-32** [MUST] (spi_master_Design_Specification.md 12) REQ-PAR-001 shall be checked by elaborating once with an illegal value, not by simulation.
+  - quote: "REQ-PAR-001 is checked by elaborating once with an illegal value, not by simulation."
+- **SPI-13-01** [MUST] (spi_master_Design_Specification.md 13) The block shall meet timing at 50 MHz i_clk (20 ns period) in GF180MCU technology at worst-case corner.
+  - quote: "[REQ-IMP-001] The block shall meet timing at 50 MHz i_clk (20 ns period) in the GF180MCU technology, at worst-case corner."
+- **SPI-13-02** [MUST] (spi_master_Design_Specification.md 13) The RTL shall follow docs/RTL_RULES.md (REF-003).
+  - quote: "[REQ-IMP-002] The RTL shall follow docs/RTL_RULES.md (REF-003)."
+- **SPI-13-03** [MUST] (spi_master_Design_Specification.md 13) All flip-flops shall be clocked on the rising edge of i_clk and reset asynchronously by i_rst_n.
+  - quote: "[REQ-IMP-003] All flip-flops shall be clocked on the rising edge of i_clk and reset asynchronously by i_rst_n."
+- **SPI-13-04** [MUST_NOT] (spi_master_Design_Specification.md 13) The RTL shall contain no latches, no clock gating and no derived clocks.
+  - quote: "The RTL shall contain no latches, no clock gating and no derived clocks."
+- **SPI-13-05** [MUST] (spi_master_Design_Specification.md 13) o_cs_n and o_mosi shall be driven directly by flip-flops.
+  - quote: "[REQ-IMP-004] o_cs_n and o_mosi shall be driven directly by flip-flops."
+- **SPI-13-06** [MUST] (spi_master_Design_Specification.md 13) o_sclk shall come from a flip-flop value while o_cs_n = 0. Condition: While o_cs_n = 0.
+  - quote: "[REQ-IMP-005] While o_cs_n = 0, o_sclk shall come from a flip-flop value."
+- **SPI-13-07** [MUST] (spi_master_Design_Specification.md 13) The only combinational path from an input to o_sclk shall be the i_cpol path, used while o_cs_n = 1 or during reset.
+  - quote: "The only combinational path from an input to o_sclk shall be the i_cpol path used while o_cs_n = 1 or during reset."
+- **SPI-13-08** [SHOULD] (spi_master_Design_Specification.md 13) o_sclk should be free of glitches when o_cs_n changes. Condition: When o_cs_n changes.
+  - quote: "[REQ-IMP-006] o_sclk should be free of glitches when o_cs_n changes."
+- **SPI-13-09** [SHOULD] (spi_master_Design_Specification.md 13) The selection between i_cpol and the internal SCLK value should be built so equal inputs give no static hazard.
+  - quote: "The selection between i_cpol and the internal SCLK value should be built so that equal inputs give no static hazard."
+- **SPI-13-10** [MUST] (spi_master_Design_Specification.md 13) o_cmd_ready, o_rsp_valid and o_rsp_data shall be driven by flip-flops or logic of flip-flops only, with no combinational path from any input.
+  - quote: "[REQ-IMP-007] o_cmd_ready, o_rsp_valid and o_rsp_data shall be driven by flip-flops or by logic of flip-flops only. They shall have no combinational path from any input."
+- **SPI-13-11** [MUST] (spi_master_Design_Specification.md 13) i_miso shall be captured directly into a data flip-flop with no synchroniser.
+  - quote: "[REQ-IMP-008] i_miso shall be captured directly into a data flip-flop with no synchroniser."
+- **SPI-13-12** [MUST] (spi_master_Design_Specification.md 13) The integrator shall constrain the input delay of i_miso.
+  - quote: "The integrator shall constrain the input delay of i_miso."
+- **SPI-13-13** [MUST] (spi_master_Design_Specification.md 13) The half-period counter shall be wide enough for D = 255, at least 8 bits.
+  - quote: "[REQ-IMP-009] The half-period counter shall be wide enough for D = 255 (at least 8 bits)."
+- **SPI-14-01** [MUST] (spi_master_Design_Specification.md 14) The master shall use exactly D cycles for lead and exactly D cycles for trail.
+  - quote: "ID: DEC-001; Question: Exact lead, trail and minimum gap ("at least one half period"); Decision: Exactly D cycles for lead and trail. Gap at least D cycles, exactly D when the next command is waiting; By: spec-draft (assumption); Date: 2026-11-19"
+- **SPI-14-02** [MUST] (spi_master_Design_Specification.md 14) The gap between transfers shall be at least D cycles, and exactly D cycles when the next command is already waiting. Condition: between bursts, o_cs_n high gap.
+  - quote: "ID: DEC-001; Question: Exact lead, trail and minimum gap ("at least one half period"); Decision: Exactly D cycles for lead and trail. Gap at least D cycles, exactly D when the next command is waiting; By: spec-draft (assumption); Date: 2026-11-19"
+- **SPI-14-03** [MUST_NOT] (spi_master_Design_Specification.md 14) A command shall be accepted only in Idle (after D − 1 blocked cycles), in Pause, or in the last cycle of a non-last transfer, and only if o_rsp_valid = 0.
+  - quote: "ID: DEC-002; Question: When can a command be accepted; Decision: Idle (after D − 1 blocked cycles), Pause, or the last cycle of a non-last transfer, and only if o_rsp_valid = 0. o_cmd_ready has no combinational input path; By: spec-draft (assumption); Date: 2026-11-19"
+- **SPI-14-04** [MUST_NOT] (spi_master_Design_Specification.md 14) o_cmd_ready shall have no combinational input path.
+  - quote: "ID: DEC-002; Question: When can a command be accepted; Decision: Idle (after D − 1 blocked cycles), Pause, or the last cycle of a non-last transfer, and only if o_rsp_valid = 0. o_cmd_ready has no combinational input path; By: spec-draft (assumption); Date: 2026-11-19"
+- **SPI-14-05** [MUST_NOT] (spi_master_Design_Specification.md 14) A transfer shall start only when o_rsp_valid = 0; no byte is lost, as one more byte can be held inside the master.
+  - quote: "ID: DEC-003; Question: Meaning of "does not start the next transfer if the response is not taken" with no-gap bursts; Decision: A transfer starts only when o_rsp_valid = 0. The byte ending at the same edge is shown, and one more byte can be held inside the master, so nothing is lost; By: spec-draft (assumption); Date: 2026-11-19"
+- **SPI-14-06** [MUST] (spi_master_Design_Specification.md 14) The response shall appear at SCLK edge 16 (A + 16·D) in all modes, also for CPHA = 0 where the last bit is sampled at edge 15. Condition: all modes, including CPHA = 0.
+  - quote: "ID: DEC-004; Question: When the response appears; Decision: At SCLK edge 16 (A + 16·D) in all modes, also for CPHA = 0 where the last bit is sampled at edge 15; By: spec-draft (assumption); Date: 2026-11-19"
+- **SPI-14-07** [MUST] (spi_master_Design_Specification.md 14) o_mosi shall hold its last value, and be 0 after reset. Condition: outside transfers, and with CPHA = 1 before edge 1.
+  - quote: "ID: DEC-005; Question: o_mosi outside transfers, and with CPHA = 1 before edge 1; Decision: Holds its last value. 0 after reset; By: spec-draft (assumption); Date: 2026-11-19"
+- **SPI-14-08** [MUST] (spi_master_Design_Specification.md 14) While o_cs_n = 1, o_sclk shall be combinational from i_cpol; while o_cs_n = 0 it shall be registered from the captured CPOL_b. Condition: during reset and Idle.
+  - quote: "ID: DEC-006; Question: o_sclk idle level "of the current i_cpol" during reset and Idle; Decision: Combinational from i_cpol while o_cs_n = 1. Registered from CPOL_b while o_cs_n = 0; By: spec-draft (assumption); Date: 2026-11-19"
+- **SPI-14-09** [MUST] (spi_master_Design_Specification.md 14) Mode input changes during a burst shall be ignored; captured values shall be used until o_cs_n rises. Condition: mode inputs change during a burst.
+  - quote: "ID: DEC-007; Question: Mode inputs changed during a burst; Decision: Ignored. Captured values are used until o_cs_n rises; By: spec-draft (assumption); Date: 2026-11-19"
+- **SPI-14-10** [MUST] (spi_master_Design_Specification.md 14) Reset in the middle of a burst shall abort immediately and discard pending bytes; the gap guarantee does not apply across reset. Condition: reset asserted mid-burst.
+  - quote: "ID: DEC-008; Question: Reset in the middle of a burst; Decision: Immediate abort. Pending bytes discarded. Gap guarantee does not apply across reset; By: spec-draft (assumption); Date: 2026-11-19"
+- **SPI-14-11** [MUST] (spi_master_Design_Specification.md 14) An illegal PARA_SPI_CLK_DIV shall cause an elaboration error. Condition: illegal PARA_SPI_CLK_DIV.
+  - quote: "ID: DEC-009; Question: Illegal PARA_SPI_CLK_DIV; Decision: Elaboration error; By: spec-draft (assumption); Date: 2026-11-19"
+- **SPI-14-12** [MUST] (spi_master_Design_Specification.md 14) o_rsp_data shall be 8'h00 after reset and otherwise keep the last loaded byte while not valid.
+  - quote: "ID: DEC-011; Question: o_rsp_data reset value and value while not valid; Decision: 8'h00 after reset. Otherwise keeps the last loaded byte; By: spec-draft (assumption); Date: 2026-11-19"
+- **SPI-14-16** [MUST] (spi_master_Design_Specification.md 14) For D = 1 in Idle, o_cmd_ready shall equal NOT o_rsp_valid from the cycle o_cs_n rises. Condition: D = 1 in Idle.
+  - quote: "ID: DEC-016; Question: o_cmd_ready for D = 1 in Idle (spec-lint GAP-005); Decision: NOT o_rsp_valid from the cycle o_cs_n rises (REQ-CMD-006/008); By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19"
+- **SPI-14-20** [MUST] (spi_master_Design_Specification.md 14) There is no Pause timeout; o_cs_n shall stay low in Pause until the next command. Condition: in Pause.
+  - quote: "ID: OQ-005; Question: Should Pause have a timeout that releases o_cs_n?; Decision: Decided: no timeout; o_cs_n stays low in Pause until the next command; By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19"
+- **SPI-14-21** [MAY] (spi_master_Design_Specification.md 14) The master shall not enforce o_cs_n high for at least D cycles after reset release; the minimum gap is not guaranteed across reset. Condition: after reset release.
+  - quote: "ID: OQ-006; Question: Should the master enforce o_cs_n high for at least D cycles after reset release?; Decision: Decided: no. The minimum gap is not guaranteed across a reset (REQ-RST-011); By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19"
+
+## Decisions on questions the specification left open
+
+- Rules SPI-11-02, SPI-11-03: Do CFG-MIN and CFG-MAX also require full-length bursts, or only the short bursts stated for CFG-MAX?
+  - **Decision:** CFG-BASE and CFG-MIN run every burst length of VER-002 (1, 2 and at least 16). CFG-MAX runs bursts of 1 and 2 bytes only ('short' = at most 2 bytes) to bound simulation time; 16-byte bursts are covered in CFG-BASE and CFG-MIN. Tests read the parameter to choose.
+- Rules SPI-12-02, SPI-12-10, SPI-12-26: ENV-007 says reset assertion happens between i_clk edges, but SPI-12-02 allows asynchronous assertion and VER-007 requires asserting between edges; how should simulation drive assertion between edges?
+  - **Decision:** Simulation asserts and releases i_rst_n at a falling edge of i_clk: half a period from every rising edge, so assertion is between edges (ENV-007, VER-007) and release is synchronous and stable before the next rising edge (ENV-001).
+- Rules SPI-13-01: Which worst-case corner (PVT) is meant for timing closure?
+  - **Decision:** The slow corner used by the flow: GF180MCU 7-track ss, 125 C, 4.50 V (gf180mcu_fd_sc_mcu7t5v0__ss_125C_4v50). The flow reports an ABC delay estimate at that corner; signoff STA is out of scope.
+- Rules SPI-1.2-06: Exact lead time, trail time and minimum CS high time in half periods are not given; what values are required?
+  - **Answer from the text:** Lead = exactly D cycles (one half period) from o_cs_n fall to SCLK edge 1. Trail = exactly D cycles from SCLK edge 16 to o_cs_n rise. Minimum o_cs_n high time between bursts = at least D cycles (exactly D when the next command is waiting).
+- Rules SPI-1.2-04, SPI-1.2-03: Does i_cpol/i_cpha capture at burst start mean changes mid-burst are ignored, and what is the exact capture cycle relative to CS assertion?
+  - **Answer from the text:** Yes. CPOL_b/CPHA_b are captured at the acceptance edge of the first command of a burst, which is the same edge A at which o_cs_n falls. Later changes of i_cpol/i_cpha while o_cs_n = 0 have no effect until o_cs_n rises.
+- Rules SPI-1.2-07, SPI-1.2-08: What does 'next command ready in time' mean in cycles for gapless operation?
+  - **Answer from the text:** Gapless means a command handshake occurs at edge A+16·D: i_cmd_valid = 1 and o_cmd_ready = 1 in the last cycle of the current transfer. That needs o_rsp_valid = 0 in that cycle and the current transfer's i_cmd_last = 0. Otherwise the burst enters Pause with SCLK idle and o_cs_n low.
+- Rules SPI-3-01, SPI-3-02, SPI-3-06: Is SCLK edge 16 at A + 16·D, which is the first cycle after the 16·D-cycle transfer window that ends at A + 16·D − 1? The window, the edge position and the trail D cycles must agree, so the exact boundary needs settling.
+  - **Answer from the text:** Yes. The transfer covers cycles A to A+16·D−1. The last cycle starts at A+16·D−1 and ends at SCLK edge 16, which is edge A+16·D. Trail then lasts D cycles until o_cs_n rises at A+17·D. These are consistent.
+- Rules SPI-4-02, SPI-4-04: SPI-4-02 and SPI-4-04: At D=1, is SCLK = f(i_clk)/2 achievable with every timing relation (setup/sample edges) in the spec? Is any minimum D implied by the data-path timing?
+  - **Answer from the text:** D = 1 is legal, giving SCLK = f(i_clk)/2, with lead, trail and gap of 1 cycle. A shift edge and the next sampling edge are 1 cycle apart. No minimum D above 1 is imposed. Silicon timing of i_miso at D = 1 is an integrator duty (ENV-006), and D = 1 stays legal and is verified in simulation.
+- Rules SPI-5-02, SPI-5-03, SPI-5-14, SPI-5-16: Is the reset value of an input (i_cmd_valid) a DUT property or an environment obligation? Also, is the i_cpol/i_cpha 'may change only while o_cs_n = 1' restriction an environment constraint, and what is the behavior if violated?
+  - **Answer from the text:** The input reset value 0 of i_cmd_valid is an environment obligation (ENV-002), not a DUT property. The restriction that i_cpol/i_cpha change only while o_cs_n = 1 is an environment constraint (ENV-003). If it is violated, the master neither detects nor reports it and keeps using CPOL_b/CPHA_b until the end of the burst.
+- Rules SPI-5-11, SPI-5-14: During reset, o_sclk follows i_cpol combinationally, but i_cpol may change only while o_cs_n=1; is i_cpol allowed to change during reset?
+  - **Answer from the text:** Yes. During reset o_cs_n = 1, so the 'only while o_cs_n = 1' rule allows i_cpol to change. o_sclk must follow it combinationally, and VER-008 toggles i_cpol during reset.
+- Rules SPI-6.2-06, SPI-6.2-07: REQ-RST-001 says outputs take their reset values at once, but REQ-RST-006 and REQ-RST-007 give o_cmd_ready = 1 during reset while no command is accepted. Is o_cmd_ready = 1 during reset a handshake-ready signal that must be ignored by the source? Should a checker treat i_cmd_valid && o_cmd_ready during reset as a non-transfer?
+  - **Answer from the text:** o_cmd_ready = 1 during reset is a reset value only. A command handshake requires i_rst_n = 1, so i_cmd_valid && o_cmd_ready while i_rst_n = 0 is not a handshake and must not be accepted. The checker should treat it as a non-transfer.
+- Rules SPI-6.2-11, SPI-6.2-12: What does 'the gap requirement met' mean concretely after reset, and which signal exposes it? Does o_cmd_ready = 1 at the first edge with i_rst_n = 1 fully capture it?
+  - **Answer from the text:** After reset release the master is in Idle and can accept a command at the first edge with i_rst_n = 1. This is visible as o_cmd_ready = 1, because o_rsp_valid is 0 after reset. The minimum high time is not enforced across reset.
+- Rules SPI-7.1-07, SPI-7.2-04, SPI-7.4-07: D is not defined in these quotes (value, range, D=1 handling). Is it a fixed parameter, and can an input pin change it? Confirm before building checks that depend on it.
+  - **Answer from the text:** D is PARA_SPI_CLK_DIV, the number of i_clk cycles in one SCLK half period. It is a fixed elaboration-time parameter in the range 1 to 255, not an input pin, and cannot change at run time. D = 1 is legal and is handled by the same rules.
+- Rules SPI-7.2-03, SPI-7.1-05, SPI-7.7-09, SPI-7.5-05: What are the reset values of o_cs_n, o_sclk and o_cmd_ready on i_rst_n assertion? Is reset asynchronous? Only o_mosi (0) and o_rsp_data (8'h00) are given.
+  - **Answer from the text:** On i_rst_n assertion, o_cs_n = 1, o_sclk = current i_cpol (combinational), o_cmd_ready = 1, o_mosi = 0, o_rsp_valid = 0 and o_rsp_data = 8'h00. Reset assertion is asynchronous and release is synchronous. Outputs take reset values at once.
+- Rules SPI-7.1-10, SPI-7.1-12, SPI-7.2-01: If i_cmd_last=1 is captured for a transfer, can a second command be accepted before cs_n rises? REQ-CMD-010 says ready is 0 then, but a command is accepted in Idle only. Confirm that ready = 0 in Trail fully covers this.
+  - **Answer from the text:** No second command can be accepted before o_cs_n rises. In the last cycle of a transfer with captured i_cmd_last = 1, o_cmd_ready = 0. Trail has o_cmd_ready = 0. After o_cs_n rises at R, o_cmd_ready is 0 for cycles R to R+D−2, so the earliest acceptance is R+D.
+- Rules SPI-8-03, SPI-8-11: SPI-8-03 says o_rsp_valid becomes 1 at 16·D after acceptance, while SPI-8-11 says the response must be taken within 16·D−1 cycles of becoming valid. Is the 16·D count measured to the edge where o_rsp_valid is first visible or to the cycle before it?
+  - **Answer from the text:** o_rsp_valid = 1 is first visible in the cycle starting at edge A+16·D, where the byte is loaded (Example 1 shows it in cycle 16). The next transfer, accepted at A+16·D, has its last cycle starting at A+32·D−1. o_rsp_valid must be 0 in that cycle, so the handshake must occur at an edge no later than A+32·D−1. That is 16·D−1 edges after the valid cycle begins.
+- Rules SPI-8-02, SPI-8-01, SPI-8-04, SPI-8-07: SPI-8-07 gives o_cs_n low time 16·n·D + D, but SPI-8-04 puts the trail at D after edge 16 and SPI-8-01 puts the lead at D. Does the low time include the lead, given 0 latency from acceptance to o_cs_n low?
+  - **Answer from the text:** Yes, the low time includes the lead. o_cs_n falls at the acceptance edge A (0 latency) and rises at A_last+17·D. For n continuous bytes that is 16·n·D + D after A. Of this, the lead D is part of the first 16·D span and the trail D is the extra D.
+- Rules SPI-8-05, SPI-8-08, SPI-8-09: SPI-8-08 gives 16·n·D + 2·D for the spacing between acceptances, but SPI-8-09 gives 18·D for n=1. Do these agree with a gap of D and a lead of D?
+  - **Answer from the text:** They agree. For n = 1, 16·D + 2·D = 18·D. o_cs_n rises at A+17·D, the minimum gap is D, so the next acceptance is at A+18·D. The lead D is already counted inside the 16·D span.
+- Rules SPI-10-09, SPI-10-03: On reset during a transfer, o_sclk goes to i_cpol 'at once'. Does the master use the current i_cpol, or the latched CPOL_b, when i_cpol changed during the burst?
+  - **Answer from the text:** The current i_cpol is used. While i_rst_n = 0, o_sclk equals the current i_cpol and follows it combinationally. On reset during a transfer, o_sclk goes to i_cpol at once, not to the latched CPOL_b.
+- Rules SPI-10-13: Is 'edge A' defined unambiguously, so that the cycle of a response handshake at A + 16·D can be identified?
+  - **Answer from the text:** Yes. A is the acceptance edge, an edge with i_rst_n = 1, i_cmd_valid = 1 and o_cmd_ready = 1. A response handshake at A+16·D is an edge where o_rsp_valid and i_rsp_ready are both 1, in the cycle ending at that edge.
+- Rules SPI-10-09, SPI-10-11: Is the reset asynchronous or synchronous? 'At once, even mid half period' needs a defined timing relative to i_rst_n.
+  - **Answer from the text:** Reset assertion is asynchronous: outputs take reset values at once on i_rst_n falling, without waiting for an i_clk edge, even mid half period. Release is synchronous to i_clk.
+- Rules SPI-11-02, SPI-11-01: Does the general SCLK formula f(i_clk)/(2*PARA_SPI_CLK_DIV) apply to the other dividers (4 and 255)? The quote gives it only for divider 1.
+  - **Answer from the text:** Yes. The formula f(i_clk)/(2·D) is general for D = 1 to 255. The table gives 6.25 MHz for D = 4 and about 98.04 kHz for D = 255 at 50 MHz.
+- Rules SPI-12-12, SPI-12-13, SPI-12-14: ENV-008 requires reset from time zero, yet GAP-002 says outputs are undefined before the first assertion and inputs must never be X/Z; is i_rst_n itself defined at time zero?
+  - **Answer from the text:** Yes. i_rst_n is driven to 0 from time zero, before the first rising edge, for at least 2 cycles, so it is defined. Outputs before the first assertion are undefined and unchecked. All inputs must always be 0 or 1, never X or Z.
+- Rules SPI-13-06, SPI-13-07: Does 'during reset' in the i_cpol combinational path allow o_sclk to follow i_cpol asynchronously while i_rst_n is asserted, and does this conflict with 'o_sclk from a flip-flop while o_cs_n = 0' if o_cs_n resets to 1?
+  - **Answer from the text:** No conflict. During reset o_cs_n = 1, so o_sclk follows i_cpol through the one permitted combinational path used while o_cs_n = 1 or in reset. The 'from a flip-flop' rule applies only while o_cs_n = 0, where o_sclk is registered from CPOL_b.
+- Rules SPI-14-03, SPI-14-05, SPI-14-17: DEC-002 allows acceptance in the last cycle of a non-last transfer only if o_rsp_valid=0, while DEC-003 says the byte ending at the same edge is shown and one more byte can be held. Is o_rsp_valid sampled before or after that edge's update, and how is the held byte kept when i_rsp_ready stays 0?
+  - **Answer from the text:** o_rsp_valid is the registered value in the cycle ending at the edge, i.e. before that edge's update. If it was 0, or a response handshake occurs at that edge, the byte is loaded into o_rsp_data. Otherwise the byte becomes the held byte. The held byte is kept internally while i_rsp_ready = 0. Neither the shown nor the held byte is overwritten, and o_rsp_valid stays 1. At the handshake the held byte loads into o_rsp_data and o_rsp_valid stays 1.
+- Rules SPI-14-03, SPI-14-16: For D=1 in Idle, DEC-002 blocks acceptance for D-1 cycles (zero) while DEC-016 says o_cmd_ready equals NOT o_rsp_valid from the cycle o_cs_n rises. Does this hold for D>1 as well, and what is o_cmd_ready during the D-1 blocked cycles?
+  - **Answer from the text:** This holds for all D. In Idle, o_cmd_ready = 0 in the first D−1 cycles after o_cs_n rose (cycles R to R+D−2), and NOT o_rsp_valid from cycle R+D−1 on. For D = 1 there are no blocked cycles, so it equals NOT o_rsp_valid from the cycle o_cs_n rises.
+- Rules SPI-14-10, SPI-14-21, SPI-14-03: After reset, o_cs_n is high but the gap is not guaranteed. Is the first command still accepted after D-1 blocked cycles in Idle, counted from reset release?
+  - **Answer from the text:** No. After reset release there are no blocked cycles. The master is in Idle with the gap requirement deemed met, and accepts a command at the first edge with i_rst_n = 1 (o_cmd_ready = 1 since o_rsp_valid = 0). The D−1 blocked cycles apply only after o_cs_n rises at the end of a burst. The gap is not guaranteed across reset.

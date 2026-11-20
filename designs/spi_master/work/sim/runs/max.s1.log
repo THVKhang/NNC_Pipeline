@@ -1,0 +1,183 @@
+rm -f results.xml
+"make" -f Makefile results.xml
+make[1]: Entering directory '/root/nnc_runs/runset_a315c28d/C03'
+make[1]: warning: -j3 forced in makefile: resetting jobserver mode.
+mkdir -p sim_build
+/opt/oss-cad-suite/bin/verilator -cc --exe -Mdir sim_build --top-module nnc_tb_top --timescale 1ns/1ps --vpi --public-flat-rw --prefix Vtop -o Vtop -LDFLAGS "-Wl,-rpath,/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/libs -L/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/libs -lcocotbvpi_verilator" --assert --timing -Wno-fatal -Wno-WIDTH -Wno-UNOPTFLAT -GPARA_SPI_CLK_DIV=255 --coverage-line --coverage-toggle --coverage-expr /root/nnc_runs/runset_a315c28d/C03/rtl/m_spi_master.sv /root/nnc_runs/runset_a315c28d/C03/sva/nnc_chk_cmd.sv /root/nnc_runs/runset_a315c28d/C03/sva/nnc_chk_cs.sv /root/nnc_runs/runset_a315c28d/C03/sva/nnc_chk_flow.sv /root/nnc_runs/runset_a315c28d/C03/sva/nnc_chk_mosi.sv /root/nnc_runs/runset_a315c28d/C03/sva/nnc_chk_reset.sv /root/nnc_runs/runset_a315c28d/C03/sva/nnc_chk_rsp.sv /root/nnc_runs/runset_a315c28d/C03/sva/nnc_chk_sclk.sv /root/nnc_runs/runset_a315c28d/C03/sva/nnc_cov.sv /root/nnc_runs/runset_a315c28d/C03/nnc_tb_top.sv /opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/share/lib/verilator/verilator.cpp
+- V e r i l a t i o n   R e p o r t: Verilator 5.055 devel rev v5.054-94-g4d23f6ea0 (mod)
+- Verilator: Built from 0.476 MB sources in 12 modules, into 1.524 MB in 6 C++ files needing 0.000 MB
+- Verilator: Walltime 0.591 s (elab=0.173, cvt=0.238, bld=0.000); cpu 0.092 s on 1 threads; allocated 28.500 MB
+make -C sim_build  -f Vtop.mk
+make[2]: Entering directory '/root/nnc_runs/runset_a315c28d/C03/sim_build'
+g++  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"     -Os  -c -o verilator.o /opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/share/lib/verilator/verilator.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o verilated.o /opt/oss-cad-suite/share/verilator/include/verilated.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o verilated_dpi.o /opt/oss-cad-suite/share/verilator/include/verilated_dpi.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o verilated_vpi.o /opt/oss-cad-suite/share/verilator/include/verilated_vpi.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o verilated_cov.o /opt/oss-cad-suite/share/verilator/include/verilated_cov.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o verilated_covergroup.o /opt/oss-cad-suite/share/verilator/include/verilated_covergroup.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o verilated_threads.o /opt/oss-cad-suite/share/verilator/include/verilated_threads.cpp
+python3 /opt/oss-cad-suite/share/verilator/bin/verilator_includer -DVL_INCLUDE_OPT=include Vtop.cpp Vtop___024root__0.cpp Vtop__Dpi.cpp Vtop___024root__Slow.cpp Vtop___024root__0__Slow.cpp Vtop__Syms__Slow.cpp > Vtop__ALL.cpp
+g++ -Os  -I.  -MMD -I/opt/oss-cad-suite/share/verilator/include -I/opt/oss-cad-suite/share/verilator/include/vltstd -DVERILATOR=1 -DVM_COVERAGE=1 -DVM_SC=0 -DVM_TIMING=0 -DVM_TRACE=0 -DVM_TRACE_FST=0 -DVM_TRACE_VCD=0 -DVM_TRACE_SAIF=0 -DVM_VPI=1 -faligned-new -fcf-protection=none -Wno-bool-operation -Wno-int-in-bool-context -Wno-shadow -Wno-sign-compare -Wno-subobject-linkage -Wno-tautological-compare -Wno-uninitialized -Wno-unused-but-set-parameter -Wno-unused-but-set-variable -Wno-unused-parameter -Wno-unused-variable  -DVM_PREFIX_INCLUDE="<Vtop.h>" -DVM_PREFIX_INCLUDE_DPI="<Vtop__Dpi.h>"      -c -o Vtop__ALL.o Vtop__ALL.cpp
+g++    -rdynamic verilator.o verilated.o verilated_dpi.o verilated_vpi.o verilated_cov.o verilated_covergroup.o verilated_threads.o Vtop__ALL.a   -Wl,-rpath,/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/libs -L/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/libs -lcocotbvpi_verilator  -pthread -lpthread -latomic -ldl   -o Vtop
+rm Vtop__ALL.verilator_deplist.tmp
+make[2]: Leaving directory '/root/nnc_runs/runset_a315c28d/C03/sim_build'
+rm -f results.xml
+COCOTB_TEST_MODULES=test_spi_master COCOTB_TESTCASE= COCOTB_TEST_FILTER= COCOTB_TOPLEVEL=nnc_tb_top TOPLEVEL_LANG=verilog \
+         sim_build/Vtop  --assert --timing -Wno-fatal -Wno-WIDTH -Wno-UNOPTFLAT -GPARA_SPI_CLK_DIV=255 --coverage-line --coverage-toggle --coverage-expr   
+     -.--ns INFO     gpi                                ../gpi/GpiCommon.cpp:216  in gpi_load_users                  Running entry func 'initialize' from loaded library '/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb/libs/libcocotb.so'
+     -.--ns INFO     gpi                                ..mbed/gpi_embed.cpp:96   in initialize                      Using Python 3.11.6 interpreter at /opt/oss-cad-suite/bin/tabbypy3
+     0.00ns INFO     cocotb                             Running on Verilator version 5.055 devel
+     0.00ns INFO     cocotb                             Seeding Python random module with supplied seed 1
+     0.00ns INFO     cocotb                             Initialized cocotb v2.1.0.dev0+41564633 from /opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb
+     0.00ns INFO     cocotb                             Running tests
+     0.00ns INFO     cocotb.regression                  running test_spi_master.test_chk_028_no_handshake_no_effect (1/15)
+                                                            CHK-028: commands without handshake (reset, o_cmd_ready=0, withdrawn, valid=0) have no effect.
+796010.00ns INFO     cocotb.nnc_tb_top                  coverage: ('joint',), ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1))
+796010.00ns INFO     cocotb.regression                  test_spi_master.test_chk_028_no_handshake_no_effect passed
+796010.00ns INFO     cocotb.regression                  running test_spi_master.test_chk_029_no_combinational_input_paths (2/15)
+                                                            CHK-029: inputs toggled between edges never change registered outputs; o_sclk follows i_cpol only with o_cs_n=1.
+1229750.00ns INFO     cocotb.nnc_tb_top                  CHK-029 phases with o_rsp_valid=1: ['pause', 'trail', 'transfer']
+1229750.00ns INFO     cocotb.nnc_tb_top                  coverage: ('joint',), ('mode', (0, 0)), ('mode', (1, 1)), ('pause_entry',), ('pause_exit',)
+1229750.00ns INFO     cocotb.regression                  test_spi_master.test_chk_029_no_combinational_input_paths passed
+1229750.00ns INFO     cocotb.regression                  running test_spi_master.test_chk_030_single_byte_bursts (3/15)
+                                                            CHK-030: i_cmd_last=1 on the first byte; o_cs_n rise independent of the response stream.
+2270540.00ns INFO     cocotb.nnc_tb_top                  coverage: ('last_on_first_byte',), ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1))
+2270540.00ns INFO     cocotb.regression                  test_spi_master.test_chk_030_single_byte_bursts passed
+2270540.00ns INFO     cocotb.regression                  running test_spi_master.test_chk_031_pause_and_endless_burst (4/15)
+                                                            CHK-031: Pause entry/exit, long pause without timeout, endless burst (i_cmd_last=0 forever).
+4229330.00ns INFO     cocotb.nnc_tb_top                  coverage: ('joint',), ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1)), ('pause',), ('pause_entry',), ('pause_exit',)
+4229330.00ns INFO     cocotb.regression                  test_spi_master.test_chk_031_pause_and_endless_burst passed
+4229330.00ns INFO     cocotb.regression                  running test_spi_master.test_chk_032_mode_change_before_burst_start (5/15)
+                                                            CHK-032: new i_cpol/i_cpha presented in the cycle before the burst-start acceptance edge are used.
+5301240.00ns INFO     cocotb.nnc_tb_top                  coverage: ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1)), ('mode_change', (0, 0), (0, 1)), ('mode_change', (0, 0), (1, 0)), ('mode_change', (0, 0), (1, 1)), ('mode_change', (0, 1), (0, 0)), ('mode_change', (0, 1), (1, 0)), ('mode_change', (0, 1), (1, 1)), ('mode_change', (1, 0), (0, 0)), ('mode_change', (1, 0), (0, 1)), ('mode_change', (1, 0), (1, 1)), ('mode_change', (1, 1), (0, 0)), ('mode_change', (1, 1), (0, 1)), ('mode_change', (1, 1), (1, 0)), ('pause_entry',), ('pause_exit',)
+5301240.00ns INFO     cocotb.regression                  test_spi_master.test_chk_032_mode_change_before_burst_start passed
+5301240.00ns INFO     cocotb.regression                  running test_spi_master.test_chk_033_mode_change_during_burst_ignored (6/15)
+                                                            CHK-033: error test; i_cpol/i_cpha complemented during a burst are ignored until o_cs_n rises.
+6383230.00ns INFO     cocotb.nnc_tb_top                  coverage: ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1)), ('pause_entry',), ('pause_exit',)
+6383230.00ns INFO     cocotb.regression                  test_spi_master.test_chk_033_mode_change_during_burst_ignored passed
+6383230.00ns INFO     cocotb.regression                  running test_spi_master.test_chk_034_cpol_follow_in_reset_and_idle (7/15)
+                                                            CHK-034: o_sclk follows i_cpol combinationally in reset, Idle and the Idle gap.
+6429380.01ns INFO     cocotb.nnc_tb_top                  coverage: ('mode', (0, 0))
+6429380.01ns INFO     cocotb.regression                  test_spi_master.test_chk_034_cpol_follow_in_reset_and_idle passed
+6429380.01ns INFO     cocotb.regression                  running test_spi_master.test_chk_035_reset_in_each_phase (8/15)
+                                                            CHK-035: asynchronous reset in each phase aborts/discards; restart at first edge after release.
+7027980.01ns INFO     cocotb.nnc_tb_top                  coverage: ('held_byte',), ('joint',), ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1)), ('pause_entry',), ('reset', 'idle_gap'), ('reset', 'pause'), ('reset', 'shown_and_held_byte'), ('reset', 'shown_byte'), ('reset', 'trail'), ('reset', 'xfer_after_sclk_edge'), ('reset', 'xfer_mid_half_period')
+7027980.01ns INFO     cocotb.regression                  test_spi_master.test_chk_035_reset_in_each_phase passed
+7027980.01ns INFO     cocotb.regression                  running test_spi_master.test_chk_036_held_byte_backpressure (9/15)
+                                                            CHK-036: held byte created and released; no transfer while held; consumer never takes.
+8864970.01ns INFO     cocotb.nnc_tb_top                  coverage: ('held_byte',), ('held_released',), ('joint',), ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1)), ('pause_entry',)
+8864970.01ns INFO     cocotb.regression                  test_spi_master.test_chk_036_held_byte_backpressure passed
+8864970.01ns INFO     cocotb.regression                  running test_spi_master.test_chk_037_rsp_handshake_at_transfer_end_and_random_ready (10/15)
+                                                            CHK-037: response handshake exactly at A+16D loads the new byte; random i_rsp_ready never loses data.
+9788500.01ns INFO     cocotb.nnc_tb_top                  coverage: ('joint',), ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1)), ('pause_entry',), ('pause_exit',)
+9788500.01ns INFO     cocotb.regression                  test_spi_master.test_chk_037_rsp_handshake_at_transfer_end_and_random_ready passed
+9788500.01ns INFO     cocotb.regression                  running test_spi_master.test_chk_038_random_traffic_all_modes (11/15)
+                                                            CHK-038: all four modes, random data, burst lengths 1/2/>=16 and gaps 0/1/many, scoreboard.
+10645610.01ns INFO     cocotb.nnc_tb_top                  coverage: ('cfg_mode', (0, 0)), ('cfg_mode', (0, 1)), ('cfg_mode', (1, 0)), ('cfg_mode', (1, 1)), ('gap', '0'), ('gap', '1'), ('gap', 'many'), ('len', 1), ('len', 2), ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1)), ('pause_entry',), ('pause_exit',)
+10645610.01ns INFO     cocotb.regression                  test_spi_master.test_chk_038_random_traffic_all_modes passed
+10645610.01ns INFO     cocotb.regression                  running test_spi_master.test_chk_039_miso_sampling_edge_precision (12/15)
+                                                            CHK-039: i_miso is captured only in the single cycle ending at each sampling edge.
+11707000.01ns INFO     cocotb.nnc_tb_top                  coverage: ('joint',), ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1))
+11707000.01ns INFO     cocotb.regression                  test_spi_master.test_chk_039_miso_sampling_edge_precision passed
+11707000.01ns INFO     cocotb.regression                  running test_spi_master.test_chk_040_continuous_bursts_timing (13/15)
+                                                            CHK-040: back-to-back commands give gapless SCLK, exact o_cs_n times and throughput; boundary variants.
+13798590.01ns INFO     cocotb.nnc_tb_top                  coverage: ('continuous_join',), ('joint',), ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1)), ('pause_entry',), ('pause_exit',)
+13798590.01ns INFO     cocotb.regression                  test_spi_master.test_chk_040_continuous_bursts_timing passed
+13798590.01ns INFO     cocotb.regression                  running test_spi_master.test_chk_041_divider_timing (14/15)
+                                                            CHK-041: SCLK half period equals PARA_SPI_CLK_DIV; a byte takes 16*D cycles.
+14329340.01ns INFO     cocotb.nnc_tb_top                  coverage: ('joint',), ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1))
+14329340.01ns INFO     cocotb.regression                  test_spi_master.test_chk_041_divider_timing passed
+14329340.01ns INFO     cocotb.regression                  running test_spi_master.test_regression_random (15/15)
+                                                            CHK-001..CHK-027, CHK-020, CHK-038: broad legal random traffic with random modes, gaps,
+14981500.01ns INFO     cocotb.nnc_tb_top                  coverage: ('joint',), ('mode', (0, 0)), ('mode', (0, 1)), ('mode', (1, 0)), ('mode', (1, 1)), ('pause_entry',), ('pause_exit',), ('regression_reset',)
+14981500.01ns INFO     cocotb.regression                  test_spi_master.test_regression_random passed
+14981500.01ns INFO     cocotb.regression                  *************************************************************************************************************************************
+                                                        ** TEST                                                                         STATUS  SIM TIME (ns)  REAL TIME (s)  RATIO (ns/s) **
+                                                        *************************************************************************************************************************************
+                                                        ** test_spi_master.test_chk_028_no_handshake_no_effect                           PASS      796010.00           6.43     123746.34  **
+                                                        ** test_spi_master.test_chk_029_no_combinational_input_paths                     PASS      433740.00           8.82      49178.55  **
+                                                        ** test_spi_master.test_chk_030_single_byte_bursts                               PASS     1040790.00           7.43     140000.23  **
+                                                        ** test_spi_master.test_chk_031_pause_and_endless_burst                          PASS     1958790.00          14.75     132820.81  **
+                                                        ** test_spi_master.test_chk_032_mode_change_before_burst_start                   PASS     1071910.00           6.35     168727.20  **
+                                                        ** test_spi_master.test_chk_033_mode_change_during_burst_ignored                 PASS     1081990.00           6.60     163881.77  **
+                                                        ** test_spi_master.test_chk_034_cpol_follow_in_reset_and_idle                    PASS       46150.00           0.26     175579.85  **
+                                                        ** test_spi_master.test_chk_035_reset_in_each_phase                              PASS      598600.00           3.47     172659.15  **
+                                                        ** test_spi_master.test_chk_036_held_byte_backpressure                           PASS     1836990.00          14.01     131154.28  **
+                                                        ** test_spi_master.test_chk_037_rsp_handshake_at_transfer_end_and_random_ready   PASS      923530.00           6.06     152445.52  **
+                                                        ** test_spi_master.test_chk_038_random_traffic_all_modes                         PASS      857110.00           6.16     139056.37  **
+                                                        ** test_spi_master.test_chk_039_miso_sampling_edge_precision                     PASS     1061390.00           7.80     136134.35  **
+                                                        ** test_spi_master.test_chk_040_continuous_bursts_timing                         PASS     2091590.00          16.14     129616.23  **
+                                                        ** test_spi_master.test_chk_041_divider_timing                                   PASS      530750.00           3.53     150474.77  **
+                                                        ** test_spi_master.test_regression_random                                        PASS      652160.00           4.35     149865.35  **
+                                                        *************************************************************************************************************************************
+                                                        ** TESTS=15 PASS=15 FAIL=0 SKIP=0                                                        14981500.01         112.18     133549.88  **
+                                                        *************************************************************************************************************************************
+- (null):0: Verilog $finish
+NNC_COVER COVP-001 hits=46
+NNC_COVER COVP-002 hits=45
+NNC_COVER COVP-003 hits=40
+NNC_COVER COVP-004 hits=44
+NNC_COVER COVP-005 hits=17
+NNC_COVER COVP-006 hits=9700
+NNC_COVER COVP-007 hits=307
+NNC_COVER COVP-008 hits=91
+NNC_COVER COVP-009 hits=89
+NNC_COVER COVP-010 hits=62
+NNC_COVER COVP-011 hits=13
+NNC_COVER COVP-012 hits=0
+NNC_COVER COVP-013 hits=0
+NNC_COVER COVP-014 hits=0
+NNC_COVER COVP-015 hits=23
+NNC_COVER COVP-016 hits=43
+NNC_COVER COVP-017 hits=51
+NNC_COVER COVP-018 hits=120819
+NNC_COVER COVP-019 hits=118995
+NNC_COVER COVP-020 hits=46
+NNC_COVER COVP-021 hits=32
+NNC_COVER COVP-022 hits=38227
+NNC_COVER COVP-023 hits=39
+NNC_COVER COVP-024 hits=13
+NNC_COVER COVP-025 hits=266
+NNC_COVER COVP-026 hits=220
+NNC_COVER COVP-027 hits=198324
+NNC_COVER COVP-028 hits=197276
+NNC_COVER COVP-029 hits=192573
+NNC_COVER COVP-030 hits=16
+NNC_COVER COVP-031 hits=28
+NNC_COVER COVP-032 hits=58710
+NNC_COVER COVP-033 hits=28
+NNC_COVER COVP-034 hits=7
+NNC_COVER COVP-035 hits=6
+NNC_COVER COVP-036 hits=5
+NNC_COVER COVP-037 hits=1
+NNC_COVER COVP-038 hits=3
+NNC_COVER COVP-039 hits=152
+NNC_CHECK CHK-023 hits=1161304 fails=0
+NNC_CHECK CHK-024 hits=1329381 fails=0
+NNC_CHECK CHK-025 hits=245815 fails=0
+NNC_CHECK CHK-026 hits=164216 fails=0
+NNC_CHECK CHK-027 hits=66 fails=0
+NNC_CHECK CHK-019 hits=1498060 fails=0
+NNC_CHECK CHK-020 hits=1498032 fails=0
+NNC_CHECK CHK-021 hits=1497477 fails=0
+NNC_CHECK CHK-022 hits=287 fails=0
+NNC_CHECK CHK-015 hits=90 fails=0
+NNC_CHECK CHK-016 hits=89 fails=0
+NNC_CHECK CHK-017 hits=90 fails=0
+NNC_CHECK CHK-018 hits=7287 fails=0
+NNC_CHECK CHK-011 hits=743085 fails=0
+NNC_CHECK CHK-012 hits=747688 fails=0
+NNC_CHECK CHK-013 hits=8476 fails=0
+NNC_CHECK CHK-014 hits=2276 fails=0
+NNC_CHECK CHK-010 hits=130683 fails=0
+NNC_CHECK CHK-006 hits=164126 fails=0
+NNC_CHECK CHK-007 hits=1333934 fails=0
+NNC_CHECK CHK-008 hits=149 fails=0
+NNC_CHECK CHK-009 hits=44800 fails=0
+NNC_CHECK CHK-001 hits=656 fails=0
+NNC_CHECK CHK-002 hits=198763 fails=0
+NNC_CHECK CHK-003 hits=156839 fails=0
+NNC_CHECK CHK-004 hits=1161304 fails=0
+NNC_CHECK CHK-005 hits=172630 fails=0
+make[1]: Leaving directory '/root/nnc_runs/runset_a315c28d/C03'
+NNC_MAKE_RC=0

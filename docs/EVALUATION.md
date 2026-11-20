@@ -1,4 +1,4 @@
-# Evaluation — phases 1 to 15 (2026-11-15; design half 2026-11-18; hardening 2026-11-19; formal depth and spec-lint 2026-11-20)
+# Evaluation — phases 1 to 16 (2026-11-15; design half 2026-11-18; hardening 2026-11-19; formal depth, spec-lint and two new designs 2026-11-20)
 
 This page collects the measurements of four steps taken after the first five designs:
 
@@ -350,7 +350,7 @@ Sources: `designs/uart_lite/work/formal.json`, `formal.md` (rows marked `[depth 
 
 **What is still vacuous, per configuration.** In `base` (16 cycles per bit) and `wide` (1024) five receive checks (CHK-003/004/005/007/008) stay VACUOUS even at 128 cycles: one frame does not fit. They are covered by `min` (4) and `odd` (5), where a frame is 40 or 50 cycles. The merged result counts a check as vacuous only if it is vacuous everywhere. Reaching them at 16 cycles per bit would need about 400 cycles, which BMC with this solver does not finish in the time limit; simulation covers those configurations.
 
-**CI.** The full rerun of uart_lite (4 configurations, escalation) lost its GitHub-hosted runner after 96 minutes. `nnc formal-check --config NAME` now reruns one configuration and compares only its recorded statuses; CI runs uart_lite as 4 jobs.
+**CI.** The full rerun of uart_lite (4 configurations, escalation) lost its GitHub-hosted runner after 96 minutes. `nnc formal-check --config NAME` now reruns one configuration and compares only its recorded statuses; CI runs uart_lite as 4 jobs. Local check: `formal-check uart_lite --config min` gave SAME OUTCOME (4 BOUNDED, 8 PROVEN, 1 sim-only) in 22.7 minutes.
 
 ### 7.5 Specification gaps before any code (phase 15, `nnc spec-lint`)
 
@@ -366,3 +366,66 @@ Sources: `designs/uart_lite/work/formal.json`, `formal.md` (rows marked `[depth 
 
 **Limit.** A18 finds questions, not answers: a person (here Claude on delegation, labelled) still decides each one, and a gap A18 misses is not reported.
 
+
+## 8. Two more designs from a short description (phase 16, 2026-11-19 to 2026-11-20)
+
+**Why.** uart_lite (§6.3) was the only design the flow made from scratch. Two more test whether that result repeats: a serial master with timing in i_clk cycles (`spi_master`) and a bus slave with an AXI4-Lite interface (`axil_regfile`). For both, the input is a short description written for this repository. No upstream RTL or testbench exists, so there is no hand-written baseline and no bug benchmark.
+
+| Step | spi_master | axil_regfile |
+|---|---|---|
+| Description | 31 lines: SPI master, mode 0–3, 8-bit bytes, bursts with `i_cmd_last`, SCLK = i_clk / 2·D | 51 lines: AXI4-Lite slave, 1–16 read/write registers, byte strobes, SLVERR on unmapped addresses |
+| `spec-draft` (A0) | 1 attempt; 15 ports, 97 requirement IDs | 2 attempts; 23 ports, 123 requirement IDs |
+| `spec-lint` (A18), see §7.5 | 0 / 2 / 3 gaps, answered before G1 | 0 / 2 / 3 gaps, answered before G1 |
+| Rules after review (G1) | 206 | 193 |
+| Contract (G2) | 41 checks (27 assertions, 14 tests) | 37 checks (17 assertions, 20 tests) |
+| Configurations (D1) | base (D = 4), min (D = 1), max (D = 255) | base (8 registers), min (1), max (16, 16-bit address), full_a7 (16, 7-bit address) |
+| `gen-rtl` (A15, D2) | clean after 2 attempts; 1 file, 360 lines; 8 462 µm², 10.8 ns at SS | clean after 1 attempt; 2 files, 409 lines; 47 805 µm², **31.5 ns at SS against a 20 ns period** |
+| Verification failures | 7 in simulation and 6 formal counterexamples, all judged B (verification wrong), fixed by A17 in 2 rounds | none |
+| Agent cost, whole flow | US$21.91 in 56 calls (US$2.57 in 4 failed calls) | US$12.57 in 47 calls |
+
+**Results.**
+
+| | spi_master | axil_regfile |
+|---|---|---|
+| Tests | 15/15 | 21/21 |
+| Assertions failing | 0/27 | 0/17 |
+| Run set | 5 runs, 3 configurations | 7 runs, 4 configurations |
+| Rules VERIFIED / not verifiable by simulation | 174 / 32 | 171 / 22 |
+| Code coverage: line, toggle | 94.8 %, 95.2 % | 100 %, 95.8 % |
+| Functional coverage | 37/39 (COVP-013, COVP-014 not hit) | 40/40 |
+| Formal, merged: PROVEN / BOUNDED / not checked | 6 / 7 / 14 simulation-only | 15 / 1 / 1 simulation-only |
+| Formal counterexamples | 0 (after the A17 round on formal) | 0 |
+| Mutation | 91.7 % (33/36); the 3 survivors are proven equivalent | 93.1 % (27/29); the 2 survivors are proven equivalent |
+| Hand fixes | 0 | 0 |
+
+Sources: `designs/<ip>/work/report.md`, `formal.md`, `mutation.json`, `rtl_gen.md`, `triage.md`, `spec_lint.md`; `designs/spi_master/NOTICE.md` (the A17 changes).
+
+**spi_master: two rounds of A17.**
+- **Simulation (7 failures).** The test helper `wait_idle` returned before the cycle monitor had logged the current cycle; a test compared MOSI traces that depended on earlier traffic; the reset checker sampled before the reset had settled; a checker compared SCLK in pause with the live `i_cpol` instead of the value captured at burst start; `setup()` asserted reset in the same time step as a clock edge, which ENV-007 forbids. Changed: `nnc_chk_flow.sv`, `nnc_chk_reset.sv`, `test_spi_master.py`.
+- **Formal (6 counterexamples, CHK-011..014, CHK-023, CHK-025).** The MOSI and SCLK checkers reloaded CPOL_b and CPHA_b at every handshake, also inside a burst. The specification captures them once, at burst start. Changed: `nnc_chk_mosi.sv`, `nnc_chk_sclk.sv`. The formal environment was **not** tightened to hide these traces: applying ENV-003 (`i_cpol`/`i_cpha` change only while `o_cs_n` = 1) as an assumption would have removed REQ-MODE-003 ("changes during a burst have no effect") from the formal check.
+- Every change went through the weakening check and a candidate simulation before `--apply`, and G3 was approved again after each round. A17 cost US$4.08 in total.
+
+**Not yet covered.**
+- spi_master, COVP-013 and COVP-014: no test completes a burst of 17 bytes or more. SPI-12-19 asks for "at least 16" and the 16-byte burst is covered (COVP-012); the endless-burst test (CHK-031) never ends its burst. The specification does not require longer completed bursts, so this is a stimulus gap, not a failure. `nnc cover spi_master --target 100 --metric functional` would ask for the missing tests.
+- spi_master, 14 checks are simulation-only. Their checkers use `$time` to judge timing within a cycle, so formal does not translate them. In configuration `max` (largest D), 3 checks are vacuous at depth 32 and 7 bounded; the merged result counts them from `base` and `min`.
+- axil_regfile, REQ-IMP-001 (timing at 50 MHz, worst corner): ABC estimates the longest combinational path at 16.9 ns (TT) and **31.5 ns (SS 125 °C)**, without wires or setup time. The likely path is the read multiplexer. This was left open at D2 and needs STA, which this flow does not have.
+
+**A fault of the mutation stage, found here.** Verilator reports the line coverage of a continuous assignment in an inlined submodule on the declaration line of its target, not on the `assign` line. Since phase 12 the mutation stage only mutates executed lines, so these `assign` lines were excluded even when they ran. `nnc/mutate.py` now counts an `assign` line as executed when the declaration line of its target is executed (`assign_lines`, unit test `AssignLinesTest`). Effect on the candidate pool of every design (the earlier scores were not rerun):
+
+| Design | Candidates | Executed before | Executed now |
+|---|---|---|---|
+| ahb2axi_bridge | 290 | 220 | 233 |
+| apb_tlul_bridge | 36 | 33 | 33 |
+| async_apb_bridge | 128 | 69 | 75 |
+| async_gray_fifo | 100 | 58 | 64 |
+| axi2apb_bridge | 235 | 230 | 230 |
+| gen_apb_tlul_bridge | 55 | 50 | 55 |
+| gen_sync_fifo | 69 | 44 | 47 |
+| sync_fifo | 68 | 54 | 62 |
+| uart_lite | 41 | 37 | 39 |
+| spi_master | 64 | 54 | 57 |
+| axil_regfile | 33 | 26 | 29 |
+
+The scores of spi_master and axil_regfile above were measured with the fix.
+
+**CI.** Both designs are added to the kit, kit-configs and formal jobs (spi_master's formal as one job per configuration).

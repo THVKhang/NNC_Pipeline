@@ -100,8 +100,37 @@ def select(cands: list[Mutant], count: int, seed: int = 1) -> list[Mutant]:
     return chosen
 
 
-def _executes(cov: dict | None, m: Mutant) -> bool | None:
-    """Whether the run with coverage `cov` executed the mutant's line (None: no coverage recorded)."""
+_ASSIGN = re.compile(r"^\s*assign\s+(\w+)")
+
+
+def assign_lines(text: list[str], ran: set[int]) -> set[int]:
+    """Lines of continuous assignments to count as executed although lcov does not list them.
+
+    Verilator puts the line point of a continuous assignment in an inlined submodule on the
+    declaration of the assigned signal (a port or a `logic` line), not on the `assign` line. Such an
+    assignment counts as executed when the declaration line of its target is executed: an unselected
+    generate branch or an inactive `ifdef has neither line, so it stays excluded."""
+    out: set[int] = set()
+    for n, line in enumerate(text, 1):
+        m = _ASSIGN.match(line.split("//")[0])
+        if not m or n in ran:
+            continue
+        decl = re.compile(rf"\b(logic|wire|reg|bit|input|output|inout)\b[^;=]*\b{re.escape(m.group(1))}\b")
+        d = next((k for k in range(n - 1, 0, -1) if decl.search(text[k - 1].split("//")[0])), None)
+        if d is None or d not in ran:
+            continue
+        k = n                                   # the statement may continue on the next lines
+        while True:
+            out.add(k)
+            if ";" in text[k - 1].split("//")[0] or k >= len(text):
+                break
+            k += 1
+    return out
+
+
+def _executes(cov: dict | None, m: Mutant, texts: dict[str, list[str]] | None = None) -> bool | None:
+    """Whether the run with coverage `cov` executed the mutant's line (None: no coverage recorded).
+    `texts` ({file: lines}) lets a continuous assignment count through its target's declaration."""
     if not cov or not cov.get("metrics"):
         return None
     elab = coverage_mod.elaborated_files(cov)
@@ -110,7 +139,9 @@ def _executes(cov: dict | None, m: Mutant) -> bool | None:
     if (m.file, m.line) in coverage_mod.uncovered_lines(cov):
         return False
     ran = coverage_mod.executed_lines(cov)
-    return ran is None or m.line in ran.get(m.file, ())
+    if ran is None or m.line in ran.get(m.file, ()):
+        return True
+    return bool(texts and m.file in texts and m.line in assign_lines(texts[m.file], ran.get(m.file, set())))
 
 
 def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: Path | list[Path], *, count: int = 12,
@@ -129,13 +160,14 @@ def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: 
         runs = [{"label": "", "params": params or {}, "opts": opts, "clock_periods": clock_periods,
                  "seed": seed if sim_seed is None else sim_seed, "baseline": baseline}]
     rtl = rtl_files(rtl_dir)
+    texts = {f.name: f.read_text(encoding="utf-8", errors="replace").splitlines() for f in rtl}
     pool = candidates(rtl)
     total = len(pool)
     where: dict[int, dict] = {}
     known = False
     for m in pool:
         for r in runs:
-            ex = _executes((r.get("baseline") or {}).get("coverage"), m)
+            ex = _executes((r.get("baseline") or {}).get("coverage"), m, texts)
             known = known or ex is not None
             if ex is None or ex:
                 where[id(m)] = r
@@ -187,7 +219,7 @@ def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: 
             seen = {_config(where[id(m)]["label"])}
             for r in runs:
                 c = _config(r["label"])
-                if c in seen or _executes((r.get("baseline") or {}).get("coverage"), m) is False:
+                if c in seen or _executes((r.get("baseline") or {}).get("coverage"), m, texts) is False:
                     continue
                 seen.add(c)
                 retry.append((f"{m.id}_{len(retry):03d}", m, r))

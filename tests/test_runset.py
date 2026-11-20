@@ -129,6 +129,28 @@ class MergeTest(unittest.TestCase):
         self.assertIn("verilator_coverage --write merged.dat", s)
 
 
+class AssignLinesTest(unittest.TestCase):
+    """Verilator gives a continuous assignment of an inlined submodule its line point on the target's
+    declaration, so mutate counts the assignment through that line (axil_regfile decoder)."""
+
+    def test_assignment_counts_through_its_declaration(self):
+        from nnc import mutate
+        text = ["module dec(input logic [5:0] i_w,",      # 1
+                "  output logic o_hit,",                   # 2
+                "  output logic o_st);",                   # 3
+                "  logic [31:0] w;",                       # 4
+                "  assign w = {26'd0, i_w};",              # 5
+                "  assign o_hit = (w < 32'd8);",           # 6
+                "  assign o_st = (w ==",                   # 7
+                "                 32'd16);",               # 8
+                "endmodule"]
+        self.assertEqual(mutate.assign_lines(text, {1, 2, 3, 4}), {5, 6, 7, 8})
+        # target declaration not executed (inactive ifdef, unselected generate branch): stays out
+        self.assertEqual(mutate.assign_lines(text, {1, 2}), {6})
+        # lines lcov already lists are left to it
+        self.assertEqual(mutate.assign_lines(text, {2, 3, 4, 5, 6, 7}), set())
+
+
 class RunSetMutationTest(unittest.TestCase):
     """Mutants come from lines executed in any run and are simulated in the first run executing them."""
 

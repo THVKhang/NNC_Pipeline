@@ -1,0 +1,1740 @@
+{
+ "mutants": [
+  {
+   "id": "M01",
+   "file": "m_axil_regfile.sv",
+   "line": 332,
+   "operator": "negate_if",
+   "original": "if (!i_rst_n) begin",
+   "mutated": "    if (!(!i_rst_n)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_033_power_on_reset",
+    "test_chk_018_r_backpressure",
+    "test_chk_019_write_ordering",
+    "test_chk_020_b_backpressure",
+    "test_chk_021_cfg_min_map",
+    "test_chk_022_full_bank_map",
+    "test_chk_023_high_bit_decode",
+    "test_chk_024_back_to_back",
+    "test_chk_025_concurrent_same_register",
+    "test_chk_026_backpressure_isolation",
+    "test_chk_027_map_and_aliasing",
+    "test_chk_028_status_register",
+    "test_chk_029_unmapped_addresses",
+    "test_chk_030_unmapped_no_stall",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_032_write_strobes",
+    "test_chk_034_async_reset_mid_cycle",
+    "test_chk_035_reset_discards_held_state",
+    "test_chk_036_valids_through_reset",
+    "test_chk_037_no_combinational_path",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-013"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M02",
+   "file": "m_axil_regfile.sv",
+   "line": 232,
+   "operator": "one_to_zero",
+   "original": "r_bvalid <= 1'b1;",
+   "mutated": "        r_bvalid <= 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_r_backpressure",
+    "test_chk_019_write_ordering",
+    "test_chk_020_b_backpressure",
+    "test_chk_024_back_to_back",
+    "test_chk_025_concurrent_same_register",
+    "test_chk_026_backpressure_isolation",
+    "test_chk_027_map_and_aliasing",
+    "test_chk_028_status_register",
+    "test_chk_029_unmapped_addresses",
+    "test_chk_030_unmapped_no_stall",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_032_write_strobes",
+    "test_chk_034_async_reset_mid_cycle",
+    "test_chk_035_reset_discards_held_state",
+    "test_chk_036_valids_through_reset",
+    "test_chk_037_no_combinational_path",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M03",
+   "file": "m_axil_regfile_dec.sv",
+   "line": 41,
+   "operator": "eq_to_ne",
+   "original": "assign o_status_hit = (widx_ext == LPARA_STATUS_WIDX);",
+   "mutated": "  assign o_status_hit = (widx_ext != LPARA_STATUS_WIDX);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_033_power_on_reset",
+    "test_chk_018_r_backpressure",
+    "test_chk_024_back_to_back",
+    "test_chk_027_map_and_aliasing",
+    "test_chk_028_status_register",
+    "test_chk_029_unmapped_addresses",
+    "test_chk_030_unmapped_no_stall",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_037_no_combinational_path",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M04",
+   "file": "m_axil_regfile.sv",
+   "line": 221,
+   "operator": "zero_to_one",
+   "original": "r_w_held  <= 1'b0;",
+   "mutated": "      r_w_held  <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_033_power_on_reset",
+    "test_chk_018_r_backpressure",
+    "test_chk_019_write_ordering",
+    "test_chk_020_b_backpressure",
+    "test_chk_021_cfg_min_map",
+    "test_chk_022_full_bank_map",
+    "test_chk_023_high_bit_decode",
+    "test_chk_024_back_to_back",
+    "test_chk_025_concurrent_same_register",
+    "test_chk_026_backpressure_isolation",
+    "test_chk_027_map_and_aliasing",
+    "test_chk_028_status_register",
+    "test_chk_029_unmapped_addresses",
+    "test_chk_030_unmapped_no_stall",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_032_write_strobes",
+    "test_chk_034_async_reset_mid_cycle",
+    "test_chk_035_reset_discards_held_state",
+    "test_chk_036_valids_through_reset",
+    "test_chk_037_no_combinational_path",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M05",
+   "file": "m_axil_regfile_dec.sv",
+   "line": 33,
+   "operator": "zero_to_one",
+   "original": "assign widx_ext = {{(32-PARA_WIDX_W){1'b0}}, i_widx};",
+   "mutated": "  assign widx_ext = {{(32-PARA_WIDX_W){1'b1}}, i_widx};",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_033_power_on_reset",
+    "test_chk_018_r_backpressure",
+    "test_chk_019_write_ordering",
+    "test_chk_020_b_backpressure",
+    "test_chk_024_back_to_back",
+    "test_chk_025_concurrent_same_register",
+    "test_chk_026_backpressure_isolation",
+    "test_chk_027_map_and_aliasing",
+    "test_chk_028_status_register",
+    "test_chk_029_unmapped_addresses",
+    "test_chk_030_unmapped_no_stall",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_032_write_strobes",
+    "test_chk_034_async_reset_mid_cycle",
+    "test_chk_035_reset_discards_held_state",
+    "test_chk_036_valids_through_reset",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-012"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M06",
+   "file": "m_axil_regfile.sv",
+   "line": 280,
+   "operator": "eq_to_ne",
+   "original": "assign rd_sel = ({28'd0, ar_reg_idx} == k);",
+   "mutated": "      assign rd_sel = ({28'd0, ar_reg_idx} != k);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_r_backpressure",
+    "test_chk_024_back_to_back",
+    "test_chk_025_concurrent_same_register",
+    "test_chk_026_backpressure_isolation",
+    "test_chk_027_map_and_aliasing",
+    "test_chk_030_unmapped_no_stall",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_032_write_strobes",
+    "test_chk_034_async_reset_mid_cycle",
+    "test_chk_036_valids_through_reset",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M07",
+   "file": "m_axil_regfile.sv",
+   "line": 292,
+   "operator": "negate_if",
+   "original": "if (wr_strb[3]) r_reg[31:24] <= wr_data[31:24];",
+   "mutated": "          if (!(wr_strb[3])) r_reg[31:24] <= wr_data[31:24];",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_r_backpressure",
+    "test_chk_019_write_ordering",
+    "test_chk_020_b_backpressure",
+    "test_chk_024_back_to_back",
+    "test_chk_025_concurrent_same_register",
+    "test_chk_026_backpressure_isolation",
+    "test_chk_027_map_and_aliasing",
+    "test_chk_028_status_register",
+    "test_chk_029_unmapped_addresses",
+    "test_chk_030_unmapped_no_stall",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_032_write_strobes",
+    "test_chk_034_async_reset_mid_cycle",
+    "test_chk_035_reset_discards_held_state",
+    "test_chk_036_valids_through_reset",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-012"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M08",
+   "file": "m_axil_regfile.sv",
+   "line": 220,
+   "operator": "zero_to_one",
+   "original": "r_aw_held <= 1'b0;",
+   "mutated": "      r_aw_held <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_033_power_on_reset",
+    "test_chk_018_r_backpressure",
+    "test_chk_019_write_ordering",
+    "test_chk_020_b_backpressure",
+    "test_chk_021_cfg_min_map",
+    "test_chk_022_full_bank_map",
+    "test_chk_023_high_bit_decode",
+    "test_chk_024_back_to_back",
+    "test_chk_025_concurrent_same_register",
+    "test_chk_026_backpressure_isolation",
+    "test_chk_027_map_and_aliasing",
+    "test_chk_028_status_register",
+    "test_chk_029_unmapped_addresses",
+    "test_chk_030_unmapped_no_stall",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_032_write_strobes",
+    "test_chk_034_async_reset_mid_cycle",
+    "test_chk_035_reset_discards_held_state",
+    "test_chk_036_valids_through_reset",
+    "test_chk_037_no_combinational_path",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M09",
+   "file": "m_axil_regfile.sv",
+   "line": 279,
+   "operator": "eq_to_ne",
+   "original": "assign wr_en  = wr_commit & wr_reg_hit & ({28'd0, wr_reg_idx} == k);",
+   "mutated": "      assign wr_en  = wr_commit & wr_reg_hit & ({28'd0, wr_reg_idx} != k);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_r_backpressure",
+    "test_chk_019_write_ordering",
+    "test_chk_020_b_backpressure",
+    "test_chk_024_back_to_back",
+    "test_chk_025_concurrent_same_register",
+    "test_chk_026_backpressure_isolation",
+    "test_chk_027_map_and_aliasing",
+    "test_chk_028_status_register",
+    "test_chk_029_unmapped_addresses",
+    "test_chk_030_unmapped_no_stall",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_032_write_strobes",
+    "test_chk_034_async_reset_mid_cycle",
+    "test_chk_035_reset_discards_held_state",
+    "test_chk_036_valids_through_reset",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-012"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M10",
+   "file": "m_axil_regfile.sv",
+   "line": 219,
+   "operator": "negate_if",
+   "original": "if (!i_rst_n) begin",
+   "mutated": "    if (!(!i_rst_n)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_033_power_on_reset",
+    "test_chk_018_r_backpressure",
+    "test_chk_019_write_ordering",
+    "test_chk_020_b_backpressure",
+    "test_chk_021_cfg_min_map",
+    "test_chk_022_full_bank_map",
+    "test_chk_023_high_bit_decode",
+    "test_chk_024_back_to_back",
+    "test_chk_025_concurrent_same_register",
+    "test_chk_026_backpressure_isolation",
+    "test_chk_027_map_and_aliasing",
+    "test_chk_028_status_register",
+    "test_chk_029_unmapped_addresses",
+    "test_chk_030_unmapped_no_stall",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_032_write_strobes",
+    "test_chk_034_async_reset_mid_cycle",
+    "test_chk_035_reset_discards_held_state",
+    "test_chk_036_valids_through_reset",
+    "test_chk_037_no_combinational_path",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-013"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M11",
+   "file": "m_axil_regfile.sv",
+   "line": 245,
+   "operator": "zero_to_one",
+   "original": "r_aw_okay    <= 1'b0;",
+   "mutated": "      r_aw_okay    <= 1'b1;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "also_run": [
+    "min.s1",
+    "max.s1",
+    "full_a7.s1"
+   ],
+   "equivalence": {
+    "status": "PROVEN",
+    "depth": 32,
+    "per_config": {
+     "base.s1": {
+      "status": "PROVEN",
+      "overrides": {}
+     },
+     "min.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "PARA_NUM_REGS": 1,
+       "PARA_ADDR_W": 7
+      }
+     },
+     "max.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "PARA_NUM_REGS": 16,
+       "PARA_ADDR_W": 16
+      }
+     },
+     "full_a7.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "PARA_NUM_REGS": 16,
+       "PARA_ADDR_W": 7
+      }
+     }
+    }
+   }
+  },
+  {
+   "id": "M12",
+   "file": "m_axil_regfile.sv",
+   "line": 231,
+   "operator": "negate_if",
+   "original": "if (wr_commit) begin",
+   "mutated": "      if (!(wr_commit)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_033_power_on_reset",
+    "test_chk_018_r_backpressure",
+    "test_chk_019_write_ordering",
+    "test_chk_020_b_backpressure",
+    "test_chk_021_cfg_min_map",
+    "test_chk_022_full_bank_map",
+    "test_chk_023_high_bit_decode",
+    "test_chk_024_back_to_back",
+    "test_chk_025_concurrent_same_register",
+    "test_chk_026_backpressure_isolation",
+    "test_chk_027_map_and_aliasing",
+    "test_chk_028_status_register",
+    "test_chk_029_unmapped_addresses",
+    "test_chk_030_unmapped_no_stall",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_032_write_strobes",
+    "test_chk_034_async_reset_mid_cycle",
+    "test_chk_035_reset_discards_held_state",
+    "test_chk_036_valids_through_reset",
+    "test_chk_037_no_combinational_path",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M13",
+   "file": "m_axil_regfile.sv",
+   "line": 223,
+   "operator": "zero_to_one",
+   "original": "r_wready  <= 1'b0;",
+   "mutated": "      r_wready  <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_033_power_on_reset",
+    "test_chk_018_r_backpressure",
+    "test_chk_019_write_ordering",
+    "test_chk_020_b_backpressure",
+    "test_chk_021_cfg_min_map",
+    "test_chk_022_full_bank_map",
+    "test_chk_023_high_bit_decode",
+    "test_chk_024_back_to_back",
+    "test_chk_025_concurrent_same_register",
+    "test_chk_026_backpressure_isolation",
+    "test_chk_027_map_and_aliasing",
+    "test_chk_028_status_register",
+    "test_chk_029_unmapped_addresses",
+    "test_chk_030_unmapped_no_stall",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_032_write_strobes",
+    "test_chk_034_async_reset_mid_cycle",
+    "test_chk_035_reset_discards_held_state",
+    "test_chk_036_valids_through_reset",
+    "test_chk_037_no_combinational_path",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-013"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M14",
+   "file": "m_axil_regfile.sv",
+   "line": 250,
+   "operator": "negate_if",
+   "original": "if (aw_hs) begin",
+   "mutated": "      if (!(aw_hs)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_019_write_ordering",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_035_reset_discards_held_state",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-012"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M15",
+   "file": "m_axil_regfile.sv",
+   "line": 244,
+   "operator": "zero_to_one",
+   "original": "r_aw_reg_hit <= 1'b0;",
+   "mutated": "      r_aw_reg_hit <= 1'b1;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "also_run": [
+    "min.s1",
+    "max.s1",
+    "full_a7.s1"
+   ],
+   "equivalence": {
+    "status": "PROVEN",
+    "depth": 32,
+    "per_config": {
+     "base.s1": {
+      "status": "PROVEN",
+      "overrides": {}
+     },
+     "min.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "PARA_NUM_REGS": 1,
+       "PARA_ADDR_W": 7
+      }
+     },
+     "max.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "PARA_NUM_REGS": 16,
+       "PARA_ADDR_W": 16
+      }
+     },
+     "full_a7.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "PARA_NUM_REGS": 16,
+       "PARA_ADDR_W": 7
+      }
+     }
+    }
+   }
+  },
+  {
+   "id": "M16",
+   "file": "m_axil_regfile.sv",
+   "line": 289,
+   "operator": "negate_if",
+   "original": "if (wr_strb[0]) r_reg[7:0]   <= wr_data[7:0];",
+   "mutated": "          if (!(wr_strb[0])) r_reg[7:0]   <= wr_data[7:0];",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_r_backpressure",
+    "test_chk_019_write_ordering",
+    "test_chk_020_b_backpressure",
+    "test_chk_024_back_to_back",
+    "test_chk_025_concurrent_same_register",
+    "test_chk_026_backpressure_isolation",
+    "test_chk_027_map_and_aliasing",
+    "test_chk_028_status_register",
+    "test_chk_029_unmapped_addresses",
+    "test_chk_030_unmapped_no_stall",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_032_write_strobes",
+    "test_chk_034_async_reset_mid_cycle",
+    "test_chk_035_reset_discards_held_state",
+    "test_chk_036_valids_through_reset",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-012"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M17",
+   "file": "m_axil_regfile.sv",
+   "line": 334,
+   "operator": "zero_to_one",
+   "original": "r_rvalid  <= 1'b0;",
+   "mutated": "      r_rvalid  <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_033_power_on_reset",
+    "test_chk_018_r_backpressure",
+    "test_chk_019_write_ordering",
+    "test_chk_020_b_backpressure",
+    "test_chk_021_cfg_min_map",
+    "test_chk_022_full_bank_map",
+    "test_chk_023_high_bit_decode",
+    "test_chk_024_back_to_back",
+    "test_chk_025_concurrent_same_register",
+    "test_chk_026_backpressure_isolation",
+    "test_chk_027_map_and_aliasing",
+    "test_chk_028_status_register",
+    "test_chk_029_unmapped_addresses",
+    "test_chk_030_unmapped_no_stall",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_032_write_strobes",
+    "test_chk_034_async_reset_mid_cycle",
+    "test_chk_035_reset_discards_held_state",
+    "test_chk_036_valids_through_reset",
+    "test_chk_037_no_combinational_path",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-013"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M18",
+   "file": "m_axil_regfile.sv",
+   "line": 243,
+   "operator": "negate_if",
+   "original": "if (!i_rst_n) begin",
+   "mutated": "    if (!(!i_rst_n)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_019_write_ordering",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_035_reset_discards_held_state",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-012"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M19",
+   "file": "m_axil_regfile.sv",
+   "line": 224,
+   "operator": "zero_to_one",
+   "original": "r_bvalid  <= 1'b0;",
+   "mutated": "      r_bvalid  <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_033_power_on_reset",
+    "test_chk_018_r_backpressure",
+    "test_chk_019_write_ordering",
+    "test_chk_020_b_backpressure",
+    "test_chk_021_cfg_min_map",
+    "test_chk_022_full_bank_map",
+    "test_chk_023_high_bit_decode",
+    "test_chk_024_back_to_back",
+    "test_chk_025_concurrent_same_register",
+    "test_chk_026_backpressure_isolation",
+    "test_chk_027_map_and_aliasing",
+    "test_chk_028_status_register",
+    "test_chk_029_unmapped_addresses",
+    "test_chk_030_unmapped_no_stall",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_032_write_strobes",
+    "test_chk_034_async_reset_mid_cycle",
+    "test_chk_035_reset_discards_held_state",
+    "test_chk_036_valids_through_reset",
+    "test_chk_037_no_combinational_path",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-013"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M20",
+   "file": "m_axil_regfile.sv",
+   "line": 290,
+   "operator": "negate_if",
+   "original": "if (wr_strb[1]) r_reg[15:8]  <= wr_data[15:8];",
+   "mutated": "          if (!(wr_strb[1])) r_reg[15:8]  <= wr_data[15:8];",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_r_backpressure",
+    "test_chk_019_write_ordering",
+    "test_chk_020_b_backpressure",
+    "test_chk_024_back_to_back",
+    "test_chk_025_concurrent_same_register",
+    "test_chk_026_backpressure_isolation",
+    "test_chk_027_map_and_aliasing",
+    "test_chk_028_status_register",
+    "test_chk_029_unmapped_addresses",
+    "test_chk_030_unmapped_no_stall",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_032_write_strobes",
+    "test_chk_034_async_reset_mid_cycle",
+    "test_chk_035_reset_discards_held_state",
+    "test_chk_036_valids_through_reset",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-012"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M21",
+   "file": "m_axil_regfile.sv",
+   "line": 222,
+   "operator": "zero_to_one",
+   "original": "r_awready <= 1'b0;",
+   "mutated": "      r_awready <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_033_power_on_reset",
+    "test_chk_018_r_backpressure",
+    "test_chk_019_write_ordering",
+    "test_chk_020_b_backpressure",
+    "test_chk_021_cfg_min_map",
+    "test_chk_022_full_bank_map",
+    "test_chk_023_high_bit_decode",
+    "test_chk_024_back_to_back",
+    "test_chk_025_concurrent_same_register",
+    "test_chk_026_backpressure_isolation",
+    "test_chk_027_map_and_aliasing",
+    "test_chk_028_status_register",
+    "test_chk_029_unmapped_addresses",
+    "test_chk_030_unmapped_no_stall",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_032_write_strobes",
+    "test_chk_034_async_reset_mid_cycle",
+    "test_chk_035_reset_discards_held_state",
+    "test_chk_036_valids_through_reset",
+    "test_chk_037_no_combinational_path",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-013"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M22",
+   "file": "m_axil_regfile.sv",
+   "line": 286,
+   "operator": "negate_if",
+   "original": "if (!i_rst_n) begin",
+   "mutated": "        if (!(!i_rst_n)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_r_backpressure",
+    "test_chk_019_write_ordering",
+    "test_chk_020_b_backpressure",
+    "test_chk_024_back_to_back",
+    "test_chk_025_concurrent_same_register",
+    "test_chk_026_backpressure_isolation",
+    "test_chk_027_map_and_aliasing",
+    "test_chk_028_status_register",
+    "test_chk_029_unmapped_addresses",
+    "test_chk_030_unmapped_no_stall",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_032_write_strobes",
+    "test_chk_034_async_reset_mid_cycle",
+    "test_chk_035_reset_discards_held_state",
+    "test_chk_036_valids_through_reset",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-012"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M23",
+   "file": "m_axil_regfile.sv",
+   "line": 235,
+   "operator": "zero_to_one",
+   "original": "r_bvalid <= 1'b0;",
+   "mutated": "        r_bvalid <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_r_backpressure",
+    "test_chk_019_write_ordering",
+    "test_chk_020_b_backpressure",
+    "test_chk_024_back_to_back",
+    "test_chk_025_concurrent_same_register",
+    "test_chk_026_backpressure_isolation",
+    "test_chk_027_map_and_aliasing",
+    "test_chk_028_status_register",
+    "test_chk_029_unmapped_addresses",
+    "test_chk_030_unmapped_no_stall",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_032_write_strobes",
+    "test_chk_034_async_reset_mid_cycle",
+    "test_chk_035_reset_discards_held_state",
+    "test_chk_036_valids_through_reset",
+    "test_chk_037_no_combinational_path",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M24",
+   "file": "m_axil_regfile.sv",
+   "line": 288,
+   "operator": "negate_if",
+   "original": "end else if (wr_en) begin",
+   "mutated": "        end else if (!(wr_en)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_r_backpressure",
+    "test_chk_019_write_ordering",
+    "test_chk_020_b_backpressure",
+    "test_chk_024_back_to_back",
+    "test_chk_025_concurrent_same_register",
+    "test_chk_026_backpressure_isolation",
+    "test_chk_027_map_and_aliasing",
+    "test_chk_028_status_register",
+    "test_chk_029_unmapped_addresses",
+    "test_chk_030_unmapped_no_stall",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_032_write_strobes",
+    "test_chk_034_async_reset_mid_cycle",
+    "test_chk_035_reset_discards_held_state",
+    "test_chk_036_valids_through_reset",
+    "test_chk_037_no_combinational_path",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-012"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M25",
+   "file": "m_axil_regfile.sv",
+   "line": 333,
+   "operator": "zero_to_one",
+   "original": "r_arready <= 1'b0;",
+   "mutated": "      r_arready <= 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_033_power_on_reset",
+    "test_chk_018_r_backpressure",
+    "test_chk_019_write_ordering",
+    "test_chk_020_b_backpressure",
+    "test_chk_021_cfg_min_map",
+    "test_chk_022_full_bank_map",
+    "test_chk_023_high_bit_decode",
+    "test_chk_024_back_to_back",
+    "test_chk_025_concurrent_same_register",
+    "test_chk_026_backpressure_isolation",
+    "test_chk_027_map_and_aliasing",
+    "test_chk_028_status_register",
+    "test_chk_029_unmapped_addresses",
+    "test_chk_030_unmapped_no_stall",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_032_write_strobes",
+    "test_chk_034_async_reset_mid_cycle",
+    "test_chk_035_reset_discards_held_state",
+    "test_chk_036_valids_through_reset",
+    "test_chk_037_no_combinational_path",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-013"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M26",
+   "file": "m_axil_regfile.sv",
+   "line": 340,
+   "operator": "negate_if",
+   "original": "if (ar_hs) begin",
+   "mutated": "      if (!(ar_hs)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_033_power_on_reset",
+    "test_chk_018_r_backpressure",
+    "test_chk_024_back_to_back",
+    "test_chk_025_concurrent_same_register",
+    "test_chk_026_backpressure_isolation",
+    "test_chk_028_status_register",
+    "test_chk_029_unmapped_addresses",
+    "test_chk_030_unmapped_no_stall",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_032_write_strobes",
+    "test_chk_034_async_reset_mid_cycle",
+    "test_chk_037_no_combinational_path",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M27",
+   "file": "m_axil_regfile.sv",
+   "line": 291,
+   "operator": "negate_if",
+   "original": "if (wr_strb[2]) r_reg[23:16] <= wr_data[23:16];",
+   "mutated": "          if (!(wr_strb[2])) r_reg[23:16] <= wr_data[23:16];",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_r_backpressure",
+    "test_chk_019_write_ordering",
+    "test_chk_024_back_to_back",
+    "test_chk_025_concurrent_same_register",
+    "test_chk_026_backpressure_isolation",
+    "test_chk_027_map_and_aliasing",
+    "test_chk_029_unmapped_addresses",
+    "test_chk_030_unmapped_no_stall",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_032_write_strobes",
+    "test_chk_034_async_reset_mid_cycle",
+    "test_chk_035_reset_discards_held_state",
+    "test_chk_036_valids_through_reset",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-012"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M28",
+   "file": "m_axil_regfile.sv",
+   "line": 234,
+   "operator": "negate_if",
+   "original": "end else if (b_hs) begin",
+   "mutated": "      end else if (!(b_hs)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_r_backpressure",
+    "test_chk_019_write_ordering",
+    "test_chk_020_b_backpressure",
+    "test_chk_024_back_to_back",
+    "test_chk_025_concurrent_same_register",
+    "test_chk_026_backpressure_isolation",
+    "test_chk_027_map_and_aliasing",
+    "test_chk_028_status_register",
+    "test_chk_029_unmapped_addresses",
+    "test_chk_030_unmapped_no_stall",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_032_write_strobes",
+    "test_chk_034_async_reset_mid_cycle",
+    "test_chk_035_reset_discards_held_state",
+    "test_chk_036_valids_through_reset",
+    "test_chk_037_no_combinational_path",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M29",
+   "file": "m_axil_regfile.sv",
+   "line": 255,
+   "operator": "negate_if",
+   "original": "if (w_hs) begin",
+   "mutated": "      if (!(w_hs)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_019_write_ordering",
+    "test_chk_031_addr_lsb_and_prot_ignored",
+    "test_chk_035_reset_discards_held_state",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-012"
+   ],
+   "run": "base.s1"
+  }
+ ],
+ "candidates": 29,
+ "count": 29,
+ "killed": 27,
+ "survived": 2,
+ "not_compiled": 0,
+ "score": 93.1,
+ "seed": 1,
+ "excluded_uncovered": {
+  "files": [],
+  "lines": 4
+ },
+ "baseline_failing": {
+  "tests": [],
+  "checks": []
+ },
+ "runs": {
+  "available": [
+   "base.s1",
+   "base.s2",
+   "min.s1",
+   "min.s2",
+   "max.s1",
+   "max.s2",
+   "full_a7.s1"
+  ],
+  "used": [
+   "base.s1"
+  ],
+  "second_chance_sims": 6
+ },
+ "threshold": 85.0,
+ "attribution": {
+  "mutants": {
+   "M01": {
+    "rules": [
+     "RF-6.2-02",
+     "RF-6.2-03",
+     "RF-6.2-01",
+     "RF-14-01",
+     "RF-6.2-09"
+    ],
+    "equivalent": false,
+    "reason": "Inverted reset condition on the read-path block: outputs are not cleared during reset and the read state is cleared during normal operation, so no read can complete."
+   },
+   "M02": {
+    "rules": [
+     "RF-7.4-01",
+     "RF-14-03",
+     "RF-1.2-09",
+     "RF-7.4-04",
+     "RF-7.2-06"
+    ],
+    "equivalent": false,
+    "reason": "bvalid is not raised at Ec (set to 0), so no write response is ever given."
+   },
+   "M03": {
+    "rules": [
+     "RF-7.1-03",
+     "RF-1.1-04",
+     "RF-9-05",
+     "RF-9-06",
+     "RF-7.5-10"
+    ],
+    "equivalent": false,
+    "reason": "Status hit is inverted: 0x40 is treated as unmapped (SLVERR, rdata 0) and every other non-register word index is treated as status."
+   },
+   "M04": {
+    "rules": [
+     "RF-6.2-09",
+     "RF-14-12",
+     "RF-7.2-03",
+     "RF-6.2-07",
+     "RF-14-01"
+    ],
+    "equivalent": false,
+    "reason": "r_w_held resets to 1, so after reset wready stays 0 and the write-data held state is wrongly set until a B transfer."
+   },
+   "M05": {
+    "rules": [
+     "RF-7.1-05",
+     "RF-14-08",
+     "RF-7.1-02",
+     "RF-1.2-01",
+     "RF-9-13"
+    ],
+    "equivalent": false,
+    "reason": "The upper bits of the extended word index are 1, so every address compares as out of range: all accesses become unmapped, including registers and status."
+   },
+   "M06": {
+    "rules": [
+     "RF-7.5-09",
+     "RF-9-04",
+     "RF-7.1-02",
+     "RF-7.6-03",
+     "RF-1.1-01"
+    ],
+    "equivalent": false,
+    "reason": "Read select is inverted, so a register read returns the OR of the other registers instead of the addressed register."
+   },
+   "M07": {
+    "rules": [
+     "RF-5-02",
+     "RF-7.3-02",
+     "RF-9-03",
+     "RF-1.2-03",
+     "RF-7.3-01"
+    ],
+    "equivalent": false,
+    "reason": "Byte lane 3 is written when wstrb[3]=0 and kept when wstrb[3]=1, so the lane strobe is inverted."
+   },
+   "M08": {
+    "rules": [
+     "RF-6.2-09",
+     "RF-14-12",
+     "RF-7.2-01",
+     "RF-6.2-07",
+     "RF-6.2-10"
+    ],
+    "equivalent": false,
+    "reason": "r_aw_held resets to 1, so awready stays 0 after reset and a held write address is wrongly present after reset."
+   },
+   "M09": {
+    "rules": [
+     "RF-7.3-04",
+     "RF-7.3-05",
+     "RF-7.1-02",
+     "RF-7.3-09",
+     "RF-7.3-01"
+    ],
+    "equivalent": false,
+    "reason": "The write enable selects every register except the addressed one, so the wrong registers are written."
+   },
+   "M10": {
+    "rules": [
+     "RF-6.2-02",
+     "RF-6.2-01",
+     "RF-6.2-09",
+     "RF-14-01",
+     "RF-6.2-03"
+    ],
+    "equivalent": false,
+    "reason": "Inverted reset condition on the write handshake block: the handshake outputs are not cleared in reset, and the state is held at reset values in normal operation, so no write handshake works."
+   },
+   "M11": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "The reset value of r_aw_okay is only read through wr_okay when aw_hs=0, and that only matters when wr_commit=1, which needs r_aw_held=1. r_aw_held is only set after an AW transfer, which loads r_aw_okay in the same edge, and reset clears r_aw_held. The reset value therefore never reaches a port."
+   },
+   "M12": {
+    "rules": [
+     "RF-7.4-01",
+     "RF-7.4-03",
+     "RF-14-03",
+     "RF-7.4-04",
+     "RF-7.4-05"
+    ],
+    "equivalent": false,
+    "reason": "bvalid and bresp are updated on every edge except Ec, so bvalid is wrongly raised without a completed write and is not raised at Ec."
+   },
+   "M13": {
+    "rules": [
+     "RF-6.2-02",
+     "RF-14-01",
+     "RF-6.2-06",
+     "RF-6.2-05",
+     "RF-6.2-01"
+    ],
+    "equivalent": false,
+    "reason": "wready resets to 1, so wready is 1 during reset and in the cycle ending at R1, and a W transfer could occur at R1."
+   },
+   "M14": {
+    "rules": [
+     "RF-7.1-06",
+     "RF-7.2-09",
+     "RF-7.4-07",
+     "RF-7.4-06",
+     "RF-7.3-05"
+    ],
+    "equivalent": false,
+    "reason": "The held write address and decode are captured when there is no AW transfer, not when there is one, so a write whose data or commit comes later uses the wrong register or response."
+   },
+   "M15": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "The reset value of r_aw_reg_hit is only used via wr_reg_hit when aw_hs=0, and then only with wr_commit=1, which needs r_aw_held=1. That state is only reached after an AW transfer has loaded r_aw_reg_hit, and reset clears r_aw_held. The reset value never reaches a port."
+   },
+   "M16": {
+    "rules": [
+     "RF-5-02",
+     "RF-7.3-02",
+     "RF-9-03",
+     "RF-1.2-03",
+     "RF-7.3-01"
+    ],
+    "equivalent": false,
+    "reason": "Byte lane 0 is written when wstrb[0]=0 and kept when wstrb[0]=1, so the lane strobe is inverted."
+   },
+   "M17": {
+    "rules": [
+     "RF-6.2-02",
+     "RF-14-01",
+     "RF-6.2-06",
+     "RF-6.2-08",
+     "RF-6.2-01"
+    ],
+    "equivalent": false,
+    "reason": "rvalid resets to 1, so rvalid is 1 during reset and after R1 with no read in progress."
+   },
+   "M18": {
+    "rules": [
+     "RF-7.2-09",
+     "RF-7.3-01",
+     "RF-7.1-06",
+     "RF-7.4-06",
+     "RF-7.3-02"
+    ],
+    "equivalent": false,
+    "reason": "Inverted reset condition on the held write address/data block: the held decode, data and strobes stay at zero in normal operation, so writes whose AW and W do not arrive at the same edge use wrong data or address."
+   },
+   "M19": {
+    "rules": [
+     "RF-6.2-02",
+     "RF-14-01",
+     "RF-6.2-06",
+     "RF-6.2-08",
+     "RF-6.2-10"
+    ],
+    "equivalent": false,
+    "reason": "bvalid resets to 1, so bvalid is 1 during reset and after R1 with no write in progress."
+   },
+   "M20": {
+    "rules": [
+     "RF-5-02",
+     "RF-7.3-02",
+     "RF-9-03",
+     "RF-1.2-03",
+     "RF-7.3-01"
+    ],
+    "equivalent": false,
+    "reason": "Byte lane 1 is written when wstrb[1]=0 and kept when wstrb[1]=1, so the lane strobe is inverted."
+   },
+   "M21": {
+    "rules": [
+     "RF-6.2-02",
+     "RF-14-01",
+     "RF-6.2-06",
+     "RF-6.2-05",
+     "RF-6.2-01"
+    ],
+    "equivalent": false,
+    "reason": "awready resets to 1, so awready is 1 during reset and in the cycle ending at R1, and an AW transfer could occur at R1."
+   },
+   "M22": {
+    "rules": [
+     "RF-6.2-04",
+     "RF-1.2-02",
+     "RF-9-01",
+     "RF-6.2-01",
+     "RF-7.3-01"
+    ],
+    "equivalent": false,
+    "reason": "Inverted reset condition on the register block: registers are not cleared on reset and are held at 0 in normal operation, so writes never take effect."
+   },
+   "M23": {
+    "rules": [
+     "RF-7.4-03",
+     "RF-7.4-04",
+     "RF-14-10",
+     "RF-7.4-05",
+     "RF-8.2-01"
+    ],
+    "equivalent": false,
+    "reason": "bvalid is set to 1 instead of cleared at the B transfer, so bvalid stays high after Eb and a second B transfer occurs."
+   },
+   "M24": {
+    "rules": [
+     "RF-7.3-05",
+     "RF-7.3-04",
+     "RF-7.3-06",
+     "RF-7.3-07",
+     "RF-7.3-01"
+    ],
+    "equivalent": false,
+    "reason": "Registers are written on every edge except Ec, so a register changes without a write and does not change at Ec."
+   },
+   "M25": {
+    "rules": [
+     "RF-6.2-02",
+     "RF-14-01",
+     "RF-6.2-06",
+     "RF-6.2-05",
+     "RF-6.2-01"
+    ],
+    "equivalent": false,
+    "reason": "arready resets to 1, so arready is 1 during reset and in the cycle ending at R1, and an AR transfer could occur at R1."
+   },
+   "M26": {
+    "rules": [
+     "RF-7.5-09",
+     "RF-7.5-10",
+     "RF-7.5-11",
+     "RF-14-07",
+     "RF-7.5-05"
+    ],
+    "equivalent": false,
+    "reason": "rdata and rresp are captured on every edge except the AR transfer, so the response is not the value sampled at Ear and changes under back-pressure."
+   },
+   "M27": {
+    "rules": [
+     "RF-5-02",
+     "RF-7.3-02",
+     "RF-9-03",
+     "RF-1.2-03",
+     "RF-7.3-01"
+    ],
+    "equivalent": false,
+    "reason": "Byte lane 2 is written when wstrb[2]=0 and kept when wstrb[2]=1, so the lane strobe is inverted."
+   },
+   "M28": {
+    "rules": [
+     "RF-7.4-03",
+     "RF-7.4-04",
+     "RF-14-10",
+     "RF-7.4-05",
+     "RF-8.2-01"
+    ],
+    "equivalent": false,
+    "reason": "bvalid is cleared on every edge without a B transfer and not at the B transfer, so bvalid drops under back-pressure or stays high after Eb."
+   },
+   "M29": {
+    "rules": [
+     "RF-7.2-09",
+     "RF-7.3-01",
+     "RF-7.2-05",
+     "RF-1.2-07",
+     "RF-7.3-02"
+    ],
+    "equivalent": false,
+    "reason": "Held write data and strobes are captured when there is no W transfer, not when there is, so a write whose AW arrives later uses wrong data or strobes."
+   }
+  },
+  "unknown_ids": [],
+  "model": "sonnet",
+  "cost_usd": 0.38194490000000003
+ },
+ "rule_scores": {
+  "RF-1.1-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-1.1-04": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-1.2-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-1.2-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-1.2-03": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-1.2-07": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-1.2-09": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-14-01": {
+   "relevant": 8,
+   "killed": 8,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-14-03": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-14-07": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-14-08": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-14-10": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-14-12": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-5-02": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-6.2-01": {
+   "relevant": 7,
+   "killed": 7,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-6.2-02": {
+   "relevant": 7,
+   "killed": 7,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-6.2-03": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-6.2-04": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-6.2-05": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-6.2-06": {
+   "relevant": 5,
+   "killed": 5,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-6.2-07": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-6.2-08": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-6.2-09": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-6.2-10": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.1-02": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.1-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.1-05": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.1-06": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.2-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.2-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.2-05": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.2-06": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.2-09": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.3-01": {
+   "relevant": 9,
+   "killed": 9,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.3-02": {
+   "relevant": 6,
+   "killed": 6,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.3-04": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.3-05": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.3-06": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.3-07": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.3-09": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.4-01": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.4-03": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.4-04": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.4-05": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.4-06": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.4-07": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.5-05": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.5-09": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.5-10": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.5-11": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-7.6-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-8.2-01": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-9-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-9-03": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-9-04": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-9-05": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-9-06": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RF-9-13": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ "equivalence": {
+  "by_status": {
+   "PROVEN": 2
+  },
+  "proven_equivalent": 2,
+  "score_without_equivalent": 100.0
+ }
+}

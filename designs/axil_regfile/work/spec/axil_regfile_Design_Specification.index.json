@@ -1,0 +1,3221 @@
+{
+ "version": 1,
+ "doc": {
+  "file": "axil_regfile_Design_Specification.md",
+  "sha256": "041127eadff9346b128be8c4cfd8f87f7d55ef0ca1c49c4cf616c33c16738531",
+  "length": 496,
+  "location": "line"
+ },
+ "sections": [
+  {
+   "id": "front",
+   "title": "Front matter",
+   "level": 0,
+   "parent": null,
+   "page_start": 1,
+   "page_end": 1,
+   "sentences": []
+  },
+  {
+   "id": "T1",
+   "title": "axil_regfile Design Specification",
+   "level": 1,
+   "parent": null,
+   "page_start": 1,
+   "page_end": 3,
+   "sentences": [
+    {
+     "id": "T1:s1",
+     "text": "Revision: 0.2, 2026-11-19.",
+     "page": 3,
+     "normative": false
+    },
+    {
+     "id": "T1:s2",
+     "text": "Top module: m_axil_regfile.",
+     "page": 3,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "1",
+   "title": "Overview",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 5,
+   "page_end": 5,
+   "sentences": []
+  },
+  {
+   "id": "1.1",
+   "title": "Purpose",
+   "level": 3,
+   "parent": "1",
+   "page_start": 7,
+   "page_end": 8,
+   "sentences": [
+    {
+     "id": "1.1:s1",
+     "text": "axil_regfile is a bank of PARA_NUM_REGS 32-bit read/write control registers and one 32-bit read-only status register.",
+     "page": 8,
+     "normative": false
+    },
+    {
+     "id": "1.1:s2",
+     "text": "A CPU reads and writes them through an AXI4-Lite subordinate port.",
+     "page": 8,
+     "normative": false
+    },
+    {
+     "id": "1.1:s3",
+     "text": "The current value of every read/write register drives the SoC logic directly on o_regs.",
+     "page": 8,
+     "normative": false
+    },
+    {
+     "id": "1.1:s4",
+     "text": "A read of the status register returns the SoC status word i_status.",
+     "page": 8,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "1.2",
+   "title": "Features",
+   "level": 3,
+   "parent": "1",
+   "page_start": 10,
+   "page_end": 20,
+   "sentences": [
+    {
+     "id": "1.2:s1",
+     "text": "AXI4-Lite subordinate port with a 32-bit data bus and a PARA_ADDR_W-bit address bus (7 to 16 bits).",
+     "page": 11,
+     "normative": false
+    },
+    {
+     "id": "1.2:s2",
+     "text": "1 to 16 read/write registers at byte addresses 0x00 + 4k.",
+     "page": 12,
+     "normative": false
+    },
+    {
+     "id": "1.2:s3",
+     "text": "Each one resets to 0.",
+     "page": 12,
+     "normative": false
+    },
+    {
+     "id": "1.2:s4",
+     "text": "Byte-lane writes controlled by i_s_axi_wstrb.",
+     "page": 13,
+     "normative": false
+    },
+    {
+     "id": "1.2:s5",
+     "text": "A read-only status register at byte address 0x40.",
+     "page": 14,
+     "normative": false
+    },
+    {
+     "id": "1.2:s6",
+     "text": "It returns i_status as sampled when the read address is taken.",
+     "page": 14,
+     "normative": false
+    },
+    {
+     "id": "1.2:s7",
+     "text": "An access to an unmapped address answers SLVERR.",
+     "page": 15,
+     "normative": false
+    },
+    {
+     "id": "1.2:s8",
+     "text": "An unmapped read returns 0.",
+     "page": 15,
+     "normative": false
+    },
+    {
+     "id": "1.2:s9",
+     "text": "The write address and the write data can arrive in either order or at the same edge.",
+     "page": 16,
+     "normative": true
+    },
+    {
+     "id": "1.2:s10",
+     "text": "The read path and the write path work independently, so a read and a write can be in progress at the same time.",
+     "page": 17,
+     "normative": true
+    },
+    {
+     "id": "1.2:s11",
+     "text": "Fixed latency: one cycle from the last write handshake to the write response, and one cycle from the read address handshake to the read data.",
+     "page": 18,
+     "normative": false
+    },
+    {
+     "id": "1.2:s12",
+     "text": "Every output is registered, so no combinational path runs from an input to an output.",
+     "page": 19,
+     "normative": false
+    },
+    {
+     "id": "1.2:s13",
+     "text": "One clock, and one active-low reset with asynchronous assertion.",
+     "page": 20,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "1.3",
+   "title": "Out of scope",
+   "level": 3,
+   "parent": "1",
+   "page_start": 22,
+   "page_end": 29,
+   "sentences": [
+    {
+     "id": "1.3:s1",
+     "text": "AXI4 full features: bursts, IDs, more than one outstanding transaction per direction, exclusive access, QoS, region, cache and user signals.",
+     "page": 23,
+     "normative": false
+    },
+    {
+     "id": "1.3:s2",
+     "text": "The response codes EXOKAY (2'b01) and DECERR (2'b11).",
+     "page": 24,
+     "normative": false
+    },
+    {
+     "id": "1.3:s3",
+     "text": "The block never produces them.",
+     "page": 24,
+     "normative": true
+    },
+    {
+     "id": "1.3:s4",
+     "text": "Protection checking. i_s_axi_awprot and i_s_axi_arprot are ignored.",
+     "page": 25,
+     "normative": false
+    },
+    {
+     "id": "1.3:s5",
+     "text": "Sub-word addressing.",
+     "page": 26,
+     "normative": false
+    },
+    {
+     "id": "1.3:s6",
+     "text": "Address bits [1:0] are ignored and there is no unaligned-access error.",
+     "page": 26,
+     "normative": false
+    },
+    {
+     "id": "1.3:s7",
+     "text": "Special register types (write-1-to-clear, self-clearing, set/clear aliases, interrupts) and parity or ECC.",
+     "page": 27,
+     "normative": false
+    },
+    {
+     "id": "1.3:s8",
+     "text": "Clock-domain crossing. i_status and every other input are synchronous to i_clk.",
+     "page": 28,
+     "normative": false
+    },
+    {
+     "id": "1.3:s9",
+     "text": "Behaviour with illegal parameter values, or when the manager breaks the AXI handshake rules.",
+     "page": 29,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "title": "References",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 31,
+   "page_end": 37,
+   "sentences": [
+    {
+     "id": "2:s1",
+     "text": "ID: REF-001; Document: ARM IHI 0022, AMBA AXI and ACE Protocol Specification; Revision: Issue H or later; Used for: AXI4-Lite channel handshake rules and response encodings (OKAY, SLVERR)",
+     "page": 35,
+     "normative": false
+    },
+    {
+     "id": "2:s2",
+     "text": "ID: REF-002; Document: docs/RTL_RULES.md; Revision: Current revision of the repository; Used for: RTL coding rules",
+     "page": 36,
+     "normative": false
+    },
+    {
+     "id": "2:s3",
+     "text": "ID: REF-003; Document: AXI4-Lite register file: design description (input of nnc spec-draft); Revision: As delivered; Used for: Source of the requirements in this specification",
+     "page": 37,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "title": "Terms",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 39,
+   "page_end": 59,
+   "sentences": [
+    {
+     "id": "3:s1",
+     "text": "Term: Manager; Meaning: The block that drives the AXI4-Lite inputs of this port (the CPU side).",
+     "page": 43,
+     "normative": false
+    },
+    {
+     "id": "3:s2",
+     "text": "Term: AW, W, B, AR, R; Meaning: The write address, write data, write response, read address and read data channels.",
+     "page": 44,
+     "normative": false
+    },
+    {
+     "id": "3:s3",
+     "text": "Term: Transfer (handshake); Meaning: A rising edge of i_clk at which the valid and the ready of a channel are both 1 and i_rst_n is 1. The channel's payload is taken at that edge.",
+     "page": 45,
+     "normative": false
+    },
+    {
+     "id": "3:s4",
+     "text": "Term: Edge n / cycle n; Meaning: Edge n is the n-th rising edge of i_clk. Cycle n is the clock period between edge n-1 and edge n: it starts at edge n-1 and ends at edge n. \"From edge n\" means \"starting in cycle n+1\": the value holds from that cycle until another requirement changes it (for example a \"shall be 0 from edge\" requirement, a held state ending, or a reset).",
+     "page": 46,
+     "normative": true
+    },
+    {
+     "id": "3:s5",
+     "text": "Term: Ea, Ew; Meaning: The edge of the AW transfer and the edge of the W transfer of one write transaction.",
+     "page": 47,
+     "normative": false
+    },
+    {
+     "id": "3:s6",
+     "text": "Term: Ec; Meaning: The completion edge of a write: the later of Ea and Ew. If both transfers happen at the same edge, Ec is that edge.",
+     "page": 48,
+     "normative": false
+    },
+    {
+     "id": "3:s7",
+     "text": "Term: Eb; Meaning: The edge of the B transfer of a write transaction.",
+     "page": 49,
+     "normative": false
+    },
+    {
+     "id": "3:s8",
+     "text": "Term: Ear, Er; Meaning: The edge of the AR transfer and the edge of the R transfer of one read transaction.",
+     "page": 50,
+     "normative": false
+    },
+    {
+     "id": "3:s9",
+     "text": "Term: Held write address; Meaning: In cycle n, a write address is held if its AW transfer happened at an edge e <= n-1 and the B transfer of its transaction has not happened at any edge <= n-1, and i_rst_n has not been 0 since that AW transfer (a reset ends the held state, REQ-RST-009).",
+     "page": 51,
+     "normative": false
+    },
+    {
+     "id": "3:s10",
+     "text": "Term: Held write data; Meaning: In cycle n, write data is held if its W transfer happened at an edge e <= n-1 and the B transfer of its transaction has not happened at any edge <= n-1, and i_rst_n has not been 0 since that W transfer (a reset ends the held state, REQ-RST-009).",
+     "page": 52,
+     "normative": false
+    },
+    {
+     "id": "3:s11",
+     "text": "Term: Held read address; Meaning: In cycle n, a read address is held if its AR transfer happened at an edge e <= n-1 and the R transfer of its transaction has not happened at any edge <= n-1, and i_rst_n has not been 0 since that AR transfer (a reset ends the held state, REQ-RST-009).",
+     "page": 53,
+     "normative": false
+    },
+    {
+     "id": "3:s12",
+     "text": "Term: R1; Meaning: The first rising edge of i_clk at which i_rst_n is 1 after a period with i_rst_n at 0. \"After R1\" means after the most recent R1 and while i_rst_n has stayed 1 since.",
+     "page": 54,
+     "normative": false
+    },
+    {
+     "id": "3:s13",
+     "text": "Term: Word index; Meaning: Bits [PARA_ADDR_W-1:2] of an address, read as an unsigned number.",
+     "page": 55,
+     "normative": false
+    },
+    {
+     "id": "3:s14",
+     "text": "Term: Mapped register; Meaning: Read/write register k, 0 <= k < PARA_NUM_REGS, at byte address 4k.",
+     "page": 56,
+     "normative": false
+    },
+    {
+     "id": "3:s15",
+     "text": "Term: Status register; Meaning: The read-only register at byte address 0x40, word index 16.",
+     "page": 57,
+     "normative": false
+    },
+    {
+     "id": "3:s16",
+     "text": "Term: Unmapped address; Meaning: An address that selects neither a mapped register nor the status register.",
+     "page": 58,
+     "normative": false
+    },
+    {
+     "id": "3:s17",
+     "text": "Term: OKAY, SLVERR; Meaning: Response codes 2'b00 and 2'b10 on o_s_axi_bresp and o_s_axi_rresp.",
+     "page": 59,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "4",
+   "title": "Parameters",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 61,
+   "page_end": 77,
+   "sentences": [
+    {
+     "id": "4:s1",
+     "text": "Parameter: PARA_NUM_REGS; Default: 8; Legal values: 1 to 16; Description: Number of read/write registers",
+     "page": 65,
+     "normative": true
+    },
+    {
+     "id": "4:s2",
+     "text": "Parameter: PARA_ADDR_W; Default: 8; Legal values: 7 to 16; Description: Width in bits of i_s_axi_awaddr and i_s_axi_araddr; 7 is the minimum that reaches the status register at 0x40",
+     "page": 66,
+     "normative": true
+    },
+    {
+     "id": "4:s3",
+     "text": "Parameter: LPARA_REGS_W; Default: Derived; Legal values: -; Description: PARA_NUM_REGS*32",
+     "page": 67,
+     "normative": true
+    },
+    {
+     "id": "4:s4",
+     "text": "LPARA_REGS_W is the width of o_regs in bits: 32 with PARA_NUM_REGS = 1, 256 with the default, 512 with PARA_NUM_REGS = 16.",
+     "page": 69,
+     "normative": false
+    },
+    {
+     "id": "4:s5",
+     "text": "[REQ-PAR-001] The block shall behave as this specification states for every combination of PARA_NUM_REGS from 1 to 16 and PARA_ADDR_W from 7 to 16.",
+     "page": 71,
+     "normative": true
+    },
+    {
+     "id": "4:s6",
+     "text": "[REQ-PAR-002] LPARA_REGS_W shall be a local parameter equal to PARA_NUM_REGS*32 that cannot be overridden from outside the module.",
+     "page": 73,
+     "normative": true
+    },
+    {
+     "id": "4:s7",
+     "text": "[REQ-PAR-003] The RTL should stop elaboration with an error message when PARA_NUM_REGS or PARA_ADDR_W is outside its legal range.",
+     "page": 75,
+     "normative": true
+    },
+    {
+     "id": "4:s8",
+     "text": "[REQ-PAR-004] Behaviour with illegal parameter values is not specified and shall not be verified.",
+     "page": 77,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "5",
+   "title": "Interface",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 79,
+   "page_end": 115,
+   "sentences": [
+    {
+     "id": "5:s1",
+     "text": "m_axil_regfile: all ports (CLK)",
+     "page": 81,
+     "normative": false
+    },
+    {
+     "id": "5:s2",
+     "text": "Port: i_clk; Direction: input; Width: 1; Signal type: Clock; Reset value: Not applicable; Clock domain: CLK; Meaning: Clock, rising edge",
+     "page": 85,
+     "normative": false
+    },
+    {
+     "id": "5:s3",
+     "text": "Port: i_rst_n; Direction: input; Width: 1; Signal type: Reset (asynchronous assertion, synchronous release); Reset value: Not applicable; Clock domain: CLK; Meaning: Active-low reset",
+     "page": 86,
+     "normative": false
+    },
+    {
+     "id": "5:s4",
+     "text": "Port: i_s_axi_awvalid; Direction: input; Width: 1; Signal type: Control; Reset value: Not applicable; Clock domain: CLK; Meaning: Write address valid",
+     "page": 87,
+     "normative": false
+    },
+    {
+     "id": "5:s5",
+     "text": "Port: o_s_axi_awready; Direction: output; Width: 1; Signal type: Control; Reset value: 0; Clock domain: CLK; Meaning: Write address ready",
+     "page": 88,
+     "normative": false
+    },
+    {
+     "id": "5:s6",
+     "text": "Port: i_s_axi_awaddr; Direction: input; Width: PARA_ADDR_W; Signal type: Data; Reset value: Not applicable; Clock domain: CLK; Meaning: Write byte address; bits [1:0] ignored",
+     "page": 89,
+     "normative": false
+    },
+    {
+     "id": "5:s7",
+     "text": "Port: i_s_axi_awprot; Direction: input; Width: 3; Signal type: Data; Reset value: Not applicable; Clock domain: CLK; Meaning: Write protection type; ignored",
+     "page": 90,
+     "normative": false
+    },
+    {
+     "id": "5:s8",
+     "text": "Port: i_s_axi_wvalid; Direction: input; Width: 1; Signal type: Control; Reset value: Not applicable; Clock domain: CLK; Meaning: Write data valid",
+     "page": 91,
+     "normative": false
+    },
+    {
+     "id": "5:s9",
+     "text": "Port: o_s_axi_wready; Direction: output; Width: 1; Signal type: Control; Reset value: 0; Clock domain: CLK; Meaning: Write data ready",
+     "page": 92,
+     "normative": false
+    },
+    {
+     "id": "5:s10",
+     "text": "Port: i_s_axi_wdata; Direction: input; Width: 32; Signal type: Data; Reset value: Not applicable; Clock domain: CLK; Meaning: Write data; byte lane i is bits 8i+7..8i",
+     "page": 93,
+     "normative": false
+    },
+    {
+     "id": "5:s11",
+     "text": "Port: i_s_axi_wstrb; Direction: input; Width: 4; Signal type: Data; Reset value: Not applicable; Clock domain: CLK; Meaning: Write strobes; bit i enables byte lane i",
+     "page": 94,
+     "normative": false
+    },
+    {
+     "id": "5:s12",
+     "text": "Port: o_s_axi_bvalid; Direction: output; Width: 1; Signal type: Control; Reset value: 0; Clock domain: CLK; Meaning: Write response valid",
+     "page": 95,
+     "normative": false
+    },
+    {
+     "id": "5:s13",
+     "text": "Port: i_s_axi_bready; Direction: input; Width: 1; Signal type: Control; Reset value: Not applicable; Clock domain: CLK; Meaning: Write response ready",
+     "page": 96,
+     "normative": false
+    },
+    {
+     "id": "5:s14",
+     "text": "Port: o_s_axi_bresp; Direction: output; Width: 2; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Write response: 2'b00 OKAY or 2'b10 SLVERR",
+     "page": 97,
+     "normative": false
+    },
+    {
+     "id": "5:s15",
+     "text": "Port: i_s_axi_arvalid; Direction: input; Width: 1; Signal type: Control; Reset value: Not applicable; Clock domain: CLK; Meaning: Read address valid",
+     "page": 98,
+     "normative": false
+    },
+    {
+     "id": "5:s16",
+     "text": "Port: o_s_axi_arready; Direction: output; Width: 1; Signal type: Control; Reset value: 0; Clock domain: CLK; Meaning: Read address ready",
+     "page": 99,
+     "normative": false
+    },
+    {
+     "id": "5:s17",
+     "text": "Port: i_s_axi_araddr; Direction: input; Width: PARA_ADDR_W; Signal type: Data; Reset value: Not applicable; Clock domain: CLK; Meaning: Read byte address; bits [1:0] ignored",
+     "page": 100,
+     "normative": false
+    },
+    {
+     "id": "5:s18",
+     "text": "Port: i_s_axi_arprot; Direction: input; Width: 3; Signal type: Data; Reset value: Not applicable; Clock domain: CLK; Meaning: Read protection type; ignored",
+     "page": 101,
+     "normative": false
+    },
+    {
+     "id": "5:s19",
+     "text": "Port: o_s_axi_rvalid; Direction: output; Width: 1; Signal type: Control; Reset value: 0; Clock domain: CLK; Meaning: Read data valid",
+     "page": 102,
+     "normative": false
+    },
+    {
+     "id": "5:s20",
+     "text": "Port: i_s_axi_rready; Direction: input; Width: 1; Signal type: Control; Reset value: Not applicable; Clock domain: CLK; Meaning: Read data ready",
+     "page": 103,
+     "normative": false
+    },
+    {
+     "id": "5:s21",
+     "text": "Port: o_s_axi_rdata; Direction: output; Width: 32; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Read data",
+     "page": 104,
+     "normative": false
+    },
+    {
+     "id": "5:s22",
+     "text": "Port: o_s_axi_rresp; Direction: output; Width: 2; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Read response: 2'b00 OKAY or 2'b10 SLVERR",
+     "page": 105,
+     "normative": false
+    },
+    {
+     "id": "5:s23",
+     "text": "Port: o_regs; Direction: output; Width: LPARA_REGS_W; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Current values of the read/write registers; register k is bits 32k+31..32k",
+     "page": 106,
+     "normative": false
+    },
+    {
+     "id": "5:s24",
+     "text": "Port: i_status; Direction: input; Width: 32; Signal type: Data; Reset value: Not applicable; Clock domain: CLK; Meaning: SoC status word; returned by a read of address 0x40",
+     "page": 107,
+     "normative": false
+    },
+    {
+     "id": "5:s25",
+     "text": "[REQ-IF-001] Every output shall change value only at a rising edge of i_clk or when i_rst_n is asserted, so that no output depends combinationally on any input in the same cycle.",
+     "page": 109,
+     "normative": true
+    },
+    {
+     "id": "5:s26",
+     "text": "[REQ-IF-002] Bits 32k+31..32k of o_regs shall carry the current value of read/write register k, for every k from 0 to PARA_NUM_REGS-1.",
+     "page": 111,
+     "normative": true
+    },
+    {
+     "id": "5:s27",
+     "text": "[REQ-IF-003] Byte lane i (i = 0 to 3) of a register shall be bits 8i+7..8i, shall correspond to i_s_axi_wdata[8i+7:8i] and o_s_axi_rdata[8i+7:8i], and shall be enabled by i_s_axi_wstrb[i].",
+     "page": 113,
+     "normative": true
+    },
+    {
+     "id": "5:s28",
+     "text": "[REQ-IF-004] The values of i_s_axi_awprot and i_s_axi_arprot shall have no effect on any output.",
+     "page": 115,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "6",
+   "title": "Clocks and resets",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 117,
+   "page_end": 117,
+   "sentences": []
+  },
+  {
+   "id": "6.1",
+   "title": "Clocks",
+   "level": 3,
+   "parent": "6",
+   "page_start": 119,
+   "page_end": 122,
+   "sentences": [
+    {
+     "id": "6.1:s1",
+     "text": "The block has one clock, i_clk, which defines the clock domain CLK.",
+     "page": 120,
+     "normative": false
+    },
+    {
+     "id": "6.1:s2",
+     "text": "The target frequency is 50 MHz.",
+     "page": 120,
+     "normative": false
+    },
+    {
+     "id": "6.1:s3",
+     "text": "Every flip-flop of the block is clocked on the rising edge of i_clk.",
+     "page": 120,
+     "normative": false
+    },
+    {
+     "id": "6.1:s4",
+     "text": "Every input, including i_status, is synchronous to i_clk.",
+     "page": 120,
+     "normative": false
+    },
+    {
+     "id": "6.1:s5",
+     "text": "The block has no clock-domain crossing and contains no synchronizer.",
+     "page": 120,
+     "normative": false
+    },
+    {
+     "id": "6.1:s6",
+     "text": "[REQ-CLK-001] Every flip-flop of the block shall be clocked by the rising edge of i_clk.",
+     "page": 122,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "6.2",
+   "title": "Resets",
+   "level": 3,
+   "parent": "6",
+   "page_start": 124,
+   "page_end": 145,
+   "sentences": [
+    {
+     "id": "6.2:s1",
+     "text": "i_rst_n is active low.",
+     "page": 125,
+     "normative": false
+    },
+    {
+     "id": "6.2:s2",
+     "text": "Assertion is asynchronous.",
+     "page": 125,
+     "normative": false
+    },
+    {
+     "id": "6.2:s3",
+     "text": "Release is synchronous to i_clk, and the environment guarantees this (see section 12).",
+     "page": 125,
+     "normative": false
+    },
+    {
+     "id": "6.2:s4",
+     "text": "[REQ-RST-001] While i_rst_n is 0, o_s_axi_awready, o_s_axi_wready, o_s_axi_arready, o_s_axi_bvalid and o_s_axi_rvalid shall be 0.",
+     "page": 127,
+     "normative": true
+    },
+    {
+     "id": "6.2:s5",
+     "text": "[REQ-RST-002] While i_rst_n is 0, o_s_axi_bresp, o_s_axi_rresp and o_s_axi_rdata shall be 0.",
+     "page": 129,
+     "normative": true
+    },
+    {
+     "id": "6.2:s6",
+     "text": "[REQ-RST-003] While i_rst_n is 0, every bit of o_regs shall be 0.",
+     "page": 131,
+     "normative": true
+    },
+    {
+     "id": "6.2:s7",
+     "text": "[REQ-RST-004] When i_rst_n goes from 1 to 0, every output shall take its reset value without waiting for a rising edge of i_clk.",
+     "page": 133,
+     "normative": true
+    },
+    {
+     "id": "6.2:s8",
+     "text": "[REQ-RST-005] No transfer shall happen on any channel at an edge where i_rst_n is 0, whatever the values of i_s_axi_awvalid, i_s_axi_wvalid, i_s_axi_arvalid, i_s_axi_bready and i_s_axi_rready.",
+     "page": 135,
+     "normative": true
+    },
+    {
+     "id": "6.2:s9",
+     "text": "[REQ-RST-006] No transfer shall happen on any channel at edge R1, because o_s_axi_awready, o_s_axi_wready and o_s_axi_arready are 0 in the cycle that ends at R1 and o_s_axi_bvalid and o_s_axi_rvalid are 0 in that cycle.",
+     "page": 137,
+     "normative": true
+    },
+    {
+     "id": "6.2:s10",
+     "text": "[REQ-RST-007] o_s_axi_awready, o_s_axi_wready and o_s_axi_arready shall be 1 from edge R1, that is, in the cycle that starts at R1.",
+     "page": 139,
+     "normative": true
+    },
+    {
+     "id": "6.2:s11",
+     "text": "[REQ-RST-008] o_s_axi_bvalid and o_s_axi_rvalid shall stay 0 after R1 until a write or read transaction makes them 1 as section 7 states.",
+     "page": 141,
+     "normative": true
+    },
+    {
+     "id": "6.2:s12",
+     "text": "[REQ-RST-009] When i_rst_n is asserted while a write address, write data, write response or read address is held or pending, the held state shall be discarded.",
+     "page": 143,
+     "normative": true
+    },
+    {
+     "id": "6.2:s13",
+     "text": "No B or R response shall be given for that transaction after release, and no register shall be written by it after release.",
+     "page": 143,
+     "normative": true
+    },
+    {
+     "id": "6.2:s14",
+     "text": "[REQ-RST-010] A valid that the manager holds at 1 through reset and after R1 shall be treated as a new transfer request.",
+     "page": 145,
+     "normative": true
+    },
+    {
+     "id": "6.2:s15",
+     "text": "It is taken at the first edge after R1 where the matching ready is 1, which is the edge after R1 at the earliest.",
+     "page": 145,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "7",
+   "title": "Functional description",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 147,
+   "page_end": 147,
+   "sentences": []
+  },
+  {
+   "id": "7.1",
+   "title": "Address decode",
+   "level": 3,
+   "parent": "7",
+   "page_start": 149,
+   "page_end": 163,
+   "sentences": [
+    {
+     "id": "7.1:s1",
+     "text": "[REQ-DEC-001] Bits [1:0] of i_s_axi_awaddr and i_s_axi_araddr shall have no effect on any output.",
+     "page": 151,
+     "normative": true
+    },
+    {
+     "id": "7.1:s2",
+     "text": "[REQ-DEC-002] An address whose word index is k, with 0 <= k < PARA_NUM_REGS, shall select read/write register k.",
+     "page": 153,
+     "normative": true
+    },
+    {
+     "id": "7.1:s3",
+     "text": "[REQ-DEC-003] An address whose word index is 16 (byte address 0x40 to 0x43) shall select the status register.",
+     "page": 155,
+     "normative": true
+    },
+    {
+     "id": "7.1:s4",
+     "text": "[REQ-DEC-004] Every other address shall be unmapped.",
+     "page": 157,
+     "normative": true
+    },
+    {
+     "id": "7.1:s5",
+     "text": "This includes word indices PARA_NUM_REGS to 15, word indices 17 to 31, and every address with a 1 in any bit from bit 7 to bit PARA_ADDR_W-1.",
+     "page": 157,
+     "normative": false
+    },
+    {
+     "id": "7.1:s6",
+     "text": "[REQ-DEC-005] The decode shall compare all bits [PARA_ADDR_W-1:2] of the address, so that no mapped register or status register appears at more than one word index (no aliasing).",
+     "page": 159,
+     "normative": true
+    },
+    {
+     "id": "7.1:s7",
+     "text": "[REQ-DEC-006] A write transaction shall be decoded from the address taken at its AW transfer.",
+     "page": 161,
+     "normative": true
+    },
+    {
+     "id": "7.1:s8",
+     "text": "[REQ-DEC-007] A read transaction shall be decoded from the address taken at its AR transfer.",
+     "page": 163,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "7.2",
+   "title": "Write address and write data acceptance",
+   "level": 3,
+   "parent": "7",
+   "page_start": 165,
+   "page_end": 181,
+   "sentences": [
+    {
+     "id": "7.2:s1",
+     "text": "[REQ-WR-001] In every cycle after R1 in which no write address is held, o_s_axi_awready shall be 1.",
+     "page": 167,
+     "normative": true
+    },
+    {
+     "id": "7.2:s2",
+     "text": "[REQ-WR-002] In every cycle in which a write address is held, o_s_axi_awready shall be 0.",
+     "page": 169,
+     "normative": true
+    },
+    {
+     "id": "7.2:s3",
+     "text": "[REQ-WR-003] In every cycle after R1 in which no write data is held, o_s_axi_wready shall be 1.",
+     "page": 171,
+     "normative": true
+    },
+    {
+     "id": "7.2:s4",
+     "text": "[REQ-WR-004] In every cycle in which write data is held, o_s_axi_wready shall be 0.",
+     "page": 173,
+     "normative": true
+    },
+    {
+     "id": "7.2:s5",
+     "text": "[REQ-WR-005] The block shall take the AW transfer and the W transfer of one transaction in either order or at the same edge, and shall not answer before it has taken both.",
+     "page": 175,
+     "normative": true
+    },
+    {
+     "id": "7.2:s6",
+     "text": "[REQ-WR-006] After an AW transfer, the block shall take no other AW transfer until the edge after Eb of that transaction.",
+     "page": 177,
+     "normative": true
+    },
+    {
+     "id": "7.2:s7",
+     "text": "[REQ-WR-007] After a W transfer, the block shall take no other W transfer until the edge after Eb of that transaction.",
+     "page": 179,
+     "normative": true
+    },
+    {
+     "id": "7.2:s8",
+     "text": "[REQ-WR-008] The write strobes and write data used by a transaction shall be the values of i_s_axi_wstrb and i_s_axi_wdata taken at its W transfer.",
+     "page": 181,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "7.3",
+   "title": "Register update",
+   "level": 3,
+   "parent": "7",
+   "page_start": 183,
+   "page_end": 201,
+   "sentences": [
+    {
+     "id": "7.3:s1",
+     "text": "[REQ-WR-010] When a write transaction selects read/write register k, then at edge Ec, for each byte lane i with i_s_axi_wstrb[i] = 1 (as taken at Ew), bits 8i+7..8i of register k shall take the value of bits 8i+7..8i of the write data taken at Ew.",
+     "page": 185,
+     "normative": true
+    },
+    {
+     "id": "7.3:s2",
+     "text": "[REQ-WR-011] When a write transaction selects read/write register k, the byte lanes of register k whose strobe bit is 0 shall keep their value.",
+     "page": 187,
+     "normative": true
+    },
+    {
+     "id": "7.3:s3",
+     "text": "[REQ-WR-012] The value written at Ec shall appear on o_regs[32k+31:32k] from edge Ec, that is, in the cycle that starts at Ec.",
+     "page": 189,
+     "normative": true
+    },
+    {
+     "id": "7.3:s4",
+     "text": "[REQ-WR-013] A write transaction shall change no bit of o_regs outside bits 32k+31..32k of the register it selects.",
+     "page": 191,
+     "normative": true
+    },
+    {
+     "id": "7.3:s5",
+     "text": "[REQ-WR-014] A write transaction shall change its register only at its edge Ec and only once.",
+     "page": 193,
+     "normative": true
+    },
+    {
+     "id": "7.3:s6",
+     "text": "[REQ-WR-015] A write transaction that selects the status register shall change no bit of o_regs.",
+     "page": 195,
+     "normative": true
+    },
+    {
+     "id": "7.3:s7",
+     "text": "[REQ-WR-016] A write transaction to an unmapped address shall change no bit of o_regs.",
+     "page": 197,
+     "normative": true
+    },
+    {
+     "id": "7.3:s8",
+     "text": "[REQ-WR-017] A write transaction to read/write register k with i_s_axi_wstrb = 4'b0000 shall change no bit of o_regs and shall answer OKAY.",
+     "page": 199,
+     "normative": true
+    },
+    {
+     "id": "7.3:s9",
+     "text": "[REQ-WR-018] Bits of o_regs shall change only at edge Ec of a write transaction that selects them or when i_rst_n is asserted.",
+     "page": 201,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "7.4",
+   "title": "Write response",
+   "level": 3,
+   "parent": "7",
+   "page_start": 203,
+   "page_end": 219,
+   "sentences": [
+    {
+     "id": "7.4:s1",
+     "text": "[REQ-WR-020] o_s_axi_bvalid shall be 1 from edge Ec of a write transaction, that is, in the cycle that starts at Ec.",
+     "page": 205,
+     "normative": true
+    },
+    {
+     "id": "7.4:s2",
+     "text": "[REQ-WR-021] Once o_s_axi_bvalid is 1, it shall stay 1 and o_s_axi_bresp shall stay unchanged until and including the cycle that ends at Eb.",
+     "page": 207,
+     "normative": true
+    },
+    {
+     "id": "7.4:s3",
+     "text": "[REQ-WR-022] o_s_axi_bvalid shall be 0 from edge Eb, unless i_rst_n is asserted earlier.",
+     "page": 209,
+     "normative": true
+    },
+    {
+     "id": "7.4:s4",
+     "text": "[REQ-WR-023] The block shall give exactly one B transfer for each write transaction that reaches Ec, and o_s_axi_bvalid shall be 0 in every cycle in which no such transaction is waiting for its B transfer.",
+     "page": 211,
+     "normative": true
+    },
+    {
+     "id": "7.4:s5",
+     "text": "[REQ-WR-024] o_s_axi_bresp shall be 2'b00 (OKAY) for a write transaction that selects a read/write register or the status register.",
+     "page": 213,
+     "normative": true
+    },
+    {
+     "id": "7.4:s6",
+     "text": "[REQ-WR-025] o_s_axi_bresp shall be 2'b10 (SLVERR) for a write transaction to an unmapped address.",
+     "page": 215,
+     "normative": true
+    },
+    {
+     "id": "7.4:s7",
+     "text": "[REQ-WR-026] o_s_axi_bresp shall never be 2'b01 or 2'b11 while o_s_axi_bvalid is 1.",
+     "page": 217,
+     "normative": true
+    },
+    {
+     "id": "7.4:s8",
+     "text": "[REQ-WR-027] While o_s_axi_bvalid is 0 and i_rst_n is 1, the value of o_s_axi_bresp is not specified and shall not be checked.",
+     "page": 219,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "7.5",
+   "title": "Read",
+   "level": 3,
+   "parent": "7",
+   "page_start": 221,
+   "page_end": 251,
+   "sentences": [
+    {
+     "id": "7.5:s1",
+     "text": "[REQ-RD-001] In every cycle after R1 in which no read address is held, o_s_axi_arready shall be 1.",
+     "page": 223,
+     "normative": true
+    },
+    {
+     "id": "7.5:s2",
+     "text": "[REQ-RD-002] In every cycle in which a read address is held, o_s_axi_arready shall be 0.",
+     "page": 225,
+     "normative": true
+    },
+    {
+     "id": "7.5:s3",
+     "text": "[REQ-RD-003] After an AR transfer, the block shall take no other AR transfer until the edge after Er of that transaction.",
+     "page": 227,
+     "normative": true
+    },
+    {
+     "id": "7.5:s4",
+     "text": "[REQ-RD-004] o_s_axi_rvalid shall be 1 from edge Ear of a read transaction, that is, in the cycle that starts at Ear.",
+     "page": 229,
+     "normative": true
+    },
+    {
+     "id": "7.5:s5",
+     "text": "[REQ-RD-005] Once o_s_axi_rvalid is 1, it shall stay 1 and o_s_axi_rdata and o_s_axi_rresp shall stay unchanged until and including the cycle that ends at Er.",
+     "page": 231,
+     "normative": true
+    },
+    {
+     "id": "7.5:s6",
+     "text": "[REQ-RD-006] o_s_axi_rvalid shall be 0 from edge Er, unless i_rst_n is asserted earlier.",
+     "page": 233,
+     "normative": true
+    },
+    {
+     "id": "7.5:s7",
+     "text": "[REQ-RD-007] The block shall give exactly one R transfer for each AR transfer, and o_s_axi_rvalid shall be 0 in every cycle in which no read transaction is waiting for its R transfer.",
+     "page": 235,
+     "normative": true
+    },
+    {
+     "id": "7.5:s8",
+     "text": "[REQ-RD-008] For a read transaction that selects read/write register k, o_s_axi_rdata shall equal the value of o_regs[32k+31:32k] in the cycle that ends at Ear.",
+     "page": 237,
+     "normative": true
+    },
+    {
+     "id": "7.5:s9",
+     "text": "[REQ-RD-009] For a read transaction that selects the status register, o_s_axi_rdata shall equal the value of i_status in the cycle that ends at Ear.",
+     "page": 239,
+     "normative": true
+    },
+    {
+     "id": "7.5:s10",
+     "text": "[REQ-RD-010] A change of i_status after Ear shall not change o_s_axi_rdata of the read transaction in progress.",
+     "page": 241,
+     "normative": true
+    },
+    {
+     "id": "7.5:s11",
+     "text": "[REQ-RD-011] o_s_axi_rresp shall be 2'b00 (OKAY) for a read transaction that selects a read/write register or the status register.",
+     "page": 243,
+     "normative": true
+    },
+    {
+     "id": "7.5:s12",
+     "text": "[REQ-RD-012] For a read transaction to an unmapped address, o_s_axi_rdata shall be 32'h0000_0000 and o_s_axi_rresp shall be 2'b10 (SLVERR).",
+     "page": 245,
+     "normative": true
+    },
+    {
+     "id": "7.5:s13",
+     "text": "[REQ-RD-013] o_s_axi_rresp shall never be 2'b01 or 2'b11 while o_s_axi_rvalid is 1.",
+     "page": 247,
+     "normative": true
+    },
+    {
+     "id": "7.5:s14",
+     "text": "[REQ-RD-014] While o_s_axi_rvalid is 0 and i_rst_n is 1, the values of o_s_axi_rdata and o_s_axi_rresp are not specified and shall not be checked.",
+     "page": 249,
+     "normative": true
+    },
+    {
+     "id": "7.5:s15",
+     "text": "[REQ-RD-015] A read transaction shall change no bit of o_regs.",
+     "page": 251,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "7.6",
+   "title": "Concurrent read and write",
+   "level": 3,
+   "parent": "7",
+   "page_start": 253,
+   "page_end": 265,
+   "sentences": [
+    {
+     "id": "7.6:s1",
+     "text": "[REQ-CC-001] The AR and R channels shall work independently of the AW, W and B channels.",
+     "page": 255,
+     "normative": true
+    },
+    {
+     "id": "7.6:s2",
+     "text": "Whether a write is held or waiting for its B transfer shall not change the value or timing of o_s_axi_arready, o_s_axi_rvalid, o_s_axi_rdata or o_s_axi_rresp, except for the register value returned as stated in REQ-CC-003 to REQ-CC-006.",
+     "page": 255,
+     "normative": true
+    },
+    {
+     "id": "7.6:s3",
+     "text": "[REQ-CC-002] Whether a read is held or waiting for its R transfer shall not change the value or timing of o_s_axi_awready, o_s_axi_wready, o_s_axi_bvalid, o_s_axi_bresp or o_regs.",
+     "page": 257,
+     "normative": true
+    },
+    {
+     "id": "7.6:s4",
+     "text": "[REQ-CC-003] When the AR transfer of a read of register k happens at the same edge as Ec of a write to register k, the read shall return the value of register k before that write (the old value).",
+     "page": 259,
+     "normative": true
+    },
+    {
+     "id": "7.6:s5",
+     "text": "[REQ-CC-004] When Ec of a write to register k is before Ear of a read of register k, the read shall return the value written by that write, unless another write to register k with an Ec before Ear came in between.",
+     "page": 261,
+     "normative": true
+    },
+    {
+     "id": "7.6:s6",
+     "text": "[REQ-CC-005] When Ec of a write to register k is after Ear of a read of register k, that write shall not change o_s_axi_rdata of the read.",
+     "page": 263,
+     "normative": true
+    },
+    {
+     "id": "7.6:s7",
+     "text": "[REQ-CC-006] The read data of register k shall always equal one whole value that register k held in the cycle that ends at Ear, and never a mix of the bytes of two values.",
+     "page": 265,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "8",
+   "title": "Timing and protocol",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 267,
+   "page_end": 267,
+   "sentences": []
+  },
+  {
+   "id": "8.1",
+   "title": "Latency and throughput",
+   "level": 3,
+   "parent": "8",
+   "page_start": 269,
+   "page_end": 287,
+   "sentences": [
+    {
+     "id": "8.1:s1",
+     "text": "Operation: Ec to o_s_axi_bvalid = 1; Value: Exactly 1 cycle: 1 in the cycle that starts at Ec; Requirement: REQ-WR-020",
+     "page": 273,
+     "normative": false
+    },
+    {
+     "id": "8.1:s2",
+     "text": "Operation: Ec to new value on o_regs; Value: Exactly 1 cycle: visible in the cycle that starts at Ec; Requirement: REQ-WR-012",
+     "page": 274,
+     "normative": false
+    },
+    {
+     "id": "8.1:s3",
+     "text": "Operation: Eb to o_s_axi_awready and o_s_axi_wready = 1; Value: Exactly 1 cycle: 1 in the cycle that starts at Eb; Requirement: REQ-WR-001, REQ-WR-003",
+     "page": 275,
+     "normative": false
+    },
+    {
+     "id": "8.1:s4",
+     "text": "Operation: Earliest Eb; Value: Ec + 1 edge; Requirement: REQ-WR-020",
+     "page": 276,
+     "normative": false
+    },
+    {
+     "id": "8.1:s5",
+     "text": "Operation: Write throughput; Value: At most 1 write every 2 cycles (AW and W at edge n, B at edge n+1, next AW and W at edge n+2); Requirement: REQ-TIM-001",
+     "page": 277,
+     "normative": false
+    },
+    {
+     "id": "8.1:s6",
+     "text": "Operation: Ear to o_s_axi_rvalid = 1; Value: Exactly 1 cycle: 1 in the cycle that starts at Ear; Requirement: REQ-RD-004",
+     "page": 278,
+     "normative": false
+    },
+    {
+     "id": "8.1:s7",
+     "text": "Operation: Er to o_s_axi_arready = 1; Value: Exactly 1 cycle: 1 in the cycle that starts at Er; Requirement: REQ-RD-001",
+     "page": 279,
+     "normative": false
+    },
+    {
+     "id": "8.1:s8",
+     "text": "Operation: Read throughput; Value: At most 1 read every 2 cycles; Requirement: REQ-TIM-002",
+     "page": 280,
+     "normative": false
+    },
+    {
+     "id": "8.1:s9",
+     "text": "Operation: Write-to-read visibility; Value: A read with Ear >= Ec + 1 edge returns the new value; a read with Ear = Ec returns the old value; Requirement: REQ-CC-003, REQ-CC-004",
+     "page": 281,
+     "normative": false
+    },
+    {
+     "id": "8.1:s10",
+     "text": "[REQ-TIM-001] When the manager drives i_s_axi_awvalid, i_s_axi_wvalid and i_s_axi_bready at 1 continuously, the block shall complete one write transaction every 2 cycles, with the AW and W transfers at edge n, the B transfer at edge n+1, and the next AW and W transfers at edge n+2.",
+     "page": 283,
+     "normative": true
+    },
+    {
+     "id": "8.1:s11",
+     "text": "[REQ-TIM-002] When the manager drives i_s_axi_arvalid and i_s_axi_rready at 1 continuously, the block shall complete one read transaction every 2 cycles, with the AR transfer at edge n, the R transfer at edge n+1, and the next AR transfer at edge n+2.",
+     "page": 285,
+     "normative": true
+    },
+    {
+     "id": "8.1:s12",
+     "text": "[REQ-TIM-003] Readies of the block shall not wait for the matching valid. o_s_axi_awready, o_s_axi_wready and o_s_axi_arready shall be 1 whenever REQ-WR-001, REQ-WR-003 and REQ-RD-001 say so, whatever the values of the valids.",
+     "page": 287,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "8.2",
+   "title": "Back-pressure and ordering",
+   "level": 3,
+   "parent": "8",
+   "page_start": 289,
+   "page_end": 297,
+   "sentences": [
+    {
+     "id": "8.2:s1",
+     "text": "[REQ-TIM-010] While i_s_axi_bready is 0 and o_s_axi_bvalid is 1, the block shall keep the response pending and shall take no new AW or W transfer, for any number of cycles.",
+     "page": 291,
+     "normative": true
+    },
+    {
+     "id": "8.2:s2",
+     "text": "[REQ-TIM-011] While i_s_axi_rready is 0 and o_s_axi_rvalid is 1, the block shall keep the read data pending and shall take no new AR transfer, for any number of cycles.",
+     "page": 293,
+     "normative": true
+    },
+    {
+     "id": "8.2:s3",
+     "text": "[REQ-TIM-012] Back-pressure on the B channel shall not stall the AR or R channel, and back-pressure on the R channel shall not stall the AW, W or B channel.",
+     "page": 295,
+     "normative": true
+    },
+    {
+     "id": "8.2:s4",
+     "text": "[REQ-TIM-013] Because only one write and one read can be in progress, the block shall answer write transactions in the order of their Ec and read transactions in the order of their Ear.",
+     "page": 297,
+     "normative": true
+    },
+    {
+     "id": "8.2:s5",
+     "text": "The only order defined between reads and writes is the one given in section 7.6.",
+     "page": 297,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "8.3",
+   "title": "Cycle-by-cycle examples",
+   "level": 3,
+   "parent": "8",
+   "page_start": 299,
+   "page_end": 335,
+   "sentences": [
+    {
+     "id": "8.3:s1",
+     "text": "Row n shows the values during cycle n, which ends at edge n.",
+     "page": 300,
+     "normative": false
+    },
+    {
+     "id": "8.3:s2",
+     "text": "A transfer listed in row n happens at edge n. - means the value does not matter or is not specified.",
+     "page": 300,
+     "normative": false
+    },
+    {
+     "id": "8.3:s3",
+     "text": "Example 1: write to register 1 (address 0x04).",
+     "page": 302,
+     "normative": false
+    },
+    {
+     "id": "8.3:s4",
+     "text": "The address arrives before the data, wstrb = 4'b0011, and the manager holds back the B response for one cycle.",
+     "page": 302,
+     "normative": false
+    },
+    {
+     "id": "8.3:s5",
+     "text": "Register 1 is 0 at the start.",
+     "page": 302,
+     "normative": false
+    },
+    {
+     "id": "8.3:s6",
+     "text": "Cycle: 1; awvalid: 1; awready: 1; awaddr: 0x04; wvalid: 0; wready: 1; wdata: -; wstrb: -; bvalid: 0; bready: 0; bresp: -; o_regs[63:32]: 0x0000_0000; Event at the end edge: AW transfer (Ea)",
+     "page": 306,
+     "normative": false
+    },
+    {
+     "id": "8.3:s7",
+     "text": "Cycle: 2; awvalid: 0; awready: 0; awaddr: -; wvalid: 1; wready: 1; wdata: 0xA5A5_1234; wstrb: 0x3; bvalid: 0; bready: 0; bresp: -; o_regs[63:32]: 0x0000_0000; Event at the end edge: W transfer (Ew = Ec); register 1 written",
+     "page": 307,
+     "normative": false
+    },
+    {
+     "id": "8.3:s8",
+     "text": "Cycle: 3; awvalid: 0; awready: 0; awaddr: -; wvalid: 0; wready: 0; wdata: -; wstrb: -; bvalid: 1; bready: 0; bresp: 2'b00; o_regs[63:32]: 0x0000_1234; Event at the end edge: Response held back",
+     "page": 308,
+     "normative": false
+    },
+    {
+     "id": "8.3:s9",
+     "text": "Cycle: 4; awvalid: 0; awready: 0; awaddr: -; wvalid: 0; wready: 0; wdata: -; wstrb: -; bvalid: 1; bready: 1; bresp: 2'b00; o_regs[63:32]: 0x0000_1234; Event at the end edge: B transfer (Eb)",
+     "page": 309,
+     "normative": false
+    },
+    {
+     "id": "8.3:s10",
+     "text": "Cycle: 5; awvalid: 0; awready: 1; awaddr: -; wvalid: 0; wready: 1; wdata: -; wstrb: -; bvalid: 0; bready: -; bresp: -; o_regs[63:32]: 0x0000_1234; Event at the end edge: Idle; new write can be taken",
+     "page": 310,
+     "normative": true
+    },
+    {
+     "id": "8.3:s11",
+     "text": "Example 2: write to an unmapped address (0x44).",
+     "page": 312,
+     "normative": false
+    },
+    {
+     "id": "8.3:s12",
+     "text": "The address and the data arrive at the same edge and bready is 1.",
+     "page": 312,
+     "normative": false
+    },
+    {
+     "id": "8.3:s13",
+     "text": "Cycle: 1; awvalid: 1; awready: 1; awaddr: 0x44; wvalid: 1; wready: 1; bvalid: 0; bready: 1; bresp: -; o_regs: unchanged; Event at the end edge: AW and W transfers (Ec)",
+     "page": 316,
+     "normative": false
+    },
+    {
+     "id": "8.3:s14",
+     "text": "Cycle: 2; awvalid: 0; awready: 0; awaddr: -; wvalid: 0; wready: 0; bvalid: 1; bready: 1; bresp: 2'b10; o_regs: unchanged; Event at the end edge: B transfer, SLVERR",
+     "page": 317,
+     "normative": false
+    },
+    {
+     "id": "8.3:s15",
+     "text": "Cycle: 3; awvalid: 0; awready: 1; awaddr: -; wvalid: 0; wready: 1; bvalid: 0; bready: 1; bresp: -; o_regs: unchanged; Event at the end edge: Idle",
+     "page": 318,
+     "normative": false
+    },
+    {
+     "id": "8.3:s16",
+     "text": "Example 3: read of the status register (0x40), with back-pressure on R while i_status changes.",
+     "page": 320,
+     "normative": false
+    },
+    {
+     "id": "8.3:s17",
+     "text": "Cycle: 1; arvalid: 1; arready: 1; araddr: 0x40; i_status: 0x1234_5678; rvalid: 0; rready: 0; rdata: -; rresp: -; Event at the end edge: AR transfer (Ear); i_status sampled",
+     "page": 324,
+     "normative": false
+    },
+    {
+     "id": "8.3:s18",
+     "text": "Cycle: 2; arvalid: 0; arready: 0; araddr: -; i_status: 0x9ABC_DEF0; rvalid: 1; rready: 0; rdata: 0x1234_5678; rresp: 2'b00; Event at the end edge: Data held back",
+     "page": 325,
+     "normative": false
+    },
+    {
+     "id": "8.3:s19",
+     "text": "Cycle: 3; arvalid: 0; arready: 0; araddr: -; i_status: 0x9ABC_DEF0; rvalid: 1; rready: 1; rdata: 0x1234_5678; rresp: 2'b00; Event at the end edge: R transfer (Er)",
+     "page": 326,
+     "normative": false
+    },
+    {
+     "id": "8.3:s20",
+     "text": "Cycle: 4; arvalid: 0; arready: 1; araddr: -; i_status: 0x9ABC_DEF0; rvalid: 0; rready: -; rdata: -; rresp: -; Event at the end edge: Idle",
+     "page": 327,
+     "normative": false
+    },
+    {
+     "id": "8.3:s21",
+     "text": "Example 4: reset release while the manager holds awvalid at 1.",
+     "page": 329,
+     "normative": false
+    },
+    {
+     "id": "8.3:s22",
+     "text": "Cycle: 1; i_rst_n: 0; awvalid: 1; awready: 0; Event at the end edge: No transfer (reset)",
+     "page": 333,
+     "normative": false
+    },
+    {
+     "id": "8.3:s23",
+     "text": "Cycle: 2; i_rst_n: 1; awvalid: 1; awready: 0; Event at the end edge: Edge R1; no transfer",
+     "page": 334,
+     "normative": false
+    },
+    {
+     "id": "8.3:s24",
+     "text": "Cycle: 3; i_rst_n: 1; awvalid: 1; awready: 1; Event at the end edge: AW transfer",
+     "page": 335,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "9",
+   "title": "Registers",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 337,
+   "page_end": 348,
+   "sentences": [
+    {
+     "id": "9:s1",
+     "text": "Offset: 0x00 + 4k, k = 0 to PARA_NUM_REGS-1; Name: REG_k; Field: VALUE; Bits: 31:0; Access: RW; Reset: 0x0000_0000; Description: Control value k. Drives o_regs[32k+31:32k]. Byte lanes are written under i_s_axi_wstrb. Reads return the current value with OKAY.",
+     "page": 341,
+     "normative": false
+    },
+    {
+     "id": "9:s2",
+     "text": "Offset: 0x40; Name: STATUS; Field: VALUE; Bits: 31:0; Access: RO; Reset: Not applicable; Description: Read returns i_status sampled at Ear, with OKAY. A write changes nothing and answers OKAY.",
+     "page": 342,
+     "normative": false
+    },
+    {
+     "id": "9:s3",
+     "text": "Offset: 4*PARA_NUM_REGS to 0x3C; Name: Reserved; Field: -; Bits: 31:0; Access: -; Reset: -; Description: Unmapped; does not exist when PARA_NUM_REGS = 16. Read returns 0 with SLVERR. A write changes nothing and answers SLVERR.",
+     "page": 343,
+     "normative": false
+    },
+    {
+     "id": "9:s4",
+     "text": "Offset: 0x44 to 2^PARA_ADDR_W - 4; Name: Reserved; Field: -; Bits: 31:0; Access: -; Reset: -; Description: Unmapped. Read returns 0 with SLVERR. A write changes nothing and answers SLVERR.",
+     "page": 344,
+     "normative": false
+    },
+    {
+     "id": "9:s5",
+     "text": "Access codes: RW is readable and writable.",
+     "page": 346,
+     "normative": false
+    },
+    {
+     "id": "9:s6",
+     "text": "RO is read-only; a write is ignored and answers OKAY.",
+     "page": 346,
+     "normative": false
+    },
+    {
+     "id": "9:s7",
+     "text": "Offsets are byte addresses with bits [1:0] ignored.",
+     "page": 346,
+     "normative": false
+    },
+    {
+     "id": "9:s8",
+     "text": "For the default configuration (PARA_NUM_REGS = 8, PARA_ADDR_W = 8): REG_0 to REG_7 are at 0x00 to 0x1C, 0x20 to 0x3C is unmapped, STATUS is at 0x40, and 0x44 to 0xFC is unmapped.",
+     "page": 346,
+     "normative": false
+    },
+    {
+     "id": "9:s9",
+     "text": "[REQ-REG-001] The register map shall be exactly the table above for every legal parameter combination.",
+     "page": 348,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "10",
+   "title": "Errors and corner cases",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 350,
+   "page_end": 350,
+   "sentences": []
+  },
+  {
+   "id": "10.1",
+   "title": "Error conditions",
+   "level": 3,
+   "parent": "10",
+   "page_start": 352,
+   "page_end": 372,
+   "sentences": [
+    {
+     "id": "10.1:s1",
+     "text": "[REQ-ERR-001] A write to an unmapped address shall be detected by the decode of the address taken at Ea, shall change no register, and shall answer o_s_axi_bresp = 2'b10 (SLVERR) with the normal write timing.",
+     "page": 354,
+     "normative": true
+    },
+    {
+     "id": "10.1:s2",
+     "text": "[REQ-ERR-002] A read from an unmapped address shall be detected by the decode of the address taken at Ear, and shall return o_s_axi_rdata = 0 and o_s_axi_rresp = 2'b10 (SLVERR) with the normal read timing.",
+     "page": 356,
+     "normative": true
+    },
+    {
+     "id": "10.1:s3",
+     "text": "[REQ-ERR-003] A write to the status register shall change no register, shall have no effect on later reads of the status register other than through i_status, and shall answer OKAY.",
+     "page": 358,
+     "normative": true
+    },
+    {
+     "id": "10.1:s4",
+     "text": "This holds for every value of i_s_axi_wstrb.",
+     "page": 358,
+     "normative": false
+    },
+    {
+     "id": "10.1:s5",
+     "text": "[REQ-ERR-004] A write with i_s_axi_wstrb = 4'b0000 shall answer exactly as a write with strobes to the same address (OKAY for a register or status, SLVERR for unmapped) and shall change no register.",
+     "page": 360,
+     "normative": true
+    },
+    {
+     "id": "10.1:s6",
+     "text": "[REQ-ERR-005] An address with bits [1:0] not equal to 2'b00 shall not be an error.",
+     "page": 362,
+     "normative": true
+    },
+    {
+     "id": "10.1:s7",
+     "text": "It shall access the aligned word given by its word index.",
+     "page": 362,
+     "normative": true
+    },
+    {
+     "id": "10.1:s8",
+     "text": "[REQ-ERR-006] Any value of i_s_axi_awprot or i_s_axi_arprot shall be accepted without an error and without an effect.",
+     "page": 364,
+     "normative": true
+    },
+    {
+     "id": "10.1:s9",
+     "text": "[REQ-ERR-007] An unmapped access shall not stall or change the state of the other channels.",
+     "page": 366,
+     "normative": true
+    },
+    {
+     "id": "10.1:s10",
+     "text": "The next transaction shall behave as if the unmapped access had targeted a mapped address.",
+     "page": 366,
+     "normative": true
+    },
+    {
+     "id": "10.1:s11",
+     "text": "[REQ-ERR-008] A valid input at 1 while i_rst_n is 0 shall have no effect (REQ-RST-005).",
+     "page": 368,
+     "normative": true
+    },
+    {
+     "id": "10.1:s12",
+     "text": "[REQ-ERR-009] Reset asserted in the middle of a transaction shall follow REQ-RST-004 and REQ-RST-009.",
+     "page": 370,
+     "normative": true
+    },
+    {
+     "id": "10.1:s13",
+     "text": "[REQ-ERR-010] If the manager breaks the handshake rules of section 12.1 (drops a valid or changes a payload before the transfer), the behaviour of the block is not specified and shall not be verified.",
+     "page": 372,
+     "normative": true
+    },
+    {
+     "id": "10.1:s14",
+     "text": "The block need not detect it.",
+     "page": 372,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "10.2",
+   "title": "Parameter extremes",
+   "level": 3,
+   "parent": "10",
+   "page_start": 374,
+   "page_end": 384,
+   "sentences": [
+    {
+     "id": "10.2:s1",
+     "text": "[REQ-EXT-001] With PARA_NUM_REGS = 1, only byte address 0x00 (REG_0) and 0x40 (STATUS) shall be mapped, o_regs shall be 32 bits wide, and 0x04 to 0x3C shall be unmapped.",
+     "page": 376,
+     "normative": true
+    },
+    {
+     "id": "10.2:s2",
+     "text": "[REQ-EXT-002] With PARA_NUM_REGS = 16, byte addresses 0x00 to 0x3C shall be REG_0 to REG_15, 0x40 shall be STATUS, o_regs shall be 512 bits wide, and no address below 0x44 shall be unmapped.",
+     "page": 378,
+     "normative": true
+    },
+    {
+     "id": "10.2:s3",
+     "text": "[REQ-EXT-003] With PARA_ADDR_W = 7, the address space shall be 0x00 to 0x7F and the addresses 0x44 to 0x7C shall be unmapped.",
+     "page": 380,
+     "normative": true
+    },
+    {
+     "id": "10.2:s4",
+     "text": "[REQ-EXT-004] With PARA_ADDR_W = 16, every address with a 1 in any bit from 15 to 7 (for example 0x0080, 0x0100, 0x8040, 0xFFFC) shall be unmapped.",
+     "page": 382,
+     "normative": true
+    },
+    {
+     "id": "10.2:s5",
+     "text": "[REQ-EXT-005] The latency, throughput, reset and back-pressure behaviour shall be the same for every legal parameter combination.",
+     "page": 384,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "11",
+   "title": "Configurations",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 386,
+   "page_end": 395,
+   "sentences": [
+    {
+     "id": "11:s1",
+     "text": "ID: CFG-BASE; Parameter values: PARA_NUM_REGS=8, PARA_ADDR_W=8; Purpose: Main configuration (defaults); covers the gap of unmapped addresses 0x20 to 0x3C",
+     "page": 390,
+     "normative": false
+    },
+    {
+     "id": "11:s2",
+     "text": "ID: CFG-MIN; Parameter values: PARA_NUM_REGS=1, PARA_ADDR_W=7; Purpose: Smallest legal: one register, narrowest address bus",
+     "page": 391,
+     "normative": true
+    },
+    {
+     "id": "11:s3",
+     "text": "ID: CFG-MAX; Parameter values: PARA_NUM_REGS=16, PARA_ADDR_W=16; Purpose: Largest legal: full register bank, widest address bus, aliasing checks with high address bits",
+     "page": 392,
+     "normative": true
+    },
+    {
+     "id": "11:s4",
+     "text": "ID: CFG-FULL-A7; Parameter values: PARA_NUM_REGS=16, PARA_ADDR_W=7; Purpose: Full register bank with the narrowest address bus; no unmapped address below 0x44",
+     "page": 393,
+     "normative": false
+    },
+    {
+     "id": "11:s5",
+     "text": "The verification runs every configuration listed here (run_set.json).",
+     "page": 395,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "12",
+   "title": "Verification requirements",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 397,
+   "page_end": 397,
+   "sentences": []
+  },
+  {
+   "id": "12.1",
+   "title": "Environment obligations",
+   "level": 3,
+   "parent": "12",
+   "page_start": 399,
+   "page_end": 413,
+   "sentences": [
+    {
+     "id": "12.1:s1",
+     "text": "[REQ-VER-001] On the AW, W and AR channels, the manager shall keep a valid at 1, and its payload stable, from the cycle it rises until the edge of its transfer.",
+     "page": 401,
+     "normative": true
+    },
+    {
+     "id": "12.1:s2",
+     "text": "[REQ-VER-002] The manager may keep i_s_axi_bready and i_s_axi_rready at 0 for any number of cycles, may drive them at 1 before the matching valid, and may make them depend on the valid.",
+     "page": 403,
+     "normative": false
+    },
+    {
+     "id": "12.1:s3",
+     "text": "[REQ-VER-003] The environment shall release i_rst_n (0 to 1) synchronously to i_clk, so that the release meets the recovery and removal times of the flip-flops.",
+     "page": 405,
+     "normative": true
+    },
+    {
+     "id": "12.1:s4",
+     "text": "The testbench shall change i_rst_n only away from rising edges of i_clk.",
+     "page": 405,
+     "normative": true
+    },
+    {
+     "id": "12.1:s5",
+     "text": "[REQ-VER-004] The environment shall drive i_status synchronously to i_clk.",
+     "page": 407,
+     "normative": true
+    },
+    {
+     "id": "12.1:s6",
+     "text": "The testbench shall change it only away from rising edges.",
+     "page": 407,
+     "normative": true
+    },
+    {
+     "id": "12.1:s7",
+     "text": "[REQ-VER-005] The testbench shall drive defined values (no X or Z) on all inputs while i_rst_n is 1.",
+     "page": 409,
+     "normative": true
+    },
+    {
+     "id": "12.1:s8",
+     "text": "During reset the valids may be 0 or 1.",
+     "page": 409,
+     "normative": false
+    },
+    {
+     "id": "12.1:s9",
+     "text": "[REQ-VER-006] The environment shall drive i_rst_n = 0 from the start of operation (time zero in simulation), before the first rising edge of i_clk, for at least 2 cycles.",
+     "page": 411,
+     "normative": true
+    },
+    {
+     "id": "12.1:s10",
+     "text": "Before the first assertion of i_rst_n the outputs are undefined and no check applies, REQ-VER-010 included (spec-lint GAP-002).",
+     "page": 411,
+     "normative": false
+    },
+    {
+     "id": "12.1:s11",
+     "text": "[REQ-VER-007] A reset assertion ends the obligation of REQ-VER-001 for a valid that rose before it: during reset and after R1 the manager may drop that valid or change its payload.",
+     "page": 413,
+     "normative": false
+    },
+    {
+     "id": "12.1:s12",
+     "text": "A valid at 1 after R1 is a new request (REQ-RST-010), with the obligation of REQ-VER-001 from that cycle (spec-lint GAP-005).",
+     "page": 413,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "12.2",
+   "title": "Observability",
+   "level": 3,
+   "parent": "12",
+   "page_start": 415,
+   "page_end": 422,
+   "sentences": [
+    {
+     "id": "12.2:s1",
+     "text": "The values of the registers can be seen directly on o_regs, and also through reads.",
+     "page": 416,
+     "normative": true
+    },
+    {
+     "id": "12.2:s2",
+     "text": "The held state of the AW, W and AR channels can be seen on o_s_axi_awready, o_s_axi_wready and o_s_axi_arready.",
+     "page": 416,
+     "normative": true
+    },
+    {
+     "id": "12.2:s3",
+     "text": "A reference model shall predict, at every edge, o_regs and the next value of every handshake output.",
+     "page": 416,
+     "normative": true
+    },
+    {
+     "id": "12.2:s4",
+     "text": "[REQ-VER-010] The checker shall compare o_regs with the reference model in every cycle, not only after B transfers.",
+     "page": 418,
+     "normative": true
+    },
+    {
+     "id": "12.2:s5",
+     "text": "[REQ-VER-011] The checker shall compare o_s_axi_rdata and o_s_axi_rresp only in cycles where o_s_axi_rvalid is 1 or i_rst_n is 0, and o_s_axi_bresp only in cycles where o_s_axi_bvalid is 1 or i_rst_n is 0 (REQ-WR-027, REQ-RD-014, REQ-RST-002).",
+     "page": 420,
+     "normative": true
+    },
+    {
+     "id": "12.2:s6",
+     "text": "[REQ-VER-012] A protocol checker shall check that o_s_axi_bvalid and o_s_axi_rvalid stay 1, with their payload stable, until their transfer, and that no response code is 2'b01 or 2'b11.",
+     "page": 422,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "12.3",
+   "title": "Special setups",
+   "level": 3,
+   "parent": "12",
+   "page_start": 424,
+   "page_end": 428,
+   "sentences": [
+    {
+     "id": "12.3:s1",
+     "text": "[REQ-VER-020] To check REQ-IF-001, the testbench shall change inputs between rising edges (for example at the falling edge), and shall check that no output changes before the next rising edge.",
+     "page": 426,
+     "normative": true
+    },
+    {
+     "id": "12.3:s2",
+     "text": "[REQ-VER-021] To check REQ-RST-004, the testbench shall assert i_rst_n between rising edges while transactions are in progress, and shall check the reset values before the next rising edge.",
+     "page": 428,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "12.4",
+   "title": "Required scenarios",
+   "level": 3,
+   "parent": "12",
+   "page_start": 430,
+   "page_end": 454,
+   "sentences": [
+    {
+     "id": "12.4:s1",
+     "text": "[REQ-VER-030] Every value of i_s_axi_wstrb (all 16) shall be applied to a write of a mapped register, with data that differs from the old value in every byte.",
+     "page": 432,
+     "normative": true
+    },
+    {
+     "id": "12.4:s2",
+     "text": "[REQ-VER-031] Write transactions shall be run with the address before the data (gaps of 1 and of 4 or more cycles), with the data before the address (same gaps), and with both at the same edge.",
+     "page": 434,
+     "normative": true
+    },
+    {
+     "id": "12.4:s3",
+     "text": "[REQ-VER-032] The B channel shall be run with i_s_axi_bready delays of 0, 1 and 4 or more cycles, including i_s_axi_bready at 1 before o_s_axi_bvalid rises.",
+     "page": 436,
+     "normative": true
+    },
+    {
+     "id": "12.4:s4",
+     "text": "[REQ-VER-033] The R channel shall be run with i_s_axi_rready delays of 0, 1 and 4 or more cycles, including i_s_axi_rready at 1 before o_s_axi_rvalid rises.",
+     "page": 438,
+     "normative": true
+    },
+    {
+     "id": "12.4:s5",
+     "text": "[REQ-VER-034] New AW, W and AR valids shall be presented while a response is held back, to check that they are not taken (REQ-TIM-010, REQ-TIM-011).",
+     "page": 440,
+     "normative": true
+    },
+    {
+     "id": "12.4:s6",
+     "text": "[REQ-VER-035] Every mapped register shall be written with a unique value and read back, to detect decode aliasing.",
+     "page": 442,
+     "normative": true
+    },
+    {
+     "id": "12.4:s7",
+     "text": "[REQ-VER-036] The status register shall be read while i_status changes in the cycles around Ear and during R back-pressure, and shall be written with several strobe values.",
+     "page": 444,
+     "normative": true
+    },
+    {
+     "id": "12.4:s8",
+     "text": "[REQ-VER-037] Unmapped addresses shall be accessed: every word index from PARA_NUM_REGS to 15, 0x44, the highest address of the bus, and addresses that equal a mapped address plus a 1 in a bit from 7 to PARA_ADDR_W-1 (when PARA_ADDR_W > 7).",
+     "page": 446,
+     "normative": true
+    },
+    {
+     "id": "12.4:s9",
+     "text": "[REQ-VER-038] Addresses with bits [1:0] not 2'b00, and random values of i_s_axi_awprot and i_s_axi_arprot, shall be applied.",
+     "page": 448,
+     "normative": true
+    },
+    {
+     "id": "12.4:s10",
+     "text": "[REQ-VER-039] A read and a write of the same register shall run with Ear at Ec - 1, Ec and Ec + 1, and a read and a write of different registers shall run at the same time.",
+     "page": 450,
+     "normative": true
+    },
+    {
+     "id": "12.4:s11",
+     "text": "[REQ-VER-040] Reset shall be asserted with only the write address held, with only the write data held, with a B response pending, with an R response pending, and with valids held at 1 through the reset.",
+     "page": 452,
+     "normative": true
+    },
+    {
+     "id": "12.4:s12",
+     "text": "[REQ-VER-041] Back-to-back writes and back-to-back reads at the full throughput of REQ-TIM-001 and REQ-TIM-002 shall be run, alone and at the same time.",
+     "page": 454,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "13",
+   "title": "Implementation constraints",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 456,
+   "page_end": 470,
+   "sentences": [
+    {
+     "id": "13:s1",
+     "text": "[REQ-IMP-001] The block shall meet timing at 50 MHz (20 ns clock period) in the GF180MCU technology at the worst-case corner of the sign-off flow.",
+     "page": 458,
+     "normative": true
+    },
+    {
+     "id": "13:s2",
+     "text": "[REQ-IMP-002] The RTL shall follow the coding rules in docs/RTL_RULES.md (REF-002).",
+     "page": 460,
+     "normative": true
+    },
+    {
+     "id": "13:s3",
+     "text": "[REQ-IMP-003] The RTL shall be synthesizable, shall use the single clock i_clk with no clock gating and no latches, and shall not rely on initial values.",
+     "page": 462,
+     "normative": true
+    },
+    {
+     "id": "13:s4",
+     "text": "[REQ-IMP-004] Every flip-flop that drives an output, or holds transaction state, shall be reset asynchronously by i_rst_n to the value that gives the reset values of section 5.",
+     "page": 464,
+     "normative": true
+    },
+    {
+     "id": "13:s5",
+     "text": "[REQ-IMP-005] Every output shall be driven directly from a flip-flop (this realises REQ-IF-001).",
+     "page": 466,
+     "normative": true
+    },
+    {
+     "id": "13:s6",
+     "text": "[REQ-IMP-006] The RTL shall compile and simulate in Verilator without lint warnings in all configurations of section 11.",
+     "page": 468,
+     "normative": true
+    },
+    {
+     "id": "13:s7",
+     "text": "No area budget is given.",
+     "page": 470,
+     "normative": false
+    },
+    {
+     "id": "13:s8",
+     "text": "The block should use no more storage than the PARA_NUM_REGS x 32 register bits plus the flip-flops needed for the held write address and data, the read data, and the handshake state.",
+     "page": 470,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "14",
+   "title": "Decisions and open questions",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 472,
+   "page_end": 496,
+   "sentences": [
+    {
+     "id": "14:s1",
+     "text": "ID: D-001; Question: Value of o_s_axi_awready, o_s_axi_wready and o_s_axi_arready during reset (the description allows 0 or 1); Decision: 0 during reset and in the cycle that ends at R1; 1 from R1 (REQ-RST-001, REQ-RST-006, REQ-RST-007); By: spec-draft; Date: 2026-11-19",
+     "page": 476,
+     "normative": false
+    },
+    {
+     "id": "14:s2",
+     "text": "ID: D-002; Question: Whether readies depend on the valids; Decision: No. The readies are registered and depend only on the held state (REQ-TIM-003, REQ-IF-001); By: spec-draft; Date: 2026-11-19",
+     "page": 477,
+     "normative": false
+    },
+    {
+     "id": "14:s3",
+     "text": "ID: D-003; Question: Write response latency (\"at the earliest one cycle\"); Decision: Exactly 1 cycle: bvalid is 1 from Ec (REQ-WR-020); By: spec-draft; Date: 2026-11-19",
+     "page": 478,
+     "normative": false
+    },
+    {
+     "id": "14:s4",
+     "text": "ID: D-004; Question: Read data latency (\"at the earliest one cycle\"); Decision: Exactly 1 cycle: rvalid is 1 from Ear (REQ-RD-004); By: spec-draft; Date: 2026-11-19",
+     "page": 479,
+     "normative": false
+    },
+    {
+     "id": "14:s5",
+     "text": "ID: D-005; Question: Edge at which the register is written; Decision: Ec, the later of the AW and W transfers (REQ-WR-010); By: spec-draft; Date: 2026-11-19",
+     "page": 480,
+     "normative": false
+    },
+    {
+     "id": "14:s6",
+     "text": "ID: D-006; Question: Old or new value when a read and a write of the same register overlap; Decision: The read samples at Ear. A write at the same edge gives the old value; a write at an earlier Ec gives the new value (REQ-CC-003, REQ-CC-004); By: spec-draft; Date: 2026-11-19",
+     "page": 481,
+     "normative": false
+    },
+    {
+     "id": "14:s7",
+     "text": "ID: D-007; Question: When i_status is sampled; Decision: At Ear, and held until Er (REQ-RD-009, REQ-RD-010); By: spec-draft; Date: 2026-11-19",
+     "page": 482,
+     "normative": false
+    },
+    {
+     "id": "14:s8",
+     "text": "ID: D-008; Question: Aliasing of address bits above bit 6; Decision: Full decode of bits [PARA_ADDR_W-1:2]; any 1 above bit 6 is unmapped (REQ-DEC-004, REQ-DEC-005); By: spec-draft; Date: 2026-11-19",
+     "page": 483,
+     "normative": false
+    },
+    {
+     "id": "14:s9",
+     "text": "ID: D-009; Question: Values of bresp, rresp and rdata while their valid is 0; Decision: Not specified outside reset and not checked; 0 during reset (REQ-WR-027, REQ-RD-014, REQ-RST-002); By: spec-draft; Date: 2026-11-19",
+     "page": 484,
+     "normative": false
+    },
+    {
+     "id": "14:s10",
+     "text": "ID: D-010; Question: When readies return to 1 after a response; Decision: In the cycle after the B or R transfer, with no combinational path from bready or rready (REQ-WR-001, REQ-RD-001); By: spec-draft; Date: 2026-11-19",
+     "page": 485,
+     "normative": false
+    },
+    {
+     "id": "14:s11",
+     "text": "ID: D-011; Question: Illegal parameter values; Decision: The RTL should stop elaboration with an error; not verified (REQ-PAR-003, REQ-PAR-004); By: spec-draft; Date: 2026-11-19",
+     "page": 486,
+     "normative": true
+    },
+    {
+     "id": "14:s12",
+     "text": "ID: D-012; Question: Configurations for PARA_ADDR_W extremes (the description names only PARA_NUM_REGS = 1 and 16); Decision: Added PARA_ADDR_W = 7 and 16 in CFG-MIN, CFG-MAX and CFG-FULL-A7; By: spec-draft; Date: 2026-11-19",
+     "page": 487,
+     "normative": false
+    },
+    {
+     "id": "14:s13",
+     "text": "ID: D-013; Question: Width of o_regs as a table-readable expression; Decision: Local parameter LPARA_REGS_W = PARA_NUM_REGS*32 (section 4, REQ-PAR-002); By: spec-draft; Date: 2026-11-19",
+     "page": 488,
+     "normative": false
+    },
+    {
+     "id": "14:s14",
+     "text": "ID: D-014; Question: Do held states survive a reset; which R1 does \"after R1\" mean (spec-lint GAP-001); Decision: A reset ends every held state; \"after R1\" is the most recent R1 (section 2 terms); By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19",
+     "page": 489,
+     "normative": false
+    },
+    {
+     "id": "14:s15",
+     "text": "ID: D-015; Question: Inputs, outputs and checks before the first reset (spec-lint GAP-002); Decision: Reset from time zero for at least 2 cycles; outputs undefined and unchecked before it: REQ-VER-006; By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19",
+     "page": 490,
+     "normative": false
+    },
+    {
+     "id": "14:s16",
+     "text": "ID: D-016; Question: Meaning of \"from edge n\" (spec-lint GAP-003); Decision: The start cycle only; other requirements end it; By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19",
+     "page": 491,
+     "normative": false
+    },
+    {
+     "id": "14:s17",
+     "text": "ID: D-017; Question: Readies during reset: D-001 or Q-003 (spec-lint GAP-004); Decision: D-001 is final; Q-003 closed; By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19",
+     "page": 492,
+     "normative": false
+    },
+    {
+     "id": "14:s18",
+     "text": "ID: D-018; Question: Valid and payload of a request across a reset (spec-lint GAP-005); Decision: Reset ends the obligation; a valid after R1 is a new request: REQ-VER-007; By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19",
+     "page": 493,
+     "normative": false
+    },
+    {
+     "id": "14:s19",
+     "text": "ID: Q-001; Question: Is a throughput of one write and one read every 2 cycles enough for the CPU?; Decision: Decided: yes, one write and one read every 2 cycles is enough; By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19",
+     "page": 494,
+     "normative": false
+    },
+    {
+     "id": "14:s20",
+     "text": "ID: Q-002; Question: Is there an area budget for GF180MCU?; Decision: Decided: no area budget. Synthesis area is reported for information only; By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19",
+     "page": 495,
+     "normative": false
+    },
+    {
+     "id": "14:s21",
+     "text": "ID: Q-003; Question: Should the readies be 0 during reset (D-001), or is a cheaper design with readies at 1 during reset wanted?; Decision: Decided: D-001 is final; the readies are 0 during reset and in the cycle that ends at R1; By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19",
+     "page": 496,
+     "normative": true
+    }
+   ]
+  }
+ ],
+ "tables": [
+  {
+   "section": "2",
+   "header": [
+    "ID",
+    "Document",
+    "Revision",
+    "Used for"
+   ],
+   "rows": [
+    [
+     "REF-001",
+     "ARM IHI 0022, AMBA AXI and ACE Protocol Specification",
+     "Issue H or later",
+     "AXI4-Lite channel handshake rules and response encodings (OKAY, SLVERR)"
+    ],
+    [
+     "REF-002",
+     "docs/RTL_RULES.md",
+     "Current revision of the repository",
+     "RTL coding rules"
+    ],
+    [
+     "REF-003",
+     "AXI4-Lite register file: design description (input of nnc spec-draft)",
+     "As delivered",
+     "Source of the requirements in this specification"
+    ]
+   ],
+   "line": 33,
+   "units": [
+    "2:s1",
+    "2:s2",
+    "2:s3"
+   ]
+  },
+  {
+   "section": "3",
+   "header": [
+    "Term",
+    "Meaning"
+   ],
+   "rows": [
+    [
+     "Manager",
+     "The block that drives the AXI4-Lite inputs of this port (the CPU side)."
+    ],
+    [
+     "AW, W, B, AR, R",
+     "The write address, write data, write response, read address and read data channels."
+    ],
+    [
+     "Transfer (handshake)",
+     "A rising edge of i_clk at which the valid and the ready of a channel are both 1 and i_rst_n is 1. The channel's payload is taken at that edge."
+    ],
+    [
+     "Edge n / cycle n",
+     "Edge n is the n-th rising edge of i_clk. Cycle n is the clock period between edge n-1 and edge n: it starts at edge n-1 and ends at edge n. \"From edge n\" means \"starting in cycle n+1\": the value holds from that cycle until another requirement changes it (for example a \"shall be 0 from edge\" requirement, a held state ending, or a reset)."
+    ],
+    [
+     "Ea, Ew",
+     "The edge of the AW transfer and the edge of the W transfer of one write transaction."
+    ],
+    [
+     "Ec",
+     "The completion edge of a write: the later of Ea and Ew. If both transfers happen at the same edge, Ec is that edge."
+    ],
+    [
+     "Eb",
+     "The edge of the B transfer of a write transaction."
+    ],
+    [
+     "Ear, Er",
+     "The edge of the AR transfer and the edge of the R transfer of one read transaction."
+    ],
+    [
+     "Held write address",
+     "In cycle n, a write address is held if its AW transfer happened at an edge e <= n-1 and the B transfer of its transaction has not happened at any edge <= n-1, and i_rst_n has not been 0 since that AW transfer (a reset ends the held state, REQ-RST-009)."
+    ],
+    [
+     "Held write data",
+     "In cycle n, write data is held if its W transfer happened at an edge e <= n-1 and the B transfer of its transaction has not happened at any edge <= n-1, and i_rst_n has not been 0 since that W transfer (a reset ends the held state, REQ-RST-009)."
+    ],
+    [
+     "Held read address",
+     "In cycle n, a read address is held if its AR transfer happened at an edge e <= n-1 and the R transfer of its transaction has not happened at any edge <= n-1, and i_rst_n has not been 0 since that AR transfer (a reset ends the held state, REQ-RST-009)."
+    ],
+    [
+     "R1",
+     "The first rising edge of i_clk at which i_rst_n is 1 after a period with i_rst_n at 0. \"After R1\" means after the most recent R1 and while i_rst_n has stayed 1 since."
+    ],
+    [
+     "Word index",
+     "Bits [PARA_ADDR_W-1:2] of an address, read as an unsigned number."
+    ],
+    [
+     "Mapped register",
+     "Read/write register k, 0 <= k < PARA_NUM_REGS, at byte address 4k."
+    ],
+    [
+     "Status register",
+     "The read-only register at byte address 0x40, word index 16."
+    ],
+    [
+     "Unmapped address",
+     "An address that selects neither a mapped register nor the status register."
+    ],
+    [
+     "OKAY, SLVERR",
+     "Response codes 2'b00 and 2'b10 on o_s_axi_bresp and o_s_axi_rresp."
+    ]
+   ],
+   "line": 41,
+   "units": [
+    "3:s1",
+    "3:s2",
+    "3:s3",
+    "3:s4",
+    "3:s5",
+    "3:s6",
+    "3:s7",
+    "3:s8",
+    "3:s9",
+    "3:s10",
+    "3:s11",
+    "3:s12",
+    "3:s13",
+    "3:s14",
+    "3:s15",
+    "3:s16",
+    "3:s17"
+   ]
+  },
+  {
+   "section": "4",
+   "header": [
+    "Parameter",
+    "Default",
+    "Legal values",
+    "Description"
+   ],
+   "rows": [
+    [
+     "PARA_NUM_REGS",
+     "8",
+     "1 to 16",
+     "Number of read/write registers"
+    ],
+    [
+     "PARA_ADDR_W",
+     "8",
+     "7 to 16",
+     "Width in bits of i_s_axi_awaddr and i_s_axi_araddr; 7 is the minimum that reaches the status register at 0x40"
+    ],
+    [
+     "LPARA_REGS_W",
+     "Derived",
+     "-",
+     "PARA_NUM_REGS*32"
+    ]
+   ],
+   "line": 63,
+   "units": [
+    "4:s1",
+    "4:s2",
+    "4:s3"
+   ]
+  },
+  {
+   "section": "5",
+   "header": [
+    "Port",
+    "Direction",
+    "Width",
+    "Signal type",
+    "Reset value",
+    "Clock domain",
+    "Meaning"
+   ],
+   "rows": [
+    [
+     "i_clk",
+     "input",
+     "1",
+     "Clock",
+     "Not applicable",
+     "CLK",
+     "Clock, rising edge"
+    ],
+    [
+     "i_rst_n",
+     "input",
+     "1",
+     "Reset (asynchronous assertion, synchronous release)",
+     "Not applicable",
+     "CLK",
+     "Active-low reset"
+    ],
+    [
+     "i_s_axi_awvalid",
+     "input",
+     "1",
+     "Control",
+     "Not applicable",
+     "CLK",
+     "Write address valid"
+    ],
+    [
+     "o_s_axi_awready",
+     "output",
+     "1",
+     "Control",
+     "0",
+     "CLK",
+     "Write address ready"
+    ],
+    [
+     "i_s_axi_awaddr",
+     "input",
+     "PARA_ADDR_W",
+     "Data",
+     "Not applicable",
+     "CLK",
+     "Write byte address; bits [1:0] ignored"
+    ],
+    [
+     "i_s_axi_awprot",
+     "input",
+     "3",
+     "Data",
+     "Not applicable",
+     "CLK",
+     "Write protection type; ignored"
+    ],
+    [
+     "i_s_axi_wvalid",
+     "input",
+     "1",
+     "Control",
+     "Not applicable",
+     "CLK",
+     "Write data valid"
+    ],
+    [
+     "o_s_axi_wready",
+     "output",
+     "1",
+     "Control",
+     "0",
+     "CLK",
+     "Write data ready"
+    ],
+    [
+     "i_s_axi_wdata",
+     "input",
+     "32",
+     "Data",
+     "Not applicable",
+     "CLK",
+     "Write data; byte lane i is bits 8i+7..8i"
+    ],
+    [
+     "i_s_axi_wstrb",
+     "input",
+     "4",
+     "Data",
+     "Not applicable",
+     "CLK",
+     "Write strobes; bit i enables byte lane i"
+    ],
+    [
+     "o_s_axi_bvalid",
+     "output",
+     "1",
+     "Control",
+     "0",
+     "CLK",
+     "Write response valid"
+    ],
+    [
+     "i_s_axi_bready",
+     "input",
+     "1",
+     "Control",
+     "Not applicable",
+     "CLK",
+     "Write response ready"
+    ],
+    [
+     "o_s_axi_bresp",
+     "output",
+     "2",
+     "Data",
+     "0",
+     "CLK",
+     "Write response: 2'b00 OKAY or 2'b10 SLVERR"
+    ],
+    [
+     "i_s_axi_arvalid",
+     "input",
+     "1",
+     "Control",
+     "Not applicable",
+     "CLK",
+     "Read address valid"
+    ],
+    [
+     "o_s_axi_arready",
+     "output",
+     "1",
+     "Control",
+     "0",
+     "CLK",
+     "Read address ready"
+    ],
+    [
+     "i_s_axi_araddr",
+     "input",
+     "PARA_ADDR_W",
+     "Data",
+     "Not applicable",
+     "CLK",
+     "Read byte address; bits [1:0] ignored"
+    ],
+    [
+     "i_s_axi_arprot",
+     "input",
+     "3",
+     "Data",
+     "Not applicable",
+     "CLK",
+     "Read protection type; ignored"
+    ],
+    [
+     "o_s_axi_rvalid",
+     "output",
+     "1",
+     "Control",
+     "0",
+     "CLK",
+     "Read data valid"
+    ],
+    [
+     "i_s_axi_rready",
+     "input",
+     "1",
+     "Control",
+     "Not applicable",
+     "CLK",
+     "Read data ready"
+    ],
+    [
+     "o_s_axi_rdata",
+     "output",
+     "32",
+     "Data",
+     "0",
+     "CLK",
+     "Read data"
+    ],
+    [
+     "o_s_axi_rresp",
+     "output",
+     "2",
+     "Data",
+     "0",
+     "CLK",
+     "Read response: 2'b00 OKAY or 2'b10 SLVERR"
+    ],
+    [
+     "o_regs",
+     "output",
+     "LPARA_REGS_W",
+     "Data",
+     "0",
+     "CLK",
+     "Current values of the read/write registers; register k is bits 32k+31..32k"
+    ],
+    [
+     "i_status",
+     "input",
+     "32",
+     "Data",
+     "Not applicable",
+     "CLK",
+     "SoC status word; returned by a read of address 0x40"
+    ]
+   ],
+   "line": 83,
+   "units": [
+    "5:s2",
+    "5:s3",
+    "5:s4",
+    "5:s5",
+    "5:s6",
+    "5:s7",
+    "5:s8",
+    "5:s9",
+    "5:s10",
+    "5:s11",
+    "5:s12",
+    "5:s13",
+    "5:s14",
+    "5:s15",
+    "5:s16",
+    "5:s17",
+    "5:s18",
+    "5:s19",
+    "5:s20",
+    "5:s21",
+    "5:s22",
+    "5:s23",
+    "5:s24"
+   ],
+   "caption": "m_axil_regfile: all ports (CLK)"
+  },
+  {
+   "section": "8.1",
+   "header": [
+    "Operation",
+    "Value",
+    "Requirement"
+   ],
+   "rows": [
+    [
+     "Ec to o_s_axi_bvalid = 1",
+     "Exactly 1 cycle: 1 in the cycle that starts at Ec",
+     "REQ-WR-020"
+    ],
+    [
+     "Ec to new value on o_regs",
+     "Exactly 1 cycle: visible in the cycle that starts at Ec",
+     "REQ-WR-012"
+    ],
+    [
+     "Eb to o_s_axi_awready and o_s_axi_wready = 1",
+     "Exactly 1 cycle: 1 in the cycle that starts at Eb",
+     "REQ-WR-001, REQ-WR-003"
+    ],
+    [
+     "Earliest Eb",
+     "Ec + 1 edge",
+     "REQ-WR-020"
+    ],
+    [
+     "Write throughput",
+     "At most 1 write every 2 cycles (AW and W at edge n, B at edge n+1, next AW and W at edge n+2)",
+     "REQ-TIM-001"
+    ],
+    [
+     "Ear to o_s_axi_rvalid = 1",
+     "Exactly 1 cycle: 1 in the cycle that starts at Ear",
+     "REQ-RD-004"
+    ],
+    [
+     "Er to o_s_axi_arready = 1",
+     "Exactly 1 cycle: 1 in the cycle that starts at Er",
+     "REQ-RD-001"
+    ],
+    [
+     "Read throughput",
+     "At most 1 read every 2 cycles",
+     "REQ-TIM-002"
+    ],
+    [
+     "Write-to-read visibility",
+     "A read with Ear >= Ec + 1 edge returns the new value; a read with Ear = Ec returns the old value",
+     "REQ-CC-003, REQ-CC-004"
+    ]
+   ],
+   "line": 271,
+   "units": [
+    "8.1:s1",
+    "8.1:s2",
+    "8.1:s3",
+    "8.1:s4",
+    "8.1:s5",
+    "8.1:s6",
+    "8.1:s7",
+    "8.1:s8",
+    "8.1:s9"
+   ]
+  },
+  {
+   "section": "8.3",
+   "header": [
+    "Cycle",
+    "awvalid",
+    "awready",
+    "awaddr",
+    "wvalid",
+    "wready",
+    "wdata",
+    "wstrb",
+    "bvalid",
+    "bready",
+    "bresp",
+    "o_regs[63:32]",
+    "Event at the end edge"
+   ],
+   "rows": [
+    [
+     "1",
+     "1",
+     "1",
+     "0x04",
+     "0",
+     "1",
+     "-",
+     "-",
+     "0",
+     "0",
+     "-",
+     "0x0000_0000",
+     "AW transfer (Ea)"
+    ],
+    [
+     "2",
+     "0",
+     "0",
+     "-",
+     "1",
+     "1",
+     "0xA5A5_1234",
+     "0x3",
+     "0",
+     "0",
+     "-",
+     "0x0000_0000",
+     "W transfer (Ew = Ec); register 1 written"
+    ],
+    [
+     "3",
+     "0",
+     "0",
+     "-",
+     "0",
+     "0",
+     "-",
+     "-",
+     "1",
+     "0",
+     "2'b00",
+     "0x0000_1234",
+     "Response held back"
+    ],
+    [
+     "4",
+     "0",
+     "0",
+     "-",
+     "0",
+     "0",
+     "-",
+     "-",
+     "1",
+     "1",
+     "2'b00",
+     "0x0000_1234",
+     "B transfer (Eb)"
+    ],
+    [
+     "5",
+     "0",
+     "1",
+     "-",
+     "0",
+     "1",
+     "-",
+     "-",
+     "0",
+     "-",
+     "-",
+     "0x0000_1234",
+     "Idle; new write can be taken"
+    ]
+   ],
+   "line": 304,
+   "units": [
+    "8.3:s6",
+    "8.3:s7",
+    "8.3:s8",
+    "8.3:s9",
+    "8.3:s10"
+   ],
+   "caption": "Example 1: write to register 1 (address 0x04). The address arrives before the data, wstrb = 4'b0011, and the manager holds back the B response for one cycle. Register 1 is 0 at the start."
+  },
+  {
+   "section": "8.3",
+   "header": [
+    "Cycle",
+    "awvalid",
+    "awready",
+    "awaddr",
+    "wvalid",
+    "wready",
+    "bvalid",
+    "bready",
+    "bresp",
+    "o_regs",
+    "Event at the end edge"
+   ],
+   "rows": [
+    [
+     "1",
+     "1",
+     "1",
+     "0x44",
+     "1",
+     "1",
+     "0",
+     "1",
+     "-",
+     "unchanged",
+     "AW and W transfers (Ec)"
+    ],
+    [
+     "2",
+     "0",
+     "0",
+     "-",
+     "0",
+     "0",
+     "1",
+     "1",
+     "2'b10",
+     "unchanged",
+     "B transfer, SLVERR"
+    ],
+    [
+     "3",
+     "0",
+     "1",
+     "-",
+     "0",
+     "1",
+     "0",
+     "1",
+     "-",
+     "unchanged",
+     "Idle"
+    ]
+   ],
+   "line": 314,
+   "units": [
+    "8.3:s13",
+    "8.3:s14",
+    "8.3:s15"
+   ],
+   "caption": "Example 2: write to an unmapped address (0x44). The address and the data arrive at the same edge and bready is 1."
+  },
+  {
+   "section": "8.3",
+   "header": [
+    "Cycle",
+    "arvalid",
+    "arready",
+    "araddr",
+    "i_status",
+    "rvalid",
+    "rready",
+    "rdata",
+    "rresp",
+    "Event at the end edge"
+   ],
+   "rows": [
+    [
+     "1",
+     "1",
+     "1",
+     "0x40",
+     "0x1234_5678",
+     "0",
+     "0",
+     "-",
+     "-",
+     "AR transfer (Ear); i_status sampled"
+    ],
+    [
+     "2",
+     "0",
+     "0",
+     "-",
+     "0x9ABC_DEF0",
+     "1",
+     "0",
+     "0x1234_5678",
+     "2'b00",
+     "Data held back"
+    ],
+    [
+     "3",
+     "0",
+     "0",
+     "-",
+     "0x9ABC_DEF0",
+     "1",
+     "1",
+     "0x1234_5678",
+     "2'b00",
+     "R transfer (Er)"
+    ],
+    [
+     "4",
+     "0",
+     "1",
+     "-",
+     "0x9ABC_DEF0",
+     "0",
+     "-",
+     "-",
+     "-",
+     "Idle"
+    ]
+   ],
+   "line": 322,
+   "units": [
+    "8.3:s17",
+    "8.3:s18",
+    "8.3:s19",
+    "8.3:s20"
+   ],
+   "caption": "Example 3: read of the status register (0x40), with back-pressure on R while i_status changes."
+  },
+  {
+   "section": "8.3",
+   "header": [
+    "Cycle",
+    "i_rst_n",
+    "awvalid",
+    "awready",
+    "Event at the end edge"
+   ],
+   "rows": [
+    [
+     "1",
+     "0",
+     "1",
+     "0",
+     "No transfer (reset)"
+    ],
+    [
+     "2",
+     "1",
+     "1",
+     "0",
+     "Edge R1; no transfer"
+    ],
+    [
+     "3",
+     "1",
+     "1",
+     "1",
+     "AW transfer"
+    ]
+   ],
+   "line": 331,
+   "units": [
+    "8.3:s22",
+    "8.3:s23",
+    "8.3:s24"
+   ],
+   "caption": "Example 4: reset release while the manager holds awvalid at 1."
+  },
+  {
+   "section": "9",
+   "header": [
+    "Offset",
+    "Name",
+    "Field",
+    "Bits",
+    "Access",
+    "Reset",
+    "Description"
+   ],
+   "rows": [
+    [
+     "0x00 + 4k, k = 0 to PARA_NUM_REGS-1",
+     "REG_k",
+     "VALUE",
+     "31:0",
+     "RW",
+     "0x0000_0000",
+     "Control value k. Drives o_regs[32k+31:32k]. Byte lanes are written under i_s_axi_wstrb. Reads return the current value with OKAY."
+    ],
+    [
+     "0x40",
+     "STATUS",
+     "VALUE",
+     "31:0",
+     "RO",
+     "Not applicable",
+     "Read returns i_status sampled at Ear, with OKAY. A write changes nothing and answers OKAY."
+    ],
+    [
+     "4*PARA_NUM_REGS to 0x3C",
+     "Reserved",
+     "-",
+     "31:0",
+     "-",
+     "-",
+     "Unmapped; does not exist when PARA_NUM_REGS = 16. Read returns 0 with SLVERR. A write changes nothing and answers SLVERR."
+    ],
+    [
+     "0x44 to 2^PARA_ADDR_W - 4",
+     "Reserved",
+     "-",
+     "31:0",
+     "-",
+     "-",
+     "Unmapped. Read returns 0 with SLVERR. A write changes nothing and answers SLVERR."
+    ]
+   ],
+   "line": 339,
+   "units": [
+    "9:s1",
+    "9:s2",
+    "9:s3",
+    "9:s4"
+   ]
+  },
+  {
+   "section": "11",
+   "header": [
+    "ID",
+    "Parameter values",
+    "Purpose"
+   ],
+   "rows": [
+    [
+     "CFG-BASE",
+     "PARA_NUM_REGS=8, PARA_ADDR_W=8",
+     "Main configuration (defaults); covers the gap of unmapped addresses 0x20 to 0x3C"
+    ],
+    [
+     "CFG-MIN",
+     "PARA_NUM_REGS=1, PARA_ADDR_W=7",
+     "Smallest legal: one register, narrowest address bus"
+    ],
+    [
+     "CFG-MAX",
+     "PARA_NUM_REGS=16, PARA_ADDR_W=16",
+     "Largest legal: full register bank, widest address bus, aliasing checks with high address bits"
+    ],
+    [
+     "CFG-FULL-A7",
+     "PARA_NUM_REGS=16, PARA_ADDR_W=7",
+     "Full register bank with the narrowest address bus; no unmapped address below 0x44"
+    ]
+   ],
+   "line": 388,
+   "units": [
+    "11:s1",
+    "11:s2",
+    "11:s3",
+    "11:s4"
+   ]
+  },
+  {
+   "section": "14",
+   "header": [
+    "ID",
+    "Question",
+    "Decision",
+    "By",
+    "Date"
+   ],
+   "rows": [
+    [
+     "D-001",
+     "Value of o_s_axi_awready, o_s_axi_wready and o_s_axi_arready during reset (the description allows 0 or 1)",
+     "0 during reset and in the cycle that ends at R1; 1 from R1 (REQ-RST-001, REQ-RST-006, REQ-RST-007)",
+     "spec-draft",
+     "2026-11-19"
+    ],
+    [
+     "D-002",
+     "Whether readies depend on the valids",
+     "No. The readies are registered and depend only on the held state (REQ-TIM-003, REQ-IF-001)",
+     "spec-draft",
+     "2026-11-19"
+    ],
+    [
+     "D-003",
+     "Write response latency (\"at the earliest one cycle\")",
+     "Exactly 1 cycle: bvalid is 1 from Ec (REQ-WR-020)",
+     "spec-draft",
+     "2026-11-19"
+    ],
+    [
+     "D-004",
+     "Read data latency (\"at the earliest one cycle\")",
+     "Exactly 1 cycle: rvalid is 1 from Ear (REQ-RD-004)",
+     "spec-draft",
+     "2026-11-19"
+    ],
+    [
+     "D-005",
+     "Edge at which the register is written",
+     "Ec, the later of the AW and W transfers (REQ-WR-010)",
+     "spec-draft",
+     "2026-11-19"
+    ],
+    [
+     "D-006",
+     "Old or new value when a read and a write of the same register overlap",
+     "The read samples at Ear. A write at the same edge gives the old value; a write at an earlier Ec gives the new value (REQ-CC-003, REQ-CC-004)",
+     "spec-draft",
+     "2026-11-19"
+    ],
+    [
+     "D-007",
+     "When i_status is sampled",
+     "At Ear, and held until Er (REQ-RD-009, REQ-RD-010)",
+     "spec-draft",
+     "2026-11-19"
+    ],
+    [
+     "D-008",
+     "Aliasing of address bits above bit 6",
+     "Full decode of bits [PARA_ADDR_W-1:2]; any 1 above bit 6 is unmapped (REQ-DEC-004, REQ-DEC-005)",
+     "spec-draft",
+     "2026-11-19"
+    ],
+    [
+     "D-009",
+     "Values of bresp, rresp and rdata while their valid is 0",
+     "Not specified outside reset and not checked; 0 during reset (REQ-WR-027, REQ-RD-014, REQ-RST-002)",
+     "spec-draft",
+     "2026-11-19"
+    ],
+    [
+     "D-010",
+     "When readies return to 1 after a response",
+     "In the cycle after the B or R transfer, with no combinational path from bready or rready (REQ-WR-001, REQ-RD-001)",
+     "spec-draft",
+     "2026-11-19"
+    ],
+    [
+     "D-011",
+     "Illegal parameter values",
+     "The RTL should stop elaboration with an error; not verified (REQ-PAR-003, REQ-PAR-004)",
+     "spec-draft",
+     "2026-11-19"
+    ],
+    [
+     "D-012",
+     "Configurations for PARA_ADDR_W extremes (the description names only PARA_NUM_REGS = 1 and 16)",
+     "Added PARA_ADDR_W = 7 and 16 in CFG-MIN, CFG-MAX and CFG-FULL-A7",
+     "spec-draft",
+     "2026-11-19"
+    ],
+    [
+     "D-013",
+     "Width of o_regs as a table-readable expression",
+     "Local parameter LPARA_REGS_W = PARA_NUM_REGS*32 (section 4, REQ-PAR-002)",
+     "spec-draft",
+     "2026-11-19"
+    ],
+    [
+     "D-014",
+     "Do held states survive a reset; which R1 does \"after R1\" mean (spec-lint GAP-001)",
+     "A reset ends every held state; \"after R1\" is the most recent R1 (section 2 terms)",
+     "Claude (delegated by GabrielHCMUT)",
+     "2026-11-19"
+    ],
+    [
+     "D-015",
+     "Inputs, outputs and checks before the first reset (spec-lint GAP-002)",
+     "Reset from time zero for at least 2 cycles; outputs undefined and unchecked before it: REQ-VER-006",
+     "Claude (delegated by GabrielHCMUT)",
+     "2026-11-19"
+    ],
+    [
+     "D-016",
+     "Meaning of \"from edge n\" (spec-lint GAP-003)",
+     "The start cycle only; other requirements end it",
+     "Claude (delegated by GabrielHCMUT)",
+     "2026-11-19"
+    ],
+    [
+     "D-017",
+     "Readies during reset: D-001 or Q-003 (spec-lint GAP-004)",
+     "D-001 is final; Q-003 closed",
+     "Claude (delegated by GabrielHCMUT)",
+     "2026-11-19"
+    ],
+    [
+     "D-018",
+     "Valid and payload of a request across a reset (spec-lint GAP-005)",
+     "Reset ends the obligation; a valid after R1 is a new request: REQ-VER-007",
+     "Claude (delegated by GabrielHCMUT)",
+     "2026-11-19"
+    ],
+    [
+     "Q-001",
+     "Is a throughput of one write and one read every 2 cycles enough for the CPU?",
+     "Decided: yes, one write and one read every 2 cycles is enough",
+     "Claude (delegated by GabrielHCMUT)",
+     "2026-11-19"
+    ],
+    [
+     "Q-002",
+     "Is there an area budget for GF180MCU?",
+     "Decided: no area budget. Synthesis area is reported for information only",
+     "Claude (delegated by GabrielHCMUT)",
+     "2026-11-19"
+    ],
+    [
+     "Q-003",
+     "Should the readies be 0 during reset (D-001), or is a cheaper design with readies at 1 during reset wanted?",
+     "Decided: D-001 is final; the readies are 0 during reset and in the cycle that ends at R1",
+     "Claude (delegated by GabrielHCMUT)",
+     "2026-11-19"
+    ]
+   ],
+   "line": 474,
+   "units": [
+    "14:s1",
+    "14:s2",
+    "14:s3",
+    "14:s4",
+    "14:s5",
+    "14:s6",
+    "14:s7",
+    "14:s8",
+    "14:s9",
+    "14:s10",
+    "14:s11",
+    "14:s12",
+    "14:s13",
+    "14:s14",
+    "14:s15",
+    "14:s16",
+    "14:s17",
+    "14:s18",
+    "14:s19",
+    "14:s20",
+    "14:s21"
+   ]
+  }
+ ],
+ "signals": {
+  "CLK": 25,
+  "CPU": 3,
+  "GF180MCU": 2,
+  "LPARA_REGS_W": 5,
+  "OKAY": 12,
+  "PARA_ADDR_W": 20,
+  "PARA_NUM_REGS": 24,
+  "REG_0": 3,
+  "RTL": 6,
+  "RTL_RULES": 2,
+  "SLVERR": 13,
+  "STATUS": 4,
+  "VALUE": 2,
+  "i_clk": 17,
+  "i_rst_n": 31,
+  "i_s_axi_araddr": 3,
+  "i_s_axi_arprot": 5,
+  "i_s_axi_arvalid": 3,
+  "i_s_axi_awaddr": 3,
+  "i_s_axi_awprot": 5,
+  "i_s_axi_awvalid": 3,
+  "i_s_axi_bready": 6,
+  "i_s_axi_rready": 6,
+  "i_s_axi_wdata": 3,
+  "i_s_axi_wstrb": 10,
+  "i_s_axi_wvalid": 3,
+  "i_status": 17,
+  "o_regs": 30,
+  "o_s_axi_arready": 11,
+  "o_s_axi_awready": 11,
+  "o_s_axi_bresp": 11,
+  "o_s_axi_bvalid": 16,
+  "o_s_axi_rdata": 13,
+  "o_s_axi_rresp": 11,
+  "o_s_axi_rvalid": 16,
+  "o_s_axi_wready": 11
+ },
+ "warnings": [],
+ "stats": {
+  "sections": 35,
+  "sentences": 295,
+  "normative": 146,
+  "chars": 39431
+ }
+}

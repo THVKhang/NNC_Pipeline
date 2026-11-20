@@ -1,0 +1,67 @@
+{
+  "config": {
+    "documents": [
+      {
+        "file": "spec/spi_master_Design_Specification.md",
+        "role": "ip_spec",
+        "sections": [],
+        "skip": [],
+        "tag": "SPI"
+      }
+    ],
+    "formal": "on",
+    "formal_depth": "32",
+    "formal_max_depth": "128",
+    "rtl_origin": "generated",
+    "top": "m_spi_master"
+  },
+  "created": "2026-11-19T06:57:20+00:00",
+  "design": "spi_master",
+  "gates": {
+    "D1_config": {
+      "at": "2026-11-19T07:19:21+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "work/final_config.json": "0000b426b4b13ee961fdc612016dcea3126c8a2aaf487b96dd164865f2fcb900"
+      },
+      "note": "Delegated: final configuration = specification defaults (D=4)."
+    },
+    "D2_rtl": {
+      "at": "2026-11-19T10:42:33+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "rtl": "738fa17ca91d8e0c9c11bbc3c77d86e03cba31e7b05b6a21e27e1e897f764687",
+        "work/rtl_gen.json": "0c57040383ed914343c8477b9597ea1504e12dcc3bc3984643692bfdc5923daa"
+      },
+      "note": "Delegated review of work/rtl_gen.md: clean after 2 attempts (0 errors, 0 warnings; 1 note: the simulation-only $error on an illegal PARA_SPI_CLK_DIV). 4-state FSM (Idle/Xfer/Pause/Trail), every flop reset, single clock, no CDC; 167/206 rules tagged, untagged ones are sections 11-13 (verification/implementation) and 5-02, 8-10/11. The 5 open points follow the specification (DEC-012..016, ENV-007). GF180 TT 8462 um^2; SS path 10.75 ns < 20 ns. Correctness is left to the verification. Not a hardware designer's review."
+    },
+    "G1_rules": {
+      "at": "2026-11-19T07:13:20+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "work/rules.json": "f1caedb8fb42ad899e60b8b2be556fb9700bac9b997ee7ddb67c762f9c244a53"
+      },
+      "note": "Delegated review: 206 rules kept after A2 review (18 fixed, 6 merged, 14 rejected); the 3 open questions answered (burst lengths per configuration, reset timing in simulation at a falling edge, SS 125 C corner). Spec decisions OQ-001..007 and the 5 spec-lint gaps (DEC-012..016) were made on delegation before ingest. Not a hardware designer's review.",
+      "sources": {
+        "spec/spi_master_Design_Specification.md": "e1b90af335f5f1cdcf23ecb560e5500de1cd47e24119cf01bc03c6e96d0b4591"
+      }
+    },
+    "G2_contract": {
+      "at": "2026-11-19T07:19:20+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "work/contract.json": "d1c5a72adcbba8e472c8491174c4b4ea595eba02078528398892571407b5be46"
+      },
+      "note": "Delegated review: 41 checks (27 assertions, 14 tests) over 174 of 206 rules; 32 rules not verifiable by simulation (18 static/structural, 12 not applicable to the DUT, 2 design guidelines). Every check selected. Not a hardware designer's review."
+    },
+    "G3_verif_sources": {
+      "at": "2026-11-20T07:06:06+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "verif": "b5fb50929d4b675a7190ac19e9a466db52ffbf22cdd3370fbb390fe0284dc1b8"
+      },
+      "note": "Re-approval after nnc fix-verif --from formal (agent A17, 1 attempt, formal triage B on all 6 counterexamples, min configuration D = 1). Diff read: nnc_chk_mosi.sv and nnc_chk_sclk.sv now load CPHA_b / CPOL_b only at a burst-start handshake (o_cs_n = 1), as the specification defines them (term CPOL_b/CPHA_b, REQ-MODE-001..003, REQ-ERR-001); one line each, nothing removed. The formal environment is unchanged on purpose: ENV-003 is not assumed, so formal still checks that mode changes during a burst have no effect. Candidate: 15/15 tests, 0 failing assertions in 5 runs. Not a hardware designer's review."
+    }
+  },
+  "version": 1
+}

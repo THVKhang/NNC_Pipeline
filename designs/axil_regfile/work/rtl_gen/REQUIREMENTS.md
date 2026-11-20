@@ -1,0 +1,447 @@
+# Requirements (approved rules, gate G1)
+
+Each rule cites the specification. Tag the RTL that implements a rule with `// REQ: <id>`.
+
+- **RF-1.1-01** [MUST] (axil_regfile_Design_Specification.md 1.1) The block provides PARA_NUM_REGS 32-bit read/write control registers and one 32-bit read-only status register.
+  - quote: "axil_regfile is a bank of PARA_NUM_REGS 32-bit read/write control registers and one 32-bit read-only status register."
+- **RF-1.1-03** [MUST] (axil_regfile_Design_Specification.md 1.1) The current value of every read/write register drives o_regs directly.
+  - quote: "The current value of every read/write register drives the SoC logic directly on o_regs."
+- **RF-1.1-04** [MUST] (axil_regfile_Design_Specification.md 1.1) A read of the status register at byte address 0x40 returns the SoC status word i_status. Condition: A read of byte address 0x40.
+  - quote: "A read of the status register returns the SoC status word i_status. A read-only status register at byte address 0x40."
+- **RF-1.2-01** [MUST] (axil_regfile_Design_Specification.md 1.2) The block implements 1 to 16 read/write registers at byte addresses 0x00 + 4k.
+  - quote: "1 to 16 read/write registers at byte addresses 0x00 + 4k."
+- **RF-1.2-02** [MUST] (axil_regfile_Design_Specification.md 1.2) Each read/write register resets to 0. Condition: On reset.
+  - quote: "Each one resets to 0."
+- **RF-1.2-03** [MUST] (axil_regfile_Design_Specification.md 1.2) Byte-lane writes are controlled by i_s_axi_wstrb. Condition: On a write to a read/write register.
+  - quote: "Byte-lane writes controlled by i_s_axi_wstrb."
+- **RF-1.2-04** [MUST] (axil_regfile_Design_Specification.md 1.2) The status read returns i_status as sampled when the read address is taken. Condition: A status register read.
+  - quote: "It returns i_status as sampled when the read address is taken."
+- **RF-1.2-05** [MUST] (axil_regfile_Design_Specification.md 1.2) An access to an unmapped address answers SLVERR. Condition: Access to an unmapped address.
+  - quote: "An access to an unmapped address answers SLVERR."
+- **RF-1.2-06** [MUST] (axil_regfile_Design_Specification.md 1.2) An unmapped read returns 0. Condition: Read of an unmapped address.
+  - quote: "An unmapped read returns 0."
+- **RF-1.2-07** [MUST] (axil_regfile_Design_Specification.md 1.2) The write address and the write data may arrive in either order or at the same edge, and the block must accept all.
+  - quote: "The write address and the write data can arrive in either order or at the same edge."
+- **RF-1.2-08** [MUST] (axil_regfile_Design_Specification.md 1.2) A read and a write may be in progress at the same time, as the read and write paths work independently.
+  - quote: "The read path and the write path work independently, so a read and a write can be in progress at the same time."
+- **RF-1.2-09** [MUST] (axil_regfile_Design_Specification.md 1.2) The write response comes one cycle after the last write handshake, and the read data one cycle after the read address handshake.
+  - quote: "Fixed latency: one cycle from the last write handshake to the write response, and one cycle from the read address handshake to the read data."
+- **RF-1.2-10** [MUST] (axil_regfile_Design_Specification.md 1.2) Every output is registered, with no combinational path from any input to any output.
+  - quote: "Every output is registered, so no combinational path runs from an input to an output."
+- **RF-1.2-11** [MUST] (axil_regfile_Design_Specification.md 1.2) The block uses one clock and one active-low reset with asynchronous assertion.
+  - quote: "One clock, and one active-low reset with asynchronous assertion."
+- **RF-1.3-01** [MUST_NOT] (axil_regfile_Design_Specification.md 1.3) The block never produces response codes EXOKAY (2'b01) or DECERR (2'b11).
+  - quote: "The response codes EXOKAY (2'b01) and DECERR (2'b11). The block never produces them."
+- **RF-1.3-02** [MUST] (axil_regfile_Design_Specification.md 1.3) i_s_axi_awprot and i_s_axi_arprot are ignored.
+  - quote: "Protection checking. i_s_axi_awprot and i_s_axi_arprot are ignored."
+- **RF-1.3-03** [MUST] (axil_regfile_Design_Specification.md 1.3) Address bits [1:0] are ignored and no unaligned-access error is produced.
+  - quote: "Address bits [1:0] are ignored and there is no unaligned-access error."
+- **RF-3-01** [MUST] (axil_regfile_Design_Specification.md 3) A transfer occurs at a rising edge of i_clk when valid and ready of a channel are both 1 and i_rst_n is 1; the payload is taken at that edge. Condition: A channel's valid and ready are both 1 at a rising edge of i_clk with i_rst_n 1.
+  - quote: "Term: Transfer (handshake); Meaning: A rising edge of i_clk at which the valid and the ready of a channel are both 1 and i_rst_n is 1. The channel's payload is taken at that edge."
+- **RF-3-02** [MUST] (axil_regfile_Design_Specification.md 3) A value required 'from edge n' holds starting in cycle n+1 until another requirement changes it, such as a held state ending or a reset. Condition: A requirement says a value holds 'from edge n'.
+  - quote: "Term: Edge n / cycle n; Meaning: Edge n is the n-th rising edge of i_clk. Cycle n is the clock period between edge n-1 and edge n: it starts at edge n-1 and ends at edge n. "From edge n" means "starting in cycle n+1": the value holds from that cycle until another requirement changes it (for example a "shall be 0 from edge" requirement, a held state ending, or a reset)."
+- **RF-3-03** [MUST] (axil_regfile_Design_Specification.md 3) A write address, write data or read address is held in cycle n if its transfer occurred at an edge <= n-1, its B or R transfer has not occurred, and i_rst_n has not been 0 since; reset ends the held state. Condition: Determining whether a write address, write data or read address is held.
+  - quote: "Term: Held write address; Meaning: In cycle n, a write address is held if its AW transfer happened at an edge e <= n-1 and the B transfer of its transaction has not happened at any edge <= n-1, and i_rst_n has not been 0 since that AW transfer (a reset ends the held state, REQ-RST-009). Term: Held write data; Meaning: In cycle n, write data is held if its W transfer happened at an edge e <= n-1 and the B transfer of its transaction has not happened at any edge <= n-1, and i_rst_n has not been 0 since that W transfer (a reset ends the held state, REQ-RST-009). Term: Held read address; Meaning: In cycle n, a read address is held if its AR transfer happened at an edge e <= n-1 and the R transfer of its transaction has not happened at any edge <= n-1, and i_rst_n has not been 0 since that AR transfer (a reset ends the held state, REQ-RST-009)."
+- **RF-4-01** [MUST] (axil_regfile_Design_Specification.md 4) PARA_NUM_REGS sets the number of read/write registers, default 8, with legal values 1 to 16.
+  - quote: "Parameter: PARA_NUM_REGS; Default: 8; Legal values: 1 to 16; Description: Number of read/write registers"
+- **RF-4-02** [MUST] (axil_regfile_Design_Specification.md 4) PARA_ADDR_W sets the width in bits of i_s_axi_awaddr and i_s_axi_araddr, default 8, legal values 7 to 16.
+  - quote: "Parameter: PARA_ADDR_W; Default: 8; Legal values: 7 to 16; Description: Width in bits of i_s_axi_awaddr and i_s_axi_araddr; 7 is the minimum that reaches the status register at 0x40"
+- **RF-4-04** [MUST] (axil_regfile_Design_Specification.md 4) The block must behave as the specification states for every legal combination of PARA_NUM_REGS (1 to 16) and PARA_ADDR_W (7 to 16). Condition: For every combination of PARA_NUM_REGS from 1 to 16 and PARA_ADDR_W from 7 to 16.
+  - quote: "[REQ-PAR-001] The block shall behave as this specification states for every combination of PARA_NUM_REGS from 1 to 16 and PARA_ADDR_W from 7 to 16."
+- **RF-4-05** [MUST] (axil_regfile_Design_Specification.md 4) LPARA_REGS_W shall be a local parameter equal to PARA_NUM_REGS*32 that cannot be overridden from outside the module.
+  - quote: "[REQ-PAR-002] LPARA_REGS_W shall be a local parameter equal to PARA_NUM_REGS*32 that cannot be overridden from outside the module."
+- **RF-4-06** [SHOULD] (axil_regfile_Design_Specification.md 4) The RTL should stop elaboration with an error message when PARA_NUM_REGS or PARA_ADDR_W is outside its legal range. Condition: PARA_NUM_REGS or PARA_ADDR_W is outside its legal range.
+  - quote: "[REQ-PAR-003] The RTL should stop elaboration with an error message when PARA_NUM_REGS or PARA_ADDR_W is outside its legal range."
+- **RF-4-07** [MUST_NOT] (axil_regfile_Design_Specification.md 4) Behaviour with illegal parameter values is unspecified and must not be verified. Condition: Illegal parameter values.
+  - quote: "[REQ-PAR-004] Behaviour with illegal parameter values is not specified and shall not be verified."
+- **RF-5-01** [MUST] (axil_regfile_Design_Specification.md 5) Byte lane i of a register must be bits 8i+7..8i and correspond to i_s_axi_wdata[8i+7:8i] and o_s_axi_rdata[8i+7:8i]. Condition: for byte lane i = 0 to 3.
+  - quote: "Port: i_s_axi_wdata; Direction: input; Width: 32; Signal type: Data; Reset value: Not applicable; Clock domain: CLK; Meaning: Write data; byte lane i is bits 8i+7..8i [REQ-IF-003] Byte lane i (i = 0 to 3) of a register shall be bits 8i+7..8i, shall correspond to i_s_axi_wdata[8i+7:8i] and o_s_axi_rdata[8i+7:8i], and shall be enabled by i_s_axi_wstrb[i]."
+- **RF-5-02** [MUST] (axil_regfile_Design_Specification.md 5) Byte lane i of a register must be enabled by i_s_axi_wstrb[i]. Condition: for byte lane i = 0 to 3.
+  - quote: "Port: i_s_axi_wstrb; Direction: input; Width: 4; Signal type: Data; Reset value: Not applicable; Clock domain: CLK; Meaning: Write strobes; bit i enables byte lane i [REQ-IF-003] Byte lane i (i = 0 to 3) of a register shall be bits 8i+7..8i, shall correspond to i_s_axi_wdata[8i+7:8i] and o_s_axi_rdata[8i+7:8i], and shall be enabled by i_s_axi_wstrb[i]."
+- **RF-5-03** [MUST] (axil_regfile_Design_Specification.md 5) Bits 32k+31..32k of o_regs must carry the current value of read/write register k. Condition: for every k from 0 to PARA_NUM_REGS-1.
+  - quote: "Port: o_regs; Direction: output; Width: LPARA_REGS_W; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Current values of the read/write registers; register k is bits 32k+31..32k [REQ-IF-002] Bits 32k+31..32k of o_regs shall carry the current value of read/write register k, for every k from 0 to PARA_NUM_REGS-1."
+- **RF-5-04** [MUST] (axil_regfile_Design_Specification.md 5) Every output must change value only at a rising edge of i_clk or when i_rst_n is asserted.
+  - quote: "[REQ-IF-001] Every output shall change value only at a rising edge of i_clk or when i_rst_n is asserted, so that no output depends combinationally on any input in the same cycle."
+- **RF-5-06** [MUST] (axil_regfile_Design_Specification.md 5) The values of i_s_axi_awprot and i_s_axi_arprot must have no effect on any output.
+  - quote: "[REQ-IF-004] The values of i_s_axi_awprot and i_s_axi_arprot shall have no effect on any output."
+- **RF-6.1-01** [MUST] (axil_regfile_Design_Specification.md 6.1) Every flip-flop of the block shall be clocked by the rising edge of i_clk.
+  - quote: "Every flip-flop of the block is clocked on the rising edge of i_clk. [REQ-CLK-001] Every flip-flop of the block shall be clocked by the rising edge of i_clk."
+- **RF-6.2-01** [MUST] (axil_regfile_Design_Specification.md 6.2) Every output shall take its reset value asynchronously, without waiting for a rising edge of i_clk. Condition: When i_rst_n goes from 1 to 0.
+  - quote: "Assertion is asynchronous. [REQ-RST-004] When i_rst_n goes from 1 to 0, every output shall take its reset value without waiting for a rising edge of i_clk."
+- **RF-6.2-02** [MUST] (axil_regfile_Design_Specification.md 6.2) o_s_axi_awready, o_s_axi_wready, o_s_axi_arready, o_s_axi_bvalid and o_s_axi_rvalid shall be 0. Condition: While i_rst_n is 0.
+  - quote: "[REQ-RST-001] While i_rst_n is 0, o_s_axi_awready, o_s_axi_wready, o_s_axi_arready, o_s_axi_bvalid and o_s_axi_rvalid shall be 0."
+- **RF-6.2-03** [MUST] (axil_regfile_Design_Specification.md 6.2) o_s_axi_bresp, o_s_axi_rresp and o_s_axi_rdata shall be 0. Condition: While i_rst_n is 0.
+  - quote: "[REQ-RST-002] While i_rst_n is 0, o_s_axi_bresp, o_s_axi_rresp and o_s_axi_rdata shall be 0."
+- **RF-6.2-04** [MUST] (axil_regfile_Design_Specification.md 6.2) Every bit of o_regs shall be 0. Condition: While i_rst_n is 0.
+  - quote: "[REQ-RST-003] While i_rst_n is 0, every bit of o_regs shall be 0."
+- **RF-6.2-05** [MUST_NOT] (axil_regfile_Design_Specification.md 6.2) No transfer shall happen on any channel, whatever the values of the valid and ready inputs. Condition: At a clock edge where i_rst_n is 0.
+  - quote: "[REQ-RST-005] No transfer shall happen on any channel at an edge where i_rst_n is 0, whatever the values of i_s_axi_awvalid, i_s_axi_wvalid, i_s_axi_arvalid, i_s_axi_bready and i_s_axi_rready."
+- **RF-6.2-06** [MUST_NOT] (axil_regfile_Design_Specification.md 6.2) No transfer shall happen on any channel at R1, because the ready outputs and bvalid/rvalid are 0 in the cycle ending at R1. Condition: At edge R1, the first rising edge after reset release.
+  - quote: "[REQ-RST-006] No transfer shall happen on any channel at edge R1, because o_s_axi_awready, o_s_axi_wready and o_s_axi_arready are 0 in the cycle that ends at R1 and o_s_axi_bvalid and o_s_axi_rvalid are 0 in that cycle."
+- **RF-6.2-07** [MUST] (axil_regfile_Design_Specification.md 6.2) o_s_axi_awready, o_s_axi_wready and o_s_axi_arready shall be 1. Condition: From edge R1, in the cycle starting at R1.
+  - quote: "[REQ-RST-007] o_s_axi_awready, o_s_axi_wready and o_s_axi_arready shall be 1 from edge R1, that is, in the cycle that starts at R1."
+- **RF-6.2-08** [MUST] (axil_regfile_Design_Specification.md 6.2) o_s_axi_bvalid and o_s_axi_rvalid shall stay 0. Condition: After R1, until a write or read transaction makes them 1.
+  - quote: "[REQ-RST-008] o_s_axi_bvalid and o_s_axi_rvalid shall stay 0 after R1 until a write or read transaction makes them 1 as section 7 states."
+- **RF-6.2-09** [MUST] (axil_regfile_Design_Specification.md 6.2) The held state shall be discarded. Condition: When i_rst_n is asserted while a write address, write data, write response or read address is held or pending.
+  - quote: "[REQ-RST-009] When i_rst_n is asserted while a write address, write data, write response or read address is held or pending, the held state shall be discarded."
+- **RF-6.2-10** [MUST_NOT] (axil_regfile_Design_Specification.md 6.2) No B or R response shall be given for that transaction, and no register shall be written by it. Condition: After release, for a transaction pending when reset was asserted.
+  - quote: "No B or R response shall be given for that transaction after release, and no register shall be written by it after release."
+- **RF-6.2-11** [MUST] (axil_regfile_Design_Specification.md 6.2) It shall be treated as a new transfer request, taken at the first edge after R1 where the matching ready is 1. Condition: A valid held at 1 through reset and after R1.
+  - quote: "[REQ-RST-010] A valid that the manager holds at 1 through reset and after R1 shall be treated as a new transfer request. It is taken at the first edge after R1 where the matching ready is 1, which is the edge after R1 at the earliest."
+- **RF-7.1-01** [MUST] (axil_regfile_Design_Specification.md 7.1) Bits [1:0] of i_s_axi_awaddr and i_s_axi_araddr must have no effect on any output.
+  - quote: "[REQ-DEC-001] Bits [1:0] of i_s_axi_awaddr and i_s_axi_araddr shall have no effect on any output."
+- **RF-7.1-02** [MUST] (axil_regfile_Design_Specification.md 7.1) An address with word index k selects read/write register k. Condition: Address word index k with 0 <= k < PARA_NUM_REGS.
+  - quote: "[REQ-DEC-002] An address whose word index is k, with 0 <= k < PARA_NUM_REGS, shall select read/write register k."
+- **RF-7.1-03** [MUST] (axil_regfile_Design_Specification.md 7.1) The address selects the status register. Condition: Address word index is 16 (byte address 0x40 to 0x43).
+  - quote: "[REQ-DEC-003] An address whose word index is 16 (byte address 0x40 to 0x43) shall select the status register."
+- **RF-7.1-04** [MUST] (axil_regfile_Design_Specification.md 7.1) Every other address is unmapped. Condition: Address is not a read/write register or status register address, including word indices PARA_NUM_REGS to 15, 17 to 31, or any 1 in bit 7 to PARA_ADDR_W-1.
+  - quote: "[REQ-DEC-004] Every other address shall be unmapped. This includes word indices PARA_NUM_REGS to 15, word indices 17 to 31, and every address with a 1 in any bit from bit 7 to bit PARA_ADDR_W-1."
+- **RF-7.1-05** [MUST] (axil_regfile_Design_Specification.md 7.1) Decode compares all address bits [PARA_ADDR_W-1:2] so no register or status register appears at more than one word index (no aliasing).
+  - quote: "[REQ-DEC-005] The decode shall compare all bits [PARA_ADDR_W-1:2] of the address, so that no mapped register or status register appears at more than one word index (no aliasing)."
+- **RF-7.1-06** [MUST] (axil_regfile_Design_Specification.md 7.1) A write transaction is decoded from the address taken at its AW transfer. Condition: Write transaction.
+  - quote: "[REQ-DEC-006] A write transaction shall be decoded from the address taken at its AW transfer."
+- **RF-7.1-07** [MUST] (axil_regfile_Design_Specification.md 7.1) A read transaction is decoded from the address taken at its AR transfer. Condition: Read transaction.
+  - quote: "[REQ-DEC-007] A read transaction shall be decoded from the address taken at its AR transfer."
+- **RF-7.2-01** [MUST] (axil_regfile_Design_Specification.md 7.2) o_s_axi_awready shall be 1. Condition: Every cycle after R1 in which no write address is held.
+  - quote: "[REQ-WR-001] In every cycle after R1 in which no write address is held, o_s_axi_awready shall be 1."
+- **RF-7.2-02** [MUST] (axil_regfile_Design_Specification.md 7.2) o_s_axi_awready shall be 0. Condition: A write address is held.
+  - quote: "[REQ-WR-002] In every cycle in which a write address is held, o_s_axi_awready shall be 0."
+- **RF-7.2-03** [MUST] (axil_regfile_Design_Specification.md 7.2) o_s_axi_wready shall be 1. Condition: Every cycle after R1 in which no write data is held.
+  - quote: "[REQ-WR-003] In every cycle after R1 in which no write data is held, o_s_axi_wready shall be 1."
+- **RF-7.2-04** [MUST] (axil_regfile_Design_Specification.md 7.2) o_s_axi_wready shall be 0. Condition: Write data is held.
+  - quote: "[REQ-WR-004] In every cycle in which write data is held, o_s_axi_wready shall be 0."
+- **RF-7.2-05** [MUST] (axil_regfile_Design_Specification.md 7.2) The block takes the AW and W transfers in either order or at the same edge. Condition: One write transaction.
+  - quote: "[REQ-WR-005] The block shall take the AW transfer and the W transfer of one transaction in either order or at the same edge, and shall not answer before it has taken both."
+- **RF-7.2-06** [MUST_NOT] (axil_regfile_Design_Specification.md 7.2) The block shall not answer a write transaction before it has taken both AW and W transfers. Condition: Before both AW and W transfers of the transaction are taken.
+  - quote: "[REQ-WR-005] The block shall take the AW transfer and the W transfer of one transaction in either order or at the same edge, and shall not answer before it has taken both."
+- **RF-7.2-07** [MUST_NOT] (axil_regfile_Design_Specification.md 7.2) The block shall take no other AW transfer. Condition: After an AW transfer, until the edge after Eb of that transaction.
+  - quote: "[REQ-WR-006] After an AW transfer, the block shall take no other AW transfer until the edge after Eb of that transaction."
+- **RF-7.2-08** [MUST_NOT] (axil_regfile_Design_Specification.md 7.2) The block shall take no other W transfer. Condition: After a W transfer, until the edge after Eb of that transaction.
+  - quote: "[REQ-WR-007] After a W transfer, the block shall take no other W transfer until the edge after Eb of that transaction."
+- **RF-7.2-09** [MUST] (axil_regfile_Design_Specification.md 7.2) The strobes and data used are the values of i_s_axi_wstrb and i_s_axi_wdata taken at the W transfer. Condition: Write transaction.
+  - quote: "[REQ-WR-008] The write strobes and write data used by a transaction shall be the values of i_s_axi_wstrb and i_s_axi_wdata taken at its W transfer."
+- **RF-7.3-01** [MUST] (axil_regfile_Design_Specification.md 7.3) Bits 8i+7..8i of register k take the value of the same bits of the write data taken at Ew. Condition: Write selects read/write register k, at edge Ec, for each lane i with i_s_axi_wstrb[i]=1.
+  - quote: "[REQ-WR-010] When a write transaction selects read/write register k, then at edge Ec, for each byte lane i with i_s_axi_wstrb[i] = 1 (as taken at Ew), bits 8i+7..8i of register k shall take the value of bits 8i+7..8i of the write data taken at Ew."
+- **RF-7.3-02** [MUST] (axil_regfile_Design_Specification.md 7.3) Byte lanes of register k whose strobe bit is 0 keep their value. Condition: Write selects read/write register k.
+  - quote: "[REQ-WR-011] When a write transaction selects read/write register k, the byte lanes of register k whose strobe bit is 0 shall keep their value."
+- **RF-7.3-03** [MUST] (axil_regfile_Design_Specification.md 7.3) The written value appears on o_regs[32k+31:32k] from edge Ec, in the cycle starting at Ec. Condition: Write to register k at edge Ec.
+  - quote: "[REQ-WR-012] The value written at Ec shall appear on o_regs[32k+31:32k] from edge Ec, that is, in the cycle that starts at Ec."
+- **RF-7.3-04** [MUST_NOT] (axil_regfile_Design_Specification.md 7.3) A write shall change no bit of o_regs outside bits 32k+31..32k. Condition: Write transaction selecting register k.
+  - quote: "[REQ-WR-013] A write transaction shall change no bit of o_regs outside bits 32k+31..32k of the register it selects."
+- **RF-7.3-05** [MUST] (axil_regfile_Design_Specification.md 7.3) A write changes its register only at its edge Ec and only once. Condition: Write transaction.
+  - quote: "[REQ-WR-014] A write transaction shall change its register only at its edge Ec and only once."
+- **RF-7.3-06** [MUST_NOT] (axil_regfile_Design_Specification.md 7.3) The write shall change no bit of o_regs. Condition: Write selects the status register.
+  - quote: "[REQ-WR-015] A write transaction that selects the status register shall change no bit of o_regs."
+- **RF-7.3-07** [MUST_NOT] (axil_regfile_Design_Specification.md 7.3) The write shall change no bit of o_regs. Condition: Write to an unmapped address.
+  - quote: "[REQ-WR-016] A write transaction to an unmapped address shall change no bit of o_regs."
+- **RF-7.3-08** [MUST] (axil_regfile_Design_Specification.md 7.3) The write changes no bit of o_regs and answers OKAY. Condition: Write to read/write register k with i_s_axi_wstrb = 4'b0000.
+  - quote: "[REQ-WR-017] A write transaction to read/write register k with i_s_axi_wstrb = 4'b0000 shall change no bit of o_regs and shall answer OKAY."
+- **RF-7.3-09** [MUST_NOT] (axil_regfile_Design_Specification.md 7.3) Bits of o_regs shall not change. Condition: Other than edge Ec of a write selecting them or i_rst_n asserted.
+  - quote: "[REQ-WR-018] Bits of o_regs shall change only at edge Ec of a write transaction that selects them or when i_rst_n is asserted."
+- **RF-7.4-01** [MUST] (axil_regfile_Design_Specification.md 7.4) o_s_axi_bvalid shall be 1 in the cycle starting at Ec. Condition: From edge Ec of a write transaction.
+  - quote: "[REQ-WR-020] o_s_axi_bvalid shall be 1 from edge Ec of a write transaction, that is, in the cycle that starts at Ec."
+- **RF-7.4-02** [MUST] (axil_regfile_Design_Specification.md 7.4) o_s_axi_bvalid stays 1 and o_s_axi_bresp stays unchanged. Condition: Once o_s_axi_bvalid is 1, until and including the cycle ending at Eb.
+  - quote: "[REQ-WR-021] Once o_s_axi_bvalid is 1, it shall stay 1 and o_s_axi_bresp shall stay unchanged until and including the cycle that ends at Eb."
+- **RF-7.4-03** [MUST] (axil_regfile_Design_Specification.md 7.4) o_s_axi_bvalid shall be 0. Condition: From edge Eb, unless i_rst_n asserted earlier.
+  - quote: "[REQ-WR-022] o_s_axi_bvalid shall be 0 from edge Eb, unless i_rst_n is asserted earlier."
+- **RF-7.4-04** [MUST] (axil_regfile_Design_Specification.md 7.4) The block gives exactly one B transfer per write transaction. Condition: Each write transaction that reaches Ec.
+  - quote: "[REQ-WR-023] The block shall give exactly one B transfer for each write transaction that reaches Ec, and o_s_axi_bvalid shall be 0 in every cycle in which no such transaction is waiting for its B transfer."
+- **RF-7.4-05** [MUST] (axil_regfile_Design_Specification.md 7.4) o_s_axi_bvalid shall be 0. Condition: No write transaction is waiting for its B transfer.
+  - quote: "[REQ-WR-023] The block shall give exactly one B transfer for each write transaction that reaches Ec, and o_s_axi_bvalid shall be 0 in every cycle in which no such transaction is waiting for its B transfer."
+- **RF-7.4-06** [MUST] (axil_regfile_Design_Specification.md 7.4) o_s_axi_bresp shall be 2'b00 (OKAY). Condition: Write selects a read/write register or the status register.
+  - quote: "[REQ-WR-024] o_s_axi_bresp shall be 2'b00 (OKAY) for a write transaction that selects a read/write register or the status register."
+- **RF-7.4-07** [MUST] (axil_regfile_Design_Specification.md 7.4) o_s_axi_bresp shall be 2'b10 (SLVERR). Condition: Write to an unmapped address.
+  - quote: "[REQ-WR-025] o_s_axi_bresp shall be 2'b10 (SLVERR) for a write transaction to an unmapped address."
+- **RF-7.4-08** [MUST_NOT] (axil_regfile_Design_Specification.md 7.4) o_s_axi_bresp shall never be 2'b01 or 2'b11. Condition: o_s_axi_bvalid is 1.
+  - quote: "[REQ-WR-026] o_s_axi_bresp shall never be 2'b01 or 2'b11 while o_s_axi_bvalid is 1."
+- **RF-7.4-09** [MUST_NOT] (axil_regfile_Design_Specification.md 7.4) The value of o_s_axi_bresp is unspecified and shall not be checked. Condition: o_s_axi_bvalid is 0 and i_rst_n is 1.
+  - quote: "[REQ-WR-027] While o_s_axi_bvalid is 0 and i_rst_n is 1, the value of o_s_axi_bresp is not specified and shall not be checked."
+- **RF-7.5-01** [MUST] (axil_regfile_Design_Specification.md 7.5) o_s_axi_arready shall be 1. Condition: Every cycle after R1 in which no read address is held.
+  - quote: "[REQ-RD-001] In every cycle after R1 in which no read address is held, o_s_axi_arready shall be 1."
+- **RF-7.5-02** [MUST] (axil_regfile_Design_Specification.md 7.5) o_s_axi_arready shall be 0. Condition: A read address is held.
+  - quote: "[REQ-RD-002] In every cycle in which a read address is held, o_s_axi_arready shall be 0."
+- **RF-7.5-03** [MUST_NOT] (axil_regfile_Design_Specification.md 7.5) The block shall take no other AR transfer. Condition: After an AR transfer, until the edge after Er of that transaction.
+  - quote: "[REQ-RD-003] After an AR transfer, the block shall take no other AR transfer until the edge after Er of that transaction."
+- **RF-7.5-04** [MUST] (axil_regfile_Design_Specification.md 7.5) o_s_axi_rvalid shall be 1 in the cycle starting at Ear. Condition: From edge Ear of a read transaction.
+  - quote: "[REQ-RD-004] o_s_axi_rvalid shall be 1 from edge Ear of a read transaction, that is, in the cycle that starts at Ear."
+- **RF-7.5-05** [MUST] (axil_regfile_Design_Specification.md 7.5) o_s_axi_rvalid stays 1 and o_s_axi_rdata and o_s_axi_rresp stay unchanged. Condition: Once o_s_axi_rvalid is 1, until and including the cycle ending at Er.
+  - quote: "[REQ-RD-005] Once o_s_axi_rvalid is 1, it shall stay 1 and o_s_axi_rdata and o_s_axi_rresp shall stay unchanged until and including the cycle that ends at Er."
+- **RF-7.5-06** [MUST] (axil_regfile_Design_Specification.md 7.5) o_s_axi_rvalid shall be 0. Condition: From edge Er, unless i_rst_n asserted earlier.
+  - quote: "[REQ-RD-006] o_s_axi_rvalid shall be 0 from edge Er, unless i_rst_n is asserted earlier."
+- **RF-7.5-07** [MUST] (axil_regfile_Design_Specification.md 7.5) The block gives exactly one R transfer for each AR transfer. Condition: Each AR transfer.
+  - quote: "[REQ-RD-007] The block shall give exactly one R transfer for each AR transfer, and o_s_axi_rvalid shall be 0 in every cycle in which no read transaction is waiting for its R transfer."
+- **RF-7.5-08** [MUST] (axil_regfile_Design_Specification.md 7.5) o_s_axi_rvalid shall be 0. Condition: No read transaction is waiting for its R transfer.
+  - quote: "[REQ-RD-007] The block shall give exactly one R transfer for each AR transfer, and o_s_axi_rvalid shall be 0 in every cycle in which no read transaction is waiting for its R transfer."
+- **RF-7.5-09** [MUST] (axil_regfile_Design_Specification.md 7.5) o_s_axi_rdata equals o_regs[32k+31:32k] in the cycle ending at Ear. Condition: Read selects read/write register k.
+  - quote: "[REQ-RD-008] For a read transaction that selects read/write register k, o_s_axi_rdata shall equal the value of o_regs[32k+31:32k] in the cycle that ends at Ear."
+- **RF-7.5-10** [MUST] (axil_regfile_Design_Specification.md 7.5) o_s_axi_rdata equals i_status in the cycle ending at Ear. Condition: Read selects the status register.
+  - quote: "[REQ-RD-009] For a read transaction that selects the status register, o_s_axi_rdata shall equal the value of i_status in the cycle that ends at Ear."
+- **RF-7.5-11** [MUST_NOT] (axil_regfile_Design_Specification.md 7.5) The change shall not alter o_s_axi_rdata. Condition: i_status changes after Ear during the read in progress.
+  - quote: "[REQ-RD-010] A change of i_status after Ear shall not change o_s_axi_rdata of the read transaction in progress."
+- **RF-7.5-12** [MUST] (axil_regfile_Design_Specification.md 7.5) o_s_axi_rresp shall be 2'b00 (OKAY). Condition: Read selects a read/write register or the status register.
+  - quote: "[REQ-RD-011] o_s_axi_rresp shall be 2'b00 (OKAY) for a read transaction that selects a read/write register or the status register."
+- **RF-7.5-13** [MUST] (axil_regfile_Design_Specification.md 7.5) o_s_axi_rdata shall be 32'h0000_0000 and o_s_axi_rresp shall be 2'b10 (SLVERR). Condition: Read to an unmapped address.
+  - quote: "[REQ-RD-012] For a read transaction to an unmapped address, o_s_axi_rdata shall be 32'h0000_0000 and o_s_axi_rresp shall be 2'b10 (SLVERR)."
+- **RF-7.5-14** [MUST_NOT] (axil_regfile_Design_Specification.md 7.5) o_s_axi_rresp shall never be 2'b01 or 2'b11. Condition: o_s_axi_rvalid is 1.
+  - quote: "[REQ-RD-013] o_s_axi_rresp shall never be 2'b01 or 2'b11 while o_s_axi_rvalid is 1."
+- **RF-7.5-15** [MUST_NOT] (axil_regfile_Design_Specification.md 7.5) Values of o_s_axi_rdata and o_s_axi_rresp are unspecified and shall not be checked. Condition: o_s_axi_rvalid is 0 and i_rst_n is 1.
+  - quote: "[REQ-RD-014] While o_s_axi_rvalid is 0 and i_rst_n is 1, the values of o_s_axi_rdata and o_s_axi_rresp are not specified and shall not be checked."
+- **RF-7.5-16** [MUST_NOT] (axil_regfile_Design_Specification.md 7.5) A read shall change no bit of o_regs. Condition: Read transaction.
+  - quote: "[REQ-RD-015] A read transaction shall change no bit of o_regs."
+- **RF-7.6-01** [MUST] (axil_regfile_Design_Specification.md 7.6) AR and R channels work independently of AW, W and B: value and timing of arready, rvalid, rdata, rresp are unchanged, except register value per REQ-CC-003 to 006. Condition: A write is held or waiting for its B transfer.
+  - quote: "[REQ-CC-001] The AR and R channels shall work independently of the AW, W and B channels. Whether a write is held or waiting for its B transfer shall not change the value or timing of o_s_axi_arready, o_s_axi_rvalid, o_s_axi_rdata or o_s_axi_rresp, except for the register value returned as stated in REQ-CC-003 to REQ-CC-006."
+- **RF-7.6-02** [MUST] (axil_regfile_Design_Specification.md 7.6) The value and timing of awready, wready, bvalid, bresp and o_regs shall not change. Condition: A read is held or waiting for its R transfer.
+  - quote: "[REQ-CC-002] Whether a read is held or waiting for its R transfer shall not change the value or timing of o_s_axi_awready, o_s_axi_wready, o_s_axi_bvalid, o_s_axi_bresp or o_regs."
+- **RF-7.6-03** [MUST] (axil_regfile_Design_Specification.md 7.6) The read returns the old value of register k before that write. Condition: AR transfer of a read of register k at the same edge as Ec of a write to register k.
+  - quote: "[REQ-CC-003] When the AR transfer of a read of register k happens at the same edge as Ec of a write to register k, the read shall return the value of register k before that write (the old value)."
+- **RF-7.6-04** [MUST] (axil_regfile_Design_Specification.md 7.6) The read returns the value written, unless another write to k with Ec before Ear came in between. Condition: Ec of a write to register k is before Ear of a read of register k.
+  - quote: "[REQ-CC-004] When Ec of a write to register k is before Ear of a read of register k, the read shall return the value written by that write, unless another write to register k with an Ec before Ear came in between."
+- **RF-7.6-05** [MUST_NOT] (axil_regfile_Design_Specification.md 7.6) The write shall not change o_s_axi_rdata of the read. Condition: Ec of a write to register k is after Ear of a read of register k.
+  - quote: "[REQ-CC-005] When Ec of a write to register k is after Ear of a read of register k, that write shall not change o_s_axi_rdata of the read."
+- **RF-7.6-06** [MUST] (axil_regfile_Design_Specification.md 7.6) Read data equals one whole value register k held in the cycle ending at Ear, never a mix of bytes of two values. Condition: Read of register k.
+  - quote: "[REQ-CC-006] The read data of register k shall always equal one whole value that register k held in the cycle that ends at Ear, and never a mix of the bytes of two values."
+- **RF-8.1-01** [MUST] (axil_regfile_Design_Specification.md 8.1) The block completes one write transaction every 2 cycles: AW and W transfers at edge n, B transfer at edge n+1, next AW and W at edge n+2. Condition: manager drives i_s_axi_awvalid, i_s_axi_wvalid and i_s_axi_bready at 1 continuously.
+  - quote: "[REQ-TIM-001] When the manager drives i_s_axi_awvalid, i_s_axi_wvalid and i_s_axi_bready at 1 continuously, the block shall complete one write transaction every 2 cycles, with the AW and W transfers at edge n, the B transfer at edge n+1, and the next AW and W transfers at edge n+2."
+- **RF-8.1-02** [MUST] (axil_regfile_Design_Specification.md 8.1) The block completes one read transaction every 2 cycles: AR transfer at edge n, R transfer at edge n+1, next AR at edge n+2. Condition: manager drives i_s_axi_arvalid and i_s_axi_rready at 1 continuously.
+  - quote: "[REQ-TIM-002] When the manager drives i_s_axi_arvalid and i_s_axi_rready at 1 continuously, the block shall complete one read transaction every 2 cycles, with the AR transfer at edge n, the R transfer at edge n+1, and the next AR transfer at edge n+2."
+- **RF-8.1-03** [MUST_NOT] (axil_regfile_Design_Specification.md 8.1) The block's readies must not wait for the matching valid; o_s_axi_awready, o_s_axi_wready and o_s_axi_arready are 1 as REQ-WR-001, REQ-WR-003 and REQ-RD-001 say, regardless of the valids.
+  - quote: "[REQ-TIM-003] Readies of the block shall not wait for the matching valid. o_s_axi_awready, o_s_axi_wready and o_s_axi_arready shall be 1 whenever REQ-WR-001, REQ-WR-003 and REQ-RD-001 say so, whatever the values of the valids."
+- **RF-8.2-01** [MUST] (axil_regfile_Design_Specification.md 8.2) The block keeps the write response pending for any number of cycles while i_s_axi_bready is 0. Condition: i_s_axi_bready is 0 and o_s_axi_bvalid is 1.
+  - quote: "[REQ-TIM-010] While i_s_axi_bready is 0 and o_s_axi_bvalid is 1, the block shall keep the response pending and shall take no new AW or W transfer, for any number of cycles."
+- **RF-8.2-02** [MUST_NOT] (axil_regfile_Design_Specification.md 8.2) The block takes no new AW or W transfer while the B response is pending and i_s_axi_bready is 0. Condition: i_s_axi_bready is 0 and o_s_axi_bvalid is 1.
+  - quote: "[REQ-TIM-010] While i_s_axi_bready is 0 and o_s_axi_bvalid is 1, the block shall keep the response pending and shall take no new AW or W transfer, for any number of cycles."
+- **RF-8.2-03** [MUST] (axil_regfile_Design_Specification.md 8.2) The block keeps the read data pending for any number of cycles while i_s_axi_rready is 0. Condition: i_s_axi_rready is 0 and o_s_axi_rvalid is 1.
+  - quote: "[REQ-TIM-011] While i_s_axi_rready is 0 and o_s_axi_rvalid is 1, the block shall keep the read data pending and shall take no new AR transfer, for any number of cycles."
+- **RF-8.2-04** [MUST_NOT] (axil_regfile_Design_Specification.md 8.2) The block takes no new AR transfer while read data is pending and i_s_axi_rready is 0. Condition: i_s_axi_rready is 0 and o_s_axi_rvalid is 1.
+  - quote: "[REQ-TIM-011] While i_s_axi_rready is 0 and o_s_axi_rvalid is 1, the block shall keep the read data pending and shall take no new AR transfer, for any number of cycles."
+- **RF-8.2-05** [MUST_NOT] (axil_regfile_Design_Specification.md 8.2) Back-pressure on the B channel must not stall the AR or R channel. Condition: back-pressure on the B channel.
+  - quote: "[REQ-TIM-012] Back-pressure on the B channel shall not stall the AR or R channel, and back-pressure on the R channel shall not stall the AW, W or B channel."
+- **RF-8.2-06** [MUST_NOT] (axil_regfile_Design_Specification.md 8.2) Back-pressure on the R channel must not stall the AW, W or B channel. Condition: back-pressure on the R channel.
+  - quote: "[REQ-TIM-012] Back-pressure on the B channel shall not stall the AR or R channel, and back-pressure on the R channel shall not stall the AW, W or B channel."
+- **RF-8.2-07** [MUST] (axil_regfile_Design_Specification.md 8.2) The block answers write transactions in the order of their Ec and read transactions in the order of their Ear.
+  - quote: "[REQ-TIM-013] Because only one write and one read can be in progress, the block shall answer write transactions in the order of their Ec and read transactions in the order of their Ear."
+- **RF-9-01** [MUST] (axil_regfile_Design_Specification.md 9) REG_k VALUE (bits 31:0, RW) shall reset to 0x0000_0000, so o_regs[32k+31:32k] is 0 after reset. Condition: Register REG_k at offset 0x00+4k, k=0..PARA_NUM_REGS-1, is reset.
+  - quote: "Offset: 0x00 + 4k, k = 0 to PARA_NUM_REGS-1; Name: REG_k; Field: VALUE; Bits: 31:0; Access: RW; Reset: 0x0000_0000; Description: Control value k. Drives o_regs[32k+31:32k]. Byte lanes are written under i_s_axi_wstrb. Reads return the current value with OKAY."
+- **RF-9-02** [MUST] (axil_regfile_Design_Specification.md 9) o_regs[32k+31:32k] shall be driven by the current value of REG_k. Condition: For each k from 0 to PARA_NUM_REGS-1.
+  - quote: "Offset: 0x00 + 4k, k = 0 to PARA_NUM_REGS-1; Name: REG_k; Field: VALUE; Bits: 31:0; Access: RW; Reset: 0x0000_0000; Description: Control value k. Drives o_regs[32k+31:32k]. Byte lanes are written under i_s_axi_wstrb. Reads return the current value with OKAY."
+- **RF-9-03** [MUST] (axil_regfile_Design_Specification.md 9) Each byte lane of REG_k shall be written only when the corresponding i_s_axi_wstrb bit is set; other byte lanes shall keep their value. Condition: A write to REG_k.
+  - quote: "Offset: 0x00 + 4k, k = 0 to PARA_NUM_REGS-1; Name: REG_k; Field: VALUE; Bits: 31:0; Access: RW; Reset: 0x0000_0000; Description: Control value k. Drives o_regs[32k+31:32k]. Byte lanes are written under i_s_axi_wstrb. Reads return the current value with OKAY. Access codes: RW is readable and writable."
+- **RF-9-04** [MUST] (axil_regfile_Design_Specification.md 9) A read of REG_k shall return the current register value with OKAY response. Condition: A read of REG_k.
+  - quote: "Offset: 0x00 + 4k, k = 0 to PARA_NUM_REGS-1; Name: REG_k; Field: VALUE; Bits: 31:0; Access: RW; Reset: 0x0000_0000; Description: Control value k. Drives o_regs[32k+31:32k]. Byte lanes are written under i_s_axi_wstrb. Reads return the current value with OKAY. Access codes: RW is readable and writable."
+- **RF-9-05** [MUST] (axil_regfile_Design_Specification.md 9) A read of STATUS shall return i_status sampled at Ear, with OKAY response. Condition: A read of STATUS at offset 0x40.
+  - quote: "Offset: 0x40; Name: STATUS; Field: VALUE; Bits: 31:0; Access: RO; Reset: Not applicable; Description: Read returns i_status sampled at Ear, with OKAY. A write changes nothing and answers OKAY."
+- **RF-9-06** [MUST] (axil_regfile_Design_Specification.md 9) A write to STATUS shall change nothing and answer OKAY. Condition: A write to STATUS at offset 0x40.
+  - quote: "Offset: 0x40; Name: STATUS; Field: VALUE; Bits: 31:0; Access: RO; Reset: Not applicable; Description: Read returns i_status sampled at Ear, with OKAY. A write changes nothing and answers OKAY. RO is read-only; a write is ignored and answers OKAY."
+- **RF-9-07** [MUST] (axil_regfile_Design_Specification.md 9) A read of the unmapped region below STATUS shall return 0 with SLVERR. Condition: A read from an address from 4*PARA_NUM_REGS to 0x3C (unmapped).
+  - quote: "Offset: 4*PARA_NUM_REGS to 0x3C; Name: Reserved; Field: -; Bits: 31:0; Access: -; Reset: -; Description: Unmapped; does not exist when PARA_NUM_REGS = 16. Read returns 0 with SLVERR. A write changes nothing and answers SLVERR."
+- **RF-9-08** [MUST] (axil_regfile_Design_Specification.md 9) A write to the unmapped region below STATUS shall change nothing and answer SLVERR. Condition: A write to an address from 4*PARA_NUM_REGS to 0x3C (unmapped).
+  - quote: "Offset: 4*PARA_NUM_REGS to 0x3C; Name: Reserved; Field: -; Bits: 31:0; Access: -; Reset: -; Description: Unmapped; does not exist when PARA_NUM_REGS = 16. Read returns 0 with SLVERR. A write changes nothing and answers SLVERR."
+- **RF-9-09** [MUST] (axil_regfile_Design_Specification.md 9) The reserved region from 4*PARA_NUM_REGS to 0x3C shall not exist when PARA_NUM_REGS is 16. Condition: PARA_NUM_REGS = 16.
+  - quote: "Offset: 4*PARA_NUM_REGS to 0x3C; Name: Reserved; Field: -; Bits: 31:0; Access: -; Reset: -; Description: Unmapped; does not exist when PARA_NUM_REGS = 16. Read returns 0 with SLVERR. A write changes nothing and answers SLVERR."
+- **RF-9-10** [MUST] (axil_regfile_Design_Specification.md 9) A read of the unmapped region above STATUS shall return 0 with SLVERR. Condition: A read from an address from 0x44 to 2^PARA_ADDR_W - 4.
+  - quote: "Offset: 0x44 to 2^PARA_ADDR_W - 4; Name: Reserved; Field: -; Bits: 31:0; Access: -; Reset: -; Description: Unmapped. Read returns 0 with SLVERR. A write changes nothing and answers SLVERR."
+- **RF-9-11** [MUST] (axil_regfile_Design_Specification.md 9) A write to the unmapped region above STATUS shall change nothing and answer SLVERR. Condition: A write to an address from 0x44 to 2^PARA_ADDR_W - 4.
+  - quote: "Offset: 0x44 to 2^PARA_ADDR_W - 4; Name: Reserved; Field: -; Bits: 31:0; Access: -; Reset: -; Description: Unmapped. Read returns 0 with SLVERR. A write changes nothing and answers SLVERR."
+- **RF-9-12** [MUST] (axil_regfile_Design_Specification.md 9) Address bits [1:0] shall be ignored when decoding register offsets. Condition: Address decoding.
+  - quote: "Offsets are byte addresses with bits [1:0] ignored."
+- **RF-9-13** [MUST] (axil_regfile_Design_Specification.md 9) The register map shall match the table exactly for every legal PARA_NUM_REGS and PARA_ADDR_W combination. Condition: For every legal parameter combination.
+  - quote: "For the default configuration (PARA_NUM_REGS = 8, PARA_ADDR_W = 8): REG_0 to REG_7 are at 0x00 to 0x1C, 0x20 to 0x3C is unmapped, STATUS is at 0x40, and 0x44 to 0xFC is unmapped. [REQ-REG-001] The register map shall be exactly the table above for every legal parameter combination."
+- **RF-10.1-01** [MUST] (axil_regfile_Design_Specification.md 10.1) A write to an unmapped address, detected by decoding the address taken at Ea, must change no register and answer o_s_axi_bresp = 2'b10 (SLVERR) with normal write timing. Condition: write to an unmapped address.
+  - quote: "[REQ-ERR-001] A write to an unmapped address shall be detected by the decode of the address taken at Ea, shall change no register, and shall answer o_s_axi_bresp = 2'b10 (SLVERR) with the normal write timing."
+- **RF-10.1-02** [MUST] (axil_regfile_Design_Specification.md 10.1) A read from an unmapped address, detected by decoding the address taken at Ear, must return o_s_axi_rdata = 0 and o_s_axi_rresp = 2'b10 (SLVERR) with normal read timing. Condition: read from an unmapped address.
+  - quote: "[REQ-ERR-002] A read from an unmapped address shall be detected by the decode of the address taken at Ear, and shall return o_s_axi_rdata = 0 and o_s_axi_rresp = 2'b10 (SLVERR) with the normal read timing."
+- **RF-10.1-03** [MUST] (axil_regfile_Design_Specification.md 10.1) A write to the status register must change no register, not affect later status reads other than through i_status, and answer OKAY, for every i_s_axi_wstrb value. Condition: write to the status register, any value of i_s_axi_wstrb.
+  - quote: "[REQ-ERR-003] A write to the status register shall change no register, shall have no effect on later reads of the status register other than through i_status, and shall answer OKAY. This holds for every value of i_s_axi_wstrb."
+- **RF-10.1-04** [MUST] (axil_regfile_Design_Specification.md 10.1) A write with i_s_axi_wstrb = 4'b0000 must answer as a write with strobes to the same address (OKAY for register or status, SLVERR for unmapped) and change no register. Condition: write with i_s_axi_wstrb = 4'b0000.
+  - quote: "[REQ-ERR-004] A write with i_s_axi_wstrb = 4'b0000 shall answer exactly as a write with strobes to the same address (OKAY for a register or status, SLVERR for unmapped) and shall change no register."
+- **RF-10.1-05** [MUST_NOT] (axil_regfile_Design_Specification.md 10.1) An address with bits [1:0] not equal to 2'b00 must not be treated as an error. Condition: address bits [1:0] not equal to 2'b00.
+  - quote: "[REQ-ERR-005] An address with bits [1:0] not equal to 2'b00 shall not be an error."
+- **RF-10.1-06** [MUST] (axil_regfile_Design_Specification.md 10.1) An access with unaligned address bits [1:0] must access the aligned word given by its word index. Condition: address bits [1:0] not equal to 2'b00.
+  - quote: "It shall access the aligned word given by its word index."
+- **RF-10.1-07** [MUST] (axil_regfile_Design_Specification.md 10.1) Any value of i_s_axi_awprot or i_s_axi_arprot must be accepted without error and without effect. Condition: any value of awprot or arprot.
+  - quote: "[REQ-ERR-006] Any value of i_s_axi_awprot or i_s_axi_arprot shall be accepted without an error and without an effect."
+- **RF-10.1-08** [MUST_NOT] (axil_regfile_Design_Specification.md 10.1) An unmapped access must not stall or change the state of the other channels. Condition: unmapped access.
+  - quote: "[REQ-ERR-007] An unmapped access shall not stall or change the state of the other channels."
+- **RF-10.1-09** [MUST] (axil_regfile_Design_Specification.md 10.1) The next transaction must behave as if the unmapped access had targeted a mapped address. Condition: transaction following an unmapped access.
+  - quote: "The next transaction shall behave as if the unmapped access had targeted a mapped address."
+- **RF-10.1-10** [MUST] (axil_regfile_Design_Specification.md 10.1) A valid input at 1 while i_rst_n is 0 must have no effect (REQ-RST-005). Condition: a valid input is 1 while i_rst_n is 0.
+  - quote: "[REQ-ERR-008] A valid input at 1 while i_rst_n is 0 shall have no effect (REQ-RST-005)."
+- **RF-10.2-01** [MUST] (axil_regfile_Design_Specification.md 10.2) Only 0x00 (REG_0) and 0x40 (STATUS) are mapped, o_regs is 32 bits wide, and 0x04 to 0x3C are unmapped. Condition: PARA_NUM_REGS = 1.
+  - quote: "[REQ-EXT-001] With PARA_NUM_REGS = 1, only byte address 0x00 (REG_0) and 0x40 (STATUS) shall be mapped, o_regs shall be 32 bits wide, and 0x04 to 0x3C shall be unmapped."
+- **RF-10.2-02** [MUST] (axil_regfile_Design_Specification.md 10.2) 0x00 to 0x3C are REG_0 to REG_15, 0x40 is STATUS, o_regs is 512 bits wide, and no address below 0x44 is unmapped. Condition: PARA_NUM_REGS = 16.
+  - quote: "[REQ-EXT-002] With PARA_NUM_REGS = 16, byte addresses 0x00 to 0x3C shall be REG_0 to REG_15, 0x40 shall be STATUS, o_regs shall be 512 bits wide, and no address below 0x44 shall be unmapped."
+- **RF-10.2-03** [MUST] (axil_regfile_Design_Specification.md 10.2) The address space is 0x00 to 0x7F and addresses 0x44 to 0x7C are unmapped. Condition: PARA_ADDR_W = 7.
+  - quote: "[REQ-EXT-003] With PARA_ADDR_W = 7, the address space shall be 0x00 to 0x7F and the addresses 0x44 to 0x7C shall be unmapped."
+- **RF-10.2-04** [MUST] (axil_regfile_Design_Specification.md 10.2) Every address with a 1 in any bit from 15 to 7 (e.g. 0x0080, 0x0100, 0x8040, 0xFFFC) is unmapped. Condition: PARA_ADDR_W = 16.
+  - quote: "[REQ-EXT-004] With PARA_ADDR_W = 16, every address with a 1 in any bit from 15 to 7 (for example 0x0080, 0x0100, 0x8040, 0xFFFC) shall be unmapped."
+- **RF-10.2-05** [MUST] (axil_regfile_Design_Specification.md 10.2) Latency, throughput, reset and back-pressure behaviour must be the same for every legal parameter combination. Condition: any legal parameter combination.
+  - quote: "[REQ-EXT-005] The latency, throughput, reset and back-pressure behaviour shall be the same for every legal parameter combination."
+- **RF-11-01** [MUST] (axil_regfile_Design_Specification.md 11) CFG-BASE uses PARA_NUM_REGS=8 and PARA_ADDR_W=8 as default and must cover the gap of unmapped addresses 0x20 to 0x3C. Condition: Configuration CFG-BASE.
+  - quote: "ID: CFG-BASE; Parameter values: PARA_NUM_REGS=8, PARA_ADDR_W=8; Purpose: Main configuration (defaults); covers the gap of unmapped addresses 0x20 to 0x3C"
+- **RF-11-02** [MUST] (axil_regfile_Design_Specification.md 11) CFG-MIN must be verified with PARA_NUM_REGS=1 and PARA_ADDR_W=7, the smallest legal configuration. Condition: Configuration CFG-MIN.
+  - quote: "ID: CFG-MIN; Parameter values: PARA_NUM_REGS=1, PARA_ADDR_W=7; Purpose: Smallest legal: one register, narrowest address bus"
+- **RF-11-03** [MUST] (axil_regfile_Design_Specification.md 11) CFG-MAX must be verified with PARA_NUM_REGS=16 and PARA_ADDR_W=16, including aliasing checks with high address bits. Condition: Configuration CFG-MAX.
+  - quote: "ID: CFG-MAX; Parameter values: PARA_NUM_REGS=16, PARA_ADDR_W=16; Purpose: Largest legal: full register bank, widest address bus, aliasing checks with high address bits"
+- **RF-11-04** [MUST] (axil_regfile_Design_Specification.md 11) CFG-FULL-A7 uses PARA_NUM_REGS=16 and PARA_ADDR_W=7, a full register bank with the narrowest address bus and no unmapped address below 0x44. Condition: Configuration CFG-FULL-A7.
+  - quote: "ID: CFG-FULL-A7; Parameter values: PARA_NUM_REGS=16, PARA_ADDR_W=7; Purpose: Full register bank with the narrowest address bus; no unmapped address below 0x44"
+- **RF-11-05** [MUST] (axil_regfile_Design_Specification.md 11) The verification must run every configuration listed in the Configurations table (CFG-BASE, CFG-MIN, CFG-MAX, CFG-FULL-A7), as defined in run_set.json.
+  - quote: "The verification runs every configuration listed here (run_set.json)."
+- **RF-12.1-01** [MUST] (axil_regfile_Design_Specification.md 12.1) The manager shall keep valid at 1 and its payload stable from the cycle it rises until the edge of its transfer. Condition: On AW, W and AR channels, once valid rises.
+  - quote: "[REQ-VER-001] On the AW, W and AR channels, the manager shall keep a valid at 1, and its payload stable, from the cycle it rises until the edge of its transfer."
+- **RF-12.1-02** [MAY] (axil_regfile_Design_Specification.md 12.1) The manager may hold i_s_axi_bready and i_s_axi_rready at 0 for any number of cycles, drive them at 1 before the matching valid, and make them depend on the valid.
+  - quote: "[REQ-VER-002] The manager may keep i_s_axi_bready and i_s_axi_rready at 0 for any number of cycles, may drive them at 1 before the matching valid, and may make them depend on the valid."
+- **RF-12.1-03** [MUST] (axil_regfile_Design_Specification.md 12.1) The environment shall release i_rst_n synchronously to i_clk so that the release meets recovery and removal times of the flip-flops. Condition: When releasing reset (0 to 1).
+  - quote: "[REQ-VER-003] The environment shall release i_rst_n (0 to 1) synchronously to i_clk, so that the release meets the recovery and removal times of the flip-flops."
+- **RF-12.1-05** [MUST] (axil_regfile_Design_Specification.md 12.1) The environment shall drive i_status synchronously to i_clk, changing it only away from rising edges.
+  - quote: "[REQ-VER-004] The environment shall drive i_status synchronously to i_clk. The testbench shall change it only away from rising edges."
+- **RF-12.1-06** [MUST] (axil_regfile_Design_Specification.md 12.1) The testbench shall drive defined values (no X or Z) on all inputs. Condition: While i_rst_n is 1.
+  - quote: "[REQ-VER-005] The testbench shall drive defined values (no X or Z) on all inputs while i_rst_n is 1."
+- **RF-12.1-07** [MAY] (axil_regfile_Design_Specification.md 12.1) The valids may be 0 or 1 during reset. Condition: During reset.
+  - quote: "During reset the valids may be 0 or 1."
+- **RF-12.1-08** [MUST] (axil_regfile_Design_Specification.md 12.1) The environment shall drive i_rst_n = 0 from time zero, before the first rising edge of i_clk, for at least 2 cycles. Condition: From start of operation (time zero).
+  - quote: "[REQ-VER-006] The environment shall drive i_rst_n = 0 from the start of operation (time zero in simulation), before the first rising edge of i_clk, for at least 2 cycles."
+- **RF-12.1-09** [MUST_NOT] (axil_regfile_Design_Specification.md 12.1) No output check applies, including REQ-VER-010, before the first assertion of i_rst_n, as outputs are undefined. Condition: Before the first assertion of i_rst_n.
+  - quote: "Before the first assertion of i_rst_n the outputs are undefined and no check applies, REQ-VER-010 included (spec-lint GAP-002)."
+- **RF-12.1-10** [MAY] (axil_regfile_Design_Specification.md 12.1) A reset assertion ends the REQ-VER-001 obligation; the manager may drop that valid or change its payload. Condition: During reset and after R1, for a valid that rose before the reset assertion.
+  - quote: "[REQ-VER-007] A reset assertion ends the obligation of REQ-VER-001 for a valid that rose before it: during reset and after R1 the manager may drop that valid or change its payload."
+- **RF-12.1-11** [MUST] (axil_regfile_Design_Specification.md 12.1) A valid at 1 after R1 is a new request and carries the REQ-VER-001 obligation from that cycle. Condition: A valid at 1 after R1.
+  - quote: "A valid at 1 after R1 is a new request (REQ-RST-010), with the obligation of REQ-VER-001 from that cycle (spec-lint GAP-005)."
+- **RF-12.2-02** [MUST] (axil_regfile_Design_Specification.md 12.2) A reference model shall predict o_regs and the next value of every handshake output. Condition: At every edge.
+  - quote: "A reference model shall predict, at every edge, o_regs and the next value of every handshake output."
+- **RF-12.2-03** [MUST] (axil_regfile_Design_Specification.md 12.2) The checker shall compare o_regs with the reference model in every cycle, not only after B transfers. Condition: Every cycle.
+  - quote: "[REQ-VER-010] The checker shall compare o_regs with the reference model in every cycle, not only after B transfers."
+- **RF-12.2-04** [MUST_NOT] (axil_regfile_Design_Specification.md 12.2) The checker shall compare o_s_axi_rdata and o_s_axi_rresp only when o_s_axi_rvalid is 1 or i_rst_n is 0, and o_s_axi_bresp only when o_s_axi_bvalid is 1 or i_rst_n is 0.
+  - quote: "[REQ-VER-011] The checker shall compare o_s_axi_rdata and o_s_axi_rresp only in cycles where o_s_axi_rvalid is 1 or i_rst_n is 0, and o_s_axi_bresp only in cycles where o_s_axi_bvalid is 1 or i_rst_n is 0 (REQ-WR-027, REQ-RD-014, REQ-RST-002)."
+- **RF-12.2-05** [MUST] (axil_regfile_Design_Specification.md 12.2) A protocol checker shall verify o_s_axi_bvalid and o_s_axi_rvalid stay 1 with stable payload until transfer, and no response code is 2'b01 or 2'b11. Condition: Until the transfer.
+  - quote: "[REQ-VER-012] A protocol checker shall check that o_s_axi_bvalid and o_s_axi_rvalid stay 1, with their payload stable, until their transfer, and that no response code is 2'b01 or 2'b11."
+- **RF-12.3-01** [MUST] (axil_regfile_Design_Specification.md 12.3) The testbench shall change inputs between rising edges, e.g. at the falling edge, and check no output changes before the next rising edge. Condition: To check REQ-IF-001.
+  - quote: "[REQ-VER-020] To check REQ-IF-001, the testbench shall change inputs between rising edges (for example at the falling edge), and shall check that no output changes before the next rising edge."
+- **RF-12.3-02** [MUST] (axil_regfile_Design_Specification.md 12.3) The testbench shall assert i_rst_n between rising edges while transactions are in progress and check reset values before the next rising edge. Condition: To check REQ-RST-004, transactions in progress.
+  - quote: "[REQ-VER-021] To check REQ-RST-004, the testbench shall assert i_rst_n between rising edges while transactions are in progress, and shall check the reset values before the next rising edge."
+- **RF-12.4-01** [MUST] (axil_regfile_Design_Specification.md 12.4) All 16 values of i_s_axi_wstrb shall be applied, with data differing from the old value in every byte. Condition: Write to a mapped register.
+  - quote: "[REQ-VER-030] Every value of i_s_axi_wstrb (all 16) shall be applied to a write of a mapped register, with data that differs from the old value in every byte."
+- **RF-12.4-02** [MUST] (axil_regfile_Design_Specification.md 12.4) Writes shall be run with address before data (gaps of 1 and 4+ cycles), data before address (same gaps), and both at the same edge.
+  - quote: "[REQ-VER-031] Write transactions shall be run with the address before the data (gaps of 1 and of 4 or more cycles), with the data before the address (same gaps), and with both at the same edge."
+- **RF-12.4-03** [MUST] (axil_regfile_Design_Specification.md 12.4) The B channel shall be run with i_s_axi_bready delays of 0, 1 and 4 or more cycles, including i_s_axi_bready at 1 before o_s_axi_bvalid rises.
+  - quote: "[REQ-VER-032] The B channel shall be run with i_s_axi_bready delays of 0, 1 and 4 or more cycles, including i_s_axi_bready at 1 before o_s_axi_bvalid rises."
+- **RF-12.4-04** [MUST] (axil_regfile_Design_Specification.md 12.4) The R channel shall be run with i_s_axi_rready delays of 0, 1 and 4 or more cycles, including i_s_axi_rready at 1 before o_s_axi_rvalid rises.
+  - quote: "[REQ-VER-033] The R channel shall be run with i_s_axi_rready delays of 0, 1 and 4 or more cycles, including i_s_axi_rready at 1 before o_s_axi_rvalid rises."
+- **RF-12.4-05** [MUST] (axil_regfile_Design_Specification.md 12.4) New AW, W and AR valids shall be presented to check they are not taken (REQ-TIM-010, REQ-TIM-011). Condition: While a response is held back.
+  - quote: "[REQ-VER-034] New AW, W and AR valids shall be presented while a response is held back, to check that they are not taken (REQ-TIM-010, REQ-TIM-011)."
+- **RF-12.4-06** [MUST] (axil_regfile_Design_Specification.md 12.4) Every mapped register shall be written with a unique value and read back to detect decode aliasing.
+  - quote: "[REQ-VER-035] Every mapped register shall be written with a unique value and read back, to detect decode aliasing."
+- **RF-12.4-07** [MUST] (axil_regfile_Design_Specification.md 12.4) The status register shall be read while i_status changes around Ear and during R back-pressure, and written with several strobe values.
+  - quote: "[REQ-VER-036] The status register shall be read while i_status changes in the cycles around Ear and during R back-pressure, and shall be written with several strobe values."
+- **RF-12.4-08** [MUST] (axil_regfile_Design_Specification.md 12.4) Unmapped addresses shall be accessed: word indexes PARA_NUM_REGS to 15, 0x44, the highest bus address, and mapped address plus a 1 in bit 7 to PARA_ADDR_W-1 when PARA_ADDR_W > 7.
+  - quote: "[REQ-VER-037] Unmapped addresses shall be accessed: every word index from PARA_NUM_REGS to 15, 0x44, the highest address of the bus, and addresses that equal a mapped address plus a 1 in a bit from 7 to PARA_ADDR_W-1 (when PARA_ADDR_W > 7)."
+- **RF-12.4-09** [MUST] (axil_regfile_Design_Specification.md 12.4) Addresses with bits [1:0] not 2'b00 and random i_s_axi_awprot and i_s_axi_arprot values shall be applied.
+  - quote: "[REQ-VER-038] Addresses with bits [1:0] not 2'b00, and random values of i_s_axi_awprot and i_s_axi_arprot, shall be applied."
+- **RF-12.4-10** [MUST] (axil_regfile_Design_Specification.md 12.4) A read and a write of the same register shall run with Ear at Ec-1, Ec and Ec+1, and reads and writes of different registers shall run simultaneously.
+  - quote: "[REQ-VER-039] A read and a write of the same register shall run with Ear at Ec - 1, Ec and Ec + 1, and a read and a write of different registers shall run at the same time."
+- **RF-12.4-11** [MUST] (axil_regfile_Design_Specification.md 12.4) Reset shall be asserted with only write address held, only write data held, B response pending, R response pending, and with valids held at 1 through reset.
+  - quote: "[REQ-VER-040] Reset shall be asserted with only the write address held, with only the write data held, with a B response pending, with an R response pending, and with valids held at 1 through the reset."
+- **RF-12.4-12** [MUST] (axil_regfile_Design_Specification.md 12.4) Back-to-back writes and reads at full throughput of REQ-TIM-001 and REQ-TIM-002 shall be run, alone and at the same time.
+  - quote: "[REQ-VER-041] Back-to-back writes and back-to-back reads at the full throughput of REQ-TIM-001 and REQ-TIM-002 shall be run, alone and at the same time."
+- **RF-13-01** [MUST] (axil_regfile_Design_Specification.md 13) The block shall meet timing at 50 MHz (20 ns clock period) in the GF180MCU technology at the worst-case corner of the sign-off flow. Condition: at worst-case corner of the sign-off flow in GF180MCU.
+  - quote: "[REQ-IMP-001] The block shall meet timing at 50 MHz (20 ns clock period) in the GF180MCU technology at the worst-case corner of the sign-off flow."
+- **RF-13-02** [MUST] (axil_regfile_Design_Specification.md 13) The RTL shall follow the coding rules in docs/RTL_RULES.md (REF-002).
+  - quote: "[REQ-IMP-002] The RTL shall follow the coding rules in docs/RTL_RULES.md (REF-002)."
+- **RF-13-03** [MUST] (axil_regfile_Design_Specification.md 13) The RTL shall be synthesizable.
+  - quote: "[REQ-IMP-003] The RTL shall be synthesizable, shall use the single clock i_clk with no clock gating and no latches, and shall not rely on initial values."
+- **RF-13-04** [MUST] (axil_regfile_Design_Specification.md 13) The RTL shall use the single clock i_clk with no clock gating and no latches.
+  - quote: "[REQ-IMP-003] The RTL shall be synthesizable, shall use the single clock i_clk with no clock gating and no latches, and shall not rely on initial values."
+- **RF-13-05** [MUST_NOT] (axil_regfile_Design_Specification.md 13) The RTL shall not rely on initial values.
+  - quote: "[REQ-IMP-003] The RTL shall be synthesizable, shall use the single clock i_clk with no clock gating and no latches, and shall not rely on initial values."
+- **RF-13-06** [MUST] (axil_regfile_Design_Specification.md 13) Every flip-flop that drives an output or holds transaction state shall be reset asynchronously by i_rst_n to the value giving the reset values of section 5. Condition: for every flip-flop that drives an output or holds transaction state.
+  - quote: "[REQ-IMP-004] Every flip-flop that drives an output, or holds transaction state, shall be reset asynchronously by i_rst_n to the value that gives the reset values of section 5."
+- **RF-13-07** [MUST] (axil_regfile_Design_Specification.md 13) Every output shall be driven directly from a flip-flop.
+  - quote: "[REQ-IMP-005] Every output shall be driven directly from a flip-flop (this realises REQ-IF-001)."
+- **RF-13-08** [MUST] (axil_regfile_Design_Specification.md 13) The RTL shall compile and simulate in Verilator without lint warnings in all configurations of section 11. Condition: in all configurations of section 11.
+  - quote: "[REQ-IMP-006] The RTL shall compile and simulate in Verilator without lint warnings in all configurations of section 11."
+- **RF-13-09** [SHOULD] (axil_regfile_Design_Specification.md 13) The block should use no more storage than PARA_NUM_REGS x 32 register bits plus flip-flops for held write address and data, read data, and handshake state.
+  - quote: "The block should use no more storage than the PARA_NUM_REGS x 32 register bits plus the flip-flops needed for the held write address and data, the read data, and the handshake state."
+- **RF-14-01** [MUST] (axil_regfile_Design_Specification.md 14) o_s_axi_awready, o_s_axi_wready and o_s_axi_arready must be 0 during reset and in the cycle that ends at R1, and 1 from R1. Condition: during reset and in the cycle that ends at R1.
+  - quote: "ID: D-001; Question: Value of o_s_axi_awready, o_s_axi_wready and o_s_axi_arready during reset (the description allows 0 or 1); Decision: 0 during reset and in the cycle that ends at R1; 1 from R1 (REQ-RST-001, REQ-RST-006, REQ-RST-007); By: spec-draft; Date: 2026-11-19 ID: Q-003; Question: Should the readies be 0 during reset (D-001), or is a cheaper design with readies at 1 during reset wanted?; Decision: Decided: D-001 is final; the readies are 0 during reset and in the cycle that ends at R1; By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19"
+- **RF-14-02** [MUST] (axil_regfile_Design_Specification.md 14) The readies must be registered and depend only on the held state, not on the valids.
+  - quote: "ID: D-002; Question: Whether readies depend on the valids; Decision: No. The readies are registered and depend only on the held state (REQ-TIM-003, REQ-IF-001); By: spec-draft; Date: 2026-11-19"
+- **RF-14-03** [MUST] (axil_regfile_Design_Specification.md 14) bvalid must be 1 from Ec, giving a write response latency of exactly 1 cycle. Condition: write response after the later of the AW and W transfers (Ec).
+  - quote: "ID: D-003; Question: Write response latency ("at the earliest one cycle"); Decision: Exactly 1 cycle: bvalid is 1 from Ec (REQ-WR-020); By: spec-draft; Date: 2026-11-19"
+- **RF-14-04** [MUST] (axil_regfile_Design_Specification.md 14) rvalid must be 1 from Ear, giving a read data latency of exactly 1 cycle. Condition: read response after the address transfer (Ear).
+  - quote: "ID: D-004; Question: Read data latency ("at the earliest one cycle"); Decision: Exactly 1 cycle: rvalid is 1 from Ear (REQ-RD-004); By: spec-draft; Date: 2026-11-19"
+- **RF-14-05** [MUST] (axil_regfile_Design_Specification.md 14) The register must be written at Ec, the later of the AW and W transfers. Condition: write request.
+  - quote: "ID: D-005; Question: Edge at which the register is written; Decision: Ec, the later of the AW and W transfers (REQ-WR-010); By: spec-draft; Date: 2026-11-19"
+- **RF-14-06** [MUST] (axil_regfile_Design_Specification.md 14) The read must sample the register at Ear: a write at the same edge gives the old value, a write at an earlier Ec gives the new value. Condition: a read and a write of the same register overlap.
+  - quote: "ID: D-006; Question: Old or new value when a read and a write of the same register overlap; Decision: The read samples at Ear. A write at the same edge gives the old value; a write at an earlier Ec gives the new value (REQ-CC-003, REQ-CC-004); By: spec-draft; Date: 2026-11-19"
+- **RF-14-07** [MUST] (axil_regfile_Design_Specification.md 14) i_status must be sampled at Ear and the sampled value held until Er. Condition: read of a status register.
+  - quote: "ID: D-007; Question: When i_status is sampled; Decision: At Ear, and held until Er (REQ-RD-009, REQ-RD-010); By: spec-draft; Date: 2026-11-19"
+- **RF-14-08** [MUST] (axil_regfile_Design_Specification.md 14) Address bits [PARA_ADDR_W-1:2] must be fully decoded; any 1 above bit 6 makes the address unmapped. Condition: address decoding.
+  - quote: "ID: D-008; Question: Aliasing of address bits above bit 6; Decision: Full decode of bits [PARA_ADDR_W-1:2]; any 1 above bit 6 is unmapped (REQ-DEC-004, REQ-DEC-005); By: spec-draft; Date: 2026-11-19"
+- **RF-14-09** [MUST] (axil_regfile_Design_Specification.md 14) bresp, rresp and rdata must be 0 during reset; their values while valid is 0 outside reset are not specified or checked. Condition: during reset.
+  - quote: "ID: D-009; Question: Values of bresp, rresp and rdata while their valid is 0; Decision: Not specified outside reset and not checked; 0 during reset (REQ-WR-027, REQ-RD-014, REQ-RST-002); By: spec-draft; Date: 2026-11-19"
+- **RF-14-10** [MUST] (axil_regfile_Design_Specification.md 14) The readies must return to 1 in the cycle after the B or R transfer, with no combinational path from bready or rready. Condition: after a B or R transfer.
+  - quote: "ID: D-010; Question: When readies return to 1 after a response; Decision: In the cycle after the B or R transfer, with no combinational path from bready or rready (REQ-WR-001, REQ-RD-001); By: spec-draft; Date: 2026-11-19"
+- **RF-14-11** [SHOULD] (axil_regfile_Design_Specification.md 14) The RTL should stop elaboration with an error on illegal parameter values. Condition: illegal parameter values.
+  - quote: "ID: D-011; Question: Illegal parameter values; Decision: The RTL should stop elaboration with an error; not verified (REQ-PAR-003, REQ-PAR-004); By: spec-draft; Date: 2026-11-19"
+- **RF-14-12** [MUST] (axil_regfile_Design_Specification.md 14) A reset must end every held state; "after R1" means the most recent R1. Condition: reset asserted.
+  - quote: "ID: D-014; Question: Do held states survive a reset; which R1 does "after R1" mean (spec-lint GAP-001); Decision: A reset ends every held state; "after R1" is the most recent R1 (section 2 terms); By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19"
+- **RF-14-13** [MUST] (axil_regfile_Design_Specification.md 14) Reset must be applied from time zero for at least 2 cycles; outputs are undefined and unchecked before the first reset. Condition: from time zero.
+  - quote: "ID: D-015; Question: Inputs, outputs and checks before the first reset (spec-lint GAP-002); Decision: Reset from time zero for at least 2 cycles; outputs undefined and unchecked before it: REQ-VER-006; By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19"
+- **RF-14-14** [MUST] (axil_regfile_Design_Specification.md 14) Reset ends the obligation on a pending request; a valid after R1 must be treated as a new request. Condition: request in progress across a reset.
+  - quote: "ID: D-018; Question: Valid and payload of a request across a reset (spec-lint GAP-005); Decision: Reset ends the obligation; a valid after R1 is a new request: REQ-VER-007; By: Claude (delegated by GabrielHCMUT); Date: 2026-11-19"
+
+## Decisions on questions the specification left open
+
+- Rules RF-1.2-09: Does 'one cycle' latency mean the response is asserted in the next cycle after the handshake, and does it hold when bready/rready is low (stall)? Also what is 'last write handshake' when AW and W arrive at different times?
+  - **Answer from the text:** Yes. The last write handshake is Ec, the later of the AW and W transfers (or the shared edge). bvalid is 1 in the cycle that starts at Ec. Read data is valid in the cycle that starts at Ear. A low bready or rready does not delay this. It only keeps valid and the payload held until the B or R transfer.
+- Rules RF-1.2-01, RF-1.2-05: On an unmapped write, are register contents unchanged, and what happens with a partly mapped address range (addresses 0x00+4k beyond PARA_NUM_REGS up to 0x40)?
+  - **Answer from the text:** An unmapped write changes no register and answers SLVERR. Word indices PARA_NUM_REGS to 15 (the gap below 0x40) are unmapped, as are all word indices 17 and above.
+- Rules RF-1.1-04, RF-1.2-05: Does a write to the status register at 0x40 return SLVERR or OKAY?
+  - **Answer from the text:** OKAY. A write to the status register changes nothing and answers 2'b00.
+- Rules RF-3-03: The quote for held read address is truncated; what are its exact conditions (ending on R transfer, reset)?
+  - **Answer from the text:** The spec defines it in full. A read address is held in cycle n if its AR transfer happened at an edge e <= n-1, its R transfer has not happened at any edge <= n-1, and i_rst_n has not been 0 since the AR transfer.
+- Rules RF-3-03: Does the held state end if i_rst_n is 0 at the same edge as the B transfer, or only on a reset after the AW/W transfer?
+  - **Answer from the text:** A reset at any time since the AW or W transfer ends the held state. No transfer can happen at an edge where i_rst_n is 0, so a B transfer cannot occur at a reset edge. The reset discards the held state and the response.
+- Rules RF-4-06, RF-4-07: REQ-PAR-003 says the RTL 'should' stop elaboration on illegal parameters while REQ-PAR-004 says illegal behaviour is unspecified and not verified. Is the elaboration error required or optional, and is it to be checked?
+  - **Answer from the text:** The elaboration error is only recommended ('should'). Behaviour with illegal parameters is unspecified and is not verified, so the error is not checked.
+- Rules RF-4-02, RF-4-01: PARA_ADDR_W legal range 7 to 16 is justified by reaching the 0x40 status register, but with PARA_NUM_REGS up to 16 the register space size relative to 0x40 is unclear. Is there an address overlap at 16 registers (16*4=0x40)?
+  - **Answer from the text:** There is no overlap. 16 registers occupy 0x00 to 0x3C, and the status register is at 0x40 (word index 16).
+- Rules RF-5-04, RF-5-05: RF-5-04 says outputs may change when i_rst_n is asserted, which suggests asynchronous reset. Is reset asynchronous or synchronous? That decides whether outputs may change between clock edges on reset assertion.
+  - **Answer from the text:** Reset assertion is asynchronous. Release is synchronous to i_clk. Outputs therefore take their reset values on assertion without waiting for a clock edge.
+- Rules RF-6.2-01, RF-6.2-04: Can o_regs be reset asynchronously and does the 'every output' in REQ-RST-004 include o_regs? RF-6.2-01 and RF-6.2-04 use different wording.
+  - **Answer from the text:** Yes. o_regs is an output with reset value 0. REQ-RST-004 covers every output, so it includes o_regs. Flip-flops are reset asynchronously.
+- Rules RF-6.2-09, RF-6.2-10: Is the pending write state, with address held but data not yet received, discarded entirely, and may a partial write have already changed a register?
+  - **Answer from the text:** The held state is discarded and no register is written by it after release. A register changes only at Ec, when both address and data have been taken, so a transaction with only the address held has not changed any register.
+- Rules RF-7.2-01, RF-7.2-02, RF-7.2-03, RF-7.2-04, RF-7.2-07, RF-7.5-01, RF-7.5-02: The quotes use R1, Ec, Eb, Ear, Er and 'held' without defining them. Are R1 the first edge after reset release and 'held' the period from the AW/W transfer until the edge after Eb? The signal-level checks for these rules depend on the answer.
+  - **Answer from the text:** The terms are defined. R1 is the first rising edge with i_rst_n at 1 after a reset period. Ec is the later of Ea and Ew. Eb, Ear and Er are the B, AR and R transfer edges. 'Held' runs from the transfer until the B (or R) transfer, with a reset also ending it. A held address or data is not held in the cycle after the B transfer, and awready and wready return to 1 in the cycle that starts at Eb.
+- Rules RF-7.2-06, RF-7.3-01, RF-7.3-03, RF-7.4-01: Which edge is Ec relative to the AW/W transfers (Ew)? Is it the edge after both are taken, and is bvalid asserted in that same cycle? REQ-WR-005, REQ-WR-010 and REQ-WR-020 leave this open.
+  - **Answer from the text:** Ec is the later of Ea and Ew, or the shared edge if both happen together. It is not the edge after. bvalid is 1 in the cycle that starts at Ec, and the register is written at Ec.
+- Rules RF-7.2-01, RF-7.2-03, RF-7.2-07, RF-7.2-08: Do the AW/W holding rules, which say no other transfer is taken until the edge after Eb, permit awready or wready to go high before the B handshake, or only after it? The ready=1 rules and the 'no other transfer' rules may conflict.
+  - **Answer from the text:** No conflict. awready and wready are 0 while the address or data is held. Held lasts until the B transfer. They return to 1 in the cycle that starts at Eb. They do not go high before the B handshake.
+- Rules RF-7.6-03, RF-7.6-04, RF-7.5-09: Is the read of a register at the same edge as Ec the only race with a write? How does o_regs relate to the old-value rule when Ear equals Ec?
+  - **Answer from the text:** The spec covers all three orderings of Ear against Ec for the same register. Ear equal to Ec returns the old value. Ear after Ec returns the new value. Ear before Ec is unaffected by the write. o_regs shows the new value from the cycle that starts at Ec. The read returns the value in the cycle that ends at Ear, which is the old one.
+- Rules RF-8.1-03, RF-8.2-02, RF-8.2-04: Can awready/wready/arready be 1 while a response is pending and bready/rready is 0? TIM-003 says readies do not wait for valids, but TIM-010/011 say no new transfer is taken. Is the ready deasserted in that state, as REQ-WR-001/RD-001 presumably require?
+  - **Answer from the text:** No. While a response is pending, the address or data (or read address) is held, so the readies are 0. The readies do not depend on the valids; they depend only on the held state. The two rule sets are consistent.
+- Rules RF-9-05: STATUS 'sampled at Ear' appears garbled; at which event or clock edge is i_status sampled (e.g., AR handshake or R data cycle)?
+  - **Answer from the text:** i_status is sampled at Ear, the AR transfer edge. It is the value in the cycle that ends at Ear. It is then held until Er. Example 3 shows this.
+- Rules RF-9-09, RF-9-13, RF-9-10: The legal range of PARA_NUM_REGS (max 16) and minimum PARA_ADDR_W (must be at least 7 to hold STATUS at 0x40) is not stated.
+  - **Answer from the text:** The ranges are stated. PARA_NUM_REGS is 1 to 16. PARA_ADDR_W is 7 to 16, and 7 is the minimum that reaches the status register at 0x40.
+- Rules RF-10.1-03, RF-10.1-04: Is the OKAY response timing for a wstrb=0 or status-register write identical to a normal write? Quotes say no register changes, but timing is not explicit for the status case.
+  - **Answer from the text:** Yes. Every write transaction has bvalid from Ec, with the normal write timing. A write with wstrb = 0 answers exactly like a strobed write to the same address and changes no register. A status write answers OKAY and changes nothing.
+- Rules RF-10.1-05, RF-10.1-06, RF-10.1-01: Is the unmapped decision for an unaligned address made only on the word index (bits above [1:0]), so an unaligned address in the unmapped range still returns SLVERR?
+  - **Answer from the text:** Yes. Bits [1:0] have no effect and are not an error. The decode uses the word index, so an unaligned address in the unmapped range is still unmapped and answers SLVERR.
+- Rules RF-10.1-10, RF-10.1-11: What exactly do REQ-RST-004, REQ-RST-005 and REQ-RST-009 require? They are referenced but not quoted, so the expected reset behaviour cannot be checked.
+  - **Answer from the text:** They are quoted in the spec. RST-004: on assertion every output takes its reset value without waiting for a clock edge. RST-005: no transfer at an edge where i_rst_n is 0. RST-009: a reset discards held write address, write data, write response and read address, with no response and no write after release.
+- Rules RF-11-01: CFG-BASE has PARA_NUM_REGS=8 (0x00-0x1C with 4-byte registers), so is the unmapped gap 0x20 to 0x3C an upper bound that depends on PARA_ADDR_W=8 (0x00-0xFC)? Should unmapped addresses above 0x3C also be covered?
+  - **Answer from the text:** Yes. With 8 registers 0x20 to 0x3C is unmapped, and 0x44 up to the top of the bus is also unmapped. CFG-BASE highlights the 0x20 to 0x3C gap. Addresses above 0x3C are covered by the register map and by the required unmapped-address scenarios.
+- Rules RF-11-04: With PARA_NUM_REGS=16 and PARA_ADDR_W=7, are registers at 0x00-0x3C, and does 'no unmapped address below 0x44' mean 0x40-0x43 is also mapped? That seems to conflict with 16 registers ending at 0x3C.
+  - **Answer from the text:** With 16 registers, REG_0 to REG_15 are at 0x00 to 0x3C, and 0x40 is the status register. 'No unmapped address below 0x44' means 0x00 to 0x3C are registers and 0x40 is the status register. There is no conflict.
+- Rules RF-12.1-09, RF-12.2-03, RF-12.1-08: Before the first reset assertion outputs are undefined, yet REQ-VER-006 drives reset from time zero; is any check expected in the window before the first clock edge? Also RF-12.1-09 vs REQ-VER-010 'every cycle'.
+  - **Answer from the text:** No check applies before the first reset assertion, and REQ-VER-010 is included in that. Reset is driven from time zero for at least 2 cycles, so checking is from reset on. 'Every cycle' in REQ-VER-010 applies after that point.
+- Rules RF-12.3-02, RF-12.1-03, RF-12.1-04: Does the mid-cycle reset assertion (REQ-VER-021) conflict with REQ-VER-003/004 which say reset changes only away from rising edges and release is synchronous? Assertion may be asynchronous while release is synchronous.
+  - **Answer from the text:** No conflict. Assertion is asynchronous, so REQ-VER-021 asserts reset between clock edges. Release must be synchronous, so the testbench changes i_rst_n away from clock edges, which fits both.
+- Rules RF-12.1-06, RF-12.1-07, RF-12.1-10: Is 'defined values on all inputs while i_rst_n is 1' consistent with valids being 0 or 1 during reset and payload being free to change after reset?
+  - **Answer from the text:** Yes, they are consistent. Inputs must be defined (no X or Z) while i_rst_n is 1. During reset the valids may be 0 or 1. A reset ends the stability obligation, so after R1 the manager may drop a valid or change a payload. A valid at 1 after R1 is a new request.
+- Rules RF-14-01, RF-14-10, RF-14-12: D-001 says readies are 0 during reset and in the cycle ending at R1, then 1 from R1, but D-010 says readies return to 1 the cycle after B/R transfer. Is behavior after a reset mid-transaction consistent, and what exactly is R1 relative to reset deassertion?
+  - **Answer from the text:** The behaviour is consistent. The readies are 0 during reset and in the cycle that ends at R1, and are 1 from R1. A reset mid-transaction ends every held state, so the R1 rule applies after it. D-010 covers the normal return after a B or R transfer. R1 is the first rising edge with i_rst_n at 1 after reset.
+- Rules RF-14-09, RF-14-13: D-009 says bresp/rresp/rdata are 0 during reset; does reset include the cycle ending at R1, and are outputs before the first reset unchecked (D-015)?
+  - **Answer from the text:** bresp, rresp and rdata are 0 only while i_rst_n is 0. After release and before a response, their values are unspecified and not checked. The checker compares them only when the valid is 1 or i_rst_n is 0. Before the first reset assertion, nothing is checked.
