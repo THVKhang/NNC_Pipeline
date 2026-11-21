@@ -1,6 +1,6 @@
 # Verification report — gen_sync_fifo
 
-Generated 2026-11-18T18:18:00+00:00 by NNC Pipeline.
+Generated 2026-11-21T16:21:13+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -13,13 +13,14 @@ Generated 2026-11-18T18:18:00+00:00 by NNC Pipeline.
 | Code coverage (RTL), line | 97.3 % (218/224 lines) |
 | Code coverage (RTL), block | 94.4 % (51/54 statement blocks and branch arms) |
 | Code coverage (RTL), expression | 97.4 % (75/77 condition terms) |
-| Code coverage (RTL), toggle | 99.5 % (1566/1574 bit toggles 0->1 and 1->0) |
+| Code coverage (RTL), toggle | 99.7 % (1566/1570 bit toggles 0->1 and 1->0); 4 points left out (constant bits), all points 99.5 % (1566/1574) |
 | Code coverage (RTL), functional | 100.0 % (40/40 cover points of the specification) |
 | Mutation score | 100.0 % (36 killed / 0 survived / 0 not compiled) |
 | Coverage target | not requested (`nnc cover <design> --target <n> --metric <m>`) |
+| Clock/reset domain crossings (structural, `nnc cdc`) | clean: no crossing over 1 configuration(s), work/cdc.md |
 | Formal (SymbiYosys, depth 20) | {'BOUNDED': 2, 'CEX': 1, 'PROVEN': 6, 'TIMEOUT': 1, 'UNSUPPORTED': 1} — reset assumptions + verif/formal/nnc_env.sv, work/formal.md |
 | Triage | 2 failure(s), 2 analysed: work/triage.md |
-| Agent cost | US$6.7045 in 7 calls (A12 0.5535, A14 2.0818, A15 2.767, A9 1.3021) |
+| Agent cost | US$7.6762 in 8 calls (A12 0.5535, A14 2.0818, A15 2.767, A18 0.9717, A9 1.3021) |
 
 ## Sign-off conditions
 
@@ -32,6 +33,7 @@ Generated 2026-11-18T18:18:00+00:00 by NNC Pipeline.
 | Every rule in a check or declared not verifiable | met |
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | met — 56 rules with attributed mutants |
+| Clock/reset domain crossings: no structural violation (RR-33) | met — clean: no crossing (work/cdc.md) |
 | Formal: no counterexample, no vacuous or failed proof | **not met** — CEX 1 |
 
 ## Gates
@@ -395,6 +397,8 @@ Generated 2026-11-18T18:18:00+00:00 by NNC Pipeline.
 
 ## Not verified by this run
 
-- Formal: the assertions were checked by SymbiYosys under the environment assumptions (work/formal.md); a BOUNDED result holds only up to its depth. CDC/RDC, STA, synthesis and DFT checks are outside this flow.
+- Formal: the assertions were checked by SymbiYosys under the environment assumptions (work/formal.md); a BOUNDED result holds only up to its depth.
+- Domain crossings were checked structurally (synchronizer structure, `nnc cdc`); gray coding and handshake protocols are not proven by that check.
+- Sign-off STA, place and route and DFT are outside this flow (docs/SIGNOFF_SCOPE.md); `nnc rtl-check` gives a synthesis estimate of area and the longest combinational path.
 - Rules marked NOT_VERIFIED_BY_SIM carry the contract's reason (static, structural, not observable...).
 - Only the default parameter configuration was simulated (no run_set.json).

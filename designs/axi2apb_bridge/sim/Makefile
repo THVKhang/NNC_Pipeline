@@ -5,7 +5,7 @@
 TOP_DIR   := $(abspath ..)
 RTL       := $(TOP_DIR)/rtl/m_axi2apb_apb_ctrl.sv $(TOP_DIR)/rtl/m_axi2apb_rd_seq.sv $(TOP_DIR)/rtl/m_axi2apb_wr_seq.sv $(TOP_DIR)/rtl/m_axi2apb_bridge.sv
 SVA       := $(TOP_DIR)/verif/sva/nnc_chk_apb.sv $(TOP_DIR)/verif/sva/nnc_chk_axi_b.sv $(TOP_DIR)/verif/sva/nnc_chk_axi_r.sv $(TOP_DIR)/verif/sva/nnc_chk_axi_w.sv $(TOP_DIR)/verif/sva/nnc_chk_cross.sv $(TOP_DIR)/verif/sva/nnc_chk_reset.sv $(TOP_DIR)/verif/sva/nnc_cov.sv
-TESTS     := test_axi2apb_bridge
+TESTS     := test_axi2apb_bridge,test_axi2apb_bridge_cov1
 TOP       := m_axi2apb_bridge
 PARAMS    := -GPARA_AXI_ID_W=4
 DEFINES   := 
@@ -33,7 +33,7 @@ tool-check:
 	python3 --version
 
 lint:
-	$(VERILATOR) --lint-only -Wno-fatal --top-module $(TOP) $(PARAMS) $(DEFINES) $(RTL)
+	$(VERILATOR) --lint-only -Wno-fatal --top-module $(TOP) $(PARAMS) $(DEFINES) +incdir+$(TOP_DIR)/rtl $(RTL)
 
 sva-compile:
 	$(VERILATOR) --lint-only --timing -Wno-fatal --top-module nnc_tb_top $(PARAMS) contract_shell.sv $(SVA) nnc_tb_top.sv

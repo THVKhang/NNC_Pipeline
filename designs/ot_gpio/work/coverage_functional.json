@@ -1,0 +1,136 @@
+{
+ "metric": "functional",
+ "target": 100.0,
+ "baseline": {
+  "hit": 36,
+  "total": 40,
+  "percent": 90.0,
+  "files": {
+   "nnc_cov.sv": {
+    "hit": 36,
+    "total": 40
+   }
+  }
+ },
+ "rounds": [
+  {
+   "round": 1,
+   "scenarios": [
+    {
+     "id": "COV-101",
+     "points": [
+      0
+     ],
+     "checks": [
+      "CHK-013",
+      "CHK-004",
+      "CHK-006",
+      "CHK-003"
+     ],
+     "rules": [
+      "TL-T3.1.3.4-01",
+      "GP-10-24",
+      "GP-10-27",
+      "GP-3-06",
+      "GP-3-07",
+      "GP-10-38",
+      "GP-10-05"
+     ],
+     "stimulus": "After a normal reset (i_a_valid=0 during reset and for the first cycle after release, i_a_intg_flip=0 and i_a_instr=0 throughout), do full-word writes with the PutPartialData opcode (a_opcode=1) instead of PutFullData. Each write uses a_size=2, a_mask=1111, a word-aligned register offset as the address, i_a_param=0 and its own a_source. In order: (1) PutPartialData to DIRECT_OUT with 32'hA5C3_0F96, then a full-word Get of DIRECT_OUT, MASKED_OUT_LOWER and MASKED_OUT_UPPER. (2) PutPartialData to DIRECT_OE with 32'h3C3C_C3C3, then a Get of DIRECT_OE. (3) PutPartialData to MASKED_OUT_UPPER with 32'hFFFF_1234 (mask field all ones), then a Get of DIRECT_OUT. (4) PutPartialData to PER_PIN_IO_0 with 32'h0000_0000 and to PER_PIN_OE_31 with 32'h0000_0000, then Gets of DIRECT_OUT and DIRECT_OE. (5) PutPartialData to INTR_ENABLE with 32'h0000_0000, then a Get of INTR_ENABLE. Keep i_d_ready=1 and i_gpio constant, and leave at least 4 idle cycles after each write response before the next write, so that o_gpio and o_gpio_en can be sampled. Expected values come from the contract: every write is a full-word write with mask 1111 and so succeeds (d_error=0), its response is AccessAck with d_size=2 and d_source echoed, readbacks equal the written values under the normal DIRECT/MASKED/PER_PIN semantics, o_gpio and o_gpio_en follow the DATA_OUT and DATA_OE model from 2 cycles after each response, and o_alert never pulses."
+    },
+    {
+     "id": "COV-102",
+     "points": [
+      3
+     ],
+     "checks": [
+      "CHK-035",
+      "CHK-013",
+      "CHK-004",
+      "CHK-003",
+      "CHK-005"
+     ],
+     "rules": [
+      "GP-4.1-06",
+      "TL-T3.1.3.5-04",
+      "TL-T3.1.3.4-03",
+      "GP-10-23",
+      "GP-10-27",
+      "GP-10-28",
+      "RG-T1.4.1-07",
+      "GP-9-06"
+     ],
+     "stimulus": "After reset, with i_a_intg_flip=0, i_a_instr=0, i_a_param=0, i_d_ready=1 and i_gpio constant, first write DIRECT_OUT=32'h0000_0000 with a normal full-word PutFullData (a_size=2, mask 1111). Then send these requests one by one, each with its own a_source, and read DIRECT_OUT with a normal full-word Get after each one. (a) Mask 1111 with size 0, marking inactive lanes as active: a Get with a_size=0 at address 0x14, and a PutPartialData with a_size=0 at address 0x14 and data 32'hFFFF_FFFF. Repeat both at 0x20 (DIRECT_OE, preloaded to 0). (b) Size 2 with a partial mask: Gets with a_size=2 at the word-aligned address 0x14 and masks 0011, 1100, 0001 and 1000. (c) Size-2 writes with a partial mask whose outcome does not depend on how the device treats them: first write DIRECT_OUT=32'h5A5A_5A5A with a normal full-word write. Then send PutFullData (a_size=2) and PutPartialData (a_size=2) to 0x14 with masks 0011 and 1100, all with data 32'h5A5A_5A5A, the value already stored. Expected values come from the contract. For (a), every request gets d_error=1, DIRECT_OUT and DIRECT_OE keep their values, and o_gpio and o_gpio_en do not change. For (b) and (c), check only that each request gets exactly one response with d_source and d_size echoed and d_opcode matching the request (AccessAckData for Get, AccessAck for Put). d_error and the data of these responses are not checked. DIRECT_OUT must read 32'h5A5A_5A5A after (c). Throughout: no o_alert pulse and o_d_intg_err=0."
+    }
+   ],
+   "tests": [
+    "test_cov_101_putpartial_fullword",
+    "test_cov_102_mask_size_combinations"
+   ],
+   "percent": 95.0,
+   "hit": 38,
+   "total": 40
+  },
+  {
+   "round": 2,
+   "scenarios": [],
+   "tests": [],
+   "note": "no scenario with legal, specification-level stimulus"
+  }
+ ],
+ "unreachable": [
+  {
+   "round": 1,
+   "rules": [
+    "GP-10-26",
+    "GP-4.1-04",
+    "GP-4.1-01",
+    "TL-T2.2-03"
+   ],
+   "reason": "The device accepts only one request at a time: it holds o_a_ready low from the moment it accepts a request until that request's response has been taken. So there can never be two accepted requests waiting for an answer, and never two A handshakes in consecutive cycles. The only edges where the host could repeat a handshake are the cycles straight after an acceptance, and a_ready is 0 then. The rules allow this. D-014 (GP-10-26) only says the host must not assume o_a_ready=1, and no rule makes the device take more than one request at a time. The host rules (GP-4.1-04, CHK-011 a) say a request must be held while a_ready is 0, so the test bench cannot force a second acceptance. Evidence: the existing outstanding/back-pressure test (CHK-038) and the random regression already queue hundreds of requests and drive them back to back with no gap. They do this with and without D-channel back-pressure, in both GpioAsyncOn settings. Neither point was hit.",
+   "where": [
+    "nnc_cov.sv:0 COVP-012",
+    "nnc_cov.sv:0 COVP-013"
+   ]
+  },
+  {
+   "round": 2,
+   "rules": [
+    "GP-4.1-01",
+    "GP-4.1-04",
+    "GP-10-26",
+    "TL-T2.2-03",
+    "GP-10-31",
+    "GP-10-32"
+   ],
+   "reason": "The two points are COVP-012 (A handshakes in two consecutive cycles) and COVP-013 (two or more accepted requests not yet answered). Both need the device to accept a new request while the previous response is still pending. Only the device drives a_ready (GP-4.1-01: TL-UL device interface). The host must hold a request with the same fields until a_ready=1 (GP-4.1-04, CHK-011(a)), and the test bench may not assume a_ready=1 (GP-10-26 / D-014). So no legal stimulus can force a second acceptance. The gpio register interface takes a new request only after the D handshake of the previous one: a_ready is low while a response is pending. The tests already do what would otherwise hit these points. CHK-038 and the random regression keep i_a_valid high back-to-back with zero or random 0-2 cycle gaps, use distinct a_source values, and run 1700+ requests with long stretches of i_d_ready=1. Neither point was hit, which shows the device never accepts in consecutive cycles and never holds two requests. Reset cannot make a stale entry count either: D-016 (GP-10-31/GP-10-32) discards a response pending at reset, so the outstanding count is cleared at reset. CHK-030 accepts a Get under back-pressure, resets, and then sends new requests, and that did not hit COVP-013. A request with i_a_intg_flip=1 still gets at most one response through the same single-request flow control, so it cannot create a second outstanding request. The only way to reach these points would be a device that accepts requests before answering earlier ones, and this design does not do that.",
+   "where": [
+    "nnc_cov.sv:0 COVP-012",
+    "nnc_cov.sv:0 COVP-013"
+   ]
+  }
+ ],
+ "dropped": [],
+ "prompt_version": "closure-v1",
+ "usage": {
+  "calls": 3,
+  "cached": 0,
+  "cost_usd": 2.6381,
+  "input_tokens": 46,
+  "output_tokens": 31466,
+  "cache_creation_input_tokens": 222441,
+  "cache_read_input_tokens": 1121634
+ },
+ "status": "target_unmet",
+ "final": {
+  "hit": 38,
+  "total": 40,
+  "percent": 95.0,
+  "files": {
+   "nnc_cov.sv": {
+    "hit": 38,
+    "total": 40
+   }
+  }
+ }
+}

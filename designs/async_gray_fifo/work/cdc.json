@@ -1,0 +1,642 @@
+{
+ "design": "async_gray_fifo",
+ "date": "2026-11-21T15:34:08+00:00",
+ "frontend": "verilog",
+ "defines": [
+  "VLSIT_SYNTHESIS"
+ ],
+ "async_inputs": [],
+ "verdict": "review",
+ "configurations": [
+  {
+   "config": "base",
+   "params": {
+    "PARA_AFIFO_DEPTH": 8,
+    "PARA_AFIFO_DATA_W": 32,
+    "PARA_AFIFO_CELL_TYPE": 2,
+    "PARA_AFIFO_MEM_USE_MACRO": 0
+   },
+   "result": {
+    "status": "ok",
+    "domains": [
+     "i_clk_rd",
+     "i_clk_wr"
+    ],
+    "flops": 30,
+    "inputs": {
+     "i_empty_thr": "i_clk_rd",
+     "i_full_thr": "i_clk_wr",
+     "i_rd_en": "i_clk_rd",
+     "i_rst_n_sw": "i_clk_wr",
+     "i_wr_data": "i_clk_wr",
+     "i_wr_en": "i_clk_wr"
+    },
+    "crossings": [
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_rd_data",
+      "domain": "i_clk_rd",
+      "from": [
+       "u_vlsit_afifo_mem.gen_array.reg_mem"
+      ],
+      "from_domains": [
+       "i_clk_wr"
+      ],
+      "bits": 32,
+      "note": "captured under control of u_vlsit_afifo_rd.w_req_s, u_vlsit_afifo_rd.w_wgray_s[0], u_vlsit_afifo_rd.w_wgray_s[1]"
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_afifo_rd.u_sync_req.gen_bit_cell[*].u_vlsit_afifo_cell_sync.genblk1.genblk1.gen_sync2.gen_rn.u_dont_touch_sync2ff.reg_chain",
+      "domain": "i_clk_rd",
+      "from": [
+       "w_req_wr"
+      ],
+      "from_domains": [
+       "i_clk_wr"
+      ],
+      "bits": 1,
+      "stages": 2
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_afifo_wr.u_sync_ack.gen_bit_cell[*].u_vlsit_afifo_cell_sync.genblk1.genblk1.gen_sync2.gen_rn.u_dont_touch_sync2ff.reg_chain",
+      "domain": "i_clk_wr",
+      "from": [
+       "w_ack_rd"
+      ],
+      "from_domains": [
+       "i_clk_rd"
+      ],
+      "bits": 1,
+      "stages": 2
+     },
+     {
+      "kind": "SYNC_MULTIBIT",
+      "flop": "u_vlsit_afifo_rd.u_sync_wr_gray.gen_bit_cell[*].u_vlsit_afifo_cell_sync.genblk1.genblk1.gen_sync2.gen_rn.u_dont_touch_sync2ff.reg_chain",
+      "domain": "i_clk_rd",
+      "from": [
+       "w_wr_gray"
+      ],
+      "from_domains": [
+       "i_clk_wr"
+      ],
+      "bits": 4,
+      "stages": 2,
+      "note": "4 bits of one register synchronized separately: gray code or handshake needed"
+     },
+     {
+      "kind": "SYNC_MULTIBIT",
+      "flop": "u_vlsit_afifo_wr.u_sync_rd_gray.gen_bit_cell[*].u_vlsit_afifo_cell_sync.genblk1.genblk1.gen_sync2.gen_rn.u_dont_touch_sync2ff.reg_chain",
+      "domain": "i_clk_wr",
+      "from": [
+       "w_rd_gray"
+      ],
+      "from_domains": [
+       "i_clk_rd"
+      ],
+      "bits": 4,
+      "stages": 2,
+      "note": "4 bits of one register synchronized separately: gray code or handshake needed"
+     }
+    ],
+    "outputs": [],
+    "resets": [],
+    "derived_clocks": [],
+    "counts": {
+     "DERIVED_CLOCK": 0,
+     "OUTPUT_FROM_OTHER_DOMAIN": 0,
+     "QUALIFIED": 32,
+     "RESET_FROM_OTHER_DOMAIN": 0,
+     "SYNC": 2,
+     "SYNC_MULTIBIT": 8
+    }
+   }
+  },
+  {
+   "config": "cell1",
+   "params": {
+    "PARA_AFIFO_DEPTH": 8,
+    "PARA_AFIFO_DATA_W": 32,
+    "PARA_AFIFO_CELL_TYPE": 1,
+    "PARA_AFIFO_MEM_USE_MACRO": 0
+   },
+   "result": {
+    "status": "ok",
+    "domains": [
+     "i_clk_rd",
+     "i_clk_wr"
+    ],
+    "flops": 40,
+    "inputs": {
+     "i_empty_thr": "i_clk_rd",
+     "i_full_thr": "i_clk_wr",
+     "i_rd_en": "i_clk_rd",
+     "i_rst_n_sw": "i_clk_wr",
+     "i_wr_data": "i_clk_wr",
+     "i_wr_en": "i_clk_wr"
+    },
+    "crossings": [
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_rd_data",
+      "domain": "i_clk_rd",
+      "from": [
+       "u_vlsit_afifo_mem.gen_array.reg_mem"
+      ],
+      "from_domains": [
+       "i_clk_wr"
+      ],
+      "bits": 32,
+      "note": "captured under control of u_vlsit_afifo_rd.w_req_s, u_vlsit_afifo_rd.w_wgray_s[0], u_vlsit_afifo_rd.w_wgray_s[1]"
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_afifo_rd.u_sync_req.gen_bit_cell[*].u_vlsit_afifo_cell_sync.genblk1.gen_dff2.w_mid",
+      "domain": "i_clk_rd",
+      "from": [
+       "w_req_wr"
+      ],
+      "from_domains": [
+       "i_clk_wr"
+      ],
+      "bits": 1,
+      "stages": 2
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_afifo_wr.u_sync_ack.gen_bit_cell[*].u_vlsit_afifo_cell_sync.genblk1.gen_dff2.w_mid",
+      "domain": "i_clk_wr",
+      "from": [
+       "w_ack_rd"
+      ],
+      "from_domains": [
+       "i_clk_rd"
+      ],
+      "bits": 1,
+      "stages": 2
+     },
+     {
+      "kind": "SYNC_MULTIBIT",
+      "flop": "u_vlsit_afifo_rd.u_sync_wr_gray.gen_bit_cell[*].u_vlsit_afifo_cell_sync.genblk1.gen_dff2.w_mid",
+      "domain": "i_clk_rd",
+      "from": [
+       "w_wr_gray"
+      ],
+      "from_domains": [
+       "i_clk_wr"
+      ],
+      "bits": 4,
+      "stages": 2,
+      "note": "4 bits of one register synchronized separately: gray code or handshake needed"
+     },
+     {
+      "kind": "SYNC_MULTIBIT",
+      "flop": "u_vlsit_afifo_wr.u_sync_rd_gray.gen_bit_cell[*].u_vlsit_afifo_cell_sync.genblk1.gen_dff2.w_mid",
+      "domain": "i_clk_wr",
+      "from": [
+       "w_rd_gray"
+      ],
+      "from_domains": [
+       "i_clk_rd"
+      ],
+      "bits": 4,
+      "stages": 2,
+      "note": "4 bits of one register synchronized separately: gray code or handshake needed"
+     }
+    ],
+    "outputs": [],
+    "resets": [],
+    "derived_clocks": [],
+    "counts": {
+     "DERIVED_CLOCK": 0,
+     "OUTPUT_FROM_OTHER_DOMAIN": 0,
+     "QUALIFIED": 32,
+     "RESET_FROM_OTHER_DOMAIN": 0,
+     "SYNC": 2,
+     "SYNC_MULTIBIT": 8
+    }
+   }
+  },
+  {
+   "config": "cell3",
+   "params": {
+    "PARA_AFIFO_DEPTH": 8,
+    "PARA_AFIFO_DATA_W": 32,
+    "PARA_AFIFO_CELL_TYPE": 3,
+    "PARA_AFIFO_MEM_USE_MACRO": 0
+   },
+   "result": {
+    "status": "ok",
+    "domains": [
+     "i_clk_rd",
+     "i_clk_wr"
+    ],
+    "flops": 30,
+    "inputs": {
+     "i_empty_thr": "i_clk_rd",
+     "i_full_thr": "i_clk_wr",
+     "i_rd_en": "i_clk_rd",
+     "i_rst_n_sw": "i_clk_wr",
+     "i_wr_data": "i_clk_wr",
+     "i_wr_en": "i_clk_wr"
+    },
+    "crossings": [
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_rd_data",
+      "domain": "i_clk_rd",
+      "from": [
+       "u_vlsit_afifo_mem.gen_array.reg_mem"
+      ],
+      "from_domains": [
+       "i_clk_wr"
+      ],
+      "bits": 32,
+      "note": "captured under control of u_vlsit_afifo_rd.w_req_s, u_vlsit_afifo_rd.w_wgray_s[0], u_vlsit_afifo_rd.w_wgray_s[1]"
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_afifo_rd.u_sync_req.gen_bit_cell[*].u_vlsit_afifo_cell_sync.genblk1.genblk1.genblk1.gen_sync3.gen_rn.u_dont_touch_sync3ff.reg_chain",
+      "domain": "i_clk_rd",
+      "from": [
+       "w_req_wr"
+      ],
+      "from_domains": [
+       "i_clk_wr"
+      ],
+      "bits": 1,
+      "stages": 3
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_afifo_wr.u_sync_ack.gen_bit_cell[*].u_vlsit_afifo_cell_sync.genblk1.genblk1.genblk1.gen_sync3.gen_rn.u_dont_touch_sync3ff.reg_chain",
+      "domain": "i_clk_wr",
+      "from": [
+       "w_ack_rd"
+      ],
+      "from_domains": [
+       "i_clk_rd"
+      ],
+      "bits": 1,
+      "stages": 3
+     },
+     {
+      "kind": "SYNC_MULTIBIT",
+      "flop": "u_vlsit_afifo_rd.u_sync_wr_gray.gen_bit_cell[*].u_vlsit_afifo_cell_sync.genblk1.genblk1.genblk1.gen_sync3.gen_rn.u_dont_touch_sync3ff.reg_chain",
+      "domain": "i_clk_rd",
+      "from": [
+       "w_wr_gray"
+      ],
+      "from_domains": [
+       "i_clk_wr"
+      ],
+      "bits": 4,
+      "stages": 3,
+      "note": "4 bits of one register synchronized separately: gray code or handshake needed"
+     },
+     {
+      "kind": "SYNC_MULTIBIT",
+      "flop": "u_vlsit_afifo_wr.u_sync_rd_gray.gen_bit_cell[*].u_vlsit_afifo_cell_sync.genblk1.genblk1.genblk1.gen_sync3.gen_rn.u_dont_touch_sync3ff.reg_chain",
+      "domain": "i_clk_wr",
+      "from": [
+       "w_rd_gray"
+      ],
+      "from_domains": [
+       "i_clk_rd"
+      ],
+      "bits": 4,
+      "stages": 3,
+      "note": "4 bits of one register synchronized separately: gray code or handshake needed"
+     }
+    ],
+    "outputs": [],
+    "resets": [],
+    "derived_clocks": [],
+    "counts": {
+     "DERIVED_CLOCK": 0,
+     "OUTPUT_FROM_OTHER_DOMAIN": 0,
+     "QUALIFIED": 32,
+     "RESET_FROM_OTHER_DOMAIN": 0,
+     "SYNC": 2,
+     "SYNC_MULTIBIT": 8
+    }
+   }
+  },
+  {
+   "config": "cell4",
+   "params": {
+    "PARA_AFIFO_DEPTH": 8,
+    "PARA_AFIFO_DATA_W": 32,
+    "PARA_AFIFO_CELL_TYPE": 4,
+    "PARA_AFIFO_MEM_USE_MACRO": 0
+   },
+   "result": {
+    "status": "ok",
+    "domains": [
+     "i_clk_rd",
+     "i_clk_wr"
+    ],
+    "flops": 30,
+    "inputs": {
+     "i_empty_thr": "i_clk_rd",
+     "i_full_thr": "i_clk_wr",
+     "i_rd_en": "i_clk_rd",
+     "i_rst_n_sw": "i_clk_wr",
+     "i_wr_data": "i_clk_wr",
+     "i_wr_en": "i_clk_wr"
+    },
+    "crossings": [
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_rd_data",
+      "domain": "i_clk_rd",
+      "from": [
+       "u_vlsit_afifo_mem.gen_array.reg_mem"
+      ],
+      "from_domains": [
+       "i_clk_wr"
+      ],
+      "bits": 32,
+      "note": "captured under control of u_vlsit_afifo_rd.w_req_s, u_vlsit_afifo_rd.w_wgray_s[0], u_vlsit_afifo_rd.w_wgray_s[1]"
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_afifo_rd.u_sync_req.gen_bit_cell[*].u_vlsit_afifo_cell_sync.genblk1.genblk1.genblk1.gen_sync4.gen_rn.u_dont_touch_sync4ff.reg_chain",
+      "domain": "i_clk_rd",
+      "from": [
+       "w_req_wr"
+      ],
+      "from_domains": [
+       "i_clk_wr"
+      ],
+      "bits": 1,
+      "stages": 4
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_afifo_wr.u_sync_ack.gen_bit_cell[*].u_vlsit_afifo_cell_sync.genblk1.genblk1.genblk1.gen_sync4.gen_rn.u_dont_touch_sync4ff.reg_chain",
+      "domain": "i_clk_wr",
+      "from": [
+       "w_ack_rd"
+      ],
+      "from_domains": [
+       "i_clk_rd"
+      ],
+      "bits": 1,
+      "stages": 4
+     },
+     {
+      "kind": "SYNC_MULTIBIT",
+      "flop": "u_vlsit_afifo_rd.u_sync_wr_gray.gen_bit_cell[*].u_vlsit_afifo_cell_sync.genblk1.genblk1.genblk1.gen_sync4.gen_rn.u_dont_touch_sync4ff.reg_chain",
+      "domain": "i_clk_rd",
+      "from": [
+       "w_wr_gray"
+      ],
+      "from_domains": [
+       "i_clk_wr"
+      ],
+      "bits": 4,
+      "stages": 4,
+      "note": "4 bits of one register synchronized separately: gray code or handshake needed"
+     },
+     {
+      "kind": "SYNC_MULTIBIT",
+      "flop": "u_vlsit_afifo_wr.u_sync_rd_gray.gen_bit_cell[*].u_vlsit_afifo_cell_sync.genblk1.genblk1.genblk1.gen_sync4.gen_rn.u_dont_touch_sync4ff.reg_chain",
+      "domain": "i_clk_wr",
+      "from": [
+       "w_rd_gray"
+      ],
+      "from_domains": [
+       "i_clk_rd"
+      ],
+      "bits": 4,
+      "stages": 4,
+      "note": "4 bits of one register synchronized separately: gray code or handshake needed"
+     }
+    ],
+    "outputs": [],
+    "resets": [],
+    "derived_clocks": [],
+    "counts": {
+     "DERIVED_CLOCK": 0,
+     "OUTPUT_FROM_OTHER_DOMAIN": 0,
+     "QUALIFIED": 32,
+     "RESET_FROM_OTHER_DOMAIN": 0,
+     "SYNC": 2,
+     "SYNC_MULTIBIT": 8
+    }
+   }
+  },
+  {
+   "config": "macro",
+   "params": {
+    "PARA_AFIFO_DEPTH": 8,
+    "PARA_AFIFO_DATA_W": 32,
+    "PARA_AFIFO_CELL_TYPE": 2,
+    "PARA_AFIFO_MEM_USE_MACRO": 1
+   },
+   "result": {
+    "status": "ok",
+    "domains": [
+     "i_clk_rd",
+     "i_clk_wr"
+    ],
+    "flops": 30,
+    "inputs": {
+     "i_empty_thr": "i_clk_rd",
+     "i_full_thr": "i_clk_wr",
+     "i_rd_en": "i_clk_rd",
+     "i_rst_n_sw": "i_clk_wr",
+     "i_wr_data": "i_clk_wr",
+     "i_wr_en": "i_clk_wr"
+    },
+    "crossings": [
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_rd_data",
+      "domain": "i_clk_rd",
+      "from": [
+       "u_vlsit_afifo_mem.gen_macro.u_vlsit_afifo_ram_macro.u_dont_touch_sram.reg_mem"
+      ],
+      "from_domains": [
+       "i_clk_wr"
+      ],
+      "bits": 32,
+      "note": "captured under control of u_vlsit_afifo_rd.w_req_s, u_vlsit_afifo_rd.w_wgray_s[0], u_vlsit_afifo_rd.w_wgray_s[1]"
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_afifo_rd.u_sync_req.gen_bit_cell[*].u_vlsit_afifo_cell_sync.genblk1.genblk1.gen_sync2.gen_rn.u_dont_touch_sync2ff.reg_chain",
+      "domain": "i_clk_rd",
+      "from": [
+       "w_req_wr"
+      ],
+      "from_domains": [
+       "i_clk_wr"
+      ],
+      "bits": 1,
+      "stages": 2
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_afifo_wr.u_sync_ack.gen_bit_cell[*].u_vlsit_afifo_cell_sync.genblk1.genblk1.gen_sync2.gen_rn.u_dont_touch_sync2ff.reg_chain",
+      "domain": "i_clk_wr",
+      "from": [
+       "w_ack_rd"
+      ],
+      "from_domains": [
+       "i_clk_rd"
+      ],
+      "bits": 1,
+      "stages": 2
+     },
+     {
+      "kind": "SYNC_MULTIBIT",
+      "flop": "u_vlsit_afifo_rd.u_sync_wr_gray.gen_bit_cell[*].u_vlsit_afifo_cell_sync.genblk1.genblk1.gen_sync2.gen_rn.u_dont_touch_sync2ff.reg_chain",
+      "domain": "i_clk_rd",
+      "from": [
+       "w_wr_gray"
+      ],
+      "from_domains": [
+       "i_clk_wr"
+      ],
+      "bits": 4,
+      "stages": 2,
+      "note": "4 bits of one register synchronized separately: gray code or handshake needed"
+     },
+     {
+      "kind": "SYNC_MULTIBIT",
+      "flop": "u_vlsit_afifo_wr.u_sync_rd_gray.gen_bit_cell[*].u_vlsit_afifo_cell_sync.genblk1.genblk1.gen_sync2.gen_rn.u_dont_touch_sync2ff.reg_chain",
+      "domain": "i_clk_wr",
+      "from": [
+       "w_rd_gray"
+      ],
+      "from_domains": [
+       "i_clk_rd"
+      ],
+      "bits": 4,
+      "stages": 2,
+      "note": "4 bits of one register synchronized separately: gray code or handshake needed"
+     }
+    ],
+    "outputs": [],
+    "resets": [],
+    "derived_clocks": [],
+    "counts": {
+     "DERIVED_CLOCK": 0,
+     "OUTPUT_FROM_OTHER_DOMAIN": 0,
+     "QUALIFIED": 32,
+     "RESET_FROM_OTHER_DOMAIN": 0,
+     "SYNC": 2,
+     "SYNC_MULTIBIT": 8
+    }
+   }
+  },
+  {
+   "config": "small",
+   "params": {
+    "PARA_AFIFO_DEPTH": 2,
+    "PARA_AFIFO_DATA_W": 1,
+    "PARA_AFIFO_CELL_TYPE": 2,
+    "PARA_AFIFO_MEM_USE_MACRO": 0
+   },
+   "result": {
+    "status": "ok",
+    "domains": [
+     "i_clk_rd",
+     "i_clk_wr"
+    ],
+    "flops": 20,
+    "inputs": {
+     "i_empty_thr": "i_clk_rd",
+     "i_full_thr": "i_clk_wr",
+     "i_rd_en": "i_clk_rd",
+     "i_rst_n_sw": "i_clk_wr",
+     "i_wr_data": "i_clk_wr",
+     "i_wr_en": "i_clk_wr"
+    },
+    "crossings": [
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_rd_data",
+      "domain": "i_clk_rd",
+      "from": [
+       "u_vlsit_afifo_mem.gen_array.reg_mem"
+      ],
+      "from_domains": [
+       "i_clk_wr"
+      ],
+      "bits": 1,
+      "note": "captured under control of u_vlsit_afifo_rd.w_req_s, u_vlsit_afifo_rd.w_wgray_s[0], u_vlsit_afifo_rd.w_wgray_s[1]"
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_afifo_rd.u_sync_req.gen_bit_cell[*].u_vlsit_afifo_cell_sync.genblk1.genblk1.gen_sync2.gen_rn.u_dont_touch_sync2ff.reg_chain",
+      "domain": "i_clk_rd",
+      "from": [
+       "w_req_wr"
+      ],
+      "from_domains": [
+       "i_clk_wr"
+      ],
+      "bits": 1,
+      "stages": 2
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_afifo_wr.u_sync_ack.gen_bit_cell[*].u_vlsit_afifo_cell_sync.genblk1.genblk1.gen_sync2.gen_rn.u_dont_touch_sync2ff.reg_chain",
+      "domain": "i_clk_wr",
+      "from": [
+       "w_ack_rd"
+      ],
+      "from_domains": [
+       "i_clk_rd"
+      ],
+      "bits": 1,
+      "stages": 2
+     },
+     {
+      "kind": "SYNC_MULTIBIT",
+      "flop": "u_vlsit_afifo_rd.u_sync_wr_gray.gen_bit_cell[*].u_vlsit_afifo_cell_sync.genblk1.genblk1.gen_sync2.gen_rn.u_dont_touch_sync2ff.reg_chain",
+      "domain": "i_clk_rd",
+      "from": [
+       "w_wr_gray"
+      ],
+      "from_domains": [
+       "i_clk_wr"
+      ],
+      "bits": 2,
+      "stages": 2,
+      "note": "2 bits of one register synchronized separately: gray code or handshake needed"
+     },
+     {
+      "kind": "SYNC_MULTIBIT",
+      "flop": "u_vlsit_afifo_wr.u_sync_rd_gray.gen_bit_cell[*].u_vlsit_afifo_cell_sync.genblk1.genblk1.gen_sync2.gen_rn.u_dont_touch_sync2ff.reg_chain",
+      "domain": "i_clk_wr",
+      "from": [
+       "w_rd_gray"
+      ],
+      "from_domains": [
+       "i_clk_rd"
+      ],
+      "bits": 2,
+      "stages": 2,
+      "note": "2 bits of one register synchronized separately: gray code or handshake needed"
+     }
+    ],
+    "outputs": [],
+    "resets": [],
+    "derived_clocks": [],
+    "counts": {
+     "DERIVED_CLOCK": 0,
+     "OUTPUT_FROM_OTHER_DOMAIN": 0,
+     "QUALIFIED": 1,
+     "RESET_FROM_OTHER_DOMAIN": 0,
+     "SYNC": 2,
+     "SYNC_MULTIBIT": 4
+    }
+   }
+  }
+ ]
+}

@@ -8,7 +8,7 @@ This packet is for the person who decides gate **G4 (sign-off)**: *is this desig
 - **Checks:** 25 — PASS 25
 - **Tests:** {'pass': 25}
 - **Simulated configuration:** one (parameters {'PARA_SFIFO_DEPTH': 8, 'PARA_SFIFO_DATA_W': 32, 'PARA_SFIFO_PTR_RETIME': 0, 'PARA_SFIFO_MEM_USE_MACRO': 0}, seed 1)
-- **Code coverage:** line 99.2 %, block 97.3 %, expression 92.8 %, toggle 70.6 %, functional 100.0 %
+- **Code coverage:** line 99.2 %, block 97.3 %, expression 92.8 %, toggle 87.7 %, functional 100.0 %
 - **Mutation score:** 100.0 % (36 of 36 injected faults detected)
 
 ## 2. Decisions taken for you
@@ -58,7 +58,7 @@ Code or cover points never reached (first ones):
 
 ### Formal check (SymbiYosys)
 
-Every input sequence of up to 20 cycles was searched (one global clock); result {'BOUNDED': 5, 'PROVEN': 4, 'TIMEOUT': 1, 'UNSUPPORTED': 1}. PROVEN holds for every cycle; BOUNDED found no counterexample within the depth. Details: `work/formal.md`.
+Every input sequence of up to 20 cycles was searched (one global clock); result {'BOUNDED': 2, 'PROVEN': 7, 'TIMEOUT': 1, 'UNSUPPORTED': 1}. PROVEN holds for every cycle; BOUNDED found no counterexample within the depth. Details: `work/formal.md`.
 
 
 Environment assumptions (the formal results hold only for inputs that respect them; an assumption the specification does not require would hide bugs):

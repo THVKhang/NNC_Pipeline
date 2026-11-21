@@ -346,6 +346,36 @@ def cmd_formal_check(args) -> int:
     return 0 if ok else 1
 
 
+def cmd_cdc(args) -> int:
+    d = _open(args)
+    rep = flow.cdc(d, flow.Options(single=args.single_run), write=not args.check)
+    bad = rep["verdict"] in ("violations", "error")
+    if args.check:
+        rec = d.work / "cdc.json"
+        if not rec.is_file():
+            print(f"{d.name}: work/cdc.json is missing: run 'nnc cdc {d.name}' first")
+            return 1
+        diffs = cdc_compare(json.loads(rec.read_text(encoding="utf-8")), rep)
+        print(f"{d.name}: cdc rerun vs recorded: " + ("SAME OUTCOME" if not diffs else "DIFFERENT"))
+        for x in diffs:
+            print(f"  DIFFERENT {x}")
+        bad = bad or bool(diffs)
+    return 1 if bad else 0
+
+
+def cdc_compare(recorded: dict, got: dict) -> list[str]:
+    """Differences of verdict and of the per-kind counts of each configuration."""
+    out = []
+    if recorded.get("verdict") != got.get("verdict"):
+        out.append(f"verdict: recorded {recorded.get('verdict')}, now {got.get('verdict')}")
+    rc = {c["config"]: (c["result"].get("counts") or {}) for c in recorded.get("configurations") or []}
+    gc = {c["config"]: (c["result"].get("counts") or {}) for c in got.get("configurations") or []}
+    for name in sorted(set(rc) | set(gc)):
+        if rc.get(name) != gc.get(name):
+            out.append(f"{name}: recorded {rc.get(name)}, now {gc.get(name)}")
+    return out
+
+
 def cmd_fix_verif(args) -> int:
     d = _open(args)
     if args.apply:
@@ -738,6 +768,13 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--config", help="run one formal configuration of the run set and compare it alone (to split "
                                     "a long rerun over several CI jobs)")
     s.set_defaults(func=cmd_formal_check)
+
+    s = sub.add_parser("cdc", help="structural clock/reset domain crossing check of the RTL (RR-33, no agent) per "
+                                   "parameter set of the run set -> work/cdc.md")
+    s.add_argument("design")
+    s.add_argument("--single-run", action="store_true", help="ignore run_set.json: the default parameters only")
+    s.add_argument("--check", action="store_true", help="print only, write nothing")
+    s.set_defaults(func=cmd_cdc)
 
     s = sub.add_parser("fix-verif", help="agent A17 (no RTL) corrects the checkers/tests where triage judged the "
                                          "verification wrong (B) -> candidate in work/verif_fix/; --apply copies it "

@@ -1,6 +1,6 @@
 {
  "design": "async_gray_fifo",
- "date": "2026-11-14T16:33:17+00:00",
+ "date": "2026-11-21T16:21:12+00:00",
  "gates": [
   {
    "gate": "G1_rules",
@@ -1766,6 +1766,36 @@
      ]
     }
    ],
+   "design_scope": {
+    "rule": "left out: never-executed points of package code that the elaborated design does not contain (Verilator instruments every function of an imported package, called or not), and toggles of signal bits that Yosys constant propagation proves constant with the run's parameters, except on signals where the simulator recorded a toggle of such a bit (then the signal counts whole)",
+    "left_out": {
+     "line": 0
+    },
+    "scope_conflicts": 0,
+    "signals_kept_whole": [],
+    "all_points": {
+     "block": {
+      "hit": 858,
+      "total": 897,
+      "percent": 95.7
+     },
+     "expression": {
+      "hit": 980,
+      "total": 1000,
+      "percent": 98.0
+     },
+     "line": {
+      "hit": 2632,
+      "total": 2657,
+      "percent": 99.1
+     },
+     "toggle": {
+      "hit": 15804,
+      "total": 15884,
+      "percent": 99.5
+     }
+    }
+   },
    "scope": "merged over 14 run(s) of the run set"
   },
   "run_set": {
@@ -2375,6 +2405,7 @@
   "not_compiled": 0,
   "score": 100.0,
   "threshold": 85.0,
+  "equivalence": null,
   "rules_attributed": 41,
   "rules_below_threshold": []
  },
@@ -2474,6 +2505,18 @@
    "UNSUPPORTED": 6
   }
  },
+ "cdc": {
+  "verdict": "review",
+  "configurations": 6,
+  "counts": {
+   "DERIVED_CLOCK": 0,
+   "OUTPUT_FROM_OTHER_DOMAIN": 0,
+   "QUALIFIED": 161,
+   "RESET_FROM_OTHER_DOMAIN": 0,
+   "SYNC": 12,
+   "SYNC_MULTIBIT": 44
+  }
+ },
  "agent_cost_usd": {
   "total_usd": 77.0587,
   "calls": 103,
@@ -2492,5 +2535,6 @@
   },
   "failed_usd": 5.5388,
   "failed_calls": 3
- }
+ },
+ "coverage_closure_other": []
 }

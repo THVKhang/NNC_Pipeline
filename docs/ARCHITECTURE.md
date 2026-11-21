@@ -788,3 +788,53 @@ Vì thế G1 và G2 phải được duyệt cho từng lần chạy. Lệnh mớ
 **CI.** ot_gpio được thêm vào các job kit và kit-configs. Job formal được tách thành 4 job, mỗi job một cấu hình.
 
 **Không đổi:** G4 vẫn để trống ở mọi thiết kế.
+
+## 26. Coverage đúng phạm vi, kiểm tra cắt miền clock (GĐ19–20, 2026-11-21)
+
+Người dùng yêu cầu ba việc:
+- nâng coverage lên;
+- nghiên cứu xem có cần làm những mảng trước đây bỏ ngoài không (STA, P&R, CDC/RDC, DFT);
+- push thẳng lên `main` mỗi bước đã xong.
+
+Phân tích từng mảng, có so với quy trình ký duyệt của OpenTitan, nằm trong [SIGNOFF_SCOPE.md](SIGNOFF_SCOPE.md). Kết luận:
+
+| Mảng | Có cần không | Làm gì |
+|---|---|---|
+| CDC/RDC | cần (OpenTitan yêu cầu ở D2/D3) | đã làm `nnc cdc` |
+| Timing, diện tích | chỉ cần ước lượng từ synthesis | đã có sẵn trong `rtl-check` |
+| Place and route, DFT | không (không phải mục ký duyệt cấp IP) | không làm |
+| X-propagation | có ích | đã thêm tuỳ chọn `x_init`, đang chạy thử |
+
+**Coverage (GĐ19).**
+- **Nguyên nhân coverage thấp:** Verilator đếm cả hàm của package mà thiết kế không gọi. Riêng `prim_secded_pkg` đã chiếm 8 136/21 352 dòng của gpio. Nó cũng đếm toggle của các bit luôn bằng hằng số.
+- **Cách đo mới:** mỗi lần chạy mô phỏng, flow tự elaborate DUT bằng hai công cụ.
+  - `verilator --json-only` cho biết hàm nào được giữ lại.
+  - Yosys `proc; flatten; opt` cho biết bit nào là hằng.
+- **Không loại bằng tay.** Báo cáo luôn ghi số điểm bị loại và con số trên mọi điểm.
+- **Khi hai công cụ mâu thuẫn ở một tín hiệu** (Verilator thấy bit "hằng" toggle), tín hiệu đó được tính nguyên. Trường hợp này xảy ra ở `prim_onehot_check` của gpio.
+- **Kết quả:** gpio line 52,5 → 96,5 %, block 44,5 → 93,6 %; rv_timer line 24,2 → 92,3 %; sync_fifo toggle 70,6 → 87,7 %. Outcome của 13 thiết kế không đổi.
+- **Con số phụ** `coverage_preverified`: coverage khi không tính các module mà OpenTitan coi là đã verify riêng (theo cover.cfg của họ). Con số này ghi thêm, không thay con số chính.
+- **Closure bằng agent:**
+  - gpio functional 90 → 95 %, nhờ 2 test mới;
+  - 2 cover point còn lại không thể xảy ra, vì thiết kế chỉ nhận một request mỗi lúc. Chúng vẫn được tính là chưa phủ.
+- **Lưu bản ghi closure:** closure đổi metric thì bản ghi cũ được giữ lại (`coverage_<metric>.md`).
+
+**CDC/RDC (GĐ20).**
+- **Bước kiểm:** `nnc cdc` kiểm cấu trúc trên netlist Yosys cho từng cấu hình tham số.
+  - SYNC: qua bộ đồng bộ ≥ 2 flop.
+  - SYNC_MULTIBIT: nhiều bit đồng bộ riêng, cần gray code.
+  - QUALIFIED: dữ liệu chốt nhờ tín hiệu đã đồng bộ.
+  - UNSYNC và FIRST_STAGE_READ là lỗi.
+- **Kết quả:** 11 thiết kế sạch, 2 cần review (FIFO và APB bất đồng bộ), 0 lỗi.
+- **Kiểm lại bước kiểm:** làm hỏng bộ đồng bộ của async_gray_fifo trong một bản sao, và cả hai lỗi cài vào đều bị bắt.
+- **CI** có job `cdc`.
+- **Giới hạn:** bước kiểm không chứng minh gray code hay handshake; việc đó vẫn do formal và mô phỏng làm.
+
+**Khởi tạo ngẫu nhiên (thử).**
+- **Lỗi ở thời điểm 0:** 4 thiết kế fail assertion tại thời điểm 0, do testbench chưa giữ reset ngay từ đầu. Đây là lỗi của bộ chạy, phải sửa trước khi đưa `x_init` vào run set.
+- **gen_sync_fifo:** có một test fail ở giữa mô phỏng, chạm câu hỏi spec CHK-008 còn mở. Cần triage.
+
+**Còn mở.**
+- Chứng minh unreachable bằng formal cho các điểm mà lan truyền hằng số không chứng minh được, ví dụ bit cao của phép trừ, nhánh `if (EnableRacl)`.
+- Các trường struct là hằng số.
+- Reset tại thời điểm 0 của testbench.

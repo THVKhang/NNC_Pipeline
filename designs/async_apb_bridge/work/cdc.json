@@ -1,0 +1,1259 @@
+{
+ "design": "async_apb_bridge",
+ "date": "2026-11-21T15:34:06+00:00",
+ "frontend": "verilog",
+ "defines": [
+  "VLSIT_SYNTHESIS"
+ ],
+ "async_inputs": [],
+ "verdict": "review",
+ "configurations": [
+  {
+   "config": "apb4",
+   "params": {
+    "PARA_APBCDC_ADDR_W": 32,
+    "PARA_APBCDC_DATA_W": 32,
+    "PARA_APBCDC_APB5": 0,
+    "PARA_APBCDC_USER_REQ_W": 0,
+    "PARA_APBCDC_USER_DATA_W": 0,
+    "PARA_APBCDC_USER_RESP_W": 0,
+    "PARA_APBCDC_HS_TYPE": 0,
+    "PARA_APBCDC_CELL_TYPE": 2
+   },
+   "result": {
+    "status": "ok",
+    "domains": [
+     "i_clk_mst",
+     "i_clk_slv"
+    ],
+    "flops": 14,
+    "inputs": {
+     "i_apb_paddr": "i_clk_mst",
+     "i_apb_pauser": "i_clk_mst",
+     "i_apb_pbuser": "i_clk_slv",
+     "i_apb_penable": "i_clk_mst",
+     "i_apb_pprot": "i_clk_mst",
+     "i_apb_prdata": "i_clk_slv",
+     "i_apb_pready": "i_clk_slv",
+     "i_apb_pruser": "i_clk_slv",
+     "i_apb_psel": "i_clk_mst",
+     "i_apb_pslverr": "i_clk_slv",
+     "i_apb_pstrb": "i_clk_mst",
+     "i_apb_pwakeup": "i_clk_mst",
+     "i_apb_pwdata": "i_clk_mst",
+     "i_apb_pwrite": "i_clk_mst",
+     "i_apb_pwuser": "i_clk_mst"
+    },
+    "crossings": [
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_paddr",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 32,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pprot",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 3,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_prdata",
+      "domain": "i_clk_mst",
+      "from": [
+       "w_resp_payload"
+      ],
+      "from_domains": [
+       "i_clk_slv"
+      ],
+      "bits": 32,
+      "note": "captured under control of u_vlsit_apbcdc_mst.w_ack_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pslverr",
+      "domain": "i_clk_mst",
+      "from": [
+       "w_resp_payload"
+      ],
+      "from_domains": [
+       "i_clk_slv"
+      ],
+      "bits": 1,
+      "note": "captured under control of u_vlsit_apbcdc_mst.w_ack_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pstrb",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 4,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pwdata",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 32,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pwrite",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 1,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_apbcdc_mst.u_sync_ack.gen_bit_cell[*].u_vlsit_apbcdc_cell_sync.genblk1.genblk1.gen_sync2.gen_rn.u_dont_touch_sync2ff.reg_chain",
+      "domain": "i_clk_mst",
+      "from": [
+       "w_ack"
+      ],
+      "from_domains": [
+       "i_clk_slv"
+      ],
+      "bits": 1,
+      "stages": 2
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_apbcdc_slv.u_sync_req.gen_bit_cell[*].u_vlsit_apbcdc_cell_sync.genblk1.genblk1.gen_sync2.gen_rn.u_dont_touch_sync2ff.reg_chain",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 1,
+      "stages": 2
+     }
+    ],
+    "outputs": [],
+    "resets": [],
+    "derived_clocks": [],
+    "counts": {
+     "DERIVED_CLOCK": 0,
+     "OUTPUT_FROM_OTHER_DOMAIN": 0,
+     "QUALIFIED": 105,
+     "RESET_FROM_OTHER_DOMAIN": 0,
+     "SYNC": 2
+    }
+   }
+  },
+  {
+   "config": "4ph",
+   "params": {
+    "PARA_APBCDC_ADDR_W": 32,
+    "PARA_APBCDC_DATA_W": 32,
+    "PARA_APBCDC_APB5": 0,
+    "PARA_APBCDC_USER_REQ_W": 0,
+    "PARA_APBCDC_USER_DATA_W": 0,
+    "PARA_APBCDC_USER_RESP_W": 0,
+    "PARA_APBCDC_HS_TYPE": 1,
+    "PARA_APBCDC_CELL_TYPE": 2
+   },
+   "result": {
+    "status": "ok",
+    "domains": [
+     "i_clk_mst",
+     "i_clk_slv"
+    ],
+    "flops": 14,
+    "inputs": {
+     "i_apb_paddr": "i_clk_mst",
+     "i_apb_pauser": "i_clk_mst",
+     "i_apb_pbuser": "i_clk_slv",
+     "i_apb_penable": "i_clk_mst",
+     "i_apb_pprot": "i_clk_mst",
+     "i_apb_prdata": "i_clk_slv",
+     "i_apb_pready": "i_clk_slv",
+     "i_apb_pruser": "i_clk_slv",
+     "i_apb_psel": "i_clk_mst",
+     "i_apb_pslverr": "i_clk_slv",
+     "i_apb_pstrb": "i_clk_mst",
+     "i_apb_pwakeup": "i_clk_mst",
+     "i_apb_pwdata": "i_clk_mst",
+     "i_apb_pwrite": "i_clk_mst",
+     "i_apb_pwuser": "i_clk_mst"
+    },
+    "crossings": [
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_paddr",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 32,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pprot",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 3,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_prdata",
+      "domain": "i_clk_mst",
+      "from": [
+       "w_resp_payload"
+      ],
+      "from_domains": [
+       "i_clk_slv"
+      ],
+      "bits": 32,
+      "note": "captured under control of u_vlsit_apbcdc_mst.w_ack_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pslverr",
+      "domain": "i_clk_mst",
+      "from": [
+       "w_resp_payload"
+      ],
+      "from_domains": [
+       "i_clk_slv"
+      ],
+      "bits": 1,
+      "note": "captured under control of u_vlsit_apbcdc_mst.w_ack_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pstrb",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 4,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pwdata",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 32,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pwrite",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 1,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_apbcdc_mst.u_sync_ack.gen_bit_cell[*].u_vlsit_apbcdc_cell_sync.genblk1.genblk1.gen_sync2.gen_rn.u_dont_touch_sync2ff.reg_chain",
+      "domain": "i_clk_mst",
+      "from": [
+       "w_ack"
+      ],
+      "from_domains": [
+       "i_clk_slv"
+      ],
+      "bits": 1,
+      "stages": 2
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_apbcdc_slv.u_sync_req.gen_bit_cell[*].u_vlsit_apbcdc_cell_sync.genblk1.genblk1.gen_sync2.gen_rn.u_dont_touch_sync2ff.reg_chain",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 1,
+      "stages": 2
+     }
+    ],
+    "outputs": [],
+    "resets": [],
+    "derived_clocks": [],
+    "counts": {
+     "DERIVED_CLOCK": 0,
+     "OUTPUT_FROM_OTHER_DOMAIN": 0,
+     "QUALIFIED": 105,
+     "RESET_FROM_OTHER_DOMAIN": 0,
+     "SYNC": 2
+    }
+   }
+  },
+  {
+   "config": "apb5",
+   "params": {
+    "PARA_APBCDC_ADDR_W": 32,
+    "PARA_APBCDC_DATA_W": 32,
+    "PARA_APBCDC_APB5": 1,
+    "PARA_APBCDC_USER_REQ_W": 0,
+    "PARA_APBCDC_USER_DATA_W": 0,
+    "PARA_APBCDC_USER_RESP_W": 0,
+    "PARA_APBCDC_HS_TYPE": 0,
+    "PARA_APBCDC_CELL_TYPE": 2
+   },
+   "result": {
+    "status": "ok",
+    "domains": [
+     "i_clk_mst",
+     "i_clk_slv"
+    ],
+    "flops": 16,
+    "inputs": {
+     "i_apb_paddr": "i_clk_mst",
+     "i_apb_pauser": "i_clk_mst",
+     "i_apb_pbuser": "i_clk_slv",
+     "i_apb_penable": "i_clk_mst",
+     "i_apb_pprot": "i_clk_mst",
+     "i_apb_prdata": "i_clk_slv",
+     "i_apb_pready": "i_clk_slv",
+     "i_apb_pruser": "i_clk_slv",
+     "i_apb_psel": "i_clk_mst",
+     "i_apb_pslverr": "i_clk_slv",
+     "i_apb_pstrb": "i_clk_mst",
+     "i_apb_pwakeup": "i_clk_mst",
+     "i_apb_pwdata": "i_clk_mst",
+     "i_apb_pwrite": "i_clk_mst",
+     "i_apb_pwuser": "i_clk_mst"
+    },
+    "crossings": [
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_paddr",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 32,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pprot",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 3,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_prdata",
+      "domain": "i_clk_mst",
+      "from": [
+       "w_resp_payload"
+      ],
+      "from_domains": [
+       "i_clk_slv"
+      ],
+      "bits": 32,
+      "note": "captured under control of u_vlsit_apbcdc_mst.w_ack_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pslverr",
+      "domain": "i_clk_mst",
+      "from": [
+       "w_resp_payload"
+      ],
+      "from_domains": [
+       "i_clk_slv"
+      ],
+      "bits": 1,
+      "note": "captured under control of u_vlsit_apbcdc_mst.w_ack_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pstrb",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 4,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pwdata",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 32,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pwrite",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 1,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_apbcdc_mst.u_sync_ack.gen_bit_cell[*].u_vlsit_apbcdc_cell_sync.genblk1.genblk1.gen_sync2.gen_rn.u_dont_touch_sync2ff.reg_chain",
+      "domain": "i_clk_mst",
+      "from": [
+       "w_ack"
+      ],
+      "from_domains": [
+       "i_clk_slv"
+      ],
+      "bits": 1,
+      "stages": 2
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_apbcdc_slv.u_sync_req.gen_bit_cell[*].u_vlsit_apbcdc_cell_sync.genblk1.genblk1.gen_sync2.gen_rn.u_dont_touch_sync2ff.reg_chain",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 1,
+      "stages": 2
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_apbcdc_slv.u_sync_wk.gen_bit_cell[*].u_vlsit_apbcdc_cell_sync.genblk1.genblk1.gen_sync2.gen_rn.u_dont_touch_sync2ff.reg_chain",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_wakeup"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 1,
+      "stages": 2
+     }
+    ],
+    "outputs": [],
+    "resets": [],
+    "derived_clocks": [],
+    "counts": {
+     "DERIVED_CLOCK": 0,
+     "OUTPUT_FROM_OTHER_DOMAIN": 0,
+     "QUALIFIED": 105,
+     "RESET_FROM_OTHER_DOMAIN": 0,
+     "SYNC": 3
+    }
+   }
+  },
+  {
+   "config": "user",
+   "params": {
+    "PARA_APBCDC_ADDR_W": 32,
+    "PARA_APBCDC_DATA_W": 32,
+    "PARA_APBCDC_APB5": 1,
+    "PARA_APBCDC_USER_REQ_W": 4,
+    "PARA_APBCDC_USER_DATA_W": 8,
+    "PARA_APBCDC_USER_RESP_W": 4,
+    "PARA_APBCDC_HS_TYPE": 0,
+    "PARA_APBCDC_CELL_TYPE": 2
+   },
+   "result": {
+    "status": "ok",
+    "domains": [
+     "i_clk_mst",
+     "i_clk_slv"
+    ],
+    "flops": 16,
+    "inputs": {
+     "i_apb_paddr": "i_clk_mst",
+     "i_apb_pauser": "i_clk_mst",
+     "i_apb_pbuser": "i_clk_slv",
+     "i_apb_penable": "i_clk_mst",
+     "i_apb_pprot": "i_clk_mst",
+     "i_apb_prdata": "i_clk_slv",
+     "i_apb_pready": "i_clk_slv",
+     "i_apb_pruser": "i_clk_slv",
+     "i_apb_psel": "i_clk_mst",
+     "i_apb_pslverr": "i_clk_slv",
+     "i_apb_pstrb": "i_clk_mst",
+     "i_apb_pwakeup": "i_clk_mst",
+     "i_apb_pwdata": "i_clk_mst",
+     "i_apb_pwrite": "i_clk_mst",
+     "i_apb_pwuser": "i_clk_mst"
+    },
+    "crossings": [
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_paddr",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 32,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pauser",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 4,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pbuser",
+      "domain": "i_clk_mst",
+      "from": [
+       "w_resp_payload"
+      ],
+      "from_domains": [
+       "i_clk_slv"
+      ],
+      "bits": 4,
+      "note": "captured under control of u_vlsit_apbcdc_mst.w_ack_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pprot",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 3,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_prdata",
+      "domain": "i_clk_mst",
+      "from": [
+       "w_resp_payload"
+      ],
+      "from_domains": [
+       "i_clk_slv"
+      ],
+      "bits": 32,
+      "note": "captured under control of u_vlsit_apbcdc_mst.w_ack_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pruser",
+      "domain": "i_clk_mst",
+      "from": [
+       "w_resp_payload"
+      ],
+      "from_domains": [
+       "i_clk_slv"
+      ],
+      "bits": 8,
+      "note": "captured under control of u_vlsit_apbcdc_mst.w_ack_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pslverr",
+      "domain": "i_clk_mst",
+      "from": [
+       "w_resp_payload"
+      ],
+      "from_domains": [
+       "i_clk_slv"
+      ],
+      "bits": 1,
+      "note": "captured under control of u_vlsit_apbcdc_mst.w_ack_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pstrb",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 4,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pwdata",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 32,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pwrite",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 1,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pwuser",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 8,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_apbcdc_mst.u_sync_ack.gen_bit_cell[*].u_vlsit_apbcdc_cell_sync.genblk1.genblk1.gen_sync2.gen_rn.u_dont_touch_sync2ff.reg_chain",
+      "domain": "i_clk_mst",
+      "from": [
+       "w_ack"
+      ],
+      "from_domains": [
+       "i_clk_slv"
+      ],
+      "bits": 1,
+      "stages": 2
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_apbcdc_slv.u_sync_req.gen_bit_cell[*].u_vlsit_apbcdc_cell_sync.genblk1.genblk1.gen_sync2.gen_rn.u_dont_touch_sync2ff.reg_chain",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 1,
+      "stages": 2
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_apbcdc_slv.u_sync_wk.gen_bit_cell[*].u_vlsit_apbcdc_cell_sync.genblk1.genblk1.gen_sync2.gen_rn.u_dont_touch_sync2ff.reg_chain",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_wakeup"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 1,
+      "stages": 2
+     }
+    ],
+    "outputs": [],
+    "resets": [],
+    "derived_clocks": [],
+    "counts": {
+     "DERIVED_CLOCK": 0,
+     "OUTPUT_FROM_OTHER_DOMAIN": 0,
+     "QUALIFIED": 129,
+     "RESET_FROM_OTHER_DOMAIN": 0,
+     "SYNC": 3
+    }
+   }
+  },
+  {
+   "config": "sync3",
+   "params": {
+    "PARA_APBCDC_ADDR_W": 32,
+    "PARA_APBCDC_DATA_W": 32,
+    "PARA_APBCDC_APB5": 0,
+    "PARA_APBCDC_USER_REQ_W": 0,
+    "PARA_APBCDC_USER_DATA_W": 0,
+    "PARA_APBCDC_USER_RESP_W": 0,
+    "PARA_APBCDC_HS_TYPE": 0,
+    "PARA_APBCDC_CELL_TYPE": 3
+   },
+   "result": {
+    "status": "ok",
+    "domains": [
+     "i_clk_mst",
+     "i_clk_slv"
+    ],
+    "flops": 14,
+    "inputs": {
+     "i_apb_paddr": "i_clk_mst",
+     "i_apb_pauser": "i_clk_mst",
+     "i_apb_pbuser": "i_clk_slv",
+     "i_apb_penable": "i_clk_mst",
+     "i_apb_pprot": "i_clk_mst",
+     "i_apb_prdata": "i_clk_slv",
+     "i_apb_pready": "i_clk_slv",
+     "i_apb_pruser": "i_clk_slv",
+     "i_apb_psel": "i_clk_mst",
+     "i_apb_pslverr": "i_clk_slv",
+     "i_apb_pstrb": "i_clk_mst",
+     "i_apb_pwakeup": "i_clk_mst",
+     "i_apb_pwdata": "i_clk_mst",
+     "i_apb_pwrite": "i_clk_mst",
+     "i_apb_pwuser": "i_clk_mst"
+    },
+    "crossings": [
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_paddr",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 32,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pprot",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 3,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_prdata",
+      "domain": "i_clk_mst",
+      "from": [
+       "w_resp_payload"
+      ],
+      "from_domains": [
+       "i_clk_slv"
+      ],
+      "bits": 32,
+      "note": "captured under control of u_vlsit_apbcdc_mst.w_ack_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pslverr",
+      "domain": "i_clk_mst",
+      "from": [
+       "w_resp_payload"
+      ],
+      "from_domains": [
+       "i_clk_slv"
+      ],
+      "bits": 1,
+      "note": "captured under control of u_vlsit_apbcdc_mst.w_ack_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pstrb",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 4,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pwdata",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 32,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pwrite",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 1,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_apbcdc_mst.u_sync_ack.gen_bit_cell[*].u_vlsit_apbcdc_cell_sync.genblk1.genblk1.genblk1.gen_sync3.gen_rn.u_dont_touch_sync3ff.reg_chain",
+      "domain": "i_clk_mst",
+      "from": [
+       "w_ack"
+      ],
+      "from_domains": [
+       "i_clk_slv"
+      ],
+      "bits": 1,
+      "stages": 3
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_apbcdc_slv.u_sync_req.gen_bit_cell[*].u_vlsit_apbcdc_cell_sync.genblk1.genblk1.genblk1.gen_sync3.gen_rn.u_dont_touch_sync3ff.reg_chain",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 1,
+      "stages": 3
+     }
+    ],
+    "outputs": [],
+    "resets": [],
+    "derived_clocks": [],
+    "counts": {
+     "DERIVED_CLOCK": 0,
+     "OUTPUT_FROM_OTHER_DOMAIN": 0,
+     "QUALIFIED": 105,
+     "RESET_FROM_OTHER_DOMAIN": 0,
+     "SYNC": 2
+    }
+   }
+  },
+  {
+   "config": "sync4",
+   "params": {
+    "PARA_APBCDC_ADDR_W": 32,
+    "PARA_APBCDC_DATA_W": 32,
+    "PARA_APBCDC_APB5": 0,
+    "PARA_APBCDC_USER_REQ_W": 0,
+    "PARA_APBCDC_USER_DATA_W": 0,
+    "PARA_APBCDC_USER_RESP_W": 0,
+    "PARA_APBCDC_HS_TYPE": 0,
+    "PARA_APBCDC_CELL_TYPE": 4
+   },
+   "result": {
+    "status": "ok",
+    "domains": [
+     "i_clk_mst",
+     "i_clk_slv"
+    ],
+    "flops": 14,
+    "inputs": {
+     "i_apb_paddr": "i_clk_mst",
+     "i_apb_pauser": "i_clk_mst",
+     "i_apb_pbuser": "i_clk_slv",
+     "i_apb_penable": "i_clk_mst",
+     "i_apb_pprot": "i_clk_mst",
+     "i_apb_prdata": "i_clk_slv",
+     "i_apb_pready": "i_clk_slv",
+     "i_apb_pruser": "i_clk_slv",
+     "i_apb_psel": "i_clk_mst",
+     "i_apb_pslverr": "i_clk_slv",
+     "i_apb_pstrb": "i_clk_mst",
+     "i_apb_pwakeup": "i_clk_mst",
+     "i_apb_pwdata": "i_clk_mst",
+     "i_apb_pwrite": "i_clk_mst",
+     "i_apb_pwuser": "i_clk_mst"
+    },
+    "crossings": [
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_paddr",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 32,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pprot",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 3,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_prdata",
+      "domain": "i_clk_mst",
+      "from": [
+       "w_resp_payload"
+      ],
+      "from_domains": [
+       "i_clk_slv"
+      ],
+      "bits": 32,
+      "note": "captured under control of u_vlsit_apbcdc_mst.w_ack_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pslverr",
+      "domain": "i_clk_mst",
+      "from": [
+       "w_resp_payload"
+      ],
+      "from_domains": [
+       "i_clk_slv"
+      ],
+      "bits": 1,
+      "note": "captured under control of u_vlsit_apbcdc_mst.w_ack_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pstrb",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 4,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pwdata",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 32,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pwrite",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 1,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_apbcdc_mst.u_sync_ack.gen_bit_cell[*].u_vlsit_apbcdc_cell_sync.genblk1.genblk1.genblk1.gen_sync4.gen_rn.u_dont_touch_sync4ff.reg_chain",
+      "domain": "i_clk_mst",
+      "from": [
+       "w_ack"
+      ],
+      "from_domains": [
+       "i_clk_slv"
+      ],
+      "bits": 1,
+      "stages": 4
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_apbcdc_slv.u_sync_req.gen_bit_cell[*].u_vlsit_apbcdc_cell_sync.genblk1.genblk1.genblk1.gen_sync4.gen_rn.u_dont_touch_sync4ff.reg_chain",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 1,
+      "stages": 4
+     }
+    ],
+    "outputs": [],
+    "resets": [],
+    "derived_clocks": [],
+    "counts": {
+     "DERIVED_CLOCK": 0,
+     "OUTPUT_FROM_OTHER_DOMAIN": 0,
+     "QUALIFIED": 105,
+     "RESET_FROM_OTHER_DOMAIN": 0,
+     "SYNC": 2
+    }
+   }
+  },
+  {
+   "config": "min",
+   "params": {
+    "PARA_APBCDC_ADDR_W": 1,
+    "PARA_APBCDC_DATA_W": 8,
+    "PARA_APBCDC_APB5": 0,
+    "PARA_APBCDC_USER_REQ_W": 0,
+    "PARA_APBCDC_USER_DATA_W": 0,
+    "PARA_APBCDC_USER_RESP_W": 0,
+    "PARA_APBCDC_HS_TYPE": 0,
+    "PARA_APBCDC_CELL_TYPE": 2
+   },
+   "result": {
+    "status": "ok",
+    "domains": [
+     "i_clk_mst",
+     "i_clk_slv"
+    ],
+    "flops": 14,
+    "inputs": {
+     "i_apb_paddr": "i_clk_mst",
+     "i_apb_pauser": "i_clk_mst",
+     "i_apb_pbuser": "i_clk_slv",
+     "i_apb_penable": "i_clk_mst",
+     "i_apb_pprot": "i_clk_mst",
+     "i_apb_prdata": "i_clk_slv",
+     "i_apb_pready": "i_clk_slv",
+     "i_apb_pruser": "i_clk_slv",
+     "i_apb_psel": "i_clk_mst",
+     "i_apb_pslverr": "i_clk_slv",
+     "i_apb_pstrb": "i_clk_mst",
+     "i_apb_pwakeup": "i_clk_mst",
+     "i_apb_pwdata": "i_clk_mst",
+     "i_apb_pwrite": "i_clk_mst",
+     "i_apb_pwuser": "i_clk_mst"
+    },
+    "crossings": [
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_paddr",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 1,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pprot",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 3,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_prdata",
+      "domain": "i_clk_mst",
+      "from": [
+       "w_resp_payload"
+      ],
+      "from_domains": [
+       "i_clk_slv"
+      ],
+      "bits": 8,
+      "note": "captured under control of u_vlsit_apbcdc_mst.w_ack_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pslverr",
+      "domain": "i_clk_mst",
+      "from": [
+       "w_resp_payload"
+      ],
+      "from_domains": [
+       "i_clk_slv"
+      ],
+      "bits": 1,
+      "note": "captured under control of u_vlsit_apbcdc_mst.w_ack_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pstrb",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 1,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pwdata",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 8,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "QUALIFIED",
+      "flop": "o_apb_pwrite",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req_payload"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 1,
+      "note": "captured under control of u_vlsit_apbcdc_slv.w_req_s"
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_apbcdc_mst.u_sync_ack.gen_bit_cell[*].u_vlsit_apbcdc_cell_sync.genblk1.genblk1.gen_sync2.gen_rn.u_dont_touch_sync2ff.reg_chain",
+      "domain": "i_clk_mst",
+      "from": [
+       "w_ack"
+      ],
+      "from_domains": [
+       "i_clk_slv"
+      ],
+      "bits": 1,
+      "stages": 2
+     },
+     {
+      "kind": "SYNC",
+      "flop": "u_vlsit_apbcdc_slv.u_sync_req.gen_bit_cell[*].u_vlsit_apbcdc_cell_sync.genblk1.genblk1.gen_sync2.gen_rn.u_dont_touch_sync2ff.reg_chain",
+      "domain": "i_clk_slv",
+      "from": [
+       "w_req"
+      ],
+      "from_domains": [
+       "i_clk_mst"
+      ],
+      "bits": 1,
+      "stages": 2
+     }
+    ],
+    "outputs": [],
+    "resets": [],
+    "derived_clocks": [],
+    "counts": {
+     "DERIVED_CLOCK": 0,
+     "OUTPUT_FROM_OTHER_DOMAIN": 0,
+     "QUALIFIED": 23,
+     "RESET_FROM_OTHER_DOMAIN": 0,
+     "SYNC": 2
+    }
+   }
+  }
+ ]
+}

@@ -125,6 +125,22 @@ Triage judged it a missing environment assumption (E). The formal-environment ag
 - Four surviving mutants change behaviour, each in a case the decisions leave unchecked: instruction fetches (M12, D-011), `d_error` in the first cycle after reset when no response is valid (M15), the input path in the first cycles after reset (M02, D-003/D-008), and the timing of later alert pulses (M21, D-010/D-017). Should any of these become checked?
 - Per-requirement mutation is below 85 % for 13 rules, mostly alert, integrity and filter rules. CHK-013 did not finish in formal within 600 s per task; it passes in simulation.
 
+### Phases 19 and 20: coverage scope, closure, domain crossings
+
+- **Coverage scope.** Coverage now counts the elaborated design only: package functions never called and bits
+  proven constant are left out by tool runs, never by hand, and each report row gives the count over all points
+  too ([SIGNOFF_SCOPE.md](SIGNOFF_SCOPE.md), [EVALUATION §12](EVALUATION.md)). Is that scope acceptable to you?
+- **Unreachable claims (still counted).** gpio: COVP-012/013 (one outstanding request,
+  [coverage_functional.md](../designs/ot_gpio/work/coverage_functional.md)); 18 toggle groups
+  ([coverage.md](../designs/ot_gpio/work/coverage.md)), of which address bits >= 10 rest only on decision D-012
+  (tests stay below offset 0x400). Do you accept these, and should accesses above 0x400 be tested?
+- **Domain crossings for review** ([async_gray_fifo cdc.md](../designs/async_gray_fifo/work/cdc.md),
+  [async_apb_bridge cdc.md](../designs/async_apb_bridge/work/cdc.md)): gray pointers synchronized bit by bit, and
+  payloads captured under a synchronized request/acknowledge. The structural check cannot prove gray coding or
+  payload stability; are the formal and simulation checks of those properties enough for you?
+- **gen_sync_fifo with random initial values** (a trial): `test_chk_024` fails in mid-run, near the open CHK-008
+  question. Not triaged yet.
+
 ## What the evidence is, and is not
 
 - **It is:**
@@ -135,7 +151,7 @@ Triage judged it a missing environment assumption (E). The formal-environment ag
   - a bug benchmark.
 
   Overall numbers: [EVALUATION.md](EVALUATION.md).
-- **It is not:** CDC/RDC analysis, STA, DFT or gate-level checks. Synthesis of generated RTL gives only area and an ABC delay estimate. Metastability is only simulated through the RTL's own model.
+- **It is not:** a commercial CDC/RDC analysis (the `nnc cdc` check is structural), STA, DFT or gate-level checks. Synthesis (`rtl-check`) gives only area and an ABC delay estimate. Metastability is only simulated through the RTL's own model.
 - **The generated tests and checkers can be wrong.** That is why the hit counters, triage and mutation results are in the packet.
 
 Thank you. Comments by issue or e-mail to the repository owner are welcome even without a signature.

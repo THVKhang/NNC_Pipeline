@@ -1,6 +1,6 @@
 # Verification report — ot_rv_timer
 
-Generated 2026-11-21T00:34:06+00:00 by NNC Pipeline.
+Generated 2026-11-21T16:21:14+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -11,14 +11,20 @@ Generated 2026-11-21T00:34:06+00:00 by NNC Pipeline.
 | Tests | {'pass': 23} |
 | Run set | 2 runs in 1 configurations (base); primary base.s1 |
 | Integration | OK |
-| Code coverage (RTL), line | 24.2 % (800/3301 lines) |
-| Code coverage (RTL), block | 29.6 % (144/486 statement blocks and branch arms) |
-| Code coverage (RTL), expression | 7.8 % (485/6228 condition terms) |
-| Code coverage (RTL), toggle | 80.3 % (9455/11776 bit toggles 0->1 and 1->0) |
+| Code coverage (RTL), line | 92.3 % (800/867 lines); 2434 points left out (package code the design does not contain), all points 24.2 % (800/3301) |
+| Code coverage (RTL), block | 87.8 % (144/164 statement blocks and branch arms); 322 points left out (package code the design does not contain), all points 29.6 % (144/486) |
+| Code coverage (RTL), expression | 61.0 % (485/795 condition terms); 5433 points left out (package code the design does not contain), all points 7.8 % (485/6228) |
+| Code coverage (RTL), toggle | 83.1 % (9451/11368 bit toggles 0->1 and 1->0); 408 points left out (constant bits), all points 80.3 % (9455/11776) |
 | Code coverage (RTL), functional | 97.4 % (38/39 cover points of the specification) |
+| Code coverage without the modules the designer declares pre-verified | prim_alert_receiver, prim_alert_sender, prim_count, prim_esc_receiver, prim_esc_sender, prim_lfsr, prim_onehot_check, prim_prince, prim_secded_inv_39_32_dec, prim_secded_inv_39_32_enc, prim_secded_inv_64_57_dec, prim_secded_inv_64_57_enc (7 instances; config `coverage_preverified`) |
+| ... without pre-verified modules, block | 91.7 % (100/109) |
+| ... without pre-verified modules, expression | 83.7 % (273/326) |
+| ... without pre-verified modules, line | 92.8 % (581/626) |
+| ... without pre-verified modules, toggle | 85.1 % (8726/10258) |
 | Mutation score | 58.3 % (21 killed / 15 survived / 0 not compiled) |
 | Surviving mutants, formal equivalence (`nnc mutate-equiv`) | {'CEX': 3, 'ERROR': 1, 'PROVEN': 11}; score without the proven-equivalent mutants 84.0 % |
 | Coverage target | not requested (`nnc cover <design> --target <n> --metric <m>`) |
+| Clock/reset domain crossings (structural, `nnc cdc`) | clean: no crossing over 1 configuration(s), work/cdc.md |
 | Formal (SymbiYosys, depth 32) | {'BOUNDED': 2, 'CEX': 1, 'PROVEN': 7, 'TIMEOUT': 1, 'UNSUPPORTED': 2} — reset assumptions + verif/formal/nnc_env.sv, work/formal.md |
 | Triage | 4 failure(s), 4 analysed: work/triage.md |
 | Agent cost | US$22.0933 in 70 calls (A1 0.7677, A12 0.9085, A13 1.3201, A14 3.0479, A17 4.2877, A18 1.0327, A2 0.641, A3 0.9391, A4 1.7633, A5 0.3345, A6 0.4296, A7 4.1614, A9 2.46) |
@@ -35,6 +41,7 @@ Generated 2026-11-21T00:34:06+00:00 by NNC Pipeline.
 | Every run of the run set built and ran | met — 2 runs |
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | **not met** — 9 rule(s) below: AH-T1.3.2-01, AH-T1.3.2-02, AH-T1.3.2-03, CP-T1.9.1-04, RT-4.2-03, RT-5-02, RT-5-05, RT-8-16, RT-T6.3-01 |
+| Clock/reset domain crossings: no structural violation (RR-33) | met — clean: no crossing (work/cdc.md) |
 | Formal: no counterexample, no vacuous or failed proof | **not met** — CEX 1 |
 
 ## Run set
@@ -371,6 +378,8 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 
 ## Not verified by this run
 
-- Formal: the assertions were checked by SymbiYosys under the environment assumptions (work/formal.md); a BOUNDED result holds only up to its depth. CDC/RDC, STA, synthesis and DFT checks are outside this flow.
+- Formal: the assertions were checked by SymbiYosys under the environment assumptions (work/formal.md); a BOUNDED result holds only up to its depth.
+- Domain crossings were checked structurally (synchronizer structure, `nnc cdc`); gray coding and handshake protocols are not proven by that check.
+- Sign-off STA, place and route and DFT are outside this flow (docs/SIGNOFF_SCOPE.md); `nnc rtl-check` gives a synthesis estimate of area and the longest combinational path.
 - Rules marked NOT_VERIFIED_BY_SIM carry the contract's reason (static, structural, not observable...).
 - Only the configurations of the run set above were simulated; code coverage is merged over its runs, mutation testing used the primary run base.s1.

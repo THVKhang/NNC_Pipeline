@@ -33,7 +33,7 @@ tool-check:
 	python3 --version
 
 lint:
-	$(VERILATOR) --lint-only -Wno-fatal --top-module $(TOP) $(PARAMS) $(DEFINES) $(RTL)
+	$(VERILATOR) --lint-only -Wno-fatal --top-module $(TOP) $(PARAMS) $(DEFINES) +incdir+$(TOP_DIR)/rtl $(RTL)
 
 sva-compile:
 	$(VERILATOR) --lint-only --timing -Wno-fatal --top-module nnc_tb_top $(PARAMS) contract_shell.sv $(SVA) nnc_tb_top.sv

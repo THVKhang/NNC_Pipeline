@@ -1,6 +1,6 @@
 # Verification report — axi2apb_bridge
 
-Generated 2026-11-19T06:11:18+00:00 by NNC Pipeline.
+Generated 2026-11-21T16:26:49+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -8,18 +8,20 @@ Generated 2026-11-19T06:11:18+00:00 by NNC Pipeline.
 |---|---|
 | Rules | 151 — {'NOT_VERIFIED_BY_SIM': 37, 'VERIFIED': 114} |
 | Checks | 31 — {'PASS': 31} |
-| Tests | {'pass': 15} |
+| Tests | {'pass': 21} |
 | Integration | OK |
 | Code coverage (RTL), line | 98.9 % (738/746 lines) |
 | Code coverage (RTL), block | 95.9 % (209/218 statement blocks and branch arms) |
 | Code coverage (RTL), expression | 96.2 % (102/106 condition terms) |
-| Code coverage (RTL), toggle | 74.8 % (3506/4690 bit toggles 0->1 and 1->0) |
+| Code coverage (RTL), toggle | 86.4 % (4032/4666 bit toggles 0->1 and 1->0); 24 points left out (constant bits), all points 86.0 % (4032/4690) |
 | Code coverage (RTL), functional | 97.5 % (39/40 cover points of the specification) |
 | Mutation score | 88.9 % (32 killed / 4 survived / 0 not compiled) |
-| Coverage target | not requested (`nnc cover <design> --target <n> --metric <m>`) |
+| Surviving mutants, formal equivalence (`nnc mutate-equiv`) | {'CEX': 2, 'PROVEN': 2}; score without the proven-equivalent mutants 94.1 % |
+| Coverage target | toggle 85.0 %: **target_met** (baseline 75.1 % -> 86.4 %, work/coverage.md) |
+| Clock/reset domain crossings (structural, `nnc cdc`) | clean: no crossing over 1 configuration(s), work/cdc.md |
 | Formal (SymbiYosys, depth 20) | {'BOUNDED': 4, 'PROVEN': 12, 'TIMEOUT': 1} — reset assumptions + verif/formal/nnc_env.sv, work/formal.md |
 | Triage | no failure to analyse |
-| Agent cost | US$14.7937 in 66 calls (A1 0.6369, A12 2.1642, A13 0.2963, A2 0.5175, A3 0.2907, A4 1.1562, A5 0.4376, A6 0.3396, A7 4.7164, A9 4.2382); of which US$0.1096 in 1 failed calls (usage limit, timeout, invalid answer) |
+| Agent cost | US$16.7088 in 68 calls (A1 0.6369, A10 1.2614, A11 0.6537, A12 2.1642, A13 0.2963, A2 0.5175, A3 0.2907, A4 1.1562, A5 0.4376, A6 0.3396, A7 4.7164, A9 4.2382); of which US$0.1096 in 1 failed calls (usage limit, timeout, invalid answer) |
 
 ## Sign-off conditions
 
@@ -32,6 +34,8 @@ Generated 2026-11-19T06:11:18+00:00 by NNC Pipeline.
 | Every rule in a check or declared not verifiable | met |
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | met — 69 rules with attributed mutants |
+| Coverage target toggle 85.0 % | met — target_met |
+| Clock/reset domain crossings: no structural violation (RR-33) | met — clean: no crossing (work/cdc.md) |
 | Formal: no counterexample, no vacuous or failed proof | met — {'BOUNDED': 4, 'PROVEN': 12, 'TIMEOUT': 1} (work/formal.md) |
 
 ## Gates
@@ -40,36 +44,36 @@ Generated 2026-11-19T06:11:18+00:00 by NNC Pipeline.
 |---|---|---|
 | G1_rules | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-08T15:29:08+00:00 |
 | G2_contract | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-08T15:29:35+00:00 |
-| G3_verif_sources | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-12T06:32:01+00:00 |
+| G3_verif_sources | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-21T16:26:49+00:00 |
 | G4_signoff | PENDING | artifacts ready for review |
 
 ## Checks
 
 | Check | Kind | Title | Status | Evidence |
 |---|---|---|---|---|
-| CHK-001 | assertion | APB SETUP/ACCESS phase sequencing | **PASS** | hits 199228, fails 0; formal PROVEN |
-| CHK-002 | assertion | APB wait-state hold of control and payload | **PASS** | hits 67608, fails 0; formal PROVEN |
-| CHK-003 | assertion | APB payload stable from SETUP into ACCESS | **PASS** | hits 43874, fails 0; formal PROVEN |
-| CHK-004 | assertion | PADDR word aligned | **PASS** | hits 319738, fails 0; formal PROVEN |
-| CHK-005 | assertion | PSTRB zero on APB reads | **PASS** | hits 80013, fails 0; formal PROVEN |
-| CHK-006 | assertion | APB outputs zero when idle | **PASS** | hits 164383, fails 0; formal PROVEN |
+| CHK-001 | assertion | APB SETUP/ACCESS phase sequencing | **PASS** | hits 199330, fails 0; formal PROVEN |
+| CHK-002 | assertion | APB wait-state hold of control and payload | **PASS** | hits 67632, fails 0; formal PROVEN |
+| CHK-003 | assertion | APB payload stable from SETUP into ACCESS | **PASS** | hits 43900, fails 0; formal PROVEN |
+| CHK-004 | assertion | PADDR word aligned | **PASS** | hits 320663, fails 0; formal PROVEN |
+| CHK-005 | assertion | PSTRB zero on APB reads | **PASS** | hits 80050, fails 0; formal PROVEN |
+| CHK-006 | assertion | APB outputs zero when idle | **PASS** | hits 165232, fails 0; formal PROVEN |
 | CHK-007 | assertion | B channel hold under BREADY backpressure | **PASS** | hits 1581, fails 0; formal PROVEN |
-| CHK-008 | assertion | Single B after all W beats and APB writes, with correct BID/BRESP | **PASS** | hits 3007, fails 0; formal BOUNDED |
+| CHK-008 | assertion | Single B after all W beats and APB writes, with correct BID/BRESP | **PASS** | hits 3018, fails 0; formal BOUNDED |
 | CHK-009 | assertion | R channel hold under RREADY backpressure | **PASS** | hits 21885, fails 0; formal PROVEN |
-| CHK-010 | assertion | RID echo, RLAST position and R beat count | **PASS** | hits 44851, fails 0; formal BOUNDED |
-| CHK-011 | assertion | Legal read beat data and response from the APB completion | **PASS** | hits 44293, fails 0; formal BOUNDED |
-| CHK-012 | assertion | Unsupported read beats are SLVERR with zero data | **PASS** | hits 558, fails 0; formal PROVEN |
-| CHK-013 | assertion | WREADY gated by AW acceptance; W beats never exceed AWLEN+1 | **PASS** | hits 22033, fails 0; formal BOUNDED |
-| CHK-014 | assertion | Transaction tracker: one global owner, actions only after the handshake | **PASS** | hits 206035, fails 0; formal PROVEN |
-| CHK-015 | assertion | No APB activity for unsupported requests | **PASS** | hits 1466, fails 0; formal PROVEN |
-| CHK-016 | assertion | APB transfer sequence matches AXI beats (direction, address, PPROT, data, strobes, count) | **PASS** | hits 108998, fails 0; formal TIMEOUT |
-| CHK-017 | assertion | Synchronous reset values of all outputs | **PASS** | hits 83, fails 0; formal PROVEN |
+| CHK-010 | assertion | RID echo, RLAST position and R beat count | **PASS** | hits 45162, fails 0; formal BOUNDED |
+| CHK-011 | assertion | Legal read beat data and response from the APB completion | **PASS** | hits 44306, fails 0; formal BOUNDED |
+| CHK-012 | assertion | Unsupported read beats are SLVERR with zero data | **PASS** | hits 856, fails 0; formal PROVEN |
+| CHK-013 | assertion | WREADY gated by AW acceptance; W beats never exceed AWLEN+1 | **PASS** | hits 22344, fails 0; formal BOUNDED |
+| CHK-014 | assertion | Transaction tracker: one global owner, actions only after the handshake | **PASS** | hits 206455, fails 0; formal PROVEN |
+| CHK-015 | assertion | No APB activity for unsupported requests | **PASS** | hits 2077, fails 0; formal PROVEN |
+| CHK-016 | assertion | APB transfer sequence matches AXI beats (direction, address, PPROT, data, strobes, count) | **PASS** | hits 109063, fails 0; formal TIMEOUT |
+| CHK-017 | assertion | Synchronous reset values of all outputs | **PASS** | hits 113, fails 0; formal PROVEN |
 | CHK-018 | test | Long APB wait: access held indefinitely, no timeout | **PASS** | test_chk_018_long_apb_wait |
 | CHK-019 | test | AR/AW round-robin: AR wins the first tie, then the side not served last wins | **PASS** | test_chk_019_arbitration_round_robin |
 | CHK-020 | test | WVALID before AW: WREADY held low until AW accepted | **PASS** | test_chk_020_wvalid_before_aw |
 | CHK-021 | test | RREADY/BREADY backpressure stalls the owning transaction without loss | **PASS** | test_chk_021_response_backpressure |
-| CHK-022 | test | Unsupported reads: no APB, ARLEN+1 SLVERR beats with zero data | **PASS** | test_chk_022_unsupported_reads |
-| CHK-023 | test | Unsupported writes: drain AWLEN+1 W beats, no APB, one SLVERR B | **PASS** | test_chk_023_unsupported_writes |
+| CHK-022 | test | Unsupported reads: no APB, ARLEN+1 SLVERR beats with zero data | **PASS** | test_chk_022_unsupported_reads, test_cov_103_unsupported_large_size_reads, test_cov_105_top_of_space_4k_cross_reads |
+| CHK-023 | test | Unsupported writes: drain AWLEN+1 W beats, no APB, one SLVERR B | **PASS** | test_chk_023_unsupported_writes, test_cov_104_unsupported_large_size_writes, test_cov_106_top_of_space_4k_cross_writes |
 | CHK-024 | test | Read PSLVERR maps to SLVERR on that beat only | **PASS** | test_chk_024_read_pslverr |
 | CHK-025 | test | Write PSLVERR accumulates into the final BRESP; later beats still run | **PASS** | test_chk_025_write_pslverr |
 | CHK-026 | test | Unmapped address answered by default completer gives AXI SLVERR | **PASS** | test_chk_026_unmapped_default_completer |
@@ -278,6 +282,8 @@ Generated 2026-11-19T06:11:18+00:00 by NNC Pipeline.
 
 ## Not verified by this run
 
-- Formal: the assertions were checked by SymbiYosys under the environment assumptions (work/formal.md); a BOUNDED result holds only up to its depth. CDC/RDC, STA, synthesis and DFT checks are outside this flow.
+- Formal: the assertions were checked by SymbiYosys under the environment assumptions (work/formal.md); a BOUNDED result holds only up to its depth.
+- Domain crossings were checked structurally (synchronizer structure, `nnc cdc`); gray coding and handshake protocols are not proven by that check.
+- Sign-off STA, place and route and DFT are outside this flow (docs/SIGNOFF_SCOPE.md); `nnc rtl-check` gives a synthesis estimate of area and the longest combinational path.
 - Rules marked NOT_VERIFIED_BY_SIM carry the contract's reason (static, structural, not observable...).
 - Only the default parameter configuration was simulated (no run_set.json).

@@ -197,6 +197,63 @@ Run `nnc report` afterwards. — **VI:**
 
 **Mutation with a run set.** Mutants are drawn from the lines executed by any run; each is simulated in the first run that executed its line (primary first) and judged against that run's baseline. A survivor gets a second chance in every other configuration (first seed) that executed its line: a line can be reached in the default configuration while the changed term only matters in another one (a four-phase handshake term, an APB5 gate). The score is that of the run set as a whole. — **VI:** khi có run set, mutant được lấy từ dòng code mà bất kỳ lần chạy nào đã đi qua, và mô phỏng ở lần chạy đầu tiên đi qua dòng đó. Mutant nào sống sót thì được chạy lại ở mọi cấu hình khác cũng đi qua dòng đó. Như vậy điểm số là điểm của cả run set, không chỉ của cấu hình mặc định.
 
+### Coverage scope | Phạm vi coverage
+
+**EN:** Code coverage counts the elaborated design only. Each simulation run also elaborates the DUT alone,
+with that run's parameters, in two tools:
+- `verilator --json-only` gives the package functions the design keeps;
+- Yosys `proc; flatten; opt` gives the bits that constant propagation proves constant. Yosys reads the RTL
+  with `formal_frontend`.
+
+Never-executed points of package functions the design never calls, and toggles of constant bits, are left
+out:
+- every row of the report says how many points were left out, and gives the count over all points;
+- a left-out point that was executed is counted (`scope_conflicts`);
+- a signal on which the simulator saw a constant bit toggle counts whole (`signals_kept_whole`).
+
+There is no hand exclusion.
+
+```bash
+python -m nnc config my_ip coverage_preverified=prim_alert_sender,prim_onehot_check   # optional
+```
+
+`coverage_preverified` lists modules verified elsewhere (OpenTitan's cover.cfg lists its pre-verified
+primitives). The report then adds rows with the coverage without their subtrees, next to the coverage of
+the whole design. See docs/SIGNOFF_SCOPE.md.
+
+**VI:**
+- Coverage chỉ đếm phần có trong thiết kế đã elaborate. Hàm package không bao giờ được gọi và bit luôn bằng
+  hằng số (do công cụ chứng minh) bị loại.
+- Báo cáo luôn ghi số điểm bị loại và con số tính trên mọi điểm. Không có loại trừ bằng tay.
+- `coverage_preverified` cho thêm con số phụ "không tính các module đã verify ở nơi khác". Con số này đứng
+  cạnh con số chính, không thay thế nó.
+
+### Domain crossings | Kiểm tra cắt miền clock (CDC/RDC)
+
+```bash
+python -m nnc cdc my_ip                     # every parameter set of the run set -> work/cdc.md, work/cdc.json
+python -m nnc cdc my_ip --check             # rerun and compare with work/cdc.json (CI), write nothing
+python -m nnc config my_ip "cdc_async_inputs=i_gpio:GpioAsyncOn=1"   # inputs asynchronous to every clock
+```
+
+**EN:** RR-33 checked by structure on the flattened Yosys netlist, read as for formal. Clocks of a
+`clock_relation=async` design are separate domains. Ports take the domain of the contract's `domain`
+column, ASYNC, or `cdc_async_inputs` (`port` or `port:PARAM=value`). Each crossing is one of:
+- **SYNC:** a chain of two or more flops, with no logic before the first and nothing else reading it;
+- **SYNC_MULTIBIT** (review): bits of one register synchronized separately;
+- **QUALIFIED** (review): data captured under control of a synchronized signal;
+- **UNSYNC** (error);
+- **FIRST_STAGE_READ** (error).
+
+Asynchronous resets from another domain are listed for review. The report gets a row and a sign-off
+condition (no error). Gray coding and handshake protocols are not proven by this check.
+
+**VI:**
+- Kiểm cấu trúc: tín hiệu sang miền clock khác có đi qua bộ đồng bộ ≥ 2 flop không.
+- Nhiều bit đồng bộ riêng lẻ, hoặc dữ liệu chốt nhờ tín hiệu đã đồng bộ, thì xếp vào loại cần người xem.
+- Thiếu bộ đồng bộ là lỗi.
+- Bước này không chứng minh gray code hay giao thức handshake.
+
 ### Bug benchmark | Đo chất lượng flow bằng bug cài sẵn
 
 ```bash

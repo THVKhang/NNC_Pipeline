@@ -5,7 +5,7 @@ TOPLEVEL_LANG = verilog
 VERILOG_SOURCES = $(TOP_DIR)/rtl/m_axil_regfile_dec.sv $(TOP_DIR)/rtl/m_axil_regfile.sv $(TOP_DIR)/verif/sva/nnc_chk_axi_rd.sv $(TOP_DIR)/verif/sva/nnc_chk_axi_wr.sv $(TOP_DIR)/verif/sva/nnc_chk_regs.sv $(TOP_DIR)/verif/sva/nnc_chk_reset.sv $(TOP_DIR)/verif/sva/nnc_chk_timing.sv $(TOP_DIR)/verif/sva/nnc_cov.sv $(CURDIR)/nnc_tb_top.sv
 COCOTB_TOPLEVEL = nnc_tb_top
 COCOTB_TEST_MODULES ?= test_axil_regfile
-EXTRA_ARGS += --assert --timing -Wno-fatal -Wno-WIDTH -Wno-UNOPTFLAT -GPARA_NUM_REGS=8 -GPARA_ADDR_W=8 --coverage-line --coverage-toggle --coverage-expr
+EXTRA_ARGS += --assert --timing -Wno-fatal -Wno-WIDTH -Wno-UNOPTFLAT +incdir+$(TOP_DIR)/rtl -GPARA_NUM_REGS=8 -GPARA_ADDR_W=8 --coverage-line --coverage-toggle --coverage-expr
 SEED ?= 1
 export NNC_SEED = $(SEED)
 export COCOTB_RANDOM_SEED = $(SEED)

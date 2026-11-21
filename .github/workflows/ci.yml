@@ -10,6 +10,8 @@
 #   formal       SymbiYosys again with the recorded configuration (nnc formal-check): a counterexample that
 #                appears or disappears, a vacuous proof, an untranslated check or a tool error fails;
 #                PROVEN / BOUNDED / TIMEOUT changes are reported (they depend on the solver time limit).
+#   cdc          the structural clock/reset domain crossing check again (nnc cdc --check): a changed verdict or
+#                changed counts of synchronized, qualified or unsynchronized crossings fail (phase 20).
 # kit-configs and formal take long: they run on main, on pull requests, weekly and by hand, not on every
 # push to a feature branch. Tool versions are pinned to the ones the committed results were produced with.
 # Designs: the 6 upstream designs, the 3 regenerated or drafted in phases 5-10, spi_master and
@@ -195,3 +197,26 @@ jobs:
           yices-smt2 --version | head -1
       - name: Formal again, compared with the committed results (no agent, writes nothing)
         run: python -m nnc formal-check ${{ matrix.design }} --workers 4 ${{ matrix.config && format('--config {0}', matrix.config) || '' }}
+
+  cdc:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        design: [sync_fifo, apb_tlul_bridge, axi2apb_bridge, async_gray_fifo, async_apb_bridge, ahb2axi_bridge,
+                 gen_apb_tlul_bridge, gen_sync_fifo, axil_regfile, uart_lite, spi_master, ot_rv_timer, ot_gpio]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Yosys (OSS CAD Suite)
+        run: |
+          tag="${OSS_CAD_SUITE}"
+          curl -fsSL -o "$RUNNER_TEMP/ocs.tgz" \
+            "https://github.com/YosysHQ/oss-cad-suite-build/releases/download/${tag}/oss-cad-suite-linux-x64-${tag//-/}.tgz"
+          tar -xzf "$RUNNER_TEMP/ocs.tgz" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/oss-cad-suite/bin" >> "$GITHUB_PATH"
+      - name: Domain crossings again, compared with the committed results (no agent, writes nothing)
+        run: python -m nnc cdc ${{ matrix.design }} --check

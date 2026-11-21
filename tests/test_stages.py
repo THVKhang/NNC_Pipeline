@@ -381,6 +381,119 @@ class CoverageClosureTest(unittest.TestCase):
         g = summarize_uncovered(r["uncovered"])
         self.assertEqual((g[0]["what"], g[0]["points"]), ("a", 2))
 
+    def test_package_code_outside_the_design_is_left_out(self):
+        from nnc import sim
+        from nnc.coverage import merge_scopes, parse_dat, scope_from_tree
+        # Elaborated tree: package p keeps one function (lines 10-12 of p.sv), module m calls it.
+        tree = {"type": "NETLIST", "modulesp": [
+            {"type": "PACKAGE", "name": "p", "loc": "b,1:9,1:10", "stmtsp": [
+                {"type": "FUNC", "name": "f", "loc": "b,10:12,10:13",
+                 "stmtsp": [{"type": "ASSIGN", "loc": "b,11:5,12:20"}]}]},
+            {"type": "MODULE", "name": "m", "loc": "c,1:8,1:9",
+             "stmtsp": [{"type": "FUNCREF", "name": "f", "loc": "c,4:3,4:4"}]}]}
+        meta = {"files": {"b": {"filename": "/x/p.sv"}, "c": {"filename": "/x/m.sv"}}}
+        scope = scope_from_tree(tree, meta)
+        self.assertEqual(scope, {"packages": ["p"], "kept": {"p.sv": "10-12"}})
+        rec = lambda f, l, page, h, n: (f"C '\x01f\x02/x/{f}\x01l\x02{l}\x01page\x02{page}\x01o\x02x"
+                                        f"\x01h\x02{h}' {n}\n")
+        with tempfile.TemporaryDirectory() as d:
+            dat = Path(d) / "coverage.dat"
+            dat.write_text(rec("p.sv", 30, "v_line/p", "p", 0).replace("\x01h", "\x01S\x0230-31\x01h") +  # never called
+                           rec("p.sv", 30, "v_expr/p", "p", 0) +
+                           rec("p.sv", 11, "v_line/p", "p", 0) +        # inside the kept function: counted
+                           rec("p.sv", 40, "v_line/p", "p", 3) +        # executed outside the scope: counted
+                           rec("m.sv", 30, "v_line/m", "nnc_tb_top.u_dut", 0), encoding="utf-8")
+            r = parse_dat(dat, ["p.sv", "m.sv"], scope)
+            info = Path(d) / "coverage.info"
+            info.write_text("SF:/x/p.sv\nDA:30,0\nDA:31,0\nDA:11,0\nDA:40,3\nSF:/x/m.sv\nDA:30,0\nend_of_record\n",
+                            encoding="utf-8")
+            cov = sim.coverage_of(info, dat, ["p.sv", "m.sv"], {}, scope)
+            plain = sim.coverage_of(info, dat, ["p.sv", "m.sv"], {})
+        self.assertEqual((r["metrics"]["block"]["hit"], r["metrics"]["block"]["total"]), (1, 3))
+        self.assertEqual(r["scope"]["left_out"], {"block": 1, "expression": 1})
+        self.assertEqual(r["scope"]["scope_conflicts"], 1)
+        self.assertEqual(r["out_of_scope_lines"], {("p.sv", 30), ("p.sv", 31)})
+        self.assertNotIn("expression", r["metrics"])
+        self.assertEqual((cov["metrics"]["line"]["hit"], cov["metrics"]["line"]["total"]), (1, 3))
+        self.assertEqual(cov["design_scope"]["left_out"], {"block": 1, "expression": 1, "line": 2})
+        self.assertEqual(cov["design_scope"]["all_points"]["line"]["total"], 5)
+        self.assertEqual(cov["design_scope"]["all_points"]["block"]["total"], 4)
+        self.assertNotIn("design_scope", plain)
+        self.assertEqual(plain["metrics"]["line"]["total"], 5)
+        # Several configurations: the union; one unknown scope means nothing is left out.
+        other = {"packages": ["p", "q"], "kept": {"p.sv": "20-21", "q.sv": "3"}}
+        self.assertEqual(merge_scopes([scope, other]),
+                         {"packages": ["p", "q"], "kept": {"p.sv": "10-12,20-21", "q.sv": "3"}})
+        self.assertIsNone(merge_scopes([scope, None]))
+        cmd = sim.scope_command("m_top", [Path("a_pkg.sv"), Path("m_top.sv")], {"W": 4}, {"defines": ["SYN"]})
+        self.assertIn("--json-only", cmd)
+        self.assertIn("--top-module m_top -GW=4 +define+SYN +incdir+rtl rtl/a_pkg.sv rtl/m_top.sv", cmd)
+        self.assertIn("read_verilog -sv -DSYN -Irtl rtl/a_pkg.sv rtl/m_top.sv; hierarchy -top m_top -chparam W 4; "
+                      "proc; flatten; opt; write_json nnc_scope/const.json", cmd)
+        slang = sim.scope_command("m_top", [Path("m_top.sv")], {"W": 4}, None, "slang")
+        self.assertIn("read_slang  -I rtl --top m_top -G W=4 rtl/m_top.sv; hierarchy -top m_top; proc", slang)
+
+    def test_preverified_modules_give_a_second_figure(self):
+        from nnc import sim
+        rec = lambda f, l, page, h, n: (f"C '\x01f\x02/x/{f}\x01l\x02{l}\x01page\x02{page}\x01o\x02x"
+                                        f"\x01h\x02{h}' {n}\n")
+        with tempfile.TemporaryDirectory() as d:
+            dat = Path(d) / "coverage.dat"
+            dat.write_text(rec("p.sv", 5, "v_line/prim_x__pi34ffab8f", "nnc_tb_top.u_dut.u_p", 0) +   # listed module
+                           rec("q.sv", 7, "v_line/prim_y", "nnc_tb_top.u_dut.u_p.u_q", 0) +           # under it
+                           rec("q.sv", 7, "v_line/prim_y", "nnc_tb_top.u_dut.u_q2", 1) +              # elsewhere
+                           rec("m.sv", 3, "v_line/m", "nnc_tb_top.u_dut", 0), encoding="utf-8")
+            info = Path(d) / "coverage.info"
+            info.write_text("SF:/x/p.sv\nDA:5,0\nSF:/x/q.sv\nDA:7,1\nSF:/x/m.sv\nDA:3,0\nend_of_record\n",
+                            encoding="utf-8")
+            cov = sim.coverage_of(info, dat, ["p.sv", "q.sv", "m.sv"], {}, None, ["prim_x"])
+            none = sim.coverage_of(info, dat, ["p.sv", "q.sv", "m.sv"], {}, None, ["prim_z"])
+        self.assertEqual((cov["metrics"]["block"]["hit"], cov["metrics"]["block"]["total"]), (1, 4))
+        w = cov["without_preverified"]
+        self.assertEqual(w["modules"], ["prim_x"])
+        self.assertEqual(w["instances"], 1)
+        self.assertEqual((w["metrics"]["block"]["hit"], w["metrics"]["block"]["total"]), (1, 2))
+        self.assertEqual(w["dropped"]["block"], 2)
+        self.assertEqual((w["metrics"]["line"]["hit"], w["metrics"]["line"]["total"]), (1, 2))   # p.sv:5 dropped
+        self.assertNotIn("without_preverified", none)
+
+    def test_constant_bits_are_left_out_of_toggle_coverage(self):
+        from nnc.coverage import const_from_netlist, merge_scopes, parse_dat
+        # Yosys netlist after opt: u_rd.w_ext[7:0] has bits 4-7 tied to 0; o_q[0:1] (upto) has its index 0 tied.
+        netlist = {"modules": {"m_top": {"attributes": {"top": "00000000000000000000000000000001"}, "netnames": {
+            "u_rd.w_ext": {"bits": [5, 6, 7, 8, "0", "0", "0", "0"], "offset": 0},
+            "o_q": {"bits": [9, "1"], "offset": 0, "upto": 1},
+            "$auto$1": {"bits": ["0"], "hide_name": 1}}}}}
+        c = const_from_netlist(netlist)
+        self.assertEqual(c, {"nets": ["o_q", "u_rd.w_ext"], "bits": {"o_q": "0", "u_rd.w_ext": "4-7"},
+                             "ones": {"o_q": "0"}})
+        scope = {"packages": [], "kept": {}, "const": c}
+        rec = lambda h, o, n: (f"C '\x01f\x02/x/m.sv\x01l\x023\x01page\x02v_toggle/m\x01o\x02{o}\x01h\x02{h}' {n}\n")
+        with tempfile.TemporaryDirectory() as d:
+            dat = Path(d) / "coverage.dat"
+            dat.write_text(rec("nnc_tb_top.u_dut.u_rd", "w_ext[5]:0->1", 0) +     # constant: left out
+                           rec("nnc_tb_top.u_dut.u_rd", "w_ext[2]:0->1", 0) +     # not constant: counted
+                           rec("nnc_tb_top.u_dut", "o_q[0]:1->0", 0) +            # constant: left out
+                           rec("nnc_tb_top.u_dut", "o_q[0]:0->1", 1) +            # constant 1 at time 0: left out
+                           rec("nnc_tb_top.u_dut", "o_q[1]:1->0", 1), encoding="utf-8")
+            r = parse_dat(dat, ["m.sv"], scope)
+            # A toggle recorded on a bit the netlist calls constant: that signal is kept whole.
+            dat.write_text(dat.read_text(encoding="utf-8") + rec("nnc_tb_top.u_dut.u_rd", "w_ext[6]:1->0", 3),
+                           encoding="utf-8")
+            r2 = parse_dat(dat, ["m.sv"], scope)
+        self.assertEqual((r["metrics"]["toggle"]["hit"], r["metrics"]["toggle"]["total"]), (1, 2))
+        self.assertEqual(r["scope"]["left_out"], {"toggle": 3})
+        self.assertEqual(r["scope"]["scope_conflicts"], 0)
+        self.assertEqual(r2["scope"]["signals_kept_whole"], ["u_rd.w_ext"])
+        self.assertEqual((r2["metrics"]["toggle"]["hit"], r2["metrics"]["toggle"]["total"]), (2, 4))
+        # Merged configurations: constant only where constant in every configuration that has the signal.
+        a = {"packages": [], "kept": {}, "const": {"nets": ["x", "y"], "bits": {"x": "0-3", "y": "1"}, "ones": {"x": "0"}}}
+        b = {"packages": [], "kept": {}, "const": {"nets": ["x", "z"], "bits": {"x": "2-5", "z": "0"}, "ones": {"x": "3"}}}
+        m = merge_scopes([a, b])
+        self.assertEqual(m["const"]["bits"], {"x": "2-3", "y": "1", "z": "0"})
+        self.assertEqual(m["const"]["ones"], {"x": "3"})
+        self.assertNotIn("const", merge_scopes([a, {"packages": [], "kept": {}}]))
+
     def test_leak_filter_and_module_validation(self):
         from nnc import closure
         with tempfile.TemporaryDirectory() as d:

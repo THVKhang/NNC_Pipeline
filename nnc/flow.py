@@ -26,12 +26,12 @@ from nnc.project import Design, ProjectError
 from nnc.simhost import default_host
 
 STAGES = ("ingest", "extract", "review", "contract", "gen-sva", "gen-tests", "gen-env", "gen-rtl", "sim", "cover",
-          "triage", "mutate", "formal", "report")
+          "triage", "mutate", "formal", "cdc", "report")
 # Stages of the design half: run only for a design whose RTL the flow generates (rtl_origin=generated).
 DESIGN_STAGES = ("gen-rtl",)
 GATE_BEFORE = {"contract": "G1_rules", "gen-rtl": "D1_config", "fix-rtl": "G3_verif_sources",
                "fix-verif": "G2_contract", "gen-sva": "G2_contract", "gen-tests": "G2_contract", "gen-env": "G2_contract",
-               "formal": "G3_verif_sources", "sim": "G3_verif_sources",
+               "formal": "G3_verif_sources", "sim": "G3_verif_sources", "cdc": "G2_contract",
                "cover": "G3_verif_sources", "triage": "G3_verif_sources", "mutate": "G3_verif_sources", "report": "G3_verif_sources"}
 
 
@@ -247,6 +247,18 @@ def _simkw(d: Design) -> dict:
     return {"clock_periods": _periods(d), "opts": sim.sim_options(d.config())}
 
 
+def _scope_frontend(d: Design) -> str:
+    """Yosys frontend of the coverage scope: the formal one of the design."""
+    return _formal_frontend(d.config())
+
+
+def _preverified(d: Design) -> list[str]:
+    """Config coverage_preverified: modules the designer declares verified elsewhere (comma-separated). The
+    report then adds the coverage without their subtrees, next to the coverage of the whole design."""
+    return [x.strip() for x in str(d.config().get("coverage_preverified") or "").replace(";", ",").split(",")
+            if x.strip()]
+
+
 CLOCK_RELATIONS = ("sync", "async")
 
 
@@ -390,10 +402,12 @@ def _regression(d: Design, o: Options, contract: dict, rtl_dir: Path, verif: Pat
     runs = _runs(d, o, contract)
     sva = (verif or d.root / "verif") / "sva"
     if runs is None:
-        return sim.run(default_host(), contract, rtl_dir, sva, test_files(d, verif), seed=o.seed, **_simkw(d))
+        return sim.run(default_host(), contract, rtl_dir, sva, test_files(d, verif), seed=o.seed,
+                       frontend=_scope_frontend(d), preverified=_preverified(d), **_simkw(d))
     o.say(f"[sim] run set: {len(runs)} run(s) in {len({r['config'] for r in runs})} configuration(s): "
           + ", ".join(r["label"] for r in runs))
-    return runset.run(default_host(), contract, rtl_dir, sva, test_files(d, verif), runs, parallel=o.workers)
+    return runset.run(default_host(), contract, rtl_dir, sva, test_files(d, verif), runs, parallel=o.workers,
+                      frontend=_scope_frontend(d), preverified=_preverified(d))
 
 
 def _primary(res: dict | None) -> dict | None:
@@ -426,6 +440,13 @@ def stage_cover(d: Design, o: Options) -> None:
         if prev.get("metric") == metric:
             cov.update({k: prev.get(k, []) for k in ("rounds", "unreachable", "dropped")})
             cov["baseline"] = prev.get("baseline") or cov["baseline"]
+        elif prev.get("rounds") and re.fullmatch(r"[a-z]+", str(prev.get("metric") or "")):
+            # A closure on another metric: keep its record (rounds, tests, unreachable claims) for the reviewer.
+            keep = d.work / f"coverage_{prev['metric']}"
+            shutil.copyfile(prev_path, keep.with_suffix(".json"))
+            if (d.work / "coverage.md").is_file():
+                shutil.copyfile(d.work / "coverage.md", keep.with_suffix(".md"))
+            o.say(f"[cover] the {prev['metric']} closure is kept in work/{keep.name}.md")
 
     def finish(status: str, note: str = "") -> None:
         cov["status"] = status
@@ -600,6 +621,35 @@ def _formal_runs(d: Design, o: Options, contract: dict, tdir: Path | None,
         if len(confs) > 1:
             o.say(f"[formal] {conf['name']} {conf['params'] or '(default parameters)'}: {r['by_status']}")
     return (per[confs[0]["name"]] if len(confs) == 1 else formal.merge_configs(per)), depth
+
+
+def cdc(d: Design, o: Options, write: bool = True) -> dict:
+    """`nnc cdc`: structural clock/reset domain crossing check (nnc/cdc.py) of every parameter set of the run
+    set (or the default one), read as formal reads the RTL (formal_frontend, formal_defines). Config
+    cdc_async_inputs lists input ports that are asynchronous to every clock when the contract does not say
+    so. Writes work/cdc.json and work/cdc.md."""
+    from nnc import cdc as cdc_mod
+    contract = _read(d.work / "contract.json")
+    cfg = d.config()
+    confs = formal.formal_configs(_runs(d, o, contract))
+    full = [{"name": c["name"], "params": sim.param_values(contract, c["params"])} for c in confs]
+    asyncs = [x.strip() for x in str(cfg.get("cdc_async_inputs") or "").replace(";", ",").split(",") if x.strip()]
+    for c in full:
+        c["async_inputs"] = cdc_mod.async_inputs_for(asyncs, c["params"])
+    res = cdc_mod.run(default_host(), contract, sim.rtl_files(d.root / "rtl"), full, _formal_defines(cfg),
+                      _formal_frontend(cfg))
+    rep = {"design": d.name, "date": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+           "frontend": _formal_frontend(cfg), "defines": _formal_defines(cfg), "async_inputs": asyncs,
+           "verdict": cdc_mod.verdict([c["result"] for c in res]), "configurations": res}
+    if write:
+        _write(d.work / "cdc.json", rep)
+        (d.work / "cdc.md").write_text(cdc_mod.to_markdown(d.name, res), encoding="utf-8", newline="\n")
+    for c in res:
+        r = c["result"]
+        o.say(f"[cdc] {c['config']}: " + (", ".join(f"{k} {v}" for k, v in r["counts"].items() if v) or "no crossing")
+              if r.get("status") == "ok" else f"[cdc] {c['config']}: {r.get('error')}")
+    o.say(f"[cdc] verdict {rep['verdict']}" + (" -> work/cdc.md" if write else ""))
+    return rep
 
 
 def formal_check(d: Design, o: Options, only_config: str | None = None) -> tuple[bool, list[str]]:
@@ -1098,8 +1148,12 @@ def stage_report(d: Design, o: Options) -> None:
     tmap = test_map(d)
     clo = _read(d.work / "coverage.json") if (d.work / "coverage.json").is_file() else None
     fv = _read(d.work / "formal.json") if (d.work / "formal.json").is_file() and formal_enabled(d) else None
+    cd = _read(d.work / "cdc.json") if (d.work / "cdc.json").is_file() else None
     rep = report.build(d.name, d.status(), _read(d.work / "rules.json"), contract, results, mutation, tri,
-                       agent_costs(d), bypass, tmap, clo, fv)
+                       agent_costs(d), bypass, tmap, clo, fv, cd)
+    rep["coverage_closure_other"] = [{k: c.get(k) for k in ("metric", "target", "status", "baseline", "final")}
+                                     for c in (_read(p) for p in sorted(d.work.glob("coverage_*.json")))
+                                     if c.get("metric") and c.get("metric") != (clo or {}).get("metric")]
     report.write(rep, contract, mutation, d.work)
     packet.write(d)
     o.say(f"[report] rules {rep['rules']['by_status']} | checks {rep['checks']['by_status']} -> work/report.md, "
@@ -1110,7 +1164,7 @@ RUNNERS = {"gen-rtl": stage_gen_rtl, "ingest": stage_ingest, "extract": stage_ex
            "gen-sva": stage_gen_sva, "gen-tests": stage_gen_tests, "gen-env": stage_gen_env, "formal": stage_formal,
            "sim": stage_sim, "cover": stage_cover,
            "triage": stage_triage,
-           "mutate": stage_mutate, "report": stage_report}
+           "mutate": stage_mutate, "cdc": lambda d, o: cdc(d, o), "report": stage_report}
 
 
 def run_flow(d: Design, o: Options, start: str = "ingest", stop: str = "report") -> str:

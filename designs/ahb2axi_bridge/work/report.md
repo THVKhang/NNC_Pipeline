@@ -1,6 +1,6 @@
 # Verification report — ahb2axi_bridge
 
-Generated 2026-11-15T05:13:05+00:00 by NNC Pipeline.
+Generated 2026-11-21T16:21:11+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -14,10 +14,11 @@ Generated 2026-11-15T05:13:05+00:00 by NNC Pipeline.
 | Code coverage (RTL), line | 86.0 % (2733/3177 lines) |
 | Code coverage (RTL), block | 77.1 % (1142/1482 statement blocks and branch arms) |
 | Code coverage (RTL), expression | 71.9 % (1316/1830 condition terms) |
-| Code coverage (RTL), toggle | 65.7 % (23645/35994 bit toggles 0->1 and 1->0) |
+| Code coverage (RTL), toggle | 75.9 % (23612/31122 bit toggles 0->1 and 1->0); 4872 points left out (constant bits), all points 65.7 % (23645/35994) |
 | Code coverage (RTL), functional | 90.0 % (36/40 cover points of the specification) |
 | Mutation score | not run |
 | Coverage target | not requested (`nnc cover <design> --target <n> --metric <m>`) |
+| Clock/reset domain crossings (structural, `nnc cdc`) | clean: no crossing over 3 configuration(s), work/cdc.md |
 | Formal (SymbiYosys, depth 20) | {'BOUNDED': 2, 'CEX': 9, 'PROVEN': 8, 'VACUOUS': 1} — reset assumptions + verif/formal/nnc_env.sv, work/formal.md |
 | Triage | 26 failure(s), 12 analysed: work/triage.md |
 | Agent cost | US$21.1069 in 70 calls (A1 0.871, A13 0.4926, A14 2.8678, A2 0.807, A3 0.3803, A4 1.9029, A5 0.7498, A6 0.3123, A7 8.7386, A9 3.9846); of which US$3.3148 in 5 failed calls (usage limit, timeout, invalid answer) |
@@ -33,6 +34,7 @@ Generated 2026-11-15T05:13:05+00:00 by NNC Pipeline.
 | Every rule in a check or declared not verifiable | met |
 | Every run of the run set built and ran | met — 4 runs |
 | Mutation run | **not met** — nnc mutate <design> |
+| Clock/reset domain crossings: no structural violation (RR-33) | met — clean: no crossing (work/cdc.md) |
 | Formal: no counterexample, no vacuous or failed proof | **not met** — CEX 9, VACUOUS 1 |
 
 ## Run set
@@ -341,6 +343,8 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 
 ## Not verified by this run
 
-- Formal: the assertions were checked by SymbiYosys under the environment assumptions (work/formal.md); a BOUNDED result holds only up to its depth. CDC/RDC, STA, synthesis and DFT checks are outside this flow.
+- Formal: the assertions were checked by SymbiYosys under the environment assumptions (work/formal.md); a BOUNDED result holds only up to its depth.
+- Domain crossings were checked structurally (synchronizer structure, `nnc cdc`); gray coding and handshake protocols are not proven by that check.
+- Sign-off STA, place and route and DFT are outside this flow (docs/SIGNOFF_SCOPE.md); `nnc rtl-check` gives a synthesis estimate of area and the longest combinational path.
 - Rules marked NOT_VERIFIED_BY_SIM carry the contract's reason (static, structural, not observable...).
 - Only the configurations of the run set above were simulated; code coverage is merged over its runs, mutation testing used the primary run base.s1.

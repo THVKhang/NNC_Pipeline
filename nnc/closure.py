@@ -189,6 +189,14 @@ def baseline_section(results: dict, points: dict | None = None) -> list[str]:
     out = ["## Measured baseline (the designer chooses whether to set a target, and on which metric)", "",
            "| Metric | Covered | Percent |", "|---|---|---|"]
     out += [f"| {m} | {v['hit']}/{v['total']} | {v['percent']} % |" for m, v in metrics.items() if v]
+    scope = cov.get("design_scope") or {}
+    if any((scope.get("left_out") or {}).values()):
+        every = scope.get("all_points") or {}
+        out += ["", f"Design scope: {scope.get('rule', '')}. Left out:"]
+        out += [f"- {m}: {n} points (over all points {every.get(m, {}).get('hit')}/{every.get(m, {}).get('total')}, "
+                f"{every.get(m, {}).get('percent')} %)" for m, n in scope["left_out"].items() if n]
+        if scope.get("scope_conflicts"):
+            out.append(f"- {scope['scope_conflicts']} executed points lie outside the scope; they are counted.")
     func = results.get("functional") or {}
     missed = sorted(k for k, n in func.items() if not n)
     if missed:

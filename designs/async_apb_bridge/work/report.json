@@ -1,6 +1,6 @@
 {
  "design": "async_apb_bridge",
- "date": "2026-11-19T06:11:18+00:00",
+ "date": "2026-11-21T16:21:12+00:00",
  "gates": [
   {
    "gate": "G1_rules",
@@ -2554,6 +2554,36 @@
      "detail": []
     }
    ],
+   "design_scope": {
+    "rule": "left out: never-executed points of package code that the elaborated design does not contain (Verilator instruments every function of an imported package, called or not), and toggles of signal bits that Yosys constant propagation proves constant with the run's parameters, except on signals where the simulator recorded a toggle of such a bit (then the signal counts whole)",
+    "left_out": {
+     "line": 0
+    },
+    "scope_conflicts": 0,
+    "signals_kept_whole": [],
+    "all_points": {
+     "block": {
+      "hit": 807,
+      "total": 909,
+      "percent": 88.8
+     },
+     "expression": {
+      "hit": 663,
+      "total": 886,
+      "percent": 74.8
+     },
+     "line": {
+      "hit": 2948,
+      "total": 3208,
+      "percent": 91.9
+     },
+     "toggle": {
+      "hit": 26577,
+      "total": 26946,
+      "percent": 98.6
+     }
+    }
+   },
    "scope": "merged over 14 run(s) of the run set"
   },
   "run_set": {
@@ -2792,7 +2822,7 @@
       "line": 89.0,
       "block": 87.1,
       "expression": 73.6,
-      "toggle": 98.5,
+      "toggle": 99.9,
       "functional": 82.5
      }
     },
@@ -3244,6 +3274,13 @@
   "not_compiled": 0,
   "score": 91.7,
   "threshold": 85.0,
+  "equivalence": {
+   "by_status": {
+    "SIM_ONLY": 1
+   },
+   "proven_equivalent": 0,
+   "score_without_equivalent": 91.7
+  },
   "rules_attributed": 34,
   "rules_below_threshold": [
    "AB2-1.3-01",
@@ -3330,6 +3367,17 @@
    "UNSUPPORTED": 3
   }
  },
+ "cdc": {
+  "verdict": "review",
+  "configurations": 7,
+  "counts": {
+   "DERIVED_CLOCK": 0,
+   "OUTPUT_FROM_OTHER_DOMAIN": 0,
+   "QUALIFIED": 677,
+   "RESET_FROM_OTHER_DOMAIN": 0,
+   "SYNC": 16
+  }
+ },
  "agent_cost_usd": {
   "total_usd": 29.1714,
   "calls": 111,
@@ -3348,5 +3396,6 @@
   },
   "failed_usd": 3.7405,
   "failed_calls": 3
- }
+ },
+ "coverage_closure_other": []
 }

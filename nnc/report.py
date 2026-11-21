@@ -130,7 +130,7 @@ def _count(items, key="status") -> dict:
 def build(design_name: str, gates: list, rules_doc: dict, contract: dict, results: dict | None,
           mutation: dict | None, triage: dict | None, costs: dict, unreviewed: list[str],
           test_map: dict[str, list[str]] | None = None, closure: dict | None = None,
-          formal: dict | None = None) -> dict:
+          formal: dict | None = None, cdc: dict | None = None) -> dict:
     statuses = check_status(results, contract, test_map)
     for cid, v in ((formal or {}).get("checks") or {}).items():
         if cid in statuses:
@@ -158,6 +158,8 @@ def build(design_name: str, gates: list, rules_doc: dict, contract: dict, result
         "triage": None if not triage else {"clusters": triage.get("clusters"), "analysed": triage.get("analysed")},
         "formal": None if not formal else {k: formal.get(k) for k in ("depth", "clocks", "environment", "defines",
                                                                        "by_status")},
+        "cdc": None if not cdc else {"verdict": cdc.get("verdict"), "configurations": len(cdc.get("configurations") or []),
+                                     "counts": _cdc_counts(cdc)},
         "agent_cost_usd": costs,
         "rtm": rows,
     }
@@ -168,13 +170,42 @@ COVERAGE_LABELS = {"line": "lines", "block": "statement blocks and branch arms",
                    "functional": "cover points of the specification"}
 
 
+def _cdc_counts(cdc: dict) -> dict:
+    """Bit counts per kind, summed over the configurations of work/cdc.json."""
+    out: dict[str, int] = {}
+    for c in cdc.get("configurations") or []:
+        for k, v in ((c.get("result") or {}).get("counts") or {}).items():
+            out[k] = out.get(k, 0) + v
+    return dict(sorted(out.items()))
+
+
 def _coverage_rows(cov: dict) -> list[str]:
     """One row per code-coverage metric of the DUT RTL (never merged into one number)."""
     metrics = cov.get("metrics") or ({"line": cov} if cov.get("percent") is not None else {})
     if not metrics:
         return [f"| Code coverage (RTL) | {cov.get('status', 'not measured')} |"]
-    return [f"| Code coverage (RTL), {m} | {v['percent']} % ({v['hit']}/{v['total']} {COVERAGE_LABELS.get(m, m)}) |"
-            for m, v in metrics.items() if v.get("total")]
+    scope = cov.get("design_scope") or {}
+    left, every = scope.get("left_out") or {}, scope.get("all_points") or {}
+    rows = []
+    for m, v in metrics.items():
+        if not v.get("total"):
+            continue
+        note = ""
+        if left.get(m):
+            a = every.get(m) or {}
+            what = "constant bits" if m == "toggle" else "package code the design does not contain"
+            note = (f"; {left[m]} points left out ({what}), "
+                    f"all points {a.get('percent')} % ({a.get('hit')}/{a.get('total')})")
+        rows.append(f"| Code coverage (RTL), {m} | {v['percent']} % ({v['hit']}/{v['total']} "
+                    f"{COVERAGE_LABELS.get(m, m)}){note} |")
+    w = cov.get("without_preverified") or {}
+    if w.get("metrics"):
+        mods = ", ".join(w.get("modules") or [])
+        rows.append(f"| Code coverage without the modules the designer declares pre-verified | {mods} "
+                    f"({w.get('instances')} instances; config `coverage_preverified`) |")
+        rows += [f"| ... without pre-verified modules, {m} | {v['percent']} % ({v['hit']}/{v['total']}) |"
+                 for m, v in w["metrics"].items() if v.get("total")]
+    return rows
 
 
 def _closure_rows(rep: dict) -> list[str]:
@@ -182,8 +213,13 @@ def _closure_rows(rep: dict) -> list[str]:
     if not c or c.get("status") in (None, "not_requested"):
         return ["| Coverage target | not requested (`nnc cover <design> --target <n> --metric <m>`) |"]
     b, f = c.get("baseline") or {}, c.get("final") or {}
-    return [f"| Coverage target | {c['metric']} {c.get('target')} %: **{c['status']}** (baseline {b.get('percent')} % -> "
+    rows = [f"| Coverage target | {c['metric']} {c.get('target')} %: **{c['status']}** (baseline {b.get('percent')} % -> "
             f"{f.get('percent')} %, work/coverage.md) |"]
+    for o in rep.get("coverage_closure_other") or []:
+        ob, of = o.get("baseline") or {}, o.get("final") or {}
+        rows.append(f"| Earlier closure | {o['metric']} {o.get('target')} %: {o.get('status')} (baseline {ob.get('percent')} % "
+                    f"-> {of.get('percent')} %, work/coverage_{o['metric']}.md) |")
+    return rows
 
 
 def signoff_conditions(rep: dict) -> list[tuple[str, bool, str]]:
@@ -222,6 +258,12 @@ def signoff_conditions(rep: dict) -> list[tuple[str, bool, str]]:
                        f"{mut.get('rules_attributed')} rules with attributed mutants")))
     if clo and clo.get("status") not in (None, "not_requested"):
         conds.append((f"Coverage target {clo['metric']} {clo.get('target')} %", clo["status"] == "target_met", clo["status"]))
+    cd = rep.get("cdc")
+    if cd:
+        conds.append(("Clock/reset domain crossings: no structural violation (RR-33)",
+                      cd["verdict"] in ("clean", "review"),
+                      f"{cd['verdict']}: " + (", ".join(f"{k} {v}" for k, v in cd["counts"].items() if v) or "no crossing")
+                      + " (work/cdc.md)"))
     fv = rep.get("formal")
     if fv:
         bad = {k: v for k, v in (fv.get("by_status") or {}).items() if k in ("CEX", "VACUOUS", "ERROR")}
@@ -249,6 +291,9 @@ def to_markdown(rep: dict, contract: dict, mutation: dict | None) -> str:
                f"proven-equivalent mutants {eqv['score_without_equivalent']} % |"]
               if rep['mutation'] and (eqv := rep['mutation'].get('equivalence')) else []),
             *_closure_rows(rep),
+            *([f"| Clock/reset domain crossings (structural, `nnc cdc`) | {rep['cdc']['verdict']}: "
+               + (", ".join(f"{k} {v}" for k, v in rep['cdc']['counts'].items() if v) or "no crossing")
+               + f" over {rep['cdc']['configurations']} configuration(s), work/cdc.md |"] if rep.get("cdc") else []),
             *([f"| Formal (SymbiYosys, depth {rep['formal']['depth']}) | {rep['formal']['by_status']} — "
                f"{rep['formal']['environment']}, work/formal.md |"] if rep.get("formal") else []),
             f"| Triage | {'no failure to analyse' if not rep['triage'] or not rep['triage'].get('clusters') else str(rep['triage']['clusters']) + ' failure(s), ' + str(rep['triage'].get('analysed')) + ' analysed: work/triage.md'} |",
@@ -296,9 +341,13 @@ def to_markdown(rep: dict, contract: dict, mutation: dict | None) -> str:
                        f"{', '.join(m['killed_by_checks'] + m['killed_by_tests'])[:120]} | {', '.join(a.get('rules', []))} | {eq} |")
     out += ["", "## Not verified by this run", "",
             ("- Formal: the assertions were checked by SymbiYosys under the environment assumptions (work/formal.md); "
-             "a BOUNDED result holds only up to its depth. CDC/RDC, STA, synthesis and DFT checks are outside this flow."
-             if rep.get("formal") else
-             "- Formal proof (`nnc config <ip> formal=on`), CDC/RDC, STA, synthesis and DFT checks were not run."),
+             "a BOUNDED result holds only up to its depth."
+             if rep.get("formal") else "- Formal proof (`nnc config <ip> formal=on`) was not run."),
+            ("- Domain crossings were checked structurally (synchronizer structure, `nnc cdc`); gray coding and "
+             "handshake protocols are not proven by that check." if rep.get("cdc") else
+             "- Domain crossings (`nnc cdc`) were not checked."),
+            "- Sign-off STA, place and route and DFT are outside this flow (docs/SIGNOFF_SCOPE.md); `nnc rtl-check` "
+            "gives a synthesis estimate of area and the longest combinational path.",
             "- Rules marked NOT_VERIFIED_BY_SIM carry the contract's reason (static, structural, not observable...).",
             ("- Only the configurations of the run set above were simulated; code coverage is merged over its runs, "
              f"mutation testing used the primary run {(sim.get('run_set') or {}).get('primary')}."

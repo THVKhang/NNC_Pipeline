@@ -1,6 +1,6 @@
 # Verification report — async_gray_fifo
 
-Generated 2026-11-14T16:33:17+00:00 by NNC Pipeline.
+Generated 2026-11-21T16:21:12+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -18,6 +18,7 @@ Generated 2026-11-14T16:33:17+00:00 by NNC Pipeline.
 | Code coverage (RTL), functional | 100.0 % (40/40 cover points of the specification) |
 | Mutation score | 100.0 % (12 killed / 0 survived / 0 not compiled) |
 | Coverage target | not requested (`nnc cover <design> --target <n> --metric <m>`) |
+| Clock/reset domain crossings (structural, `nnc cdc`) | review: QUALIFIED 161, SYNC 12, SYNC_MULTIBIT 44 over 6 configuration(s), work/cdc.md |
 | Formal (SymbiYosys, depth 20) | {'BOUNDED': 2, 'PROVEN': 5, 'UNSUPPORTED': 6} — reset assumptions + verif/formal/nnc_env.sv, work/formal.md |
 | Triage | 10 failure(s), 10 analysed: work/triage.md |
 | Agent cost | US$77.0587 in 103 calls (A1 1.3607, A12 1.3997, A13 1.2791, A14 5.3431, A2 1.1421, A3 0.556, A4 2.88, A5 0.7881, A6 0.463, A7 30.2581, A9 31.5886); of which US$5.5388 in 3 failed calls (usage limit, timeout, invalid answer) |
@@ -34,6 +35,7 @@ Generated 2026-11-14T16:33:17+00:00 by NNC Pipeline.
 | Every run of the run set built and ran | met — 14 runs |
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | met — 41 rules with attributed mutants |
+| Clock/reset domain crossings: no structural violation (RR-33) | met — review: QUALIFIED 161, SYNC 12, SYNC_MULTIBIT 44 (work/cdc.md) |
 | Formal: no counterexample, no vacuous or failed proof | met — {'BOUNDED': 2, 'PROVEN': 5, 'UNSUPPORTED': 6} (work/formal.md) |
 
 ## Run set
@@ -543,6 +545,8 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 
 ## Not verified by this run
 
-- Formal: the assertions were checked by SymbiYosys under the environment assumptions (work/formal.md); a BOUNDED result holds only up to its depth. CDC/RDC, STA, synthesis and DFT checks are outside this flow.
+- Formal: the assertions were checked by SymbiYosys under the environment assumptions (work/formal.md); a BOUNDED result holds only up to its depth.
+- Domain crossings were checked structurally (synchronizer structure, `nnc cdc`); gray coding and handshake protocols are not proven by that check.
+- Sign-off STA, place and route and DFT are outside this flow (docs/SIGNOFF_SCOPE.md); `nnc rtl-check` gives a synthesis estimate of area and the longest combinational path.
 - Rules marked NOT_VERIFIED_BY_SIM carry the contract's reason (static, structural, not observable...).
 - Only the configurations of the run set above were simulated; code coverage is merged over its runs, mutation testing used the primary run base.s1.

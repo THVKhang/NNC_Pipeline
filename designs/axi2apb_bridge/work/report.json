@@ -1,6 +1,6 @@
 {
  "design": "axi2apb_bridge",
- "date": "2026-11-19T06:11:18+00:00",
+ "date": "2026-11-21T16:26:49+00:00",
  "gates": [
   {
    "gate": "G1_rules",
@@ -15,7 +15,7 @@
   {
    "gate": "G3_verif_sources",
    "state": "APPROVED",
-   "detail": "by Claude (delegated by GabrielHCMUT) at 2026-11-12T06:32:01+00:00"
+   "detail": "by Claude (delegated by GabrielHCMUT) at 2026-11-21T16:26:49+00:00"
   },
   {
    "gate": "G4_signoff",
@@ -39,37 +39,37 @@
   "detail": {
    "CHK-001": {
     "status": "PASS",
-    "hits": 199228,
+    "hits": 199330,
     "fails": 0,
     "formal": "PROVEN"
    },
    "CHK-002": {
     "status": "PASS",
-    "hits": 67608,
+    "hits": 67632,
     "fails": 0,
     "formal": "PROVEN"
    },
    "CHK-003": {
     "status": "PASS",
-    "hits": 43874,
+    "hits": 43900,
     "fails": 0,
     "formal": "PROVEN"
    },
    "CHK-004": {
     "status": "PASS",
-    "hits": 319738,
+    "hits": 320663,
     "fails": 0,
     "formal": "PROVEN"
    },
    "CHK-005": {
     "status": "PASS",
-    "hits": 80013,
+    "hits": 80050,
     "fails": 0,
     "formal": "PROVEN"
    },
    "CHK-006": {
     "status": "PASS",
-    "hits": 164383,
+    "hits": 165232,
     "fails": 0,
     "formal": "PROVEN"
    },
@@ -81,7 +81,7 @@
    },
    "CHK-008": {
     "status": "PASS",
-    "hits": 3007,
+    "hits": 3018,
     "fails": 0,
     "formal": "BOUNDED"
    },
@@ -93,49 +93,49 @@
    },
    "CHK-010": {
     "status": "PASS",
-    "hits": 44851,
+    "hits": 45162,
     "fails": 0,
     "formal": "BOUNDED"
    },
    "CHK-011": {
     "status": "PASS",
-    "hits": 44293,
+    "hits": 44306,
     "fails": 0,
     "formal": "BOUNDED"
    },
    "CHK-012": {
     "status": "PASS",
-    "hits": 558,
+    "hits": 856,
     "fails": 0,
     "formal": "PROVEN"
    },
    "CHK-013": {
     "status": "PASS",
-    "hits": 22033,
+    "hits": 22344,
     "fails": 0,
     "formal": "BOUNDED"
    },
    "CHK-014": {
     "status": "PASS",
-    "hits": 206035,
+    "hits": 206455,
     "fails": 0,
     "formal": "PROVEN"
    },
    "CHK-015": {
     "status": "PASS",
-    "hits": 1466,
+    "hits": 2077,
     "fails": 0,
     "formal": "PROVEN"
    },
    "CHK-016": {
     "status": "PASS",
-    "hits": 108998,
+    "hits": 109063,
     "fails": 0,
     "formal": "TIMEOUT"
    },
    "CHK-017": {
     "status": "PASS",
-    "hits": 83,
+    "hits": 113,
     "fails": 0,
     "formal": "PROVEN"
    },
@@ -166,13 +166,17 @@
    "CHK-022": {
     "status": "PASS",
     "tests": [
-     "test_chk_022_unsupported_reads"
+     "test_chk_022_unsupported_reads",
+     "test_cov_103_unsupported_large_size_reads",
+     "test_cov_105_top_of_space_4k_cross_reads"
     ]
    },
    "CHK-023": {
     "status": "PASS",
     "tests": [
-     "test_chk_023_unsupported_writes"
+     "test_chk_023_unsupported_writes",
+     "test_cov_104_unsupported_large_size_writes",
+     "test_cov_106_top_of_space_4k_cross_writes"
     ]
    },
    "CHK-024": {
@@ -233,7 +237,7 @@
    "PARA_AXI_ID_W": 4
   },
   "tests": {
-   "pass": 15
+   "pass": 21
   },
   "integration": {
    "ok": true,
@@ -332,25 +336,25 @@
      }
     },
     "toggle": {
-     "hit": 3506,
-     "total": 4690,
-     "percent": 74.8,
+     "hit": 4032,
+     "total": 4666,
+     "percent": 86.4,
      "files": {
       "m_axi2apb_apb_ctrl.sv": {
-       "hit": 630,
-       "total": 766
+       "hit": 750,
+       "total": 758
       },
       "m_axi2apb_bridge.sv": {
-       "hit": 826,
-       "total": 932
+       "hit": 916,
+       "total": 924
       },
       "m_axi2apb_rd_seq.sv": {
-       "hit": 1012,
-       "total": 1484
+       "hit": 1170,
+       "total": 1480
       },
       "m_axi2apb_wr_seq.sv": {
-       "hit": 1038,
-       "total": 1508
+       "hit": 1196,
+       "total": 1504
       }
      }
     },
@@ -682,40 +686,6 @@
     {
      "metric": "toggle",
      "file": "m_axi2apb_rd_seq.sv",
-     "line": 115,
-     "what": "w_rd_wrap_bytes",
-     "points": 44,
-     "detail": [
-      "w_rd_wrap_bytes[10]:0->1",
-      "w_rd_wrap_bytes[10]:1->0",
-      "w_rd_wrap_bytes[11]:0->1",
-      "w_rd_wrap_bytes[11]:1->0",
-      "w_rd_wrap_bytes[12]:0->1",
-      "w_rd_wrap_bytes[12]:1->0",
-      "w_rd_wrap_bytes[13]:0->1",
-      "w_rd_wrap_bytes[13]:1->0"
-     ]
-    },
-    {
-     "metric": "toggle",
-     "file": "m_axi2apb_wr_seq.sv",
-     "line": 121,
-     "what": "w_wr_wrap_bytes",
-     "points": 44,
-     "detail": [
-      "w_wr_wrap_bytes[10]:0->1",
-      "w_wr_wrap_bytes[10]:1->0",
-      "w_wr_wrap_bytes[11]:0->1",
-      "w_wr_wrap_bytes[11]:1->0",
-      "w_wr_wrap_bytes[12]:0->1",
-      "w_wr_wrap_bytes[12]:1->0",
-      "w_wr_wrap_bytes[13]:0->1",
-      "w_wr_wrap_bytes[13]:1->0"
-     ]
-    },
-    {
-     "metric": "toggle",
-     "file": "m_axi2apb_rd_seq.sv",
      "line": 105,
      "what": "w_ar_wrap_bytes",
      "points": 40,
@@ -728,6 +698,23 @@
       "w_ar_wrap_bytes[14]:1->0",
       "w_ar_wrap_bytes[15]:0->1",
       "w_ar_wrap_bytes[15]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_axi2apb_rd_seq.sv",
+     "line": 115,
+     "what": "w_rd_wrap_bytes",
+     "points": 40,
+     "detail": [
+      "w_rd_wrap_bytes[12]:0->1",
+      "w_rd_wrap_bytes[12]:1->0",
+      "w_rd_wrap_bytes[13]:0->1",
+      "w_rd_wrap_bytes[13]:1->0",
+      "w_rd_wrap_bytes[14]:0->1",
+      "w_rd_wrap_bytes[14]:1->0",
+      "w_rd_wrap_bytes[15]:0->1",
+      "w_rd_wrap_bytes[15]:1->0"
      ]
     },
     {
@@ -749,138 +736,19 @@
     },
     {
      "metric": "toggle",
-     "file": "m_axi2apb_apb_ctrl.sv",
-     "line": 28,
-     "what": "i_rd_req_addr",
-     "points": 34,
+     "file": "m_axi2apb_wr_seq.sv",
+     "line": 121,
+     "what": "w_wr_wrap_bytes",
+     "points": 40,
      "detail": [
-      "i_rd_req_addr[0]:0->1",
-      "i_rd_req_addr[0]:1->0",
-      "i_rd_req_addr[16]:0->1",
-      "i_rd_req_addr[16]:1->0",
-      "i_rd_req_addr[17]:0->1",
-      "i_rd_req_addr[17]:1->0",
-      "i_rd_req_addr[18]:0->1",
-      "i_rd_req_addr[18]:1->0"
-     ]
-    },
-    {
-     "metric": "toggle",
-     "file": "m_axi2apb_apb_ctrl.sv",
-     "line": 37,
-     "what": "i_wr_req_addr",
-     "points": 34,
-     "detail": [
-      "i_wr_req_addr[0]:0->1",
-      "i_wr_req_addr[0]:1->0",
-      "i_wr_req_addr[16]:0->1",
-      "i_wr_req_addr[16]:1->0",
-      "i_wr_req_addr[17]:0->1",
-      "i_wr_req_addr[17]:1->0",
-      "i_wr_req_addr[18]:0->1",
-      "i_wr_req_addr[18]:1->0"
-     ]
-    },
-    {
-     "metric": "toggle",
-     "file": "m_axi2apb_apb_ctrl.sv",
-     "line": 49,
-     "what": "o_apb_paddr",
-     "points": 34,
-     "detail": [
-      "o_apb_paddr[0]:0->1",
-      "o_apb_paddr[0]:1->0",
-      "o_apb_paddr[16]:0->1",
-      "o_apb_paddr[16]:1->0",
-      "o_apb_paddr[17]:0->1",
-      "o_apb_paddr[17]:1->0",
-      "o_apb_paddr[18]:0->1",
-      "o_apb_paddr[18]:1->0"
-     ]
-    },
-    {
-     "metric": "toggle",
-     "file": "m_axi2apb_apb_ctrl.sv",
-     "line": 80,
-     "what": "reg_apb_addr",
-     "points": 34,
-     "detail": [
-      "reg_apb_addr[0]:0->1",
-      "reg_apb_addr[0]:1->0",
-      "reg_apb_addr[16]:0->1",
-      "reg_apb_addr[16]:1->0",
-      "reg_apb_addr[17]:0->1",
-      "reg_apb_addr[17]:1->0",
-      "reg_apb_addr[18]:0->1",
-      "reg_apb_addr[18]:1->0"
-     ]
-    },
-    {
-     "metric": "toggle",
-     "file": "m_axi2apb_bridge.sv",
-     "line": 63,
-     "what": "o_apb_paddr",
-     "points": 34,
-     "detail": [
-      "o_apb_paddr[0]:0->1",
-      "o_apb_paddr[0]:1->0",
-      "o_apb_paddr[16]:0->1",
-      "o_apb_paddr[16]:1->0",
-      "o_apb_paddr[17]:0->1",
-      "o_apb_paddr[17]:1->0",
-      "o_apb_paddr[18]:0->1",
-      "o_apb_paddr[18]:1->0"
-     ]
-    },
-    {
-     "metric": "toggle",
-     "file": "m_axi2apb_bridge.sv",
-     "line": 80,
-     "what": "w_rd_req_addr",
-     "points": 34,
-     "detail": [
-      "w_rd_req_addr[0]:0->1",
-      "w_rd_req_addr[0]:1->0",
-      "w_rd_req_addr[16]:0->1",
-      "w_rd_req_addr[16]:1->0",
-      "w_rd_req_addr[17]:0->1",
-      "w_rd_req_addr[17]:1->0",
-      "w_rd_req_addr[18]:0->1",
-      "w_rd_req_addr[18]:1->0"
-     ]
-    },
-    {
-     "metric": "toggle",
-     "file": "m_axi2apb_bridge.sv",
-     "line": 92,
-     "what": "w_wr_req_addr",
-     "points": 34,
-     "detail": [
-      "w_wr_req_addr[0]:0->1",
-      "w_wr_req_addr[0]:1->0",
-      "w_wr_req_addr[16]:0->1",
-      "w_wr_req_addr[16]:1->0",
-      "w_wr_req_addr[17]:0->1",
-      "w_wr_req_addr[17]:1->0",
-      "w_wr_req_addr[18]:0->1",
-      "w_wr_req_addr[18]:1->0"
-     ]
-    },
-    {
-     "metric": "toggle",
-     "file": "m_axi2apb_rd_seq.sv",
-     "line": 67,
-     "what": "o_req_addr",
-     "points": 34,
-     "detail": [
-      "o_req_addr[0]:0->1",
-      "o_req_addr[0]:1->0",
-      "o_req_addr[16]:0->1",
-      "o_req_addr[16]:1->0",
-      "o_req_addr[17]:0->1",
-      "o_req_addr[17]:1->0",
-      "o_req_addr[18]:0->1",
-      "o_req_addr[18]:1->0"
+      "w_wr_wrap_bytes[12]:0->1",
+      "w_wr_wrap_bytes[12]:1->0",
+      "w_wr_wrap_bytes[13]:0->1",
+      "w_wr_wrap_bytes[13]:1->0",
+      "w_wr_wrap_bytes[14]:0->1",
+      "w_wr_wrap_bytes[14]:1->0",
+      "w_wr_wrap_bytes[15]:0->1",
+      "w_wr_wrap_bytes[15]:1->0"
      ]
     },
     {
@@ -903,23 +771,6 @@
     {
      "metric": "toggle",
      "file": "m_axi2apb_wr_seq.sv",
-     "line": 70,
-     "what": "o_req_addr",
-     "points": 34,
-     "detail": [
-      "o_req_addr[0]:0->1",
-      "o_req_addr[0]:1->0",
-      "o_req_addr[16]:0->1",
-      "o_req_addr[16]:1->0",
-      "o_req_addr[17]:0->1",
-      "o_req_addr[17]:1->0",
-      "o_req_addr[18]:0->1",
-      "o_req_addr[18]:1->0"
-     ]
-    },
-    {
-     "metric": "toggle",
-     "file": "m_axi2apb_wr_seq.sv",
      "line": 115,
      "what": "w_aw_total_bytes",
      "points": 34,
@@ -932,176 +783,6 @@
       "w_aw_total_bytes[18]:1->0",
       "w_aw_total_bytes[19]:0->1",
       "w_aw_total_bytes[19]:1->0"
-     ]
-    },
-    {
-     "metric": "toggle",
-     "file": "m_axi2apb_rd_seq.sv",
-     "line": 90,
-     "what": "reg_rd_addr",
-     "points": 30,
-     "detail": [
-      "reg_rd_addr[16]:0->1",
-      "reg_rd_addr[16]:1->0",
-      "reg_rd_addr[17]:0->1",
-      "reg_rd_addr[17]:1->0",
-      "reg_rd_addr[18]:0->1",
-      "reg_rd_addr[18]:1->0",
-      "reg_rd_addr[19]:0->1",
-      "reg_rd_addr[19]:1->0"
-     ]
-    },
-    {
-     "metric": "toggle",
-     "file": "m_axi2apb_rd_seq.sv",
-     "line": 117,
-     "what": "w_rd_wrap_base",
-     "points": 30,
-     "detail": [
-      "w_rd_wrap_base[16]:0->1",
-      "w_rd_wrap_base[16]:1->0",
-      "w_rd_wrap_base[17]:0->1",
-      "w_rd_wrap_base[17]:1->0",
-      "w_rd_wrap_base[18]:0->1",
-      "w_rd_wrap_base[18]:1->0",
-      "w_rd_wrap_base[19]:0->1",
-      "w_rd_wrap_base[19]:1->0"
-     ]
-    },
-    {
-     "metric": "toggle",
-     "file": "m_axi2apb_rd_seq.sv",
-     "line": 118,
-     "what": "w_rd_addr_plus_size",
-     "points": 30,
-     "detail": [
-      "w_rd_addr_plus_size[16]:0->1",
-      "w_rd_addr_plus_size[16]:1->0",
-      "w_rd_addr_plus_size[17]:0->1",
-      "w_rd_addr_plus_size[17]:1->0",
-      "w_rd_addr_plus_size[18]:0->1",
-      "w_rd_addr_plus_size[18]:1->0",
-      "w_rd_addr_plus_size[19]:0->1",
-      "w_rd_addr_plus_size[19]:1->0"
-     ]
-    },
-    {
-     "metric": "toggle",
-     "file": "m_axi2apb_rd_seq.sv",
-     "line": 119,
-     "what": "w_rd_nxt_addr",
-     "points": 30,
-     "detail": [
-      "w_rd_nxt_addr[16]:0->1",
-      "w_rd_nxt_addr[16]:1->0",
-      "w_rd_nxt_addr[17]:0->1",
-      "w_rd_nxt_addr[17]:1->0",
-      "w_rd_nxt_addr[18]:0->1",
-      "w_rd_nxt_addr[18]:1->0",
-      "w_rd_nxt_addr[19]:0->1",
-      "w_rd_nxt_addr[19]:1->0"
-     ]
-    },
-    {
-     "metric": "toggle",
-     "file": "m_axi2apb_wr_seq.sv",
-     "line": 95,
-     "what": "reg_wr_addr",
-     "points": 30,
-     "detail": [
-      "reg_wr_addr[16]:0->1",
-      "reg_wr_addr[16]:1->0",
-      "reg_wr_addr[17]:0->1",
-      "reg_wr_addr[17]:1->0",
-      "reg_wr_addr[18]:0->1",
-      "reg_wr_addr[18]:1->0",
-      "reg_wr_addr[19]:0->1",
-      "reg_wr_addr[19]:1->0"
-     ]
-    },
-    {
-     "metric": "toggle",
-     "file": "m_axi2apb_wr_seq.sv",
-     "line": 123,
-     "what": "w_wr_wrap_base",
-     "points": 30,
-     "detail": [
-      "w_wr_wrap_base[16]:0->1",
-      "w_wr_wrap_base[16]:1->0",
-      "w_wr_wrap_base[17]:0->1",
-      "w_wr_wrap_base[17]:1->0",
-      "w_wr_wrap_base[18]:0->1",
-      "w_wr_wrap_base[18]:1->0",
-      "w_wr_wrap_base[19]:0->1",
-      "w_wr_wrap_base[19]:1->0"
-     ]
-    },
-    {
-     "metric": "toggle",
-     "file": "m_axi2apb_wr_seq.sv",
-     "line": 124,
-     "what": "w_wr_addr_plus_size",
-     "points": 30,
-     "detail": [
-      "w_wr_addr_plus_size[16]:0->1",
-      "w_wr_addr_plus_size[16]:1->0",
-      "w_wr_addr_plus_size[17]:0->1",
-      "w_wr_addr_plus_size[17]:1->0",
-      "w_wr_addr_plus_size[18]:0->1",
-      "w_wr_addr_plus_size[18]:1->0",
-      "w_wr_addr_plus_size[19]:0->1",
-      "w_wr_addr_plus_size[19]:1->0"
-     ]
-    },
-    {
-     "metric": "toggle",
-     "file": "m_axi2apb_wr_seq.sv",
-     "line": 125,
-     "what": "w_wr_nxt_addr",
-     "points": 30,
-     "detail": [
-      "w_wr_nxt_addr[16]:0->1",
-      "w_wr_nxt_addr[16]:1->0",
-      "w_wr_nxt_addr[17]:0->1",
-      "w_wr_nxt_addr[17]:1->0",
-      "w_wr_nxt_addr[18]:0->1",
-      "w_wr_nxt_addr[18]:1->0",
-      "w_wr_nxt_addr[19]:0->1",
-      "w_wr_nxt_addr[19]:1->0"
-     ]
-    },
-    {
-     "metric": "toggle",
-     "file": "m_axi2apb_rd_seq.sv",
-     "line": 116,
-     "what": "w_rd_wrap_mask",
-     "points": 23,
-     "detail": [
-      "w_rd_wrap_mask[10]:1->0",
-      "w_rd_wrap_mask[11]:1->0",
-      "w_rd_wrap_mask[12]:1->0",
-      "w_rd_wrap_mask[13]:1->0",
-      "w_rd_wrap_mask[14]:1->0",
-      "w_rd_wrap_mask[15]:1->0",
-      "w_rd_wrap_mask[16]:1->0",
-      "w_rd_wrap_mask[17]:1->0"
-     ]
-    },
-    {
-     "metric": "toggle",
-     "file": "m_axi2apb_wr_seq.sv",
-     "line": 122,
-     "what": "w_wr_wrap_mask",
-     "points": 23,
-     "detail": [
-      "w_wr_wrap_mask[10]:1->0",
-      "w_wr_wrap_mask[11]:1->0",
-      "w_wr_wrap_mask[12]:1->0",
-      "w_wr_wrap_mask[13]:1->0",
-      "w_wr_wrap_mask[14]:1->0",
-      "w_wr_wrap_mask[15]:1->0",
-      "w_wr_wrap_mask[16]:1->0",
-      "w_wr_wrap_mask[17]:1->0"
      ]
     },
     {
@@ -1123,6 +804,23 @@
     },
     {
      "metric": "toggle",
+     "file": "m_axi2apb_rd_seq.sv",
+     "line": 116,
+     "what": "w_rd_wrap_mask",
+     "points": 21,
+     "detail": [
+      "w_rd_wrap_mask[11]:1->0",
+      "w_rd_wrap_mask[12]:1->0",
+      "w_rd_wrap_mask[13]:1->0",
+      "w_rd_wrap_mask[14]:1->0",
+      "w_rd_wrap_mask[15]:1->0",
+      "w_rd_wrap_mask[16]:1->0",
+      "w_rd_wrap_mask[17]:1->0",
+      "w_rd_wrap_mask[18]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
      "file": "m_axi2apb_wr_seq.sv",
      "line": 112,
      "what": "w_aw_wrap_mask",
@@ -1136,6 +834,62 @@
       "w_aw_wrap_mask[16]:1->0",
       "w_aw_wrap_mask[17]:1->0",
       "w_aw_wrap_mask[18]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_axi2apb_wr_seq.sv",
+     "line": 122,
+     "what": "w_wr_wrap_mask",
+     "points": 21,
+     "detail": [
+      "w_wr_wrap_mask[11]:1->0",
+      "w_wr_wrap_mask[12]:1->0",
+      "w_wr_wrap_mask[13]:1->0",
+      "w_wr_wrap_mask[14]:1->0",
+      "w_wr_wrap_mask[15]:1->0",
+      "w_wr_wrap_mask[16]:1->0",
+      "w_wr_wrap_mask[17]:1->0",
+      "w_wr_wrap_mask[18]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_axi2apb_apb_ctrl.sv",
+     "line": 49,
+     "what": "o_apb_paddr",
+     "points": 4,
+     "detail": [
+      "o_apb_paddr[0]:0->1",
+      "o_apb_paddr[0]:1->0",
+      "o_apb_paddr[1]:0->1",
+      "o_apb_paddr[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_axi2apb_apb_ctrl.sv",
+     "line": 80,
+     "what": "reg_apb_addr",
+     "points": 4,
+     "detail": [
+      "reg_apb_addr[0]:0->1",
+      "reg_apb_addr[0]:1->0",
+      "reg_apb_addr[1]:0->1",
+      "reg_apb_addr[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_axi2apb_bridge.sv",
+     "line": 63,
+     "what": "o_apb_paddr",
+     "points": 4,
+     "detail": [
+      "o_apb_paddr[0]:0->1",
+      "o_apb_paddr[0]:1->0",
+      "o_apb_paddr[1]:0->1",
+      "o_apb_paddr[1]:1->0"
      ]
     },
     {
@@ -1196,17 +950,6 @@
     {
      "metric": "toggle",
      "file": "m_axi2apb_rd_seq.sv",
-     "line": 110,
-     "what": "w_ar_end_page",
-     "points": 2,
-     "detail": [
-      "w_ar_end_page[20]:0->1",
-      "w_ar_end_page[20]:1->0"
-     ]
-    },
-    {
-     "metric": "toggle",
-     "file": "m_axi2apb_rd_seq.sv",
      "line": 113,
      "what": "w_rd_wrap_log2",
      "points": 2,
@@ -1240,17 +983,6 @@
     {
      "metric": "toggle",
      "file": "m_axi2apb_wr_seq.sv",
-     "line": 116,
-     "what": "w_aw_end_page",
-     "points": 2,
-     "detail": [
-      "w_aw_end_page[20]:0->1",
-      "w_aw_end_page[20]:1->0"
-     ]
-    },
-    {
-     "metric": "toggle",
-     "file": "m_axi2apb_wr_seq.sv",
      "line": 119,
      "what": "w_wr_wrap_log2",
      "points": 2,
@@ -1267,7 +999,38 @@
      "points": 1,
      "detail": []
     }
-   ]
+   ],
+   "design_scope": {
+    "rule": "left out: never-executed points of package code that the elaborated design does not contain (Verilator instruments every function of an imported package, called or not), and toggles of signal bits that Yosys constant propagation proves constant with the run's parameters, except on signals where the simulator recorded a toggle of such a bit (then the signal counts whole)",
+    "left_out": {
+     "line": 0,
+     "toggle": 24
+    },
+    "scope_conflicts": 0,
+    "signals_kept_whole": [],
+    "all_points": {
+     "block": {
+      "hit": 209,
+      "total": 218,
+      "percent": 95.9
+     },
+     "expression": {
+      "hit": 102,
+      "total": 106,
+      "percent": 96.2
+     },
+     "line": {
+      "hit": 738,
+      "total": 746,
+      "percent": 98.9
+     },
+     "toggle": {
+      "hit": 4032,
+      "total": 4690,
+      "percent": 86.0
+     }
+    }
+   }
   },
   "run_set": null
  },
@@ -1278,56 +1041,64 @@
   "not_compiled": 0,
   "score": 88.9,
   "threshold": 85.0,
+  "equivalence": {
+   "by_status": {
+    "CEX": 2,
+    "PROVEN": 2
+   },
+   "proven_equivalent": 2,
+   "score_without_equivalent": 94.1
+  },
   "rules_attributed": 69,
   "rules_below_threshold": []
  },
  "coverage_closure": {
-  "metric": "line",
-  "target": null,
-  "status": "not_requested",
+  "metric": "toggle",
+  "target": 85.0,
+  "status": "target_met",
   "baseline": {
-   "hit": 728,
-   "total": 745,
-   "percent": 97.7,
+   "hit": 3506,
+   "total": 4666,
+   "percent": 75.1,
    "files": {
     "m_axi2apb_apb_ctrl.sv": {
-     "hit": 186,
-     "total": 190
+     "hit": 630,
+     "total": 758
     },
     "m_axi2apb_bridge.sv": {
-     "hit": 66,
-     "total": 66
+     "hit": 826,
+     "total": 924
     },
     "m_axi2apb_rd_seq.sv": {
-     "hit": 250,
-     "total": 254
+     "hit": 1012,
+     "total": 1480
     },
     "m_axi2apb_wr_seq.sv": {
-     "hit": 226,
-     "total": 235
+     "hit": 1038,
+     "total": 1504
     }
    }
   },
   "final": {
-   "hit": 738,
-   "total": 746,
-   "percent": 98.9,
+   "hit": 4032,
+   "total": 4666,
+   "percent": 86.4,
    "files": {
     "m_axi2apb_apb_ctrl.sv": {
-     "hit": 186,
-     "total": 190
+     "hit": 750,
+     "total": 758
     },
     "m_axi2apb_bridge.sv": {
-     "hit": 66,
-     "total": 66
+     "hit": 916,
+     "total": 924
     },
     "m_axi2apb_rd_seq.sv": {
-     "hit": 252,
-     "total": 254
+     "hit": 1170,
+     "total": 1480
     },
     "m_axi2apb_wr_seq.sv": {
-     "hit": 234,
-     "total": 236
+     "hit": 1196,
+     "total": 1504
     }
    }
   }
@@ -1347,11 +1118,22 @@
    "TIMEOUT": 1
   }
  },
+ "cdc": {
+  "verdict": "clean",
+  "configurations": 1,
+  "counts": {
+   "DERIVED_CLOCK": 0,
+   "OUTPUT_FROM_OTHER_DOMAIN": 0,
+   "RESET_FROM_OTHER_DOMAIN": 0
+  }
+ },
  "agent_cost_usd": {
-  "total_usd": 14.7937,
-  "calls": 66,
+  "total_usd": 16.7088,
+  "calls": 68,
   "by_agent": {
    "A1": 0.6369,
+   "A10": 1.2614,
+   "A11": 0.6537,
    "A12": 2.1642,
    "A13": 0.2963,
    "A2": 0.5175,
@@ -1364,5 +1146,6 @@
   },
   "failed_usd": 0.1096,
   "failed_calls": 1
- }
+ },
+ "coverage_closure_other": []
 }

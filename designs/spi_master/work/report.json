@@ -1,6 +1,6 @@
 {
  "design": "spi_master",
- "date": "2026-11-20T08:35:26+00:00",
+ "date": "2026-11-21T16:21:14+00:00",
  "gates": [
   {
    "gate": "G1_rules",
@@ -1332,6 +1332,36 @@
      "detail": []
     }
    ],
+   "design_scope": {
+    "rule": "left out: never-executed points of package code that the elaborated design does not contain (Verilator instruments every function of an imported package, called or not), and toggles of signal bits that Yosys constant propagation proves constant with the run's parameters, except on signals where the simulator recorded a toggle of such a bit (then the signal counts whole)",
+    "left_out": {
+     "line": 0
+    },
+    "scope_conflicts": 0,
+    "signals_kept_whole": [],
+    "all_points": {
+     "block": {
+      "hit": 135,
+      "total": 144,
+      "percent": 93.8
+     },
+     "expression": {
+      "hit": 162,
+      "total": 165,
+      "percent": 98.2
+     },
+     "line": {
+      "hit": 438,
+      "total": 462,
+      "percent": 94.8
+     },
+     "toggle": {
+      "hit": 577,
+      "total": 606,
+      "percent": 95.2
+     }
+    }
+   },
    "scope": "merged over 5 run(s) of the run set"
   },
   "run_set": {
@@ -1494,6 +1524,13 @@
   "not_compiled": 0,
   "score": 91.7,
   "threshold": 85.0,
+  "equivalence": {
+   "by_status": {
+    "PROVEN": 3
+   },
+   "proven_equivalent": 3,
+   "score_without_equivalent": 100.0
+  },
   "rules_attributed": 80,
   "rules_below_threshold": []
  },
@@ -1511,6 +1548,15 @@
    "BOUNDED": 7,
    "PROVEN": 6,
    "UNSUPPORTED": 14
+  }
+ },
+ "cdc": {
+  "verdict": "clean",
+  "configurations": 3,
+  "counts": {
+   "DERIVED_CLOCK": 0,
+   "OUTPUT_FROM_OTHER_DOMAIN": 0,
+   "RESET_FROM_OTHER_DOMAIN": 0
   }
  },
  "agent_cost_usd": {
@@ -1535,5 +1581,6 @@
   },
   "failed_usd": 2.5729,
   "failed_calls": 4
- }
+ },
+ "coverage_closure_other": []
 }

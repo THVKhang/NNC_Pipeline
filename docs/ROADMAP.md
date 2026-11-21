@@ -1,13 +1,13 @@
 # Kế hoạch các giai đoạn tiếp theo (từ 2026-11-21)
 
-Trang này liệt kê các bước của giai đoạn 17 và 18. Mỗi bước có **điều kiện xong** kiểm được bằng lệnh. Một bước chỉ được đánh dấu xong khi điều kiện đó đúng.
+Trang này liệt kê các bước của giai đoạn 17 đến 20. Mỗi bước có **điều kiện xong** kiểm được bằng lệnh. Một bước chỉ được đánh dấu xong khi điều kiện đó đúng.
 
 Các ràng buộc sau vẫn giữ nguyên:
 - **Không ai ký G4 thay người có chuyên môn.** Claude không ký G4.
 - Không sửa RTL, test, assertion hay giá trị kỳ vọng được giao chỉ để cho qua. Không nới check.
 - Không báo gì cho tác giả upstream.
 - Các tài liệu chuẩn có bản quyền (`specs/*.pdf`, `designs/axi_std/`) không đưa vào git.
-- Mở PR hay merge thì phải hỏi người dùng trước.
+- Từ 2026-11-21, người dùng cho phép push thẳng lên `main` mỗi bước đã xong và đã kiểm ("mọi bước chạy qua cứ push lên main nếu hoàn thiện"). Không push việc còn hỏng.
 
 ## Giai đoạn 17: đóng gói để người khác cài và chạy được
 
@@ -17,7 +17,7 @@ Các ràng buộc sau vẫn giữ nguyên:
 - CI có job `install`;
 - có lệnh `nnc review-kit` và `nnc summary`.
 
-17.7 (PR vào `main`) chờ người dùng đồng ý.
+17.7 xong: CI xanh, `main` đã được đưa lên commit 4666c59 (2026-11-21), theo lời người dùng.
 
 **Mục tiêu.** Một máy mới chạy `pip install` từ repo là có lệnh `nnc` chạy được, không cần mở mã nguồn.
 
@@ -52,7 +52,7 @@ Các ràng buộc sau vẫn giữ nguyên:
   - 4 lỗi verification do A17 sửa, không có sửa tay.
 - 18.3 xong: §11.2.
 - 18.5 xong: §11.1.
-- Còn lại: 17.7 (PR vào `main`), chờ người dùng.
+- 17.7 xong.
 
 Chi phí giai đoạn 18: khoảng US$23 (độ ổn định US$5.2, ot_gpio US$17.9). **Dừng và hỏi người dùng nếu tổng vượt khoảng US$50.**
 
@@ -77,6 +77,41 @@ Chi phí giai đoạn 18: khoảng US$23 (độ ổn định US$5.2, ot_gpio US$
 | 18.3 | So với testbench UVM của OpenTitan cho gpio và rv_timer, chỉ dùng số liệu công khai (dashboard coverage, danh sách test trong testplan `.hjson`). Không chép testbench vào repo, chỉ ghi nguồn và commit tham chiếu. Nói rõ hai bên đo những thứ khác nhau: coverage của họ khác mutation score của mình. | Một bảng so sánh trong EVALUATION. |
 | 18.5 | So rv_timer với gpio: tỉ lệ lỗi verification loại B, số quyết định D-xxx cần đến, chi phí agent, điểm mutation. Từ đó kết luận kết quả của rv_timer có lặp lại được không. | Một đoạn kết luận trong EVALUATION §11. |
 | 17.7 | **Hỏi người dùng** có mở PR từ `feature/phase-12-17` vào `main` không. | Người dùng trả lời. |
+
+## Giai đoạn 19: coverage đúng phạm vi và cao hơn
+
+**Mục tiêu.** Coverage chỉ đếm phần có trong thiết kế, không loại bằng tay, và phần còn thiếu được bù bằng test mới. Xem [SIGNOFF_SCOPE.md](SIGNOFF_SCOPE.md).
+
+| # | Bước | Điều kiện xong |
+|---|---|---|
+| 19.1 | Phạm vi coverage do công cụ tính: hàm package không được gọi (`verilator --json-only`), bit hằng số (Yosys). Điểm đã chạy thì vẫn tính. Tín hiệu mà hai công cụ mâu thuẫn thì tính nguyên. | Unit test. `scope_conflicts` = 0 trên mọi thiết kế. Báo cáo ghi số trên mọi điểm bên cạnh. |
+| 19.2 | Con số phụ "không tính module đã verify riêng" (`coverage_preverified`), theo danh sách cover.cfg của OpenTitan. | Hai IP OpenTitan có thêm dòng trong báo cáo. |
+| 19.3 | Closure bằng agent (A10/A11) cho các metric dưới 90 % (mốc V2 của OpenTitan), ưu tiên toggle và functional của gpio và rv_timer. Test mới thêm vào, không bỏ test cũ. G3 duyệt lại theo uỷ quyền. | Metric đạt 90 %, hoặc phần còn lại được giải thích (không đạt được bằng kích thích hợp lệ). |
+| 19.4 | Một cấu hình run set với giá trị khởi tạo ngẫu nhiên (`--x-initial unique`, `+verilator+rand+reset+2`) để lộ flop thiếu reset. | Cấu hình chạy trên ít nhất một thiết kế. Kết quả được ghi lại. |
+| 19.5 | (Sau) Chứng minh unreachable bằng formal cho các điểm mà lan truyền hằng số không chứng minh được, ví dụ bit cao của phép trừ. | Điểm chỉ bị loại khi có bằng chứng PROVEN. |
+
+**Trạng thái (2026-11-21):** 19.1 và 19.2 xong.
+- gpio: line 52,5 % → 96,5 %, block 44,5 % → 93,6 %, toggle 84,0 % → 87,5 %.
+- rv_timer: line 24,2 % → 92,3 %, block 29,6 % → 87,8 %, toggle 80,3 % → 83,1 %.
+- sync_fifo: toggle 70,6 % → 87,7 %.
+- 19.3 làm một phần.
+  - gpio: functional 90 → 95 % (2 test). Toggle không thêm được test: 18 lời khẳng định unreachable, người duyệt cần xem.
+  - axi2apb: toggle 75,1 → 86,4 % (6 test).
+  - rv_timer: chưa chạy closure, vì phần còn thiếu là nhánh có điều kiện hằng, chờ 19.5.
+- 19.4: đã có tuỳ chọn `x_init` và đã chạy thử. Phải sửa reset ở thời điểm 0 của testbench, và triage gen_sync_fifo, trước khi đưa vào run set.
+- 19.5 chưa làm.
+
+## Giai đoạn 20: kiểm tra cắt miền clock/reset (CDC/RDC)
+
+**Mục tiêu.** Biến RR-33 (tín hiệu sang miền khác phải qua bộ đồng bộ) từ "người xem" thành "code kiểm".
+
+| # | Bước | Điều kiện xong |
+|---|---|---|
+| 20.1 | `nnc cdc`: kiểm cấu trúc trên netlist Yosys cho từng cấu hình. Các loại kết quả: SYNC, SYNC_MULTIBIT, QUALIFIED, UNSYNC, FIRST_STAGE_READ, và reset từ miền khác. | Unit test với netlist dựng tay. |
+| 20.2 | Chứng minh bước kiểm bắt được lỗi: làm hỏng bộ đồng bộ trong một bản sao của async_gray_fifo. | Hai lỗi cài vào đều bị báo là vi phạm. |
+| 20.3 | Chạy trên 13 thiết kế. Báo cáo có dòng CDC và điều kiện sign-off. CI có job `cdc`. | 11 sạch, 2 cần review (async_gray_fifo, async_apb_bridge), 0 lỗi. Job CI xanh. |
+
+**Trạng thái (2026-11-21):** 20.1–20.3 xong.
 
 ## Việc còn mở, chờ người có chuyên môn (G4)
 

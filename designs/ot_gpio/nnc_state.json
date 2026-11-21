@@ -1,5 +1,10 @@
 {
   "config": {
+    "cdc_async_inputs": "i_gpio:GpioAsyncOn=1",
+    "coverage_metric": "toggle",
+    "coverage_preverified": "prim_alert_sender,prim_alert_receiver,prim_count,prim_esc_sender,prim_esc_receiver,prim_lfsr,prim_onehot_check,prim_prince,prim_secded_inv_64_57_dec,prim_secded_inv_39_32_dec,prim_secded_inv_64_57_enc,prim_secded_inv_39_32_enc",
+    "coverage_rounds": "2",
+    "coverage_target": "90.0",
     "documents": [
       {
         "file": "spec/gpio_Design_Specification.md",
@@ -89,12 +94,12 @@
       "note": "Not a hardware designer's review. 38 checks (13 assertions, 25 tests) over 188 rules; 80 rules not verifiable by simulation (mostly standard text outside this IP, status-type interrupts, pings, obligations of the host). Checks follow D-001..D-022: bounds instead of exact cycles where the documents are silent (filter D-007, latencies D-018); MASKED_OE read bits 31:16 unchecked (D-002); INTR_STATE checked only where both readings of D-004 agree. Run set: base (2 seeds), sync_off, straps_off, min."
     },
     "G3_verif_sources": {
-      "at": "2026-11-21T10:56:40+00:00",
+      "at": "2026-11-21T15:49:42+00:00",
       "by": "Claude (delegated by GabrielHCMUT)",
       "hashes": {
-        "verif": "2ecedd2b789b1f66afd31200fdeb1637de3bb12e50dba5043116ec9a77f67ed0"
+        "verif": "198672cf888f42e41cbdafbcd7ca656205e01eed1f058861de871648a1296010"
       },
-      "note": "Not a hardware designer's review. Re-approved after fix-verif from the formal counterexample of CHK-003: a request with i_a_intg_flip=1 counts as an alert cause from i_a_valid=1, not only from its A handshake (INT-INTG-002, INT-TL-003, D-017 gives only an upper bound). Traffic with i_a_intg_flip=0 is still never a cause. Candidate passes 26/26 tests and 13/13 assertions in all 5 runs."
+      "note": "Coverage closure (phase 19.3): added verif/tests/test_ot_gpio_cov1.py (COV-101 PutPartialData full-word writes, COV-102 mask and size combinations); nothing removed or relaxed; 28/28 tests pass in all 5 runs; COVP-012/013 claimed unreachable (single outstanding request), still counted. Not a hardware designer's review."
     }
   },
   "version": 1

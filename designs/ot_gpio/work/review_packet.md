@@ -6,9 +6,9 @@ This packet is for the person who decides gate **G4 (sign-off)**: *is this desig
 
 - **Requirements (rules):** 268 — NOT_VERIFIED_BY_SIM 80, VERIFIED 188
 - **Checks:** 38 — PASS 38
-- **Tests:** {'pass': 26}
+- **Tests:** {'pass': 28}
 - **Simulated configurations:** 5 runs in 4 configurations (base, sync_off, straps_off, min); see `run_set.json` and the *Run set* table of the report
-- **Code coverage:** line 52.5 %, block 44.5 %, expression 20.6 %, toggle 84.0 %, functional 90.0 %
+- **Code coverage:** line 96.5 %, block 93.6 %, expression 64.9 %, toggle 87.5 %, functional 95.0 %
 - **Mutation score:** 58.3 % (21 of 36 injected faults detected); 9 survivor(s) proven equivalent by formal, 77.8 % without them; formal on the survivors: {'CEX': 4, 'ERROR': 2, 'PROVEN': 9}
 
 ## 2. Decisions taken for you
@@ -17,7 +17,7 @@ These gates were approved by an AI agent on delegation, not by a qualified perso
 
 - **G1_rules** (2026-11-21T01:04:06+00:00): Not a hardware designer's review. 227 rules kept (45 rejected, 7 merged). 19 spec-lint gaps answered as spec section 10 decisions D-001..D-022 (documents only; where they are silent or disagree, only the common part or a bound is checked). 8 open questions answered on delegation: run set = all four parameter combinations; counting convention for D-018 at the ports; status-type interrupts, pings and sender encoding-error timing out of scope. Where a kept rule conflicts with a decision, the decision limits the check: GP-T5.11-02/GP-T5.12-02 (MASKED_OE read bits 31:16) by D-002, CP-T1.8.4-05 (INTR_STATE not qualified by INTR_ENABLE) by D-004. Open for the G4 reviewer: D-002, D-004.
 - **G2_contract** (2026-11-21T01:13:18+00:00): Not a hardware designer's review. 38 checks (13 assertions, 25 tests) over 188 rules; 80 rules not verifiable by simulation (mostly standard text outside this IP, status-type interrupts, pings, obligations of the host). Checks follow D-001..D-022: bounds instead of exact cycles where the documents are silent (filter D-007, latencies D-018); MASKED_OE read bits 31:16 unchecked (D-002); INTR_STATE checked only where both readings of D-004 agree. Run set: base (2 seeds), sync_off, straps_off, min.
-- **G3_verif_sources** (2026-11-21T10:56:40+00:00): Not a hardware designer's review. Re-approved after fix-verif from the formal counterexample of CHK-003: a request with i_a_intg_flip=1 counts as an alert cause from i_a_valid=1, not only from its A handshake (INT-INTG-002, INT-TL-003, D-017 gives only an upper bound). Traffic with i_a_intg_flip=0 is still never a cause. Candidate passes 26/26 tests and 13/13 assertions in all 5 runs.
+- **G3_verif_sources** (2026-11-21T15:49:42+00:00): Coverage closure (phase 19.3): added verif/tests/test_ot_gpio_cov1.py (COV-101 PutPartialData full-word writes, COV-102 mask and size combinations); nothing removed or relaxed; 28/28 tests pass in all 5 runs; COVP-012/013 claimed unreachable (single outstanding request), still counted. Not a hardware designer's review.
 
 ## 3. Failures and what they mean
 

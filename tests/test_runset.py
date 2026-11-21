@@ -51,6 +51,18 @@ class LoadTest(unittest.TestCase):
         self.assertEqual(syn["params"], {"PARA_MODE": 1})
         self.assertEqual(syn["clock_periods"], {"i_clk_a": 10, "i_clk_b": 23.7})
 
+    def test_random_initial_values(self):
+        from nnc import sim
+        runs = _load({"configs": [{"name": "base"}, {"name": "xr", "x_init": "random"}]})
+        self.assertNotIn("x_init", runs[0]["opts"])
+        self.assertEqual(runs[1]["opts"]["x_init"], "random")
+        lines = sim._opts_lines(runs[1]["opts"])
+        self.assertIn("EXTRA_ARGS += --x-assign unique --x-initial unique", lines)
+        self.assertIn("+verilator+rand+reset+2 +verilator+seed+$(shell expr $(SEED) + 1)", lines)
+        self.assertNotIn("x-initial", sim._opts_lines(runs[0]["opts"]))
+        with self.assertRaises(runset.RunSetError):
+            _load({"configs": [{"name": "a", "x_init": "ones"}]})
+
     def test_errors(self):
         for doc, msg in (({"configs": []}, "non-empty"),
                          ({"configs": [{"name": "a"}, {"name": "a"}]}, "twice"),

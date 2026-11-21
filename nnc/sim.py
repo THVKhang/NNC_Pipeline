@@ -140,8 +140,15 @@ def _plusargs(opts: dict | None) -> str:
     return (opts or {}).get("plusargs", "").replace("{seed}", "$(SEED)")
 
 
+X_RANDOM_ARGS = "--x-assign unique --x-initial unique"
+# Seed 0 would let Verilator pick a time-based seed: SEED + 1 keeps every run reproducible.
+X_RANDOM_PLUSARGS = "+verilator+rand+reset+2 +verilator+seed+$(shell expr $(SEED) + 1)"
+
+
 def _opts_lines(opts: dict | None) -> str:
     out = ""
+    if (opts or {}).get("x_init") == "random":
+        out += f"EXTRA_ARGS += {X_RANDOM_ARGS}\nPLUSARGS += {X_RANDOM_PLUSARGS}\n"
     if _define_args(opts):
         out += f"EXTRA_ARGS += {_define_args(opts)}\n"
     if _plusargs(opts):
@@ -384,7 +391,7 @@ def parse_periods(text: str | None) -> dict[str, float]:
 
 def build_inputs(contract: dict, rtl: list[Path], sva: list[Path], test_file: Path | list[Path], params: dict[str, int],
                  coverage: bool = True, clock_periods: dict[str, float] | None = None,
-                 opts: dict | None = None) -> dict[str, object]:
+                 opts: dict | None = None, frontend: str = "verilog") -> dict[str, object]:
     files: dict[str, object] = {}
     srcs = []
     for f in rtl:
@@ -414,20 +421,81 @@ def build_inputs(contract: dict, rtl: list[Path], sva: list[Path], test_file: Pa
         cfg["run_options"] = {"defines": list(opts.get("defines") or []), "plusargs": opts.get("plusargs") or ""}
     files["nnc_interface.json"] = json.dumps(cfg)
     files["Makefile"] = makefile(srcs, ",".join(t.stem for t in tests), params, coverage, opts)
+    if coverage:
+        files["nnc_scope.sh"] = scope_command(contract["top"], rtl, params, opts, frontend) + "\n"
     return files
 
 
 SIM_SCRIPT = """make SEED={seed} NNC_JOBS={jobs} > sim.log 2>&1
 echo "NNC_MAKE_RC=$?" >> sim.log
 if [ -f coverage.dat ]; then verilator_coverage --write-info coverage.info coverage.dat >> sim.log 2>&1; fi
+if [ -f nnc_scope.sh ]; then bash nnc_scope.sh; fi
 """
+
+SCOPE_DIR = "nnc_scope"
+
+
+def scope_command(top: str, rtl: list[Path], params: dict[str, int], opts: dict | None,
+                  frontend: str = "verilog") -> str:
+    """Two tool runs on the DUT alone, with the parameters and macros of the run:
+    1. verilator --json-only: the elaborated tree, from which coverage.scope_from_tree reads the package
+       code the design contains;
+    2. yosys `proc; flatten; opt` (frontend "verilog" or "slang", as for formal): the netlist, from which
+       coverage.const_from_netlist reads the signal bits that are constant.
+    A failure only means no scope (nothing is left out of the coverage); it never changes a test result."""
+    gen = " ".join(f"-G{k}={v}" for k, v in params.items())
+    srcs = " ".join(f"rtl/{f.name}" for f in rtl)
+    ydefs = " ".join(f"-D{d}" for d in (opts or {}).get("defines", []))
+    if frontend == "slang":
+        read = f"read_slang {ydefs} -I rtl --top {top} " + "".join(f"-G {k}={v} " for k, v in params.items()) + srcs
+        hier = f"hierarchy -top {top}"
+    else:
+        read = f"read_verilog -sv {ydefs} -Irtl {srcs}"
+        hier = f"hierarchy -top {top}" + "".join(f" -chparam {k} {v}" for k, v in params.items())
+    return (f"verilator --json-only -Wno-fatal -Wno-lint -Wno-style --Mdir {SCOPE_DIR} --top-module {top} "
+            f"{gen} {_define_args(opts)} +incdir+rtl {srcs} > {SCOPE_DIR}.log 2>&1 || true\n"
+            f"mkdir -p {SCOPE_DIR} && yosys -q -p '{read}; {hier}; proc; flatten; opt; write_json {SCOPE_DIR}/const.json' "
+            f">> {SCOPE_DIR}.log 2>&1 || rm -f {SCOPE_DIR}/const.json")
+
+
+SCOPE_OUTPUTS = [f"{SCOPE_DIR}/*.tree.json", f"{SCOPE_DIR}/*.tree.meta.json", f"{SCOPE_DIR}/const.json"]
+
+
+def read_scope(out_dir: Path) -> dict | None:
+    """The design scope of a run from its scope output folder, or None when neither tool gave one."""
+    d = out_dir / SCOPE_DIR
+    if not d.is_dir():
+        return None
+    s: dict = {"packages": [], "kept": {}}
+    trees, metas = sorted(d.glob("*.tree.json")), sorted(d.glob("*.tree.meta.json"))
+    found = False
+    try:
+        if len(trees) == 1 and len(metas) == 1:
+            s = coverage_mod.scope_from_tree(json.loads(trees[0].read_text(encoding="utf-8")),
+                                             json.loads(metas[0].read_text(encoding="utf-8")))
+            found = True
+    except (OSError, ValueError):
+        pass
+    try:
+        if (d / "const.json").is_file():
+            c = coverage_mod.const_from_netlist(json.loads((d / "const.json").read_text(encoding="utf-8")))
+            if c:
+                s["const"] = c
+                found = True
+    except (OSError, ValueError):
+        pass
+    return s if found else None
 
 
 # ---------------------------------------------------------------------------------------- results
 _EXC = re.compile(r"^\s*(?:\S+\.)?([A-Z]\w*(?:Error|Exception|Exit|Timeout\w*))\b:?\s*(.*)$")
 
 
-def parse_results(out_dir: Path, rtl_names: list[str]) -> dict:
+_FROM_DIR = object()
+
+
+def parse_results(out_dir: Path, rtl_names: list[str], scope=_FROM_DIR, preverified: list[str] | None = None) -> dict:
+    """Results of one run folder. `scope`: the design scope for coverage (default: read from the folder)."""
     log = (out_dir / "sim.log").read_text(encoding="utf-8", errors="replace") if (out_dir / "sim.log").is_file() else ""
     tests = []
     xml = out_dir / "results.xml"
@@ -471,7 +539,8 @@ def parse_results(out_dir: Path, rtl_names: list[str]) -> dict:
     for m in re.finditer(r"NNC_NOT_VERIFIABLE (CHK-\d{3}) ([^\n]*)", log):
         not_verifiable.setdefault(m.group(1), m.group(2).strip()[:300])
     functional = {m.group(1): int(m.group(2)) for m in re.finditer(r"NNC_COVER (COVP-\d{3}) hits=(\d+)", log)}
-    cov = coverage_of(out_dir / "coverage.info", out_dir / "coverage.dat", rtl_names, functional)
+    cov = coverage_of(out_dir / "coverage.info", out_dir / "coverage.dat", rtl_names, functional,
+                      read_scope(out_dir) if scope is _FROM_DIR else scope, preverified)
     rc = re.search(r"NNC_MAKE_RC=(\d+)", log)
     built = bool(tests) or "Running tests" in log
     return {"tests": tests, "assertions": checks, "not_verifiable": not_verifiable, "coverage": cov,
@@ -480,17 +549,44 @@ def parse_results(out_dir: Path, rtl_names: list[str]) -> dict:
             "built": built, "build_errors": [l for l in log.splitlines() if l.startswith("%Error")][:30]}
 
 
-def coverage_of(info: Path, dat_path: Path, rtl_names: list[str], functional: dict[str, int]) -> dict:
+def coverage_of(info: Path, dat_path: Path, rtl_names: list[str], functional: dict[str, int],
+                scope: dict | None = None, preverified: list[str] | None = None) -> dict:
     """Code coverage (lcov export + coverage.dat) and functional cover points of one run, or of a
-    merged run set (verilator_coverage --write of several coverage.dat, cover hits summed)."""
-    cov = _line_coverage(info, rtl_names)
+    merged run set (verilator_coverage --write of several coverage.dat, cover hits summed). With the
+    design `scope` (coverage.scope_from_tree), package code the design does not contain is left out;
+    the counts over all points are kept under coverage.design_scope.all_points. `preverified`: modules
+    the designer declares verified elsewhere; the coverage without their subtrees goes to
+    coverage.without_preverified, next to (never instead of) the coverage of the whole design."""
+    dat = coverage_mod.parse_dat(dat_path, rtl_names, scope) if scope else None
+    cov = _line_coverage(info, rtl_names, (dat or {}).get("out_of_scope_lines"))
     if cov["status"] == "measured":
-        dat = coverage_mod.parse_dat(dat_path, rtl_names)
+        if dat is None:
+            dat = coverage_mod.parse_dat(dat_path, rtl_names)
         cov["metrics"] = {"line": {k: cov[k] for k in ("hit", "total", "percent", "files")}, **dat["metrics"]}
         cov["uncovered"] = coverage_mod.summarize_uncovered(cov.pop("uncovered_lines") + dat["uncovered"])
+        if scope and "scope" in dat:
+            raw_line = _line_coverage(info, rtl_names)
+            raw = coverage_mod.parse_dat(dat_path, rtl_names)["metrics"]
+            raw["line"] = {k: raw_line[k] for k in ("hit", "total", "percent")}
+            left = dict(dat["scope"]["left_out"])
+            left["line"] = cov.pop("left_out_lines", 0)
+            cov["design_scope"] = {**dat["scope"], "left_out": dict(sorted(left.items())),
+                            "all_points": {m: {k: v[k] for k in ("hit", "total", "percent")}
+                                           for m, v in sorted(raw.items())}}
+        cov.pop("left_out_lines", None)
+        w = coverage_mod.without_modules(dat_path, rtl_names, scope, preverified or [])
+        if w:
+            oos = (dat or {}).get("out_of_scope_lines")
+            wl = _line_coverage(info, rtl_names, oos, drop=w["drop_lines"])
+            w["metrics"]["line"] = {k: wl[k] for k in ("hit", "total", "percent")}
+            w["dropped"]["line"] = wl.get("dropped_lines", 0)
+            cov["without_preverified"] = {"modules": sorted(preverified), "instances": w["instances"],
+                                          "metrics": dict(sorted(w["metrics"].items())),
+                                          "dropped": dict(sorted(w["dropped"].items()))}
     else:
         cov.pop("uncovered_lines", None)
         cov.pop("executed_lines", None)
+        cov.pop("left_out_lines", None)
     if functional:
         hit = sum(v > 0 for v in functional.values())
         cov.setdefault("metrics", {})["functional"] = {
@@ -502,10 +598,14 @@ def coverage_of(info: Path, dat_path: Path, rtl_names: list[str], functional: di
     return cov
 
 
-def _line_coverage(info: Path, rtl_names: list[str]) -> dict:
+def _line_coverage(info: Path, rtl_names: list[str], out_of_scope: set | None = None,
+                   drop: set | None = None) -> dict:
+    """lcov line coverage of the RTL files; lines in `out_of_scope` ((file, line) whose every block
+    point is outside the design scope, never executed) are left out and counted, and so are the lines in
+    `drop` (lines only of pre-verified subtrees), executed or not."""
     if not info.is_file():
         return {"status": "not_measured"}
-    hit = total = 0
+    hit = total = left = dropped = 0
     per_file: dict[str, list[int]] = {}
     missed = []
     executed: dict[str, list[int]] = {}
@@ -516,6 +616,12 @@ def _line_coverage(info: Path, rtl_names: list[str]) -> dict:
             current = name if name in rtl_names else None
         elif line.startswith("DA:") and current:
             no, cnt = line[3:].split(",")[:2]
+            if drop and (current, int(no)) in drop:
+                dropped += 1
+                continue
+            if out_of_scope and int(cnt) == 0 and (current, int(no)) in out_of_scope:
+                left += 1
+                continue
             total += 1
             hit += int(cnt) > 0
             per_file.setdefault(current, [0, 0])
@@ -528,12 +634,14 @@ def _line_coverage(info: Path, rtl_names: list[str]) -> dict:
     return {"status": "measured" if total else "no_rtl_points", "metric": "line", "hit": hit, "total": total,
             "percent": round(100.0 * hit / total, 1) if total else None,
             "files": {k: {"hit": v[0], "total": v[1]} for k, v in per_file.items()}, "uncovered_lines": missed,
-            "executed_lines": {k: coverage_mod.line_ranges(v) for k, v in sorted(executed.items())}}
+            "executed_lines": {k: coverage_mod.line_ranges(v) for k, v in sorted(executed.items())},
+            **({"left_out_lines": left} if out_of_scope is not None else {}),
+            **({"dropped_lines": dropped} if drop is not None else {})}
 
 
 def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: Path | list[Path], *, seed: int = 1,
         params: dict | None = None, clock_periods: dict | None = None, opts: dict | None = None,
-        timeout_s: int = 3600) -> dict:
+        timeout_s: int = 3600, frontend: str = "verilog", preverified: list[str] | None = None) -> dict:
     rtl = rtl_files(rtl_dir)
     if not rtl:
         return {"status": "error", "error": f"no RTL files in {rtl_dir}"}
@@ -547,9 +655,10 @@ def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: 
         return {**base, "status": "integration_failed"}
     sva = checker_files(sva_dir)
     pv = param_values(contract, params)
-    files = build_inputs(contract, rtl, sva, test_file, pv, clock_periods=clock_periods, opts=opts)
+    files = build_inputs(contract, rtl, sva, test_file, pv, clock_periods=clock_periods, opts=opts, frontend=frontend)
     res = host.run(files, SIM_SCRIPT.format(seed=seed, jobs=8),
-                   ["sim.log", "results.xml", "coverage.info", "coverage.dat"], timeout_s=timeout_s, tag="sim")
-    parsed = parse_results(res.out_dir, [f.name for f in rtl])
+                   ["sim.log", "results.xml", "coverage.info", "coverage.dat", *SCOPE_OUTPUTS],
+                   timeout_s=timeout_s, tag="sim")
+    parsed = parse_results(res.out_dir, [f.name for f in rtl], preverified=preverified)
     status = "build_failed" if not parsed["built"] else "ran"
     return {**base, "status": status, "params": pv, "host": host.name, "out_dir": str(res.out_dir), **parsed}

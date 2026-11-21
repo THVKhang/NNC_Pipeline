@@ -1,4 +1,4 @@
-# Evaluation — phases 1 to 16 and OpenTitan rv_timer and gpio, stability (2026-11-15; design half 2026-11-18; hardening 2026-11-19; formal depth, spec-lint and two new designs 2026-11-20; OpenTitan rv_timer 2026-11-21)
+# Evaluation — phases 1 to 16 and OpenTitan rv_timer and gpio, stability, coverage scope and CDC (2026-11-15; design half 2026-11-18; hardening 2026-11-19; formal depth, spec-lint and two new designs 2026-11-20; OpenTitan rv_timer 2026-11-21)
 
 This page collects the measurements of four steps taken after the first five designs:
 
@@ -657,7 +657,9 @@ and the testplans at commit ee811654 are used.
 | Nightly report (2025-02-08, VCS, rev 9f20940d49) | 939/970 tests (96.8 %); all failures in `stress_all_with_rand_reset` | 578/620 (93.2 %) |
 | Their coverage: score, line, condition, toggle, branch, assertion, functional | 99.63, 99.06, 99.24, 100.00, 99.80, 99.68, 99.99 | 99.61, 99.36, 98.73, 100.00, 100.00, 100.00, 99.55 |
 | This flow: tests, assertions | 26 tests, 13 assertions in 5 runs | 23 tests, 13 assertions in 2 runs |
-| This flow: line, toggle, functional coverage | 52.5 %, 84.0 %, 36/40 | 24.2 %, 80.3 %, 38/39 |
+| This flow, phase 18 (every instrumented point): line, toggle, functional | 52.5 %, 84.0 %, 36/40 | 24.2 %, 80.3 %, 38/39 |
+| This flow, phase 19 (design scope, §12): line, block, toggle, functional | 96.5 %, 93.6 %, 87.5 %, 38/40 | 92.3 %, 87.8 %, 83.1 %, 38/39 |
+| This flow, phase 19, without OpenTitan's pre-verified primitives (as their cover.cfg): line, block, toggle | 97.0 %, 96.8 %, 89.2 % | 92.8 %, 91.7 %, 85.1 % |
 
 Sources: https://reports.opentitan.org/hw/ip/gpio/dv/latest/report.html and
 https://reports.opentitan.org/hw/ip/rv_timer/dv/latest/report.html (a report under the
@@ -665,9 +667,10 @@ https://reports.opentitan.org/hw/ip/rv_timer/dv/latest/report.html (a report und
 `rv_timer_testplan.hjson`.
 
 The two sides do not measure the same thing, so the table is not a ranking:
-- OpenTitan's coverage is collected on the IP and its own register block, with exclusions they reviewed. Here,
-  code coverage counts every line of every file in the file list, including whole packages of which the IP
-  uses a few functions, without any exclusion; that is why line coverage is low. Functional coverage counts
+- OpenTitan's coverage is collected on the IP and its own register block, with exclusions they reviewed. In
+  phase 18, code coverage here counted every instrumented point, including whole packages of which the IP uses a
+  few functions; that is why line coverage was low. Phase 19 counts the elaborated design only (§12), with no
+  hand exclusion. Functional coverage counts
   different cover points (theirs from the testplan, ours from the specification rules).
 - Their report is from 2025-02-08 and for `hw/ip/gpio`, not for the ip_autogen gpio at ee811654 verified here.
 - They report no mutation score and no formal proof of their checks; this flow has no CSR randomisation,
@@ -677,3 +680,158 @@ What the comparison shows: a mature hand-written test bench reaches about 99 % o
 work. This flow, from the documents alone and in about a day per IP, reaches every planned check and proves most
 assertions, but leaves the coverage gaps that its line and toggle numbers show. A person deciding G4 should read
 these numbers as a first pass, not as sign-off quality.
+
+## 12. Coverage of the elaborated design, and closure (phase 19, 2026-11-21)
+
+The sign-off areas the flow covers, and the ones it leaves out, are discussed in
+[SIGNOFF_SCOPE.md](SIGNOFF_SCOPE.md). This section measures what changed for code coverage.
+
+**Why the OpenTitan numbers were low.** Verilator instruments every function of every imported package, called or
+not. OpenTitan's `prim_secded_pkg` holds 8 136 of gpio's 21 352 line points and 20 848 of its 31 906 expression
+points, and the design calls none of its functions: it uses the separate `prim_secded_inv_*` modules. Toggle
+coverage also counted bits that cannot change, such as the zero-extended upper bits of sync_fifo's pointer
+arithmetic.
+
+**What the flow does now** (nnc/coverage.py, nnc/sim.py). Every simulation run also elaborates the DUT alone, with
+that run's parameters and macros, in two tools:
+- `verilator --json-only`: the elaborated tree keeps only the package functions the design calls;
+- Yosys `proc; flatten; opt` (the formal frontend): the netlist shows the bits that constant propagation proves
+  constant.
+
+The following points are left out of every denominator:
+- never-executed points of package code outside the kept functions;
+- toggles of constant bits.
+
+Each row of the report says how many points were left out, and gives the count over all points. There is no hand
+exclusion. Safeguards:
+- an executed point that the scope would leave out is counted (`scope_conflicts`);
+- when the simulator records a toggle on a bit that the netlist calls constant, the signal is counted whole. This
+  happened on gpio's `prim_onehot_check` trees (`or_tree`, `and_tree`): the RTL ties the leaves above
+  `OneHotWidth` = 114 to 0, yet Verilator reports toggles on them;
+- the 0->1 toggle of a constant-1 bit at time zero is left out: Verilator starts every variable at 0.
+
+`scope_conflicts` is 0 on all 13 designs. The outcomes (tests, failing tests and assertions, never-hit and
+NOT_VERIFIABLE checks) of all 13 reruns equal the committed ones. The only difference is gpio's two new closure
+tests.
+
+| Design | line | block | toggle | expression | functional | Left out by the scope |
+|---|---|---|---|---|---|---|
+| ahb2axi_bridge | 86.0 | 77.1 | 65.7 → **75.9** | 71.9 | 90.0 | toggle 4872 |
+| apb_tlul_bridge | 96.0 | 95.6 | 95.9 → **99.8** | 100.0 | 100.0 | toggle 88 |
+| async_apb_bridge | 91.9 | 88.8 | 98.6 | 74.8 | 97.5 | - |
+| async_gray_fifo | 99.1 | 95.7 | 99.5 | 98.0 | 100.0 | - |
+| axi2apb_bridge | 98.9 | 95.9 | 74.8 → **86.4** (closure) | 96.2 | 97.5 | toggle 24 |
+| axil_regfile | 100.0 | 100.0 | 95.8 → **96.7** | 95.7 | 100.0 | toggle 64 |
+| gen_apb_tlul_bridge | 95.1 | 95.7 | 95.6 → **99.8** | 100.0 | 100.0 | toggle 88 |
+| gen_sync_fifo | 97.3 | 94.4 | 99.5 → **99.7** | 97.4 | 100.0 | toggle 4 |
+| ot_gpio | 52.5 → **96.5** | 44.5 → **93.6** | 84.0 → **87.5** | 20.6 → **64.9** | 90.0 → **95.0** | line 9736, block 1288, expression 21732, toggle 3328 |
+| ot_rv_timer | 24.2 → **92.3** | 29.6 → **87.8** | 80.3 → **83.1** | 7.8 → **61.0** | 97.4 | line 2434, block 322, expression 5433, toggle 408 |
+| spi_master | 94.8 | 93.8 | 95.2 | 98.2 | 94.9 | - |
+| sync_fifo | 99.2 | 97.3 | 70.6 → **87.7** | 92.8 | 100.0 | toggle 448 |
+| uart_lite | 98.7 | 97.3 | 100.0 | 100.0 | 97.5 | - |
+
+Percent, before (phase 18, every instrumented point) → after. Source: each design's `work/results.json`
+(`coverage.design_scope`). The two asynchronous designs show no constant bits.
+
+**Pre-verified modules.** OpenTitan leaves its pre-verified primitives out of its coverage model (cover.cfg:
+`prim_alert_sender`, `prim_alert_receiver`, `prim_onehot_check`, the `prim_secded_inv_*` coders and others). Design
+config `coverage_preverified` holds that list for the two OpenTitan designs. The report then adds the coverage
+without their subtrees, next to the coverage of the whole design:
+
+| | line | block | toggle | expression |
+|---|---|---|---|---|
+| gpio, without 7 instances | 97.0 | 96.8 | 89.2 | 69.4 |
+| rv_timer, without 7 instances | 92.8 | 91.7 | 85.1 | 83.7 |
+
+**Closure by agents (A10/A11).**
+
+*gpio, functional.* 90.0 % → 95.0 % (38/40). Two tests were added in `verif/tests/test_ot_gpio_cov1.py`:
+PutPartialData full-word writes, and mask/size combinations. All 28 tests pass in all 5 runs, and G3 was approved
+again on delegation. The two points left are COVP-012 (A handshakes in consecutive cycles) and COVP-013 (two
+outstanding requests). The agents claim both unreachable: the register adapter holds `a_ready` low until the
+pending response has been taken. That matches OpenTitan's single-outstanding `tlul_adapter_reg`. The points still
+count; the claim is in `work/coverage_functional.md` for the reviewer.
+
+*gpio, toggle.* No test added. There were 18 unreachable claims, in `work/coverage.md`:
+- RACL disabled;
+- wrapper-tied `a_user` fields;
+- `d_opcode` bits 1-2;
+- the one-hot error tree;
+- read-only write enables;
+- address bits ≥ 10. These are excluded only by decision D-012 (tests use offsets below 0x400), a decision the
+  reviewer should look at.
+
+Several of these signals are constant struct fields. The constant-bit scope does not reach them yet, because
+Verilator names a struct member (`tl_i.a_user.rsvd`) where Yosys has one packed net.
+
+*axi2apb_bridge, toggle.* 75.1 % (after the scope) → 86.4 % for a target of 85 %, met in one round. Six tests were added (`verif/tests/test_axi2apb_bridge_cov1.py`). They had never been run before: reads and writes in the upper half of the address space, unsupported AxSIZE with long bursts, and 4-KiB-crossing bursts at the top of the space. Address bits 16 and up had never toggled, so a fault on them would have gone unnoticed. 21/21 tests pass, and G3 was approved again on delegation. Most of what is left is the upper bits of size and wrap arithmetic, which are unreachable.
+
+**Random initial values (step 19.4, a trial, not recorded).** A run-set configuration can set
+`"x_init": "random"`: Verilator `--x-assign unique --x-initial unique` with `+verilator+rand+reset+2`, seeded by
+the run seed. One run per seed, on six designs:
+- sync_fifo is clean;
+- uart_lite, axil_regfile, spi_master and apb_tlul_bridge fail assertions only at time 0. That is before the test
+  bench asserts reset: the reset input itself starts at a random value, so a checker sees state from before any
+  reset. This is a fault of the harness, not of the designs. The test bench must hold reset from time 0 before
+  such a configuration can go into a run set;
+- gen_sync_fifo fails `test_chk_024_sw_reset_full_and_rerequest` in the middle of the run (`o_sw_rst_busy` still 1
+  when the test expects 0). The register involved has an asynchronous reset. The test touches CHK-008, the
+  specification question left open in phase 6. Triage is needed to place it.
+
+No run set uses `x_init` yet.
+
+**Still open.**
+- Unreachable points that constant propagation cannot prove: upper bits of subtractions, branches under a
+  constant parameter in procedural code (`if (EnableRacl)`), `reinit_i`. A formal unreachability pass (step 19.5)
+  would prove them.
+- Constant struct fields.
+- The time-zero reset of the harness.
+
+## 13. Clock and reset domain crossings (phase 20, 2026-11-21)
+
+`nnc cdc <ip>` (nnc/cdc.py) checks RR-33 by structure, on the flattened Yosys netlist of each parameter set of the
+run set:
+- each flop gets the domain of its clock;
+- the cone of its data, enable and synchronous reset gives its sources;
+- a source of another domain is a crossing, classified as in the table below;
+- asynchronous resets from another domain are listed.
+
+Declared asynchronous inputs come from the contract's `domain` column or from config `cdc_async_inputs`.
+
+| Design | Configurations | Verdict | Crossings (bits, summed over configurations) |
+|---|---|---|---|
+| async_gray_fifo | 6 | review | SYNC 12, SYNC_MULTIBIT 44, QUALIFIED 161 |
+| async_apb_bridge | 7 | review | SYNC 16, QUALIFIED 677 |
+| ot_gpio | 4 | clean | SYNC 64 (`i_gpio` with `GpioAsyncOn=1`; none with `GpioAsyncOn=0`) |
+| uart_lite | 4 | clean | SYNC 4 (`i_rxd`) |
+| the 9 others | 1-4 | clean | no crossing (one clock, or synchronous clocks) |
+
+Source: `work/cdc.json` of each design (`work/cdc.md` lists every row).
+
+How to read the two reviews:
+- **async_gray_fifo.** The gray pointers cross bit by bit into the other domain: that is SYNC_MULTIBIT, correct
+  only because a gray code changes one bit at a time. The read data is captured under control of the synchronized
+  write pointer (`w_wgray_s`): that is QUALIFIED.
+- **async_apb_bridge.** The request and response payloads are captured under control of the synchronized
+  request and acknowledge (`w_req_s`, `w_ack_s`): QUALIFIED. The handshake bits themselves are SYNC.
+
+That one bit changes at a time, and that a payload is stable while it is captured, are protocol properties. This
+check does not prove them; formal and simulation do.
+
+**Does the check find faults?** In a copy of async_gray_fifo, two faults were put into the 2-FF synchronizer
+cell, and both were reported as violations:
+
+| Fault | Result |
+|---|---|
+| output taken from the first stage | FIRST_STAGE_READ on 4 synchronizers, verdict violations |
+| no synchronizer (`Q = D`) | 314 UNSYNC bits, verdict violations |
+
+Unit tests (tests/test_cdc.py) cover each class on hand-made netlists, including raw use of a value that is also
+synchronized (UNSYNC). CI job `cdc` reruns the check on all 13 designs and compares it with `work/cdc.json`.
+
+**Limits.**
+- QUALIFIED is a heuristic: some flop of the cone derives from a synchronizer of the destination domain. It is not
+  a proof that the control actually gates the capture. It therefore stays a review item.
+- Clocks that the contract calls synchronous are one domain.
+- No glitch analysis of combinational logic before a synchronizer: such logic is reported as UNSYNC, because the
+  first stage must take the source directly.

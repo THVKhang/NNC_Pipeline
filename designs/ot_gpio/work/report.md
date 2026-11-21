@@ -1,6 +1,6 @@
 # Verification report — ot_gpio
 
-Generated 2026-11-21T12:40:20+00:00 by NNC Pipeline.
+Generated 2026-11-21T16:21:13+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -8,20 +8,27 @@ Generated 2026-11-21T12:40:20+00:00 by NNC Pipeline.
 |---|---|
 | Rules | 268 — {'NOT_VERIFIED_BY_SIM': 80, 'VERIFIED': 188} |
 | Checks | 38 — {'PASS': 38} |
-| Tests | {'pass': 26} |
+| Tests | {'pass': 28} |
 | Run set | 5 runs in 4 configurations (base, sync_off, straps_off, min); primary base.s1 |
 | Integration | OK |
-| Code coverage (RTL), line | 52.5 % (11212/21352 lines) |
-| Code coverage (RTL), block | 44.5 % (1090/2452 statement blocks and branch arms) |
-| Code coverage (RTL), expression | 20.6 % (6576/31906 condition terms) |
-| Code coverage (RTL), toggle | 84.0 % (69898/83184 bit toggles 0->1 and 1->0) |
-| Code coverage (RTL), functional | 90.0 % (36/40 cover points of the specification) |
+| Code coverage (RTL), line | 96.5 % (11212/11616 lines); 9736 points left out (package code the design does not contain), all points 52.5 % (11212/21352) |
+| Code coverage (RTL), block | 93.6 % (1090/1164 statement blocks and branch arms); 1288 points left out (package code the design does not contain), all points 44.5 % (1090/2452) |
+| Code coverage (RTL), expression | 64.9 % (6600/10174 condition terms); 21732 points left out (package code the design does not contain), all points 20.7 % (6600/31906) |
+| Code coverage (RTL), toggle | 87.5 % (69874/79856 bit toggles 0->1 and 1->0); 3328 points left out (constant bits), all points 84.0 % (69898/83184) |
+| Code coverage (RTL), functional | 95.0 % (38/40 cover points of the specification) |
+| Code coverage without the modules the designer declares pre-verified | prim_alert_receiver, prim_alert_sender, prim_count, prim_esc_receiver, prim_esc_sender, prim_lfsr, prim_onehot_check, prim_prince, prim_secded_inv_39_32_dec, prim_secded_inv_39_32_enc, prim_secded_inv_64_57_dec, prim_secded_inv_64_57_enc (7 instances; config `coverage_preverified`) |
+| ... without pre-verified modules, block | 96.8 % (914/944) |
+| ... without pre-verified modules, expression | 69.4 % (5724/8250) |
+| ... without pre-verified modules, line | 97.0 % (10336/10652) |
+| ... without pre-verified modules, toggle | 89.2 % (62438/70032) |
 | Mutation score | 58.3 % (21 killed / 15 survived / 0 not compiled) |
 | Surviving mutants, formal equivalence (`nnc mutate-equiv`) | {'CEX': 4, 'ERROR': 2, 'PROVEN': 9}; score without the proven-equivalent mutants 77.8 % |
-| Coverage target | not requested (`nnc cover <design> --target <n> --metric <m>`) |
+| Coverage target | toggle 90.0 %: **target_unmet** (baseline 87.5 % -> 87.5 %, work/coverage.md) |
+| Earlier closure | functional 100.0 %: target_unmet (baseline 90.0 % -> 95.0 %, work/coverage_functional.md) |
+| Clock/reset domain crossings (structural, `nnc cdc`) | clean: SYNC 64 over 4 configuration(s), work/cdc.md |
 | Formal (SymbiYosys, depth 32) | {'PROVEN': 10, 'TIMEOUT': 1, 'UNSUPPORTED': 2} — reset assumptions + verif/formal/nnc_env.sv, work/formal.md |
 | Triage | no failure to analyse |
-| Agent cost | US$17.9041 in 70 calls (A1 0.9059, A12 1.5812, A13 0.544, A14 0.9184, A17 2.6852, A18 1.1687, A2 0.7038, A3 0.6687, A4 1.7198, A5 0.4537, A6 0.2562, A7 4.0072, A9 2.291) |
+| Agent cost | US$22.1904 in 74 calls (A1 0.9059, A10 3.6383, A11 0.6481, A12 1.5812, A13 0.544, A14 0.9184, A17 2.6852, A18 1.1687, A2 0.7038, A3 0.6687, A4 1.7198, A5 0.4537, A6 0.2562, A7 4.0072, A9 2.291) |
 
 ## Sign-off conditions
 
@@ -35,6 +42,8 @@ Generated 2026-11-21T12:40:20+00:00 by NNC Pipeline.
 | Every run of the run set built and ran | met — 5 runs |
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | **not met** — 13 rule(s) below: AH-T1.3.2-01, AH-T1.3.2-03, GP-10-07, GP-10-08, GP-10-19, GP-3-01, GP-4.1-01, GP-4.1-03, GP-5-02, GP-5-05 |
+| Coverage target toggle 90.0 % | **not met** — target_unmet |
+| Clock/reset domain crossings: no structural violation (RR-33) | met — clean: SYNC 64 (work/cdc.md) |
 | Formal: no counterexample, no vacuous or failed proof | met — {'PROVEN': 10, 'TIMEOUT': 1, 'UNSUPPORTED': 2} (work/formal.md) |
 
 ## Run set
@@ -43,11 +52,11 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 
 | Run | Parameters changed | Defines | Plusargs | Status | Tests | Failing assertions | Not verifiable here |
 |---|---|---|---|---|---|---|---|
-| base.s1 — GpioAsyncOn=1, GpioAsHwStrapsEn=1 (defaults) | defaults | — | — | ran | {'pass': 26} | none | 1 |
-| base.s2 — GpioAsyncOn=1, GpioAsHwStrapsEn=1 (defaults) | defaults | — | — | ran | {'pass': 26} | none | 1 |
-| sync_off.s1 — no input synchronizer | GpioAsyncOn=0 | — | — | ran | {'pass': 26} | none | 1 |
-| straps_off.s1 — no strap sampling | GpioAsHwStrapsEn=0 | — | — | ran | {'pass': 26} | none | 1 |
-| min.s1 — both off | GpioAsyncOn=0, GpioAsHwStrapsEn=0 | — | — | ran | {'pass': 26} | none | 1 |
+| base.s1 — GpioAsyncOn=1, GpioAsHwStrapsEn=1 (defaults) | defaults | — | — | ran | {'pass': 28} | none | 1 |
+| base.s2 — GpioAsyncOn=1, GpioAsHwStrapsEn=1 (defaults) | defaults | — | — | ran | {'pass': 28} | none | 1 |
+| sync_off.s1 — no input synchronizer | GpioAsyncOn=0 | — | — | ran | {'pass': 28} | none | 1 |
+| straps_off.s1 — no strap sampling | GpioAsHwStrapsEn=0 | — | — | ran | {'pass': 28} | none | 1 |
+| min.s1 — both off | GpioAsyncOn=0, GpioAsHwStrapsEn=0 | — | — | ran | {'pass': 28} | none | 1 |
 
 ## Gates
 
@@ -55,26 +64,26 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 |---|---|---|
 | G1_rules | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-21T01:04:06+00:00 |
 | G2_contract | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-21T01:13:18+00:00 |
-| G3_verif_sources | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-21T10:56:40+00:00 |
+| G3_verif_sources | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-21T15:49:42+00:00 |
 | G4_signoff | PENDING | artifacts ready for review |
 
 ## Checks
 
 | Check | Kind | Title | Status | Evidence |
 |---|---|---|---|---|
-| CHK-001 | assertion | Alert signal integrity never fails | **PASS** | hits 205232, fails 0; hit in 5/5 runs; formal PROVEN |
+| CHK-001 | assertion | Alert signal integrity never fails | **PASS** | hits 206219, fails 0; hit in 5/5 runs; formal PROVEN |
 | CHK-002 | assertion | o_alert is a single-cycle pulse | **PASS** | hits 862, fails 0; hit in 5/5 runs; formal PROVEN |
 | CHK-003 | assertion | No alert without an alert cause | **PASS** | hits 862, fails 0; hit in 5/5 runs; formal PROVEN |
-| CHK-004 | assertion | o_gpio / o_gpio_en follow the DATA_OUT / DATA_OE shadow model | **PASS** | hits 171413, fails 0; hit in 5/5 runs; formal PROVEN |
-| CHK-005 | assertion | D-channel response integrity never fails | **PASS** | hits 205232, fails 0; hit in 5/5 runs; formal PROVEN |
-| CHK-006 | assertion | Disabled interrupts never assert o_intr_gpio | **PASS** | hits 192407, fails 0; hit in 5/5 runs; formal PROVEN |
+| CHK-004 | assertion | o_gpio / o_gpio_en follow the DATA_OUT / DATA_OE shadow model | **PASS** | hits 172193, fails 0; hit in 5/5 runs; formal PROVEN |
+| CHK-005 | assertion | D-channel response integrity never fails | **PASS** | hits 206219, fails 0; hit in 5/5 runs; formal PROVEN |
+| CHK-006 | assertion | Disabled interrupts never assert o_intr_gpio | **PASS** | hits 193384, fails 0; hit in 5/5 runs; formal PROVEN |
 | CHK-007 | assertion | Interrupt level is held until software acknowledges it | **PASS** | hits 52865, fails 0; hit in 5/5 runs; formal PROVEN |
-| CHK-008 | assertion | Outputs held at zero during reset | **PASS** | hits 1612, fails 0; hit in 5/5 runs; formal PROVEN |
-| CHK-009 | assertion | Strap outputs: invalid before the trigger, frozen after sampling | **PASS** | hits 121896, fails 0; hit in 3/5 runs; formal PROVEN |
-| CHK-010 | assertion | Outputs change only at rising clock edges | **PASS** | hits 205069, fails 0; hit in 5/5 runs; formal UNSUPPORTED |
-| CHK-011 | assertion | Test-bench stimulus legality monitor (host rules and plan constraints) | **PASS** | hits 205232, fails 0; hit in 5/5 runs; formal UNSUPPORTED |
+| CHK-008 | assertion | Outputs held at zero during reset | **PASS** | hits 1712, fails 0; hit in 5/5 runs; formal PROVEN |
+| CHK-009 | assertion | Strap outputs: invalid before the trigger, frozen after sampling | **PASS** | hits 122479, fails 0; hit in 3/5 runs; formal PROVEN |
+| CHK-010 | assertion | Outputs change only at rising clock edges | **PASS** | hits 206046, fails 0; hit in 5/5 runs; formal UNSUPPORTED |
+| CHK-011 | assertion | Test-bench stimulus legality monitor (host rules and plan constraints) | **PASS** | hits 206219, fails 0; hit in 5/5 runs; formal UNSUPPORTED |
 | CHK-012 | assertion | D channel held stable under back-pressure | **PASS** | hits 18826, fails 0; hit in 5/5 runs; formal PROVEN |
-| CHK-013 | assertion | Response matches an outstanding request (source/size/opcode echo, no orphans) | **PASS** | hits 49357, fails 0; hit in 5/5 runs; formal TIMEOUT |
+| CHK-013 | assertion | Response matches an outstanding request (source/size/opcode echo, no orphans) | **PASS** | hits 49587, fails 0; hit in 5/5 runs; formal TIMEOUT |
 | CHK-014 | test | ALERT_TEST.fatal_fault triggers exactly one o_alert pulse | **PASS** | test_chk_014_alert_test_pulse, test_regression_random; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
 | CHK-015 | test | ALERT_TEST.regwen rw0c locks alert testing until reset | **PASS** | test_chk_015_alert_regwen_lock; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
 | CHK-016 | test | Command integrity error raises the fatal alert, repeated until reset | **PASS** | test_chk_016_intg_error_fatal_alert, test_regression_random; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
@@ -96,7 +105,7 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 | CHK-032 | test | HW_STRAPS_DATA_IN reads zero when GpioAsHwStrapsEn=0 | **PASS** | test_chk_032_straps_disabled; verified in straps_off.s1, min.s1 |
 | CHK-033 | test | Aligned byte writes: rejected on wide registers, accepted on PER_PIN_OE / PER_PIN_INTR_CTRL | **PASS** | test_chk_033_byte_writes; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
 | CHK-034 | test | Sub-word reads return the full register | **PASS** | test_chk_034_subword_reads; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
-| CHK-035 | test | TL-UL protocol error cases answered with d_error=1 | **PASS** | test_chk_035_protocol_errors; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
+| CHK-035 | test | TL-UL protocol error cases answered with d_error=1 | **PASS** | test_chk_035_protocol_errors, test_cov_102_mask_size_combinations; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
 | CHK-036 | test | Unmapped offsets return d_error=1 and change nothing | **PASS** | test_chk_036_unmapped; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
 | CHK-037 | test | Instruction-fetch reads complete without side effects | **PASS** | test_chk_037_instr_fetch; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
 | CHK-038 | test | Outstanding requests and back-pressure | **PASS** | test_chk_038_outstanding_backpressure, test_regression_random; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
@@ -417,6 +426,8 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 
 ## Not verified by this run
 
-- Formal: the assertions were checked by SymbiYosys under the environment assumptions (work/formal.md); a BOUNDED result holds only up to its depth. CDC/RDC, STA, synthesis and DFT checks are outside this flow.
+- Formal: the assertions were checked by SymbiYosys under the environment assumptions (work/formal.md); a BOUNDED result holds only up to its depth.
+- Domain crossings were checked structurally (synchronizer structure, `nnc cdc`); gray coding and handshake protocols are not proven by that check.
+- Sign-off STA, place and route and DFT are outside this flow (docs/SIGNOFF_SCOPE.md); `nnc rtl-check` gives a synthesis estimate of area and the longest combinational path.
 - Rules marked NOT_VERIFIED_BY_SIM carry the contract's reason (static, structural, not observable...).
 - Only the configurations of the run set above were simulated; code coverage is merged over its runs, mutation testing used the primary run base.s1.

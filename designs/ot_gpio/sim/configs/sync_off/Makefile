@@ -4,7 +4,7 @@
 #   make regression SEED=<n>        (the recorded seeds are in ../runs.tsv)
 TOP_DIR   := $(abspath ../../..)
 KIT_DIR   := $(abspath ../..)
-TESTS     := test_ot_gpio
+TESTS     := test_ot_gpio,test_ot_gpio_cov1
 SEED      ?= 1
 
 .PHONY: regression clean

@@ -15,7 +15,8 @@ specification in `designs/<ip>/run_set.json`:
 Every configuration starts from the design configuration (clock_periods, defines, plusargs) and the
 default parameters of the contract, and overrides what it names: `params` (contract parameters),
 `defines` and `plusargs` (replace), `clock_periods` (merged per clock), `seeds` (else the top-level list,
-else [1]). The first configuration with its first seed is the PRIMARY run: the reproduction kit and
+else [1]), `x_init` ("random": every variable without a reset starts at a random value of the seed,
+Verilator --x-assign/--x-initial unique, so a test that passes only because flops start at 0 fails). The first configuration with its first seed is the PRIMARY run: the reproduction kit and
 mutation testing use it.
 
 Each configuration is built once in its own folder and its seeds run one after the other; the
@@ -36,13 +37,13 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 
-from nnc import sim
+from nnc import coverage, sim
 from nnc.params import check as legal_check
 from nnc.simhost import SimHost
 
 FILE = "run_set.json"
 _NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,40}$")
-_FIELDS = {"name", "note", "params", "defines", "plusargs", "clock_periods", "seeds"}
+_FIELDS = {"name", "note", "params", "defines", "plusargs", "clock_periods", "seeds", "x_init"}
 
 
 class RunSetError(ValueError):
@@ -96,6 +97,11 @@ def load(path: Path, contract: dict, design_config: dict) -> list[dict]:
             override = sim.sim_options({"defines": _text(c.get("defines", ",".join(base_opts["defines"]))),
                                         "plusargs": c.get("plusargs", base_opts["plusargs"])})
             opts = override
+        if "x_init" in c:
+            if c["x_init"] not in ("zero", "random"):
+                raise RunSetError(f"{path.name}: configuration {name}: x_init is 'zero' or 'random'")
+            if c["x_init"] == "random":
+                opts = {**opts, "x_init": "random"}
         periods = dict(base_periods)
         cp = c.get("clock_periods")
         if cp:
@@ -118,7 +124,7 @@ def _seeds(v, where: str) -> list[int]:
 
 
 # ------------------------------------------------------------------------------------------- running
-RUN_ONE = ("cd {} && for s in $(cat seeds.txt); do "
+RUN_ONE = ("cd {} && if [ -f nnc_scope.sh ]; then bash nnc_scope.sh; fi; for s in $(cat seeds.txt); do "
            "make SEED=$s NNC_JOBS=@JOBS@ > sim.log 2>&1; echo \"NNC_MAKE_RC=$?\" >> sim.log; mkdir -p s$s; "
            "if [ -f coverage.dat ]; then verilator_coverage --write-info coverage.info coverage.dat >> sim.log 2>&1; "
            "mv coverage.dat coverage.info s$s/; fi; "
@@ -134,7 +140,8 @@ def script(parallel: int) -> str:
 
 
 def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: Path | list[Path],
-        runs: list[dict], *, parallel: int = 4, timeout_s: int | None = None) -> dict:
+        runs: list[dict], *, parallel: int = 4, timeout_s: int | None = None, frontend: str = "verilog",
+        preverified: list[str] | None = None) -> dict:
     """Simulate every run of the run set; return the merged result (results.json shape) with the
     per-run results under 'runs_detail' and the folder of the logs under 'out_dir'."""
     rtl = sim.rtl_files(rtl_dir)
@@ -158,7 +165,7 @@ def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: 
         r = c["run"]
         pv = sim.param_values(contract, r["params"])
         for rel, src in sim.build_inputs(contract, rtl, sva, test_file, pv, clock_periods=r["clock_periods"],
-                                         opts=r["opts"]).items():
+                                         opts=r["opts"], frontend=frontend).items():
             files[f"{folder[name]}/{rel}"] = src
         files[f"{folder[name]}/seeds.txt"] = " ".join(str(s) for s in c["seeds"]) + "\n"
     if timeout_s is None:
@@ -166,12 +173,14 @@ def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: 
         timeout_s = 3600 * waves * max(len(c["seeds"]) for c in configs.values())
     res = host.run(files, script(parallel),
                    ["C*/s*/sim.log", "C*/s*/results.xml", "C*/s*/coverage.info", "C*/s*/coverage.dat",
-                    "merged.info", "merged.dat", "merge.log"], timeout_s=timeout_s, tag="runset")
+                    "merged.info", "merged.dat", "merge.log", *(f"C*/{p}" for p in sim.SCOPE_OUTPUTS)],
+                   timeout_s=timeout_s, tag="runset")
     names = [f.name for f in rtl]
+    scopes = {name: sim.read_scope(res.out_dir / folder[name]) for name in configs}
     detail = []
     for r in runs:
         out = res.out_dir / folder[r["config"]] / f"s{r['seed']}"
-        parsed = sim.parse_results(out, names) if out.is_dir() else {
+        parsed = sim.parse_results(out, names, scopes[r["config"]], preverified) if out.is_dir() else {
             "tests": [], "assertions": {}, "not_verifiable": {}, "coverage": {"status": "not_measured"},
             "functional": {}, "make_rc": None, "built": False, "build_errors": ["no output: the run did not start"]}
         detail.append({**r, "params": sim.param_values(contract, r["params"]), "overrides": r["params"],
@@ -181,7 +190,9 @@ def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: 
     for d in detail:
         for k, v in d.get("functional", {}).items():
             functional[k] = functional.get(k, 0) + v
-    cov = sim.coverage_of(res.out_dir / "merged.info", res.out_dir / "merged.dat", names, functional)
+    scope = coverage.merge_scopes(list(scopes.values()))
+    cov = sim.coverage_of(res.out_dir / "merged.info", res.out_dir / "merged.dat", names, functional, scope,
+                          preverified)
     return {**base, **merge(detail, cov, functional), "host": host.name, "out_dir": str(res.out_dir),
             "runs_detail": detail}
 

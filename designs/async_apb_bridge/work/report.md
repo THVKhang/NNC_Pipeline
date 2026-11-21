@@ -1,6 +1,6 @@
 # Verification report — async_apb_bridge
 
-Generated 2026-11-19T06:11:18+00:00 by NNC Pipeline.
+Generated 2026-11-21T16:21:12+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -17,7 +17,9 @@ Generated 2026-11-19T06:11:18+00:00 by NNC Pipeline.
 | Code coverage (RTL), toggle | 98.6 % (26577/26946 bit toggles 0->1 and 1->0) |
 | Code coverage (RTL), functional | 97.5 % (39/40 cover points of the specification) |
 | Mutation score | 91.7 % (11 killed / 1 survived / 0 not compiled) |
+| Surviving mutants, formal equivalence (`nnc mutate-equiv`) | {'SIM_ONLY': 1}; score without the proven-equivalent mutants 91.7 % |
 | Coverage target | not requested (`nnc cover <design> --target <n> --metric <m>`) |
+| Clock/reset domain crossings (structural, `nnc cdc`) | review: QUALIFIED 677, SYNC 16 over 7 configuration(s), work/cdc.md |
 | Formal (SymbiYosys, depth 20) | {'PROVEN': 15, 'UNSUPPORTED': 3} — reset assumptions + verif/formal/nnc_env.sv, work/formal.md |
 | Triage | no failure to analyse |
 | Agent cost | US$29.1714 in 111 calls (A1 0.9876, A12 1.6017, A13 0.7526, A14 1.5197, A2 0.7731, A3 0.4261, A4 1.6549, A5 2.1882, A6 1.2864, A7 12.0202, A9 5.9606); of which US$3.7405 in 3 failed calls (usage limit, timeout, invalid answer) |
@@ -34,6 +36,7 @@ Generated 2026-11-19T06:11:18+00:00 by NNC Pipeline.
 | Every run of the run set built and ran | met — 14 runs |
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | **not met** — 3 rule(s) below: AB2-1.3-01, AB2-1.3-03, AB2-1.3-05 |
+| Clock/reset domain crossings: no structural violation (RR-33) | met — review: QUALIFIED 677, SYNC 16 (work/cdc.md) |
 | Formal: no counterexample, no vacuous or failed proof | met — {'PROVEN': 15, 'UNSUPPORTED': 3} (work/formal.md) |
 
 ## Run set
@@ -390,6 +393,8 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 
 ## Not verified by this run
 
-- Formal: the assertions were checked by SymbiYosys under the environment assumptions (work/formal.md); a BOUNDED result holds only up to its depth. CDC/RDC, STA, synthesis and DFT checks are outside this flow.
+- Formal: the assertions were checked by SymbiYosys under the environment assumptions (work/formal.md); a BOUNDED result holds only up to its depth.
+- Domain crossings were checked structurally (synchronizer structure, `nnc cdc`); gray coding and handshake protocols are not proven by that check.
+- Sign-off STA, place and route and DFT are outside this flow (docs/SIGNOFF_SCOPE.md); `nnc rtl-check` gives a synthesis estimate of area and the longest combinational path.
 - Rules marked NOT_VERIFIED_BY_SIM carry the contract's reason (static, structural, not observable...).
 - Only the configurations of the run set above were simulated; code coverage is merged over its runs, mutation testing used the primary run apb4.s1.

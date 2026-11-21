@@ -6,6 +6,29 @@ Measurements for every phase are in [docs/EVALUATION.md](docs/EVALUATION.md). Th
 No release contains a G4 sign-off. G1–G3 were approved by an AI assistant on the owner's delegation, and each
 approval is recorded as delegated. See [docs/G4_REVIEW_REQUEST.md](docs/G4_REVIEW_REQUEST.md).
 
+## 0.4.0 (2026-11-21)
+
+### Phase 19: coverage of the elaborated design (EVALUATION §12, docs/SIGNOFF_SCOPE.md)
+- Every simulation run elaborates the DUT alone with `verilator --json-only` and Yosys. Never-executed points
+  of package functions the design never calls, and toggles of bits that constant propagation proves constant,
+  are left out of every denominator. The report gives the count over all points next to each figure. Nothing
+  is left out by hand; an executed point is always counted; a signal on which the simulator saw a "constant"
+  bit toggle counts whole. gpio line 52.5 % -> 96.5 %, rv_timer 24.2 % -> 92.3 %, sync_fifo toggle
+  70.6 % -> 87.7 %; the outcomes of all 13 designs are unchanged.
+- Config `coverage_preverified`: extra report rows with the coverage without the subtrees of modules verified
+  elsewhere (the OpenTitan designs use the list of OpenTitan's cover.cfg).
+- Closure: gpio functional 90 % -> 95 % (two tests added; the two points left are claimed unreachable, still
+  counted). A closure on another metric no longer overwrites the record of the previous one
+  (`work/coverage_<metric>.md`, an "Earlier closure" row in the report).
+- Run-set option `"x_init": "random"` (random initial values of unreset variables). Tried, not used in any run
+  set yet: see EVALUATION §12.
+
+### Phase 20: clock and reset domain crossings (EVALUATION §13)
+- `nnc cdc <ip>`: structural RR-33 check on the flattened Yosys netlist of every parameter set (SYNC,
+  SYNC_MULTIBIT, QUALIFIED, UNSYNC, FIRST_STAGE_READ, resets from another domain) -> `work/cdc.md`; `--check`
+  compares with the recorded result. Config `cdc_async_inputs` (`port` or `port:PARAM=value`). Report row and
+  sign-off condition; flow stage `cdc`; CI job `cdc`. 11 designs clean, 2 for review, 0 violations.
+
 ## 0.3.0 (2026-11-21)
 
 ### Phase 18: a second OpenTitan IP, stability of the agents

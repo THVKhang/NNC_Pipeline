@@ -1,6 +1,6 @@
 # Verification report — apb_tlul_bridge
 
-Generated 2026-11-12T07:27:23+00:00 by NNC Pipeline.
+Generated 2026-11-21T16:21:12+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -13,13 +13,14 @@ Generated 2026-11-12T07:27:23+00:00 by NNC Pipeline.
 | Code coverage (RTL), line | 96.0 % (192/200 lines) |
 | Code coverage (RTL), block | 95.6 % (43/45 statement blocks and branch arms) |
 | Code coverage (RTL), expression | 100.0 % (47/47 condition terms) |
-| Code coverage (RTL), toggle | 95.9 % (1920/2002 bit toggles 0->1 and 1->0) |
+| Code coverage (RTL), toggle | 99.8 % (1910/1914 bit toggles 0->1 and 1->0); 88 points left out (constant bits), all points 95.9 % (1920/2002) |
 | Code coverage (RTL), functional | 100.0 % (40/40 cover points of the specification) |
 | Mutation score | 100.0 % (33 killed / 0 survived / 0 not compiled) |
 | Coverage target | functional 100.0 %: **target_met** (baseline 95.0 % -> 100.0 %, work/coverage.md) |
-| Formal (SymbiYosys, depth 20) | {'BOUNDED': 7, 'PROVEN': 10} — reset assumptions + verif/formal/nnc_env.sv, work/formal.md |
+| Clock/reset domain crossings (structural, `nnc cdc`) | clean: no crossing over 1 configuration(s), work/cdc.md |
+| Formal (SymbiYosys, depth 20) | {'PROVEN': 17} — reset assumptions + verif/formal/nnc_env.sv, work/formal.md |
 | Triage | no failure to analyse |
-| Agent cost | US$22.138 in 87 calls (A1 0.8682, A10 0.416, A11 1.3515, A12 0.514, A13 0.2732, A2 0.7102, A3 0.3887, A4 3.2454, A5 1.0603, A6 0.2892, A7 10.3255, A9 2.6961) |
+| Agent cost | US$23.0696 in 88 calls (A1 0.8682, A10 0.416, A11 1.3515, A12 0.514, A13 0.2732, A16 0.9316, A2 0.7102, A3 0.3887, A4 3.2454, A5 1.0603, A6 0.2892, A7 10.3255, A9 2.6961) |
 
 ## Sign-off conditions
 
@@ -33,7 +34,8 @@ Generated 2026-11-12T07:27:23+00:00 by NNC Pipeline.
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | met — 76 rules with attributed mutants |
 | Coverage target functional 100.0 % | met — target_met |
-| Formal: no counterexample, no vacuous or failed proof | met — {'BOUNDED': 7, 'PROVEN': 10} (work/formal.md) |
+| Clock/reset domain crossings: no structural violation (RR-33) | met — clean: no crossing (work/cdc.md) |
+| Formal: no counterexample, no vacuous or failed proof | met — {'PROVEN': 17} (work/formal.md) |
 
 ## Gates
 
@@ -48,17 +50,17 @@ Generated 2026-11-12T07:27:23+00:00 by NNC Pipeline.
 
 | Check | Kind | Title | Status | Evidence |
 |---|---|---|---|---|
-| CHK-001 | assertion | PREADY only in an APB Access cycle | **PASS** | hits 13715, fails 0; formal BOUNDED |
+| CHK-001 | assertion | PREADY only in an APB Access cycle | **PASS** | hits 13715, fails 0; formal PROVEN |
 | CHK-002 | assertion | PREADY is a one-cycle pulse | **PASS** | hits 13715, fails 0; formal PROVEN |
 | CHK-003 | assertion | PSLVERR only with PREADY | **PASS** | hits 5019, fails 0; formal PROVEN |
 | CHK-004 | assertion | PRDATA holds its value outside PREADY | **PASS** | hits 95936, fails 0; formal PROVEN |
-| CHK-005 | assertion | PRDATA is zero on write and error completions | **PASS** | hits 8852, fails 0; formal BOUNDED |
-| CHK-006 | assertion | Legal Setup launches the request from flops in the first Access cycle | **PASS** | hits 9845, fails 0; formal BOUNDED |
-| CHK-007 | assertion | Illegal Setup completes locally in the first Access cycle with no request | **PASS** | hits 3880, fails 0; formal BOUNDED |
-| CHK-008 | assertion | One request at a time, none before the APB completion | **PASS** | hits 34101, fails 0; formal BOUNDED |
+| CHK-005 | assertion | PRDATA is zero on write and error completions | **PASS** | hits 8852, fails 0; formal PROVEN |
+| CHK-006 | assertion | Legal Setup launches the request from flops in the first Access cycle | **PASS** | hits 9845, fails 0; formal PROVEN |
+| CHK-007 | assertion | Illegal Setup completes locally in the first Access cycle with no request | **PASS** | hits 3880, fails 0; formal PROVEN |
+| CHK-008 | assertion | One request at a time, none before the APB completion | **PASS** | hits 34101, fails 0; formal PROVEN |
 | CHK-009 | assertion | a_valid only inside an APB Access phase before PREADY | **PASS** | hits 34101, fails 0; formal PROVEN |
-| CHK-010 | assertion | Accepted TL-UL response is checked and mapped to the APB completion one cycle later | **PASS** | hits 9838, fails 0; formal BOUNDED |
-| CHK-011 | assertion | PREADY only caused by an illegal Setup or a counted response (orphans have no APB effect) | **PASS** | hits 13715, fails 0; formal BOUNDED |
+| CHK-010 | assertion | Accepted TL-UL response is checked and mapped to the APB completion one cycle later | **PASS** | hits 9838, fails 0; formal PROVEN |
+| CHK-011 | assertion | PREADY only caused by an illegal Setup or a counted response (orphans have no APB effect) | **PASS** | hits 13715, fails 0; formal PROVEN |
 | CHK-012 | assertion | Output values while reset is asserted | **PASS** | hits 196, fails 0; formal PROVEN |
 | CHK-013 | assertion | d_ready constant 1 after the first edge following reset release | **PASS** | hits 109651, fails 0; formal PROVEN |
 | CHK-014 | assertion | A request starts only after a legal Setup | **PASS** | hits 9842, fails 0; formal PROVEN |
@@ -357,6 +359,8 @@ Generated 2026-11-12T07:27:23+00:00 by NNC Pipeline.
 
 ## Not verified by this run
 
-- Formal: the assertions were checked by SymbiYosys under the environment assumptions (work/formal.md); a BOUNDED result holds only up to its depth. CDC/RDC, STA, synthesis and DFT checks are outside this flow.
+- Formal: the assertions were checked by SymbiYosys under the environment assumptions (work/formal.md); a BOUNDED result holds only up to its depth.
+- Domain crossings were checked structurally (synchronizer structure, `nnc cdc`); gray coding and handshake protocols are not proven by that check.
+- Sign-off STA, place and route and DFT are outside this flow (docs/SIGNOFF_SCOPE.md); `nnc rtl-check` gives a synthesis estimate of area and the longest combinational path.
 - Rules marked NOT_VERIFIED_BY_SIM carry the contract's reason (static, structural, not observable...).
 - Only the default parameter configuration was simulated (no run_set.json).

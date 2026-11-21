@@ -8,7 +8,7 @@ This packet is for the person who decides gate **G4 (sign-off)**: *is this desig
 - **Checks:** 25 — FAIL 1, PASS 24
 - **Tests:** {'fail': 1, 'pass': 24}
 - **Simulated configuration:** one (parameters {'PARA_SFIFO_DEPTH': 8, 'PARA_SFIFO_DATA_W': 32, 'PARA_SFIFO_PTR_RETIME': 0, 'PARA_SFIFO_MEM_USE_MACRO': 0}, seed 1)
-- **Code coverage:** line 97.3 %, block 94.4 %, expression 97.4 %, toggle 99.5 %, functional 100.0 %
+- **Code coverage:** line 97.3 %, block 94.4 %, expression 97.4 %, toggle 99.7 %, functional 100.0 %
 - **Mutation score:** 100.0 % (36 of 36 injected faults detected)
 
 ## 2. Decisions taken for you
