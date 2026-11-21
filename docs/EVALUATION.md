@@ -1,4 +1,4 @@
-# Evaluation — phases 1 to 16 and OpenTitan rv_timer (2026-11-15; design half 2026-11-18; hardening 2026-11-19; formal depth, spec-lint and two new designs 2026-11-20; OpenTitan rv_timer 2026-11-21)
+# Evaluation — phases 1 to 16 and OpenTitan rv_timer and gpio, stability (2026-11-15; design half 2026-11-18; hardening 2026-11-19; formal depth, spec-lint and two new designs 2026-11-20; OpenTitan rv_timer 2026-11-21)
 
 This page collects the measurements of four steps taken after the first five designs:
 
@@ -437,7 +437,7 @@ an open-source industrial IP with a public specification, a TL-UL register inter
 register tool, a differential alert and bus-integrity logic. It tests whether the flow scales to RTL that uses
 the full SystemVerilog of a large project (packages, structs, `prim_*` primitives), and to a specification spread
 over five documents. The RTL is the design under test and was never shown to the agents that write checks and
-tests. OpenTitan's own UVM test bench is not copied (licence and isolation); no comparison with it is made here.
+tests. OpenTitan's own UVM test bench is not copied (licence and isolation); §11.2 compares with its public numbers.
 
 **Set-up** (`designs/ot_rv_timer/`, Apache-2.0, see its `NOTICE.md`):
 - RTL: the 44 OpenTitan files of rv_timer and what it uses, 8 635 lines, unchanged, plus a 127-line wrapper
@@ -519,3 +519,161 @@ RT-5-02, RT-5-05, RT-8-16, RT-T6.3-01) are attributed mostly to these alert and 
 6. The report shows the equivalence summary next to the mutation score.
 
 **CI.** ot_rv_timer is added to the kit, kit-configs and formal jobs.
+
+## 10. Do repeated agent runs agree? (phase 18, uart_lite, 2026-11-21)
+
+Three fresh copies of uart_lite ran ingest, extraction (A1), review (A2), questions (A3) and the contract (A4)
+with the same specification, document configuration and models, an empty `work/` and no cache
+(`nnc flow <copy> --from ingest --to contract --unreviewed`). The committed `designs/uart_lite` is the fourth run.
+Each run picks its own rule and check IDs, so `nnc stability` (nnc/stability.py) compares the specification
+sentences the rules cite. Files: [designs/uart_lite/stability/](../designs/uart_lite/stability/README.md).
+Cost of the three runs: about US$5.2.
+
+| Measure (Jaccard index unless noted) | Range over the 6 pairs |
+|---|---|
+| Normative sentences kept | 0.91–0.95 |
+| Normative sentences covered by a check | 0.86–0.93 |
+| All cited sentences kept | 0.77–0.90 |
+| Kept rules whose sentence set is a rule in the other run (fraction) | 0.81–0.93 |
+| Same strongest MUST/SHOULD/MAY per sentence (fraction) | 0.99–1.00 |
+| Rules / checks per run | 134–154 rules, 32–34 checks (12–13 assertions) |
+
+Each run keeps 105 to 108 of the 114 normative sentences, and the runs agree on more than 9 in 10. Agreement on
+which sentences a check covers is lower (86 to 92 normative sentences per run). About one kept rule in six groups
+the sentences differently. The strength of a sentence almost never differs. This variation is why the rules (G1)
+and the contract (G2) are reviewed for each run; the cache makes a re-run of the same run reproducible, not a new
+run identical.
+
+## 11. A second OpenTitan IP: gpio, with four configurations (phase 18, 2026-11-21)
+
+**Why.** rv_timer (§9) is one industrial design with one configuration. gpio checks whether its results repeat
+on a second OpenTitan IP that has parameters, so that the run set, formal per configuration and the slang
+frontend are exercised together.
+
+**Set-up** (`designs/ot_gpio/`, Apache-2.0, see its `NOTICE.md`):
+- RTL: the 45 OpenTitan files of `hw/top_earlgrey/ip_autogen/gpio` and what it uses (commit ee811654, 18 891
+  lines), unchanged, plus a 150-line wrapper `ot_gpio_nnc.sv` written here (flat ports, request integrity,
+  response integrity check, alert receiver, as for rv_timer).
+- Golden sources: the gpio documentation (1 169 lines with the wrapper's integration part and the decisions) and
+  the same four standards as rv_timer.
+- Run set: the two parameters `GpioAsyncOn` and `GpioAsHwStrapsEn`, all four combinations: base (1, 1; seeds 1
+  and 2), sync_off (0, 1), straps_off (1, 0), min (0, 0).
+
+| Step | Result |
+|---|---|
+| `spec-lint` (A18) | 19 gaps (10 high, 7 medium, 2 low), US$1.17 |
+| Rules after review (G1) | 268 of 320 (45 rejected, 7 merged, 41 fixed); 8 open questions, answered with decisions **D-001..D-022** (spec §10), made from the documents only |
+| Contract (G2) | 38 checks (13 assertions, 25 tests) over 188 rules; 80 rules not verifiable by simulation |
+| Test code | one Python error in the generated tests, repaired by A7 in one round (no RTL, no failed check shown) |
+| Simulation failures | 3 assertions (CHK-006, CHK-008, CHK-011), all judged B (verification wrong); fixed by A17 in one round |
+| Formal counterexamples | 1 (CHK-003), judged B and fixed by A17 in a second round |
+| Agent cost, whole flow | US$17.90 in 70 calls (A7 US$4.01, A17 US$2.69, A9 US$2.29) |
+
+**Results** (`work/report.md`, `formal.md`, `mutation.json`):
+
+| | ot_gpio |
+|---|---|
+| Tests | 26/26, in all 5 runs |
+| Assertions failing | 0/13 |
+| Rules VERIFIED / not verifiable by simulation | 188 / 80 |
+| Functional coverage | 36/40 cover points |
+| Code coverage: line, toggle | 52.5 %, 84.0 % |
+| Formal (depth 32, 4 configurations): PROVEN / TIMEOUT / simulation-only / CEX | 10 / 1 (CHK-013) / 2 (CHK-010, CHK-011) / **0** |
+| Mutation | 58.3 % (21/36); of the 15 survivors formal proves 9 equivalent, 4 differ, 2 not checked: **77.8 %** without the equivalent ones |
+| Hand fixes | 0 |
+
+CHK-009 (strap outputs) is VACUOUS in straps_off and min, as it must be: with `GpioAsHwStrapsEn` = 0 the strap
+outputs are not checked (D-009). It is PROVEN in the two configurations with straps.
+
+The 13 rules below 85 % per-requirement mutation score (alert handler AH-T1.3.2-01 and -03, GP-10-07, GP-10-08,
+GP-10-19, GP-3-01, GP-4.1-01, GP-4.1-03, GP-5-02, GP-5-05, GP-T2.2-05, GP-T3.2.3-03, GP-T5.17-01) are attributed
+mostly to the alert, integrity and filter survivors below.
+
+**The verification faults, all in the verification, none in the RTL.**
+- CHK-006 assumed that a write to `INTR_ENABLE` takes effect at its response. The RTL applies it at the request,
+  so under D-channel back-pressure a bit being enabled showed early. The checker now skips only bits that an
+  outstanding write sets from 0 to 1 (D-018, D-004); bits that stay 0 are still checked on every edge.
+- CHK-008 fired at time 0, before any reset had been asserted, and its hit counter could never count. It now
+  starts at the first reset assertion.
+- CHK-011 (stimulus self-check) found that, with `GpioAsyncOn` = 0, the tests drove inputs after the falling
+  edge while the plan asks for changes just after the rising edge. The tests were changed. The checker also
+  compared only 49 of 121 input bits (a truncated vector); it now compares all of them, which strengthens it.
+- CHK-003 (formal) counted a request with a command integrity error as an alert cause only once accepted. The
+  stock OpenTitan integrity check raises the alert while the request is presented (`a_valid` = 1), which no
+  rule forbids. The checker now counts the request from `a_valid`.
+
+**The 4 mutants formal finds different** (the miter leaves inputs free and does not apply `nnc_env.sv`):
+- M12 (`prim_mubi_pkg.sv:72`): the response to an instruction fetch; D-011 does not check it (as M01 of
+  rv_timer).
+- M15 (`tlul_adapter_reg.sv:219`, reset value of `error_q`): `o_d_error` in the first cycle after reset, when no
+  response is valid; D-015 checks `d_error` only on a response.
+- M02 (`prim_filter_ctr.sv:59`, reset value of the filter): `o_straps_data` six cycles after reset; D-008
+  samples straps only after `i_gpio` has been stable for 24 cycles, and D-003 leaves the input path unchecked in
+  the first 20 cycles.
+- M21 (`prim_alert_receiver.sv:190`): the timing of later alert pulses; D-010 and D-017 bound the pulses but do
+  not fix their cycle.
+- M30 and M33 (reset condition inverted) are not checked, for the same reason as M12 of rv_timer.
+
+These explanations are read from the counterexample summary (output and step) and the mutated line; the traces
+are in `work/mutation_equiv/`.
+
+**Fault of the flow found and fixed** (with a unit test): with the slang frontend, formal elaborated the DUT
+with its default parameters and the formal top then failed to set them ("does not have a parameter named
+'GpioAsHwStrapsEn'"), so every check was ERROR. rv_timer has no parameter and never reached this path. The
+configuration's parameters now go to `read_slang -G`, as `mutate-equiv` already did.
+
+**CI.** ot_gpio is added to the kit and kit-configs jobs, and to formal with one job per configuration.
+
+### 11.1 Did the rv_timer results repeat?
+
+| | ot_rv_timer (§9) | ot_gpio |
+|---|---|---|
+| OpenTitan RTL | 44 files, 8 635 lines | 45 files, 18 891 lines |
+| Configurations, runs | 1, 2 | 4, 5 |
+| Gaps found by spec-lint; decisions | 20; D-001..D-020 | 19; D-001..D-022 |
+| Rules kept / checks (assertions) | 228 / 35 (13) | 268 / 38 (13) |
+| Verification faults (B) found by simulation, by formal | 4, 2 | 3, 1 |
+| Faults judged A (RTL wrong) | 0 | 0 |
+| Formal: PROVEN, CEX left | 7, 1 (stimulus question for G4) | 10, 0 |
+| Mutation score; without proven-equivalent mutants | 58.3 %; 84.0 % | 58.3 %; 77.8 % |
+| Survivors that differ, all in a case a decision leaves unchecked | 3 | 4 |
+| Hand fixes | 0 | 0 |
+| Agent cost | US$22.09 | US$17.90 |
+
+The pattern repeats. The RTL is never blamed. Every failure is a verification fault that the agents correct
+without changing an expected value. The surviving differences fall where the specification decisions chose not
+to check. No hand fix was needed. Formal went further on gpio (no counterexample left).
+
+### 11.2 Comparison with OpenTitan's own test benches (public numbers only)
+
+OpenTitan verifies both IPs with UVM test benches. They are not copied here; only the public nightly report
+and the testplans at commit ee811654 are used.
+
+| | gpio | rv_timer |
+|---|---|---|
+| OpenTitan stage | gpio 1.0.0 D3/V3 (the ip_autogen 2.0.0 is D1/V1) | 1.1.0 D3/V3 |
+| UVM DV code (`dv/`, `.sv`/`.svh`) | 25 files, 3 158 lines | 19 files, 1 574 lines |
+| Testplan | 11 testpoints + 5 common testplans | 8 testpoints + 5 common testplans |
+| Nightly report (2025-02-08, VCS, rev 9f20940d49) | 939/970 tests (96.8 %); all failures in `stress_all_with_rand_reset` | 578/620 (93.2 %) |
+| Their coverage: score, line, condition, toggle, branch, assertion, functional | 99.63, 99.06, 99.24, 100.00, 99.80, 99.68, 99.99 | 99.61, 99.36, 98.73, 100.00, 100.00, 100.00, 99.55 |
+| This flow: tests, assertions | 26 tests, 13 assertions in 5 runs | 23 tests, 13 assertions in 2 runs |
+| This flow: line, toggle, functional coverage | 52.5 %, 84.0 %, 36/40 | 24.2 %, 80.3 %, 38/39 |
+
+Sources: https://reports.opentitan.org/hw/ip/gpio/dv/latest/report.html and
+https://reports.opentitan.org/hw/ip/rv_timer/dv/latest/report.html (a report under the
+`top_earlgrey/ip_autogen/gpio` path does not exist); the testplans `gpio_testplan.hjson` and
+`rv_timer_testplan.hjson`.
+
+The two sides do not measure the same thing, so the table is not a ranking:
+- OpenTitan's coverage is collected on the IP and its own register block, with exclusions they reviewed. Here,
+  code coverage counts every line of every file in the file list, including whole packages of which the IP
+  uses a few functions, without any exclusion; that is why line coverage is low. Functional coverage counts
+  different cover points (theirs from the testplan, ours from the specification rules).
+- Their report is from 2025-02-08 and for `hw/ip/gpio`, not for the ip_autogen gpio at ee811654 verified here.
+- They report no mutation score and no formal proof of their checks; this flow has no CSR randomisation,
+  stress-with-reset or long random regressions.
+
+What the comparison shows: a mature hand-written test bench reaches about 99 % on every metric after years of
+work. This flow, from the documents alone and in about a day per IP, reaches every planned check and proves most
+assertions, but leaves the coverage gaps that its line and toggle numbers show. A person deciding G4 should read
+these numbers as a first pass, not as sign-off quality.

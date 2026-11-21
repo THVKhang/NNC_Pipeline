@@ -1,0 +1,325 @@
+{
+ "source": {
+  "file": "opentitan_alert_handler_theory_of_operation.md",
+  "sha256": "b232624126f8a7bc6f941cdbc2d8f1e2db39f55f1b694749b3f2bef42b712545",
+  "index_version": 1
+ },
+ "extraction": {
+  "prompt_version": "extract-v2",
+  "model": "sonnet",
+  "budget_tokens": 3500,
+  "tag": "AH",
+  "sections": [
+   "Alert Definition",
+   "Differential Alert Signaling",
+   "Monitoring of Signal Integrity Issues"
+  ],
+  "skip": [],
+  "batches": 1,
+  "date": "2026-11-21T01:00:17+00:00",
+  "usage": {
+   "calls": 1,
+   "cached": 0,
+   "cost_usd": 0.0339,
+   "input_tokens": 2,
+   "output_tokens": 1898,
+   "cache_creation_input_tokens": 3613,
+   "cache_read_input_tokens": 1031
+  },
+  "errors": []
+ },
+ "coverage": {
+  "sentences": 28,
+  "normative_sentences": 8,
+  "normative_cited": 8,
+  "normative_skipped": 0,
+  "uncovered_after_first_pass": 0,
+  "uncovered": [],
+  "invalid_ids": []
+ },
+ "rules": [
+  {
+   "id": "AH-T1.3.1-01",
+   "doc": "opentitan_alert_handler_theory_of_operation.md",
+   "section": "T1.3.1",
+   "section_title": "Alert Definition",
+   "page": 122,
+   "quote": "Alerts are defined as events that have security implications, and should be handled by the main processor, or escalated to other hardware modules to take action.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3.1:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "An event has security implications",
+   "statement": "Alerts are events with security implications and must be handled by the main processor or escalated to other hardware modules for action.",
+   "check": "none"
+  },
+  {
+   "id": "AH-T1.3.1-02",
+   "doc": "opentitan_alert_handler_theory_of_operation.md",
+   "section": "T1.3.1",
+   "section_title": "Alert Definition",
+   "page": 122,
+   "quote": "Those peripherals should instantiate one module (prim_alert_sender) to convert the event associated with that alert into a signal to the alert handler module.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3.1:s3"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "prim_alert_sender"
+   ],
+   "condition": "A peripheral defines an alert signal",
+   "statement": "Peripherals defining alerts must instantiate a prim_alert_sender to convert the alert event into a signal to the alert handler.",
+   "check": "none"
+  },
+  {
+   "id": "AH-T1.3.1-03",
+   "doc": "opentitan_alert_handler_theory_of_operation.md",
+   "section": "T1.3.1",
+   "section_title": "Alert Definition",
+   "page": 122,
+   "quote": "The differential signaling submodules may either use a synchronous or asynchronous clocking scheme, since the message type to be transferred is a single discrete event.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3.1:s5"
+   ],
+   "strength": "MAY",
+   "actor": "any",
+   "signals": [],
+   "condition": "",
+   "statement": "The differential signaling submodules may use either a synchronous or an asynchronous clocking scheme.",
+   "check": "scenario"
+  },
+  {
+   "id": "AH-T1.3.2-01",
+   "doc": "opentitan_alert_handler_theory_of_operation.md",
+   "section": "T1.3.2",
+   "section_title": "Differential Alert Signaling",
+   "page": 135,
+   "quote": "Alerts are encoded differentially and signaled using a full handshake on the alert_tx_i/o.alert_p/n and alert_rx_i/o.ack_p/n wires. The handshake pattern is repeated as long as the alert is true.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3.2:s2",
+    "T1.3.2:s7"
+   ],
+   "strength": "MUST",
+   "actor": "any",
+   "signals": [
+    "alert_tx_i.alert_p",
+    "alert_tx_i.alert_n",
+    "alert_rx_i.ack_p",
+    "alert_rx_i.ack_n"
+   ],
+   "condition": "Alert is signaled",
+   "statement": "Alerts are differentially encoded and signaled with a full handshake on alert_p/n and ack_p/n, repeated as long as the alert is true.",
+   "check": "both"
+  },
+  {
+   "id": "AH-T1.3.2-02",
+   "doc": "opentitan_alert_handler_theory_of_operation.md",
+   "section": "T1.3.2",
+   "section_title": "Differential Alert Signaling",
+   "page": 135,
+   "quote": "The full handshake guarantees that alert messages are correctly back-pressured and no alert is \"lost\" at the asynchronous boundary due to (possibly variable) clock ratios greater or less than 1.0.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3.2:s4"
+   ],
+   "strength": "MUST",
+   "actor": "any",
+   "signals": [
+    "alert_tx_i.alert_p",
+    "alert_rx_i.ack_p"
+   ],
+   "condition": "Alert crosses an asynchronous boundary",
+   "statement": "The full handshake must back-pressure alert messages correctly so no alert is lost at the asynchronous boundary regardless of clock ratio.",
+   "check": "scenario"
+  },
+  {
+   "id": "AH-T1.3.2-03",
+   "doc": "opentitan_alert_handler_theory_of_operation.md",
+   "section": "T1.3.2",
+   "section_title": "Differential Alert Signaling",
+   "page": 135,
+   "quote": "The \"native alert message\" will be repeated on the output wires as long as the alert event is still true within the peripheral.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3.2:s5"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "alert_tx_o.alert_p",
+    "alert_tx_o.alert_n"
+   ],
+   "condition": "Alert event is still true within the peripheral",
+   "statement": "The native alert message is repeated on the output wires as long as the alert event remains true.",
+   "check": "both"
+  },
+  {
+   "id": "AH-T1.3.2-04",
+   "doc": "opentitan_alert_handler_theory_of_operation.md",
+   "section": "T1.3.2",
+   "section_title": "Differential Alert Signaling",
+   "page": 170,
+   "quote": "The sender will wait for 2 cycles between handshakes.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3.2:s8"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "alert_tx_o.alert_p",
+    "alert_tx_o.alert_n"
+   ],
+   "condition": "Alert handshake repeats",
+   "statement": "The sender waits 2 cycles between handshakes.",
+   "check": "assertion"
+  },
+  {
+   "id": "AH-T1.3.2-05",
+   "doc": "opentitan_alert_handler_theory_of_operation.md",
+   "section": "T1.3.2",
+   "section_title": "Differential Alert Signaling",
+   "page": 173,
+   "quote": "Note that the alert is immediately propagated to alert_o once the initial level change on alert_tx_i.alert_p/n has been received and synchronized to the local clock on the receiver side. This ensures that the first occurrence of an alert is always propagated - even if the handshake lines have been manipulated to emulate backpressure.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3.2:s9",
+    "T1.3.2:s10"
+   ],
+   "strength": "MUST",
+   "actor": "master",
+   "signals": [
+    "alert_tx_i.alert_p",
+    "alert_tx_i.alert_n",
+    "alert_o"
+   ],
+   "condition": "Initial level change on alert_tx_i.alert_p/n received and synchronized, even if handshake lines are manipulated to emulate backpressure",
+   "statement": "The receiver must immediately propagate the first alert occurrence to alert_o after synchronizing the initial level change on alert_tx_i.alert_p/n.",
+   "check": "both"
+  },
+  {
+   "id": "AH-T1.3.2-06",
+   "doc": "opentitan_alert_handler_theory_of_operation.md",
+   "section": "T1.3.2",
+   "section_title": "Differential Alert Signaling",
+   "page": 177,
+   "quote": "The alert sender and receiver modules can either be used synchronously or asynchronously.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3.2:s12"
+   ],
+   "strength": "MAY",
+   "actor": "any",
+   "signals": [],
+   "condition": "",
+   "statement": "The alert sender and receiver modules can be used either synchronously or asynchronously.",
+   "check": "scenario"
+  },
+  {
+   "id": "AH-T1.3.2-07",
+   "doc": "opentitan_alert_handler_theory_of_operation.md",
+   "section": "T1.3.2",
+   "section_title": "Differential Alert Signaling",
+   "page": 177,
+   "quote": "The signaling protocol remains the same in both cases, but the additional synchronizer flops at the diff pair inputs may be omitted, which results in lower signaling latency.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3.2:s13"
+   ],
+   "strength": "MUST",
+   "actor": "any",
+   "signals": [],
+   "condition": "Sync or async use",
+   "statement": "The signaling protocol remains the same in both synchronous and asynchronous use; synchronizer flops at the diff pair inputs may be omitted.",
+   "check": "scenario"
+  },
+  {
+   "id": "AH-T1.3.4-01",
+   "doc": "opentitan_alert_handler_theory_of_operation.md",
+   "section": "T1.3.4",
+   "section_title": "Monitoring of Signal Integrity Issues",
+   "page": 232,
+   "quote": "All differential pairs are monitored for signal integrity issues, and if an encoding failure is detected, the receiver module asserts a signal integrity alert via integ_fail_o. The alert_tx_i.alert_p/n pair is not correctly encoded on the receiver side. This can be directly flagged as an integrity failure on the receiver side.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3.4:s1",
+    "T1.3.4:s3",
+    "T1.3.4:s4"
+   ],
+   "strength": "MUST",
+   "actor": "master",
+   "signals": [
+    "integ_fail_o",
+    "alert_tx_i.alert_p",
+    "alert_tx_i.alert_n"
+   ],
+   "condition": "alert_tx_i.alert_p/n pair is not correctly encoded at the receiver",
+   "statement": "The receiver must assert integ_fail_o when alert_tx_i.alert_p/n is incorrectly encoded.",
+   "check": "both"
+  },
+  {
+   "id": "AH-T1.3.4-02",
+   "doc": "opentitan_alert_handler_theory_of_operation.md",
+   "section": "T1.3.4",
+   "section_title": "Monitoring of Signal Integrity Issues",
+   "page": 232,
+   "quote": "All differential pairs are monitored for signal integrity issues, and if an encoding failure is detected, the receiver module asserts a signal integrity alert via integ_fail_o. The alert_rx_i.ping_p/n or the alert_rx_i.ack_p/n pairs are not correctly encoded on the sender side. This is signaled to the receiver by setting the alert_tx_o.alert_p/n wires to the same value, and that value will be continuously toggled. This implicitly triggers a signal integrity alert on the receiver side.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3.4:s1",
+    "T1.3.4:s5",
+    "T1.3.4:s6",
+    "T1.3.4:s7"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "alert_rx_i.ping_p",
+    "alert_rx_i.ping_n",
+    "alert_rx_i.ack_p",
+    "alert_rx_i.ack_n",
+    "alert_tx_o.alert_p",
+    "alert_tx_o.alert_n",
+    "integ_fail_o"
+   ],
+   "condition": "ping_p/n or ack_p/n pair is not correctly encoded at the sender",
+   "statement": "The sender must set alert_tx_o.alert_p/n to the same continuously toggling value, causing the receiver to assert integ_fail_o.",
+   "check": "both"
+  },
+  {
+   "id": "AH-T1.3.4-03",
+   "doc": "opentitan_alert_handler_theory_of_operation.md",
+   "section": "T1.3.4",
+   "section_title": "Monitoring of Signal Integrity Issues",
+   "page": 268,
+   "quote": "Note that if signal integrity failures occur during ping or alert handshaking, it is possible that the protocol state-machines lock up and the alert sender and receiver modules become unresponsive. However, the above mechanisms ensure that this will always trigger either a signal integrity alert or eventually a \"pingfail\" alert.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3.4:s9",
+    "T1.3.4:s10"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "integ_fail_o"
+   ],
+   "condition": "Signal integrity failures occur during ping or alert handshaking and the protocol locks up",
+   "statement": "A protocol lock-up must always trigger either a signal integrity alert or eventually a pingfail alert.",
+   "check": "scenario"
+  }
+ ],
+ "skipped": [
+  {
+   "sentence": "T1.3.2:s11",
+   "reason": "informative_note",
+   "text": "(In such a scenario, all subsequent alerts would be back-pressured and eventually the ping testing mechanism described in the next subsection would detect that the wires have been tampered with.)"
+  }
+ ]
+}

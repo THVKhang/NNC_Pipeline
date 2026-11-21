@@ -1,0 +1,2247 @@
+{
+ "mutants": [
+  {
+   "id": "M01",
+   "file": "prim_alert_receiver.sv",
+   "line": 226,
+   "operator": "or_to_and",
+   "original": "send_ping = ping_rise || ping_pending_q;",
+   "mutated": "          send_ping = ping_rise && ping_pending_q;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "also_run": [
+    "sync_off.s1",
+    "straps_off.s1",
+    "min.s1"
+   ],
+   "equivalence": {
+    "status": "PROVEN",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "          send_ping = ping_rise && ping_pending_q;",
+    "per_config": {
+     "base.s1": {
+      "status": "PROVEN",
+      "overrides": {}
+     },
+     "sync_off.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "GpioAsyncOn": 0
+      }
+     },
+     "straps_off.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "GpioAsHwStrapsEn": 0
+      }
+     },
+     "min.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "GpioAsyncOn": 0,
+       "GpioAsHwStrapsEn": 0
+      }
+     }
+    }
+   }
+  },
+  {
+   "id": "M02",
+   "file": "prim_filter_ctr.sv",
+   "line": 59,
+   "operator": "zero_to_one",
+   "original": "stored_value_q <= 1'b0;",
+   "mutated": "      stored_value_q <= 1'b1;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "also_run": [
+    "sync_off.s1",
+    "straps_off.s1",
+    "min.s1"
+   ],
+   "equivalence": {
+    "status": "CEX",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "      stored_value_q <= 1'b1;",
+    "per_config": {
+     "base.s1": {
+      "status": "CEX",
+      "overrides": {},
+      "first_difference": "outputs differ at step 6 after reset: o_straps_data (original 00000000000000000000000000000000, mutant 00000000010000000000000000010000)",
+      "trace": "work/mutation_equiv/M02_base.s1.vcd"
+     },
+     "sync_off.s1": {
+      "status": "CEX",
+      "overrides": {
+       "GpioAsyncOn": 0
+      },
+      "first_difference": "outputs differ at step 12 after reset: o_straps_data (original 00000000000000000000000000000000, mutant 00000000000000000010000000010000)",
+      "trace": "work/mutation_equiv/M02_sync_off.s1.vcd"
+     },
+     "straps_off.s1": {
+      "status": "CEX",
+      "overrides": {
+       "GpioAsHwStrapsEn": 0
+      },
+      "first_difference": "outputs differ at step 10 after reset: o_d_data (original 00000000000000000000000000000000, mutant 00000000000000000010000000000000)",
+      "trace": "work/mutation_equiv/M02_straps_off.s1.vcd"
+     },
+     "min.s1": {
+      "status": "CEX",
+      "overrides": {
+       "GpioAsyncOn": 0,
+       "GpioAsHwStrapsEn": 0
+      },
+      "first_difference": "outputs differ at step 8 after reset: o_d_data (original 00000000000000000000000000000000, mutant 00000000000000000000000000000100)",
+      "trace": "work/mutation_equiv/M02_min.s1.vcd"
+     }
+    }
+   }
+  },
+  {
+   "id": "M03",
+   "file": "tlul_err.sv",
+   "line": 26,
+   "operator": "eq_to_ne",
+   "original": "assign op_full    = (tl_i.a_opcode == PutFullData);",
+   "mutated": "  assign op_full    = (tl_i.a_opcode != PutFullData);",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "also_run": [
+    "sync_off.s1",
+    "straps_off.s1",
+    "min.s1"
+   ],
+   "equivalence": {
+    "status": "PROVEN",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "  assign op_full    = (tl_i.a_opcode != PutFullData);",
+    "per_config": {
+     "base.s1": {
+      "status": "PROVEN",
+      "overrides": {}
+     },
+     "sync_off.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "GpioAsyncOn": 0
+      }
+     },
+     "straps_off.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "GpioAsHwStrapsEn": 0
+      }
+     },
+     "min.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "GpioAsyncOn": 0,
+       "GpioAsHwStrapsEn": 0
+      }
+     }
+    }
+   }
+  },
+  {
+   "id": "M04",
+   "file": "gpio_reg_top.sv",
+   "line": 7140,
+   "operator": "one_to_zero",
+   "original": "unique case (1'b1)",
+   "mutated": "    unique case (1'b0)",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_pulse",
+    "test_chk_015_alert_regwen_lock",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_chk_017_input_filter",
+    "test_chk_018_direct_out",
+    "test_chk_019_masked_out",
+    "test_chk_020_data_oe",
+    "test_chk_021_data_in_follows_input",
+    "test_chk_022_edge_interrupts",
+    "test_chk_023_level_interrupts",
+    "test_chk_024_intr_test_and_enable",
+    "test_chk_025_per_pin_io",
+    "test_chk_026_per_pin_cfg",
+    "test_chk_027_no_per_pin_intr",
+    "test_chk_028_reset_values",
+    "test_chk_029_field_access_types",
+    "test_chk_030_async_short_reset",
+    "test_chk_031_strap_sampling",
+    "test_chk_032_straps_disabled",
+    "test_chk_033_byte_writes",
+    "test_chk_034_subword_reads",
+    "test_chk_035_protocol_errors",
+    "test_chk_036_unmapped",
+    "test_chk_037_instr_fetch",
+    "test_chk_038_outstanding_backpressure",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M05",
+   "file": "prim_onehot_check.sv",
+   "line": 89,
+   "operator": "zero_to_one",
+   "original": "assign or_tree[Pa]  = 1'b0;",
+   "mutated": "          assign or_tree[Pa]  = 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_pulse",
+    "test_chk_015_alert_regwen_lock",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_chk_028_reset_values",
+    "test_chk_029_field_access_types",
+    "test_chk_035_protocol_errors",
+    "test_chk_037_instr_fetch",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-003"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M06",
+   "file": "tlul_err.sv",
+   "line": 84,
+   "operator": "zero_to_one",
+   "original": "addr_sz_chk  = 1'b0;",
+   "mutated": "          addr_sz_chk  = 1'b1;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "also_run": [
+    "sync_off.s1",
+    "straps_off.s1",
+    "min.s1"
+   ],
+   "equivalence": {
+    "status": "PROVEN",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "          addr_sz_chk  = 1'b1;",
+    "per_config": {
+     "base.s1": {
+      "status": "PROVEN",
+      "overrides": {}
+     },
+     "sync_off.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "GpioAsyncOn": 0
+      }
+     },
+     "straps_off.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "GpioAsHwStrapsEn": 0
+      }
+     },
+     "min.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "GpioAsyncOn": 0,
+       "GpioAsHwStrapsEn": 0
+      }
+     }
+    }
+   }
+  },
+  {
+   "id": "M07",
+   "file": "prim_subreg_arb.sv",
+   "line": 34,
+   "operator": "eq_to_ne",
+   "original": "assign wr_data = (we == 1'b1) ? wd : d; // SW higher priority",
+   "mutated": "    assign wr_data = (we != 1'b1) ? wd : d; // SW higher priority",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_input_filter",
+    "test_chk_022_edge_interrupts",
+    "test_chk_023_level_interrupts",
+    "test_chk_024_intr_test_and_enable",
+    "test_chk_025_per_pin_io",
+    "test_chk_027_no_per_pin_intr",
+    "test_chk_029_field_access_types",
+    "test_chk_033_byte_writes",
+    "test_chk_038_outstanding_backpressure",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M08",
+   "file": "prim_onehot_check.sv",
+   "line": 96,
+   "operator": "and_to_or",
+   "original": "assign and_tree[Pa] = (!addr_i[AddrWidth-1-level] && and_tree[C0]) ||",
+   "mutated": "        assign and_tree[Pa] = (!addr_i[AddrWidth-1-level] || and_tree[C0]) ||",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "also_run": [
+    "sync_off.s1",
+    "straps_off.s1",
+    "min.s1"
+   ],
+   "equivalence": {
+    "status": "PROVEN",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "        assign and_tree[Pa] = (!addr_i[AddrWidth-1-level] || and_tree[C0]) ||",
+    "per_config": {
+     "base.s1": {
+      "status": "PROVEN",
+      "overrides": {}
+     },
+     "sync_off.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "GpioAsyncOn": 0
+      }
+     },
+     "straps_off.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "GpioAsHwStrapsEn": 0
+      }
+     },
+     "min.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "GpioAsyncOn": 0,
+       "GpioAsHwStrapsEn": 0
+      }
+     }
+    }
+   }
+  },
+  {
+   "id": "M09",
+   "file": "prim_alert_receiver.sv",
+   "line": 163,
+   "operator": "zero_to_one",
+   "original": "ack_pd       = 1'b0;",
+   "mutated": "    ack_pd       = 1'b1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_pulse",
+    "test_chk_015_alert_regwen_lock",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M10",
+   "file": "prim_secded_inv_64_57_enc.sv",
+   "line": 17,
+   "operator": "one_to_zero",
+   "original": "data_o[60] = (^(data_i & 57'h1DEEE3B8E388E22)) ^ 1'b1;",
+   "mutated": "    data_o[60] = (^(data_i & 57'h1DEEE3B8E388E22)) ^ 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_pulse",
+    "test_chk_015_alert_regwen_lock",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_chk_017_input_filter",
+    "test_chk_018_direct_out",
+    "test_chk_019_masked_out",
+    "test_chk_020_data_oe",
+    "test_chk_021_data_in_follows_input",
+    "test_chk_022_edge_interrupts",
+    "test_chk_023_level_interrupts",
+    "test_chk_024_intr_test_and_enable",
+    "test_chk_025_per_pin_io",
+    "test_chk_026_per_pin_cfg",
+    "test_chk_027_no_per_pin_intr",
+    "test_chk_028_reset_values",
+    "test_chk_029_field_access_types",
+    "test_chk_030_async_short_reset",
+    "test_chk_031_strap_sampling",
+    "test_chk_033_byte_writes",
+    "test_chk_034_subword_reads",
+    "test_chk_035_protocol_errors",
+    "test_chk_036_unmapped",
+    "test_chk_037_instr_fetch",
+    "test_chk_038_outstanding_backpressure",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-005",
+    "CHK-003"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M11",
+   "file": "tlul_adapter_reg.sv",
+   "line": 171,
+   "operator": "one_to_zero",
+   "original": "else if (a_ack) outstanding_q <= 1'b1;",
+   "mutated": "    else if (a_ack) outstanding_q <= 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_pulse",
+    "test_chk_015_alert_regwen_lock",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_chk_017_input_filter",
+    "test_chk_018_direct_out",
+    "test_chk_019_masked_out",
+    "test_chk_020_data_oe",
+    "test_chk_021_data_in_follows_input",
+    "test_chk_022_edge_interrupts",
+    "test_chk_023_level_interrupts",
+    "test_chk_024_intr_test_and_enable",
+    "test_chk_025_per_pin_io",
+    "test_chk_026_per_pin_cfg",
+    "test_chk_027_no_per_pin_intr",
+    "test_chk_028_reset_values",
+    "test_chk_029_field_access_types",
+    "test_chk_030_async_short_reset",
+    "test_chk_031_strap_sampling",
+    "test_chk_033_byte_writes",
+    "test_chk_034_subword_reads",
+    "test_chk_035_protocol_errors",
+    "test_chk_036_unmapped",
+    "test_chk_037_instr_fetch",
+    "test_chk_038_outstanding_backpressure",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-006",
+    "CHK-007"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M12",
+   "file": "prim_mubi_pkg.sv",
+   "line": 72,
+   "operator": "ne_to_eq",
+   "original": "return MuBi4True != val;",
+   "mutated": "    return MuBi4True == val;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "also_run": [
+    "sync_off.s1",
+    "straps_off.s1",
+    "min.s1"
+   ],
+   "equivalence": {
+    "status": "CEX",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "    return MuBi4True == val;",
+    "per_config": {
+     "base.s1": {
+      "status": "CEX",
+      "overrides": {},
+      "first_difference": "outputs differ at step 4 after reset: o_d_data (original 11111111111111111111111111111111, mutant 00000000000000000000000000000000), o_d_error (original 1, mutant 0)",
+      "trace": "work/mutation_equiv/M12_base.s1.vcd"
+     },
+     "sync_off.s1": {
+      "status": "CEX",
+      "overrides": {
+       "GpioAsyncOn": 0
+      },
+      "first_difference": "outputs differ at step 4 after reset: o_d_data (original 11111111111111111111111111111111, mutant 00000000000000000000000000000000), o_d_error (original 1, mutant 0)",
+      "trace": "work/mutation_equiv/M12_sync_off.s1.vcd"
+     },
+     "straps_off.s1": {
+      "status": "CEX",
+      "overrides": {
+       "GpioAsHwStrapsEn": 0
+      },
+      "first_difference": "outputs differ at step 4 after reset: o_d_data (original 11111111111111111111111111111111, mutant 00000000000000000000000000000000), o_d_error (original 1, mutant 0)",
+      "trace": "work/mutation_equiv/M12_straps_off.s1.vcd"
+     },
+     "min.s1": {
+      "status": "CEX",
+      "overrides": {
+       "GpioAsyncOn": 0,
+       "GpioAsHwStrapsEn": 0
+      },
+      "first_difference": "outputs differ at step 4 after reset: o_d_data (original 11111111111111111111111111111111, mutant 00000000000000000000000000000000), o_d_error (original 1, mutant 0)",
+      "trace": "work/mutation_equiv/M12_min.s1.vcd"
+     }
+    }
+   }
+  },
+  {
+   "id": "M13",
+   "file": "prim_alert_sender.sv",
+   "line": 206,
+   "operator": "or_to_and",
+   "original": "if (alert_trigger || ping_trigger) begin",
+   "mutated": "        if (alert_trigger && ping_trigger) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_pulse",
+    "test_chk_015_alert_regwen_lock",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M14",
+   "file": "prim_subreg_arb.sv",
+   "line": 34,
+   "operator": "one_to_zero",
+   "original": "assign wr_data = (we == 1'b1) ? wd : d; // SW higher priority",
+   "mutated": "    assign wr_data = (we == 1'b0) ? wd : d; // SW higher priority",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_input_filter",
+    "test_chk_022_edge_interrupts",
+    "test_chk_023_level_interrupts",
+    "test_chk_024_intr_test_and_enable",
+    "test_chk_025_per_pin_io",
+    "test_chk_027_no_per_pin_intr",
+    "test_chk_029_field_access_types",
+    "test_chk_033_byte_writes",
+    "test_chk_038_outstanding_backpressure",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M15",
+   "file": "tlul_adapter_reg.sv",
+   "line": 219,
+   "operator": "zero_to_one",
+   "original": "error_q <= 1'b0;",
+   "mutated": "        error_q <= 1'b1;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "also_run": [
+    "sync_off.s1",
+    "straps_off.s1",
+    "min.s1"
+   ],
+   "equivalence": {
+    "status": "CEX",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "        error_q <= 1'b1;",
+    "per_config": {
+     "base.s1": {
+      "status": "CEX",
+      "overrides": {},
+      "first_difference": "outputs differ at step 0 after reset: o_d_error (original 0, mutant 1)",
+      "trace": "work/mutation_equiv/M15_base.s1.vcd"
+     },
+     "sync_off.s1": {
+      "status": "CEX",
+      "overrides": {
+       "GpioAsyncOn": 0
+      },
+      "first_difference": "outputs differ at step 0 after reset: o_d_error (original 0, mutant 1)",
+      "trace": "work/mutation_equiv/M15_sync_off.s1.vcd"
+     },
+     "straps_off.s1": {
+      "status": "CEX",
+      "overrides": {
+       "GpioAsHwStrapsEn": 0
+      },
+      "first_difference": "outputs differ at step 0 after reset: o_d_error (original 0, mutant 1)",
+      "trace": "work/mutation_equiv/M15_straps_off.s1.vcd"
+     },
+     "min.s1": {
+      "status": "CEX",
+      "overrides": {
+       "GpioAsyncOn": 0,
+       "GpioAsHwStrapsEn": 0
+      },
+      "first_difference": "outputs differ at step 0 after reset: o_d_error (original 0, mutant 1)",
+      "trace": "work/mutation_equiv/M15_min.s1.vcd"
+     }
+    }
+   }
+  },
+  {
+   "id": "M16",
+   "file": "prim_subreg.sv",
+   "line": 59,
+   "operator": "negate_if",
+   "original": "if (!rst_ni) begin",
+   "mutated": "    if (!(!rst_ni)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_015_alert_regwen_lock",
+    "test_chk_017_input_filter",
+    "test_chk_021_data_in_follows_input",
+    "test_chk_022_edge_interrupts",
+    "test_chk_023_level_interrupts",
+    "test_chk_024_intr_test_and_enable",
+    "test_chk_025_per_pin_io",
+    "test_chk_027_no_per_pin_intr",
+    "test_chk_028_reset_values",
+    "test_chk_029_field_access_types",
+    "test_chk_031_strap_sampling",
+    "test_chk_033_byte_writes",
+    "test_chk_036_unmapped",
+    "test_chk_038_outstanding_backpressure",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M17",
+   "file": "tlul_err.sv",
+   "line": 79,
+   "operator": "one_to_zero",
+   "original": "mask_chk     = 1'b1;",
+   "mutated": "          mask_chk     = 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_pulse",
+    "test_chk_015_alert_regwen_lock",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_chk_017_input_filter",
+    "test_chk_018_direct_out",
+    "test_chk_019_masked_out",
+    "test_chk_020_data_oe",
+    "test_chk_021_data_in_follows_input",
+    "test_chk_022_edge_interrupts",
+    "test_chk_023_level_interrupts",
+    "test_chk_024_intr_test_and_enable",
+    "test_chk_025_per_pin_io",
+    "test_chk_026_per_pin_cfg",
+    "test_chk_027_no_per_pin_intr",
+    "test_chk_028_reset_values",
+    "test_chk_029_field_access_types",
+    "test_chk_030_async_short_reset",
+    "test_chk_031_strap_sampling",
+    "test_chk_033_byte_writes",
+    "test_chk_034_subword_reads",
+    "test_chk_035_protocol_errors",
+    "test_chk_036_unmapped",
+    "test_chk_037_instr_fetch",
+    "test_chk_038_outstanding_backpressure",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M18",
+   "file": "gpio_reg_top.sv",
+   "line": 80,
+   "operator": "or_to_and",
+   "original": "end else if (intg_err || reg_we_err) begin",
+   "mutated": "    end else if (intg_err && reg_we_err) begin",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "also_run": [
+    "sync_off.s1",
+    "straps_off.s1",
+    "min.s1"
+   ],
+   "equivalence": {
+    "status": "PROVEN",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "    end else if (intg_err && reg_we_err) begin",
+    "per_config": {
+     "base.s1": {
+      "status": "PROVEN",
+      "overrides": {}
+     },
+     "sync_off.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "GpioAsyncOn": 0
+      }
+     },
+     "straps_off.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "GpioAsHwStrapsEn": 0
+      }
+     },
+     "min.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "GpioAsyncOn": 0,
+       "GpioAsHwStrapsEn": 0
+      }
+     }
+    }
+   }
+  },
+  {
+   "id": "M19",
+   "file": "prim_secded_inv_64_57_dec.sv",
+   "line": 39,
+   "operator": "eq_to_ne",
+   "original": "data_o[14] = (syndrome_o == 7'h61) ^ data_i[14];",
+   "mutated": "    data_o[14] = (syndrome_o != 7'h61) ^ data_i[14];",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "also_run": [
+    "sync_off.s1",
+    "straps_off.s1",
+    "min.s1"
+   ],
+   "equivalence": {
+    "status": "PROVEN",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "    data_o[14] = (syndrome_o != 7'h61) ^ data_i[14];",
+    "per_config": {
+     "base.s1": {
+      "status": "PROVEN",
+      "overrides": {}
+     },
+     "sync_off.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "GpioAsyncOn": 0
+      }
+     },
+     "straps_off.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "GpioAsHwStrapsEn": 0
+      }
+     },
+     "min.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "GpioAsyncOn": 0,
+       "GpioAsHwStrapsEn": 0
+      }
+     }
+    }
+   }
+  },
+  {
+   "id": "M20",
+   "file": "prim_filter_ctr.sv",
+   "line": 74,
+   "operator": "eq_to_ne",
+   "original": "assign update_stored_value = (diff_ctr_d == thresh_i);",
+   "mutated": "  assign update_stored_value = (diff_ctr_d != thresh_i);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_input_filter"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M21",
+   "file": "prim_alert_receiver.sv",
+   "line": 190,
+   "operator": "one_to_zero",
+   "original": "ack_pd = 1'b1;",
+   "mutated": "          ack_pd = 1'b0;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "also_run": [
+    "sync_off.s1",
+    "straps_off.s1",
+    "min.s1"
+   ],
+   "equivalence": {
+    "status": "CEX",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "          ack_pd = 1'b0;",
+    "per_config": {
+     "base.s1": {
+      "status": "CEX",
+      "overrides": {},
+      "first_difference": "outputs differ at step 30 after reset: o_alert (original 0, mutant 1)",
+      "trace": "work/mutation_equiv/M21_base.s1.vcd"
+     },
+     "sync_off.s1": {
+      "status": "CEX",
+      "overrides": {
+       "GpioAsyncOn": 0
+      },
+      "first_difference": "outputs differ at step 30 after reset: o_alert (original 0, mutant 1)",
+      "trace": "work/mutation_equiv/M21_sync_off.s1.vcd"
+     },
+     "straps_off.s1": {
+      "status": "CEX",
+      "overrides": {
+       "GpioAsHwStrapsEn": 0
+      },
+      "first_difference": "outputs differ at step 30 after reset: o_alert (original 0, mutant 1)",
+      "trace": "work/mutation_equiv/M21_straps_off.s1.vcd"
+     },
+     "min.s1": {
+      "status": "CEX",
+      "overrides": {
+       "GpioAsyncOn": 0,
+       "GpioAsHwStrapsEn": 0
+      },
+      "first_difference": "outputs differ at step 30 after reset: o_alert (original 0, mutant 1)",
+      "trace": "work/mutation_equiv/M21_min.s1.vcd"
+     }
+    }
+   }
+  },
+  {
+   "id": "M22",
+   "file": "gpio_reg_top.sv",
+   "line": 6116,
+   "operator": "eq_to_ne",
+   "original": "addr_hit[ 70] = (reg_addr == GPIO_PER_PIN_OE_10_OFFSET);",
+   "mutated": "    addr_hit[ 70] = (reg_addr != GPIO_PER_PIN_OE_10_OFFSET);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_pulse",
+    "test_chk_015_alert_regwen_lock",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_chk_017_input_filter",
+    "test_chk_018_direct_out",
+    "test_chk_019_masked_out",
+    "test_chk_020_data_oe",
+    "test_chk_021_data_in_follows_input",
+    "test_chk_022_edge_interrupts",
+    "test_chk_023_level_interrupts",
+    "test_chk_024_intr_test_and_enable",
+    "test_chk_025_per_pin_io",
+    "test_chk_026_per_pin_cfg",
+    "test_chk_027_no_per_pin_intr",
+    "test_chk_028_reset_values",
+    "test_chk_029_field_access_types",
+    "test_chk_030_async_short_reset",
+    "test_chk_031_strap_sampling",
+    "test_chk_032_straps_disabled",
+    "test_chk_033_byte_writes",
+    "test_chk_034_subword_reads",
+    "test_chk_035_protocol_errors",
+    "test_chk_036_unmapped",
+    "test_chk_037_instr_fetch",
+    "test_chk_038_outstanding_backpressure",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M23",
+   "file": "prim_secded_inv_39_32_dec.sv",
+   "line": 51,
+   "operator": "eq_to_ne",
+   "original": "data_o[26] = (syndrome_o == 7'h23) ^ data_i[26];",
+   "mutated": "    data_o[26] = (syndrome_o != 7'h23) ^ data_i[26];",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "also_run": [
+    "sync_off.s1",
+    "straps_off.s1",
+    "min.s1"
+   ],
+   "equivalence": {
+    "status": "PROVEN",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "    data_o[26] = (syndrome_o != 7'h23) ^ data_i[26];",
+    "per_config": {
+     "base.s1": {
+      "status": "PROVEN",
+      "overrides": {}
+     },
+     "sync_off.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "GpioAsyncOn": 0
+      }
+     },
+     "straps_off.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "GpioAsHwStrapsEn": 0
+      }
+     },
+     "min.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "GpioAsyncOn": 0,
+       "GpioAsHwStrapsEn": 0
+      }
+     }
+    }
+   }
+  },
+  {
+   "id": "M24",
+   "file": "tlul_adapter_reg.sv",
+   "line": 155,
+   "operator": "eq_to_ne",
+   "original": "assign wr_req  = a_ack & ((tl_i.a_opcode == PutFullData) | (tl_i.a_opcode == PutPartialData));",
+   "mutated": "  assign wr_req  = a_ack & ((tl_i.a_opcode == PutFullData) | (tl_i.a_opcode != PutPartialData));",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_pulse",
+    "test_chk_015_alert_regwen_lock",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_chk_017_input_filter",
+    "test_chk_018_direct_out",
+    "test_chk_019_masked_out",
+    "test_chk_020_data_oe",
+    "test_chk_021_data_in_follows_input",
+    "test_chk_022_edge_interrupts",
+    "test_chk_023_level_interrupts",
+    "test_chk_024_intr_test_and_enable",
+    "test_chk_025_per_pin_io",
+    "test_chk_026_per_pin_cfg",
+    "test_chk_027_no_per_pin_intr",
+    "test_chk_028_reset_values",
+    "test_chk_029_field_access_types",
+    "test_chk_030_async_short_reset",
+    "test_chk_031_strap_sampling",
+    "test_chk_033_byte_writes",
+    "test_chk_034_subword_reads",
+    "test_chk_035_protocol_errors",
+    "test_chk_036_unmapped",
+    "test_chk_037_instr_fetch",
+    "test_chk_038_outstanding_backpressure",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-007",
+    "CHK-004"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M25",
+   "file": "prim_flop.sv",
+   "line": 16,
+   "operator": "negate_if",
+   "original": "if (!rst_ni) begin",
+   "mutated": "    if (!(!rst_ni)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_pulse",
+    "test_chk_015_alert_regwen_lock",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_chk_017_input_filter",
+    "test_chk_021_data_in_follows_input",
+    "test_chk_022_edge_interrupts",
+    "test_chk_023_level_interrupts",
+    "test_chk_025_per_pin_io",
+    "test_chk_028_reset_values",
+    "test_chk_029_field_access_types",
+    "test_chk_031_strap_sampling",
+    "test_chk_036_unmapped",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M26",
+   "file": "gpio.sv",
+   "line": 868,
+   "operator": "negate_if",
+   "original": "end else if (reg2hw.masked_out_lower.data.qe) begin",
+   "mutated": "    end else if (!(reg2hw.masked_out_lower.data.qe)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_019_masked_out",
+    "test_chk_020_data_oe",
+    "test_chk_025_per_pin_io",
+    "test_chk_029_field_access_types",
+    "test_chk_033_byte_writes",
+    "test_chk_035_protocol_errors",
+    "test_chk_036_unmapped",
+    "test_chk_038_outstanding_backpressure",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-004"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M27",
+   "file": "prim_intr_hw.sv",
+   "line": 97,
+   "operator": "negate_if",
+   "original": "if (!rst_ni) begin",
+   "mutated": "      if (!(!rst_ni)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_input_filter",
+    "test_chk_018_direct_out",
+    "test_chk_022_edge_interrupts",
+    "test_chk_023_level_interrupts",
+    "test_chk_024_intr_test_and_enable",
+    "test_chk_025_per_pin_io",
+    "test_chk_030_async_short_reset",
+    "test_chk_033_byte_writes",
+    "test_chk_034_subword_reads",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-008"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M28",
+   "file": "prim_alert_receiver.sv",
+   "line": 178,
+   "operator": "negate_if",
+   "original": "if (ping_pending_q) begin",
+   "mutated": "          if (!(ping_pending_q)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_pulse",
+    "test_chk_015_alert_regwen_lock",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M29",
+   "file": "tlul_adapter_reg.sv",
+   "line": 220,
+   "operator": "negate_if",
+   "original": "end else if (a_ack) begin",
+   "mutated": "      end else if (!(a_ack)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_pulse",
+    "test_chk_015_alert_regwen_lock",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_chk_017_input_filter",
+    "test_chk_018_direct_out",
+    "test_chk_019_masked_out",
+    "test_chk_020_data_oe",
+    "test_chk_021_data_in_follows_input",
+    "test_chk_022_edge_interrupts",
+    "test_chk_023_level_interrupts",
+    "test_chk_024_intr_test_and_enable",
+    "test_chk_025_per_pin_io",
+    "test_chk_026_per_pin_cfg",
+    "test_chk_027_no_per_pin_intr",
+    "test_chk_028_reset_values",
+    "test_chk_029_field_access_types",
+    "test_chk_030_async_short_reset",
+    "test_chk_031_strap_sampling",
+    "test_chk_033_byte_writes",
+    "test_chk_034_subword_reads",
+    "test_chk_035_protocol_errors",
+    "test_chk_036_unmapped",
+    "test_chk_037_instr_fetch",
+    "test_chk_038_outstanding_backpressure",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-012",
+    "CHK-004"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M30",
+   "file": "prim_diff_decode.sv",
+   "line": 234,
+   "operator": "negate_if",
+   "original": "if (!rst_ni) begin",
+   "mutated": "      if (!(!rst_ni)) begin",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "also_run": [
+    "sync_off.s1",
+    "straps_off.s1",
+    "min.s1"
+   ],
+   "equivalence": {
+    "status": "ERROR",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "      if (!(!rst_ni)) begin",
+    "per_config": {
+     "base.s1": {
+      "status": "ERROR",
+      "overrides": {},
+      "detail": "gate/prim_diff_decode.sv:234: ERROR: polarity of condition doesn't match edge sensitivity\nERROR: Design elaboration failed; see full log for details"
+     },
+     "sync_off.s1": {
+      "status": "ERROR",
+      "overrides": {
+       "GpioAsyncOn": 0
+      },
+      "detail": "gate/prim_diff_decode.sv:234: ERROR: polarity of condition doesn't match edge sensitivity\nERROR: Design elaboration failed; see full log for details"
+     },
+     "straps_off.s1": {
+      "status": "ERROR",
+      "overrides": {
+       "GpioAsHwStrapsEn": 0
+      },
+      "detail": "gate/prim_diff_decode.sv:234: ERROR: polarity of condition doesn't match edge sensitivity\nERROR: Design elaboration failed; see full log for details"
+     },
+     "min.s1": {
+      "status": "ERROR",
+      "overrides": {
+       "GpioAsyncOn": 0,
+       "GpioAsHwStrapsEn": 0
+      },
+      "detail": "gate/prim_diff_decode.sv:234: ERROR: polarity of condition doesn't match edge sensitivity\nERROR: Design elaboration failed; see full log for details"
+     }
+    }
+   }
+  },
+  {
+   "id": "M31",
+   "file": "prim_diff_decode.sv",
+   "line": 236,
+   "operator": "zero_to_one",
+   "original": "level_q  <= 1'b0;",
+   "mutated": "        level_q  <= 1'b1;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "also_run": [
+    "sync_off.s1",
+    "straps_off.s1",
+    "min.s1"
+   ],
+   "equivalence": {
+    "status": "PROVEN",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "        level_q  <= 1'b1;",
+    "per_config": {
+     "base.s1": {
+      "status": "PROVEN",
+      "overrides": {}
+     },
+     "sync_off.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "GpioAsyncOn": 0
+      }
+     },
+     "straps_off.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "GpioAsHwStrapsEn": 0
+      }
+     },
+     "min.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "GpioAsyncOn": 0,
+       "GpioAsHwStrapsEn": 0
+      }
+     }
+    }
+   }
+  },
+  {
+   "id": "M32",
+   "file": "prim_filter_ctr.sv",
+   "line": 75,
+   "operator": "ne_to_eq",
+   "original": "assign diff_ctr_d = (filter_synced != filter_q) ? '0       :           // restart",
+   "mutated": "  assign diff_ctr_d = (filter_synced == filter_q) ? '0       :           // restart",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_input_filter",
+    "test_chk_029_field_access_types",
+    "test_chk_036_unmapped"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M33",
+   "file": "gpio_reg_top.sv",
+   "line": 78,
+   "operator": "negate_if",
+   "original": "if (!rst_ni) begin",
+   "mutated": "    if (!(!rst_ni)) begin",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "also_run": [
+    "sync_off.s1",
+    "straps_off.s1",
+    "min.s1"
+   ],
+   "equivalence": {
+    "status": "ERROR",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "    if (!(!rst_ni)) begin",
+    "per_config": {
+     "base.s1": {
+      "status": "ERROR",
+      "overrides": {},
+      "detail": "gate/gpio_reg_top.sv:78: ERROR: polarity of condition doesn't match edge sensitivity\nERROR: Design elaboration failed; see full log for details"
+     },
+     "sync_off.s1": {
+      "status": "ERROR",
+      "overrides": {
+       "GpioAsyncOn": 0
+      },
+      "detail": "gate/gpio_reg_top.sv:78: ERROR: polarity of condition doesn't match edge sensitivity\nERROR: Design elaboration failed; see full log for details"
+     },
+     "straps_off.s1": {
+      "status": "ERROR",
+      "overrides": {
+       "GpioAsHwStrapsEn": 0
+      },
+      "detail": "gate/gpio_reg_top.sv:78: ERROR: polarity of condition doesn't match edge sensitivity\nERROR: Design elaboration failed; see full log for details"
+     },
+     "min.s1": {
+      "status": "ERROR",
+      "overrides": {
+       "GpioAsyncOn": 0,
+       "GpioAsHwStrapsEn": 0
+      },
+      "detail": "gate/gpio_reg_top.sv:78: ERROR: polarity of condition doesn't match edge sensitivity\nERROR: Design elaboration failed; see full log for details"
+     }
+    }
+   }
+  },
+  {
+   "id": "M34",
+   "file": "prim_mubi_pkg.sv",
+   "line": 44,
+   "operator": "eq_to_ne",
+   "original": "return MuBi4True == val;",
+   "mutated": "    return MuBi4True != val;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_pulse",
+    "test_chk_015_alert_regwen_lock",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_chk_017_input_filter",
+    "test_chk_018_direct_out",
+    "test_chk_019_masked_out",
+    "test_chk_020_data_oe",
+    "test_chk_021_data_in_follows_input",
+    "test_chk_022_edge_interrupts",
+    "test_chk_023_level_interrupts",
+    "test_chk_024_intr_test_and_enable",
+    "test_chk_025_per_pin_io",
+    "test_chk_026_per_pin_cfg",
+    "test_chk_027_no_per_pin_intr",
+    "test_chk_028_reset_values",
+    "test_chk_029_field_access_types",
+    "test_chk_030_async_short_reset",
+    "test_chk_031_strap_sampling",
+    "test_chk_033_byte_writes",
+    "test_chk_034_subword_reads",
+    "test_chk_035_protocol_errors",
+    "test_chk_036_unmapped",
+    "test_chk_037_instr_fetch",
+    "test_chk_038_outstanding_backpressure",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M35",
+   "file": "prim_secded_inv_39_32_enc.sv",
+   "line": 15,
+   "operator": "one_to_zero",
+   "original": "data_o[33] = (^(data_i & 32'hDEBA8050)) ^ 1'b1;",
+   "mutated": "    data_o[33] = (^(data_i & 32'hDEBA8050)) ^ 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_pulse",
+    "test_chk_015_alert_regwen_lock",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_chk_017_input_filter",
+    "test_chk_018_direct_out",
+    "test_chk_019_masked_out",
+    "test_chk_020_data_oe",
+    "test_chk_021_data_in_follows_input",
+    "test_chk_022_edge_interrupts",
+    "test_chk_023_level_interrupts",
+    "test_chk_024_intr_test_and_enable",
+    "test_chk_025_per_pin_io",
+    "test_chk_026_per_pin_cfg",
+    "test_chk_027_no_per_pin_intr",
+    "test_chk_028_reset_values",
+    "test_chk_029_field_access_types",
+    "test_chk_030_async_short_reset",
+    "test_chk_031_strap_sampling",
+    "test_chk_033_byte_writes",
+    "test_chk_034_subword_reads",
+    "test_chk_035_protocol_errors",
+    "test_chk_036_unmapped",
+    "test_chk_037_instr_fetch",
+    "test_chk_038_outstanding_backpressure",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-003"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M36",
+   "file": "gpio.sv",
+   "line": 116,
+   "operator": "zero_to_one",
+   "original": "assign sampled_straps_o.valid            = 1'b0;",
+   "mutated": "    assign sampled_straps_o.valid            = 1'b1;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "also_run": [
+    "sync_off.s1"
+   ],
+   "equivalence": {
+    "status": "PROVEN",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "    assign sampled_straps_o.valid            = 1'b1;",
+    "per_config": {
+     "base.s1": {
+      "status": "PROVEN",
+      "overrides": {}
+     },
+     "sync_off.s1": {
+      "status": "PROVEN",
+      "overrides": {
+       "GpioAsyncOn": 0
+      }
+     }
+    }
+   }
+  }
+ ],
+ "candidates": 364,
+ "count": 36,
+ "killed": 21,
+ "survived": 15,
+ "not_compiled": 0,
+ "score": 58.3,
+ "seed": 1,
+ "excluded_uncovered": {
+  "files": [
+   "ot_gpio_nnc.sv",
+   "prim_alert_pkg.sv",
+   "prim_assert.sv",
+   "prim_assert_sec_cm.svh",
+   "prim_flop_macros.sv",
+   "prim_onehot_enc.sv",
+   "prim_secded_pkg.sv",
+   "prim_util_pkg.sv",
+   "tlul_cmd_intg_gen.sv",
+   "tlul_pkg.sv",
+   "tlul_rsp_intg_chk.sv",
+   "tlul_rsp_intg_gen.sv"
+  ],
+  "lines": 1731
+ },
+ "baseline_failing": {
+  "tests": [],
+  "checks": []
+ },
+ "runs": {
+  "available": [
+   "base.s1",
+   "base.s2",
+   "sync_off.s1",
+   "straps_off.s1",
+   "min.s1"
+  ],
+  "used": [
+   "base.s1"
+  ],
+  "second_chance_sims": 43
+ },
+ "threshold": 85.0,
+ "attribution": {
+  "mutants": {
+   "M01": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "Line is in the InitAckWait state, which is reached only after init_trig_i is MuBi4True. The wrapper ties init_trig_i to MuBi4False and ping_req_i to 0, so InitAckWait is unreachable and ping_rise and ping_pending_q are always 0. OR and AND give the same result."
+   },
+   "M02": {
+    "rules": [
+     "GP-T3.2.3-03",
+     "GP-T5.17-01",
+     "GP-10-07",
+     "GP-T2.2-05",
+     "GP-10-08"
+    ],
+    "equivalent": false,
+    "reason": "The filter's stored value would reset to 1 instead of 0. If CTRL_EN_INPUT_FILTER is enabled within about 15 cycles of reset with i_gpio=0, DATA_IN and edge or level interrupt detection would see a spurious 1."
+   },
+   "M03": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "op_full feeds only instr_wr_err, which is nonzero only when instr_type is MuBi4True. In that case tlul_adapter_reg's instr_error is already 1, because en_ifetch_i is tied to MuBi4False, so err_internal is identical. op_full is not used in a_config_allowed."
+   },
+   "M04": {
+    "rules": [
+     "GP-9-01",
+     "GP-T5.1-01",
+     "GP-T3.2.3-01",
+     "GP-9-02",
+     "GP-T3.2.1-01"
+    ],
+    "equivalent": false,
+    "reason": "The read-data mux would select on 1'b0 instead of 1'b1, so register reads would return wrong or zero data instead of the addressed register."
+   },
+   "M05": {
+    "rules": [
+     "GP-T6.4-01",
+     "GP-4.2-01",
+     "GP-4.2-03",
+     "GP-5-05",
+     "GP-4.2-02"
+    ],
+    "equivalent": false,
+    "reason": "The tied-off one-hot leaves (offsets 114 to 127) would read 1, so the write-enable one-hot check would flag an error with no cause. That would raise a spurious fatal alert without any integrity error."
+   },
+   "M06": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "This is the default case, which only a_size=3 reaches. mask_chk is also 0 in that case, so a_config_allowed stays 0 and err_o stays 1 whatever addr_sz_chk is."
+   },
+   "M07": {
+    "rules": [
+     "GP-9-01",
+     "GP-10-39",
+     "GP-T3.2.1-01",
+     "GP-T2.2-01",
+     "GP-9-02"
+    ],
+    "equivalent": false,
+    "reason": "The write-data select in prim_subreg_arb would be inverted. Software writes would store the hardware d value, and hardware updates would store the software wd value, so rw registers would not hold the written value."
+   },
+   "M08": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "and_tree is used only for the address check. prim_reg_we_check instantiates prim_onehot_check with AddrCheck=0, so addr_err is tied to 0 and and_tree is unused."
+   },
+   "M09": {
+    "rules": [
+     "GP-5-01",
+     "GP-5-02",
+     "GP-5-05",
+     "AH-T1.3.2-01",
+     "AH-T1.3.2-03"
+    ],
+    "equivalent": false,
+    "reason": "The receiver's default ack would be 1, so the four-phase alert handshake is broken. The ack would be asserted with no alert, and o_alert pulses and handshake behaviour would be wrong."
+   },
+   "M10": {
+    "rules": [
+     "GP-4.3-01",
+     "GP-4.3-02",
+     "GP-3-03",
+     "GP-4.2-01",
+     "GP-10-33"
+    ],
+    "equivalent": false,
+    "reason": "One command or response integrity check bit would be wrong. A good request would be flagged as an integrity error and raise an alert, and the D-channel response integrity would be wrong, so o_d_intg_err would go to 1."
+   },
+   "M11": {
+    "rules": [
+     "TL-T3.1.3.2.3-01",
+     "GP-10-32",
+     "GP-10-27",
+     "GP-4.1-01",
+     "TL-T2.2-03"
+    ],
+    "equivalent": false,
+    "reason": "outstanding_q would be set to 0 on an A handshake, so d_valid would never rise. No request would get a response and o_a_ready would never drop."
+   },
+   "M12": {
+    "rules": [
+     "GP-3-01",
+     "GP-4.1-03",
+     "GP-10-19"
+    ],
+    "equivalent": false,
+    "reason": "The loose false test on en_ifetch (MuBi4False) would return 0, so instr_error would be 0. An instruction-fetch Get (i_a_instr=1) would then complete with d_error=0 and real data instead of d_error=1."
+   },
+   "M13": {
+    "rules": [
+     "GP-5-01",
+     "GP-T5.5.1-02",
+     "GP-4.2-02",
+     "GP-3-04",
+     "GP-10-15"
+    ],
+    "equivalent": false,
+    "reason": "The sender would need both alert_trigger and ping_trigger to start a handshake. Pings are never sent, so no alert would ever be sent and o_alert would stay 0."
+   },
+   "M14": {
+    "rules": [
+     "GP-9-01",
+     "GP-10-39",
+     "GP-T3.2.1-01",
+     "GP-T2.2-01",
+     "GP-9-02"
+    ],
+    "equivalent": false,
+    "reason": "The select would use we==0, so a software write would store the hardware d value and a no-write cycle with de would store wd. Writes would not take effect as written."
+   },
+   "M15": {
+    "rules": [
+     "GP-4.1-01"
+    ],
+    "equivalent": false,
+    "reason": "error_q would reset to 1, so o_d_error would be 1 after reset until the first access, whereas it is 0 in the original. This is visible on the port, although d_valid is 0."
+   },
+   "M16": {
+    "rules": [
+     "GP-9-01",
+     "GP-2-06",
+     "GP-10-03",
+     "GP-10-31",
+     "GP-T5.1-01"
+    ],
+    "equivalent": false,
+    "reason": "The reset polarity of every register field would be inverted. Registers would be held at their reset value while rst_ni=1 and could change while rst_ni=0."
+   },
+   "M17": {
+    "rules": [
+     "GP-10-24",
+     "GP-1-01",
+     "GP-T2.2-01"
+    ],
+    "equivalent": false,
+    "reason": "mask_chk for a_size=2 would be 0, so every legal full-word access would be flagged as a TL-UL error. d_error would be 1 and the access would have no effect."
+   },
+   "M18": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "err_q only latches the integrity error. intg_err_o is still the combinational OR of intg_err and reg_we_err, and intg_err is gated by a_valid. The fatal prim_alert_sender latches the alert request itself (alert_set_q feeds back into alert_set_d), so alert timing and repetition at the ports are unchanged."
+   },
+   "M19": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "data_o of the 64_57 decoder is left unconnected in tlul_cmd_intg_chk and tlul_rsp_intg_chk. Only err_o is used, and it depends on the syndrome, not on data_o."
+   },
+   "M20": {
+    "rules": [
+     "GP-T3.2.3-03",
+     "GP-T5.17-01",
+     "GP-10-07",
+     "GP-10-08",
+     "GP-10-09"
+    ],
+    "equivalent": false,
+    "reason": "The stored filter value would update at the wrong time (whenever the counter is not at threshold). The filter would pass short pulses and block long changes."
+   },
+   "M21": {
+    "rules": [
+     "GP-5-05",
+     "AH-T1.3.2-01",
+     "AH-T1.3.2-03",
+     "GP-5-02"
+    ],
+    "equivalent": false,
+    "reason": "The receiver would drop ack one cycle early while the alert is still high. The handshake would finish one cycle sooner, so the spacing between repeated o_alert pulses after an integrity error would change by one cycle."
+   },
+   "M22": {
+    "rules": [
+     "GP-T5.21-01",
+     "GP-T5.21-02",
+     "GP-9-07",
+     "GP-T3.2.2-01",
+     "GP-10-20"
+    ],
+    "equivalent": false,
+    "reason": "The PER_PIN_OE_10 (0x250) address hit would be inverted. Accesses to 0x250 would miss, and accesses to any other address would also hit entry 70."
+   },
+   "M23": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "data_o of the 39_32 decoder is left unconnected in tlul_data_integ_dec. Only err_o is used, and it does not depend on data_o."
+   },
+   "M24": {
+    "rules": [
+     "GP-9-01",
+     "GP-T5.1-01",
+     "GP-9-02",
+     "GP-T4.4-03",
+     "GP-T2.2-01"
+    ],
+    "equivalent": false,
+    "reason": "wr_req would be true for Get requests and false for PutPartialData. Reads would become writes and return all ones, and byte writes would not take effect."
+   },
+   "M25": {
+    "rules": [
+     "GP-T3.2.3-01",
+     "GP-10-35",
+     "GP-10-43",
+     "GP-5-01",
+     "GP-T5.5.1-02"
+    ],
+    "equivalent": false,
+    "reason": "prim_flop's reset would be active while rst_ni=1. The input synchronizer and the alert handshake diff-pair flops would be stuck at their reset values, so DATA_IN would stay 0 and no alert handshake would complete."
+   },
+   "M26": {
+    "rules": [
+     "GP-T5.8-01",
+     "GP-T5.8-02",
+     "GP-T3.2.1-02",
+     "GP-T2.2-02",
+     "GP-10-02"
+    ],
+    "equivalent": false,
+    "reason": "The MASKED_OUT_LOWER update would run when qe is 0, not when it is written. Masked writes to the lower half would not update DATA_OUT or o_gpio, and other writes could corrupt it."
+   },
+   "M27": {
+    "rules": [
+     "GP-7-01",
+     "GP-T5.13-01",
+     "GP-10-04",
+     "GP-T5.4.1-01",
+     "GP-10-31"
+    ],
+    "equivalent": false,
+    "reason": "The reset of the registered interrupt output would be inverted. o_intr_gpio would stay at 0 whenever rst_ni=1, so enabled interrupts would never assert, and it could be non-zero during reset."
+   },
+   "M28": {
+    "rules": [
+     "GP-5-01",
+     "GP-T5.5.1-02",
+     "GP-5-02",
+     "GP-10-15",
+     "GP-3-04"
+    ],
+    "equivalent": false,
+    "reason": "The receiver's ping_pending test would be inverted. A received alert would be reported as a ping response, so o_alert would not pulse."
+   },
+   "M29": {
+    "rules": [
+     "GP-9-01",
+     "GP-4.1-01",
+     "GP-10-28",
+     "GP-T5.1-01",
+     "GP-10-20"
+    ],
+    "equivalent": false,
+    "reason": "rdata_q and error_q would be captured on cycles with no A handshake. Read data and d_error would not belong to the accepted request, so reads would return wrong data and d_error would be wrong."
+   },
+   "M30": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "This is the synchronous diff decoder, which is used because AlertAsyncOn=0 in the wrapper. The mutant holds diff_pq and level_q at 0 while rst_ni=1. diff_pq only affects rise, fall and event, and those are unused except for the ping decoder, whose pair never toggles. level_q only matters during sigint, which occurs only in the post-reset init handshake, when the previous level is 0 anyway."
+   },
+   "M31": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "level_q is read only when sigint_o=1. After reset release the pairs hold their reset values (no sigint), and the first clock edge loads level_q from level_o (0) before the init sigint starts. The reset value 1 is never observed."
+   },
+   "M32": {
+    "rules": [
+     "GP-T3.2.3-03",
+     "GP-T5.17-01",
+     "GP-10-08",
+     "GP-10-09",
+     "GP-T2.2-05"
+    ],
+    "equivalent": false,
+    "reason": "The restart condition would be inverted, so the counter would restart while the input is stable and count while it changes. Short pulses would pass and held changes would be filtered out."
+   },
+   "M33": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "err_q would be held at 0 while rst_ni=1. intg_err_o is still the combinational intg_err | reg_we_err, which is nonzero only during an a_valid cycle with an error. The fatal alert sender latches the request, so alerts are unchanged. During reset a_valid=0 and reg_we=0, so err_q cannot be set."
+   },
+   "M34": {
+    "rules": [
+     "GP-3-01",
+     "GP-4.1-03",
+     "GP-10-24",
+     "GP-1-01",
+     "GP-10-19"
+    ],
+    "equivalent": false,
+    "reason": "The strict true test would be inverted. Every data access (instr_type False) would count as an instruction fetch and get d_error=1, while real instruction fetches would not be flagged."
+   },
+   "M35": {
+    "rules": [
+     "GP-4.3-01",
+     "GP-4.3-02",
+     "GP-3-03",
+     "GP-4.2-01",
+     "GP-10-33"
+    ],
+    "equivalent": false,
+    "reason": "One 39_32 data-integrity check bit would be wrong. Good request data would fail the data integrity check and raise an alert, and the response data integrity would be wrong, so o_d_intg_err would go to 1."
+   },
+   "M36": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "The line is in gen_no_strap_sample, which is elaborated only when GpioAsHwStrapsEn=0. Run base.s1 uses GpioAsHwStrapsEn=1, so the line does not exist in that configuration and port behaviour is unchanged."
+   }
+  },
+  "unknown_ids": [],
+  "model": "sonnet",
+  "cost_usd": 0.9718798000000001
+ },
+ "rule_scores": {
+  "AH-T1.3.2-01": {
+   "relevant": 2,
+   "killed": 1,
+   "survived": [
+    "M21"
+   ],
+   "claimed_equivalent": [],
+   "score": 50.0,
+   "meets_threshold": false
+  },
+  "AH-T1.3.2-03": {
+   "relevant": 2,
+   "killed": 1,
+   "survived": [
+    "M21"
+   ],
+   "claimed_equivalent": [],
+   "score": 50.0,
+   "meets_threshold": false
+  },
+  "GP-1-01": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-10-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-10-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-10-04": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-10-07": {
+   "relevant": 2,
+   "killed": 1,
+   "survived": [
+    "M02"
+   ],
+   "claimed_equivalent": [],
+   "score": 50.0,
+   "meets_threshold": false
+  },
+  "GP-10-08": {
+   "relevant": 3,
+   "killed": 2,
+   "survived": [
+    "M02"
+   ],
+   "claimed_equivalent": [],
+   "score": 66.7,
+   "meets_threshold": false
+  },
+  "GP-10-09": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-10-15": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-10-19": {
+   "relevant": 2,
+   "killed": 1,
+   "survived": [
+    "M12"
+   ],
+   "claimed_equivalent": [],
+   "score": 50.0,
+   "meets_threshold": false
+  },
+  "GP-10-20": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-10-24": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-10-27": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-10-28": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-10-31": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-10-32": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-10-33": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-10-35": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-10-39": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-10-43": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-2-06": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-3-01": {
+   "relevant": 2,
+   "killed": 1,
+   "survived": [
+    "M12"
+   ],
+   "claimed_equivalent": [],
+   "score": 50.0,
+   "meets_threshold": false
+  },
+  "GP-3-03": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-3-04": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-4.1-01": {
+   "relevant": 3,
+   "killed": 2,
+   "survived": [
+    "M15"
+   ],
+   "claimed_equivalent": [],
+   "score": 66.7,
+   "meets_threshold": false
+  },
+  "GP-4.1-03": {
+   "relevant": 2,
+   "killed": 1,
+   "survived": [
+    "M12"
+   ],
+   "claimed_equivalent": [],
+   "score": 50.0,
+   "meets_threshold": false
+  },
+  "GP-4.2-01": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-4.2-02": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-4.2-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-4.3-01": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-4.3-02": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-5-01": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-5-02": {
+   "relevant": 3,
+   "killed": 2,
+   "survived": [
+    "M21"
+   ],
+   "claimed_equivalent": [],
+   "score": 66.7,
+   "meets_threshold": false
+  },
+  "GP-5-05": {
+   "relevant": 3,
+   "killed": 2,
+   "survived": [
+    "M21"
+   ],
+   "claimed_equivalent": [],
+   "score": 66.7,
+   "meets_threshold": false
+  },
+  "GP-7-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-9-01": {
+   "relevant": 6,
+   "killed": 6,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-9-02": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-9-07": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-T2.2-01": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-T2.2-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-T2.2-05": {
+   "relevant": 2,
+   "killed": 1,
+   "survived": [
+    "M02"
+   ],
+   "claimed_equivalent": [],
+   "score": 50.0,
+   "meets_threshold": false
+  },
+  "GP-T3.2.1-01": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-T3.2.1-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-T3.2.2-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-T3.2.3-01": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-T3.2.3-03": {
+   "relevant": 3,
+   "killed": 2,
+   "survived": [
+    "M02"
+   ],
+   "claimed_equivalent": [],
+   "score": 66.7,
+   "meets_threshold": false
+  },
+  "GP-T4.4-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-T5.1-01": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-T5.13-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-T5.17-01": {
+   "relevant": 3,
+   "killed": 2,
+   "survived": [
+    "M02"
+   ],
+   "claimed_equivalent": [],
+   "score": 66.7,
+   "meets_threshold": false
+  },
+  "GP-T5.21-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-T5.21-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-T5.4.1-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-T5.5.1-02": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-T5.8-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-T5.8-02": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "GP-T6.4-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "TL-T2.2-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "TL-T3.1.3.2.3-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ "equivalence": {
+  "by_status": {
+   "CEX": 4,
+   "ERROR": 2,
+   "PROVEN": 9
+  },
+  "proven_equivalent": 9,
+  "score_without_equivalent": 77.8
+ }
+}

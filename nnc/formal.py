@@ -309,11 +309,16 @@ def env_module(contract: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
-def top_module(contract: dict, checker_modules: list[str], user_env: bool = False) -> str:
+def top_module(contract: dict, checker_modules: list[str], user_env: bool = False,
+               dut_params: bool = True) -> str:
     """The test-bench top without the cover module, plus the reset environment and, when present, the
-    designer's environment `nnc_env` (verif/formal/nnc_env.sv) on every port."""
+    designer's environment `nnc_env` (verif/formal/nnc_env.sv) on every port. With `dut_params` False the DUT
+    is instantiated without parameter overrides: read_slang has already elaborated it with its parameters
+    (`-G`), and the elaborated module has none left to set."""
     iface = contract["interface"]
     text = tb_top(contract, checker_modules).replace("`timescale 1ns/1ps\n", "")
+    if not dut_params:
+        text = re.sub(rf"^(  {re.escape(contract['top'])}) #\(.*?\)( u_dut \()", r"\1\2", text, count=1, flags=re.M)
     rs = _resets(iface)
     inst = ("  nnc_fv_env u_nnc_fv_env (" + ", ".join(f".{r['name']}({r['name']})" for r in rs) + ");\n") if rs else ""
     if user_env:
@@ -384,9 +389,13 @@ def build(contract: dict, rtl_dir: Path, sva_dir: Path, env_file: Path | None, *
     user_env = bool(env_file and env_file.is_file())
     if user_env:
         files["src/nnc_env.sv"] = env_file
-    files["src/nnc_fv_top.sv"] = top_module(contract, [f.stem for f in used], user_env)
+    files["src/nnc_fv_top.sv"] = top_module(contract, [f.stem for f in used], user_env,
+                                            dut_params=frontend != "slang")
     srcs = [k[4:] for k in files if k.startswith("src/")]
     defs = " ".join(f"-D{d}" for d in (defines or []))
+    # read_slang elaborates the DUT: the configuration's parameters go in there; the formal top and the checkers
+    # still get them through chparam
+    gdefs = "".join(f" -G {k}={v}" for k, v in (params or {}).items())
     gen = "\n".join(f"chparam -set {k} {v} nnc_fv_top" for k, v in (params or {}).items())
     multiclock = "on" if is_async(contract["interface"]) else "off"
     # Checker variables start at 0 as in simulation (2-state int/bit); DUT flops keep a free initial value.
@@ -398,7 +407,7 @@ def build(contract: dict, rtl_dir: Path, sva_dir: Path, env_file: Path | None, *
         if frontend == "slang":
             rtl_srcs = [f.name for f in rtl]
             other = [s for s in srcs if s not in rtl_srcs]
-            read = (f"read_slang {defs} --top {contract['top']} " + " ".join(rtl_srcs) + "\n"
+            read = (f"read_slang {defs} --top {contract['top']}{gdefs} " + " ".join(rtl_srcs) + "\n"
                     f"read_verilog -sv -formal {defs} -DNNC_FV_{tag} " + " ".join(other))
         else:
             read = f"read_verilog -sv -formal {defs} -DNNC_FV_{tag} " + " ".join(srcs)

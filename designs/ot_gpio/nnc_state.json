@@ -1,0 +1,101 @@
+{
+  "config": {
+    "documents": [
+      {
+        "file": "spec/gpio_Design_Specification.md",
+        "role": "ip_spec",
+        "sections": [],
+        "skip": [],
+        "tag": "GP"
+      },
+      {
+        "file": "spec/standards/opentitan_tlul_bus_specification.md",
+        "role": "standard",
+        "sections": [],
+        "skip": [
+          "Bus Primitives",
+          "Bus Integrity Scheme"
+        ],
+        "tag": "TL"
+      },
+      {
+        "file": "spec/standards/opentitan_comportability.md",
+        "role": "standard",
+        "sections": [
+          "Clocking",
+          "Bus Interfaces",
+          "Interrupts",
+          "Alerts",
+          "Interrupt Handling",
+          "Alert Handling",
+          "Register Handling"
+        ],
+        "skip": [],
+        "tag": "CP"
+      },
+      {
+        "file": "spec/standards/opentitan_register_tool.md",
+        "role": "standard",
+        "sections": [
+          "Register Tool Hardware Generation",
+          "Error responses",
+          "Register definitions per type"
+        ],
+        "skip": [],
+        "tag": "RG"
+      },
+      {
+        "file": "spec/standards/opentitan_alert_handler_theory_of_operation.md",
+        "role": "standard",
+        "sections": [
+          "Alert Definition",
+          "Differential Alert Signaling",
+          "Monitoring of Signal Integrity Issues"
+        ],
+        "skip": [],
+        "tag": "AH"
+      }
+    ],
+    "formal": "on",
+    "formal_defines": "SYNTHESIS",
+    "formal_depth": "32",
+    "formal_frontend": "slang",
+    "top": "ot_gpio_nnc"
+  },
+  "created": "2026-11-21T00:49:38+00:00",
+  "design": "ot_gpio",
+  "gates": {
+    "G1_rules": {
+      "at": "2026-11-21T01:04:06+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "work/rules.json": "c8e808162b76c943cf4b9b687f27eb639161e9d114169dc48a7fa7604a80a8ba"
+      },
+      "note": "Not a hardware designer's review. 227 rules kept (45 rejected, 7 merged). 19 spec-lint gaps answered as spec section 10 decisions D-001..D-022 (documents only; where they are silent or disagree, only the common part or a bound is checked). 8 open questions answered on delegation: run set = all four parameter combinations; counting convention for D-018 at the ports; status-type interrupts, pings and sender encoding-error timing out of scope. Where a kept rule conflicts with a decision, the decision limits the check: GP-T5.11-02/GP-T5.12-02 (MASKED_OE read bits 31:16) by D-002, CP-T1.8.4-05 (INTR_STATE not qualified by INTR_ENABLE) by D-004. Open for the G4 reviewer: D-002, D-004.",
+      "sources": {
+        "spec/gpio_Design_Specification.md": "cb9e069f603bd62cfed438b7227832240ac086152f58cabb4424541189d68925",
+        "spec/standards/opentitan_alert_handler_theory_of_operation.md": "b232624126f8a7bc6f941cdbc2d8f1e2db39f55f1b694749b3f2bef42b712545",
+        "spec/standards/opentitan_comportability.md": "8f5207dc44bd886660d866b30833be91dd3a87d1fe51a01dee70f917b8a336cb",
+        "spec/standards/opentitan_register_tool.md": "bc37a4652b5fda7150274720d8ca4854afa95efeb3f4b93526c3c911657e262a",
+        "spec/standards/opentitan_tlul_bus_specification.md": "7b07c0572d341ac5147eda51f1fb18fc537f289da6302030aa72808e26cf47b2"
+      }
+    },
+    "G2_contract": {
+      "at": "2026-11-21T01:13:18+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "work/contract.json": "c058cacad176346247802767adac7e67a42b10b34a36fd3361383ee1c02ba0a6"
+      },
+      "note": "Not a hardware designer's review. 38 checks (13 assertions, 25 tests) over 188 rules; 80 rules not verifiable by simulation (mostly standard text outside this IP, status-type interrupts, pings, obligations of the host). Checks follow D-001..D-022: bounds instead of exact cycles where the documents are silent (filter D-007, latencies D-018); MASKED_OE read bits 31:16 unchecked (D-002); INTR_STATE checked only where both readings of D-004 agree. Run set: base (2 seeds), sync_off, straps_off, min."
+    },
+    "G3_verif_sources": {
+      "at": "2026-11-21T10:56:40+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "verif": "2ecedd2b789b1f66afd31200fdeb1637de3bb12e50dba5043116ec9a77f67ed0"
+      },
+      "note": "Not a hardware designer's review. Re-approved after fix-verif from the formal counterexample of CHK-003: a request with i_a_intg_flip=1 counts as an alert cause from i_a_valid=1, not only from its A handshake (INT-INTG-002, INT-TL-003, D-017 gives only an upper bound). Traffic with i_a_intg_flip=0 is still never a cause. Candidate passes 26/26 tests and 13/13 assertions in all 5 runs."
+    }
+  },
+  "version": 1
+}

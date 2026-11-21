@@ -1,0 +1,799 @@
+{
+ "source": {
+  "file": "opentitan_register_tool.md",
+  "sha256": "bc37a4652b5fda7150274720d8ca4854afa95efeb3f4b93526c3c911657e262a",
+  "index_version": 1
+ },
+ "extraction": {
+  "prompt_version": "extract-v2",
+  "model": "sonnet",
+  "budget_tokens": 3500,
+  "tag": "RG",
+  "sections": [
+   "Register Tool Hardware Generation",
+   "Error responses",
+   "Register definitions per type"
+  ],
+  "skip": [],
+  "batches": 2,
+  "date": "2026-11-21T01:00:06+00:00",
+  "usage": {
+   "calls": 2,
+   "cached": 0,
+   "cost_usd": 0.0847,
+   "input_tokens": 4,
+   "output_tokens": 4199,
+   "cache_creation_input_tokens": 10362,
+   "cache_read_input_tokens": 2062
+  },
+  "errors": []
+ },
+ "coverage": {
+  "sentences": 121,
+  "normative_sentences": 25,
+  "normative_cited": 24,
+  "normative_skipped": 2,
+  "uncovered_after_first_pass": 0,
+  "uncovered": [],
+  "invalid_ids": []
+ },
+ "rules": [
+  {
+   "id": "RG-T1.3-01",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.3",
+   "section_title": "Register Tool Hardware Generation",
+   "page": 598,
+   "quote": "The output is two Verilog files that can be instantiated by a peripheral that follows the Comportability Guidelines.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3:s3"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "register generation tool produces hardware output",
+   "statement": "The tool output is two Verilog files that can be instantiated by a peripheral following the Comportability Guidelines.",
+   "check": "none"
+  },
+  {
+   "id": "RG-T1.3-02",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.3",
+   "section_title": "Register Tool Hardware Generation",
+   "page": 602,
+   "quote": "As an example the tool can be invoked from the top project directory to generate the uart registers with:",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3:s6"
+   ],
+   "strength": "MAY",
+   "actor": "system",
+   "signals": [],
+   "condition": "invoking the tool from the top project directory",
+   "statement": "The tool can be invoked from the top project directory to generate registers, e.g. for uart.",
+   "check": "none"
+  },
+  {
+   "id": "RG-T1.3-03",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.3",
+   "section_title": "Register Tool Hardware Generation",
+   "page": 610,
+   "quote": "The name_reg2hw_t structure contains the signals that are driven from the register module to the rest of the hardware (this contains any required .q, .qe, and .re signals described below).",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3:s8"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "name_reg2hw_t",
+    ".q",
+    ".qe",
+    ".re"
+   ],
+   "condition": "",
+   "statement": "The name_reg2hw_t structure contains the signals driven from the register module to the rest of the hardware, including any required .q, .qe and .re signals.",
+   "check": "scenario"
+  },
+  {
+   "id": "RG-T1.3-04",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.3",
+   "section_title": "Register Tool Hardware Generation",
+   "page": 610,
+   "quote": "The name_hw2reg_t structure contains the signals that are driven from the rest of the hardware to the register module (this contains any required .d and .de signals described below).",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3:s9"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "name_hw2reg_t",
+    ".d",
+    ".de"
+   ],
+   "condition": "",
+   "statement": "The name_hw2reg_t structure contains the signals driven from the rest of the hardware to the register module, including any required .d and .de signals.",
+   "check": "scenario"
+  },
+  {
+   "id": "RG-T1.4.1-01",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.4.1",
+   "section_title": "Error responses",
+   "page": 675,
+   "quote": "Accesses to unmapped target addresses that can be fully represented with the internally used address bits typically return an error.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.4.1:s3"
+   ],
+   "strength": "SHOULD",
+   "actor": "slave",
+   "signals": [],
+   "condition": "access targets an unmapped address fully representable with the internally used address bits",
+   "statement": "Accesses to unmapped addresses representable with the internal address bits typically return an error.",
+   "check": "scenario"
+  },
+  {
+   "id": "RG-T1.4.1-02",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.4.1",
+   "section_title": "Error responses",
+   "page": 676,
+   "quote": "They typically return an error if the resulting address is not mapped. If the resulting address is mapped, the request is forwarded to the corresponding register and no error is returned.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.4.1:s5",
+    "T1.4.1:s6"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [],
+   "condition": "excess address bits stripped and resulting address is mapped",
+   "statement": "If the stripped address maps to a register, the request is forwarded to that register and no error is returned.",
+   "check": "scenario"
+  },
+  {
+   "id": "RG-T1.4.1-03",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.4.1",
+   "section_title": "Error responses",
+   "page": 681,
+   "quote": "A request to address 0x88 can be represented using the 8 internal address bits but there is no register mapped at this address. Typical implementations return an error for such a request.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.4.1:s8",
+    "T1.4.1:s9"
+   ],
+   "strength": "SHOULD",
+   "actor": "slave",
+   "signals": [],
+   "condition": "request to an unmapped address such as 0x88 with 8 internal address bits",
+   "statement": "A request to an address representable by the internal address bits but with no register mapped should return an error.",
+   "check": "scenario"
+  },
+  {
+   "id": "RG-T1.4.1-04",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.4.1",
+   "section_title": "Error responses",
+   "page": 688,
+   "quote": "TL-UL a_opcode illegal value",
+   "spec_refs": [],
+   "sentences": [
+    "T1.4.1:s13"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "a_opcode"
+   ],
+   "condition": "a_opcode has an illegal value",
+   "statement": "An error response is returned when TL-UL a_opcode has an illegal value.",
+   "check": "both"
+  },
+  {
+   "id": "RG-T1.4.1-05",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.4.1",
+   "section_title": "Error responses",
+   "page": 689,
+   "quote": "TL-UL writes of size smaller than register size This can be seen with an 8b write to a register which is larger than 8 bits, or a 16b write to a register which is larger than 16 bits.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.4.1:s14",
+    "T1.4.1:s17"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [],
+   "condition": "TL-UL write of size smaller than the register size, e.g. 8b write to register wider than 8 bits",
+   "statement": "A write smaller than the register size returns an error.",
+   "check": "both"
+  },
+  {
+   "id": "RG-T1.4.1-06",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.4.1",
+   "section_title": "Error responses",
+   "page": 694,
+   "quote": "TL-UL writes of size smaller than 32b that are not word-aligned I.e. writes of size 8b or 16b that are not to an address that is 4B aligned return in error.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.4.1:s19",
+    "T1.4.1:s20"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [],
+   "condition": "write of size 8b or 16b to an address not 4B aligned",
+   "statement": "Sub-word writes that are not word-aligned return an error.",
+   "check": "both"
+  },
+  {
+   "id": "RG-T1.4.1-07",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.4.1",
+   "section_title": "Error responses",
+   "page": 697,
+   "quote": "Reads of size smaller than full word (32b) return the full register content and do not signal error.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.4.1:s21"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [],
+   "condition": "read smaller than full word (32b)",
+   "statement": "Reads smaller than a full word return the full register content and do not signal error.",
+   "check": "both"
+  },
+  {
+   "id": "RG-T1.4.1-08",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.4.1",
+   "section_title": "Error responses",
+   "page": 697,
+   "quote": "Reads response data is always in its byte-channel, i.e. a one-byte read to address 0x3 will return the full word with the correct MSB in bits [31:24] on the TL-UL response bus (as well as the not-asked-for bytes 2:0 in [23:0]).",
+   "spec_refs": [],
+   "sentences": [
+    "T1.4.1:s22"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [],
+   "condition": "sub-word read, e.g. one-byte read to address 0x3",
+   "statement": "Read response data is always in its byte channel, e.g. a byte read at 0x3 returns the full word with the correct byte in bits [31:24].",
+   "check": "both"
+  },
+  {
+   "id": "RG-T1.4.1-09",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.4.1",
+   "section_title": "Error responses",
+   "page": 700,
+   "quote": "It is recommended to follow the above error rules based on the declared number of validbits: for the window, but there are some cases where this might be relaxed.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.4.1:s26"
+   ],
+   "strength": "SHOULD",
+   "actor": "system",
+   "signals": [],
+   "condition": "window access, based on declared validbits",
+   "statement": "The error rules above should be followed for windows based on the declared number of validbits, though this may be relaxed in some cases.",
+   "check": "none"
+  },
+  {
+   "id": "RG-T1.4.1-10",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.4.1",
+   "section_title": "Error responses",
+   "page": 700,
+   "quote": "For example, if the termination of the TL-UL bus is a memory that handles byte and halfword writes via masking, errors do not need be returned for unaligned sub-word writes.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.4.1:s27"
+   ],
+   "strength": "MAY",
+   "actor": "slave",
+   "signals": [],
+   "condition": "window terminates in a memory handling byte and halfword writes via masking",
+   "statement": "Errors need not be returned for unaligned sub-word writes.",
+   "check": "scenario"
+  },
+  {
+   "id": "RG-T1.5.1-01",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.5.1",
+   "section_title": "Type RW",
+   "page": 811,
+   "quote": "Coming in from the left (bus) are the software write enable and write data, which has the highest priority in modifying the register contents.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.1:s6"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "we",
+    "wd"
+   ],
+   "condition": "",
+   "statement": "Software write enable and write data have the highest priority in modifying register contents.",
+   "check": "scenario"
+  },
+  {
+   "id": "RG-T1.5.1-02",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.5.1",
+   "section_title": "Type RW",
+   "page": 811,
+   "quote": "Optionally, if the hwaccess attribute allows writes from the hardware, the hardware can present updated values in the form of data enable (de) and update data (d). If the data enable is true, the register content is updated with the update data.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.1:s9",
+    "T1.5.1:s10"
+   ],
+   "strength": "MAY",
+   "actor": "system",
+   "signals": [
+    "de",
+    "d"
+   ],
+   "condition": "hwaccess allows hardware writes",
+   "statement": "Hardware can present updated values via de and d; when de is true the register content is updated with d.",
+   "check": "both"
+  },
+  {
+   "id": "RG-T1.5.1-03",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.5.1",
+   "section_title": "Type RW",
+   "page": 811,
+   "quote": "If both software and hardware request an update in the same clock cycle (i.e. both de and we are true), the software updated value is used, as shown in the diagram.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.1:s11"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "de",
+    "we"
+   ],
+   "condition": "software and hardware both request an update in the same cycle (de and we true)",
+   "statement": "The software-written value is used.",
+   "check": "both"
+  },
+  {
+   "id": "RG-T1.5.1-04",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.5.1",
+   "section_title": "Type RW",
+   "page": 819,
+   "quote": "Finally an attribute value of none asks for no interface to the hardware, and might be used for things like scratch registers or DV test registers where only software can modify the value, or informational registers like version numbers that are read-only by the software.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.1:s17"
+   ],
+   "strength": "MAY",
+   "actor": "system",
+   "signals": [],
+   "condition": "hwaccess is none",
+   "statement": "A hwaccess of none provides no hardware interface and may be used for registers only software can modify.",
+   "check": "none"
+  },
+  {
+   "id": "RG-T1.5.1-05",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.5.1",
+   "section_title": "Type RW",
+   "page": 828,
+   "quote": "Another attribute in the register description hwqe, when true indicates that the hardware wants to see the software write enable exported to the peripheral logic. This is just a registered version of the bus side write-enable we so that its rising edge aligns with the change in the q output.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.1:s18",
+    "T1.5.1:s19"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "qe",
+    "we"
+   ],
+   "condition": "hwqe is true",
+   "statement": "qe is a registered version of the bus-side we, aligned with the change in q.",
+   "check": "both"
+  },
+  {
+   "id": "RG-T1.5.2-01",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.5.2",
+   "section_title": "Type RW HWExt",
+   "page": 834,
+   "quote": "Finally, note that no de input is required from the rest of the peripheral hardware, only the d is added to the struct bundle.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.2:s10"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "system",
+   "signals": [
+    "de",
+    "d"
+   ],
+   "condition": "hwext register",
+   "statement": "No de input is required from peripheral hardware; only d is added to the struct bundle.",
+   "check": "none"
+  },
+  {
+   "id": "RG-T1.5.2-02",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.5.2",
+   "section_title": "Type RW HWExt",
+   "page": 847,
+   "quote": "Note the timing of qe is one cycle earlier in this model than in the non-hwext model.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.2:s11"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "qe"
+   ],
+   "condition": "hwext register",
+   "statement": "qe timing is one cycle earlier than in the non-hwext model.",
+   "check": "both"
+  },
+  {
+   "id": "RG-T1.5.3-01",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.5.3",
+   "section_title": "Type RO, with hwext and zero-gate options",
+   "page": 852,
+   "quote": "Read-only type registers can be thought of as identical as RW types with no wd and we input. They are implemented as prim_subreg with those inputs disabled.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.3:s1",
+    "T1.5.3:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "wd",
+    "we"
+   ],
+   "condition": "read-only registers",
+   "statement": "RO registers behave as RW registers with no wd and we inputs.",
+   "check": "scenario"
+  },
+  {
+   "id": "RG-T1.5.3-02",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.5.3",
+   "section_title": "Type RO, with hwext and zero-gate options",
+   "page": 856,
+   "quote": "In this case, a hardwired value is returned for a software read equal to the default value assigned to the register this can be useful for auto-generated register values with no storage register required.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.3:s5"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "swaccess is ro, hwaccess is none or hro, and hwext is true",
+   "statement": "A software read returns a hardwired value equal to the register default value.",
+   "check": "scenario"
+  },
+  {
+   "id": "RG-T1.5.4-01",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.5.4",
+   "section_title": "Type RC",
+   "page": 861,
+   "quote": "This signal re indicates that this register is being read, in which case the contents should be set to zero.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.4:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "re"
+   ],
+   "condition": "register type rc is read",
+   "statement": "When re indicates the register is being read, the contents are set to zero.",
+   "check": "both"
+  },
+  {
+   "id": "RG-T1.5.4-02",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.5.4",
+   "section_title": "Type RC",
+   "page": 861,
+   "quote": "Note this register is not recommended but might be required for backwards compatibility to other IP functionality.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.4:s3"
+   ],
+   "strength": "SHOULD_NOT",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "RC registers are not recommended, except for backwards compatibility.",
+   "check": "none"
+  },
+  {
+   "id": "RG-T1.5.4-03",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.5.4",
+   "section_title": "Type RC",
+   "page": 861,
+   "quote": "At the moment hwext is not allowed to be true for RC since there is no exporting of the re signal. If this is required, please add a feature request.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.4:s4",
+    "T1.5.4:s5"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "system",
+   "signals": [
+    "re"
+   ],
+   "condition": "register type RC",
+   "statement": "hwext must not be true for RC registers since re is not exported.",
+   "check": "none"
+  },
+  {
+   "id": "RG-T1.5.5-01",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.5.5",
+   "section_title": "Type WO",
+   "page": 869,
+   "quote": "If there is no storage required, only an indication of the act of writing, then hwext should be set to true and the outside hardware can handle the write event.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.5:s2"
+   ],
+   "strength": "SHOULD",
+   "actor": "system",
+   "signals": [],
+   "condition": "WO register with no storage needed, only write indication",
+   "statement": "hwext should be set to true so outside hardware handles the write event.",
+   "check": "none"
+  },
+  {
+   "id": "RG-T1.5.6-01",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.5.6",
+   "section_title": "Type R0W1C, RW1S, RW1C and RW0C",
+   "page": 874,
+   "quote": "Certain RW register types must be implemented with special configuration of prim_subreg since the act of writing causes the values to be set in unique ways.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.6:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "R0W1C, RW1S, RW1C, RW0C types",
+   "statement": "These types are implemented with special prim_subreg configuration so writing sets values in type-specific ways.",
+   "check": "scenario"
+  },
+  {
+   "id": "RG-T1.5.6.1-01",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.5.6.1",
+   "section_title": "Simultaneous SW and HW access",
+   "page": 888,
+   "quote": "As shown in the module descriptions, the subreg needs to handle the case when both hardware and software attempt to write at the same time. As is true with the RW type, the software has precedence, but it is more tricky here.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.6.1:s1",
+    "T1.5.6.1:s2"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [],
+   "condition": "when hardware and software write a RW1C/RW1S/RW0C/R0W1C subreg at the same time",
+   "statement": "The subreg must handle simultaneous hardware and software writes, with software taking precedence as for the RW type.",
+   "check": "scenario"
+  },
+  {
+   "id": "RG-T1.5.6.1-02",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.5.6.1",
+   "section_title": "Simultaneous SW and HW access",
+   "page": 899,
+   "quote": "In this description if the hardware is writing, its value is sent to the logic that potentially clears that value or the stored value.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.6.1:s7"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "d",
+    "de"
+   ],
+   "condition": "RW1C subreg when hardware is writing",
+   "statement": "The hardware write value is sent to the logic that potentially clears that value or the stored value.",
+   "check": "scenario"
+  },
+  {
+   "id": "RG-T1.5.6.1-03",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.5.6.1",
+   "section_title": "Simultaneous SW and HW access",
+   "page": 899,
+   "quote": "So if the hardware accidentally clears fields that the software hasn't cleared yet, there is a risk that events will not be seen by software. The recommendation is that the hardware feed the q value back into d, only setting bits with new events. Then there will be no \"collision\" between hardware setting events and software clearing events.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.6.1:s8",
+    "T1.5.6.1:s9",
+    "T1.5.6.1:s10"
+   ],
+   "strength": "SHOULD",
+   "actor": "master",
+   "signals": [
+    "d",
+    "q"
+   ],
+   "condition": "hardware writing a RW1C-type register",
+   "statement": "Hardware should feed the q value back into d, only setting bits with new events, to avoid collisions with software clearing.",
+   "check": "none"
+  },
+  {
+   "id": "RG-T1.5.6.1-04",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.5.6.1",
+   "section_title": "Simultaneous SW and HW access",
+   "page": 899,
+   "quote": "The HW could have chosen to simply treat d and de as set-only, but the preference is to leave the subreg simple and allow the hardware to do either \"the right thing\" or whatever it feels is appropriate for its needs. (Perhaps it is a feature to clear all events in the hardware.)",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.6.1:s11",
+    "T1.5.6.1:s12"
+   ],
+   "strength": "MAY",
+   "actor": "master",
+   "signals": [
+    "d",
+    "de"
+   ],
+   "condition": "RW1C-type subreg hardware writes",
+   "statement": "Hardware may drive d and de to clear or set bits as it sees fit, including clearing all events, rather than set-only.",
+   "check": "scenario"
+  },
+  {
+   "id": "RG-T1.5.6.1-05",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.5.6.1",
+   "section_title": "Simultaneous SW and HW access",
+   "page": 906,
+   "quote": "But if the event is still true (the HW d input is still 1) then the clear should still have effect for one cycle in order to create a new interrupt edge. Since d is still 1 the q will return to 1 after one cycle, since the clean up was not successful.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.6.1:s16",
+    "T1.5.6.1:s17"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "d",
+    "q"
+   ],
+   "condition": "RW1C interrupt vector when software clears a bit while hardware d input is still 1",
+   "statement": "The software clear must still take effect for one cycle to create a new interrupt edge, after which q returns to 1 since d is still 1.",
+   "check": "both"
+  },
+  {
+   "id": "RG-T1.5.6.2-01",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.5.6.2",
+   "section_title": "HWExt RW1C etc.",
+   "page": 914,
+   "quote": "It is legal to create RW1C, RW1S, etc. with hwext true.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.6.2:s1"
+   ],
+   "strength": "MAY",
+   "actor": "any",
+   "signals": [],
+   "condition": "",
+   "statement": "RW1C, RW1S and similar register types may be created with hwext true.",
+   "check": "scenario"
+  },
+  {
+   "id": "RG-T1.5.6.2-02",
+   "doc": "opentitan_register_tool.md",
+   "section": "T1.5.6.2",
+   "section_title": "HWExt RW1C etc.",
+   "page": 919,
+   "quote": "Similarly it is legal to set hwqe true for any of these register types if the clearing wants to be monitored by the hardware outside.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.6.2:s5"
+   ],
+   "strength": "MAY",
+   "actor": "any",
+   "signals": [],
+   "condition": "when clearing is to be monitored by external hardware",
+   "statement": "hwqe may be set true for RW1C, RW1S and similar register types.",
+   "check": "scenario"
+  }
+ ],
+ "skipped": [
+  {
+   "sentence": "T1.5:s9",
+   "reason": "descriptive",
+   "text": "This is typically the same as q[] except for hwext registers. de input Hardware data enable from peripheral logic, scalar, should be set when the hardware wishes to update the register field d[] input Hardware data from peripheral logic, size == field size qe output Output register enable, scalar, true when bus interface writes to subreg q[] output Output register content, size == field size."
+  },
+  {
+   "sentence": "T1.5.1:s17",
+   "reason": "duplicate",
+   "text": "Finally an attribute value of none asks for no interface to the hardware, and might be used for things like scratch registers or DV test registers where only software can modify the value, or informational registers like version numbers that are read-only by the software."
+  },
+  {
+   "sentence": "T1.5.2:s5",
+   "reason": "informative_note",
+   "text": "Note that these could be done non-hwext as well, with swaccess==rw and hwaccess=rw, but could lose atomicity due to the register included within the autogenerated region."
+  },
+  {
+   "sentence": "T1.5.6.1:s3",
+   "reason": "descriptive",
+   "text": "The goal for these types of registers is to have software clear or set certain bits at the same time hardware is clearing or setting other bits."
+  },
+  {
+   "sentence": "T1.5.6.1:s4",
+   "reason": "descriptive",
+   "text": "So in theory what software is clearing, hardware is setting, or vice-versa."
+  },
+  {
+   "sentence": "T1.5.6.1:s5",
+   "reason": "example_or_figure",
+   "text": "An example would be where hardware is setting interrupt status bits, and software is clearing them, using RW1C."
+  },
+  {
+   "sentence": "T1.5.6.1:s6",
+   "reason": "list_lead_in",
+   "text": "The logic for RW1C shows how this is implemented in the module:"
+  },
+  {
+   "sentence": "T1.5.6.1:s13",
+   "reason": "descriptive",
+   "text": "The one \"conflict\" that is common and worth mentioning is RW1C on an interrupt vector."
+  },
+  {
+   "sentence": "T1.5.6.1:s14",
+   "reason": "descriptive",
+   "text": "This is the typical scenario where hardware sets bits (representing an interrupt event), and software clears bits (indicating the event has been handled)."
+  },
+  {
+   "sentence": "T1.5.6.1:s15",
+   "reason": "informative_note",
+   "text": "The assumption is that between the hardware setting and software clearing, software has cleaned up whatever caused the event in the first place."
+  },
+  {
+   "sentence": "T1.5.6.2:s2",
+   "reason": "descriptive",
+   "text": "In these cases the auto-generated hardware is simply the same as the hwext RW register shown earlier."
+  },
+  {
+   "sentence": "T1.5.6.2:s3",
+   "reason": "descriptive",
+   "text": "This causes all of the implementation to be done outside of the generated register block."
+  },
+  {
+   "sentence": "T1.5.6.2:s4",
+   "reason": "informative_note",
+   "text": "There is no way to guarantee that hardware is doing the right thing, but at least the RW1C conveys the notion to software the intended effect."
+  }
+ ]
+}

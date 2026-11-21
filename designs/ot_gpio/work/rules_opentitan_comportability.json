@@ -1,0 +1,1321 @@
+{
+ "source": {
+  "file": "opentitan_comportability.md",
+  "sha256": "8f5207dc44bd886660d866b30833be91dd3a87d1fe51a01dee70f917b8a336cb",
+  "index_version": 1
+ },
+ "extraction": {
+  "prompt_version": "extract-v2",
+  "model": "sonnet",
+  "budget_tokens": 3500,
+  "tag": "CP",
+  "sections": [
+   "Clocking",
+   "Bus Interfaces",
+   "Interrupts",
+   "Alerts",
+   "Interrupt Handling",
+   "Alert Handling",
+   "Register Handling"
+  ],
+  "skip": [],
+  "batches": 2,
+  "date": "2026-11-21T00:59:48+00:00",
+  "usage": {
+   "calls": 2,
+   "cached": 0,
+   "cost_usd": 0.1224,
+   "input_tokens": 4,
+   "output_tokens": 6668,
+   "cache_creation_input_tokens": 13549,
+   "cache_read_input_tokens": 2062
+  },
+  "errors": []
+ },
+ "coverage": {
+  "sentences": 172,
+  "normative_sentences": 50,
+  "normative_cited": 44,
+  "normative_skipped": 8,
+  "uncovered_after_first_pass": 0,
+  "uncovered": [],
+  "invalid_ids": []
+ },
+ "rules": [
+  {
+   "id": "CP-T1.5.2-01",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.5.2",
+   "section_title": "Clocking",
+   "page": 134,
+   "quote": "If there are several, exactly one of the items' dictionaries should also have a boolean field called primary set to true.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.2:s8"
+   ],
+   "strength": "SHOULD",
+   "actor": "system",
+   "signals": [
+    "primary"
+   ],
+   "condition": "When the clocking element has several clocking items",
+   "statement": "Exactly one clocking item dictionary should have the boolean field primary set to true.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.5.2-02",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.5.2",
+   "section_title": "Clocking",
+   "page": 139,
+   "quote": "Special care will be required for security sensitive storage elements.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.2:s11"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "For security sensitive storage elements",
+   "statement": "Special care will be required for security sensitive storage elements.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.5.2-03",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.5.2",
+   "section_title": "Clocking",
+   "page": 143,
+   "quote": "To allow these blocks to be described, the clock and reset fields of an item are optional.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.2:s15"
+   ],
+   "strength": "MAY",
+   "actor": "system",
+   "signals": [
+    "clock",
+    "reset"
+   ],
+   "condition": "For blocks that generate clocks or resets",
+   "statement": "The clock and reset fields of a clocking item are optional.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.5.2-04",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.5.2",
+   "section_title": "Clocking",
+   "page": 143,
+   "quote": "However, the primary clock must have both.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.2:s16"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "clock",
+    "reset"
+   ],
+   "condition": "",
+   "statement": "The primary clock clocking item must have both clock and reset fields.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.5.2.1-01",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.5.2.1",
+   "section_title": "Details and rationale for asynchronous active low reset strategy",
+   "page": 154,
+   "quote": "Security storage elements might \"leak\" sensitive state content, and should be handled with care regardless of reset methodology.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.2.1:s4"
+   ],
+   "strength": "SHOULD",
+   "actor": "system",
+   "signals": [],
+   "condition": "For security storage elements",
+   "statement": "Security storage elements should be handled with care regardless of reset methodology, since they might leak sensitive state content.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.5.2.1-02",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.5.2.1",
+   "section_title": "Details and rationale for asynchronous active low reset strategy",
+   "page": 154,
+   "quote": "By \"care\" an example would be to reset their value synchronously at a time after chip-wide reset, to a value that is randomized so that the Hamming distance between the register value and all zeros cannot produce information available to an attacker.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.2.1:s5"
+   ],
+   "strength": "MAY",
+   "actor": "system",
+   "signals": [],
+   "condition": "Handling security storage elements",
+   "statement": "Care may include synchronously resetting the value after chip-wide reset to a randomized value.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.5.2.1-03",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.5.2.1",
+   "section_title": "Details and rationale for asynchronous active low reset strategy",
+   "page": 157,
+   "quote": "Asynchronous active low incurs slightly more area and requires more hand-holding, but is more common.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.2.1:s7"
+   ],
+   "strength": "MAY",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "Asynchronous active low reset incurs slightly more area and needs more hand-holding but is more common.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.5.2.1-04",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.5.2.1",
+   "section_title": "Details and rationale for asynchronous active low reset strategy",
+   "page": 158,
+   "quote": "Synchronous active high is slightly more efficient, but requires the existence of a clock edge to take effect.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.2.1:s8"
+   ],
+   "strength": "MAY",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "Synchronous active high reset is slightly more efficient but requires a clock edge to take effect.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.5.3-01",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.5.3",
+   "section_title": "Bus Interfaces",
+   "page": 164,
+   "quote": "Peripherals can connect to the chip bus.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.3:s1"
+   ],
+   "strength": "MAY",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "Peripherals can connect to the chip bus.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.5.3-02",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.5.3",
+   "section_title": "Bus Interfaces",
+   "page": 164,
+   "quote": "All peripherals are assumed to have registers, and are thus required to expose at least one device interface on the chip bus.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.3:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "Every peripheral must expose at least one device interface on the chip bus.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.5.3-03",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.5.3",
+   "section_title": "Bus Interfaces",
+   "page": 164,
+   "quote": "Peripherals can act as a bus host on some occasions, though for full chip simplicity the preferred model is for the processor to be primary host.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.3:s3"
+   ],
+   "strength": "MAY",
+   "actor": "master",
+   "signals": [],
+   "condition": "On some occasions",
+   "statement": "Peripherals can act as a bus host, though the preferred model is the processor being primary host.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.5.3-04",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.5.3",
+   "section_title": "Bus Interfaces",
+   "page": 172,
+   "quote": "The bus_interfaces attribute in the configuration file should contain a list of dictionaries, describing the interfaces that the peripheral exposes.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.3:s7"
+   ],
+   "strength": "SHOULD",
+   "actor": "system",
+   "signals": [
+    "bus_interfaces"
+   ],
+   "condition": "",
+   "statement": "The bus_interfaces attribute in the configuration file should contain a list of dictionaries describing the interfaces the peripheral exposes.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.5.3-05",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.5.3",
+   "section_title": "Bus Interfaces",
+   "page": 178,
+   "quote": "To signify this, the peripheral must have a protocol of tlul.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.3:s11"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "protocol"
+   ],
+   "condition": "",
+   "statement": "The peripheral must have a protocol of tlul.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.5.3-06",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.5.3",
+   "section_title": "Bus Interfaces",
+   "page": 185,
+   "quote": "Each entry must also contain a direction. This must either be host or device.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.3:s14",
+    "T1.5.3:s15"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "direction"
+   ],
+   "condition": "",
+   "statement": "Each bus_interfaces entry must contain a direction, which must be either host or device.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.5.3-07",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.5.3",
+   "section_title": "Bus Interfaces",
+   "page": 185,
+   "quote": "All bus hosts must use the same clock as the defined primary host clock.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.3:s16"
+   ],
+   "strength": "MUST",
+   "actor": "master",
+   "signals": [],
+   "condition": "",
+   "statement": "All bus hosts must use the same clock as the defined primary host clock.",
+   "check": "scenario"
+  },
+  {
+   "id": "CP-T1.5.3-08",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.5.3",
+   "section_title": "Bus Interfaces",
+   "page": 192,
+   "quote": "This is optional unless there is another entry in the list with the same direction (in which case, the port names would collide).",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.3:s22"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "name"
+   ],
+   "condition": "When another entry in the list has the same direction",
+   "statement": "An entry must include a name so port names do not collide.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.5.5-01",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.5.5",
+   "section_title": "Interrupts",
+   "page": 222,
+   "quote": "Each item of the form name in the interrupt list expects a module output named intr_name_o.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.5.5:s4"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "intr_name_o"
+   ],
+   "condition": "For each item name in the interrupt list",
+   "statement": "The module must have an output named intr_name_o for each interrupt name.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.6-01",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.6",
+   "section_title": "Register Handling",
+   "page": 334,
+   "quote": "All lowRISC peripheral designs must conform to this register specification.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.6:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "All lowRISC peripheral designs must conform to the register specification.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.8-01",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.8",
+   "section_title": "Interrupt Handling",
+   "page": 476,
+   "quote": "Where possible (exceptions for inherited IP that is too tricky to convert) all interrupts shall have common naming, hardware interfaces, and software interfaces.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.8:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "Where possible, except inherited IP too tricky to convert",
+   "statement": "All interrupts shall have common naming, hardware interfaces, and software interfaces.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.8.1-01",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.8.1",
+   "section_title": "Conventions",
+   "page": 481,
+   "quote": "Currently, all wired CIP interrupts in OpenTitan use active-high level-triggering.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.8.1:s1"
+   ],
+   "strength": "MUST",
+   "actor": "source",
+   "signals": [
+    "intr_o"
+   ],
+   "condition": "",
+   "statement": "Wired CIP interrupts use active-high level-triggering.",
+   "check": "assertion"
+  },
+  {
+   "id": "CP-T1.8.2-01",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.8.2",
+   "section_title": "Defining Interrupts",
+   "page": 498,
+   "quote": "Key: name; Kind: required; Type: string; Description of Value: Name of the interrupt",
+   "spec_refs": [],
+   "sentences": [
+    "T1.8.2:s4"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "name"
+   ],
+   "condition": "For each entry in interrupt_list",
+   "statement": "The name key, a string naming the interrupt, is required.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.8.2-02",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.8.2",
+   "section_title": "Defining Interrupts",
+   "page": 499,
+   "quote": "Key: desc; Kind: optional; Type: string; Description of Value: Description of the interrupt",
+   "spec_refs": [],
+   "sentences": [
+    "T1.8.2:s5"
+   ],
+   "strength": "MAY",
+   "actor": "system",
+   "signals": [
+    "desc"
+   ],
+   "condition": "For each entry in interrupt_list",
+   "statement": "The desc key, a string describing the interrupt, is optional.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.8.2-03",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.8.2",
+   "section_title": "Defining Interrupts",
+   "page": 500,
+   "quote": "Key: type; Kind: optional; Type: string; Description of Value: Select between \"Event\" and \"Status\" types, default is \"Event\" if unspecified.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.8.2:s6"
+   ],
+   "strength": "MAY",
+   "actor": "system",
+   "signals": [
+    "type"
+   ],
+   "condition": "For each entry in interrupt_list",
+   "statement": "The type key is optional, selecting Event or Status, defaulting to Event if unspecified.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.8.3-01",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.8.3",
+   "section_title": "Interrupts per module",
+   "page": 504,
+   "quote": "A peripheral generates a separate wired interrupt for each interrupt source, which are all routed to the target's interrupt controller.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.8.3:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "A peripheral generates a separate wired interrupt for each interrupt source.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.8.4-01",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.8.4",
+   "section_title": "Register Creation",
+   "page": 511,
+   "quote": "By default for every peripheral, three registers are automatically created to manage the interrupts (as defined in the 'interrupt_list' of the .hjson file). These registers are named INTR_STATE, INTR_ENABLE and INTR_TEST, and are placed in that order automatically by the reggen tool at the top of the peripheral's address map. There is one bitfield in each register per interrupt.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.8.4:s1",
+    "T1.8.4:s2",
+    "T1.8.4:s3"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "INTR_STATE",
+    "INTR_ENABLE",
+    "INTR_TEST"
+   ],
+   "condition": "",
+   "statement": "INTR_STATE, INTR_ENABLE and INTR_TEST registers are created at offsets 0x0, 0x4, 0x8 with one bitfield per interrupt.",
+   "check": "scenario"
+  },
+  {
+   "id": "CP-T1.8.4-02",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.8.4",
+   "section_title": "Register Creation",
+   "page": 511,
+   "quote": "(It is currently an error if the .hjson defines more than 32 interrupts for each peripheral.) The function of each register is explained in the following table.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.8.4:s4"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "The .hjson must not define more than 32 interrupts per peripheral.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.8.4-03",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.8.4",
+   "section_title": "Register Creation",
+   "page": 520,
+   "quote": "Name: INTR_ENABLE; Offset: 0x4; Desc: enables/masks the output of INTR_STATE to create the wired interrupt signal intr_o.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.8.4:s6"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "INTR_ENABLE",
+    "INTR_STATE",
+    "intr_o"
+   ],
+   "condition": "",
+   "statement": "INTR_ENABLE enables/masks the output of INTR_STATE to create the wired interrupt signal intr_o.",
+   "check": "both"
+  },
+  {
+   "id": "CP-T1.8.4-04",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.8.4",
+   "section_title": "Register Creation",
+   "page": 521,
+   "quote": "Name: INTR_TEST; Offset: 0x8; Desc: write-only (wo) register which asserts the interrupt for testing purposes.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.8.4:s7"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "INTR_TEST",
+    "intr_o"
+   ],
+   "condition": "When INTR_TEST is written",
+   "statement": "INTR_TEST is write-only and asserts the interrupt for testing.",
+   "check": "scenario"
+  },
+  {
+   "id": "CP-T1.8.4-05",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.8.4",
+   "section_title": "Register Creation",
+   "page": 523,
+   "quote": "The contents of the INTR_STATE register are not qualified by INTR_ENABLE, but rather show the raw state of all latched hardware interrupt events.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.8.4:s8"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "INTR_STATE",
+    "INTR_ENABLE"
+   ],
+   "condition": "",
+   "statement": "INTR_STATE is not qualified by INTR_ENABLE and shows the raw state of latched hardware interrupt events.",
+   "check": "scenario"
+  },
+  {
+   "id": "CP-T1.8.5-01",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.8.5",
+   "section_title": "CIP Interrupt Types",
+   "page": 535,
+   "quote": "The current interrupt can only be cleared by an acknowledgement from the handler (ack is a W1C operation to INTR_STATE in this mode).",
+   "spec_refs": [],
+   "sentences": [
+    "T1.8.5:s8"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "INTR_STATE"
+   ],
+   "condition": "Event type interrupt",
+   "statement": "The current interrupt can only be cleared by handler acknowledgement, a W1C write to INTR_STATE.",
+   "check": "scenario"
+  },
+  {
+   "id": "CP-T1.8.5.1-01",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.8.5.1",
+   "section_title": "Event Type Interrupt",
+   "page": 551,
+   "quote": "Using level-triggered wired interrupts, this is signaled by latching intr_o high (request) when the event occurs, and resetting intr_o low (ack) when software has finished executing its handler. The event is latched into the corresponding bitfield of INTR_STATE when it occurs. The event is cleared/acknowledged by a sw write of this bitfield, as INTR_STATE has W1C behaviour in this mode.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.8.5.1:s3",
+    "T1.8.5.1:s5",
+    "T1.8.5.1:s6"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "intr_o",
+    "INTR_STATE"
+   ],
+   "condition": "Event type interrupt",
+   "statement": "The event is latched into its INTR_STATE bitfield and intr_o goes high; a software W1C write clears it and intr_o goes low.",
+   "check": "both"
+  },
+  {
+   "id": "CP-T1.8.5.2-01",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.8.5.2",
+   "section_title": "Status Type Interrupt",
+   "page": 585,
+   "quote": "Status type interrupts create a wired level-triggered interrupt signal directly from the input signal from hardware (only qualified by INTR_ENABLE). If the input signal is asserted, then the wired interrupt is constantly asserted, effectively issuing interrupt requests continuously.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.8.5.2:s1",
+    "T1.8.5.2:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "INTR_ENABLE"
+   ],
+   "condition": "Status type interrupt",
+   "statement": "A status type interrupt must be a wired level-triggered signal directly from the hardware input signal, qualified only by INTR_ENABLE, asserted continuously while the input is asserted.",
+   "check": "assertion"
+  },
+  {
+   "id": "CP-T1.8.5.2-02",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.8.5.2",
+   "section_title": "Status Type Interrupt",
+   "page": 585,
+   "quote": "This means that the wired interrupt does not deassert until the root cause of the hardware input signal is addressed.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.8.5.2:s4"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "Status type interrupt",
+   "statement": "The wired interrupt must not deassert until the root cause of the hardware input signal is addressed.",
+   "check": "assertion"
+  },
+  {
+   "id": "CP-T1.8.5.2-03",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.8.5.2",
+   "section_title": "Status Type Interrupt",
+   "page": 585,
+   "quote": "Software cannot acknowledge this interrupt request using the INTR_STATE register, which has (ro) access permissions in this context.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.8.5.2:s5"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "slave",
+   "signals": [
+    "INTR_STATE"
+   ],
+   "condition": "Status type interrupt",
+   "statement": "Software cannot acknowledge a status type interrupt via INTR_STATE, which is read-only (ro) in this context.",
+   "check": "scenario"
+  },
+  {
+   "id": "CP-T1.8.5.2-04",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.8.5.2",
+   "section_title": "Status Type Interrupt",
+   "page": 591,
+   "quote": "The generic component prim_intr_hw can generate the correct hardware when parameterized with .IntrT(\"Status\").",
+   "spec_refs": [],
+   "sentences": [
+    "T1.8.5.2:s6"
+   ],
+   "strength": "MAY",
+   "actor": "system",
+   "signals": [
+    "prim_intr_hw"
+   ],
+   "condition": "Status type interrupt",
+   "statement": "prim_intr_hw parameterized with .IntrT(\"Status\") can generate the correct hardware for status type interrupts.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.8.5.2-05",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.8.5.2",
+   "section_title": "Status Type Interrupt",
+   "page": 617,
+   "quote": "If SW cannot address the root cause of the interrupt, or wishes to defer handling, it should mask the interrupt, either at the peripheral or at some point further up the tree such as at the PLIC.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.8.5.2:s8"
+   ],
+   "strength": "SHOULD",
+   "actor": "master",
+   "signals": [
+    "INTR_ENABLE"
+   ],
+   "condition": "SW cannot address the root cause or wishes to defer handling",
+   "statement": "Software should mask the interrupt, at the peripheral or further up the tree such as the PLIC.",
+   "check": "scenario"
+  },
+  {
+   "id": "CP-T1.8.5.2-06",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.8.5.2",
+   "section_title": "Status Type Interrupt",
+   "page": 617,
+   "quote": "Masking at the peripheral can be achieved by clearing the corresponding bit in INTR_ENABLE.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.8.5.2:s9"
+   ],
+   "strength": "MAY",
+   "actor": "master",
+   "signals": [
+    "INTR_ENABLE"
+   ],
+   "condition": "Masking a status interrupt at the peripheral",
+   "statement": "Software can mask at the peripheral by clearing the corresponding bit in INTR_ENABLE.",
+   "check": "scenario"
+  },
+  {
+   "id": "CP-T1.8.6-01",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.8.6",
+   "section_title": "Interrupt Hardware Implementation (Event Type)",
+   "page": 622,
+   "quote": "Taking an interrupt foo as an example, the block diagram below shows one possible hardware implementation.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.8.6:s1"
+   ],
+   "strength": "MAY",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "The block diagram shows one possible hardware implementation of an interrupt; other implementations are allowed.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.8.6-02",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.8.6",
+   "section_title": "Interrupt Hardware Implementation (Event Type)",
+   "page": 630,
+   "quote": "Within the register file, the event triggers the setting of the associated bit in the INTR_STATE register to 1.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.8.6:s7"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "INTR_STATE"
+   ],
+   "condition": "Event occurs",
+   "statement": "The event sets the associated bit in INTR_STATE to 1.",
+   "check": "both"
+  },
+  {
+   "id": "CP-T1.8.6-03",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.8.6",
+   "section_title": "Interrupt Hardware Implementation (Event Type)",
+   "page": 630,
+   "quote": "Additionally, a write of 1 of the associated foo bit of the INTR_TEST register can set the corresponding INTR_STATE bit.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.8.6:s8"
+   ],
+   "strength": "MAY",
+   "actor": "master",
+   "signals": [
+    "INTR_TEST",
+    "INTR_STATE"
+   ],
+   "condition": "Write of 1 to foo bit of INTR_TEST",
+   "statement": "A write of 1 to the foo bit of INTR_TEST can set the corresponding INTR_STATE bit.",
+   "check": "scenario"
+  },
+  {
+   "id": "CP-T1.8.6-04",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.8.6",
+   "section_title": "Interrupt Hardware Implementation (Event Type)",
+   "page": 630,
+   "quote": "The output of the INTR_STATE register becomes the outgoing interrupt to the processor after masking (ANDing) with the value of INTR_ENABLE.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.8.6:s9"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "INTR_STATE",
+    "INTR_ENABLE",
+    "intr_foo_o"
+   ],
+   "condition": "",
+   "statement": "The outgoing interrupt must be INTR_STATE ANDed with INTR_ENABLE.",
+   "check": "assertion"
+  },
+  {
+   "id": "CP-T1.8.6-05",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.8.6",
+   "section_title": "Interrupt Hardware Implementation (Event Type)",
+   "page": 636,
+   "quote": "Note that the handling of the ro/rw1c functionality of the INTR_STATE register allows software to control the clearing of the INTR_STATE content. A write of 1 to the corresponding bit of INTR_STATE clears the latched value, but if the event itself is still active, the INTR_STATE register will return to true.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.8.6:s10",
+    "T1.8.6:s11"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "INTR_STATE"
+   ],
+   "condition": "Write of 1 to INTR_STATE bit",
+   "statement": "A write of 1 to an INTR_STATE bit clears the latched value, but if the event is still active the bit returns to true.",
+   "check": "scenario"
+  },
+  {
+   "id": "CP-T1.8.6-06",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.8.6",
+   "section_title": "Interrupt Hardware Implementation (Event Type)",
+   "page": 636,
+   "quote": "The hardware does not have the ability to clear the latched interrupt state, only software does.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.8.6:s12"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "slave",
+   "signals": [
+    "INTR_STATE"
+   ],
+   "condition": "",
+   "statement": "Hardware must not clear the latched interrupt state; only software can.",
+   "check": "assertion"
+  },
+  {
+   "id": "CP-T1.9.1-01",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.9.1",
+   "section_title": "Alerts per Module",
+   "page": 649,
+   "quote": "Each peripheral can send zero or more alerts, where each is a distinguishable security threat.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.9.1:s2"
+   ],
+   "strength": "MAY",
+   "actor": "any",
+   "signals": [],
+   "condition": "",
+   "statement": "Each peripheral can send zero or more alerts, each a distinguishable security threat.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.9.1-02",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.9.1",
+   "section_title": "Alerts per Module",
+   "page": 649,
+   "quote": "Each alert originates in some internal event, and must be specially handled within the peripheral, and then within the alert handler module.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.9.1:s3"
+   ],
+   "strength": "MUST",
+   "actor": "any",
+   "signals": [],
+   "condition": "",
+   "statement": "Each alert originates in an internal event and must be handled within the peripheral and then within the alert handler module.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.9.1-03",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.9.1",
+   "section_title": "Alerts per Module",
+   "page": 653,
+   "quote": "Alerts of comportable IPs in the system must be in either of the following two categories: *Recoverable*, one-time triggered alerts. The alert sender transmits one single alert event when the corresponding error condition is asserted.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.9.1:s4",
+    "T1.9.1:s5",
+    "T1.9.1:s7"
+   ],
+   "strength": "MUST",
+   "actor": "source",
+   "signals": [],
+   "condition": "Recoverable alert",
+   "statement": "A recoverable alert sender must transmit one single alert event when the error condition is asserted.",
+   "check": "scenario"
+  },
+  {
+   "id": "CP-T1.9.1-04",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.9.1",
+   "section_title": "Alerts per Module",
+   "page": 653,
+   "quote": "Alerts of comportable IPs in the system must be in either of the following two categories: *Fatal* alerts that are continuously triggered until reset. The alert sender continuously transmits alert events until the system is reset.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.9.1:s4",
+    "T1.9.1:s8",
+    "T1.9.1:s10"
+   ],
+   "strength": "MUST",
+   "actor": "source",
+   "signals": [],
+   "condition": "Fatal alert",
+   "statement": "A fatal alert sender must continuously transmit alert events until the system is reset.",
+   "check": "scenario"
+  },
+  {
+   "id": "CP-T1.9.1-05",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.9.1",
+   "section_title": "Alerts per Module",
+   "page": 663,
+   "quote": "It is recommended that fatal alerts also trigger local security countermeasures, if they exist.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.9.1:s11"
+   ],
+   "strength": "SHOULD",
+   "actor": "any",
+   "signals": [],
+   "condition": "Local security countermeasures exist",
+   "statement": "Fatal alerts should also trigger local security countermeasures.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.9.1-06",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.9.1",
+   "section_title": "Alerts per Module",
+   "page": 667,
+   "quote": "The table below lists a few common error conditions and the recommended alert type for each of those errors. (x): optional",
+   "spec_refs": [],
+   "sentences": [
+    "T1.9.1:s14",
+    "T1.9.1:s16"
+   ],
+   "strength": "SHOULD",
+   "actor": "any",
+   "signals": [],
+   "condition": "",
+   "statement": "Error conditions should use the recommended alert type from the table; regular IRQ is optional.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.9.1-07",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.9.1",
+   "section_title": "Alerts per Module",
+   "page": 681,
+   "quote": "The column \"Regular IRQ\" indicates whether the corresponding error condition should also send out a regular IRQ. A peripheral may optionally send out an IRQ for any alert event, depending on whether this is needed by the programming model to make forward progress.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.9.1:s17",
+    "T1.9.1:s18"
+   ],
+   "strength": "MAY",
+   "actor": "any",
+   "signals": [],
+   "condition": "Alert event",
+   "statement": "A peripheral may optionally send a regular IRQ for any alert event.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.9.2-01",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.9.2",
+   "section_title": "Defining Alerts",
+   "page": 690,
+   "quote": "In terms of naming convention, alerts shall be given a meaningful name that is indicative of its cause.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.9.2:s3"
+   ],
+   "strength": "MUST",
+   "actor": "any",
+   "signals": [],
+   "condition": "",
+   "statement": "Alerts shall be given a meaningful name indicative of their cause.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.9.2-02",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.9.2",
+   "section_title": "Defining Alerts",
+   "page": 690,
+   "quote": "Recoverable alerts must be prefixed with recov_*, whereas fatal alerts must be prefixed with fatal_*.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.9.2:s4"
+   ],
+   "strength": "MUST",
+   "actor": "any",
+   "signals": [],
+   "condition": "",
+   "statement": "Recoverable alerts must be prefixed recov_ and fatal alerts must be prefixed fatal_.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.9.2-03",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.9.2",
+   "section_title": "Defining Alerts",
+   "page": 694,
+   "quote": "In such cases, it is permissible to default the alert names to just recov and/or fatal. Note that this implies that the peripheral does not expose more than one alert for that type.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.9.2:s7",
+    "T1.9.2:s8"
+   ],
+   "strength": "MAY",
+   "actor": "any",
+   "signals": [],
+   "condition": "Many diverse sources bundled into one alert",
+   "statement": "Alert names may default to just recov and/or fatal, implying only one alert of that type is exposed.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.9.3-01",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.9.3",
+   "section_title": "Test Alert Register Creation",
+   "page": 700,
+   "quote": "For every peripheral, by default, one register named ALERT_TEST is automatically created. ALERT_TEST is a write-only (wo) register that allows software to test the reporting of alerts in the alert handler.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.9.3:s1",
+    "T1.9.3:s2"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "ALERT_TEST"
+   ],
+   "condition": "",
+   "statement": "Each peripheral has a write-only ALERT_TEST register for software to test alert reporting.",
+   "check": "scenario"
+  },
+  {
+   "id": "CP-T1.9.3-02",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.9.3",
+   "section_title": "Test Alert Register Creation",
+   "page": 702,
+   "quote": "Every alert of a peripheral has one field bit inside the ALERT_TEST register, and each field bit is meant to be connected to the test input of the corresponding prim_alert_sender (see next subsection).",
+   "spec_refs": [],
+   "sentences": [
+    "T1.9.3:s3"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "ALERT_TEST"
+   ],
+   "condition": "",
+   "statement": "Each alert has one field bit in ALERT_TEST, connected to the test input of the corresponding prim_alert_sender.",
+   "check": "scenario"
+  },
+  {
+   "id": "CP-T1.9.4-01",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.9.4",
+   "section_title": "Alert Hardware Implementation",
+   "page": 707,
+   "quote": "Internal events are sent active-high to a piece of IP within the peripheral called the prim_alert_sender.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.9.4:s1"
+   ],
+   "strength": "MUST",
+   "actor": "source",
+   "signals": [],
+   "condition": "",
+   "statement": "Internal events are sent active-high to the prim_alert_sender within the peripheral.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.9.4-02",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.9.4",
+   "section_title": "Alert Hardware Implementation",
+   "page": 707,
+   "quote": "One prim_alert_sender must be instantiated per distinct alert event, and the IsFatal parameter of the alert sender must be set to 1 for fatal alerts (this causes the alert sender to latch the alert until the next system reset).",
+   "spec_refs": [],
+   "sentences": [
+    "T1.9.4:s2"
+   ],
+   "strength": "MUST",
+   "actor": "source",
+   "signals": [
+    "IsFatal"
+   ],
+   "condition": "",
+   "statement": "One prim_alert_sender must be instantiated per distinct alert event, with IsFatal set to 1 for fatal alerts.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.9.4-03",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.9.4",
+   "section_title": "Alert Hardware Implementation",
+   "page": 710,
+   "quote": "It is up to the peripheral maintainer to determine what are distinct alert events; multiple ones can be bundled depending upon the distinction required within the module (i.e. high priority threat vs. low level threat).",
+   "spec_refs": [],
+   "sentences": [
+    "T1.9.4:s3"
+   ],
+   "strength": "MAY",
+   "actor": "any",
+   "signals": [],
+   "condition": "",
+   "statement": "The peripheral maintainer determines distinct alert events; multiple may be bundled.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.9.4-04",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.9.4",
+   "section_title": "Alert Hardware Implementation",
+   "page": 710,
+   "quote": "As a general guideline, it is recommended that each peripheral bundles alert sources into one or two distinct alerts, for example one fatal and one recoverable alert.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.9.4:s4"
+   ],
+   "strength": "SHOULD",
+   "actor": "any",
+   "signals": [],
+   "condition": "",
+   "statement": "Each peripheral should bundle alert sources into one or two distinct alerts, e.g. one fatal and one recoverable.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.9.4-05",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.9.4",
+   "section_title": "Alert Hardware Implementation",
+   "page": 715,
+   "quote": "It is recommended that comportable IPs with multiple bundled alerts expose a cause register for disambiguation, which is useful for debugging and crash dumps.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.9.4:s6"
+   ],
+   "strength": "SHOULD",
+   "actor": "any",
+   "signals": [],
+   "condition": "IP has multiple bundled alerts",
+   "statement": "Comportable IPs with multiple bundled alerts should expose a cause register for disambiguation.",
+   "check": "none"
+  },
+  {
+   "id": "CP-T1.9.4-06",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.9.4",
+   "section_title": "Alert Hardware Implementation",
+   "page": 715,
+   "quote": "Cause registers for recoverable alerts must either be clearable by SW, or the HW must provide an automatic mechanism to clear them (e.g., upon starting a new transaction initiated by SW).",
+   "spec_refs": [],
+   "sentences": [
+    "T1.9.4:s7"
+   ],
+   "strength": "MUST",
+   "actor": "any",
+   "signals": [],
+   "condition": "Cause register for recoverable alerts",
+   "statement": "Recoverable alert cause registers must be clearable by SW or automatically cleared by HW.",
+   "check": "scenario"
+  },
+  {
+   "id": "CP-T1.9.4-07",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.9.4",
+   "section_title": "Alert Hardware Implementation",
+   "page": 715,
+   "quote": "Cause registers for fatal alerts must not be clearable in any way and must hence be read-only.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.9.4:s8"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "any",
+   "signals": [],
+   "condition": "Cause register for fatal alerts",
+   "statement": "Fatal alert cause registers must not be clearable and must be read-only.",
+   "check": "scenario"
+  },
+  {
+   "id": "CP-T1.9.4-08",
+   "doc": "opentitan_comportability.md",
+   "section": "T1.9.4",
+   "section_title": "Alert Hardware Implementation",
+   "page": 719,
+   "quote": "The prim_alert_sender converts the event into a differentially encoded signal pair to be routed to the hardware alert handler, as dictated by the details in the alert handler specification.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.9.4:s9"
+   ],
+   "strength": "MUST",
+   "actor": "source",
+   "signals": [],
+   "condition": "",
+   "statement": "The prim_alert_sender converts the event into a differentially encoded signal pair for the alert handler.",
+   "check": "assertion"
+  }
+ ],
+ "skipped": [
+  {
+   "sentence": "T1.5.2:s11",
+   "reason": "duplicate",
+   "text": "Special care will be required for security sensitive storage elements."
+  },
+  {
+   "sentence": "T1.5.3:s7",
+   "reason": "duplicate",
+   "text": "The bus_interfaces attribute in the configuration file should contain a list of dictionaries, describing the interfaces that the peripheral exposes."
+  },
+  {
+   "sentence": "T1.8.2:s2",
+   "reason": "cross_reference",
+   "text": "See the example file above for one possible use of this schema."
+  },
+  {
+   "sentence": "T1.8.3:s4",
+   "reason": "informative_note",
+   "text": "This is distinct from another possible model in which each peripheral would send only one interrupt, and the processor would disambiguate by querying the peripheral to figure out which interrupt was triggered."
+  },
+  {
+   "sentence": "T1.8.5:s6",
+   "reason": "list_lead_in",
+   "text": "When creating an interrupt in a peripheral, we can identify two distinct behaviors a designer may choose to implement."
+  },
+  {
+   "sentence": "T1.8.5:s13",
+   "reason": "informative_note",
+   "text": "A persistent *Status* might be any conditional expression evaluating truthfully, such as a counter value currently exceeds a threshold, or the system being in a particular abstract state, such as an error state it cannot recover from on its own."
+  },
+  {
+   "sentence": "T1.8.5:s14",
+   "reason": "informative_note",
+   "text": "Choosing to generate interrupts based on instantaneous events or persistent status signals can make it easier to write SW handlers that are simple and race-free."
+  },
+  {
+   "sentence": "T1.8.5.1:s4",
+   "reason": "informative_note",
+   "text": "The generic component prim_intr_hw can generate the correct hardware when parameterized with .IntrT(\"Event\")."
+  },
+  {
+   "sentence": "T1.8.5.2:s7",
+   "reason": "example_or_figure",
+   "text": "The waveform below shows the timing of the status type interrupt."
+  },
+  {
+   "sentence": "T1.9.1:s15",
+   "reason": "example_or_figure",
+   "text": "Error Event | Regular IRQ | Recoverable Alert | Fatal Alert ------------------------------------------------------------------------|-------------|-------------------|------------- ECC correctable in NVM (OTP, Flash) | (x) | x | ECC uncorrectable in Flash | (x) | x | ECC uncorrectable in OTP | (x) | | x Any ECC / Parity error in SRAMs or register files | (x) | | x Glitch detectors (e.g., invalid FSM encoding) | (x) | | x Incorrect usage of security IP (e.g., shadowed control register in AES) | (x) | x | Incorrect usage of regular IP | x | |"
+  }
+ ]
+}

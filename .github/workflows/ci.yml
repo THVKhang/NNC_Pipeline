@@ -13,8 +13,8 @@
 # kit-configs and formal take long: they run on main, on pull requests, weekly and by hand, not on every
 # push to a feature branch. Tool versions are pinned to the ones the committed results were produced with.
 # Designs: the 6 upstream designs, the 3 regenerated or drafted in phases 5-10, spi_master and
-# axil_regfile (phase 16, made from a short description), and ot_rv_timer (OpenTitan rv_timer, Apache-2.0;
-# its formal reads the RTL with the yosys-slang plugin of the OSS CAD Suite).
+# axil_regfile (phase 16, made from a short description), ot_rv_timer and ot_gpio (OpenTitan rv_timer and
+# gpio, Apache-2.0; their formal reads the RTL with the yosys-slang plugin of the OSS CAD Suite).
 name: CI
 
 on:
@@ -53,7 +53,7 @@ jobs:
       matrix:
         design: [sync_fifo, apb_tlul_bridge, axi2apb_bridge, async_gray_fifo, async_apb_bridge,
                  ahb2axi_bridge, gen_apb_tlul_bridge, gen_sync_fifo, uart_lite, spi_master, axil_regfile,
-                 ot_rv_timer]
+                 ot_rv_timer, ot_gpio]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -127,7 +127,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        design: [async_gray_fifo, async_apb_bridge, ahb2axi_bridge, uart_lite, spi_master, axil_regfile, ot_rv_timer]
+        design: [async_gray_fifo, async_apb_bridge, ahb2axi_bridge, uart_lite, spi_master, axil_regfile, ot_rv_timer,
+                 ot_gpio]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -172,6 +173,10 @@ jobs:
           - {design: spi_master, config: base}
           - {design: spi_master, config: min}
           - {design: spi_master, config: max}
+          - {design: ot_gpio, config: base}
+          - {design: ot_gpio, config: sync_off}
+          - {design: ot_gpio, config: straps_off}
+          - {design: ot_gpio, config: min}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

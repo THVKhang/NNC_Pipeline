@@ -745,3 +745,46 @@ Người duyệt G4 cũng phải tự tìm hồ sơ rải rác trong `work/`.
 - **`nnc summary --readme README.md`:** bảng mọi thiết kế trong README do code sinh từ các file kết quả đã commit. Một unit test báo lỗi nếu bảng không khớp với các file đó.
 
 **Không đổi:** G4 vẫn để trống ở mọi thiết kế.
+
+## 25. IP OpenTitan thứ hai (gpio) và độ ổn định của agent (GĐ18, 2026-11-21)
+
+Số đo: [EVALUATION.md §10 và §11](EVALUATION.md).
+
+**Vì sao.** rv_timer chỉ là một thiết kế, với một cấu hình. Giai đoạn này kiểm hai điều:
+- kết quả của rv_timer có lặp lại trên một IP OpenTitan khác có tham số không;
+- nếu chạy lại agent trên cùng một spec thì có ra cùng rules và checks không.
+
+**gpio.**
+- RTL OpenTitan (45 file, Apache-2.0) giữ nguyên, có ghi NOTICE. Repo chỉ viết thêm wrapper `ot_gpio_nnc.sv`.
+- Run set có 4 cấu hình, là mọi tổ hợp của `GpioAsyncOn` và `GpioAsHwStrapsEn`, tổng cộng 5 lần chạy.
+- Kết quả: 26/26 test và 13/13 assertion pass ở cả 5 lần chạy.
+  - Formal ra 10 PROVEN, không còn phản ví dụ, 1 TIMEOUT (CHK-013), 2 chỉ kiểm bằng mô phỏng.
+  - Mutation đạt 58,3 %. Bỏ 9 mutant mà formal chứng minh là tương đương thì còn 77,8 %.
+- Bốn lỗi tìm được đều là lỗi của verification (loại B), không có lỗi RTL. Agent A17 sửa qua 2 lượt và không đổi giá trị kỳ vọng nào. Không có sửa tay.
+  - Checker CHK-011 trước đó chỉ so 49 trong 121 bit đầu vào; nay so đủ, tức là chặt hơn.
+- Chi phí agent là US$17,90.
+
+**Kết quả của rv_timer có lặp lại.** Cả hai IP đều cho thấy cùng một mẫu:
+- không lỗi nào bị quy cho RTL;
+- mọi lỗi đều do verification và được agent sửa;
+- các mutant còn sống mà khác hành vi đều nằm ở chỗ quyết định spec chọn không kiểm.
+
+**So với testbench UVM của OpenTitan** (chỉ dùng số công khai, không chép testbench): testbench của họ đạt khoảng 99 % mọi loại coverage. Flow này đạt line 52,5 % và toggle 84 % trên gpio. Hai bên đo khác nhau:
+- coverage của flow này tính cả các package mà IP chỉ dùng vài hàm, và không có exclusion;
+- báo cáo của họ là của `hw/ip/gpio` ngày 2025-02-08.
+
+Vì vậy kết quả của flow chỉ nên xem là lượt kiểm đầu, chưa đủ để ký.
+
+**Độ ổn định** (uart_lite, chạy lại 3 lần từ đầu đến contract):
+- Các lần chạy giống nhau ở 91–95 % câu chuẩn tắc (normative) được giữ.
+- Chỉ 86–93 % câu chuẩn tắc được check phủ.
+- Khoảng 1/6 số luật được chia khác đi.
+- Độ mạnh của luật (MUST/SHOULD/MAY) gần như không bao giờ khác.
+
+Vì thế G1 và G2 phải được duyệt cho từng lần chạy. Lệnh mới là `nnc stability`.
+
+**Lỗi của flow tìm thấy và đã sửa (có unit test).** Với frontend slang, formal không truyền được tham số của cấu hình cho DUT, nên mọi check báo ERROR. rv_timer không có tham số nên trước đây chưa gặp lỗi này. Nay tham số được truyền qua `read_slang -G`.
+
+**CI.** ot_gpio được thêm vào các job kit và kit-configs. Job formal được tách thành 4 job, mỗi job một cấu hình.
+
+**Không đổi:** G4 vẫn để trống ở mọi thiết kế.

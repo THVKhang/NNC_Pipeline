@@ -1,0 +1,93 @@
+{
+ "file": "C:\\Users\\Admin\\OneDrive\\ドキュメント\\GitHub\\NNC_Pipeline\\designs\\ot_gpio\\verif\\formal\\nnc_env.sv",
+ "status": "lint_clean",
+ "attempts": 1,
+ "problems": [],
+ "lint_errors": "NNC_RC=0",
+ "assumptions": [
+  {
+   "id": "ENV-01",
+   "obligation": "i_a_valid is 0 while rst_ni = 0 and in the first cycle after reset release",
+   "rules": [
+    "GP-10-30",
+    "TL-T3.1.1-01"
+   ]
+  },
+  {
+   "id": "ENV-02",
+   "obligation": "TL-UL host rule: once i_a_valid=1 and o_a_ready=0, i_a_valid stays 1 and all A-channel fields (opcode, param, size, source, address, mask, data, instr, intg_flip) stay stable until the request is accepted",
+   "rules": [
+    "GP-4.1-04"
+   ]
+  },
+  {
+   "id": "ENV-03",
+   "obligation": "A new request never reuses the a_source of a request that is still outstanding (accepted but not yet answered on the D channel); tracking is cleared by reset",
+   "rules": [
+    "GP-10-26",
+    "TL-T3.1.3.2-01"
+   ]
+  },
+  {
+   "id": "ENV-04",
+   "obligation": "Requests at offset 0x400 and above are not issued (i_a_address[31:10] = 0 while i_a_valid)",
+   "rules": [
+    "GP-10-21"
+   ]
+  },
+  {
+   "id": "ENV-05",
+   "obligation": "No write request (PutFullData/PutPartialData) is issued with i_a_instr = 1",
+   "rules": [
+    "GP-10-19"
+   ]
+  },
+  {
+   "id": "ENV-06",
+   "obligation": "No combined ALERT_TEST write (offset 0x0C, bytes 0 and 3 written) that sets fatal_fault (bit 0) and clears regwen (bit 31) in one write, i.e. 0x0000_0001; tests use 0x8000_0001",
+   "rules": [
+    "GP-10-15"
+   ]
+  },
+  {
+   "id": "ENV-07",
+   "obligation": "When GpioAsHwStrapsEn=1: i_strap_en is 0 while rst_ni = 0 and for at least the first 4 cycles after reset release",
+   "rules": [
+    "GP-10-10"
+   ]
+  },
+  {
+   "id": "ENV-08",
+   "obligation": "When GpioAsHwStrapsEn=1: at the first rising edge of i_strap_en after reset, i_gpio has been constant for the 24 preceding cycles",
+   "rules": [
+    "GP-10-10",
+    "GP-T3.2.3.1-01"
+   ]
+  },
+  {
+   "id": "ENV-09",
+   "obligation": "When GpioAsHwStrapsEn=1: i_gpio stays constant for 8 cycles after the first rising edge of i_strap_en",
+   "rules": [
+    "GP-10-10",
+    "GP-T3.2.3.1-01"
+   ]
+  },
+  {
+   "id": "ENV-10",
+   "obligation": "After an accepted write that may change CTRL_EN_INPUT_FILTER[i] (write to 0x3C with the byte lane of bit i enabled, or to PER_PIN_INTR_CTRL_i at 0x204+8*i with byte 0 enabled), i_gpio[i] is kept constant for 24 cycles",
+   "rules": [
+    "GP-10-09"
+   ]
+  }
+ ],
+ "usage": {
+  "calls": 1,
+  "cached": 0,
+  "cost_usd": 0.544,
+  "input_tokens": 2,
+  "output_tokens": 18551,
+  "cache_creation_input_tokens": 21366,
+  "cache_read_input_tokens": 0
+ },
+ "prompt_version": "env-v2"
+}

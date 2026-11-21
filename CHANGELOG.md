@@ -6,6 +6,19 @@ Measurements for every phase are in [docs/EVALUATION.md](docs/EVALUATION.md). Th
 No release contains a G4 sign-off. G1–G3 were approved by an AI assistant on the owner's delegation, and each
 approval is recorded as delegated. See [docs/G4_REVIEW_REQUEST.md](docs/G4_REVIEW_REQUEST.md).
 
+## 0.3.0 (2026-11-21)
+
+### Phase 18: a second OpenTitan IP, stability of the agents
+- OpenTitan gpio (EVALUATION §11): four configurations of `GpioAsyncOn` and `GpioAsHwStrapsEn`, the RTL
+  unchanged (Apache-2.0, see its NOTICE). 26/26 tests and 13/13 assertions in 5 runs, formal 10 proven and no
+  counterexample, 4 verification faults corrected by A17, no hand fix. §11.1 compares with rv_timer, §11.2 with
+  the public numbers of OpenTitan's own test benches.
+- Fix: with the slang frontend, formal now gives a configuration's parameters to `read_slang -G`; before, every
+  check of a parameterised design was ERROR.
+- `nnc stability <run> <run> ...` compares repeated agent runs through the specification sentences their rules
+  cite. Measured on uart_lite (EVALUATION §10, `designs/uart_lite/stability/`).
+- CI: ot_gpio in the kit and kit-configs jobs, and in formal with one job per configuration.
+
 ## 0.2.0 (2026-11-21)
 
 ### Phase 17: packaging

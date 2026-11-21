@@ -1,0 +1,6155 @@
+[
+ {
+  "rule": "GP-T2.2-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T2.2",
+  "sentences": [
+   "T2.2:s2",
+   "T2.2:s6",
+   "T2.2:s7"
+  ],
+  "strength": "MUST",
+  "statement": "Each of the 32 independent GPIO bits can be written as a peripheral output via direct write, giving software simultaneous control of all 32 bits.",
+  "checks": [
+   "CHK-018"
+  ],
+  "check_status": {
+   "CHK-018": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-T2.2-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T2.2",
+  "sentences": [
+   "T2.2:s2",
+   "T2.2:s8",
+   "T2.2:s9"
+  ],
+  "strength": "MUST",
+  "statement": "Masked write modifies only the selected bits of a 16-bit half, using the user-provided mask and new values, without read-modify-write; unmasked bits keep their output value.",
+  "checks": [
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-T2.2-03",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T2.2",
+  "sentences": [
+   "T2.2:s3",
+   "T2.2:s11"
+  ],
+  "strength": "MAY",
+  "statement": "Software can read each of the 32 GPIO bits as peripheral inputs.",
+  "checks": [
+   "CHK-021"
+  ],
+  "check_status": {
+   "CHK-021": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T2.2-04",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T2.2",
+  "sentences": [
+   "T2.2:s12",
+   "T2.2:s13"
+  ],
+  "strength": "MAY",
+  "statement": "Software can configure interrupt event detection for any of the 32 bits as positive edge, negative edge or level detection.",
+  "checks": [
+   "CHK-022",
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-022": "PASS",
+   "CHK-023": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T2.2-05",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T2.2",
+  "sentences": [
+   "T2.2:s14",
+   "T2.2:s15"
+  ],
+  "strength": "MUST",
+  "statement": "The input must be stable for 16 module clock cycles before the input register reflects the change and interrupt generation is evaluated.",
+  "checks": [
+   "CHK-017"
+  ],
+  "check_status": {
+   "CHK-017": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 1,
+   "survived": [
+    "M02"
+   ],
+   "claimed_equivalent": [],
+   "score": 50.0,
+   "meets_threshold": false
+  }
+ },
+ {
+  "rule": "GP-T2.2-06",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T2.2",
+  "sentences": [
+   "T2.2:s16"
+  ],
+  "strength": "MUST",
+  "statement": "A change in output value is reflected in the input register with a corresponding filter delay.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "GP-T2.2-06",
+   "reason": "not_applicable_to_dut",
+   "note": "There is no pad model (INT-IO-002, D-021). i_gpio comes only from the test bench, so output-to-input delay does not occur. Designer decision for GP-T2.2-05/06."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "GP-T3.2.1-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T3.2.1",
+  "sentences": [
+   "T3.2.1:s1",
+   "T3.2.1:s2",
+   "T3.2.1:s3"
+  ],
+  "strength": "MUST",
+  "statement": "DIRECT_OUT provides full write and read access to all 32 bits of the DATA_OUT register.",
+  "checks": [
+   "CHK-018"
+  ],
+  "check_status": {
+   "CHK-018": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-T3.2.1-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T3.2.1",
+  "sentences": [
+   "T3.2.1:s4",
+   "T3.2.1:s5"
+  ],
+  "strength": "MUST",
+  "statement": "Upper 16 bits of the write are a mask of bits to modify and lower 16 bits are data; hardware updates only masked DATA_OUT bits without read-modify-write.",
+  "checks": [
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-T3.2.1-03",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T3.2.1",
+  "sentences": [
+   "T3.2.1:s6",
+   "T3.2.1:s7"
+  ],
+  "strength": "MUST",
+  "statement": "Reads return the upper or lower 16 bits of DATA_OUT in the lower 16 bits, with zeros in the upper 16 mask-field bits.",
+  "checks": [
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T3.2.1-05",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T3.2.1",
+  "sentences": [
+   "T3.2.1:s10",
+   "T3.2.1:s11"
+  ],
+  "strength": "MUST",
+  "statement": "DATA_OE is accessible directly via DIRECT_OE and with masked access via MASKED_OE_UPPER and MASKED_OE_LOWER, with the same semantics as DATA_OUT.",
+  "checks": [
+   "CHK-020"
+  ],
+  "check_status": {
+   "CHK-020": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T3.2.1-06",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T3.2.1",
+  "sentences": [
+   "T3.2.1:s12"
+  ],
+  "strength": "SHOULD",
+  "statement": "The output enable is sent to the pad control block to determine whether the pad drives the DATA_OUT value to the pin.",
+  "checks": [
+   "CHK-004",
+   "CHK-020"
+  ],
+  "check_status": {
+   "CHK-004": "PASS",
+   "CHK-020": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T3.2.1-07",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T3.2.1",
+  "sentences": [
+   "T3.2.1:s14"
+  ],
+  "strength": "MUST",
+  "statement": "Output values of unused GPIOs are disconnected and have no effect on the GPIO input regardless of output enable values.",
+  "checks": [
+   "CHK-021"
+  ],
+  "check_status": {
+   "CHK-021": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T3.2.2-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T3.2.2",
+  "sentences": [
+   "T3.2.2:s3"
+  ],
+  "strength": "MUST",
+  "statement": "The per-pin and 32-bit register views alias the same state, and a write to a per-pin register affects only its own GPIO.",
+  "checks": [
+   "CHK-025",
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-025": "PASS",
+   "CHK-026": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-T3.2.2-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T3.2.2",
+  "sentences": [
+   "T3.2.2:s4",
+   "T3.2.2:s5",
+   "T3.2.2:s6"
+  ],
+  "strength": "MUST",
+  "statement": "Per-pin view has separate aligned ranges: PER_PIN_IO holds one register per GPIO for DATA_OUT/DATA_IN bit i; configuration range holds consecutive PER_PIN_OE_n and PER_PIN_INTR_CTRL_n registers per GPIO.",
+  "checks": [
+   "CHK-025",
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-025": "PASS",
+   "CHK-026": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T3.2.2-03",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T3.2.2",
+  "sentences": [
+   "T3.2.2:s7"
+  ],
+  "strength": "MUST",
+  "statement": "A register write must cover all bytes of the register that hold a field.",
+  "checks": [
+   "CHK-033"
+  ],
+  "check_status": {
+   "CHK-033": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T3.2.2-05",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T3.2.2",
+  "sentences": [
+   "T3.2.2:s9"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "INTR_STATE, INTR_ENABLE and INTR_TEST have no per-pin view.",
+  "checks": [
+   "CHK-027"
+  ],
+  "check_status": {
+   "CHK-027": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T3.2.3-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T3.2.3",
+  "sentences": [
+   "T3.2.3:s1",
+   "T3.2.3:s9",
+   "T3.2.3:s10"
+  ],
+  "strength": "MUST",
+  "statement": "DATA_IN is always readable and reflects the value at the chip input pad regardless of DATA_OE.",
+  "checks": [
+   "CHK-021"
+  ],
+  "check_status": {
+   "CHK-021": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-T3.2.3-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T3.2.3",
+  "sentences": [
+   "T3.2.3:s2"
+  ],
+  "strength": "MUST",
+  "statement": "GPIO peripheral inputs not connected to a chip input are tied to constant zero.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "GP-T3.2.3-02",
+   "reason": "not_applicable_to_dut",
+   "note": "ot_gpio_nnc has no pin multiplexer (INT-IO-002)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "GP-T3.2.3-03",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T3.2.3",
+  "sentences": [
+   "T3.2.3:s3",
+   "T3.2.3:s4",
+   "T3.2.3:s5"
+  ],
+  "strength": "MAY",
+  "statement": "Each of the 32 inputs can be independently enabled for the 16-cycle noise filter via CTRL_EN_INPUT_FILTER, applied to both DATA_IN and interrupt detection.",
+  "checks": [
+   "CHK-017"
+  ],
+  "check_status": {
+   "CHK-017": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 3,
+   "killed": 2,
+   "survived": [
+    "M02"
+   ],
+   "claimed_equivalent": [],
+   "score": 66.7,
+   "meets_threshold": false
+  }
+ },
+ {
+  "rule": "GP-T3.2.3.1-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T3.2.3.1",
+  "sentences": [
+   "T3.2.3.1:s1",
+   "T3.2.3.1:s2",
+   "T3.2.3.1:s3"
+  ],
+  "strength": "MUST",
+  "statement": "GPIO detects strap_en_i low-to-high and one clock cycle later samples the GPIO inputs into HW_STRAPS_DATA_IN.",
+  "checks": [
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-031": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T3.2.3.1-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T3.2.3.1",
+  "sentences": [
+   "T3.2.3.1:s5",
+   "T3.2.3.1:s6"
+  ],
+  "strength": "MUST",
+  "statement": "All 32 input bits are sampled regardless of output enable, and later input changes are not captured in HW_STRAPS_DATA_IN.",
+  "checks": [
+   "CHK-009",
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-009": "PASS",
+   "CHK-031": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T3.2.4-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T3.2.4",
+  "sentences": [
+   "T3.2.4:s3",
+   "T3.2.4:s4",
+   "T3.2.4:s11"
+  ],
+  "strength": "MUST",
+  "statement": "Interrupt state is readable in INTR_STATE only when enabled, and can be triggered only by GPIO input.",
+  "checks": [
+   "CHK-022",
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-022": "PASS",
+   "CHK-024": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T3.2.4-03",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T3.2.4",
+  "sentences": [
+   "T3.2.4:s5"
+  ],
+  "strength": "MUST",
+  "statement": "Writing 1 to an INTR_STATE bit clears that interrupt.",
+  "checks": [
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T3.2.4-04",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T3.2.4",
+  "sentences": [
+   "T3.2.4:s6",
+   "T3.2.4:s7",
+   "T3.2.4:s8",
+   "T3.2.4:s9"
+  ],
+  "strength": "MUST",
+  "statement": "Each bit supports rising-edge, falling-edge, level-high and level-low interrupt detection, selected by the corresponding INTR_CTRL_EN register.",
+  "checks": [
+   "CHK-022",
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-022": "PASS",
+   "CHK-023": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T3.2.4-05",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T3.2.4",
+  "sentences": [
+   "T3.2.4:s10"
+  ],
+  "strength": "MAY",
+  "statement": "An input may be configured for both rising and falling edge detection, with no hardware indication of which edge caused the interrupt.",
+  "checks": [
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T3.2.4-06",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T3.2.4",
+  "sentences": [
+   "T3.2.4:s12"
+  ],
+  "strength": "MUST",
+  "statement": "All inputs pass through the optional noise filter before interrupt detection.",
+  "checks": [
+   "CHK-017"
+  ],
+  "check_status": {
+   "CHK-017": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T3.2.4-07",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T3.2.4",
+  "sentences": [
+   "T3.2.4:s13",
+   "T3.2.4:s14"
+  ],
+  "strength": "MUST",
+  "statement": "Interrupts to the processor are level interrupts; edge detection is converted into a level interrupt.",
+  "checks": [
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T4.4-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T4.4",
+  "sentences": [
+   "T4.4:s2"
+  ],
+  "strength": "SHOULD",
+  "statement": "Each component should be granted access only to the per-pin registers of its own GPIOs, while software managing all GPIOs keeps using the 32-bit registers.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "GP-T4.4-01",
+   "reason": "design_guideline",
+   "note": "Software capability-assignment advice; nothing to observe."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "GP-T4.4-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T4.4",
+  "sentences": [
+   "T4.4:s7"
+  ],
+  "strength": "MUST",
+  "statement": "A write to PER_PIN_IO_i must cover both bytes 0 and 1, i.e., be at least 16 bits wide.",
+  "checks": [
+   "CHK-025",
+   "CHK-033"
+  ],
+  "check_status": {
+   "CHK-025": "PASS",
+   "CHK-033": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T4.4-03",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T4.4",
+  "sentences": [
+   "T4.4:s8"
+  ],
+  "strength": "MUST",
+  "statement": "A byte write to PER_PIN_IO_i returns an error and has no effect on the register.",
+  "checks": [
+   "CHK-033"
+  ],
+  "check_status": {
+   "CHK-033": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-T4.4-05",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T4.4",
+  "sentences": [
+   "T4.4:s9"
+  ],
+  "strength": "MUST",
+  "statement": "PER_PIN_OE_i and PER_PIN_INTR_CTRL_i accept byte writes.",
+  "checks": [
+   "CHK-033"
+  ],
+  "check_status": {
+   "CHK-033": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T5.1-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.1",
+  "sentences": [
+   "T5.1:s1",
+   "T5.1:s2",
+   "T5.1:s3",
+   "T5.1:s4",
+   "T5.1:s5",
+   "T5.1:s6",
+   "T5.1:s7",
+   "T5.1:s8",
+   "T5.1:s9",
+   "T5.1:s10",
+   "T5.1:s11",
+   "T5.1:s12",
+   "T5.1:s13",
+   "T5.1:s14",
+   "T5.1:s15",
+   "T5.1:s16",
+   "T5.1:s17",
+   "T5.1:s18"
+  ],
+  "strength": "MUST",
+  "statement": "gpio core registers INTR_STATE through HW_STRAPS_DATA_IN must be accessible at offsets 0x0 to 0x44 in 4-byte steps, each 4 bytes long, with the listed functions.",
+  "checks": [
+   "CHK-028",
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-028": "PASS",
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-T5.1-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.1",
+  "sentences": [
+   "T5.1:s19",
+   "T5.1:s20",
+   "T5.1:s21",
+   "T5.1:s22",
+   "T5.1:s23",
+   "T5.1:s24",
+   "T5.1:s25",
+   "T5.1:s26",
+   "T5.1:s27",
+   "T5.1:s28",
+   "T5.1:s29",
+   "T5.1:s30",
+   "T5.1:s31",
+   "T5.1:s32",
+   "T5.1:s33",
+   "T5.1:s34",
+   "T5.1:s35",
+   "T5.1:s36",
+   "T5.1:s37",
+   "T5.1:s38",
+   "T5.1:s39",
+   "T5.1:s40",
+   "T5.1:s41",
+   "T5.1:s42",
+   "T5.1:s43",
+   "T5.1:s44",
+   "T5.1:s45",
+   "T5.1:s46",
+   "T5.1:s47",
+   "T5.1:s48",
+   "T5.1:s49",
+   "T5.1:s50"
+  ],
+  "strength": "MUST",
+  "statement": "PER_PIN_IO_0 to PER_PIN_IO_31 must be at offsets 0x100 to 0x17c in 4-byte steps, each 4 bytes long, giving a per-pin view of output and input data of one GPIO.",
+  "checks": [
+   "CHK-025",
+   "CHK-028"
+  ],
+  "check_status": {
+   "CHK-025": "PASS",
+   "CHK-028": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T5.1-03",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.1",
+  "sentences": [
+   "T5.1:s51",
+   "T5.1:s52",
+   "T5.1:s53",
+   "T5.1:s54",
+   "T5.1:s55",
+   "T5.1:s56",
+   "T5.1:s57",
+   "T5.1:s58",
+   "T5.1:s59",
+   "T5.1:s60",
+   "T5.1:s61",
+   "T5.1:s62",
+   "T5.1:s63",
+   "T5.1:s64",
+   "T5.1:s65",
+   "T5.1:s66",
+   "T5.1:s67",
+   "T5.1:s68",
+   "T5.1:s69",
+   "T5.1:s70",
+   "T5.1:s71",
+   "T5.1:s72",
+   "T5.1:s73",
+   "T5.1:s74",
+   "T5.1:s75",
+   "T5.1:s76",
+   "T5.1:s77",
+   "T5.1:s78",
+   "T5.1:s79",
+   "T5.1:s80",
+   "T5.1:s81",
+   "T5.1:s82",
+   "T5.1:s83",
+   "T5.1:s84",
+   "T5.1:s85",
+   "T5.1:s86",
+   "T5.1:s87",
+   "T5.1:s88",
+   "T5.1:s89",
+   "T5.1:s90",
+   "T5.1:s91",
+   "T5.1:s92",
+   "T5.1:s93",
+   "T5.1:s94",
+   "T5.1:s95",
+   "T5.1:s96",
+   "T5.1:s97",
+   "T5.1:s98",
+   "T5.1:s99",
+   "T5.1:s100",
+   "T5.1:s101",
+   "T5.1:s102",
+   "T5.1:s103",
+   "T5.1:s104",
+   "T5.1:s105",
+   "T5.1:s106",
+   "T5.1:s107",
+   "T5.1:s108",
+   "T5.1:s109",
+   "T5.1:s110",
+   "T5.1:s111",
+   "T5.1:s112",
+   "T5.1:s113",
+   "T5.1:s114"
+  ],
+  "strength": "MUST",
+  "statement": "PER_PIN_OE_n and PER_PIN_INTR_CTRL_n for GPIO[n], n=0..31, must alternate at offsets 0x200 to 0x2fc in 4-byte steps, each 4 bytes long.",
+  "checks": [
+   "CHK-026",
+   "CHK-028"
+  ],
+  "check_status": {
+   "CHK-026": "PASS",
+   "CHK-028": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T5.2.1-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.2.1",
+  "sentences": [
+   "T5.2.1:s1"
+  ],
+  "strength": "MUST",
+  "statement": "INTR_STATE.gpio bit is raised when the corresponding GPIO pin detects its configured interrupt mode; the field is rw1c (write 1 clears).",
+  "checks": [
+   "CHK-022",
+   "CHK-028"
+  ],
+  "check_status": {
+   "CHK-022": "PASS",
+   "CHK-028": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T5.4.1-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.4.1",
+  "sentences": [
+   "T5.4.1:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Writing 1 to INTR_TEST.gpio[i] forces INTR_STATE.gpio[i] to 1.",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-T5.5.1-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.5.1",
+  "sentences": [
+   "T5.5.1:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Writing 0 to ALERT_TEST.regwen disables alert testing until the next reset.",
+  "checks": [
+   "CHK-015"
+  ],
+  "check_status": {
+   "CHK-015": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T5.5.1-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.5.1",
+  "sentences": [
+   "T5.5.1:s3"
+  ],
+  "strength": "MUST",
+  "statement": "Writing 1 to ALERT_TEST.fatal_fault triggers one alert event of the fatal_fault kind.",
+  "checks": [
+   "CHK-014"
+  ],
+  "check_status": {
+   "CHK-014": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-T5.8-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.8",
+  "sentences": [
+   "T5.8:s2",
+   "T5.8:s3",
+   "T5.8:s4",
+   "T5.8.1:s1",
+   "T5.8.1:s2"
+  ],
+  "strength": "MUST",
+  "statement": "Upper 16 bits of MASKED_OUT_LOWER are a mask; DATA_OUT[i] for i in 0..15 is updated with data[i] only if mask[i] is 1.",
+  "checks": [
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-T5.8-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.8",
+  "sentences": [
+   "T5.8:s5"
+  ],
+  "strength": "MUST",
+  "statement": "Reading MASKED_OUT_LOWER returns upper 16 bits as zero and lower 16 bits as DATA_OUT[15:0].",
+  "checks": [
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-T5.9-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.9",
+  "sentences": [
+   "T5.9:s2",
+   "T5.9:s3",
+   "T5.9:s4",
+   "T5.9.1:s1",
+   "T5.9.1:s2"
+  ],
+  "strength": "MUST",
+  "statement": "Upper 16 bits of MASKED_OUT_UPPER are a mask; DATA_OUT[i] for i in 16..31 is updated from the lower 16 bits only if mask[i] is 1.",
+  "checks": [
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T5.9-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.9",
+  "sentences": [
+   "T5.9:s5"
+  ],
+  "strength": "MUST",
+  "statement": "Reading MASKED_OUT_UPPER returns upper 16 bits as zero and lower 16 bits as DATA_OUT[31:16].",
+  "checks": [
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T5.10-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.10",
+  "sentences": [
+   "T5.10:s2"
+  ],
+  "strength": "MUST",
+  "statement": "Setting direct_oe[i] to 1 enables output mode for GPIO[i].",
+  "checks": [
+   "CHK-020"
+  ],
+  "check_status": {
+   "CHK-020": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T5.11-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.11",
+  "sentences": [
+   "T5.11:s2",
+   "T5.11:s3",
+   "T5.11:s4",
+   "T5.11.1:s1",
+   "T5.11.1:s2"
+  ],
+  "strength": "MUST",
+  "statement": "Upper 16 bits of MASKED_OE_LOWER are a mask; DATA_OE[i] for i in 0..15 is updated from the lower 16 bits only if mask[i] is 1.",
+  "checks": [
+   "CHK-020"
+  ],
+  "check_status": {
+   "CHK-020": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T5.11-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.11",
+  "sentences": [
+   "T5.11:s5"
+  ],
+  "strength": "MUST",
+  "statement": "Reading MASKED_OE_LOWER returns upper 16 bits as zero and lower 16 bits as DATA_OE[15:0].",
+  "checks": [
+   "CHK-020"
+  ],
+  "check_status": {
+   "CHK-020": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T5.12-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.12",
+  "sentences": [
+   "T5.12:s2",
+   "T5.12:s3",
+   "T5.12:s4",
+   "T5.12.1:s1",
+   "T5.12.1:s2"
+  ],
+  "strength": "MUST",
+  "statement": "Upper 16 bits of MASKED_OE_UPPER are a mask; DATA_OE[i] for i in 16..31 is updated from the lower 16 bits only if mask[i] is 1.",
+  "checks": [
+   "CHK-020"
+  ],
+  "check_status": {
+   "CHK-020": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T5.12-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.12",
+  "sentences": [
+   "T5.12:s5"
+  ],
+  "strength": "MUST",
+  "statement": "Reading MASKED_OE_UPPER returns upper 16 bits as zero and lower 16 bits as DATA_OE[31:16].",
+  "checks": [
+   "CHK-020"
+  ],
+  "check_status": {
+   "CHK-020": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T5.13-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.13",
+  "sentences": [
+   "T5.13:s2"
+  ],
+  "strength": "MUST",
+  "statement": "Rising-edge interrupt detection on GPIO[i] is enabled.",
+  "checks": [
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-T5.14-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.14",
+  "sentences": [
+   "T5.14:s2"
+  ],
+  "strength": "MUST",
+  "statement": "Falling-edge interrupt detection on GPIO[i] is enabled.",
+  "checks": [
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T5.15-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.15",
+  "sentences": [
+   "T5.15:s2"
+  ],
+  "strength": "MUST",
+  "statement": "Level-high interrupt detection on GPIO[i] is enabled.",
+  "checks": [
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-023": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T5.16-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.16",
+  "sentences": [
+   "T5.16:s2"
+  ],
+  "strength": "MUST",
+  "statement": "Level-low interrupt detection on GPIO[i] is enabled.",
+  "checks": [
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-023": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T5.17-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.17",
+  "sentences": [
+   "T5.17:s2"
+  ],
+  "strength": "MUST",
+  "statement": "A value of input bit [i] must be stable for 16 cycles before transitioning.",
+  "checks": [
+   "CHK-017"
+  ],
+  "check_status": {
+   "CHK-017": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 3,
+   "killed": 2,
+   "survived": [
+    "M02"
+   ],
+   "claimed_equivalent": [],
+   "score": 66.7,
+   "meets_threshold": false
+  }
+ },
+ {
+  "rule": "GP-T5.19-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.19",
+  "sentences": [
+   "T5.19:s1",
+   "T5.19:s4",
+   "T5.19:s5"
+  ],
+  "strength": "MUST",
+  "statement": "GPIO input data is sampled at most once after reset on the first cycle where strap_en_i is high, and stored in HW_STRAPS_DATA_IN.",
+  "checks": [
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-031": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T5.19-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.19",
+  "sentences": [
+   "T5.19:s3"
+  ],
+  "strength": "MUST",
+  "statement": "HW_STRAPS_DATA_IN reads as zero.",
+  "checks": [
+   "CHK-032"
+  ],
+  "check_status": {
+   "CHK-032": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T5.20-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.20",
+  "sentences": [
+   "T5.20:s2",
+   "T5.20.2:s2",
+   "T5.20.2:s4"
+  ],
+  "strength": "MUST",
+  "statement": "PER_PIN_IO bit 8 (data_in) aliases DATA_IN[i] and bit 0 (data_out) aliases DATA_OUT[i] for GPIO[i].",
+  "checks": [
+   "CHK-025"
+  ],
+  "check_status": {
+   "CHK-025": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T5.20-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.20",
+  "sentences": [
+   "T5.20:s3"
+  ],
+  "strength": "MUST",
+  "statement": "Writing PER_PIN_IO updates only DATA_OUT[i], without affecting other GPIOs.",
+  "checks": [
+   "CHK-025"
+  ],
+  "check_status": {
+   "CHK-025": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T5.21-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.21",
+  "sentences": [
+   "T5.21:s2",
+   "T5.21.1:s2"
+  ],
+  "strength": "MUST",
+  "statement": "PER_PIN_OE_0 bit 0 aliases bit 0 of DIRECT_OE (DATA_OE[0]).",
+  "checks": [
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-026": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-T5.21-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.21",
+  "sentences": [
+   "T5.21:s3"
+  ],
+  "strength": "MUST",
+  "statement": "Writing PER_PIN_OE_0 updates only DATA_OE[0], without affecting other GPIOs.",
+  "checks": [
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-026": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-T5.22-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.22",
+  "sentences": [
+   "T5.22:s2",
+   "T5.22.1:s2",
+   "T5.22.1:s3",
+   "T5.22.1:s4",
+   "T5.22.1:s5",
+   "T5.22.1:s6"
+  ],
+  "strength": "MUST",
+  "statement": "PER_PIN_INTR_CTRL_0 bits 0..4 alias bit 0 of INTR_CTRL_EN_RISING, FALLING, LVLHIGH, LVLLOW and CTRL_EN_INPUT_FILTER respectively.",
+  "checks": [
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-026": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T5.22-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.22",
+  "sentences": [
+   "T5.22:s3"
+  ],
+  "strength": "MUST",
+  "statement": "Writing PER_PIN_INTR_CTRL_0 updates only the configuration of GPIO[0], without affecting other GPIOs.",
+  "checks": [
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-026": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T5.23-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T5.23",
+  "sentences": [
+   "T5.23:s1",
+   "T5.23:s2"
+  ],
+  "strength": "MUST",
+  "statement": "PER_PIN_OE_i at 0x200+8*i and PER_PIN_INTR_CTRL_i at 0x204+8*i behave like the index-0 registers for GPIO[i], with reset default 0x0.",
+  "checks": [
+   "CHK-026",
+   "CHK-028"
+  ],
+  "check_status": {
+   "CHK-026": "PASS",
+   "CHK-028": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T6.2-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T6.2",
+  "sentences": [
+   "T6.2:s1"
+  ],
+  "strength": "MUST",
+  "statement": "On strap_en, gpio must take a snapshot of the input pins and provide the sampled values on sampled_straps.",
+  "checks": [
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-031": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T6.2-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T6.2",
+  "sentences": [
+   "T6.2:s1"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The behaviour of strap_en after the snapshot event must have no effect on the sampled strap values.",
+  "checks": [
+   "CHK-009",
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-009": "PASS",
+   "CHK-031": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T6.3-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T6.3",
+  "sentences": [
+   "T6.3:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The corresponding gpio interrupt event must be raised when a GPIO pin detects the configured interrupt mode.",
+  "checks": [
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-T6.4-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "T6.4",
+  "sentences": [
+   "T6.4:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The fatal_fault alert must be triggered when a fatal TL-UL bus integrity fault is detected.",
+  "checks": [
+   "CHK-016"
+  ],
+  "check_status": {
+   "CHK-016": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-1-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "1",
+  "sentences": [
+   "1:s2"
+  ],
+  "strength": "MUST",
+  "statement": "Every register access must be permitted and no access may be rejected for an access-control reason.",
+  "checks": [
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-1-03",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "1",
+  "sentences": [
+   "1:s4"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "Ping requests must never be issued.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "GP-1-03",
+   "reason": "not_observable_at_interface",
+   "note": "Ping requests belong to the wrapper's internal alert receiver. No port shows them."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "GP-2-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "2",
+  "sentences": [
+   "2:s2"
+  ],
+  "strength": "MUST",
+  "statement": "TL-UL and strap inputs are sampled and all outputs change only at the rising edge of clk_i, except for the effect of rst_ni.",
+  "checks": [
+   "CHK-010"
+  ],
+  "check_status": {
+   "CHK-010": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-2-03",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "2",
+  "sentences": [
+   "2:s3"
+  ],
+  "strength": "MAY",
+  "statement": "i_gpio may change at any time relative to clk_i.",
+  "checks": [
+   "CHK-021"
+  ],
+  "check_status": {
+   "CHK-021": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-2-04",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "2",
+  "sentences": [
+   "2:s4"
+  ],
+  "strength": "MUST",
+  "statement": "The test bench must change i_gpio only synchronously to clk_i, like the other inputs.",
+  "checks": [
+   "CHK-011",
+   "CHK-021"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-021": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-2-05",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "2",
+  "sentences": [
+   "2:s5"
+  ],
+  "strength": "MUST",
+  "statement": "rst_ni is active-low reset, asserted asynchronously and released synchronously to clk_i.",
+  "checks": [
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-030": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-2-06",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "2",
+  "sentences": [
+   "2:s6"
+  ],
+  "strength": "MUST",
+  "statement": "While rst_ni is 0, every register holds its reset value given in the gpio specification register tables.",
+  "checks": [
+   "CHK-008",
+   "CHK-028",
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-008": "PASS",
+   "CHK-028": "PASS",
+   "CHK-030": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-3-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s12"
+  ],
+  "strength": "MUST",
+  "statement": "i_a_instr=1 must make the request an instruction fetch (a_user.instr_type = MuBi4True); i_a_instr=0 must make it a data access (MuBi4False).",
+  "checks": [
+   "CHK-037"
+  ],
+  "check_status": {
+   "CHK-037": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 1,
+   "survived": [
+    "M12"
+   ],
+   "claimed_equivalent": [],
+   "score": 50.0,
+   "meets_threshold": false
+  }
+ },
+ {
+  "rule": "GP-3-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s13"
+  ],
+  "strength": "MUST",
+  "statement": "When i_a_intg_flip is 1, the A-channel integrity sent with the request must be corrupted.",
+  "checks": [
+   "CHK-016"
+  ],
+  "check_status": {
+   "CHK-016": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-3-03",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s23"
+  ],
+  "strength": "MUST",
+  "statement": "o_d_intg_err must indicate when the response integrity of the D-channel beat is wrong.",
+  "checks": [
+   "CHK-005"
+  ],
+  "check_status": {
+   "CHK-005": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-3-04",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s24"
+  ],
+  "strength": "MUST",
+  "statement": "o_alert must indicate that alert fatal_fault has been received.",
+  "checks": [
+   "CHK-014"
+  ],
+  "check_status": {
+   "CHK-014": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-3-05",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s25"
+  ],
+  "strength": "MUST",
+  "statement": "o_alert_integ_fail must indicate a signal integrity failure on the alert differential pairs.",
+  "checks": [
+   "CHK-001"
+  ],
+  "check_status": {
+   "CHK-001": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-3-06",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s27"
+  ],
+  "strength": "MUST",
+  "statement": "o_gpio (cio_gpio_o) must carry the value of DATA_OUT.",
+  "checks": [
+   "CHK-004",
+   "CHK-018"
+  ],
+  "check_status": {
+   "CHK-004": "PASS",
+   "CHK-018": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-3-07",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s28"
+  ],
+  "strength": "MUST",
+  "statement": "o_gpio_en (cio_gpio_en_o) must carry the value of DATA_OE.",
+  "checks": [
+   "CHK-004",
+   "CHK-020"
+  ],
+  "check_status": {
+   "CHK-004": "PASS",
+   "CHK-020": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-4.1-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "4.1",
+  "sentences": [
+   "4.1:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The i_a_*, o_a_ready, o_d_* (except o_d_intg_err) and i_d_ready ports carry the same-named fields of the gpio TL-UL device interface tl, with TL-UL specification meaning.",
+  "checks": [
+   "CHK-012",
+   "CHK-013",
+   "CHK-038"
+  ],
+  "check_status": {
+   "CHK-012": "PASS",
+   "CHK-013": "PASS",
+   "CHK-038": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 3,
+   "killed": 2,
+   "survived": [
+    "M15"
+   ],
+   "claimed_equivalent": [],
+   "score": 66.7,
+   "meets_threshold": false
+  }
+ },
+ {
+  "rule": "GP-4.1-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "4.1",
+  "sentences": [
+   "4.1:s2"
+  ],
+  "strength": "MUST",
+  "statement": "a_user.rsvd is 0.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "GP-4.1-02",
+   "reason": "not_observable_at_interface",
+   "note": "a_user.rsvd is set inside the wrapper and is not a port."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "GP-4.1-03",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "4.1",
+  "sentences": [
+   "4.1:s2"
+  ],
+  "strength": "MUST",
+  "statement": "a_user.instr_type is MuBi4True when i_a_instr is 1 and MuBi4False when i_a_instr is 0.",
+  "checks": [
+   "CHK-037"
+  ],
+  "check_status": {
+   "CHK-037": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 1,
+   "survived": [
+    "M12"
+   ],
+   "claimed_equivalent": [],
+   "score": 50.0,
+   "meets_threshold": false
+  }
+ },
+ {
+  "rule": "GP-4.1-04",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "4.1",
+  "sentences": [
+   "4.1:s3",
+   "4.1:s4"
+  ],
+  "strength": "MUST",
+  "statement": "The test bench must follow the TL-UL host rules, for example keeping A-channel signals stable while a_valid is 1 and a_ready is 0.",
+  "checks": [
+   "CHK-011",
+   "CHK-038"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-038": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-4.1-06",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "4.1",
+  "sentences": [
+   "4.1:s5"
+  ],
+  "strength": "MUST",
+  "statement": "The device answers such error-case requests with d_error = 1.",
+  "checks": [
+   "CHK-035"
+  ],
+  "check_status": {
+   "CHK-035": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-4.2-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "4.2",
+  "sentences": [
+   "4.2:s1",
+   "4.2:s2"
+  ],
+  "strength": "MUST",
+  "statement": "The wrapper computes correct a_user.cmd_intg and a_user.data_intg for every request, so a request with i_a_intg_flip = 0 carries correct integrity.",
+  "checks": [
+   "CHK-003"
+  ],
+  "check_status": {
+   "CHK-003": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-4.2-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "4.2",
+  "sentences": [
+   "4.2:s3"
+  ],
+  "strength": "MUST",
+  "statement": "Bit 0 of a_user.cmd_intg is inverted.",
+  "checks": [
+   "CHK-016"
+  ],
+  "check_status": {
+   "CHK-016": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-4.2-03",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "4.2",
+  "sentences": [
+   "4.2:s4"
+  ],
+  "strength": "MUST",
+  "statement": "The command integrity error is treated as a fatal TL-UL bus integrity fault and triggers the fatal_fault alert.",
+  "checks": [
+   "CHK-016"
+  ],
+  "check_status": {
+   "CHK-016": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-4.3-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "4.3",
+  "sentences": [
+   "4.3:s1"
+  ],
+  "strength": "MUST",
+  "statement": "o_d_intg_err is 1 in a cycle where o_d_valid is 1 and the d_user.rsp_intg check fails, and 0 otherwise.",
+  "checks": [
+   "CHK-005"
+  ],
+  "check_status": {
+   "CHK-005": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-4.3-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "4.3",
+  "sentences": [
+   "4.3:s2"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "A correct device never makes o_d_intg_err 1.",
+  "checks": [
+   "CHK-005"
+  ],
+  "check_status": {
+   "CHK-005": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-5-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s1"
+  ],
+  "strength": "MUST",
+  "statement": "gpio has a single alert, fatal_fault, which is sent through an alert sender.",
+  "checks": [
+   "CHK-014"
+  ],
+  "check_status": {
+   "CHK-014": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-5-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s2"
+  ],
+  "strength": "MUST",
+  "statement": "o_alert is the alert_o output of the alert receiver and is 1 for exactly one clock cycle for each detected alert handshake.",
+  "checks": [
+   "CHK-002",
+   "CHK-014"
+  ],
+  "check_status": {
+   "CHK-002": "PASS",
+   "CHK-014": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 3,
+   "killed": 2,
+   "survived": [
+    "M21"
+   ],
+   "claimed_equivalent": [],
+   "score": 66.7,
+   "meets_threshold": false
+  }
+ },
+ {
+  "rule": "GP-5-03",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s3"
+  ],
+  "strength": "MUST",
+  "statement": "o_alert_integ_fail is the integ_fail_o output of the alert receiver.",
+  "checks": [
+   "CHK-001"
+  ],
+  "check_status": {
+   "CHK-001": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-5-04",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s4"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "A correct alert sender never makes o_alert_integ_fail 1.",
+  "checks": [
+   "CHK-001"
+  ],
+  "check_status": {
+   "CHK-001": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-5-05",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s5"
+  ],
+  "strength": "MUST",
+  "statement": "After a bus integrity fault, the fatal alert is repeated so o_alert pulses repeatedly until rst_ni is asserted.",
+  "checks": [
+   "CHK-016"
+  ],
+  "check_status": {
+   "CHK-016": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 3,
+   "killed": 2,
+   "survived": [
+    "M21"
+   ],
+   "claimed_equivalent": [],
+   "score": 66.7,
+   "meets_threshold": false
+  }
+ },
+ {
+  "rule": "GP-5-06",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s6"
+  ],
+  "strength": "MUST",
+  "statement": "A write of 1 to ALERT_TEST.fatal_fault triggers exactly one alert event.",
+  "checks": [
+   "CHK-014"
+  ],
+  "check_status": {
+   "CHK-014": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-6-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "6",
+  "sentences": [
+   "6:s1"
+  ],
+  "strength": "MUST",
+  "statement": "i_gpio, o_gpio and o_gpio_en must map to cio_gpio_i, cio_gpio_o and cio_gpio_en_o respectively, with bit i belonging to GPIO[i].",
+  "checks": [
+   "CHK-004",
+   "CHK-018",
+   "CHK-021"
+  ],
+  "check_status": {
+   "CHK-004": "PASS",
+   "CHK-018": "PASS",
+   "CHK-021": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-6-03",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "6",
+  "sentences": [
+   "6:s2"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "ot_gpio_nnc must not contain a pad model or pin multiplexer; i_gpio is driven only by the test bench and does not depend on o_gpio or o_gpio_en.",
+  "checks": [
+   "CHK-021"
+  ],
+  "check_status": {
+   "CHK-021": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-7-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "7",
+  "sentences": [
+   "7:s1"
+  ],
+  "strength": "MUST",
+  "statement": "o_intr_gpio[i] must be the interrupt output intr_gpio_o[i] of gpio, an event-type interrupt per the comportability specification, associated with bit i of INTR_ENABLE, INTR_STATE and INTR_TEST.",
+  "checks": [
+   "CHK-022",
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-022": "PASS",
+   "CHK-024": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-8-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The wrapper input i_strap_en must be connected to the gpio input strap_en_i.",
+  "checks": [
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-031": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-8-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The wrapper output o_straps_valid must be driven by the valid field of the gpio output sampled_straps_o.",
+  "checks": [
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-031": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-8-03",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The wrapper output o_straps_data must be driven by the data field of the gpio output sampled_straps_o.",
+  "checks": [
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-031": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-9-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "9",
+  "sentences": [
+   "9:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Verification must cover reset values of every register and the access type of every register field as given in the register tables.",
+  "checks": [
+   "CHK-028",
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-028": "PASS",
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 6,
+   "killed": 6,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-9-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "9",
+  "sentences": [
+   "9:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Verification must cover direct and masked writes of DATA_OUT and DATA_OE and their reads, and the per-pin register view.",
+  "checks": [
+   "CHK-018",
+   "CHK-019",
+   "CHK-020",
+   "CHK-025"
+  ],
+  "check_status": {
+   "CHK-018": "PASS",
+   "CHK-019": "PASS",
+   "CHK-020": "PASS",
+   "CHK-025": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-9-03",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "9",
+  "sentences": [
+   "9:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Verification must cover DATA_IN with and without the input filter.",
+  "checks": [
+   "CHK-017",
+   "CHK-021"
+  ],
+  "check_status": {
+   "CHK-017": "PASS",
+   "CHK-021": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-9-04",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "9",
+  "sentences": [
+   "9:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Verification must cover interrupt detection on rising edge, falling edge, high level and low level, with INTR_STATE, INTR_ENABLE and INTR_TEST.",
+  "checks": [
+   "CHK-022",
+   "CHK-023",
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-022": "PASS",
+   "CHK-023": "PASS",
+   "CHK-024": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-9-05",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "9",
+  "sentences": [
+   "9:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Verification must cover strap sampling with HW_STRAPS_DATA_IN_VALID and HW_STRAPS_DATA_IN.",
+  "checks": [
+   "CHK-031",
+   "CHK-032"
+  ],
+  "check_status": {
+   "CHK-031": "PASS",
+   "CHK-032": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-9-06",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "9",
+  "sentences": [
+   "9:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Verification must cover bus error responses (unmapped addresses, sub-word writes, instruction fetches, integrity errors) and the fatal_fault alert.",
+  "checks": [
+   "CHK-014",
+   "CHK-016",
+   "CHK-033",
+   "CHK-035",
+   "CHK-036",
+   "CHK-037"
+  ],
+  "check_status": {
+   "CHK-014": "PASS",
+   "CHK-016": "PASS",
+   "CHK-033": "PASS",
+   "CHK-035": "PASS",
+   "CHK-036": "PASS",
+   "CHK-037": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-9-07",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "9",
+  "sentences": [
+   "9:s2"
+  ],
+  "strength": "MUST",
+  "statement": "The per-pin registers of all 32 GPIOs must behave alike.",
+  "checks": [
+   "CHK-025",
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-025": "PASS",
+   "CHK-026": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-9-09",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "9",
+  "sentences": [
+   "9:s3"
+  ],
+  "strength": "MUST",
+  "statement": "The selection of GPIOs must include GPIO[0], GPIO[15], GPIO[16] and GPIO[31].",
+  "checks": [
+   "CHK-025",
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-025": "PASS",
+   "CHK-026": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-10-01",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s4"
+  ],
+  "strength": "MUST",
+  "statement": "DATA_OE[i] is set to data bit i where mask bit i is 1 and every other DATA_OE bit is left unchanged, as for DATA_OUT.",
+  "checks": [
+   "CHK-020"
+  ],
+  "check_status": {
+   "CHK-020": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-10-02",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s5"
+  ],
+  "strength": "MUST",
+  "statement": "Bits 15:0 of the read return the corresponding half of DATA_OUT or DATA_OE; bits 31:16 of MASKED_OUT_* read 0.",
+  "checks": [
+   "CHK-019",
+   "CHK-020"
+  ],
+  "check_status": {
+   "CHK-019": "PASS",
+   "CHK-020": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-10-03",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s6"
+  ],
+  "strength": "MUST",
+  "statement": "DIRECT_OUT, DIRECT_OE, MASKED_*, INTR_CTRL_EN_*, CTRL_EN_INPUT_FILTER, PER_PIN_OE_i, PER_PIN_INTR_CTRL_i and PER_PIN_IO_i.data_out read 0; o_gpio and o_gpio_en are 0.",
+  "checks": [
+   "CHK-004",
+   "CHK-008",
+   "CHK-028"
+  ],
+  "check_status": {
+   "CHK-004": "PASS",
+   "CHK-008": "PASS",
+   "CHK-028": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-10-04",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s7"
+  ],
+  "strength": "MUST",
+  "statement": "A configured event sets INTR_STATE[i].",
+  "checks": [
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-10-05",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s7"
+  ],
+  "strength": "MUST",
+  "statement": "o_intr_gpio[i] stays 0.",
+  "checks": [
+   "CHK-006",
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-006": "PASS",
+   "CHK-024": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-10-06",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s8"
+  ],
+  "strength": "MUST",
+  "statement": "INTR_STATE[i] reads 1 and o_intr_gpio[i] with INTR_ENABLE[i] = 1 is 1 again within 4 cycles after the write response.",
+  "checks": [
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-023": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-10-07",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s10"
+  ],
+  "strength": "MUST",
+  "statement": "The new value never appears in DATA_IN[i] and creates no interrupt event.",
+  "checks": [
+   "CHK-017"
+  ],
+  "check_status": {
+   "CHK-017": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 1,
+   "survived": [
+    "M02"
+   ],
+   "claimed_equivalent": [],
+   "score": 50.0,
+   "meets_threshold": false
+  }
+ },
+ {
+  "rule": "GP-10-08",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s10"
+  ],
+  "strength": "MUST",
+  "statement": "The new value appears in DATA_IN[i] no later than 24 cycles after the change.",
+  "checks": [
+   "CHK-017"
+  ],
+  "check_status": {
+   "CHK-017": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 3,
+   "killed": 2,
+   "survived": [
+    "M02"
+   ],
+   "claimed_equivalent": [],
+   "score": 66.7,
+   "meets_threshold": false
+  }
+ },
+ {
+  "rule": "GP-10-09",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s10"
+  ],
+  "strength": "MUST",
+  "statement": "Tests keep i_gpio[i] constant; DATA_IN[i] and interrupt events are not checked in this window.",
+  "checks": [
+   "CHK-017"
+  ],
+  "check_status": {
+   "CHK-017": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-10-10",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s11"
+  ],
+  "strength": "MUST",
+  "statement": "Tests keep i_strap_en = 0 while rst_ni = 0 and at least 4 cycles after release, raise it once, and keep i_gpio constant from 24 cycles before to 8 cycles after the rising edge.",
+  "checks": [
+   "CHK-011",
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-031": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-10-11",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s11"
+  ],
+  "strength": "MUST",
+  "statement": "HW_STRAPS_DATA_IN_VALID reads 1, o_straps_valid = 1, and HW_STRAPS_DATA_IN and o_straps_data equal the sampled i_gpio value.",
+  "checks": [
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-031": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-10-12",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s11"
+  ],
+  "strength": "MUST",
+  "statement": "Both valid indications are 0.",
+  "checks": [
+   "CHK-009",
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-009": "PASS",
+   "CHK-031": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-10-13",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s11"
+  ],
+  "strength": "MUST",
+  "statement": "Later changes of i_gpio or i_strap_en change neither the valid indications nor the strap data.",
+  "checks": [
+   "CHK-009",
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-009": "PASS",
+   "CHK-031": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-10-14",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s12"
+  ],
+  "strength": "MUST",
+  "statement": "HW_STRAPS_DATA_IN reads 0 at all times.",
+  "checks": [
+   "CHK-032"
+  ],
+  "check_status": {
+   "CHK-032": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-10-15",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s13"
+  ],
+  "strength": "MUST",
+  "statement": "Tests write 0x8000_0001 to keep regwen at 1 and do not use the combined write 0x0000_0001.",
+  "checks": [
+   "CHK-014"
+  ],
+  "check_status": {
+   "CHK-014": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-10-16",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s13"
+  ],
+  "strength": "MUST",
+  "statement": "A write of 0x8000_0001 completes with d_error = 0, triggers no alert, and regwen still reads 0.",
+  "checks": [
+   "CHK-015"
+  ],
+  "check_status": {
+   "CHK-015": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-10-17",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s13"
+  ],
+  "strength": "MUST",
+  "statement": "Exactly one o_alert pulse occurs, no later than 16 cycles after the write response.",
+  "checks": [
+   "CHK-014"
+  ],
+  "check_status": {
+   "CHK-014": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-10-18",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s13"
+  ],
+  "strength": "MUST",
+  "statement": "ALERT_TEST reads 0x8000_0000.",
+  "checks": [
+   "CHK-015",
+   "CHK-028"
+  ],
+  "check_status": {
+   "CHK-015": "PASS",
+   "CHK-028": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-10-19",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s14"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "Tests do not use a write with i_a_instr = 1; d_error of a request with i_a_instr = 1 is not checked.",
+  "checks": [
+   "CHK-011",
+   "CHK-037"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-037": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 1,
+   "survived": [
+    "M12"
+   ],
+   "claimed_equivalent": [],
+   "score": 50.0,
+   "meets_threshold": false
+  }
+ },
+ {
+  "rule": "GP-10-20",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s15"
+  ],
+  "strength": "MUST",
+  "statement": "The response has d_error = 1 and no register changes.",
+  "checks": [
+   "CHK-036"
+  ],
+  "check_status": {
+   "CHK-036": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-10-21",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s15"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "Requests at offset 0x400 and above are not used.",
+  "checks": [
+   "CHK-011",
+   "CHK-036"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-036": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-10-22",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s16"
+  ],
+  "strength": "MUST",
+  "statement": "The write returns d_error = 1 and changes nothing.",
+  "checks": [
+   "CHK-033"
+  ],
+  "check_status": {
+   "CHK-033": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-10-23",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s16"
+  ],
+  "strength": "MUST",
+  "statement": "The write completes with d_error = 0 and has the effect of the write.",
+  "checks": [
+   "CHK-033"
+  ],
+  "check_status": {
+   "CHK-033": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-10-24",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s16"
+  ],
+  "strength": "MUST",
+  "statement": "The write succeeds.",
+  "checks": [
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-10-26",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s17"
+  ],
+  "strength": "MUST",
+  "statement": "The test bench matches responses by d_source, uses a distinct a_source per outstanding request, and does not assume o_a_ready = 1.",
+  "checks": [
+   "CHK-011",
+   "CHK-038"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-038": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-10-27",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s18"
+  ],
+  "strength": "MUST",
+  "statement": "d_source echoes a_source, d_size echoes a_size, and d_opcode is AccessAckData for Get and AccessAck for PutFullData and PutPartialData.",
+  "checks": [
+   "CHK-013"
+  ],
+  "check_status": {
+   "CHK-013": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-10-28",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s18"
+  ],
+  "strength": "MUST",
+  "statement": "d_error = 1.",
+  "checks": [
+   "CHK-013",
+   "CHK-035"
+  ],
+  "check_status": {
+   "CHK-013": "PASS",
+   "CHK-035": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-10-30",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s19"
+  ],
+  "strength": "MUST",
+  "statement": "The test bench keeps i_a_valid = 0 while rst_ni = 0 and in the first cycle after release.",
+  "checks": [
+   "CHK-011"
+  ],
+  "check_status": {
+   "CHK-011": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-10-31",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s19"
+  ],
+  "strength": "MUST",
+  "statement": "o_d_valid, o_alert, o_alert_integ_fail, o_intr_gpio, o_gpio and o_gpio_en are 0.",
+  "checks": [
+   "CHK-008",
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-008": "PASS",
+   "CHK-030": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-10-32",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s19"
+  ],
+  "strength": "MUST",
+  "statement": "The pending response is discarded.",
+  "checks": [
+   "CHK-013",
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-013": "PASS",
+   "CHK-030": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-10-33",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s20"
+  ],
+  "strength": "MUST",
+  "statement": "o_d_intg_err and o_alert_integ_fail are 0 in every cycle.",
+  "checks": [
+   "CHK-001",
+   "CHK-005"
+  ],
+  "check_status": {
+   "CHK-001": "PASS",
+   "CHK-005": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-10-34",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s20"
+  ],
+  "strength": "MUST",
+  "statement": "o_alert pulses no later than 16 cycles later and then at least once in every 32 cycles until rst_ni is asserted.",
+  "checks": [
+   "CHK-016"
+  ],
+  "check_status": {
+   "CHK-016": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-10-35",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s21"
+  ],
+  "strength": "MUST",
+  "statement": "DATA_IN[i] shows the change no later than 4 cycles after the first rising edge after the change, for both values of GpioAsyncOn.",
+  "checks": [
+   "CHK-021"
+  ],
+  "check_status": {
+   "CHK-021": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-10-36",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s21"
+  ],
+  "strength": "MUST",
+  "statement": "INTR_STATE[i] is set no later than 4 cycles after it.",
+  "checks": [
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-10-37",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s21"
+  ],
+  "strength": "MUST",
+  "statement": "o_intr_gpio[i] equals INTR_STATE[i] AND INTR_ENABLE[i].",
+  "checks": [
+   "CHK-022",
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-022": "PASS",
+   "CHK-024": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-10-38",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s21"
+  ],
+  "strength": "MUST",
+  "statement": "o_gpio and o_gpio_en equal DATA_OUT and DATA_OE no later than 2 cycles after the write response.",
+  "checks": [
+   "CHK-004",
+   "CHK-018",
+   "CHK-020"
+  ],
+  "check_status": {
+   "CHK-004": "PASS",
+   "CHK-018": "PASS",
+   "CHK-020": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-10-39",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s22"
+  ],
+  "strength": "MUST",
+  "statement": "The register or field is left unchanged.",
+  "checks": [
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "GP-10-40",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s22"
+  ],
+  "strength": "MUST",
+  "statement": "The read returns 0.",
+  "checks": [
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-10-41",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s22"
+  ],
+  "strength": "MUST",
+  "statement": "Reserved bits read 0 and writes to them have no effect.",
+  "checks": [
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "GP-10-43",
+  "spec_refs": [],
+  "doc": "gpio_Design_Specification.md",
+  "section": "10",
+  "sentences": [
+   "10:s24"
+  ],
+  "strength": "MUST",
+  "statement": "DATA_IN[i] follows i_gpio[i], not o_gpio[i].",
+  "checks": [
+   "CHK-021"
+  ],
+  "check_status": {
+   "CHK-021": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "TL-T2.2-01",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T2.2",
+  "sentences": [
+   "T2.2:s6"
+  ],
+  "strength": "MAY",
+  "statement": "Existing TL-UL IP blocks may be used directly in devices that do not need the additional user sideband signals.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T2.2-01",
+   "reason": "design_guideline",
+   "note": "MAY about reuse of IP blocks."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T2.2-03",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T2.2",
+  "sentences": [
+   "T2.2:s9",
+   "T2.2:s10",
+   "T2.2:s11"
+  ],
+  "strength": "MUST",
+  "statement": "The bus carries at most one request and one response per cycle, and supports no burst transactions.",
+  "checks": [
+   "CHK-013",
+   "CHK-038"
+  ],
+  "check_status": {
+   "CHK-013": "PASS",
+   "CHK-038": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "TL-T2.3-01",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T2.3",
+  "sentences": [
+   "T2.3:s2"
+  ],
+  "strength": "MAY",
+  "statement": "Bus primitives, hosts and peripherals developed with the extended specification can be used with blocks using the base specification.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T2.3-01",
+   "reason": "static_or_structural",
+   "note": "Compatibility statement about block integration."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T2.3-02",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T2.3",
+  "sentences": [
+   "T2.3:s3"
+  ],
+  "strength": "MUST",
+  "statement": "A baseline block as receiver ignores the user signals.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T2.3-02",
+   "reason": "not_applicable_to_dut",
+   "note": "gpio is not a baseline block; it uses the a_user integrity fields."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T2.3-03",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T2.3",
+  "sentences": [
+   "T2.3:s3"
+  ],
+  "strength": "MUST",
+  "statement": "A baseline block as source generates a project-specific default value for the user signals.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T2.3-03",
+   "reason": "not_applicable_to_dut",
+   "note": "gpio is not a baseline block."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.1-01",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.1",
+  "sentences": [
+   "T3.1.1:s1"
+  ],
+  "strength": "MAY",
+  "statement": "TL-UL host drivers in this library are not required to drive valid signals LOW for at least 100 cycles during reset, unlike the TileLink 1.7.1 requirement.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T3.1.1-01",
+   "reason": "not_applicable_to_dut",
+   "note": "Relaxation for host drivers. The test bench follows D-016 (CHK-011)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.1-02",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.1",
+  "sentences": [
+   "T3.1.1:s2"
+  ],
+  "strength": "MAY",
+  "statement": "TL-UL devices tolerate shorter reset windows than the TileLink-specified 100 cycles.",
+  "checks": [
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-030": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.1-01",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.1",
+  "sentences": [
+   "T3.1.3.1:s1",
+   "T3.1.3.1:s3",
+   "T3.1.3.1:s5"
+  ],
+  "strength": "MUST",
+  "statement": "All request steering to a device must be a function of the address only; a_source and a_user do not enter into address calculation.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T3.1.3.1-01",
+   "reason": "not_applicable_to_dut",
+   "note": "Interconnect routing rule. There is no fabric in ot_gpio_nnc."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.2-01",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.2",
+  "sentences": [
+   "T3.1.3.2:s3"
+  ],
+  "strength": "MAY",
+  "statement": "A host may use source ID bits to ascribe request identifiers, since TL-UL does not guarantee in-order responses.",
+  "checks": [
+   "CHK-038"
+  ],
+  "check_status": {
+   "CHK-038": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.2-02",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.2",
+  "sentences": [
+   "T3.1.3.2:s7"
+  ],
+  "strength": "MUST",
+  "statement": "The fabric architect must ensure AIW is large enough for outstanding host requests plus maximum source ID growth added by bus primitives.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T3.1.3.2-02",
+   "reason": "not_applicable_to_dut",
+   "note": "Fabric architect sizing rule."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.2-03",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.2",
+  "sentences": [
+   "T3.1.3.2:s9"
+  ],
+  "strength": "MUST",
+  "statement": "The fabric must provide enough host ID bits to maintain the converted host ID values.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T3.1.3.2-03",
+   "reason": "not_applicable_to_dut",
+   "note": "Fabric host-ID conversion rule."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.2.1-01",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.2.1",
+  "sentences": [
+   "T3.1.3.2.1:s1",
+   "T3.1.3.2.1:s3"
+  ],
+  "strength": "MUST",
+  "statement": "The primitive shifts incoming a_source left and post-pends its sub-source bits.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T3.1.3.2.1-01",
+   "reason": "not_applicable_to_dut",
+   "note": "Bus primitive source-ID growth. There is no primitive between the test bench and the DUT."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.2.1-02",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.2.1",
+  "sentences": [
+   "T3.1.3.2.1:s4"
+  ],
+  "strength": "MUST",
+  "statement": "The sub-source bits are shifted off with zeros shifted into the top, and the result is returned on the originator's d_source.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T3.1.3.2.1-02",
+   "reason": "not_applicable_to_dut",
+   "note": "Bus primitive response source shifting."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.2.1-03",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.2.1",
+  "sentences": [
+   "T3.1.3.2.1:s5"
+  ],
+  "strength": "SHOULD",
+  "statement": "Assertions should be in place to ensure no significant bits of a_source are lost in M:1 sockets.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T3.1.3.2.1-03",
+   "reason": "not_applicable_to_dut",
+   "note": "M:1 socket assertion recommendation."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.2.2-01",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.2.2",
+  "sentences": [
+   "T3.1.3.2.2:s1"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "Hosts may only use the low bits of the source identifier and must not assume all AIW bits are returned intact.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T3.1.3.2.2-01",
+   "reason": "not_applicable_to_dut",
+   "note": "Host rule about source contraction through a fabric. The DUT is connected directly; CHK-013 checks the full 8-bit d_source echo."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.2.3-01",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.2.3",
+  "sentences": [
+   "T3.1.3.2.3:s1"
+  ],
+  "strength": "MUST",
+  "statement": "A device must return the associated a_source value on the response d_source.",
+  "checks": [
+   "CHK-013"
+  ],
+  "check_status": {
+   "CHK-013": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "TL-T3.1.3.3-02",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.3",
+  "sentences": [
+   "T3.1.3.3:s3"
+  ],
+  "strength": "MUST",
+  "statement": "User bits follow the same timing as source ID bits: a_user matches a_source and d_user matches d_source.",
+  "checks": [
+   "CHK-005"
+  ],
+  "check_status": {
+   "CHK-005": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.3-03",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.3",
+  "sentences": [
+   "T3.1.3.3:s4"
+  ],
+  "strength": "MUST",
+  "statement": "The bus fabric must not rely on user bits for transport and should pass them on blindly; user bit usage is assigned project-wide.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T3.1.3.3-03",
+   "reason": "not_applicable_to_dut",
+   "note": "Interconnect user-bit pass-through."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.4-02",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.4",
+  "sentences": [
+   "T3.1.3.4:s9",
+   "T3.1.3.4:s10"
+  ],
+  "strength": "SHOULD_NOT",
+  "statement": "TL-UL hosts should not assert non-contiguous a_mask values, only a restricted set of masks.",
+  "checks": [
+   "CHK-011"
+  ],
+  "check_status": {
+   "CHK-011": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.4-03",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.4",
+  "sentences": [
+   "T3.1.3.4:s11"
+  ],
+  "strength": "MAY",
+  "statement": "A device may assert d_error if it does not support a given contiguous or non-contiguous subword mask.",
+  "checks": [
+   "CHK-033"
+  ],
+  "check_status": {
+   "CHK-033": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.4-04",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.4",
+  "sentences": [
+   "T3.1.3.4:s12"
+  ],
+  "strength": "SHOULD",
+  "statement": "a_size should be 'h2 for a 32b write.",
+  "checks": [
+   "CHK-011"
+  ],
+  "check_status": {
+   "CHK-011": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.4-05",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.4",
+  "sentences": [
+   "T3.1.3.4:s15"
+  ],
+  "strength": "SHOULD",
+  "statement": "Bus devices should return an error for undefined request opcodes.",
+  "checks": [
+   "CHK-035"
+  ],
+  "check_status": {
+   "CHK-035": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.5-01",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.5",
+  "sentences": [
+   "T3.1.3.5:s1",
+   "T3.1.3.5:s2",
+   "T3.1.3.5:s3"
+  ],
+  "strength": "MUST",
+  "statement": "TL-UL devices must raise a runtime error via d_error when a request carries a wrong opcode.",
+  "checks": [
+   "CHK-035"
+  ],
+  "check_status": {
+   "CHK-035": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.5-02",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.5",
+  "sentences": [
+   "T3.1.3.5:s1",
+   "T3.1.3.5:s2",
+   "T3.1.3.5:s4",
+   "T3.1.3.5:s5"
+  ],
+  "strength": "MUST",
+  "statement": "a_size must not be greater than 2; a request violating this is flagged by the device with d_error.",
+  "checks": [
+   "CHK-035"
+  ],
+  "check_status": {
+   "CHK-035": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.5-03",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.5",
+  "sentences": [
+   "T3.1.3.5:s1",
+   "T3.1.3.5:s2",
+   "T3.1.3.5:s10"
+  ],
+  "strength": "MUST",
+  "statement": "TL-UL devices must raise d_error for accesses to non-existent addresses.",
+  "checks": [
+   "CHK-036"
+  ],
+  "check_status": {
+   "CHK-036": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.5-04",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.5",
+  "sentences": [
+   "T3.1.3.5:s4",
+   "T3.1.3.5:s6"
+  ],
+  "strength": "MUST",
+  "statement": "Inactive lanes must be marked with 'b0 in a_mask; otherwise the request has a wrong a_addr/a_size/a_mask combination and raises d_error.",
+  "checks": [
+   "CHK-035"
+  ],
+  "check_status": {
+   "CHK-035": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.5-06",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.5",
+  "sentences": [
+   "T3.1.3.5:s8"
+  ],
+  "strength": "MAY",
+  "statement": "A non-contiguous a_mask may lead to an error response, depending on device support.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T3.1.3.5-06",
+   "reason": "design_guideline",
+   "note": "MAY. Non-contiguous masks are not driven (TL-T3.1.3.4-02, CHK-011), and D-013 leaves partial masks unchecked."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.5-07",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.5",
+  "sentences": [
+   "T3.1.3.5:s9"
+  ],
+  "strength": "MUST",
+  "statement": "Register files always assume aligned 32-bit accesses; other accesses are in violation.",
+  "checks": [
+   "CHK-033"
+  ],
+  "check_status": {
+   "CHK-033": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.5-08",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.5",
+  "sentences": [
+   "T3.1.3.5:s11"
+  ],
+  "strength": "MUST",
+  "statement": "The host side must discard orphaned responses and responses with the wrong opcode.",
+  "checks": [
+   "CHK-013"
+  ],
+  "check_status": {
+   "CHK-013": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.2-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.2",
+  "sentences": [
+   "T1.5.2:s8"
+  ],
+  "strength": "SHOULD",
+  "statement": "Exactly one clocking item dictionary should have the boolean field primary set to true.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.2-01",
+   "reason": "static_or_structural",
+   "note": "Configuration file content."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.2-03",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.2",
+  "sentences": [
+   "T1.5.2:s15"
+  ],
+  "strength": "MAY",
+  "statement": "The clock and reset fields of a clocking item are optional.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.2-03",
+   "reason": "static_or_structural",
+   "note": "Configuration file content."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.2-04",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.2",
+  "sentences": [
+   "T1.5.2:s16"
+  ],
+  "strength": "MUST",
+  "statement": "The primary clock clocking item must have both clock and reset fields.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.2-04",
+   "reason": "static_or_structural",
+   "note": "Configuration file content."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.2.1-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.2.1",
+  "sentences": [
+   "T1.5.2.1:s4"
+  ],
+  "strength": "SHOULD",
+  "statement": "Security storage elements should be handled with care regardless of reset methodology, since they might leak sensitive state content.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.2.1-01",
+   "reason": "design_guideline",
+   "note": "Advice on security storage elements."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.3-02",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.3",
+  "sentences": [
+   "T1.5.3:s2"
+  ],
+  "strength": "MUST",
+  "statement": "Every peripheral must expose at least one device interface on the chip bus.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.3-02",
+   "reason": "static_or_structural",
+   "note": "Presence of a device interface (the TL-UL ports exist)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.3-03",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.3",
+  "sentences": [
+   "T1.5.3:s3"
+  ],
+  "strength": "MAY",
+  "statement": "Peripherals can act as a bus host, though the preferred model is the processor being primary host.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.3-03",
+   "reason": "not_applicable_to_dut",
+   "note": "gpio is not a bus host."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.3-04",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.3",
+  "sentences": [
+   "T1.5.3:s7"
+  ],
+  "strength": "SHOULD",
+  "statement": "The bus_interfaces attribute in the configuration file should contain a list of dictionaries describing the interfaces the peripheral exposes.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.3-04",
+   "reason": "static_or_structural",
+   "note": "Configuration file content."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.3-05",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.3",
+  "sentences": [
+   "T1.5.3:s11"
+  ],
+  "strength": "MUST",
+  "statement": "The peripheral must have a protocol of tlul.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.3-05",
+   "reason": "static_or_structural",
+   "note": "Configuration file content."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.3-06",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.3",
+  "sentences": [
+   "T1.5.3:s14",
+   "T1.5.3:s15"
+  ],
+  "strength": "MUST",
+  "statement": "Each bus_interfaces entry must contain a direction, which must be either host or device.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.3-06",
+   "reason": "static_or_structural",
+   "note": "Configuration file content."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.3-07",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.3",
+  "sentences": [
+   "T1.5.3:s16"
+  ],
+  "strength": "MUST",
+  "statement": "All bus hosts must use the same clock as the defined primary host clock.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.3-07",
+   "reason": "static_or_structural",
+   "note": "Clocking structure. The single test-bench host runs on clk_i."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.3-08",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.3",
+  "sentences": [
+   "T1.5.3:s22"
+  ],
+  "strength": "MUST",
+  "statement": "An entry must include a name so port names do not collide.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.3-08",
+   "reason": "static_or_structural",
+   "note": "Configuration file content."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.5-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.5",
+  "sentences": [
+   "T1.5.5:s4"
+  ],
+  "strength": "MUST",
+  "statement": "The module must have an output named intr_name_o for each interrupt name.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.5-01",
+   "reason": "static_or_structural",
+   "note": "Port naming of the inner module."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.6-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.6",
+  "sentences": [
+   "T1.6:s2"
+  ],
+  "strength": "MUST",
+  "statement": "All lowRISC peripheral designs must conform to the register specification.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.6-01",
+   "reason": "static_or_structural",
+   "note": "Conformance of the register description."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8",
+  "sentences": [
+   "T1.8:s2"
+  ],
+  "strength": "MUST",
+  "statement": "All interrupts shall have common naming, hardware interfaces, and software interfaces.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.8-01",
+   "reason": "static_or_structural",
+   "note": "Interrupt naming conventions."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.1-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.1",
+  "sentences": [
+   "T1.8.1:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Wired CIP interrupts use active-high level-triggering.",
+  "checks": [
+   "CHK-007"
+  ],
+  "check_status": {
+   "CHK-007": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.2-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.2",
+  "sentences": [
+   "T1.8.2:s4"
+  ],
+  "strength": "MUST",
+  "statement": "The name key, a string naming the interrupt, is required.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.8.2-01",
+   "reason": "static_or_structural",
+   "note": "hjson key requirement."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.2-02",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.2",
+  "sentences": [
+   "T1.8.2:s5"
+  ],
+  "strength": "MAY",
+  "statement": "The desc key, a string describing the interrupt, is optional.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.8.2-02",
+   "reason": "static_or_structural",
+   "note": "hjson key option."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.2-03",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.2",
+  "sentences": [
+   "T1.8.2:s6"
+  ],
+  "strength": "MAY",
+  "statement": "The type key is optional, selecting Event or Status, defaulting to Event if unspecified.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.8.2-03",
+   "reason": "static_or_structural",
+   "note": "hjson key option. All gpio interrupts are event type."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.3-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.3",
+  "sentences": [
+   "T1.8.3:s1"
+  ],
+  "strength": "MUST",
+  "statement": "A peripheral generates a separate wired interrupt for each interrupt source.",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.4-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.4",
+  "sentences": [
+   "T1.8.4:s1",
+   "T1.8.4:s2",
+   "T1.8.4:s3"
+  ],
+  "strength": "MUST",
+  "statement": "INTR_STATE, INTR_ENABLE and INTR_TEST registers are created at offsets 0x0, 0x4, 0x8 with one bitfield per interrupt.",
+  "checks": [
+   "CHK-028"
+  ],
+  "check_status": {
+   "CHK-028": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.4-02",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.4",
+  "sentences": [
+   "T1.8.4:s4"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The .hjson must not define more than 32 interrupts per peripheral.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.8.4-02",
+   "reason": "static_or_structural",
+   "note": "hjson interrupt-count limit."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.4-03",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.4",
+  "sentences": [
+   "T1.8.4:s6"
+  ],
+  "strength": "MUST",
+  "statement": "INTR_ENABLE enables/masks the output of INTR_STATE to create the wired interrupt signal intr_o.",
+  "checks": [
+   "CHK-006",
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-006": "PASS",
+   "CHK-024": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.4-04",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.4",
+  "sentences": [
+   "T1.8.4:s7"
+  ],
+  "strength": "MUST",
+  "statement": "INTR_TEST is write-only and asserts the interrupt for testing.",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.4-05",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.4",
+  "sentences": [
+   "T1.8.4:s8"
+  ],
+  "strength": "MUST",
+  "statement": "INTR_STATE is not qualified by INTR_ENABLE and shows the raw state of latched hardware interrupt events.",
+  "checks": [
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.5-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.5",
+  "sentences": [
+   "T1.8.5:s8"
+  ],
+  "strength": "MUST",
+  "statement": "The current interrupt can only be cleared by handler acknowledgement, a W1C write to INTR_STATE.",
+  "checks": [
+   "CHK-007",
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-007": "PASS",
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.5.1-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.5.1",
+  "sentences": [
+   "T1.8.5.1:s3",
+   "T1.8.5.1:s5",
+   "T1.8.5.1:s6"
+  ],
+  "strength": "MUST",
+  "statement": "The event is latched into its INTR_STATE bitfield and intr_o goes high; a software W1C write clears it and intr_o goes low.",
+  "checks": [
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.5.2-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.5.2",
+  "sentences": [
+   "T1.8.5.2:s1",
+   "T1.8.5.2:s2"
+  ],
+  "strength": "MUST",
+  "statement": "A status type interrupt must be a wired level-triggered signal directly from the hardware input signal, qualified only by INTR_ENABLE, asserted continuously while the input is asserted.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.8.5.2-01",
+   "reason": "not_applicable_to_dut",
+   "note": "Status-type interrupts. All gpio interrupts are event type (designer decision)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.5.2-03",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.5.2",
+  "sentences": [
+   "T1.8.5.2:s5"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "Software cannot acknowledge a status type interrupt via INTR_STATE, which is read-only (ro) in this context.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.8.5.2-03",
+   "reason": "not_applicable_to_dut",
+   "note": "Status-type interrupts are out of scope (designer decision)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.5.2-05",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.5.2",
+  "sentences": [
+   "T1.8.5.2:s8"
+  ],
+  "strength": "SHOULD",
+  "statement": "Software should mask the interrupt, at the peripheral or further up the tree such as the PLIC.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.8.5.2-05",
+   "reason": "not_applicable_to_dut",
+   "note": "Status-type interrupt software handling."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.5.2-06",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.5.2",
+  "sentences": [
+   "T1.8.5.2:s9"
+  ],
+  "strength": "MAY",
+  "statement": "Software can mask at the peripheral by clearing the corresponding bit in INTR_ENABLE.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.8.5.2-06",
+   "reason": "not_applicable_to_dut",
+   "note": "Status-type interrupt masking. Masking for event interrupts is checked in CHK-006/CHK-024."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.6-02",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.6",
+  "sentences": [
+   "T1.8.6:s7"
+  ],
+  "strength": "MUST",
+  "statement": "The event sets the associated bit in INTR_STATE to 1.",
+  "checks": [
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.6-03",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.6",
+  "sentences": [
+   "T1.8.6:s8"
+  ],
+  "strength": "MAY",
+  "statement": "A write of 1 to the foo bit of INTR_TEST can set the corresponding INTR_STATE bit.",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.6-04",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.6",
+  "sentences": [
+   "T1.8.6:s9"
+  ],
+  "strength": "MUST",
+  "statement": "The outgoing interrupt must be INTR_STATE ANDed with INTR_ENABLE.",
+  "checks": [
+   "CHK-006",
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-006": "PASS",
+   "CHK-024": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.6-05",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.6",
+  "sentences": [
+   "T1.8.6:s10",
+   "T1.8.6:s11"
+  ],
+  "strength": "MUST",
+  "statement": "A write of 1 to an INTR_STATE bit clears the latched value, but if the event is still active the bit returns to true.",
+  "checks": [
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-023": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.6-06",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.6",
+  "sentences": [
+   "T1.8.6:s12"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "Hardware must not clear the latched interrupt state; only software can.",
+  "checks": [
+   "CHK-007",
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-007": "PASS",
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.1-03",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.1",
+  "sentences": [
+   "T1.9.1:s4",
+   "T1.9.1:s5",
+   "T1.9.1:s7"
+  ],
+  "strength": "MUST",
+  "statement": "A recoverable alert sender must transmit one single alert event when the error condition is asserted.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.9.1-03",
+   "reason": "not_applicable_to_dut",
+   "note": "gpio has no recoverable alert, only fatal_fault."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.1-04",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.1",
+  "sentences": [
+   "T1.9.1:s4",
+   "T1.9.1:s8",
+   "T1.9.1:s10"
+  ],
+  "strength": "MUST",
+  "statement": "A fatal alert sender must continuously transmit alert events until the system is reset.",
+  "checks": [
+   "CHK-016"
+  ],
+  "check_status": {
+   "CHK-016": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.1-05",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.1",
+  "sentences": [
+   "T1.9.1:s11"
+  ],
+  "strength": "SHOULD",
+  "statement": "Fatal alerts should also trigger local security countermeasures.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.9.1-05",
+   "reason": "design_guideline",
+   "note": "Recommendation on local countermeasures."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.1-07",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.1",
+  "sentences": [
+   "T1.9.1:s17",
+   "T1.9.1:s18"
+  ],
+  "strength": "MAY",
+  "statement": "A peripheral may optionally send a regular IRQ for any alert event.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.9.1-07",
+   "reason": "design_guideline",
+   "note": "MAY: optional IRQ for alerts."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.2-02",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.2",
+  "sentences": [
+   "T1.9.2:s4"
+  ],
+  "strength": "MUST",
+  "statement": "Recoverable alerts must be prefixed recov_ and fatal alerts must be prefixed fatal_.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.9.2-02",
+   "reason": "static_or_structural",
+   "note": "Alert naming (fatal_fault)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.2-03",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.2",
+  "sentences": [
+   "T1.9.2:s7",
+   "T1.9.2:s8"
+  ],
+  "strength": "MAY",
+  "statement": "Alert names may default to just recov and/or fatal, implying only one alert of that type is exposed.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.9.2-03",
+   "reason": "static_or_structural",
+   "note": "Alert naming option."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.3-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.3",
+  "sentences": [
+   "T1.9.3:s1",
+   "T1.9.3:s2"
+  ],
+  "strength": "MUST",
+  "statement": "Each peripheral has a write-only ALERT_TEST register for software to test alert reporting.",
+  "checks": [
+   "CHK-014",
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-014": "PASS",
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.3-02",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.3",
+  "sentences": [
+   "T1.9.3:s3"
+  ],
+  "strength": "MUST",
+  "statement": "Each alert has one field bit in ALERT_TEST, connected to the test input of the corresponding prim_alert_sender.",
+  "checks": [
+   "CHK-014"
+  ],
+  "check_status": {
+   "CHK-014": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.4-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.4",
+  "sentences": [
+   "T1.9.4:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Internal events are sent active-high to the prim_alert_sender within the peripheral.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.9.4-01",
+   "reason": "static_or_structural",
+   "note": "Internal connection to prim_alert_sender."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.4-02",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.4",
+  "sentences": [
+   "T1.9.4:s2"
+  ],
+  "strength": "MUST",
+  "statement": "One prim_alert_sender must be instantiated per distinct alert event, with IsFatal set to 1 for fatal alerts.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.9.4-02",
+   "reason": "static_or_structural",
+   "note": "Instantiation and IsFatal parameter. The fatal repeat behaviour is checked in CHK-016."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.4-03",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.4",
+  "sentences": [
+   "T1.9.4:s3"
+  ],
+  "strength": "MAY",
+  "statement": "The peripheral maintainer determines distinct alert events; multiple may be bundled.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.9.4-03",
+   "reason": "design_guideline",
+   "note": "Maintainer freedom in bundling."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.4-04",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.4",
+  "sentences": [
+   "T1.9.4:s4"
+  ],
+  "strength": "SHOULD",
+  "statement": "Each peripheral should bundle alert sources into one or two distinct alerts, e.g. one fatal and one recoverable.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.9.4-04",
+   "reason": "design_guideline",
+   "note": "Bundling recommendation."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.4-05",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.4",
+  "sentences": [
+   "T1.9.4:s6"
+  ],
+  "strength": "SHOULD",
+  "statement": "Comportable IPs with multiple bundled alerts should expose a cause register for disambiguation.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.9.4-05",
+   "reason": "design_guideline",
+   "note": "Cause register recommendation."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.4-06",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.4",
+  "sentences": [
+   "T1.9.4:s7"
+  ],
+  "strength": "MUST",
+  "statement": "Recoverable alert cause registers must be clearable by SW or automatically cleared by HW.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.9.4-06",
+   "reason": "not_applicable_to_dut",
+   "note": "gpio has no recoverable alerts or cause registers."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.4-07",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.4",
+  "sentences": [
+   "T1.9.4:s8"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "Fatal alert cause registers must not be clearable and must be read-only.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.9.4-07",
+   "reason": "not_applicable_to_dut",
+   "note": "gpio has no fatal alert cause register."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.4-08",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.4",
+  "sentences": [
+   "T1.9.4:s9"
+  ],
+  "strength": "MUST",
+  "statement": "The prim_alert_sender converts the event into a differentially encoded signal pair for the alert handler.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.9.4-08",
+   "reason": "covered_by_other_check",
+   "note": "The differential pair is internal. Correct encoding is seen through o_alert pulses and o_alert_integ_fail=0 (CHK-001, CHK-014, CHK-016)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.4.1-01",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.4.1",
+  "sentences": [
+   "T1.4.1:s3"
+  ],
+  "strength": "SHOULD",
+  "statement": "Accesses to unmapped addresses representable with the internal address bits typically return an error.",
+  "checks": [
+   "CHK-036"
+  ],
+  "check_status": {
+   "CHK-036": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.4.1-02",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.4.1",
+  "sentences": [
+   "T1.4.1:s5",
+   "T1.4.1:s6"
+  ],
+  "strength": "SHOULD",
+  "statement": "If the stripped address maps to a register, the request is forwarded to that register and no error is returned.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.4.1-02",
+   "reason": "not_applicable_to_dut",
+   "note": "D-012: requests at 0x400 and above are not used, so stripping of excess address bits is not exercised."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.4.1-04",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.4.1",
+  "sentences": [
+   "T1.4.1:s13"
+  ],
+  "strength": "MUST",
+  "statement": "An error response is returned when TL-UL a_opcode has an illegal value.",
+  "checks": [
+   "CHK-035"
+  ],
+  "check_status": {
+   "CHK-035": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.4.1-05",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.4.1",
+  "sentences": [
+   "T1.4.1:s14",
+   "T1.4.1:s17"
+  ],
+  "strength": "MUST",
+  "statement": "A write smaller than the register size returns an error.",
+  "checks": [
+   "CHK-033"
+  ],
+  "check_status": {
+   "CHK-033": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.4.1-06",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.4.1",
+  "sentences": [
+   "T1.4.1:s19",
+   "T1.4.1:s20"
+  ],
+  "strength": "MUST",
+  "statement": "Sub-word writes that are not word-aligned return an error.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.4.1-06",
+   "reason": "covered_by_other_check",
+   "note": "D-013 limits sub-word write checks to aligned byte writes (CHK-033). Unaligned sub-word writes are explicitly not checked."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.4.1-07",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.4.1",
+  "sentences": [
+   "T1.4.1:s21"
+  ],
+  "strength": "MUST",
+  "statement": "Reads smaller than a full word return the full register content and do not signal error.",
+  "checks": [
+   "CHK-034"
+  ],
+  "check_status": {
+   "CHK-034": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.4.1-08",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.4.1",
+  "sentences": [
+   "T1.4.1:s22"
+  ],
+  "strength": "MUST",
+  "statement": "Read response data is always in its byte channel, e.g. a byte read at 0x3 returns the full word with the correct byte in bits [31:24].",
+  "checks": [
+   "CHK-034"
+  ],
+  "check_status": {
+   "CHK-034": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.4.1-09",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.4.1",
+  "sentences": [
+   "T1.4.1:s26"
+  ],
+  "strength": "SHOULD",
+  "statement": "The error rules above should be followed for windows based on the declared number of validbits, though this may be relaxed in some cases.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.4.1-09",
+   "reason": "not_applicable_to_dut",
+   "note": "gpio has no memory windows."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.4.1-10",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.4.1",
+  "sentences": [
+   "T1.4.1:s27"
+  ],
+  "strength": "MAY",
+  "statement": "Errors need not be returned for unaligned sub-word writes.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.4.1-10",
+   "reason": "not_applicable_to_dut",
+   "note": "gpio has no memory windows."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.1-01",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.1",
+  "sentences": [
+   "T1.5.1:s6"
+  ],
+  "strength": "MUST",
+  "statement": "Software write enable and write data have the highest priority in modifying register contents.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.5.1-01",
+   "reason": "not_observable_at_interface",
+   "note": "Software/hardware priority in the same internal cycle cannot be lined up from the ports without knowing internal latency."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.1-02",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.1",
+  "sentences": [
+   "T1.5.1:s9",
+   "T1.5.1:s10"
+  ],
+  "strength": "MUST",
+  "statement": "Hardware can present updated values via de and d; when de is true the register content is updated with d.",
+  "checks": [
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.1-03",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.1",
+  "sentences": [
+   "T1.5.1:s11"
+  ],
+  "strength": "MUST",
+  "statement": "The software-written value is used.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.5.1-03",
+   "reason": "not_observable_at_interface",
+   "note": "Same-cycle de/we collision is internal timing."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.1-05",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.1",
+  "sentences": [
+   "T1.5.1:s18",
+   "T1.5.1:s19"
+  ],
+  "strength": "MUST",
+  "statement": "qe is a registered version of the bus-side we, aligned with the change in q.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.5.1-05",
+   "reason": "not_observable_at_interface",
+   "note": "hwqe/qe are internal signals."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.2-01",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.2",
+  "sentences": [
+   "T1.5.2:s10"
+  ],
+  "strength": "MUST",
+  "statement": "No de input is required from peripheral hardware; only d is added to the struct bundle.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.5.2-01",
+   "reason": "static_or_structural",
+   "note": "Structure of the hwext register bundle."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.2-02",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.2",
+  "sentences": [
+   "T1.5.2:s11"
+  ],
+  "strength": "MUST",
+  "statement": "qe timing is one cycle earlier than in the non-hwext model.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.5.2-02",
+   "reason": "not_observable_at_interface",
+   "note": "qe timing is internal."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.3-01",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.3",
+  "sentences": [
+   "T1.5.3:s1",
+   "T1.5.3:s2"
+  ],
+  "strength": "MUST",
+  "statement": "RO registers behave as RW registers with no wd and we inputs.",
+  "checks": [
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.3-02",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.3",
+  "sentences": [
+   "T1.5.3:s5"
+  ],
+  "strength": "MUST",
+  "statement": "A software read returns a hardwired value equal to the register default value.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.5.3-02",
+   "reason": "not_observable_at_interface",
+   "note": "Whether a ro register is hwext/hardwired is an implementation attribute. The read value of HW_STRAPS_DATA_IN with straps disabled is checked in CHK-032."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.4-01",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.4",
+  "sentences": [
+   "T1.5.4:s2"
+  ],
+  "strength": "MUST",
+  "statement": "When re indicates the register is being read, the contents are set to zero.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.5.4-01",
+   "reason": "not_applicable_to_dut",
+   "note": "gpio has no rc (read-clear) registers."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.4-02",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.4",
+  "sentences": [
+   "T1.5.4:s3"
+  ],
+  "strength": "SHOULD_NOT",
+  "statement": "RC registers are not recommended, except for backwards compatibility.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.5.4-02",
+   "reason": "design_guideline",
+   "note": "Advice against rc registers."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.4-03",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.4",
+  "sentences": [
+   "T1.5.4:s4",
+   "T1.5.4:s5"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "hwext must not be true for RC registers since re is not exported.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.5.4-03",
+   "reason": "static_or_structural",
+   "note": "Register tool configuration restriction."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.5-01",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.5",
+  "sentences": [
+   "T1.5.5:s2"
+  ],
+  "strength": "SHOULD",
+  "statement": "hwext should be set to true so outside hardware handles the write event.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.5.5-01",
+   "reason": "design_guideline",
+   "note": "Implementation advice for wo registers."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.6-01",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.6",
+  "sentences": [
+   "T1.5.6:s1"
+  ],
+  "strength": "MUST",
+  "statement": "These types are implemented with special prim_subreg configuration so writing sets values in type-specific ways.",
+  "checks": [
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.6.1-01",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.6.1",
+  "sentences": [
+   "T1.5.6.1:s1",
+   "T1.5.6.1:s2"
+  ],
+  "strength": "MUST",
+  "statement": "The subreg must handle simultaneous hardware and software writes, with software taking precedence as for the RW type.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.5.6.1-01",
+   "reason": "not_observable_at_interface",
+   "note": "Simultaneous hardware/software write to a rw1c subreg needs internal cycle alignment. The visible W1C behaviour is covered by CHK-022/CHK-023."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.6.1-03",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.6.1",
+  "sentences": [
+   "T1.5.6.1:s8",
+   "T1.5.6.1:s9",
+   "T1.5.6.1:s10"
+  ],
+  "strength": "SHOULD",
+  "statement": "Hardware should feed the q value back into d, only setting bits with new events, to avoid collisions with software clearing.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.5.6.1-03",
+   "reason": "design_guideline",
+   "note": "Recommendation for hardware d feedback."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.6.1-04",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.6.1",
+  "sentences": [
+   "T1.5.6.1:s11",
+   "T1.5.6.1:s12"
+  ],
+  "strength": "MAY",
+  "statement": "Hardware may drive d and de to clear or set bits as it sees fit, including clearing all events, rather than set-only.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.5.6.1-04",
+   "reason": "design_guideline",
+   "note": "MAY: implementation freedom."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.6.1-05",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.6.1",
+  "sentences": [
+   "T1.5.6.1:s16",
+   "T1.5.6.1:s17"
+  ],
+  "strength": "MUST",
+  "statement": "The software clear must still take effect for one cycle to create a new interrupt edge, after which q returns to 1 since d is still 1.",
+  "checks": [
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-023": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.6.2-01",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.6.2",
+  "sentences": [
+   "T1.5.6.2:s1"
+  ],
+  "strength": "MAY",
+  "statement": "RW1C, RW1S and similar register types may be created with hwext true.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.5.6.2-01",
+   "reason": "static_or_structural",
+   "note": "Register attribute legality."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.6.2-02",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.6.2",
+  "sentences": [
+   "T1.5.6.2:s5"
+  ],
+  "strength": "MAY",
+  "statement": "hwqe may be set true for RW1C, RW1S and similar register types.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.5.6.2-02",
+   "reason": "static_or_structural",
+   "note": "Register attribute legality."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AH-T1.3.1-02",
+  "spec_refs": [],
+  "doc": "opentitan_alert_handler_theory_of_operation.md",
+  "section": "T1.3.1",
+  "sentences": [
+   "T1.3.1:s3"
+  ],
+  "strength": "SHOULD",
+  "statement": "Peripherals defining alerts must instantiate a prim_alert_sender to convert the alert event into a signal to the alert handler.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AH-T1.3.1-02",
+   "reason": "static_or_structural",
+   "note": "Instantiation of prim_alert_sender."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AH-T1.3.2-01",
+  "spec_refs": [],
+  "doc": "opentitan_alert_handler_theory_of_operation.md",
+  "section": "T1.3.2",
+  "sentences": [
+   "T1.3.2:s2",
+   "T1.3.2:s7"
+  ],
+  "strength": "MUST",
+  "statement": "Alerts are differentially encoded and signaled with a full handshake on alert_p/n and ack_p/n, repeated as long as the alert is true.",
+  "checks": [
+   "CHK-014",
+   "CHK-016"
+  ],
+  "check_status": {
+   "CHK-014": "PASS",
+   "CHK-016": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 1,
+   "survived": [
+    "M21"
+   ],
+   "claimed_equivalent": [],
+   "score": 50.0,
+   "meets_threshold": false
+  }
+ },
+ {
+  "rule": "AH-T1.3.2-02",
+  "spec_refs": [],
+  "doc": "opentitan_alert_handler_theory_of_operation.md",
+  "section": "T1.3.2",
+  "sentences": [
+   "T1.3.2:s4"
+  ],
+  "strength": "MUST",
+  "statement": "The full handshake must back-pressure alert messages correctly so no alert is lost at the asynchronous boundary regardless of clock ratio.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AH-T1.3.2-02",
+   "reason": "not_applicable_to_dut",
+   "note": "Sender and receiver share clk_i in the wrapper; there is no asynchronous boundary."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AH-T1.3.2-03",
+  "spec_refs": [],
+  "doc": "opentitan_alert_handler_theory_of_operation.md",
+  "section": "T1.3.2",
+  "sentences": [
+   "T1.3.2:s5"
+  ],
+  "strength": "MUST",
+  "statement": "The native alert message is repeated on the output wires as long as the alert event remains true.",
+  "checks": [
+   "CHK-016"
+  ],
+  "check_status": {
+   "CHK-016": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 1,
+   "survived": [
+    "M21"
+   ],
+   "claimed_equivalent": [],
+   "score": 50.0,
+   "meets_threshold": false
+  }
+ },
+ {
+  "rule": "AH-T1.3.2-04",
+  "spec_refs": [],
+  "doc": "opentitan_alert_handler_theory_of_operation.md",
+  "section": "T1.3.2",
+  "sentences": [
+   "T1.3.2:s8"
+  ],
+  "strength": "MUST",
+  "statement": "The sender waits 2 cycles between handshakes.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AH-T1.3.2-04",
+   "reason": "not_observable_at_interface",
+   "note": "The handshake pause is inside the diff-pair protocol. Only the bounds on o_alert pulse spacing are checked (CHK-016)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AH-T1.3.2-05",
+  "spec_refs": [],
+  "doc": "opentitan_alert_handler_theory_of_operation.md",
+  "section": "T1.3.2",
+  "sentences": [
+   "T1.3.2:s9",
+   "T1.3.2:s10"
+  ],
+  "strength": "MUST",
+  "statement": "The receiver must immediately propagate the first alert occurrence to alert_o after synchronizing the initial level change on alert_tx_i.alert_p/n.",
+  "checks": [
+   "CHK-014"
+  ],
+  "check_status": {
+   "CHK-014": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AH-T1.3.2-06",
+  "spec_refs": [],
+  "doc": "opentitan_alert_handler_theory_of_operation.md",
+  "section": "T1.3.2",
+  "sentences": [
+   "T1.3.2:s12"
+  ],
+  "strength": "MAY",
+  "statement": "The alert sender and receiver modules can be used either synchronously or asynchronously.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AH-T1.3.2-06",
+   "reason": "static_or_structural",
+   "note": "MAY: synchronous or asynchronous instantiation."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AH-T1.3.2-07",
+  "spec_refs": [],
+  "doc": "opentitan_alert_handler_theory_of_operation.md",
+  "section": "T1.3.2",
+  "sentences": [
+   "T1.3.2:s13"
+  ],
+  "strength": "MAY",
+  "statement": "The signaling protocol remains the same in both synchronous and asynchronous use; synchronizer flops at the diff pair inputs may be omitted.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AH-T1.3.2-07",
+   "reason": "static_or_structural",
+   "note": "MAY: synchronizer flops omitted."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AH-T1.3.4-01",
+  "spec_refs": [],
+  "doc": "opentitan_alert_handler_theory_of_operation.md",
+  "section": "T1.3.4",
+  "sentences": [
+   "T1.3.4:s1",
+   "T1.3.4:s3",
+   "T1.3.4:s4"
+  ],
+  "strength": "MUST",
+  "statement": "The receiver must assert integ_fail_o when alert_tx_i.alert_p/n is incorrectly encoded.",
+  "checks": [
+   "CHK-001"
+  ],
+  "check_status": {
+   "CHK-001": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "AH-T1.3.4-02",
+  "spec_refs": [],
+  "doc": "opentitan_alert_handler_theory_of_operation.md",
+  "section": "T1.3.4",
+  "sentences": [
+   "T1.3.4:s1",
+   "T1.3.4:s5",
+   "T1.3.4:s6",
+   "T1.3.4:s7"
+  ],
+  "strength": "MUST",
+  "statement": "The sender must set alert_tx_o.alert_p/n to the same continuously toggling value, causing the receiver to assert integ_fail_o.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AH-T1.3.4-02",
+   "reason": "not_observable_at_interface",
+   "note": "Designer decision: sender-side encoding error signalling is not observable except via o_alert_integ_fail, which must stay 0 (CHK-001)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AH-T1.3.4-03",
+  "spec_refs": [],
+  "doc": "opentitan_alert_handler_theory_of_operation.md",
+  "section": "T1.3.4",
+  "sentences": [
+   "T1.3.4:s9",
+   "T1.3.4:s10"
+  ],
+  "strength": "MUST",
+  "statement": "A protocol lock-up must always trigger either a signal integrity alert or eventually a pingfail alert.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AH-T1.3.4-03",
+   "reason": "not_applicable_to_dut",
+   "note": "Designer decision: no ping requests (INT-CFG-003), so pingfail and lock-up are not checked."
+  },
+  "mutation": null
+ }
+]

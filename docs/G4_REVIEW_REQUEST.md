@@ -112,6 +112,19 @@ Triage judged it a missing environment assumption (E). The formal-environment ag
 - Three surviving mutants change behaviour, but only in cases the decisions leave unchecked: instruction fetches (M01, D-011), `d_data` of error responses (M14, D-015), and alert timing after an integrity error (M19, D-010). Should any of these become checked?
 - Per-requirement mutation is below 85 % for 9 rules, mostly alert and integrity rules.
 
+### A second OpenTitan IP: gpio
+
+| Design | Packet | State | Main questions for you |
+|---|---|---|---|
+| ot_gpio | [packet](../designs/ot_gpio/work/review_packet.md), [spec](../designs/ot_gpio/spec/gpio_Design_Specification.md) (decisions D-001..D-022 in §10), [triage](../designs/ot_gpio/work/triage.md), [CHK-003 formal counterexample and its fix](../designs/ot_gpio/work/verif_fix/verif_fix.md), [A17 changes](../designs/ot_gpio/NOTICE.md) | 26/26 tests, 13/13 assertions in 5 runs (4 configurations); formal 10 proven, 1 timeout (CHK-013), 2 simulation-only, no counterexample; mutation 21/36, of the 15 survivors 9 proven equivalent (77.8 % without them); no hand fix | The OpenTitan RTL is unchanged; only the wrapper `ot_gpio_nnc.sv` was written here. Are the delegated decisions D-001..D-022 sound readings of the OpenTitan documents? Are the A17 changes (3 simulation failures, 1 formal counterexample, all judged verification faults) corrections, not relaxations? See below. |
+
+**ot_gpio, questions.**
+- **CHK-006, when does a register write take effect?** No document says whether a write to `INTR_ENABLE` takes effect at the TL-UL request (A handshake) or at its response (D handshake). The RTL applies it at the request. A17 changed CHK-006 so that bits an outstanding write sets from 0 to 1 are not checked until its response. Is that window acceptable, or should the specification bind the A handshake?
+- **CHK-003, may the alert come before the request is accepted?** OpenTitan raises the integrity alert while a request with a bad command integrity is presented (`a_valid` = 1), before it is accepted. D-017 only bounds the alert from acceptance. CHK-003 now counts the request from `a_valid`. Is that the intended reading?
+- **D-002, D-004, D-007:** the documents disagree on `MASKED_OE_*` bits 31:16 (text: read 0, field table: rw), on whether `INTR_ENABLE` gates detection or only the output, and do not give the exact input filter threshold. Only what every reading has in common is checked. Should any of these be decided?
+- Four surviving mutants change behaviour, each in a case the decisions leave unchecked: instruction fetches (M12, D-011), `d_error` in the first cycle after reset when no response is valid (M15), the input path in the first cycles after reset (M02, D-003/D-008), and the timing of later alert pulses (M21, D-010/D-017). Should any of these become checked?
+- Per-requirement mutation is below 85 % for 13 rules, mostly alert, integrity and filter rules. CHK-013 did not finish in formal within 600 s per task; it passes in simulation.
+
 ## What the evidence is, and is not
 
 - **It is:**

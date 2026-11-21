@@ -1,0 +1,6203 @@
+{
+ "version": 1,
+ "doc": {
+  "file": "gpio_Design_Specification.md",
+  "sha256": "cb9e069f603bd62cfed438b7227832240ac086152f58cabb4424541189d68925",
+  "length": 1169,
+  "location": "line"
+ },
+ "sections": [
+  {
+   "id": "front",
+   "title": "Front matter",
+   "level": 0,
+   "parent": null,
+   "page_start": 1,
+   "page_end": 1,
+   "sentences": []
+  },
+  {
+   "id": "T1",
+   "title": "GPIO HWIP Technical Specification",
+   "level": 1,
+   "parent": null,
+   "page_start": 12,
+   "page_end": 12,
+   "sentences": []
+  },
+  {
+   "id": "T2",
+   "title": "Overview",
+   "level": 1,
+   "parent": null,
+   "page_start": 14,
+   "page_end": 16,
+   "sentences": [
+    {
+     "id": "T2:s1",
+     "text": "This document specifies GPIO hardware IP functionality.",
+     "page": 16,
+     "normative": false
+    },
+    {
+     "id": "T2:s2",
+     "text": "This module conforms to the Comportable guideline for peripheral device functionality See that document for integration overview within the broader top level system.",
+     "page": 16,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T2.1",
+   "title": "Features",
+   "level": 2,
+   "parent": "T2",
+   "page_start": 22,
+   "page_end": 28,
+   "sentences": [
+    {
+     "id": "T2.1:s1",
+     "text": "32 GPIO ports",
+     "page": 24,
+     "normative": false
+    },
+    {
+     "id": "T2.1:s2",
+     "text": "Configurable interrupt per GPIO for detecting rising edge, falling edge, or active low/high input",
+     "page": 25,
+     "normative": false
+    },
+    {
+     "id": "T2.1:s3",
+     "text": "Two ways to update GPIO output: direct-write and masked (thread-safe) update",
+     "page": 27,
+     "normative": false
+    },
+    {
+     "id": "T2.1:s4",
+     "text": "Second, per-pin register view to assign individual GPIOs to different software components, e.g., CHERIoT compartments",
+     "page": 28,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T2.2",
+   "title": "Description",
+   "level": 2,
+   "parent": "T2",
+   "page_start": 31,
+   "page_end": 61,
+   "sentences": [
+    {
+     "id": "T2.2:s1",
+     "text": "The GPIO block allows software to communicate through general purpose I/O pins in a flexible manner.",
+     "page": 33,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s2",
+     "text": "Each of 32 independent bits can be written as peripheral outputs in two modes.",
+     "page": 33,
+     "normative": true
+    },
+    {
+     "id": "T2.2:s3",
+     "text": "Each of the 32 bits can be read by software as peripheral inputs.",
+     "page": 33,
+     "normative": true
+    },
+    {
+     "id": "T2.2:s4",
+     "text": "How these peripheral inputs and outputs are connected to the chip IO is not within the scope of this document.",
+     "page": 33,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s5",
+     "text": "See the Comportability Specification for peripheral IO options at the top chip level.",
+     "page": 33,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s6",
+     "text": "In the output direction, this module provides direct 32b access to each GPIO value using direct write.",
+     "page": 41,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s7",
+     "text": "This mode allows software to control all GPIO bits simultaneously.",
+     "page": 41,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s8",
+     "text": "Alternately, this module provides masked writes to half of the bits at a time, allowing software to affect the output value of a subset of the bits without requiring a read-modify-write.",
+     "page": 41,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s9",
+     "text": "In this mode the user provides a mask of which of the 16 bits are to be modified, along with their new value.",
+     "page": 41,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s10",
+     "text": "The details of this mode are given in the Programmers Guide below.",
+     "page": 41,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s11",
+     "text": "In the input direction, software can read the contents of any of the GPIO peripheral inputs.",
+     "page": 50,
+     "normative": true
+    },
+    {
+     "id": "T2.2:s12",
+     "text": "In addition, software can request the detection of an interrupt event for any of the 32 bits in a configurable manner.",
+     "page": 50,
+     "normative": true
+    },
+    {
+     "id": "T2.2:s13",
+     "text": "The choices are positive edge, negative edge or level detection events.",
+     "page": 50,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s14",
+     "text": "A noise filter is available through configuration for any of the 32 GPIO inputs.",
+     "page": 50,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s15",
+     "text": "This requires the input to be stable for 16 cycles of the module clock before the input register reflects the change and interrupt generation is evaluated.",
+     "page": 50,
+     "normative": true
+    },
+    {
+     "id": "T2.2:s16",
+     "text": "Note that if the filter is enabled and the pin is set to output then there will be a corresponding delay in a change in output value being reflected in the input register.",
+     "page": 50,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s17",
+     "text": "See the Design Details section for more details on the features.",
+     "page": 61,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3",
+   "title": "Theory of Operation",
+   "level": 1,
+   "parent": null,
+   "page_start": 65,
+   "page_end": 65,
+   "sentences": []
+  },
+  {
+   "id": "T3.1",
+   "title": "Block Diagram",
+   "level": 2,
+   "parent": "T3",
+   "page_start": 67,
+   "page_end": 71,
+   "sentences": [
+    {
+     "id": "T3.1:s1",
+     "text": "The block diagram above shows the DATA_OUT and DATA_OE registers managed by hardware outside of the auto-generated register file.",
+     "page": 71,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s2",
+     "text": "For reference, it also shows the assumed connections to pads in the top level netlist.",
+     "page": 71,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3.2",
+   "title": "Design Details",
+   "level": 2,
+   "parent": "T3",
+   "page_start": 76,
+   "page_end": 76,
+   "sentences": []
+  },
+  {
+   "id": "T3.2.1",
+   "title": "GPIO Output logic",
+   "level": 3,
+   "parent": "T3.2",
+   "page_start": 78,
+   "page_end": 111,
+   "sentences": [
+    {
+     "id": "T3.2.1:s1",
+     "text": "The GPIO module maintains one 32-bit output register DATA_OUT with two ways to write to it.",
+     "page": 82,
+     "normative": false
+    },
+    {
+     "id": "T3.2.1:s2",
+     "text": "Direct write access uses DIRECT_OUT, and masked access uses MASKED_OUT_UPPER and MASKED_OUT_LOWER.",
+     "page": 82,
+     "normative": false
+    },
+    {
+     "id": "T3.2.1:s3",
+     "text": "Direct access provides full write and read access for all 32 bits in one register.",
+     "page": 82,
+     "normative": false
+    },
+    {
+     "id": "T3.2.1:s4",
+     "text": "For masked access the bits to modify are given as a mask in the upper 16 bits of the MASKED_OUT_UPPER and MASKED_OUT_LOWER register write, while the data to write is provided in the lower 16 bits of the register write.",
+     "page": 88,
+     "normative": false
+    },
+    {
+     "id": "T3.2.1:s5",
+     "text": "The hardware updates DATA_OUT with the mask so that the modification is done without software requiring a Read-Modify-Write.",
+     "page": 88,
+     "normative": false
+    },
+    {
+     "id": "T3.2.1:s6",
+     "text": "Reads of masked registers return the lower/upper 16 bits of the DATA_OUT contents.",
+     "page": 95,
+     "normative": false
+    },
+    {
+     "id": "T3.2.1:s7",
+     "text": "Zeros are returned in the upper 16 bits (mask field).",
+     "page": 95,
+     "normative": false
+    },
+    {
+     "id": "T3.2.1:s8",
+     "text": "To read what is on the pins, software should read the DATA_IN register.",
+     "page": 95,
+     "normative": true
+    },
+    {
+     "id": "T3.2.1:s9",
+     "text": "(See GPIO Input section below).",
+     "page": 95,
+     "normative": false
+    },
+    {
+     "id": "T3.2.1:s10",
+     "text": "The same concept is duplicated for the output enable register DATA_OE.",
+     "page": 100,
+     "normative": false
+    },
+    {
+     "id": "T3.2.1:s11",
+     "text": "Direct access uses DIRECT_OE, and masked access is available using MASKED_OE_UPPER and MASKED_OE_LOWER.",
+     "page": 100,
+     "normative": false
+    },
+    {
+     "id": "T3.2.1:s12",
+     "text": "The output enable is sent to the pad control block to determine if the pad should drive the DATA_OUT value to the associated pin or not.",
+     "page": 104,
+     "normative": true
+    },
+    {
+     "id": "T3.2.1:s13",
+     "text": "A typical use pattern is for initialization and suspend/resume code to use the full access registers to set the output enables and current output values, then switch to masked access for both DATA_OUT and DATA_OE.",
+     "page": 107,
+     "normative": false
+    },
+    {
+     "id": "T3.2.1:s14",
+     "text": "For GPIO outputs that are not used (either not wired to a pin output or not selected for pin multiplexing), the output values are disconnected and have no effect on the GPIO input, regardless of output enable values.",
+     "page": 111,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3.2.2",
+   "title": "Per-Pin Register View",
+   "level": 3,
+   "parent": "T3.2",
+   "page_start": 115,
+   "page_end": 129,
+   "sentences": [
+    {
+     "id": "T3.2.2:s1",
+     "text": "In addition to the 32-bit registers, which group the GPIOs by function, the GPIO module provides a second register view that groups them by pin.",
+     "page": 117,
+     "normative": false
+    },
+    {
+     "id": "T3.2.2:s2",
+     "text": "This view allows assigning individual GPIOs to different software components, for example to CHERIoT compartments, by granting each component access to only the registers of its GPIOs.",
+     "page": 117,
+     "normative": false
+    },
+    {
+     "id": "T3.2.2:s3",
+     "text": "Both views alias the same state, and a write to a per-pin register only affects the GPIO it belongs to.",
+     "page": 117,
+     "normative": false
+    },
+    {
+     "id": "T3.2.2:s4",
+     "text": "The per-pin view consists of two separate, aligned address ranges, so access to the data of a GPIO can be granted without access to its configuration:",
+     "page": 121,
+     "normative": true
+    },
+    {
+     "id": "T3.2.2:s5",
+     "text": "PER_PIN_IO holds one register per GPIO with bit i of DATA_OUT and of DATA_IN.",
+     "page": 123,
+     "normative": false
+    },
+    {
+     "id": "T3.2.2:s6",
+     "text": "The configuration range holds two registers per GPIO, which directly follow one another: PER_PIN_OE_0 with bit 0 of DATA_OE, PER_PIN_INTR_CTRL_0 with bit 0 of the interrupt control and input filter registers, then PER_PIN_OE_1, PER_PIN_INTR_CTRL_1, and so on.",
+     "page": 124,
+     "normative": false
+    },
+    {
+     "id": "T3.2.2:s7",
+     "text": "A register write must cover all bytes of the register that hold a field, so access cannot be granted to only some fields of a register.",
+     "page": 126,
+     "normative": true
+    },
+    {
+     "id": "T3.2.2:s8",
+     "text": "The output enable and the interrupt configuration of a GPIO are therefore in separate registers, so access to one can be granted without the other.",
+     "page": 126,
+     "normative": true
+    },
+    {
+     "id": "T3.2.2:s9",
+     "text": "The interrupt registers INTR_STATE, INTR_ENABLE and INTR_TEST have no per-pin view.",
+     "page": 129,
+     "normative": false
+    },
+    {
+     "id": "T3.2.2:s10",
+     "text": "Like the interrupt controller, they are expected to be managed by a trusted software component, for example a trusted CHERIoT compartment, which handles the GPIO interrupts on behalf of the components owning the GPIOs.",
+     "page": 129,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3.2.3",
+   "title": "GPIO Input",
+   "level": 3,
+   "parent": "T3.2",
+   "page_start": 132,
+   "page_end": 146,
+   "sentences": [
+    {
+     "id": "T3.2.3:s1",
+     "text": "The DATA_IN register returns the contents as seen on the peripheral input, typically from the pads connected to those inputs.",
+     "page": 134,
+     "normative": false
+    },
+    {
+     "id": "T3.2.3:s2",
+     "text": "In the presence of a pin-multiplexing unit, GPIO peripheral inputs that are not connected to a chip input will be tied to a constant zero input.",
+     "page": 134,
+     "normative": false
+    },
+    {
+     "id": "T3.2.3:s3",
+     "text": "The GPIO module provides optional independent noise filter control for each of the 32 input signals.",
+     "page": 139,
+     "normative": true
+    },
+    {
+     "id": "T3.2.3:s4",
+     "text": "Each input can be independently enabled with the CTRL_EN_INPUT_FILTER (one bit per input).",
+     "page": 139,
+     "normative": true
+    },
+    {
+     "id": "T3.2.3:s5",
+     "text": "This 16-cycle filter is applied to both the DATA_IN register and the interrupt detection logic.",
+     "page": 139,
+     "normative": false
+    },
+    {
+     "id": "T3.2.3:s6",
+     "text": "The timing for DATA_IN is still not instantaneous if CTRL_EN_INPUT_FILTER is false as there is still both top-level routing delay and input CDC synchronizer delay involved.",
+     "page": 139,
+     "normative": false
+    },
+    {
+     "id": "T3.2.3:s7",
+     "text": "The top-level routing delay depends on the physical layout of the chip.",
+     "page": 139,
+     "normative": false
+    },
+    {
+     "id": "T3.2.3:s8",
+     "text": "The input synchronizer adds two flops between the chip input and the DATA_IN register, though the added delay may vary by up to one GPIO clock cycle depending on when cycle each external input transition arrives relative to the GPIO clock.",
+     "page": 139,
+     "normative": false
+    },
+    {
+     "id": "T3.2.3:s9",
+     "text": "The contents of DATA_IN are always readable and reflect the value seen at the chip input pad regardless of the output enable setting from DATA_OE.",
+     "page": 146,
+     "normative": true
+    },
+    {
+     "id": "T3.2.3:s10",
+     "text": "If the output enable is true (and the GPIO is connected to a chip-level pad), the value read from DATA_IN includes the effect of the peripheral's driven output and will only differ from DATA_OUT if the output driver is unable to switch the pin or during the delay imposed by the input synchronizer and noise filter (if enabled).",
+     "page": 146,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3.2.3.1",
+   "title": "GPIO Inputs as HW Straps",
+   "level": 4,
+   "parent": "T3.2.3",
+   "page_start": 149,
+   "page_end": 151,
+   "sentences": [
+    {
+     "id": "T3.2.3.1:s1",
+     "text": "The GPIO controller provides an optional feature to sample GPIO input values as hardware configuration straps.",
+     "page": 151,
+     "normative": true
+    },
+    {
+     "id": "T3.2.3.1:s2",
+     "text": "After each reset, on the first cycle when the strap_en_i signal is asserted, the GPIO detects its transition from low to high.",
+     "page": 151,
+     "normative": false
+    },
+    {
+     "id": "T3.2.3.1:s3",
+     "text": "One clock cycle later, it samples the GPIO input values and stores them in the HW_STRAPS_DATA_IN register.",
+     "page": 151,
+     "normative": false
+    },
+    {
+     "id": "T3.2.3.1:s4",
+     "text": "The strap_en_i signal transition from low to high is expected only once after the reset process.",
+     "page": 151,
+     "normative": false
+    },
+    {
+     "id": "T3.2.3.1:s5",
+     "text": "Sampling occurs exclusively at this time, and any subsequent changes to the GPIO input configuration will not be captured.",
+     "page": 151,
+     "normative": false
+    },
+    {
+     "id": "T3.2.3.1:s6",
+     "text": "This mechanism samples all 32 bits of the GPIO input data, regardless of the GPIO output enable status, providing a reliable snapshot of the input values for firmware access.",
+     "page": 151,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3.2.4",
+   "title": "Interrupts",
+   "level": 3,
+   "parent": "T3.2",
+   "page_start": 159,
+   "page_end": 180,
+   "sentences": [
+    {
+     "id": "T3.2.4:s1",
+     "text": "The GPIO module provides 32 interrupt signals to the main processor.",
+     "page": 161,
+     "normative": false
+    },
+    {
+     "id": "T3.2.4:s2",
+     "text": "Each interrupt can be independently enabled, tested, and configured.",
+     "page": 161,
+     "normative": true
+    },
+    {
+     "id": "T3.2.4:s3",
+     "text": "Following the standard interrupt guidelines in the Comportability Specification, the 32 bits of the INTR_ENABLE register determines whether the associated inputs are configured to detect interrupt events.",
+     "page": 161,
+     "normative": false
+    },
+    {
+     "id": "T3.2.4:s4",
+     "text": "If enabled via the various INTR_CTRL_EN registers, their current state can be read in the INTR_STATE register.",
+     "page": 161,
+     "normative": true
+    },
+    {
+     "id": "T3.2.4:s5",
+     "text": "Clearing is done by writing a 1 into the associated INTR_STATE bit field.",
+     "page": 161,
+     "normative": false
+    },
+    {
+     "id": "T3.2.4:s6",
+     "text": "For configuration, there are 4 types of interrupts available per bit, controlled with four control registers.",
+     "page": 171,
+     "normative": false
+    },
+    {
+     "id": "T3.2.4:s7",
+     "text": "INTR_CTRL_EN_RISING configures the associated input for rising-edge detection.",
+     "page": 171,
+     "normative": false
+    },
+    {
+     "id": "T3.2.4:s8",
+     "text": "Similarly, INTR_CTRL_EN_FALLING detects falling edge inputs.",
+     "page": 171,
+     "normative": false
+    },
+    {
+     "id": "T3.2.4:s9",
+     "text": "INTR_CTRL_EN_LVLHIGH and INTR_CTRL_EN_LVLLOW allow the input to be level sensitive interrupts.",
+     "page": 171,
+     "normative": false
+    },
+    {
+     "id": "T3.2.4:s10",
+     "text": "In theory an input can be configured to detect both a rising and falling edge, but there is no hardware assistance to indicate which edge caused the output interrupt.",
+     "page": 171,
+     "normative": true
+    },
+    {
+     "id": "T3.2.4:s11",
+     "text": "Note #1: The interrupt can only be triggered by GPIO input.",
+     "page": 180,
+     "normative": true
+    },
+    {
+     "id": "T3.2.4:s12",
+     "text": "Note #2: All inputs are sent through optional noise filtering before being sent into interrupt detection.",
+     "page": 180,
+     "normative": true
+    },
+    {
+     "id": "T3.2.4:s13",
+     "text": "Note #3: All interrupts to the processor are level interrupts as per the Comportability Specification guidelines.",
+     "page": 180,
+     "normative": false
+    },
+    {
+     "id": "T3.2.4:s14",
+     "text": "The GPIO module, if configured, converts an edge detection into a level interrupt to the processor core.",
+     "page": 180,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T4",
+   "title": "Programmer's Guide",
+   "level": 1,
+   "parent": null,
+   "page_start": 187,
+   "page_end": 187,
+   "sentences": []
+  },
+  {
+   "id": "T4.1",
+   "title": "Initialization",
+   "level": 2,
+   "parent": "T4",
+   "page_start": 189,
+   "page_end": 191,
+   "sentences": [
+    {
+     "id": "T4.1:s1",
+     "text": "Initialization of the GPIO module includes the setting up of the interrupt configuration for each GPIO input, as well as the configuration of the required noise filtering.",
+     "page": 191,
+     "normative": true
+    },
+    {
+     "id": "T4.1:s2",
+     "text": "These do not provide masked access since they are not expected to be done frequently.",
+     "page": 191,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T4.2",
+   "title": "Common Examples",
+   "level": 2,
+   "parent": "T4",
+   "page_start": 209,
+   "page_end": 211,
+   "sentences": [
+    {
+     "id": "T4.2:s1",
+     "text": "This section below shows the interaction between the direct access and mask access for data output and data enable.",
+     "page": 211,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T4.3",
+   "title": "Interrupt Handling",
+   "level": 2,
+   "parent": "T4",
+   "page_start": 259,
+   "page_end": 261,
+   "sentences": [
+    {
+     "id": "T4.3:s1",
+     "text": "This section below gives an example of how interrupt clearing works, assuming some events have occurred as shown in comments.",
+     "page": 261,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T4.4",
+   "title": "Per-Pin Register View",
+   "level": 2,
+   "parent": "T4",
+   "page_start": 307,
+   "page_end": 321,
+   "sentences": [
+    {
+     "id": "T4.4:s1",
+     "text": "Use the per-pin register view when individual GPIOs belong to different software components, for example CHERIoT compartments.",
+     "page": 309,
+     "normative": false
+    },
+    {
+     "id": "T4.4:s2",
+     "text": "Grant each component access to only the per-pin registers of its GPIOs, and keep using the 32-bit registers in software that manages all GPIOs, for example during initialization.",
+     "page": 309,
+     "normative": false
+    },
+    {
+     "id": "T4.4:s3",
+     "text": "The per-pin registers of GPIO i are:",
+     "page": 309,
+     "normative": false
+    },
+    {
+     "id": "T4.4:s4",
+     "text": "PER_PIN_IO_i at offset 0x100 + 4 * i: data_out in bit 0 and the read-only data_in in bit 8.",
+     "page": 313,
+     "normative": false
+    },
+    {
+     "id": "T4.4:s5",
+     "text": "PER_PIN_OE_i at offset 0x200 + 8 * i: oe in bit 0.",
+     "page": 314,
+     "normative": false
+    },
+    {
+     "id": "T4.4:s6",
+     "text": "PER_PIN_INTR_CTRL_i at offset 0x204 + 8 * i: the rising-edge, falling-edge, level-high and level-low interrupt enables in bits 0 to 3, and the input filter enable in bit 4.",
+     "page": 315,
+     "normative": false
+    },
+    {
+     "id": "T4.4:s7",
+     "text": "PER_PIN_IO_i has fields in bytes 0 and 1, so a write to it must cover both bytes, i.e., be at least 16 bits wide.",
+     "page": 317,
+     "normative": true
+    },
+    {
+     "id": "T4.4:s8",
+     "text": "A byte write returns an error and has no effect, so a capability for PER_PIN_IO_i must cover at least these two bytes.",
+     "page": 317,
+     "normative": true
+    },
+    {
+     "id": "T4.4:s9",
+     "text": "PER_PIN_OE_i and PER_PIN_INTR_CTRL_i also accept byte writes.",
+     "page": 317,
+     "normative": false
+    },
+    {
+     "id": "T4.4:s10",
+     "text": "The interrupt registers INTR_STATE, INTR_ENABLE and INTR_TEST have no per-pin view.",
+     "page": 321,
+     "normative": false
+    },
+    {
+     "id": "T4.4:s11",
+     "text": "They are expected to be managed by a trusted component, which handles the GPIO interrupts on behalf of the components owning the GPIOs.",
+     "page": 321,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T4.5",
+   "title": "Device Interface Functions (DIFs)",
+   "level": 2,
+   "parent": "T4",
+   "page_start": 334,
+   "page_end": 336,
+   "sentences": [
+    {
+     "id": "T4.5:s1",
+     "text": "Device Interface Functions",
+     "page": 336,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5",
+   "title": "Registers",
+   "level": 1,
+   "parent": null,
+   "page_start": 340,
+   "page_end": 340,
+   "sentences": []
+  },
+  {
+   "id": "T5.1",
+   "title": "Summary",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 343,
+   "page_end": 460,
+   "sentences": [
+    {
+     "id": "T5.1:s1",
+     "text": "Name: gpio.INTR_STATE; Offset: 0x0; Length: 4; Description: Interrupt State Register",
+     "page": 347,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s2",
+     "text": "Name: gpio.INTR_ENABLE; Offset: 0x4; Length: 4; Description: Interrupt Enable Register",
+     "page": 348,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s3",
+     "text": "Name: gpio.INTR_TEST; Offset: 0x8; Length: 4; Description: Interrupt Test Register",
+     "page": 349,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s4",
+     "text": "Name: gpio.ALERT_TEST; Offset: 0xc; Length: 4; Description: Alert Test Register",
+     "page": 350,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s5",
+     "text": "Name: gpio.DATA_IN; Offset: 0x10; Length: 4; Description: GPIO Input data read value",
+     "page": 351,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s6",
+     "text": "Name: gpio.DIRECT_OUT; Offset: 0x14; Length: 4; Description: GPIO direct output data write value",
+     "page": 352,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s7",
+     "text": "Name: gpio.MASKED_OUT_LOWER; Offset: 0x18; Length: 4; Description: GPIO write data lower with mask.",
+     "page": 353,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s8",
+     "text": "Name: gpio.MASKED_OUT_UPPER; Offset: 0x1c; Length: 4; Description: GPIO write data upper with mask.",
+     "page": 354,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s9",
+     "text": "Name: gpio.DIRECT_OE; Offset: 0x20; Length: 4; Description: GPIO Output Enable.",
+     "page": 355,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s10",
+     "text": "Name: gpio.MASKED_OE_LOWER; Offset: 0x24; Length: 4; Description: GPIO write Output Enable lower with mask.",
+     "page": 356,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s11",
+     "text": "Name: gpio.MASKED_OE_UPPER; Offset: 0x28; Length: 4; Description: GPIO write Output Enable upper with mask.",
+     "page": 357,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s12",
+     "text": "Name: gpio.INTR_CTRL_EN_RISING; Offset: 0x2c; Length: 4; Description: GPIO interrupt enable for GPIO, rising edge.",
+     "page": 358,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s13",
+     "text": "Name: gpio.INTR_CTRL_EN_FALLING; Offset: 0x30; Length: 4; Description: GPIO interrupt enable for GPIO, falling edge.",
+     "page": 359,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s14",
+     "text": "Name: gpio.INTR_CTRL_EN_LVLHIGH; Offset: 0x34; Length: 4; Description: GPIO interrupt enable for GPIO, level high.",
+     "page": 360,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s15",
+     "text": "Name: gpio.INTR_CTRL_EN_LVLLOW; Offset: 0x38; Length: 4; Description: GPIO interrupt enable for GPIO, level low.",
+     "page": 361,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s16",
+     "text": "Name: gpio.CTRL_EN_INPUT_FILTER; Offset: 0x3c; Length: 4; Description: filter enable for GPIO input bits.",
+     "page": 362,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s17",
+     "text": "Name: gpio.HW_STRAPS_DATA_IN_VALID; Offset: 0x40; Length: 4; Description: Indicates whether the data in HW_STRAPS_DATA_IN is valid.",
+     "page": 363,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s18",
+     "text": "Name: gpio.HW_STRAPS_DATA_IN; Offset: 0x44; Length: 4; Description: GPIO input data that was sampled as straps at most once after the block",
+     "page": 364,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s19",
+     "text": "Name: gpio.PER_PIN_IO_0; Offset: 0x100; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 365,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s20",
+     "text": "Name: gpio.PER_PIN_IO_1; Offset: 0x104; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 366,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s21",
+     "text": "Name: gpio.PER_PIN_IO_2; Offset: 0x108; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 367,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s22",
+     "text": "Name: gpio.PER_PIN_IO_3; Offset: 0x10c; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 368,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s23",
+     "text": "Name: gpio.PER_PIN_IO_4; Offset: 0x110; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 369,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s24",
+     "text": "Name: gpio.PER_PIN_IO_5; Offset: 0x114; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 370,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s25",
+     "text": "Name: gpio.PER_PIN_IO_6; Offset: 0x118; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 371,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s26",
+     "text": "Name: gpio.PER_PIN_IO_7; Offset: 0x11c; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 372,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s27",
+     "text": "Name: gpio.PER_PIN_IO_8; Offset: 0x120; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 373,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s28",
+     "text": "Name: gpio.PER_PIN_IO_9; Offset: 0x124; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 374,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s29",
+     "text": "Name: gpio.PER_PIN_IO_10; Offset: 0x128; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 375,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s30",
+     "text": "Name: gpio.PER_PIN_IO_11; Offset: 0x12c; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 376,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s31",
+     "text": "Name: gpio.PER_PIN_IO_12; Offset: 0x130; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 377,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s32",
+     "text": "Name: gpio.PER_PIN_IO_13; Offset: 0x134; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 378,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s33",
+     "text": "Name: gpio.PER_PIN_IO_14; Offset: 0x138; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 379,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s34",
+     "text": "Name: gpio.PER_PIN_IO_15; Offset: 0x13c; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 380,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s35",
+     "text": "Name: gpio.PER_PIN_IO_16; Offset: 0x140; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 381,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s36",
+     "text": "Name: gpio.PER_PIN_IO_17; Offset: 0x144; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 382,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s37",
+     "text": "Name: gpio.PER_PIN_IO_18; Offset: 0x148; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 383,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s38",
+     "text": "Name: gpio.PER_PIN_IO_19; Offset: 0x14c; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 384,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s39",
+     "text": "Name: gpio.PER_PIN_IO_20; Offset: 0x150; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 385,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s40",
+     "text": "Name: gpio.PER_PIN_IO_21; Offset: 0x154; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 386,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s41",
+     "text": "Name: gpio.PER_PIN_IO_22; Offset: 0x158; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 387,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s42",
+     "text": "Name: gpio.PER_PIN_IO_23; Offset: 0x15c; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 388,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s43",
+     "text": "Name: gpio.PER_PIN_IO_24; Offset: 0x160; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 389,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s44",
+     "text": "Name: gpio.PER_PIN_IO_25; Offset: 0x164; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 390,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s45",
+     "text": "Name: gpio.PER_PIN_IO_26; Offset: 0x168; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 391,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s46",
+     "text": "Name: gpio.PER_PIN_IO_27; Offset: 0x16c; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 392,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s47",
+     "text": "Name: gpio.PER_PIN_IO_28; Offset: 0x170; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 393,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s48",
+     "text": "Name: gpio.PER_PIN_IO_29; Offset: 0x174; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 394,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s49",
+     "text": "Name: gpio.PER_PIN_IO_30; Offset: 0x178; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 395,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s50",
+     "text": "Name: gpio.PER_PIN_IO_31; Offset: 0x17c; Length: 4; Description: Per-pin view of the output and input data of one GPIO.",
+     "page": 396,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s51",
+     "text": "Name: gpio.PER_PIN_OE_0; Offset: 0x200; Length: 4; Description: Per-pin view of the output enable of GPIO[0].",
+     "page": 397,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s52",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_0; Offset: 0x204; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[0].",
+     "page": 398,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s53",
+     "text": "Name: gpio.PER_PIN_OE_1; Offset: 0x208; Length: 4; Description: Per-pin view of the output enable of GPIO[1].",
+     "page": 399,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s54",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_1; Offset: 0x20c; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[1].",
+     "page": 400,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s55",
+     "text": "Name: gpio.PER_PIN_OE_2; Offset: 0x210; Length: 4; Description: Per-pin view of the output enable of GPIO[2].",
+     "page": 401,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s56",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_2; Offset: 0x214; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[2].",
+     "page": 402,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s57",
+     "text": "Name: gpio.PER_PIN_OE_3; Offset: 0x218; Length: 4; Description: Per-pin view of the output enable of GPIO[3].",
+     "page": 403,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s58",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_3; Offset: 0x21c; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[3].",
+     "page": 404,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s59",
+     "text": "Name: gpio.PER_PIN_OE_4; Offset: 0x220; Length: 4; Description: Per-pin view of the output enable of GPIO[4].",
+     "page": 405,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s60",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_4; Offset: 0x224; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[4].",
+     "page": 406,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s61",
+     "text": "Name: gpio.PER_PIN_OE_5; Offset: 0x228; Length: 4; Description: Per-pin view of the output enable of GPIO[5].",
+     "page": 407,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s62",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_5; Offset: 0x22c; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[5].",
+     "page": 408,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s63",
+     "text": "Name: gpio.PER_PIN_OE_6; Offset: 0x230; Length: 4; Description: Per-pin view of the output enable of GPIO[6].",
+     "page": 409,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s64",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_6; Offset: 0x234; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[6].",
+     "page": 410,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s65",
+     "text": "Name: gpio.PER_PIN_OE_7; Offset: 0x238; Length: 4; Description: Per-pin view of the output enable of GPIO[7].",
+     "page": 411,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s66",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_7; Offset: 0x23c; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[7].",
+     "page": 412,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s67",
+     "text": "Name: gpio.PER_PIN_OE_8; Offset: 0x240; Length: 4; Description: Per-pin view of the output enable of GPIO[8].",
+     "page": 413,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s68",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_8; Offset: 0x244; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[8].",
+     "page": 414,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s69",
+     "text": "Name: gpio.PER_PIN_OE_9; Offset: 0x248; Length: 4; Description: Per-pin view of the output enable of GPIO[9].",
+     "page": 415,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s70",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_9; Offset: 0x24c; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[9].",
+     "page": 416,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s71",
+     "text": "Name: gpio.PER_PIN_OE_10; Offset: 0x250; Length: 4; Description: Per-pin view of the output enable of GPIO[10].",
+     "page": 417,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s72",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_10; Offset: 0x254; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[10].",
+     "page": 418,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s73",
+     "text": "Name: gpio.PER_PIN_OE_11; Offset: 0x258; Length: 4; Description: Per-pin view of the output enable of GPIO[11].",
+     "page": 419,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s74",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_11; Offset: 0x25c; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[11].",
+     "page": 420,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s75",
+     "text": "Name: gpio.PER_PIN_OE_12; Offset: 0x260; Length: 4; Description: Per-pin view of the output enable of GPIO[12].",
+     "page": 421,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s76",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_12; Offset: 0x264; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[12].",
+     "page": 422,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s77",
+     "text": "Name: gpio.PER_PIN_OE_13; Offset: 0x268; Length: 4; Description: Per-pin view of the output enable of GPIO[13].",
+     "page": 423,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s78",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_13; Offset: 0x26c; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[13].",
+     "page": 424,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s79",
+     "text": "Name: gpio.PER_PIN_OE_14; Offset: 0x270; Length: 4; Description: Per-pin view of the output enable of GPIO[14].",
+     "page": 425,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s80",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_14; Offset: 0x274; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[14].",
+     "page": 426,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s81",
+     "text": "Name: gpio.PER_PIN_OE_15; Offset: 0x278; Length: 4; Description: Per-pin view of the output enable of GPIO[15].",
+     "page": 427,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s82",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_15; Offset: 0x27c; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[15].",
+     "page": 428,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s83",
+     "text": "Name: gpio.PER_PIN_OE_16; Offset: 0x280; Length: 4; Description: Per-pin view of the output enable of GPIO[16].",
+     "page": 429,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s84",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_16; Offset: 0x284; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[16].",
+     "page": 430,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s85",
+     "text": "Name: gpio.PER_PIN_OE_17; Offset: 0x288; Length: 4; Description: Per-pin view of the output enable of GPIO[17].",
+     "page": 431,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s86",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_17; Offset: 0x28c; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[17].",
+     "page": 432,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s87",
+     "text": "Name: gpio.PER_PIN_OE_18; Offset: 0x290; Length: 4; Description: Per-pin view of the output enable of GPIO[18].",
+     "page": 433,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s88",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_18; Offset: 0x294; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[18].",
+     "page": 434,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s89",
+     "text": "Name: gpio.PER_PIN_OE_19; Offset: 0x298; Length: 4; Description: Per-pin view of the output enable of GPIO[19].",
+     "page": 435,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s90",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_19; Offset: 0x29c; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[19].",
+     "page": 436,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s91",
+     "text": "Name: gpio.PER_PIN_OE_20; Offset: 0x2a0; Length: 4; Description: Per-pin view of the output enable of GPIO[20].",
+     "page": 437,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s92",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_20; Offset: 0x2a4; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[20].",
+     "page": 438,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s93",
+     "text": "Name: gpio.PER_PIN_OE_21; Offset: 0x2a8; Length: 4; Description: Per-pin view of the output enable of GPIO[21].",
+     "page": 439,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s94",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_21; Offset: 0x2ac; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[21].",
+     "page": 440,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s95",
+     "text": "Name: gpio.PER_PIN_OE_22; Offset: 0x2b0; Length: 4; Description: Per-pin view of the output enable of GPIO[22].",
+     "page": 441,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s96",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_22; Offset: 0x2b4; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[22].",
+     "page": 442,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s97",
+     "text": "Name: gpio.PER_PIN_OE_23; Offset: 0x2b8; Length: 4; Description: Per-pin view of the output enable of GPIO[23].",
+     "page": 443,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s98",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_23; Offset: 0x2bc; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[23].",
+     "page": 444,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s99",
+     "text": "Name: gpio.PER_PIN_OE_24; Offset: 0x2c0; Length: 4; Description: Per-pin view of the output enable of GPIO[24].",
+     "page": 445,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s100",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_24; Offset: 0x2c4; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[24].",
+     "page": 446,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s101",
+     "text": "Name: gpio.PER_PIN_OE_25; Offset: 0x2c8; Length: 4; Description: Per-pin view of the output enable of GPIO[25].",
+     "page": 447,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s102",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_25; Offset: 0x2cc; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[25].",
+     "page": 448,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s103",
+     "text": "Name: gpio.PER_PIN_OE_26; Offset: 0x2d0; Length: 4; Description: Per-pin view of the output enable of GPIO[26].",
+     "page": 449,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s104",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_26; Offset: 0x2d4; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[26].",
+     "page": 450,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s105",
+     "text": "Name: gpio.PER_PIN_OE_27; Offset: 0x2d8; Length: 4; Description: Per-pin view of the output enable of GPIO[27].",
+     "page": 451,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s106",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_27; Offset: 0x2dc; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[27].",
+     "page": 452,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s107",
+     "text": "Name: gpio.PER_PIN_OE_28; Offset: 0x2e0; Length: 4; Description: Per-pin view of the output enable of GPIO[28].",
+     "page": 453,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s108",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_28; Offset: 0x2e4; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[28].",
+     "page": 454,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s109",
+     "text": "Name: gpio.PER_PIN_OE_29; Offset: 0x2e8; Length: 4; Description: Per-pin view of the output enable of GPIO[29].",
+     "page": 455,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s110",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_29; Offset: 0x2ec; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[29].",
+     "page": 456,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s111",
+     "text": "Name: gpio.PER_PIN_OE_30; Offset: 0x2f0; Length: 4; Description: Per-pin view of the output enable of GPIO[30].",
+     "page": 457,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s112",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_30; Offset: 0x2f4; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[30].",
+     "page": 458,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s113",
+     "text": "Name: gpio.PER_PIN_OE_31; Offset: 0x2f8; Length: 4; Description: Per-pin view of the output enable of GPIO[31].",
+     "page": 459,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s114",
+     "text": "Name: gpio.PER_PIN_INTR_CTRL_31; Offset: 0x2fc; Length: 4; Description: Per-pin view of the interrupt control and input filter configuration of GPIO[31].",
+     "page": 460,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.2",
+   "title": "INTR_STATE",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 462,
+   "page_end": 466,
+   "sentences": [
+    {
+     "id": "T5.2:s1",
+     "text": "Interrupt State Register",
+     "page": 463,
+     "normative": false
+    },
+    {
+     "id": "T5.2:s2",
+     "text": "Offset: 0x0",
+     "page": 464,
+     "normative": false
+    },
+    {
+     "id": "T5.2:s3",
+     "text": "Reset default: 0x0",
+     "page": 465,
+     "normative": false
+    },
+    {
+     "id": "T5.2:s4",
+     "text": "Reset mask: 0xffffffff",
+     "page": 466,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.2.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.2",
+   "page_start": 468,
+   "page_end": 476,
+   "sentences": [
+    {
+     "id": "T5.2.1:s1",
+     "text": "Bits: 31:0; Type: rw1c; Reset: 0x0; Name: gpio; Description: raised if any of GPIO pin detects configured interrupt mode",
+     "page": 476,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.3",
+   "title": "INTR_ENABLE",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 478,
+   "page_end": 482,
+   "sentences": [
+    {
+     "id": "T5.3:s1",
+     "text": "Interrupt Enable Register",
+     "page": 479,
+     "normative": false
+    },
+    {
+     "id": "T5.3:s2",
+     "text": "Offset: 0x4",
+     "page": 480,
+     "normative": false
+    },
+    {
+     "id": "T5.3:s3",
+     "text": "Reset default: 0x0",
+     "page": 481,
+     "normative": false
+    },
+    {
+     "id": "T5.3:s4",
+     "text": "Reset mask: 0xffffffff",
+     "page": 482,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.3.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.3",
+   "page_start": 484,
+   "page_end": 492,
+   "sentences": [
+    {
+     "id": "T5.3.1:s1",
+     "text": "Bits: 31:0; Type: rw; Reset: 0x0; Name: gpio; Description: Enable interrupt when corresponding bit in INTR_STATE.gpio is set.",
+     "page": 492,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.4",
+   "title": "INTR_TEST",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 494,
+   "page_end": 498,
+   "sentences": [
+    {
+     "id": "T5.4:s1",
+     "text": "Interrupt Test Register",
+     "page": 495,
+     "normative": false
+    },
+    {
+     "id": "T5.4:s2",
+     "text": "Offset: 0x8",
+     "page": 496,
+     "normative": false
+    },
+    {
+     "id": "T5.4:s3",
+     "text": "Reset default: 0x0",
+     "page": 497,
+     "normative": false
+    },
+    {
+     "id": "T5.4:s4",
+     "text": "Reset mask: 0xffffffff",
+     "page": 498,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.4.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.4",
+   "page_start": 500,
+   "page_end": 508,
+   "sentences": [
+    {
+     "id": "T5.4.1:s1",
+     "text": "Bits: 31:0; Type: wo; Reset: 0x0; Name: gpio; Description: Write 1 to force corresponding bit in INTR_STATE.gpio to 1.",
+     "page": 508,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.5",
+   "title": "ALERT_TEST",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 510,
+   "page_end": 514,
+   "sentences": [
+    {
+     "id": "T5.5:s1",
+     "text": "Alert Test Register",
+     "page": 511,
+     "normative": false
+    },
+    {
+     "id": "T5.5:s2",
+     "text": "Offset: 0xc",
+     "page": 512,
+     "normative": false
+    },
+    {
+     "id": "T5.5:s3",
+     "text": "Reset default: 0x80000000",
+     "page": 513,
+     "normative": false
+    },
+    {
+     "id": "T5.5:s4",
+     "text": "Reset mask: 0x80000001",
+     "page": 514,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.5.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.5",
+   "page_start": 516,
+   "page_end": 526,
+   "sentences": [
+    {
+     "id": "T5.5.1:s1",
+     "text": "Bits: 31; Type: rw0c; Reset: 0x1; Name: regwen; Description: Write 0 to disable alert testing until the next reset.",
+     "page": 524,
+     "normative": false
+    },
+    {
+     "id": "T5.5.1:s2",
+     "text": "Bits: 30:1; Description: Reserved",
+     "page": 525,
+     "normative": false
+    },
+    {
+     "id": "T5.5.1:s3",
+     "text": "Bits: 0; Type: wo; Reset: 0x0; Name: fatal_fault; Description: Write 1 to trigger one alert event of this kind.",
+     "page": 526,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.6",
+   "title": "DATA_IN",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 528,
+   "page_end": 532,
+   "sentences": [
+    {
+     "id": "T5.6:s1",
+     "text": "GPIO Input data read value",
+     "page": 529,
+     "normative": false
+    },
+    {
+     "id": "T5.6:s2",
+     "text": "Offset: 0x10",
+     "page": 530,
+     "normative": false
+    },
+    {
+     "id": "T5.6:s3",
+     "text": "Reset default: 0x0",
+     "page": 531,
+     "normative": false
+    },
+    {
+     "id": "T5.6:s4",
+     "text": "Reset mask: 0xffffffff",
+     "page": 532,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.6.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.6",
+   "page_start": 534,
+   "page_end": 542,
+   "sentences": [
+    {
+     "id": "T5.6.1:s1",
+     "text": "Bits: 31:0; Type: ro; Reset: x; Name: DATA_IN",
+     "page": 542,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.7",
+   "title": "DIRECT_OUT",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 544,
+   "page_end": 548,
+   "sentences": [
+    {
+     "id": "T5.7:s1",
+     "text": "GPIO direct output data write value",
+     "page": 545,
+     "normative": false
+    },
+    {
+     "id": "T5.7:s2",
+     "text": "Offset: 0x14",
+     "page": 546,
+     "normative": false
+    },
+    {
+     "id": "T5.7:s3",
+     "text": "Reset default: 0x0",
+     "page": 547,
+     "normative": false
+    },
+    {
+     "id": "T5.7:s4",
+     "text": "Reset mask: 0xffffffff",
+     "page": 548,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.7.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.7",
+   "page_start": 550,
+   "page_end": 558,
+   "sentences": [
+    {
+     "id": "T5.7.1:s1",
+     "text": "Bits: 31:0; Type: rw; Reset: x; Name: DIRECT_OUT",
+     "page": 558,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.8",
+   "title": "MASKED_OUT_LOWER",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 560,
+   "page_end": 573,
+   "sentences": [
+    {
+     "id": "T5.8:s1",
+     "text": "GPIO write data lower with mask.",
+     "page": 561,
+     "normative": false
+    },
+    {
+     "id": "T5.8:s2",
+     "text": "Masked write for DATA_OUT[15:0].",
+     "page": 563,
+     "normative": false
+    },
+    {
+     "id": "T5.8:s3",
+     "text": "Upper 16 bits of this register are used as mask.",
+     "page": 565,
+     "normative": false
+    },
+    {
+     "id": "T5.8:s4",
+     "text": "Writing lower 16 bits of the register changes DATA_OUT[15:0] value if mask bits are set.",
+     "page": 565,
+     "normative": false
+    },
+    {
+     "id": "T5.8:s5",
+     "text": "Read-back of this register returns upper 16 bits as zero and lower 16 bits as DATA_OUT[15:0].",
+     "page": 569,
+     "normative": false
+    },
+    {
+     "id": "T5.8:s6",
+     "text": "Offset: 0x18",
+     "page": 571,
+     "normative": false
+    },
+    {
+     "id": "T5.8:s7",
+     "text": "Reset default: 0x0",
+     "page": 572,
+     "normative": false
+    },
+    {
+     "id": "T5.8:s8",
+     "text": "Reset mask: 0xffffffff",
+     "page": 573,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.8.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.8",
+   "page_start": 575,
+   "page_end": 584,
+   "sentences": [
+    {
+     "id": "T5.8.1:s1",
+     "text": "Bits: 31:16; Type: wo; Reset: x; Name: mask; Description: Write data mask[15:0]. A value of 1 in mask[i] allows the updating of DATA_OUT[i], 0 <= i <= 15",
+     "page": 583,
+     "normative": false
+    },
+    {
+     "id": "T5.8.1:s2",
+     "text": "Bits: 15:0; Type: rw; Reset: x; Name: data; Description: Write data value[15:0]. Value to write into DATA_OUT[i], valid in the presence of mask[i]==1",
+     "page": 584,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.9",
+   "title": "MASKED_OUT_UPPER",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 586,
+   "page_end": 599,
+   "sentences": [
+    {
+     "id": "T5.9:s1",
+     "text": "GPIO write data upper with mask.",
+     "page": 587,
+     "normative": false
+    },
+    {
+     "id": "T5.9:s2",
+     "text": "Masked write for DATA_OUT[31:16].",
+     "page": 589,
+     "normative": false
+    },
+    {
+     "id": "T5.9:s3",
+     "text": "Upper 16 bits of this register are used as mask.",
+     "page": 591,
+     "normative": false
+    },
+    {
+     "id": "T5.9:s4",
+     "text": "Writing lower 16 bits of the register changes DATA_OUT[31:16] value if mask bits are set.",
+     "page": 591,
+     "normative": false
+    },
+    {
+     "id": "T5.9:s5",
+     "text": "Read-back of this register returns upper 16 bits as zero and lower 16 bits as DATA_OUT[31:16].",
+     "page": 595,
+     "normative": false
+    },
+    {
+     "id": "T5.9:s6",
+     "text": "Offset: 0x1c",
+     "page": 597,
+     "normative": false
+    },
+    {
+     "id": "T5.9:s7",
+     "text": "Reset default: 0x0",
+     "page": 598,
+     "normative": false
+    },
+    {
+     "id": "T5.9:s8",
+     "text": "Reset mask: 0xffffffff",
+     "page": 599,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.9.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.9",
+   "page_start": 601,
+   "page_end": 610,
+   "sentences": [
+    {
+     "id": "T5.9.1:s1",
+     "text": "Bits: 31:16; Type: wo; Reset: x; Name: mask; Description: Write data mask[31:16]. A value of 1 in mask[i] allows the updating of DATA_OUT[i], 16 <= i <= 31",
+     "page": 609,
+     "normative": false
+    },
+    {
+     "id": "T5.9.1:s2",
+     "text": "Bits: 15:0; Type: rw; Reset: x; Name: data; Description: Write data value[31:16]. Value to write into DATA_OUT[i], valid in the presence of mask[i]==1",
+     "page": 610,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.10",
+   "title": "DIRECT_OE",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 612,
+   "page_end": 618,
+   "sentences": [
+    {
+     "id": "T5.10:s1",
+     "text": "GPIO Output Enable.",
+     "page": 613,
+     "normative": false
+    },
+    {
+     "id": "T5.10:s2",
+     "text": "Setting direct_oe[i] to 1 enables output mode for GPIO[i]",
+     "page": 615,
+     "normative": false
+    },
+    {
+     "id": "T5.10:s3",
+     "text": "Offset: 0x20",
+     "page": 616,
+     "normative": false
+    },
+    {
+     "id": "T5.10:s4",
+     "text": "Reset default: 0x0",
+     "page": 617,
+     "normative": false
+    },
+    {
+     "id": "T5.10:s5",
+     "text": "Reset mask: 0xffffffff",
+     "page": 618,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.10.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.10",
+   "page_start": 620,
+   "page_end": 628,
+   "sentences": [
+    {
+     "id": "T5.10.1:s1",
+     "text": "Bits: 31:0; Type: rw; Reset: x; Name: DIRECT_OE",
+     "page": 628,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.11",
+   "title": "MASKED_OE_LOWER",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 630,
+   "page_end": 644,
+   "sentences": [
+    {
+     "id": "T5.11:s1",
+     "text": "GPIO write Output Enable lower with mask.",
+     "page": 631,
+     "normative": false
+    },
+    {
+     "id": "T5.11:s2",
+     "text": "Masked write for DATA_OE[15:0], the register that controls output mode for GPIO pins [15:0].",
+     "page": 633,
+     "normative": false
+    },
+    {
+     "id": "T5.11:s3",
+     "text": "Upper 16 bits of this register are used as mask.",
+     "page": 636,
+     "normative": false
+    },
+    {
+     "id": "T5.11:s4",
+     "text": "Writing lower 16 bits of the register changes DATA_OE[15:0] value if mask bits are set.",
+     "page": 636,
+     "normative": false
+    },
+    {
+     "id": "T5.11:s5",
+     "text": "Read-back of this register returns upper 16 bits as zero and lower 16 bits as DATA_OE[15:0].",
+     "page": 640,
+     "normative": false
+    },
+    {
+     "id": "T5.11:s6",
+     "text": "Offset: 0x24",
+     "page": 642,
+     "normative": false
+    },
+    {
+     "id": "T5.11:s7",
+     "text": "Reset default: 0x0",
+     "page": 643,
+     "normative": false
+    },
+    {
+     "id": "T5.11:s8",
+     "text": "Reset mask: 0xffffffff",
+     "page": 644,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.11.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.11",
+   "page_start": 646,
+   "page_end": 655,
+   "sentences": [
+    {
+     "id": "T5.11.1:s1",
+     "text": "Bits: 31:16; Type: rw; Reset: x; Name: mask; Description: Write OE mask[15:0]. A value of 1 in mask[i] allows the updating of DATA_OE[i], 0 <= i <= 15",
+     "page": 654,
+     "normative": false
+    },
+    {
+     "id": "T5.11.1:s2",
+     "text": "Bits: 15:0; Type: rw; Reset: x; Name: data; Description: Write OE value[15:0]. Value to write into DATA_OE[i], valid in the presence of mask[i]==1",
+     "page": 655,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.12",
+   "title": "MASKED_OE_UPPER",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 657,
+   "page_end": 671,
+   "sentences": [
+    {
+     "id": "T5.12:s1",
+     "text": "GPIO write Output Enable upper with mask.",
+     "page": 658,
+     "normative": false
+    },
+    {
+     "id": "T5.12:s2",
+     "text": "Masked write for DATA_OE[31:16], the register that controls output mode for GPIO pins [31:16].",
+     "page": 660,
+     "normative": false
+    },
+    {
+     "id": "T5.12:s3",
+     "text": "Upper 16 bits of this register are used as mask.",
+     "page": 663,
+     "normative": false
+    },
+    {
+     "id": "T5.12:s4",
+     "text": "Writing lower 16 bits of the register changes DATA_OE[31:16] value if mask bits are set.",
+     "page": 663,
+     "normative": false
+    },
+    {
+     "id": "T5.12:s5",
+     "text": "Read-back of this register returns upper 16 bits as zero and lower 16 bits as DATA_OE[31:16].",
+     "page": 667,
+     "normative": false
+    },
+    {
+     "id": "T5.12:s6",
+     "text": "Offset: 0x28",
+     "page": 669,
+     "normative": false
+    },
+    {
+     "id": "T5.12:s7",
+     "text": "Reset default: 0x0",
+     "page": 670,
+     "normative": false
+    },
+    {
+     "id": "T5.12:s8",
+     "text": "Reset mask: 0xffffffff",
+     "page": 671,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.12.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.12",
+   "page_start": 673,
+   "page_end": 682,
+   "sentences": [
+    {
+     "id": "T5.12.1:s1",
+     "text": "Bits: 31:16; Type: rw; Reset: x; Name: mask; Description: Write OE mask[31:16]. A value of 1 in mask[i] allows the updating of DATA_OE[i], 16 <= i <= 31",
+     "page": 681,
+     "normative": false
+    },
+    {
+     "id": "T5.12.1:s2",
+     "text": "Bits: 15:0; Type: rw; Reset: x; Name: data; Description: Write OE value[31:16]. Value to write into DATA_OE[i], valid in the presence of mask[i]==1",
+     "page": 682,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.13",
+   "title": "INTR_CTRL_EN_RISING",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 684,
+   "page_end": 691,
+   "sentences": [
+    {
+     "id": "T5.13:s1",
+     "text": "GPIO interrupt enable for GPIO, rising edge.",
+     "page": 685,
+     "normative": false
+    },
+    {
+     "id": "T5.13:s2",
+     "text": "If INTR_ENABLE[i] is true, a value of 1 on INTR_CTRL_EN_RISING[i] enables rising-edge interrupt detection on GPIO[i].",
+     "page": 687,
+     "normative": false
+    },
+    {
+     "id": "T5.13:s3",
+     "text": "Offset: 0x2c",
+     "page": 689,
+     "normative": false
+    },
+    {
+     "id": "T5.13:s4",
+     "text": "Reset default: 0x0",
+     "page": 690,
+     "normative": false
+    },
+    {
+     "id": "T5.13:s5",
+     "text": "Reset mask: 0xffffffff",
+     "page": 691,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.13.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.13",
+   "page_start": 693,
+   "page_end": 701,
+   "sentences": [
+    {
+     "id": "T5.13.1:s1",
+     "text": "Bits: 31:0; Type: rw; Reset: x; Name: INTR_CTRL_EN_RISING",
+     "page": 701,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.14",
+   "title": "INTR_CTRL_EN_FALLING",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 703,
+   "page_end": 710,
+   "sentences": [
+    {
+     "id": "T5.14:s1",
+     "text": "GPIO interrupt enable for GPIO, falling edge.",
+     "page": 704,
+     "normative": false
+    },
+    {
+     "id": "T5.14:s2",
+     "text": "If INTR_ENABLE[i] is true, a value of 1 on INTR_CTRL_EN_FALLING[i] enables falling-edge interrupt detection on GPIO[i].",
+     "page": 706,
+     "normative": false
+    },
+    {
+     "id": "T5.14:s3",
+     "text": "Offset: 0x30",
+     "page": 708,
+     "normative": false
+    },
+    {
+     "id": "T5.14:s4",
+     "text": "Reset default: 0x0",
+     "page": 709,
+     "normative": false
+    },
+    {
+     "id": "T5.14:s5",
+     "text": "Reset mask: 0xffffffff",
+     "page": 710,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.14.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.14",
+   "page_start": 712,
+   "page_end": 720,
+   "sentences": [
+    {
+     "id": "T5.14.1:s1",
+     "text": "Bits: 31:0; Type: rw; Reset: x; Name: INTR_CTRL_EN_FALLING",
+     "page": 720,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.15",
+   "title": "INTR_CTRL_EN_LVLHIGH",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 722,
+   "page_end": 729,
+   "sentences": [
+    {
+     "id": "T5.15:s1",
+     "text": "GPIO interrupt enable for GPIO, level high.",
+     "page": 723,
+     "normative": false
+    },
+    {
+     "id": "T5.15:s2",
+     "text": "If INTR_ENABLE[i] is true, a value of 1 on INTR_CTRL_EN_LVLHIGH[i] enables level high interrupt detection on GPIO[i].",
+     "page": 725,
+     "normative": false
+    },
+    {
+     "id": "T5.15:s3",
+     "text": "Offset: 0x34",
+     "page": 727,
+     "normative": false
+    },
+    {
+     "id": "T5.15:s4",
+     "text": "Reset default: 0x0",
+     "page": 728,
+     "normative": false
+    },
+    {
+     "id": "T5.15:s5",
+     "text": "Reset mask: 0xffffffff",
+     "page": 729,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.15.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.15",
+   "page_start": 731,
+   "page_end": 739,
+   "sentences": [
+    {
+     "id": "T5.15.1:s1",
+     "text": "Bits: 31:0; Type: rw; Reset: x; Name: INTR_CTRL_EN_LVLHIGH",
+     "page": 739,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.16",
+   "title": "INTR_CTRL_EN_LVLLOW",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 741,
+   "page_end": 748,
+   "sentences": [
+    {
+     "id": "T5.16:s1",
+     "text": "GPIO interrupt enable for GPIO, level low.",
+     "page": 742,
+     "normative": false
+    },
+    {
+     "id": "T5.16:s2",
+     "text": "If INTR_ENABLE[i] is true, a value of 1 on INTR_CTRL_EN_LVLLOW[i] enables level low interrupt detection on GPIO[i].",
+     "page": 744,
+     "normative": false
+    },
+    {
+     "id": "T5.16:s3",
+     "text": "Offset: 0x38",
+     "page": 746,
+     "normative": false
+    },
+    {
+     "id": "T5.16:s4",
+     "text": "Reset default: 0x0",
+     "page": 747,
+     "normative": false
+    },
+    {
+     "id": "T5.16:s5",
+     "text": "Reset mask: 0xffffffff",
+     "page": 748,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.16.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.16",
+   "page_start": 750,
+   "page_end": 758,
+   "sentences": [
+    {
+     "id": "T5.16.1:s1",
+     "text": "Bits: 31:0; Type: rw; Reset: x; Name: INTR_CTRL_EN_LVLLOW",
+     "page": 758,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.17",
+   "title": "CTRL_EN_INPUT_FILTER",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 760,
+   "page_end": 767,
+   "sentences": [
+    {
+     "id": "T5.17:s1",
+     "text": "filter enable for GPIO input bits.",
+     "page": 761,
+     "normative": false
+    },
+    {
+     "id": "T5.17:s2",
+     "text": "If CTRL_EN_INPUT_FILTER[i] is true, a value of input bit [i] must be stable for 16 cycles before transitioning.",
+     "page": 763,
+     "normative": true
+    },
+    {
+     "id": "T5.17:s3",
+     "text": "Offset: 0x3c",
+     "page": 765,
+     "normative": false
+    },
+    {
+     "id": "T5.17:s4",
+     "text": "Reset default: 0x0",
+     "page": 766,
+     "normative": false
+    },
+    {
+     "id": "T5.17:s5",
+     "text": "Reset mask: 0xffffffff",
+     "page": 767,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.17.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.17",
+   "page_start": 769,
+   "page_end": 777,
+   "sentences": [
+    {
+     "id": "T5.17.1:s1",
+     "text": "Bits: 31:0; Type: rw; Reset: x; Name: CTRL_EN_INPUT_FILTER",
+     "page": 777,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.18",
+   "title": "HW_STRAPS_DATA_IN_VALID",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 779,
+   "page_end": 783,
+   "sentences": [
+    {
+     "id": "T5.18:s1",
+     "text": "Indicates whether the data in HW_STRAPS_DATA_IN is valid.",
+     "page": 780,
+     "normative": false
+    },
+    {
+     "id": "T5.18:s2",
+     "text": "Offset: 0x40",
+     "page": 781,
+     "normative": false
+    },
+    {
+     "id": "T5.18:s3",
+     "text": "Reset default: 0x0",
+     "page": 782,
+     "normative": false
+    },
+    {
+     "id": "T5.18:s4",
+     "text": "Reset mask: 0x1",
+     "page": 783,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.18.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.18",
+   "page_start": 785,
+   "page_end": 794,
+   "sentences": [
+    {
+     "id": "T5.18.1:s1",
+     "text": "Bits: 31:1; Description: Reserved",
+     "page": 793,
+     "normative": false
+    },
+    {
+     "id": "T5.18.1:s2",
+     "text": "Bits: 0; Type: ro; Reset: 0x0; Name: HW_STRAPS_DATA_IN_VALID",
+     "page": 794,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.19",
+   "title": "HW_STRAPS_DATA_IN",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 796,
+   "page_end": 807,
+   "sentences": [
+    {
+     "id": "T5.19:s1",
+     "text": "GPIO input data that was sampled as straps at most once after the block came out of reset.",
+     "page": 797,
+     "normative": false
+    },
+    {
+     "id": "T5.19:s2",
+     "text": "The behavior of this register depends on the GpioAsHwStrapsEn parameter.",
+     "page": 800,
+     "normative": false
+    },
+    {
+     "id": "T5.19:s3",
+     "text": "If the parameter is false then the register reads as zero.",
+     "page": 801,
+     "normative": false
+    },
+    {
+     "id": "T5.19:s4",
+     "text": "If the parameter is true then GPIO input data is sampled after reset on the first cycle where the strap_en_i input is high.",
+     "page": 802,
+     "normative": false
+    },
+    {
+     "id": "T5.19:s5",
+     "text": "The sampled data is then stored in this register.",
+     "page": 802,
+     "normative": false
+    },
+    {
+     "id": "T5.19:s6",
+     "text": "Offset: 0x44",
+     "page": 805,
+     "normative": false
+    },
+    {
+     "id": "T5.19:s7",
+     "text": "Reset default: 0x0",
+     "page": 806,
+     "normative": false
+    },
+    {
+     "id": "T5.19:s8",
+     "text": "Reset mask: 0xffffffff",
+     "page": 807,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.19.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.19",
+   "page_start": 809,
+   "page_end": 817,
+   "sentences": [
+    {
+     "id": "T5.19.1:s1",
+     "text": "Bits: 31:0; Type: ro; Reset: 0x0; Name: HW_STRAPS_DATA_IN",
+     "page": 817,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.20",
+   "title": "PER_PIN_IO",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 819,
+   "page_end": 825,
+   "sentences": [
+    {
+     "id": "T5.20:s1",
+     "text": "Per-pin view of the output and input data of one GPIO.",
+     "page": 820,
+     "normative": false
+    },
+    {
+     "id": "T5.20:s2",
+     "text": "This register aliases bit i of DIRECT_OUT and DATA_IN for GPIO[i].",
+     "page": 822,
+     "normative": false
+    },
+    {
+     "id": "T5.20:s3",
+     "text": "Writing it updates only DATA_OUT[i], without affecting the other GPIOs.",
+     "page": 822,
+     "normative": false
+    },
+    {
+     "id": "T5.20:s4",
+     "text": "Reset default: 0x0",
+     "page": 824,
+     "normative": false
+    },
+    {
+     "id": "T5.20:s5",
+     "text": "Reset mask: 0x101",
+     "page": 825,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.20.1",
+   "title": "Instances",
+   "level": 3,
+   "parent": "T5.20",
+   "page_start": 827,
+   "page_end": 862,
+   "sentences": [
+    {
+     "id": "T5.20.1:s1",
+     "text": "Name: PER_PIN_IO_0; Offset: 0x100",
+     "page": 831,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s2",
+     "text": "Name: PER_PIN_IO_1; Offset: 0x104",
+     "page": 832,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s3",
+     "text": "Name: PER_PIN_IO_2; Offset: 0x108",
+     "page": 833,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s4",
+     "text": "Name: PER_PIN_IO_3; Offset: 0x10c",
+     "page": 834,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s5",
+     "text": "Name: PER_PIN_IO_4; Offset: 0x110",
+     "page": 835,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s6",
+     "text": "Name: PER_PIN_IO_5; Offset: 0x114",
+     "page": 836,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s7",
+     "text": "Name: PER_PIN_IO_6; Offset: 0x118",
+     "page": 837,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s8",
+     "text": "Name: PER_PIN_IO_7; Offset: 0x11c",
+     "page": 838,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s9",
+     "text": "Name: PER_PIN_IO_8; Offset: 0x120",
+     "page": 839,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s10",
+     "text": "Name: PER_PIN_IO_9; Offset: 0x124",
+     "page": 840,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s11",
+     "text": "Name: PER_PIN_IO_10; Offset: 0x128",
+     "page": 841,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s12",
+     "text": "Name: PER_PIN_IO_11; Offset: 0x12c",
+     "page": 842,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s13",
+     "text": "Name: PER_PIN_IO_12; Offset: 0x130",
+     "page": 843,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s14",
+     "text": "Name: PER_PIN_IO_13; Offset: 0x134",
+     "page": 844,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s15",
+     "text": "Name: PER_PIN_IO_14; Offset: 0x138",
+     "page": 845,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s16",
+     "text": "Name: PER_PIN_IO_15; Offset: 0x13c",
+     "page": 846,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s17",
+     "text": "Name: PER_PIN_IO_16; Offset: 0x140",
+     "page": 847,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s18",
+     "text": "Name: PER_PIN_IO_17; Offset: 0x144",
+     "page": 848,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s19",
+     "text": "Name: PER_PIN_IO_18; Offset: 0x148",
+     "page": 849,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s20",
+     "text": "Name: PER_PIN_IO_19; Offset: 0x14c",
+     "page": 850,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s21",
+     "text": "Name: PER_PIN_IO_20; Offset: 0x150",
+     "page": 851,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s22",
+     "text": "Name: PER_PIN_IO_21; Offset: 0x154",
+     "page": 852,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s23",
+     "text": "Name: PER_PIN_IO_22; Offset: 0x158",
+     "page": 853,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s24",
+     "text": "Name: PER_PIN_IO_23; Offset: 0x15c",
+     "page": 854,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s25",
+     "text": "Name: PER_PIN_IO_24; Offset: 0x160",
+     "page": 855,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s26",
+     "text": "Name: PER_PIN_IO_25; Offset: 0x164",
+     "page": 856,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s27",
+     "text": "Name: PER_PIN_IO_26; Offset: 0x168",
+     "page": 857,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s28",
+     "text": "Name: PER_PIN_IO_27; Offset: 0x16c",
+     "page": 858,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s29",
+     "text": "Name: PER_PIN_IO_28; Offset: 0x170",
+     "page": 859,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s30",
+     "text": "Name: PER_PIN_IO_29; Offset: 0x174",
+     "page": 860,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s31",
+     "text": "Name: PER_PIN_IO_30; Offset: 0x178",
+     "page": 861,
+     "normative": false
+    },
+    {
+     "id": "T5.20.1:s32",
+     "text": "Name: PER_PIN_IO_31; Offset: 0x17c",
+     "page": 862,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.20.2",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.20",
+   "page_start": 865,
+   "page_end": 876,
+   "sentences": [
+    {
+     "id": "T5.20.2:s1",
+     "text": "Bits: 31:9; Description: Reserved",
+     "page": 873,
+     "normative": false
+    },
+    {
+     "id": "T5.20.2:s2",
+     "text": "Bits: 8; Type: ro; Reset: x; Name: data_in; Description: Input data value of GPIO[i], alias of DATA_IN[i].",
+     "page": 874,
+     "normative": false
+    },
+    {
+     "id": "T5.20.2:s3",
+     "text": "Bits: 7:1; Description: Reserved",
+     "page": 875,
+     "normative": false
+    },
+    {
+     "id": "T5.20.2:s4",
+     "text": "Bits: 0; Type: rw; Reset: x; Name: data_out; Description: Output data value of GPIO[i], alias of DATA_OUT[i].",
+     "page": 876,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.21",
+   "title": "PER_PIN_OE_0",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 878,
+   "page_end": 885,
+   "sentences": [
+    {
+     "id": "T5.21:s1",
+     "text": "Per-pin view of the output enable of GPIO[0].",
+     "page": 879,
+     "normative": false
+    },
+    {
+     "id": "T5.21:s2",
+     "text": "This register aliases bit 0 of DIRECT_OE.",
+     "page": 881,
+     "normative": false
+    },
+    {
+     "id": "T5.21:s3",
+     "text": "Writing it updates only DATA_OE[0], without affecting the other GPIOs.",
+     "page": 881,
+     "normative": false
+    },
+    {
+     "id": "T5.21:s4",
+     "text": "Offset: 0x200",
+     "page": 883,
+     "normative": false
+    },
+    {
+     "id": "T5.21:s5",
+     "text": "Reset default: 0x0",
+     "page": 884,
+     "normative": false
+    },
+    {
+     "id": "T5.21:s6",
+     "text": "Reset mask: 0x1",
+     "page": 885,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.21.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.21",
+   "page_start": 887,
+   "page_end": 896,
+   "sentences": [
+    {
+     "id": "T5.21.1:s1",
+     "text": "Bits: 31:1; Description: Reserved",
+     "page": 895,
+     "normative": false
+    },
+    {
+     "id": "T5.21.1:s2",
+     "text": "Bits: 0; Type: rw; Reset: x; Name: oe; Description: Output enable of GPIO[0], alias of DATA_OE[0].",
+     "page": 896,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.22",
+   "title": "PER_PIN_INTR_CTRL_0",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 898,
+   "page_end": 906,
+   "sentences": [
+    {
+     "id": "T5.22:s1",
+     "text": "Per-pin view of the interrupt control and input filter configuration of GPIO[0].",
+     "page": 899,
+     "normative": false
+    },
+    {
+     "id": "T5.22:s2",
+     "text": "This register aliases bit 0 of INTR_CTRL_EN_RISING, INTR_CTRL_EN_FALLING, INTR_CTRL_EN_LVLHIGH, INTR_CTRL_EN_LVLLOW and CTRL_EN_INPUT_FILTER.",
+     "page": 901,
+     "normative": false
+    },
+    {
+     "id": "T5.22:s3",
+     "text": "Writing it updates only the configuration of GPIO[0], without affecting the other GPIOs.",
+     "page": 901,
+     "normative": false
+    },
+    {
+     "id": "T5.22:s4",
+     "text": "It is separate from PER_PIN_OE_0, so access to the output enable and to the interrupt configuration of a GPIO can be controlled independently.",
+     "page": 901,
+     "normative": true
+    },
+    {
+     "id": "T5.22:s5",
+     "text": "Offset: 0x204",
+     "page": 904,
+     "normative": false
+    },
+    {
+     "id": "T5.22:s6",
+     "text": "Reset default: 0x0",
+     "page": 905,
+     "normative": false
+    },
+    {
+     "id": "T5.22:s7",
+     "text": "Reset mask: 0x1f",
+     "page": 906,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.22.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.22",
+   "page_start": 908,
+   "page_end": 921,
+   "sentences": [
+    {
+     "id": "T5.22.1:s1",
+     "text": "Bits: 31:5; Description: Reserved",
+     "page": 916,
+     "normative": false
+    },
+    {
+     "id": "T5.22.1:s2",
+     "text": "Bits: 4; Type: rw; Reset: x; Name: ctrl_en_input_filter; Description: Input filter enable of GPIO[0], alias of CTRL_EN_INPUT_FILTER[0].",
+     "page": 917,
+     "normative": false
+    },
+    {
+     "id": "T5.22.1:s3",
+     "text": "Bits: 3; Type: rw; Reset: x; Name: intr_ctrl_en_lvllow; Description: Level-low interrupt enable of GPIO[0], alias of INTR_CTRL_EN_LVLLOW[0].",
+     "page": 918,
+     "normative": false
+    },
+    {
+     "id": "T5.22.1:s4",
+     "text": "Bits: 2; Type: rw; Reset: x; Name: intr_ctrl_en_lvlhigh; Description: Level-high interrupt enable of GPIO[0], alias of INTR_CTRL_EN_LVLHIGH[0].",
+     "page": 919,
+     "normative": false
+    },
+    {
+     "id": "T5.22.1:s5",
+     "text": "Bits: 1; Type: rw; Reset: x; Name: intr_ctrl_en_falling; Description: Falling-edge interrupt enable of GPIO[0], alias of INTR_CTRL_EN_FALLING[0].",
+     "page": 920,
+     "normative": false
+    },
+    {
+     "id": "T5.22.1:s6",
+     "text": "Bits: 0; Type: rw; Reset: x; Name: intr_ctrl_en_rising; Description: Rising-edge interrupt enable of GPIO[0], alias of INTR_CTRL_EN_RISING[0].",
+     "page": 921,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.23",
+   "title": "PER_PIN_OE_1 to PER_PIN_OE_31, PER_PIN_INTR_CTRL_1 to PER_PIN_INTR_CTRL_31",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 923,
+   "page_end": 924,
+   "sentences": [
+    {
+     "id": "T5.23:s1",
+     "text": "[Note added for NNC Pipeline] These 62 sections of the original document are identical to PER_PIN_OE_0 and PER_PIN_INTR_CTRL_0 above, with the GPIO index i (1 to 31) in place of 0: PER_PIN_OE_i aliases bit i of DIRECT_OE at offset 0x200 + 8 * i, and PER_PIN_INTR_CTRL_i aliases bit i of the interrupt control and input filter registers at offset 0x204 + 8 * i (see the Summary table and the Programmer's Guide).",
+     "page": 924,
+     "normative": false
+    },
+    {
+     "id": "T5.23:s2",
+     "text": "Reset default 0x0 and fields as for GPIO[0].",
+     "page": 924,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T6",
+   "title": "Hardware Interfaces",
+   "level": 1,
+   "parent": null,
+   "page_start": 928,
+   "page_end": 935,
+   "sentences": [
+    {
+     "id": "T6:s1",
+     "text": "Referring to the Comportable guideline for peripheral device functionality, the module gpio has the following hardware interfaces defined",
+     "page": 931,
+     "normative": false
+    },
+    {
+     "id": "T6:s2",
+     "text": "Primary Clock: clk_i",
+     "page": 932,
+     "normative": false
+    },
+    {
+     "id": "T6:s3",
+     "text": "Other Clocks: *none*",
+     "page": 933,
+     "normative": false
+    },
+    {
+     "id": "T6:s4",
+     "text": "Bus Device Interfaces (TL-UL): tl",
+     "page": 934,
+     "normative": false
+    },
+    {
+     "id": "T6:s5",
+     "text": "Bus Host Interfaces (TL-UL): *none*",
+     "page": 935,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T6.1",
+   "title": "Peripheral Pins for Chip IO",
+   "level": 2,
+   "parent": "T6",
+   "page_start": 937,
+   "page_end": 941,
+   "sentences": [
+    {
+     "id": "T6.1:s1",
+     "text": "Pin name: gpio[31:0]; Direction: inout; Description: GPIO inout to/from PAD",
+     "page": 941,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T6.2",
+   "title": "Inter-Module Signals",
+   "level": 2,
+   "parent": "T6",
+   "page_start": 943,
+   "page_end": 951,
+   "sentences": [
+    {
+     "id": "T6.2:s1",
+     "text": "Port Name: strap_en; Package::Struct: logic; Type: uni; Act: rcv; Width: 1; Description: The strap enable signal tells gpio to take a snapshot of the input pins. The behaviour of this signal after that event will have no effect.",
+     "page": 947,
+     "normative": false
+    },
+    {
+     "id": "T6.2:s2",
+     "text": "Port Name: sampled_straps; Package::Struct: gpio_pkg::gpio_straps; Type: uni; Act: req; Width: 1; Description: This vector contains the sampled strap values.",
+     "page": 948,
+     "normative": false
+    },
+    {
+     "id": "T6.2:s3",
+     "text": "Port Name: racl_policies; Package::Struct: top_racl_pkg::racl_policy_vec; Type: uni; Act: rcv; Width: 1; Description: Incoming RACL policy vector from a racl_ctrl instance. The policy selection vector (parameter) selects the policy for each register.",
+     "page": 949,
+     "normative": false
+    },
+    {
+     "id": "T6.2:s4",
+     "text": "Port Name: racl_error; Package::Struct: top_racl_pkg::racl_error_log; Type: uni; Act: req; Width: 1; Description: RACL error log information of this module.",
+     "page": 950,
+     "normative": false
+    },
+    {
+     "id": "T6.2:s5",
+     "text": "Port Name: tl; Package::Struct: tlul_pkg::tl; Type: req_rsp; Act: rsp; Width: 1",
+     "page": 951,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T6.3",
+   "title": "Interrupts",
+   "level": 2,
+   "parent": "T6",
+   "page_start": 953,
+   "page_end": 957,
+   "sentences": [
+    {
+     "id": "T6.3:s1",
+     "text": "Interrupt Name: gpio[31:0]; Type: Event; Description: raised if any of GPIO pin detects configured interrupt mode",
+     "page": 957,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T6.4",
+   "title": "Security Alerts",
+   "level": 2,
+   "parent": "T6",
+   "page_start": 959,
+   "page_end": 963,
+   "sentences": [
+    {
+     "id": "T6.4:s1",
+     "text": "Alert Name: fatal_fault; Description: This fatal alert is triggered when a fatal TL-UL bus integrity fault is detected.",
+     "page": 963,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T6.5",
+   "title": "Security Countermeasures",
+   "level": 2,
+   "parent": "T6",
+   "page_start": 965,
+   "page_end": 969,
+   "sentences": [
+    {
+     "id": "T6.5:s1",
+     "text": "Countermeasure ID: GPIO.BUS.INTEGRITY; Description: End-to-end bus integrity scheme.",
+     "page": 969,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T7",
+   "title": "ot_gpio_nnc: integration of the OpenTitan gpio for verification",
+   "level": 1,
+   "parent": null,
+   "page_start": 974,
+   "page_end": 986,
+   "sentences": [
+    {
+     "id": "T7:s1",
+     "text": "Written for NNC Pipeline.",
+     "page": 976,
+     "normative": false
+    },
+    {
+     "id": "T7:s2",
+     "text": "This document describes the verification top ot_gpio_nnc: the OpenTitan gpio (specified by the OpenTitan parts of this document, above) plus a thin wrapper that flattens its struct ports and closes two protocols.",
+     "page": 976,
+     "normative": false
+    },
+    {
+     "id": "T7:s3",
+     "text": "The behaviour of gpio itself is specified only by the OpenTitan documents; this document adds the port mapping, the configurations and what the wrapper does.",
+     "page": 976,
+     "normative": false
+    },
+    {
+     "id": "T7:s4",
+     "text": "Normative references:",
+     "page": 981,
+     "normative": false
+    },
+    {
+     "id": "T7:s5",
+     "text": "the OpenTitan parts of this document (above): the GPIO block, its registers, interrupts, straps and alert.",
+     "page": 982,
+     "normative": false
+    },
+    {
+     "id": "T7:s6",
+     "text": "standards/opentitan_tlul_bus_specification.md: the TL-UL bus, including the bus integrity scheme.",
+     "page": 983,
+     "normative": false
+    },
+    {
+     "id": "T7:s7",
+     "text": "standards/opentitan_comportability.md: interrupt and alert conventions of OpenTitan peripherals.",
+     "page": 984,
+     "normative": false
+    },
+    {
+     "id": "T7:s8",
+     "text": "standards/opentitan_register_tool.md: register access types and bus error responses of generated register blocks.",
+     "page": 985,
+     "normative": false
+    },
+    {
+     "id": "T7:s9",
+     "text": "standards/opentitan_alert_handler_theory_of_operation.md: the differential alert handshake and the alert receiver.",
+     "page": 986,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "1",
+   "title": "Configuration",
+   "level": 2,
+   "parent": "T7",
+   "page_start": 988,
+   "page_end": 1005,
+   "sentences": [
+    {
+     "id": "1:s1",
+     "text": "[INT-CFG-001] The design under verification has 32 GPIOs, as stated in the Features section.",
+     "page": 990,
+     "normative": false
+    },
+    {
+     "id": "1:s2",
+     "text": "[INT-CFG-002] RACL (register access control) is disabled: every register access is permitted, and no access is rejected for an access-control reason.",
+     "page": 992,
+     "normative": true
+    },
+    {
+     "id": "1:s3",
+     "text": "[INT-CFG-003] The alert sender of gpio and the alert receiver of the wrapper both use the synchronous clocking scheme (no synchronizer flops on the differential pairs).",
+     "page": 995,
+     "normative": false
+    },
+    {
+     "id": "1:s4",
+     "text": "Ping requests are never issued.",
+     "page": 995,
+     "normative": true
+    },
+    {
+     "id": "1:s5",
+     "text": "[INT-CFG-004] Two design parameters of gpio are parameters of ot_gpio_nnc and are passed through unchanged:",
+     "page": 998,
+     "normative": false
+    },
+    {
+     "id": "1:s6",
+     "text": "Parameter: GpioAsyncOn; Default: 1; Legal values: 0 or 1; Description: \"Instantiates 2-flop synchronizers on all GPIO inputs if set to 1.\" (gpio parameter list)",
+     "page": 1002,
+     "normative": true
+    },
+    {
+     "id": "1:s7",
+     "text": "Parameter: GpioAsHwStrapsEn; Default: 1; Legal values: 0 or 1; Description: \"Enable HW straps sampling logic for GPIO inputs at initial cold boot\" (gpio parameter list); the behaviour of HW_STRAPS_DATA_IN for each value is given in its register description",
+     "page": 1003,
+     "normative": true
+    },
+    {
+     "id": "1:s8",
+     "text": "[INT-CFG-005] The verification shall be run in every combination of the two parameters that the run set selects; the default combination (1, 1) is the configuration of the Earl Grey top level.",
+     "page": 1005,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "title": "Clock and reset",
+   "level": 2,
+   "parent": "T7",
+   "page_start": 1008,
+   "page_end": 1017,
+   "sentences": [
+    {
+     "id": "2:s1",
+     "text": "[INT-CLK-001] clk_i is the only clock.",
+     "page": 1010,
+     "normative": false
+    },
+    {
+     "id": "2:s2",
+     "text": "All TL-UL and strap inputs are sampled and all outputs change at its rising edge, except for the effect of rst_ni.",
+     "page": 1010,
+     "normative": false
+    },
+    {
+     "id": "2:s3",
+     "text": "[INT-CLK-002] With GpioAsyncOn = 1, i_gpio may change at any time relative to clk_i (an input from a pad).",
+     "page": 1013,
+     "normative": false
+    },
+    {
+     "id": "2:s4",
+     "text": "With GpioAsyncOn = 0 there is no synchronizer, and the test bench shall change i_gpio only synchronously to clk_i, like the other inputs.",
+     "page": 1013,
+     "normative": true
+    },
+    {
+     "id": "2:s5",
+     "text": "[INT-RST-001] rst_ni is the active-low reset, asserted asynchronously and released synchronously to clk_i (the reset strategy of the comportability specification).",
+     "page": 1017,
+     "normative": false
+    },
+    {
+     "id": "2:s6",
+     "text": "While rst_ni is 0, every register holds its reset value as given in the register tables of the gpio specification.",
+     "page": 1017,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "title": "Ports",
+   "level": 2,
+   "parent": "T7",
+   "page_start": 1021,
+   "page_end": 1056,
+   "sentences": [
+    {
+     "id": "3:s1",
+     "text": "Port: clk_i; Direction: input; Width: 1; Meaning: Clock",
+     "page": 1025,
+     "normative": false
+    },
+    {
+     "id": "3:s2",
+     "text": "Port: rst_ni; Direction: input; Width: 1; Meaning: Active-low reset",
+     "page": 1026,
+     "normative": false
+    },
+    {
+     "id": "3:s3",
+     "text": "Port: i_a_valid; Direction: input; Width: 1; Meaning: TL-UL a_valid",
+     "page": 1027,
+     "normative": false
+    },
+    {
+     "id": "3:s4",
+     "text": "Port: o_a_ready; Direction: output; Width: 1; Meaning: TL-UL a_ready",
+     "page": 1028,
+     "normative": false
+    },
+    {
+     "id": "3:s5",
+     "text": "Port: i_a_opcode; Direction: input; Width: 3; Meaning: TL-UL a_opcode (Get = 4, PutFullData = 0, PutPartialData = 1)",
+     "page": 1029,
+     "normative": false
+    },
+    {
+     "id": "3:s6",
+     "text": "Port: i_a_param; Direction: input; Width: 3; Meaning: TL-UL a_param",
+     "page": 1030,
+     "normative": false
+    },
+    {
+     "id": "3:s7",
+     "text": "Port: i_a_size; Direction: input; Width: 2; Meaning: TL-UL a_size (log2 of the number of bytes)",
+     "page": 1031,
+     "normative": false
+    },
+    {
+     "id": "3:s8",
+     "text": "Port: i_a_source; Direction: input; Width: 8; Meaning: TL-UL a_source",
+     "page": 1032,
+     "normative": false
+    },
+    {
+     "id": "3:s9",
+     "text": "Port: i_a_address; Direction: input; Width: 32; Meaning: TL-UL a_address (byte address; the register offsets of the gpio specification are relative to 0)",
+     "page": 1033,
+     "normative": false
+    },
+    {
+     "id": "3:s10",
+     "text": "Port: i_a_mask; Direction: input; Width: 4; Meaning: TL-UL a_mask",
+     "page": 1034,
+     "normative": false
+    },
+    {
+     "id": "3:s11",
+     "text": "Port: i_a_data; Direction: input; Width: 32; Meaning: TL-UL a_data",
+     "page": 1035,
+     "normative": false
+    },
+    {
+     "id": "3:s12",
+     "text": "Port: i_a_instr; Direction: input; Width: 1; Meaning: 1: the request is an instruction fetch (a_user.instr_type = MuBi4True); 0: a data access (MuBi4False)",
+     "page": 1036,
+     "normative": false
+    },
+    {
+     "id": "3:s13",
+     "text": "Port: i_a_intg_flip; Direction: input; Width: 1; Meaning: 1: the A-channel integrity sent with the request is corrupted (see 4.2)",
+     "page": 1037,
+     "normative": false
+    },
+    {
+     "id": "3:s14",
+     "text": "Port: o_d_valid; Direction: output; Width: 1; Meaning: TL-UL d_valid",
+     "page": 1038,
+     "normative": false
+    },
+    {
+     "id": "3:s15",
+     "text": "Port: i_d_ready; Direction: input; Width: 1; Meaning: TL-UL d_ready",
+     "page": 1039,
+     "normative": false
+    },
+    {
+     "id": "3:s16",
+     "text": "Port: o_d_opcode; Direction: output; Width: 3; Meaning: TL-UL d_opcode (AccessAck = 0, AccessAckData = 1)",
+     "page": 1040,
+     "normative": false
+    },
+    {
+     "id": "3:s17",
+     "text": "Port: o_d_param; Direction: output; Width: 3; Meaning: TL-UL d_param",
+     "page": 1041,
+     "normative": false
+    },
+    {
+     "id": "3:s18",
+     "text": "Port: o_d_size; Direction: output; Width: 2; Meaning: TL-UL d_size",
+     "page": 1042,
+     "normative": false
+    },
+    {
+     "id": "3:s19",
+     "text": "Port: o_d_source; Direction: output; Width: 8; Meaning: TL-UL d_source",
+     "page": 1043,
+     "normative": false
+    },
+    {
+     "id": "3:s20",
+     "text": "Port: o_d_sink; Direction: output; Width: 1; Meaning: TL-UL d_sink",
+     "page": 1044,
+     "normative": false
+    },
+    {
+     "id": "3:s21",
+     "text": "Port: o_d_data; Direction: output; Width: 32; Meaning: TL-UL d_data",
+     "page": 1045,
+     "normative": false
+    },
+    {
+     "id": "3:s22",
+     "text": "Port: o_d_error; Direction: output; Width: 1; Meaning: TL-UL d_error",
+     "page": 1046,
+     "normative": false
+    },
+    {
+     "id": "3:s23",
+     "text": "Port: o_d_intg_err; Direction: output; Width: 1; Meaning: Response integrity of the D-channel beat is wrong (see 4.3)",
+     "page": 1047,
+     "normative": false
+    },
+    {
+     "id": "3:s24",
+     "text": "Port: o_alert; Direction: output; Width: 1; Meaning: Alert fatal_fault received (see 5)",
+     "page": 1048,
+     "normative": false
+    },
+    {
+     "id": "3:s25",
+     "text": "Port: o_alert_integ_fail; Direction: output; Width: 1; Meaning: Signal integrity failure on the alert differential pairs (see 5)",
+     "page": 1049,
+     "normative": false
+    },
+    {
+     "id": "3:s26",
+     "text": "Port: i_gpio; Direction: input; Width: 32; Meaning: GPIO inputs cio_gpio_i (see 6)",
+     "page": 1050,
+     "normative": false
+    },
+    {
+     "id": "3:s27",
+     "text": "Port: o_gpio; Direction: output; Width: 32; Meaning: GPIO outputs cio_gpio_o: the value of DATA_OUT (see 6)",
+     "page": 1051,
+     "normative": false
+    },
+    {
+     "id": "3:s28",
+     "text": "Port: o_gpio_en; Direction: output; Width: 32; Meaning: GPIO output enables cio_gpio_en_o: the value of DATA_OE (see 6)",
+     "page": 1052,
+     "normative": false
+    },
+    {
+     "id": "3:s29",
+     "text": "Port: o_intr_gpio; Direction: output; Width: 32; Meaning: Interrupts intr_gpio_o, one per GPIO (see 7)",
+     "page": 1053,
+     "normative": false
+    },
+    {
+     "id": "3:s30",
+     "text": "Port: i_strap_en; Direction: input; Width: 1; Meaning: Strap sampling trigger strap_en_i (see 8)",
+     "page": 1054,
+     "normative": false
+    },
+    {
+     "id": "3:s31",
+     "text": "Port: o_straps_valid; Direction: output; Width: 1; Meaning: sampled_straps_o.valid (see 8)",
+     "page": 1055,
+     "normative": false
+    },
+    {
+     "id": "3:s32",
+     "text": "Port: o_straps_data; Direction: output; Width: 32; Meaning: sampled_straps_o.data (see 8)",
+     "page": 1056,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "4",
+   "title": "TL-UL device interface",
+   "level": 2,
+   "parent": "T7",
+   "page_start": 1058,
+   "page_end": 1058,
+   "sentences": []
+  },
+  {
+   "id": "4.1",
+   "title": "Mapping",
+   "level": 3,
+   "parent": "4",
+   "page_start": 1060,
+   "page_end": 1067,
+   "sentences": [
+    {
+     "id": "4.1:s1",
+     "text": "[INT-TL-001] The i_a_*, o_a_ready, o_d_* (except o_d_intg_err) and i_d_ready ports are the fields of the same name of the TL-UL device interface tl of gpio, with the meaning given by the TL-UL bus specification.",
+     "page": 1062,
+     "normative": false
+    },
+    {
+     "id": "4.1:s2",
+     "text": "[INT-TL-002] a_user.rsvd is 0. a_user.instr_type is MuBi4True when i_a_instr is 1 and MuBi4False when it is 0.",
+     "page": 1065,
+     "normative": false
+    },
+    {
+     "id": "4.1:s3",
+     "text": "[INT-TL-003] The test bench acts as the TL-UL host.",
+     "page": 1067,
+     "normative": false
+    },
+    {
+     "id": "4.1:s4",
+     "text": "It shall follow the host rules of the TL-UL bus specification (for example, the A-channel signals stay stable while a_valid is 1 and a_ready is 0).",
+     "page": 1067,
+     "normative": true
+    },
+    {
+     "id": "4.1:s5",
+     "text": "Requests that the TL-UL specification lists as error cases (unsupported opcode, bad size or mask, misaligned address) are legal stimulus: the device answers them with d_error = 1 as the specifications require.",
+     "page": 1067,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "4.2",
+   "title": "Request integrity",
+   "level": 3,
+   "parent": "4",
+   "page_start": 1072,
+   "page_end": 1079,
+   "sentences": [
+    {
+     "id": "4.2:s1",
+     "text": "[INT-INTG-001] The wrapper computes a_user.cmd_intg and a_user.data_intg of every request with OpenTitan's integrity generator for TL-UL hosts (the section Bus Integrity Scheme of the TL-UL bus specification is not written yet; the code is not part of this specification).",
+     "page": 1074,
+     "normative": false
+    },
+    {
+     "id": "4.2:s2",
+     "text": "A request with i_a_intg_flip = 0 therefore always carries correct integrity, and the test bench does not compute integrity itself.",
+     "page": 1074,
+     "normative": true
+    },
+    {
+     "id": "4.2:s3",
+     "text": "[INT-INTG-002] When i_a_intg_flip is 1, bit 0 of a_user.cmd_intg is inverted.",
+     "page": 1079,
+     "normative": false
+    },
+    {
+     "id": "4.2:s4",
+     "text": "The request then has a command integrity error: a fatal TL-UL bus integrity fault in the sense of the gpio Security Alerts table, which triggers the fatal_fault alert (section 5).",
+     "page": 1079,
+     "normative": false
+    },
+    {
+     "id": "4.2:s5",
+     "text": "These documents do not specify the D-channel response to such a request.",
+     "page": 1079,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "4.3",
+   "title": "Response integrity",
+   "level": 3,
+   "parent": "4",
+   "page_start": 1084,
+   "page_end": 1086,
+   "sentences": [
+    {
+     "id": "4.3:s1",
+     "text": "[INT-INTG-003] The wrapper checks d_user.rsp_intg of every D-channel beat against the response fields with OpenTitan's response integrity checker for TL-UL hosts. o_d_intg_err is 1 in a cycle where o_d_valid is 1 and this check fails, and 0 otherwise.",
+     "page": 1086,
+     "normative": false
+    },
+    {
+     "id": "4.3:s2",
+     "text": "A correct device never makes it 1.",
+     "page": 1086,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "5",
+   "title": "Alert",
+   "level": 2,
+   "parent": "T7",
+   "page_start": 1090,
+   "page_end": 1100,
+   "sentences": [
+    {
+     "id": "5:s1",
+     "text": "[INT-ALERT-001] gpio has one alert, fatal_fault, sent through an alert sender.",
+     "page": 1092,
+     "normative": false
+    },
+    {
+     "id": "5:s2",
+     "text": "The wrapper connects it to an alert receiver as described in the alert handler theory of operation (Differential Alert Signaling). o_alert is the alert_o output of that receiver: it is 1 for one clock cycle for each alert handshake that the receiver detects.",
+     "page": 1092,
+     "normative": false
+    },
+    {
+     "id": "5:s3",
+     "text": "[INT-ALERT-002] o_alert_integ_fail is the integ_fail_o output of the receiver.",
+     "page": 1097,
+     "normative": false
+    },
+    {
+     "id": "5:s4",
+     "text": "A correct sender never makes it 1.",
+     "page": 1097,
+     "normative": true
+    },
+    {
+     "id": "5:s5",
+     "text": "[INT-ALERT-003] A fatal alert is repeated until reset (comportability specification, Alerts per Module), so after a bus integrity fault o_alert pulses repeatedly until rst_ni is asserted.",
+     "page": 1100,
+     "normative": false
+    },
+    {
+     "id": "5:s6",
+     "text": "A write of 1 to ALERT_TEST.fatal_fault triggers one alert event, as the register description says.",
+     "page": 1100,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "6",
+   "title": "GPIO pins",
+   "level": 2,
+   "parent": "T7",
+   "page_start": 1104,
+   "page_end": 1109,
+   "sentences": [
+    {
+     "id": "6:s1",
+     "text": "[INT-IO-001] i_gpio, o_gpio and o_gpio_en are the peripheral pins cio_gpio_i, cio_gpio_o and cio_gpio_en_o of gpio: bit i belongs to GPIO[i]. o_gpio is DATA_OUT and o_gpio_en is DATA_OE.",
+     "page": 1106,
+     "normative": false
+    },
+    {
+     "id": "6:s2",
+     "text": "[INT-IO-002] There is no pad model and no pin multiplexer in ot_gpio_nnc: i_gpio is driven only by the test bench and does not depend on o_gpio or o_gpio_en.",
+     "page": 1109,
+     "normative": false
+    },
+    {
+     "id": "6:s3",
+     "text": "The Programmer's Guide examples assume pads with weak pull-ups connected to the outputs; a test that follows such an example models the pad itself (for example by driving i_gpio[i] = o_gpio[i] where o_gpio_en[i] = 1 and 1 elsewhere).",
+     "page": 1109,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "7",
+   "title": "Interrupts",
+   "level": 2,
+   "parent": "T7",
+   "page_start": 1114,
+   "page_end": 1116,
+   "sentences": [
+    {
+     "id": "7:s1",
+     "text": "[INT-INTR-001] o_intr_gpio[i] is the interrupt output intr_gpio_o[i] of gpio, an event-type interrupt as defined in the comportability specification, with bit i of the registers INTR_ENABLE, INTR_STATE and INTR_TEST.",
+     "page": 1116,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "8",
+   "title": "Straps",
+   "level": 2,
+   "parent": "T7",
+   "page_start": 1120,
+   "page_end": 1122,
+   "sentences": [
+    {
+     "id": "8:s1",
+     "text": "[INT-STRAP-001] i_strap_en is the input strap_en_i of gpio, and o_straps_valid and o_straps_data are the fields valid and data of its output sampled_straps_o (Inter-Module Signals table, GPIO Inputs as HW Straps).",
+     "page": 1122,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "9",
+   "title": "Verification scope",
+   "level": 2,
+   "parent": "T7",
+   "page_start": 1125,
+   "page_end": 1135,
+   "sentences": [
+    {
+     "id": "9:s1",
+     "text": "[INT-VER-001] The verification shall cover, through the ports above and in each configuration of the run set: reset values of every register; the access type of every register field as given in the register tables; direct and masked writes of DATA_OUT and DATA_OE and their reads; the per-pin register view; DATA_IN with and without the input filter; interrupt detection on rising edge, falling edge, high level and low level, with INTR_STATE, INTR_ENABLE and INTR_TEST; strap sampling with HW_STRAPS_DATA_IN_VALID and HW_STRAPS_DATA_IN; bus error responses (unmapped addresses, sub-word writes, instruction fetches, integrity errors) and the fatal_fault alert.",
+     "page": 1127,
+     "normative": true
+    },
+    {
+     "id": "9:s2",
+     "text": "[INT-VER-002] The per-pin registers of 32 GPIOs behave alike.",
+     "page": 1135,
+     "normative": false
+    },
+    {
+     "id": "9:s3",
+     "text": "The verification may check every GPIO for the 32-bit registers and a selection of GPIOs for the per-pin registers, provided that the selection includes GPIO[0], GPIO[15], GPIO[16] and GPIO[31].",
+     "page": 1135,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "10",
+   "title": "Decisions for verification",
+   "level": 2,
+   "parent": "T7",
+   "page_start": 1139,
+   "page_end": 1169,
+   "sentences": [
+    {
+     "id": "10:s1",
+     "text": "The gaps that nnc spec-lint found in this specification (work/spec_lint.md, GAP-001..019) are answered here, from the documents only.",
+     "page": 1141,
+     "normative": false
+    },
+    {
+     "id": "10:s2",
+     "text": "Where the documents are silent or disagree, the verification checks only what every reading has in common, or a bound instead of an exact cycle.",
+     "page": 1141,
+     "normative": false
+    },
+    {
+     "id": "10:s3",
+     "text": "These decisions were taken on the project owner's delegation by an AI assistant, not by a hardware designer; the G4 reviewer is asked to confirm them.",
+     "page": 1141,
+     "normative": false
+    },
+    {
+     "id": "10:s4",
+     "text": "ID: D-001; Subject: Masked writes of DATA_OE (GAP-001); Decision: The register descriptions bind, and the Theory of Operation says the masked-write concept \"is duplicated for the output enable register\": a write to MASKED_OE_LOWER (MASKED_OE_UPPER) sets DATA_OE[i] to data bit i where mask bit i is 1 and leaves every other bit of DATA_OE unchanged, exactly as for DATA_OUT. The DATA_OE values in the Programmer's Guide example are not used as expected values.",
+     "page": 1148,
+     "normative": false
+    },
+    {
+     "id": "10:s5",
+     "text": "ID: D-002; Subject: Read of MASKED_OE_* bits 31:16 (GAP-002); Decision: Bits 15:0 of a read of MASKED_OUT_* and MASKED_OE_* are the corresponding half of DATA_OUT / DATA_OE. Bits 31:16 of a read of MASKED_OUT_* are 0. For MASKED_OE_* the text says 0 and the field table says rw: bits 31:16 of a read are not checked.",
+     "page": 1149,
+     "normative": false
+    },
+    {
+     "id": "10:s6",
+     "text": "ID: D-003; Subject: Reset values (GAP-003); Decision: The \"Reset default\" line of each register binds where the field table says \"x\": DIRECT_OUT, DIRECT_OE, MASKED_*, INTR_CTRL_EN_*, CTRL_EN_INPUT_FILTER, PER_PIN_OE_i, PER_PIN_INTR_CTRL_i and PER_PIN_IO_i.data_out read 0 after reset, and o_gpio and o_gpio_en are 0 while rst_ni = 0 and until written. DATA_IN and PER_PIN_IO_i.data_in are not checked while rst_ni = 0 and in the first 20 cycles after release.",
+     "page": 1150,
+     "normative": false
+    },
+    {
+     "id": "10:s7",
+     "text": "ID: D-004; Subject: INTR_ENABLE and detection (GAP-004); Decision: The gpio text makes INTR_ENABLE a condition for detection; the comportability specification makes it only mask the output. Checked, as both readings agree: with INTR_ENABLE[i] = 1 a configured event sets INTR_STATE[i]; with INTR_ENABLE[i] = 0, o_intr_gpio[i] stays 0. INTR_STATE[i] after an event that occurs while INTR_ENABLE[i] = 0 is not checked, and neither is o_intr_gpio[i] in the 4 cycles after INTR_ENABLE[i] is set to 1 when such an event may have been latched.",
+     "page": 1151,
+     "normative": false
+    },
+    {
+     "id": "10:s8",
+     "text": "ID: D-005; Subject: W1C while a level condition holds (GAP-005); Decision: If the level condition still holds after a write of 1 to INTR_STATE[i], INTR_STATE[i] reads 1 and o_intr_gpio[i] (with INTR_ENABLE[i] = 1) is 1 again within 4 cycles after the write response; a dip in between is not checked.",
+     "page": 1152,
+     "normative": false
+    },
+    {
+     "id": "10:s9",
+     "text": "ID: D-006; Subject: Event in the same cycle as a W1C (GAP-006); Decision: Not checked: tests do not create an edge on GPIO[i] within 8 cycles of a write of 1 to INTR_STATE[i], or do not check INTR_STATE[i] after it.",
+     "page": 1153,
+     "normative": false
+    },
+    {
+     "id": "10:s10",
+     "text": "ID: D-007; Subject: Input filter threshold and switching (GAP-007); Decision: With CTRL_EN_INPUT_FILTER[i] = 1: a new value of i_gpio[i] held for at most 12 cycles never appears in DATA_IN[i] and creates no interrupt event; a new value held for at least 24 cycles appears in DATA_IN[i] no later than 24 cycles after the change. The exact threshold is not checked. After a write that changes CTRL_EN_INPUT_FILTER[i], DATA_IN[i] and interrupt events of GPIO[i] are not checked for 24 cycles; tests keep i_gpio[i] constant in that window.",
+     "page": 1154,
+     "normative": true
+    },
+    {
+     "id": "10:s11",
+     "text": "ID: D-008; Subject: Strap sampling (GAP-008); Decision: With GpioAsHwStrapsEn = 1, tests keep i_strap_en = 0 while rst_ni = 0 and for at least 4 cycles after release, then raise it once and keep i_gpio constant from 24 cycles before to 8 cycles after that rising edge. Within 4 cycles after the edge, HW_STRAPS_DATA_IN_VALID reads 1, o_straps_valid = 1, and HW_STRAPS_DATA_IN and o_straps_data equal that i_gpio value. Before the edge both valid indications are 0. Later changes of i_gpio or i_strap_en change neither until reset; after a reset (\"After each reset\", Theory of Operation) the sequence can happen again. A level already high at reset release is not used.",
+     "page": 1155,
+     "normative": true
+    },
+    {
+     "id": "10:s12",
+     "text": "ID: D-009; Subject: Straps disabled (GAP-009); Decision: With GpioAsHwStrapsEn = 0, HW_STRAPS_DATA_IN reads 0 at all times (register description). HW_STRAPS_DATA_IN_VALID, o_straps_valid and o_straps_data are not checked.",
+     "page": 1156,
+     "normative": false
+    },
+    {
+     "id": "10:s13",
+     "text": "ID: D-010; Subject: ALERT_TEST (GAP-010); Decision: Tests that trigger an alert write 0x8000_0001 (regwen kept at 1); the combined write 0x0000_0001 is not used. A write with bit 31 = 0 sets regwen to 0 until reset; afterwards a write of 0x8000_0001 completes with d_error = 0, triggers no alert, and regwen still reads 0. One write of 1 to fatal_fault, with no other alert cause and no other such write within 32 cycles, gives exactly one o_alert pulse, no later than 16 cycles after the write response. After reset ALERT_TEST reads 0x8000_0000.",
+     "page": 1157,
+     "normative": false
+    },
+    {
+     "id": "10:s14",
+     "text": "ID: D-011; Subject: Instruction fetches (GAP-011); Decision: Not stated for registers in these documents. A request with i_a_instr = 1 is not checked for d_error; a write with i_a_instr = 1 is not used.",
+     "page": 1158,
+     "normative": false
+    },
+    {
+     "id": "10:s15",
+     "text": "ID: D-012; Subject: Address decoding (GAP-012); Decision: Following the register tool (excess address bits are stripped), the registers 0x000..0x2fc use the offsets 0x000..0x3FF. A request to an unmapped offset in 0x000..0x3FF returns d_error = 1 and changes no register. Requests at 0x400 and above are not used.",
+     "page": 1159,
+     "normative": false
+    },
+    {
+     "id": "10:s16",
+     "text": "ID: D-013; Subject: Sub-word and partial writes (GAP-013); Decision: Per the register tool and the Per-Pin Register View text: full-word writes with mask 1111 succeed. An aligned byte write (a_size 0 at offset 0 of the register, mask 0001) to a register with fields above bit 7 (INTR_*, DIRECT_*, MASKED_*, INTR_CTRL_EN_*, CTRL_EN_INPUT_FILTER, PER_PIN_IO_i) returns d_error = 1 and changes nothing; such a byte write to PER_PIN_OE_i or PER_PIN_INTR_CTRL_i completes with d_error = 0 and has the effect of the write. Other sub-word cases, including a_size 2 with a partial mask, are not checked. Reads of any size return the full register.",
+     "page": 1160,
+     "normative": false
+    },
+    {
+     "id": "10:s17",
+     "text": "ID: D-014; Subject: Outstanding requests and back-pressure (GAP-016); Decision: TL-UL allows several outstanding requests and does not guarantee order. The test bench matches responses by d_source, uses a distinct a_source per outstanding request, and does not assume o_a_ready = 1.",
+     "page": 1161,
+     "normative": false
+    },
+    {
+     "id": "10:s18",
+     "text": "ID: D-015; Subject: Fields of a response (GAP-018); Decision: Checked: d_error, d_source (echo of a_source), d_size (echo of a_size), d_opcode (AccessAckData for Get, AccessAck for PutFullData and PutPartialData). d_data is checked only for a Get without error. For an undefined opcode only d_error = 1 is checked. d_param and d_sink are not checked.",
+     "page": 1162,
+     "normative": false
+    },
+    {
+     "id": "10:s19",
+     "text": "ID: D-016; Subject: Reset (GAP-017); Decision: The test bench keeps i_a_valid = 0 while rst_ni = 0 and in the first cycle after release. While rst_ni = 0, o_d_valid, o_alert, o_alert_integ_fail, o_intr_gpio, o_gpio and o_gpio_en shall be 0; o_a_ready, o_straps_valid and o_straps_data are not checked. A response pending at reset is discarded. The rule that outputs change only at rising clock edges is not applied in cycles where rst_ni is 0 or falls.",
+     "page": 1163,
+     "normative": true
+    },
+    {
+     "id": "10:s20",
+     "text": "ID: D-017; Subject: Integrity outputs and integrity errors (GAP-014); Decision: o_d_intg_err and o_alert_integ_fail shall be 0 in every cycle with rst_ni = 1. After a request with i_a_intg_flip = 1 is accepted, o_alert shall pulse no later than 16 cycles later and then at least once in every 32 cycles until rst_ni is asserted. The D-channel response to that request, its effect on registers and the behaviour of later requests are not checked; the test bench does not wait more than 32 cycles for that response, and the test resets the design afterwards.",
+     "page": 1164,
+     "normative": true
+    },
+    {
+     "id": "10:s21",
+     "text": "ID: D-018; Subject: Latencies (GAP-015); Decision: With the filter off, a change of i_gpio[i] held for at least 8 cycles appears in DATA_IN[i] no later than 4 cycles after the first rising edge after the change (both values of GpioAsyncOn). A configured event sets INTR_STATE[i] no later than 4 cycles after it appears in DATA_IN[i]. o_intr_gpio[i] equals INTR_STATE[i] AND INTR_ENABLE[i] except in the 2 cycles after either changes. o_gpio and o_gpio_en equal DATA_OUT and DATA_OE no later than 2 cycles after the response of the write that changed them. Lower bounds are not checked.",
+     "page": 1165,
+     "normative": false
+    },
+    {
+     "id": "10:s22",
+     "text": "ID: D-019; Subject: Writes to read-only registers, reads of write-only fields (GAP-018); Decision: A write to a ro register or field (DATA_IN, HW_STRAPS_*, PER_PIN_IO_i.data_in) leaves it unchanged; its d_error is not checked. A wo field (INTR_TEST, MASKED_OUT_* mask, ALERT_TEST.fatal_fault) has no read path and reads 0 (register tool, Type WO). Reserved bits read 0 and writes to them have no effect.",
+     "page": 1166,
+     "normative": false
+    },
+    {
+     "id": "10:s23",
+     "text": "ID: D-020; Subject: Programmer's Guide comments (GAP-019); Decision: The register names and descriptions decide: INTR_CTRL_EN_LVLLOW and INTR_CTRL_EN_LVLHIGH enable level detection, not edge detection. The comments of the examples are not used as expected behaviour.",
+     "page": 1167,
+     "normative": false
+    },
+    {
+     "id": "10:s24",
+     "text": "ID: D-021; Subject: Pins and the pad model; Decision: DATA_IN reflects i_gpio only (INT-IO-002): with o_gpio_en[i] = 1 the test bench may drive i_gpio[i] to any value, and DATA_IN[i] follows i_gpio[i], not o_gpio[i].",
+     "page": 1168,
+     "normative": false
+    },
+    {
+     "id": "10:s25",
+     "text": "ID: D-022; Subject: Out of scope; Decision: User-bit default values, requests with a non-zero a_param, and the bit layout of a_user/d_user (the wrapper produces them) are not checked; tests drive i_a_param = 0.",
+     "page": 1169,
+     "normative": false
+    }
+   ]
+  }
+ ],
+ "tables": [
+  {
+   "section": "T5.1",
+   "header": [
+    "Name",
+    "Offset",
+    "Length",
+    "Description"
+   ],
+   "rows": [
+    [
+     "gpio.INTR_STATE",
+     "0x0",
+     "4",
+     "Interrupt State Register"
+    ],
+    [
+     "gpio.INTR_ENABLE",
+     "0x4",
+     "4",
+     "Interrupt Enable Register"
+    ],
+    [
+     "gpio.INTR_TEST",
+     "0x8",
+     "4",
+     "Interrupt Test Register"
+    ],
+    [
+     "gpio.ALERT_TEST",
+     "0xc",
+     "4",
+     "Alert Test Register"
+    ],
+    [
+     "gpio.DATA_IN",
+     "0x10",
+     "4",
+     "GPIO Input data read value"
+    ],
+    [
+     "gpio.DIRECT_OUT",
+     "0x14",
+     "4",
+     "GPIO direct output data write value"
+    ],
+    [
+     "gpio.MASKED_OUT_LOWER",
+     "0x18",
+     "4",
+     "GPIO write data lower with mask."
+    ],
+    [
+     "gpio.MASKED_OUT_UPPER",
+     "0x1c",
+     "4",
+     "GPIO write data upper with mask."
+    ],
+    [
+     "gpio.DIRECT_OE",
+     "0x20",
+     "4",
+     "GPIO Output Enable."
+    ],
+    [
+     "gpio.MASKED_OE_LOWER",
+     "0x24",
+     "4",
+     "GPIO write Output Enable lower with mask."
+    ],
+    [
+     "gpio.MASKED_OE_UPPER",
+     "0x28",
+     "4",
+     "GPIO write Output Enable upper with mask."
+    ],
+    [
+     "gpio.INTR_CTRL_EN_RISING",
+     "0x2c",
+     "4",
+     "GPIO interrupt enable for GPIO, rising edge."
+    ],
+    [
+     "gpio.INTR_CTRL_EN_FALLING",
+     "0x30",
+     "4",
+     "GPIO interrupt enable for GPIO, falling edge."
+    ],
+    [
+     "gpio.INTR_CTRL_EN_LVLHIGH",
+     "0x34",
+     "4",
+     "GPIO interrupt enable for GPIO, level high."
+    ],
+    [
+     "gpio.INTR_CTRL_EN_LVLLOW",
+     "0x38",
+     "4",
+     "GPIO interrupt enable for GPIO, level low."
+    ],
+    [
+     "gpio.CTRL_EN_INPUT_FILTER",
+     "0x3c",
+     "4",
+     "filter enable for GPIO input bits."
+    ],
+    [
+     "gpio.HW_STRAPS_DATA_IN_VALID",
+     "0x40",
+     "4",
+     "Indicates whether the data in HW_STRAPS_DATA_IN is valid."
+    ],
+    [
+     "gpio.HW_STRAPS_DATA_IN",
+     "0x44",
+     "4",
+     "GPIO input data that was sampled as straps at most once after the block"
+    ],
+    [
+     "gpio.PER_PIN_IO_0",
+     "0x100",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_1",
+     "0x104",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_2",
+     "0x108",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_3",
+     "0x10c",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_4",
+     "0x110",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_5",
+     "0x114",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_6",
+     "0x118",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_7",
+     "0x11c",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_8",
+     "0x120",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_9",
+     "0x124",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_10",
+     "0x128",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_11",
+     "0x12c",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_12",
+     "0x130",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_13",
+     "0x134",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_14",
+     "0x138",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_15",
+     "0x13c",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_16",
+     "0x140",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_17",
+     "0x144",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_18",
+     "0x148",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_19",
+     "0x14c",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_20",
+     "0x150",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_21",
+     "0x154",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_22",
+     "0x158",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_23",
+     "0x15c",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_24",
+     "0x160",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_25",
+     "0x164",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_26",
+     "0x168",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_27",
+     "0x16c",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_28",
+     "0x170",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_29",
+     "0x174",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_30",
+     "0x178",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_IO_31",
+     "0x17c",
+     "4",
+     "Per-pin view of the output and input data of one GPIO."
+    ],
+    [
+     "gpio.PER_PIN_OE_0",
+     "0x200",
+     "4",
+     "Per-pin view of the output enable of GPIO[0]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_0",
+     "0x204",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[0]."
+    ],
+    [
+     "gpio.PER_PIN_OE_1",
+     "0x208",
+     "4",
+     "Per-pin view of the output enable of GPIO[1]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_1",
+     "0x20c",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[1]."
+    ],
+    [
+     "gpio.PER_PIN_OE_2",
+     "0x210",
+     "4",
+     "Per-pin view of the output enable of GPIO[2]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_2",
+     "0x214",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[2]."
+    ],
+    [
+     "gpio.PER_PIN_OE_3",
+     "0x218",
+     "4",
+     "Per-pin view of the output enable of GPIO[3]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_3",
+     "0x21c",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[3]."
+    ],
+    [
+     "gpio.PER_PIN_OE_4",
+     "0x220",
+     "4",
+     "Per-pin view of the output enable of GPIO[4]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_4",
+     "0x224",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[4]."
+    ],
+    [
+     "gpio.PER_PIN_OE_5",
+     "0x228",
+     "4",
+     "Per-pin view of the output enable of GPIO[5]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_5",
+     "0x22c",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[5]."
+    ],
+    [
+     "gpio.PER_PIN_OE_6",
+     "0x230",
+     "4",
+     "Per-pin view of the output enable of GPIO[6]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_6",
+     "0x234",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[6]."
+    ],
+    [
+     "gpio.PER_PIN_OE_7",
+     "0x238",
+     "4",
+     "Per-pin view of the output enable of GPIO[7]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_7",
+     "0x23c",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[7]."
+    ],
+    [
+     "gpio.PER_PIN_OE_8",
+     "0x240",
+     "4",
+     "Per-pin view of the output enable of GPIO[8]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_8",
+     "0x244",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[8]."
+    ],
+    [
+     "gpio.PER_PIN_OE_9",
+     "0x248",
+     "4",
+     "Per-pin view of the output enable of GPIO[9]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_9",
+     "0x24c",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[9]."
+    ],
+    [
+     "gpio.PER_PIN_OE_10",
+     "0x250",
+     "4",
+     "Per-pin view of the output enable of GPIO[10]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_10",
+     "0x254",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[10]."
+    ],
+    [
+     "gpio.PER_PIN_OE_11",
+     "0x258",
+     "4",
+     "Per-pin view of the output enable of GPIO[11]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_11",
+     "0x25c",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[11]."
+    ],
+    [
+     "gpio.PER_PIN_OE_12",
+     "0x260",
+     "4",
+     "Per-pin view of the output enable of GPIO[12]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_12",
+     "0x264",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[12]."
+    ],
+    [
+     "gpio.PER_PIN_OE_13",
+     "0x268",
+     "4",
+     "Per-pin view of the output enable of GPIO[13]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_13",
+     "0x26c",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[13]."
+    ],
+    [
+     "gpio.PER_PIN_OE_14",
+     "0x270",
+     "4",
+     "Per-pin view of the output enable of GPIO[14]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_14",
+     "0x274",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[14]."
+    ],
+    [
+     "gpio.PER_PIN_OE_15",
+     "0x278",
+     "4",
+     "Per-pin view of the output enable of GPIO[15]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_15",
+     "0x27c",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[15]."
+    ],
+    [
+     "gpio.PER_PIN_OE_16",
+     "0x280",
+     "4",
+     "Per-pin view of the output enable of GPIO[16]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_16",
+     "0x284",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[16]."
+    ],
+    [
+     "gpio.PER_PIN_OE_17",
+     "0x288",
+     "4",
+     "Per-pin view of the output enable of GPIO[17]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_17",
+     "0x28c",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[17]."
+    ],
+    [
+     "gpio.PER_PIN_OE_18",
+     "0x290",
+     "4",
+     "Per-pin view of the output enable of GPIO[18]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_18",
+     "0x294",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[18]."
+    ],
+    [
+     "gpio.PER_PIN_OE_19",
+     "0x298",
+     "4",
+     "Per-pin view of the output enable of GPIO[19]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_19",
+     "0x29c",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[19]."
+    ],
+    [
+     "gpio.PER_PIN_OE_20",
+     "0x2a0",
+     "4",
+     "Per-pin view of the output enable of GPIO[20]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_20",
+     "0x2a4",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[20]."
+    ],
+    [
+     "gpio.PER_PIN_OE_21",
+     "0x2a8",
+     "4",
+     "Per-pin view of the output enable of GPIO[21]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_21",
+     "0x2ac",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[21]."
+    ],
+    [
+     "gpio.PER_PIN_OE_22",
+     "0x2b0",
+     "4",
+     "Per-pin view of the output enable of GPIO[22]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_22",
+     "0x2b4",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[22]."
+    ],
+    [
+     "gpio.PER_PIN_OE_23",
+     "0x2b8",
+     "4",
+     "Per-pin view of the output enable of GPIO[23]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_23",
+     "0x2bc",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[23]."
+    ],
+    [
+     "gpio.PER_PIN_OE_24",
+     "0x2c0",
+     "4",
+     "Per-pin view of the output enable of GPIO[24]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_24",
+     "0x2c4",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[24]."
+    ],
+    [
+     "gpio.PER_PIN_OE_25",
+     "0x2c8",
+     "4",
+     "Per-pin view of the output enable of GPIO[25]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_25",
+     "0x2cc",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[25]."
+    ],
+    [
+     "gpio.PER_PIN_OE_26",
+     "0x2d0",
+     "4",
+     "Per-pin view of the output enable of GPIO[26]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_26",
+     "0x2d4",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[26]."
+    ],
+    [
+     "gpio.PER_PIN_OE_27",
+     "0x2d8",
+     "4",
+     "Per-pin view of the output enable of GPIO[27]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_27",
+     "0x2dc",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[27]."
+    ],
+    [
+     "gpio.PER_PIN_OE_28",
+     "0x2e0",
+     "4",
+     "Per-pin view of the output enable of GPIO[28]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_28",
+     "0x2e4",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[28]."
+    ],
+    [
+     "gpio.PER_PIN_OE_29",
+     "0x2e8",
+     "4",
+     "Per-pin view of the output enable of GPIO[29]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_29",
+     "0x2ec",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[29]."
+    ],
+    [
+     "gpio.PER_PIN_OE_30",
+     "0x2f0",
+     "4",
+     "Per-pin view of the output enable of GPIO[30]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_30",
+     "0x2f4",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[30]."
+    ],
+    [
+     "gpio.PER_PIN_OE_31",
+     "0x2f8",
+     "4",
+     "Per-pin view of the output enable of GPIO[31]."
+    ],
+    [
+     "gpio.PER_PIN_INTR_CTRL_31",
+     "0x2fc",
+     "4",
+     "Per-pin view of the interrupt control and input filter configuration of GPIO[31]."
+    ]
+   ],
+   "line": 345,
+   "units": [
+    "T5.1:s1",
+    "T5.1:s2",
+    "T5.1:s3",
+    "T5.1:s4",
+    "T5.1:s5",
+    "T5.1:s6",
+    "T5.1:s7",
+    "T5.1:s8",
+    "T5.1:s9",
+    "T5.1:s10",
+    "T5.1:s11",
+    "T5.1:s12",
+    "T5.1:s13",
+    "T5.1:s14",
+    "T5.1:s15",
+    "T5.1:s16",
+    "T5.1:s17",
+    "T5.1:s18",
+    "T5.1:s19",
+    "T5.1:s20",
+    "T5.1:s21",
+    "T5.1:s22",
+    "T5.1:s23",
+    "T5.1:s24",
+    "T5.1:s25",
+    "T5.1:s26",
+    "T5.1:s27",
+    "T5.1:s28",
+    "T5.1:s29",
+    "T5.1:s30",
+    "T5.1:s31",
+    "T5.1:s32",
+    "T5.1:s33",
+    "T5.1:s34",
+    "T5.1:s35",
+    "T5.1:s36",
+    "T5.1:s37",
+    "T5.1:s38",
+    "T5.1:s39",
+    "T5.1:s40",
+    "T5.1:s41",
+    "T5.1:s42",
+    "T5.1:s43",
+    "T5.1:s44",
+    "T5.1:s45",
+    "T5.1:s46",
+    "T5.1:s47",
+    "T5.1:s48",
+    "T5.1:s49",
+    "T5.1:s50",
+    "T5.1:s51",
+    "T5.1:s52",
+    "T5.1:s53",
+    "T5.1:s54",
+    "T5.1:s55",
+    "T5.1:s56",
+    "T5.1:s57",
+    "T5.1:s58",
+    "T5.1:s59",
+    "T5.1:s60",
+    "T5.1:s61",
+    "T5.1:s62",
+    "T5.1:s63",
+    "T5.1:s64",
+    "T5.1:s65",
+    "T5.1:s66",
+    "T5.1:s67",
+    "T5.1:s68",
+    "T5.1:s69",
+    "T5.1:s70",
+    "T5.1:s71",
+    "T5.1:s72",
+    "T5.1:s73",
+    "T5.1:s74",
+    "T5.1:s75",
+    "T5.1:s76",
+    "T5.1:s77",
+    "T5.1:s78",
+    "T5.1:s79",
+    "T5.1:s80",
+    "T5.1:s81",
+    "T5.1:s82",
+    "T5.1:s83",
+    "T5.1:s84",
+    "T5.1:s85",
+    "T5.1:s86",
+    "T5.1:s87",
+    "T5.1:s88",
+    "T5.1:s89",
+    "T5.1:s90",
+    "T5.1:s91",
+    "T5.1:s92",
+    "T5.1:s93",
+    "T5.1:s94",
+    "T5.1:s95",
+    "T5.1:s96",
+    "T5.1:s97",
+    "T5.1:s98",
+    "T5.1:s99",
+    "T5.1:s100",
+    "T5.1:s101",
+    "T5.1:s102",
+    "T5.1:s103",
+    "T5.1:s104",
+    "T5.1:s105",
+    "T5.1:s106",
+    "T5.1:s107",
+    "T5.1:s108",
+    "T5.1:s109",
+    "T5.1:s110",
+    "T5.1:s111",
+    "T5.1:s112",
+    "T5.1:s113",
+    "T5.1:s114"
+   ]
+  },
+  {
+   "section": "T5.2.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:0",
+     "rw1c",
+     "0x0",
+     "gpio",
+     "raised if any of GPIO pin detects configured interrupt mode"
+    ]
+   ],
+   "line": 474,
+   "units": [
+    "T5.2.1:s1"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.3.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:0",
+     "rw",
+     "0x0",
+     "gpio",
+     "Enable interrupt when corresponding bit in INTR_STATE.gpio is set."
+    ]
+   ],
+   "line": 490,
+   "units": [
+    "T5.3.1:s1"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.4.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:0",
+     "wo",
+     "0x0",
+     "gpio",
+     "Write 1 to force corresponding bit in INTR_STATE.gpio to 1."
+    ]
+   ],
+   "line": 506,
+   "units": [
+    "T5.4.1:s1"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.5.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31",
+     "rw0c",
+     "0x1",
+     "regwen",
+     "Write 0 to disable alert testing until the next reset."
+    ],
+    [
+     "30:1",
+     "",
+     "",
+     "",
+     "Reserved"
+    ],
+    [
+     "0",
+     "wo",
+     "0x0",
+     "fatal_fault",
+     "Write 1 to trigger one alert event of this kind."
+    ]
+   ],
+   "line": 522,
+   "units": [
+    "T5.5.1:s1",
+    "T5.5.1:s2",
+    "T5.5.1:s3"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.6.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:0",
+     "ro",
+     "x",
+     "DATA_IN",
+     ""
+    ]
+   ],
+   "line": 540,
+   "units": [
+    "T5.6.1:s1"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.7.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:0",
+     "rw",
+     "x",
+     "DIRECT_OUT",
+     ""
+    ]
+   ],
+   "line": 556,
+   "units": [
+    "T5.7.1:s1"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.8.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:16",
+     "wo",
+     "x",
+     "mask",
+     "Write data mask[15:0]. A value of 1 in mask[i] allows the updating of DATA_OUT[i], 0 <= i <= 15"
+    ],
+    [
+     "15:0",
+     "rw",
+     "x",
+     "data",
+     "Write data value[15:0]. Value to write into DATA_OUT[i], valid in the presence of mask[i]==1"
+    ]
+   ],
+   "line": 581,
+   "units": [
+    "T5.8.1:s1",
+    "T5.8.1:s2"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.9.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:16",
+     "wo",
+     "x",
+     "mask",
+     "Write data mask[31:16]. A value of 1 in mask[i] allows the updating of DATA_OUT[i], 16 <= i <= 31"
+    ],
+    [
+     "15:0",
+     "rw",
+     "x",
+     "data",
+     "Write data value[31:16]. Value to write into DATA_OUT[i], valid in the presence of mask[i]==1"
+    ]
+   ],
+   "line": 607,
+   "units": [
+    "T5.9.1:s1",
+    "T5.9.1:s2"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.10.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:0",
+     "rw",
+     "x",
+     "DIRECT_OE",
+     ""
+    ]
+   ],
+   "line": 626,
+   "units": [
+    "T5.10.1:s1"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.11.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:16",
+     "rw",
+     "x",
+     "mask",
+     "Write OE mask[15:0]. A value of 1 in mask[i] allows the updating of DATA_OE[i], 0 <= i <= 15"
+    ],
+    [
+     "15:0",
+     "rw",
+     "x",
+     "data",
+     "Write OE value[15:0]. Value to write into DATA_OE[i], valid in the presence of mask[i]==1"
+    ]
+   ],
+   "line": 652,
+   "units": [
+    "T5.11.1:s1",
+    "T5.11.1:s2"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.12.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:16",
+     "rw",
+     "x",
+     "mask",
+     "Write OE mask[31:16]. A value of 1 in mask[i] allows the updating of DATA_OE[i], 16 <= i <= 31"
+    ],
+    [
+     "15:0",
+     "rw",
+     "x",
+     "data",
+     "Write OE value[31:16]. Value to write into DATA_OE[i], valid in the presence of mask[i]==1"
+    ]
+   ],
+   "line": 679,
+   "units": [
+    "T5.12.1:s1",
+    "T5.12.1:s2"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.13.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:0",
+     "rw",
+     "x",
+     "INTR_CTRL_EN_RISING",
+     ""
+    ]
+   ],
+   "line": 699,
+   "units": [
+    "T5.13.1:s1"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.14.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:0",
+     "rw",
+     "x",
+     "INTR_CTRL_EN_FALLING",
+     ""
+    ]
+   ],
+   "line": 718,
+   "units": [
+    "T5.14.1:s1"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.15.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:0",
+     "rw",
+     "x",
+     "INTR_CTRL_EN_LVLHIGH",
+     ""
+    ]
+   ],
+   "line": 737,
+   "units": [
+    "T5.15.1:s1"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.16.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:0",
+     "rw",
+     "x",
+     "INTR_CTRL_EN_LVLLOW",
+     ""
+    ]
+   ],
+   "line": 756,
+   "units": [
+    "T5.16.1:s1"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.17.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:0",
+     "rw",
+     "x",
+     "CTRL_EN_INPUT_FILTER",
+     ""
+    ]
+   ],
+   "line": 775,
+   "units": [
+    "T5.17.1:s1"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.18.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:1",
+     "",
+     "",
+     "",
+     "Reserved"
+    ],
+    [
+     "0",
+     "ro",
+     "0x0",
+     "HW_STRAPS_DATA_IN_VALID",
+     ""
+    ]
+   ],
+   "line": 791,
+   "units": [
+    "T5.18.1:s1",
+    "T5.18.1:s2"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.19.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:0",
+     "ro",
+     "0x0",
+     "HW_STRAPS_DATA_IN",
+     ""
+    ]
+   ],
+   "line": 815,
+   "units": [
+    "T5.19.1:s1"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.20.1",
+   "header": [
+    "Name",
+    "Offset"
+   ],
+   "rows": [
+    [
+     "PER_PIN_IO_0",
+     "0x100"
+    ],
+    [
+     "PER_PIN_IO_1",
+     "0x104"
+    ],
+    [
+     "PER_PIN_IO_2",
+     "0x108"
+    ],
+    [
+     "PER_PIN_IO_3",
+     "0x10c"
+    ],
+    [
+     "PER_PIN_IO_4",
+     "0x110"
+    ],
+    [
+     "PER_PIN_IO_5",
+     "0x114"
+    ],
+    [
+     "PER_PIN_IO_6",
+     "0x118"
+    ],
+    [
+     "PER_PIN_IO_7",
+     "0x11c"
+    ],
+    [
+     "PER_PIN_IO_8",
+     "0x120"
+    ],
+    [
+     "PER_PIN_IO_9",
+     "0x124"
+    ],
+    [
+     "PER_PIN_IO_10",
+     "0x128"
+    ],
+    [
+     "PER_PIN_IO_11",
+     "0x12c"
+    ],
+    [
+     "PER_PIN_IO_12",
+     "0x130"
+    ],
+    [
+     "PER_PIN_IO_13",
+     "0x134"
+    ],
+    [
+     "PER_PIN_IO_14",
+     "0x138"
+    ],
+    [
+     "PER_PIN_IO_15",
+     "0x13c"
+    ],
+    [
+     "PER_PIN_IO_16",
+     "0x140"
+    ],
+    [
+     "PER_PIN_IO_17",
+     "0x144"
+    ],
+    [
+     "PER_PIN_IO_18",
+     "0x148"
+    ],
+    [
+     "PER_PIN_IO_19",
+     "0x14c"
+    ],
+    [
+     "PER_PIN_IO_20",
+     "0x150"
+    ],
+    [
+     "PER_PIN_IO_21",
+     "0x154"
+    ],
+    [
+     "PER_PIN_IO_22",
+     "0x158"
+    ],
+    [
+     "PER_PIN_IO_23",
+     "0x15c"
+    ],
+    [
+     "PER_PIN_IO_24",
+     "0x160"
+    ],
+    [
+     "PER_PIN_IO_25",
+     "0x164"
+    ],
+    [
+     "PER_PIN_IO_26",
+     "0x168"
+    ],
+    [
+     "PER_PIN_IO_27",
+     "0x16c"
+    ],
+    [
+     "PER_PIN_IO_28",
+     "0x170"
+    ],
+    [
+     "PER_PIN_IO_29",
+     "0x174"
+    ],
+    [
+     "PER_PIN_IO_30",
+     "0x178"
+    ],
+    [
+     "PER_PIN_IO_31",
+     "0x17c"
+    ]
+   ],
+   "line": 829,
+   "units": [
+    "T5.20.1:s1",
+    "T5.20.1:s2",
+    "T5.20.1:s3",
+    "T5.20.1:s4",
+    "T5.20.1:s5",
+    "T5.20.1:s6",
+    "T5.20.1:s7",
+    "T5.20.1:s8",
+    "T5.20.1:s9",
+    "T5.20.1:s10",
+    "T5.20.1:s11",
+    "T5.20.1:s12",
+    "T5.20.1:s13",
+    "T5.20.1:s14",
+    "T5.20.1:s15",
+    "T5.20.1:s16",
+    "T5.20.1:s17",
+    "T5.20.1:s18",
+    "T5.20.1:s19",
+    "T5.20.1:s20",
+    "T5.20.1:s21",
+    "T5.20.1:s22",
+    "T5.20.1:s23",
+    "T5.20.1:s24",
+    "T5.20.1:s25",
+    "T5.20.1:s26",
+    "T5.20.1:s27",
+    "T5.20.1:s28",
+    "T5.20.1:s29",
+    "T5.20.1:s30",
+    "T5.20.1:s31",
+    "T5.20.1:s32"
+   ]
+  },
+  {
+   "section": "T5.20.2",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:9",
+     "",
+     "",
+     "",
+     "Reserved"
+    ],
+    [
+     "8",
+     "ro",
+     "x",
+     "data_in",
+     "Input data value of GPIO[i], alias of DATA_IN[i]."
+    ],
+    [
+     "7:1",
+     "",
+     "",
+     "",
+     "Reserved"
+    ],
+    [
+     "0",
+     "rw",
+     "x",
+     "data_out",
+     "Output data value of GPIO[i], alias of DATA_OUT[i]."
+    ]
+   ],
+   "line": 871,
+   "units": [
+    "T5.20.2:s1",
+    "T5.20.2:s2",
+    "T5.20.2:s3",
+    "T5.20.2:s4"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.21.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:1",
+     "",
+     "",
+     "",
+     "Reserved"
+    ],
+    [
+     "0",
+     "rw",
+     "x",
+     "oe",
+     "Output enable of GPIO[0], alias of DATA_OE[0]."
+    ]
+   ],
+   "line": 893,
+   "units": [
+    "T5.21.1:s1",
+    "T5.21.1:s2"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.22.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:5",
+     "",
+     "",
+     "",
+     "Reserved"
+    ],
+    [
+     "4",
+     "rw",
+     "x",
+     "ctrl_en_input_filter",
+     "Input filter enable of GPIO[0], alias of CTRL_EN_INPUT_FILTER[0]."
+    ],
+    [
+     "3",
+     "rw",
+     "x",
+     "intr_ctrl_en_lvllow",
+     "Level-low interrupt enable of GPIO[0], alias of INTR_CTRL_EN_LVLLOW[0]."
+    ],
+    [
+     "2",
+     "rw",
+     "x",
+     "intr_ctrl_en_lvlhigh",
+     "Level-high interrupt enable of GPIO[0], alias of INTR_CTRL_EN_LVLHIGH[0]."
+    ],
+    [
+     "1",
+     "rw",
+     "x",
+     "intr_ctrl_en_falling",
+     "Falling-edge interrupt enable of GPIO[0], alias of INTR_CTRL_EN_FALLING[0]."
+    ],
+    [
+     "0",
+     "rw",
+     "x",
+     "intr_ctrl_en_rising",
+     "Rising-edge interrupt enable of GPIO[0], alias of INTR_CTRL_EN_RISING[0]."
+    ]
+   ],
+   "line": 914,
+   "units": [
+    "T5.22.1:s1",
+    "T5.22.1:s2",
+    "T5.22.1:s3",
+    "T5.22.1:s4",
+    "T5.22.1:s5",
+    "T5.22.1:s6"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T6.1",
+   "header": [
+    "Pin name",
+    "Direction",
+    "Description"
+   ],
+   "rows": [
+    [
+     "gpio[31:0]",
+     "inout",
+     "GPIO inout to/from PAD"
+    ]
+   ],
+   "line": 939,
+   "units": [
+    "T6.1:s1"
+   ]
+  },
+  {
+   "section": "T6.2",
+   "header": [
+    "Port Name",
+    "Package::Struct",
+    "Type",
+    "Act",
+    "Width",
+    "Description"
+   ],
+   "rows": [
+    [
+     "strap_en",
+     "logic",
+     "uni",
+     "rcv",
+     "1",
+     "The strap enable signal tells gpio to take a snapshot of the input pins. The behaviour of this signal after that event will have no effect."
+    ],
+    [
+     "sampled_straps",
+     "gpio_pkg::gpio_straps",
+     "uni",
+     "req",
+     "1",
+     "This vector contains the sampled strap values."
+    ],
+    [
+     "racl_policies",
+     "top_racl_pkg::racl_policy_vec",
+     "uni",
+     "rcv",
+     "1",
+     "Incoming RACL policy vector from a racl_ctrl instance. The policy selection vector (parameter) selects the policy for each register."
+    ],
+    [
+     "racl_error",
+     "top_racl_pkg::racl_error_log",
+     "uni",
+     "req",
+     "1",
+     "RACL error log information of this module."
+    ],
+    [
+     "tl",
+     "tlul_pkg::tl",
+     "req_rsp",
+     "rsp",
+     "1",
+     ""
+    ]
+   ],
+   "line": 945,
+   "units": [
+    "T6.2:s1",
+    "T6.2:s2",
+    "T6.2:s3",
+    "T6.2:s4",
+    "T6.2:s5"
+   ]
+  },
+  {
+   "section": "T6.3",
+   "header": [
+    "Interrupt Name",
+    "Type",
+    "Description"
+   ],
+   "rows": [
+    [
+     "gpio[31:0]",
+     "Event",
+     "raised if any of GPIO pin detects configured interrupt mode"
+    ]
+   ],
+   "line": 955,
+   "units": [
+    "T6.3:s1"
+   ]
+  },
+  {
+   "section": "T6.4",
+   "header": [
+    "Alert Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "fatal_fault",
+     "This fatal alert is triggered when a fatal TL-UL bus integrity fault is detected."
+    ]
+   ],
+   "line": 961,
+   "units": [
+    "T6.4:s1"
+   ]
+  },
+  {
+   "section": "T6.5",
+   "header": [
+    "Countermeasure ID",
+    "Description"
+   ],
+   "rows": [
+    [
+     "GPIO.BUS.INTEGRITY",
+     "End-to-end bus integrity scheme."
+    ]
+   ],
+   "line": 967,
+   "units": [
+    "T6.5:s1"
+   ]
+  },
+  {
+   "section": "1",
+   "header": [
+    "Parameter",
+    "Default",
+    "Legal values",
+    "Description"
+   ],
+   "rows": [
+    [
+     "GpioAsyncOn",
+     "1",
+     "0 or 1",
+     "\"Instantiates 2-flop synchronizers on all GPIO inputs if set to 1.\" (gpio parameter list)"
+    ],
+    [
+     "GpioAsHwStrapsEn",
+     "1",
+     "0 or 1",
+     "\"Enable HW straps sampling logic for GPIO inputs at initial cold boot\" (gpio parameter list); the behaviour of HW_STRAPS_DATA_IN for each value is given in its register description"
+    ]
+   ],
+   "line": 1000,
+   "units": [
+    "1:s6",
+    "1:s7"
+   ],
+   "caption": "[INT-CFG-004] Two design parameters of gpio are parameters of ot_gpio_nnc and are passed through unchanged:"
+  },
+  {
+   "section": "3",
+   "header": [
+    "Port",
+    "Direction",
+    "Width",
+    "Meaning"
+   ],
+   "rows": [
+    [
+     "clk_i",
+     "input",
+     "1",
+     "Clock"
+    ],
+    [
+     "rst_ni",
+     "input",
+     "1",
+     "Active-low reset"
+    ],
+    [
+     "i_a_valid",
+     "input",
+     "1",
+     "TL-UL a_valid"
+    ],
+    [
+     "o_a_ready",
+     "output",
+     "1",
+     "TL-UL a_ready"
+    ],
+    [
+     "i_a_opcode",
+     "input",
+     "3",
+     "TL-UL a_opcode (Get = 4, PutFullData = 0, PutPartialData = 1)"
+    ],
+    [
+     "i_a_param",
+     "input",
+     "3",
+     "TL-UL a_param"
+    ],
+    [
+     "i_a_size",
+     "input",
+     "2",
+     "TL-UL a_size (log2 of the number of bytes)"
+    ],
+    [
+     "i_a_source",
+     "input",
+     "8",
+     "TL-UL a_source"
+    ],
+    [
+     "i_a_address",
+     "input",
+     "32",
+     "TL-UL a_address (byte address; the register offsets of the gpio specification are relative to 0)"
+    ],
+    [
+     "i_a_mask",
+     "input",
+     "4",
+     "TL-UL a_mask"
+    ],
+    [
+     "i_a_data",
+     "input",
+     "32",
+     "TL-UL a_data"
+    ],
+    [
+     "i_a_instr",
+     "input",
+     "1",
+     "1: the request is an instruction fetch (a_user.instr_type = MuBi4True); 0: a data access (MuBi4False)"
+    ],
+    [
+     "i_a_intg_flip",
+     "input",
+     "1",
+     "1: the A-channel integrity sent with the request is corrupted (see 4.2)"
+    ],
+    [
+     "o_d_valid",
+     "output",
+     "1",
+     "TL-UL d_valid"
+    ],
+    [
+     "i_d_ready",
+     "input",
+     "1",
+     "TL-UL d_ready"
+    ],
+    [
+     "o_d_opcode",
+     "output",
+     "3",
+     "TL-UL d_opcode (AccessAck = 0, AccessAckData = 1)"
+    ],
+    [
+     "o_d_param",
+     "output",
+     "3",
+     "TL-UL d_param"
+    ],
+    [
+     "o_d_size",
+     "output",
+     "2",
+     "TL-UL d_size"
+    ],
+    [
+     "o_d_source",
+     "output",
+     "8",
+     "TL-UL d_source"
+    ],
+    [
+     "o_d_sink",
+     "output",
+     "1",
+     "TL-UL d_sink"
+    ],
+    [
+     "o_d_data",
+     "output",
+     "32",
+     "TL-UL d_data"
+    ],
+    [
+     "o_d_error",
+     "output",
+     "1",
+     "TL-UL d_error"
+    ],
+    [
+     "o_d_intg_err",
+     "output",
+     "1",
+     "Response integrity of the D-channel beat is wrong (see 4.3)"
+    ],
+    [
+     "o_alert",
+     "output",
+     "1",
+     "Alert fatal_fault received (see 5)"
+    ],
+    [
+     "o_alert_integ_fail",
+     "output",
+     "1",
+     "Signal integrity failure on the alert differential pairs (see 5)"
+    ],
+    [
+     "i_gpio",
+     "input",
+     "32",
+     "GPIO inputs cio_gpio_i (see 6)"
+    ],
+    [
+     "o_gpio",
+     "output",
+     "32",
+     "GPIO outputs cio_gpio_o: the value of DATA_OUT (see 6)"
+    ],
+    [
+     "o_gpio_en",
+     "output",
+     "32",
+     "GPIO output enables cio_gpio_en_o: the value of DATA_OE (see 6)"
+    ],
+    [
+     "o_intr_gpio",
+     "output",
+     "32",
+     "Interrupts intr_gpio_o, one per GPIO (see 7)"
+    ],
+    [
+     "i_strap_en",
+     "input",
+     "1",
+     "Strap sampling trigger strap_en_i (see 8)"
+    ],
+    [
+     "o_straps_valid",
+     "output",
+     "1",
+     "sampled_straps_o.valid (see 8)"
+    ],
+    [
+     "o_straps_data",
+     "output",
+     "32",
+     "sampled_straps_o.data (see 8)"
+    ]
+   ],
+   "line": 1023,
+   "units": [
+    "3:s1",
+    "3:s2",
+    "3:s3",
+    "3:s4",
+    "3:s5",
+    "3:s6",
+    "3:s7",
+    "3:s8",
+    "3:s9",
+    "3:s10",
+    "3:s11",
+    "3:s12",
+    "3:s13",
+    "3:s14",
+    "3:s15",
+    "3:s16",
+    "3:s17",
+    "3:s18",
+    "3:s19",
+    "3:s20",
+    "3:s21",
+    "3:s22",
+    "3:s23",
+    "3:s24",
+    "3:s25",
+    "3:s26",
+    "3:s27",
+    "3:s28",
+    "3:s29",
+    "3:s30",
+    "3:s31",
+    "3:s32"
+   ]
+  },
+  {
+   "section": "10",
+   "header": [
+    "ID",
+    "Subject",
+    "Decision"
+   ],
+   "rows": [
+    [
+     "D-001",
+     "Masked writes of DATA_OE (GAP-001)",
+     "The register descriptions bind, and the Theory of Operation says the masked-write concept \"is duplicated for the output enable register\": a write to MASKED_OE_LOWER (MASKED_OE_UPPER) sets DATA_OE[i] to data bit i where mask bit i is 1 and leaves every other bit of DATA_OE unchanged, exactly as for DATA_OUT. The DATA_OE values in the Programmer's Guide example are not used as expected values."
+    ],
+    [
+     "D-002",
+     "Read of MASKED_OE_* bits 31:16 (GAP-002)",
+     "Bits 15:0 of a read of MASKED_OUT_* and MASKED_OE_* are the corresponding half of DATA_OUT / DATA_OE. Bits 31:16 of a read of MASKED_OUT_* are 0. For MASKED_OE_* the text says 0 and the field table says rw: bits 31:16 of a read are not checked."
+    ],
+    [
+     "D-003",
+     "Reset values (GAP-003)",
+     "The \"Reset default\" line of each register binds where the field table says \"x\": DIRECT_OUT, DIRECT_OE, MASKED_*, INTR_CTRL_EN_*, CTRL_EN_INPUT_FILTER, PER_PIN_OE_i, PER_PIN_INTR_CTRL_i and PER_PIN_IO_i.data_out read 0 after reset, and o_gpio and o_gpio_en are 0 while rst_ni = 0 and until written. DATA_IN and PER_PIN_IO_i.data_in are not checked while rst_ni = 0 and in the first 20 cycles after release."
+    ],
+    [
+     "D-004",
+     "INTR_ENABLE and detection (GAP-004)",
+     "The gpio text makes INTR_ENABLE a condition for detection; the comportability specification makes it only mask the output. Checked, as both readings agree: with INTR_ENABLE[i] = 1 a configured event sets INTR_STATE[i]; with INTR_ENABLE[i] = 0, o_intr_gpio[i] stays 0. INTR_STATE[i] after an event that occurs while INTR_ENABLE[i] = 0 is not checked, and neither is o_intr_gpio[i] in the 4 cycles after INTR_ENABLE[i] is set to 1 when such an event may have been latched."
+    ],
+    [
+     "D-005",
+     "W1C while a level condition holds (GAP-005)",
+     "If the level condition still holds after a write of 1 to INTR_STATE[i], INTR_STATE[i] reads 1 and o_intr_gpio[i] (with INTR_ENABLE[i] = 1) is 1 again within 4 cycles after the write response; a dip in between is not checked."
+    ],
+    [
+     "D-006",
+     "Event in the same cycle as a W1C (GAP-006)",
+     "Not checked: tests do not create an edge on GPIO[i] within 8 cycles of a write of 1 to INTR_STATE[i], or do not check INTR_STATE[i] after it."
+    ],
+    [
+     "D-007",
+     "Input filter threshold and switching (GAP-007)",
+     "With CTRL_EN_INPUT_FILTER[i] = 1: a new value of i_gpio[i] held for at most 12 cycles never appears in DATA_IN[i] and creates no interrupt event; a new value held for at least 24 cycles appears in DATA_IN[i] no later than 24 cycles after the change. The exact threshold is not checked. After a write that changes CTRL_EN_INPUT_FILTER[i], DATA_IN[i] and interrupt events of GPIO[i] are not checked for 24 cycles; tests keep i_gpio[i] constant in that window."
+    ],
+    [
+     "D-008",
+     "Strap sampling (GAP-008)",
+     "With GpioAsHwStrapsEn = 1, tests keep i_strap_en = 0 while rst_ni = 0 and for at least 4 cycles after release, then raise it once and keep i_gpio constant from 24 cycles before to 8 cycles after that rising edge. Within 4 cycles after the edge, HW_STRAPS_DATA_IN_VALID reads 1, o_straps_valid = 1, and HW_STRAPS_DATA_IN and o_straps_data equal that i_gpio value. Before the edge both valid indications are 0. Later changes of i_gpio or i_strap_en change neither until reset; after a reset (\"After each reset\", Theory of Operation) the sequence can happen again. A level already high at reset release is not used."
+    ],
+    [
+     "D-009",
+     "Straps disabled (GAP-009)",
+     "With GpioAsHwStrapsEn = 0, HW_STRAPS_DATA_IN reads 0 at all times (register description). HW_STRAPS_DATA_IN_VALID, o_straps_valid and o_straps_data are not checked."
+    ],
+    [
+     "D-010",
+     "ALERT_TEST (GAP-010)",
+     "Tests that trigger an alert write 0x8000_0001 (regwen kept at 1); the combined write 0x0000_0001 is not used. A write with bit 31 = 0 sets regwen to 0 until reset; afterwards a write of 0x8000_0001 completes with d_error = 0, triggers no alert, and regwen still reads 0. One write of 1 to fatal_fault, with no other alert cause and no other such write within 32 cycles, gives exactly one o_alert pulse, no later than 16 cycles after the write response. After reset ALERT_TEST reads 0x8000_0000."
+    ],
+    [
+     "D-011",
+     "Instruction fetches (GAP-011)",
+     "Not stated for registers in these documents. A request with i_a_instr = 1 is not checked for d_error; a write with i_a_instr = 1 is not used."
+    ],
+    [
+     "D-012",
+     "Address decoding (GAP-012)",
+     "Following the register tool (excess address bits are stripped), the registers 0x000..0x2fc use the offsets 0x000..0x3FF. A request to an unmapped offset in 0x000..0x3FF returns d_error = 1 and changes no register. Requests at 0x400 and above are not used."
+    ],
+    [
+     "D-013",
+     "Sub-word and partial writes (GAP-013)",
+     "Per the register tool and the Per-Pin Register View text: full-word writes with mask 1111 succeed. An aligned byte write (a_size 0 at offset 0 of the register, mask 0001) to a register with fields above bit 7 (INTR_*, DIRECT_*, MASKED_*, INTR_CTRL_EN_*, CTRL_EN_INPUT_FILTER, PER_PIN_IO_i) returns d_error = 1 and changes nothing; such a byte write to PER_PIN_OE_i or PER_PIN_INTR_CTRL_i completes with d_error = 0 and has the effect of the write. Other sub-word cases, including a_size 2 with a partial mask, are not checked. Reads of any size return the full register."
+    ],
+    [
+     "D-014",
+     "Outstanding requests and back-pressure (GAP-016)",
+     "TL-UL allows several outstanding requests and does not guarantee order. The test bench matches responses by d_source, uses a distinct a_source per outstanding request, and does not assume o_a_ready = 1."
+    ],
+    [
+     "D-015",
+     "Fields of a response (GAP-018)",
+     "Checked: d_error, d_source (echo of a_source), d_size (echo of a_size), d_opcode (AccessAckData for Get, AccessAck for PutFullData and PutPartialData). d_data is checked only for a Get without error. For an undefined opcode only d_error = 1 is checked. d_param and d_sink are not checked."
+    ],
+    [
+     "D-016",
+     "Reset (GAP-017)",
+     "The test bench keeps i_a_valid = 0 while rst_ni = 0 and in the first cycle after release. While rst_ni = 0, o_d_valid, o_alert, o_alert_integ_fail, o_intr_gpio, o_gpio and o_gpio_en shall be 0; o_a_ready, o_straps_valid and o_straps_data are not checked. A response pending at reset is discarded. The rule that outputs change only at rising clock edges is not applied in cycles where rst_ni is 0 or falls."
+    ],
+    [
+     "D-017",
+     "Integrity outputs and integrity errors (GAP-014)",
+     "o_d_intg_err and o_alert_integ_fail shall be 0 in every cycle with rst_ni = 1. After a request with i_a_intg_flip = 1 is accepted, o_alert shall pulse no later than 16 cycles later and then at least once in every 32 cycles until rst_ni is asserted. The D-channel response to that request, its effect on registers and the behaviour of later requests are not checked; the test bench does not wait more than 32 cycles for that response, and the test resets the design afterwards."
+    ],
+    [
+     "D-018",
+     "Latencies (GAP-015)",
+     "With the filter off, a change of i_gpio[i] held for at least 8 cycles appears in DATA_IN[i] no later than 4 cycles after the first rising edge after the change (both values of GpioAsyncOn). A configured event sets INTR_STATE[i] no later than 4 cycles after it appears in DATA_IN[i]. o_intr_gpio[i] equals INTR_STATE[i] AND INTR_ENABLE[i] except in the 2 cycles after either changes. o_gpio and o_gpio_en equal DATA_OUT and DATA_OE no later than 2 cycles after the response of the write that changed them. Lower bounds are not checked."
+    ],
+    [
+     "D-019",
+     "Writes to read-only registers, reads of write-only fields (GAP-018)",
+     "A write to a ro register or field (DATA_IN, HW_STRAPS_*, PER_PIN_IO_i.data_in) leaves it unchanged; its d_error is not checked. A wo field (INTR_TEST, MASKED_OUT_* mask, ALERT_TEST.fatal_fault) has no read path and reads 0 (register tool, Type WO). Reserved bits read 0 and writes to them have no effect."
+    ],
+    [
+     "D-020",
+     "Programmer's Guide comments (GAP-019)",
+     "The register names and descriptions decide: INTR_CTRL_EN_LVLLOW and INTR_CTRL_EN_LVLHIGH enable level detection, not edge detection. The comments of the examples are not used as expected behaviour."
+    ],
+    [
+     "D-021",
+     "Pins and the pad model",
+     "DATA_IN reflects i_gpio only (INT-IO-002): with o_gpio_en[i] = 1 the test bench may drive i_gpio[i] to any value, and DATA_IN[i] follows i_gpio[i], not o_gpio[i]."
+    ],
+    [
+     "D-022",
+     "Out of scope",
+     "User-bit default values, requests with a non-zero a_param, and the bit layout of a_user/d_user (the wrapper produces them) are not checked; tests drive i_a_param = 0."
+    ]
+   ],
+   "line": 1146,
+   "units": [
+    "10:s4",
+    "10:s5",
+    "10:s6",
+    "10:s7",
+    "10:s8",
+    "10:s9",
+    "10:s10",
+    "10:s11",
+    "10:s12",
+    "10:s13",
+    "10:s14",
+    "10:s15",
+    "10:s16",
+    "10:s17",
+    "10:s18",
+    "10:s19",
+    "10:s20",
+    "10:s21",
+    "10:s22",
+    "10:s23",
+    "10:s24",
+    "10:s25"
+   ],
+   "caption": "delegation by an AI assistant, not by a hardware designer; the G4 reviewer is asked to confirm them."
+  }
+ ],
+ "signals": {
+  "ALERT_TEST": 4,
+  "CTRL_EN_INPUT_FILTER": 10,
+  "DATA_IN": 18,
+  "DATA_OE": 23,
+  "DATA_OUT": 26,
+  "DIRECT_OE": 6,
+  "DIRECT_OUT": 5,
+  "GPIO": 196,
+  "HW_STRAPS_DATA_IN": 9,
+  "HW_STRAPS_DATA_IN_VALID": 5,
+  "INTR_CTRL_EN_": 2,
+  "INTR_CTRL_EN_FALLING": 6,
+  "INTR_CTRL_EN_LVLHIGH": 7,
+  "INTR_CTRL_EN_LVLLOW": 7,
+  "INTR_CTRL_EN_RISING": 6,
+  "INTR_ENABLE": 13,
+  "INTR_STATE": 13,
+  "INTR_TEST": 6,
+  "MASKED_": 2,
+  "MASKED_OE_LOWER": 3,
+  "MASKED_OE_UPPER": 3,
+  "MASKED_OUT_": 2,
+  "MASKED_OUT_LOWER": 3,
+  "MASKED_OUT_UPPER": 3,
+  "NNC": 2,
+  "PER_PIN_INTR_CTRL_0": 3,
+  "PER_PIN_INTR_CTRL_1": 2,
+  "PER_PIN_IO_0": 2,
+  "PER_PIN_IO_1": 2,
+  "PER_PIN_IO_10": 2,
+  "PER_PIN_IO_11": 2,
+  "PER_PIN_IO_12": 2,
+  "PER_PIN_IO_13": 2,
+  "PER_PIN_IO_14": 2,
+  "PER_PIN_IO_15": 2,
+  "PER_PIN_IO_16": 2,
+  "PER_PIN_IO_17": 2,
+  "PER_PIN_IO_18": 2,
+  "PER_PIN_IO_19": 2,
+  "PER_PIN_IO_2": 2,
+  "PER_PIN_IO_20": 2,
+  "PER_PIN_IO_21": 2,
+  "PER_PIN_IO_22": 2,
+  "PER_PIN_IO_23": 2,
+  "PER_PIN_IO_24": 2,
+  "PER_PIN_IO_25": 2,
+  "PER_PIN_IO_26": 2,
+  "PER_PIN_IO_27": 2,
+  "PER_PIN_IO_28": 2,
+  "PER_PIN_IO_29": 2,
+  "PER_PIN_IO_3": 2,
+  "PER_PIN_IO_30": 2,
+  "PER_PIN_IO_31": 2,
+  "PER_PIN_IO_4": 2,
+  "PER_PIN_IO_5": 2,
+  "PER_PIN_IO_6": 2,
+  "PER_PIN_IO_7": 2,
+  "PER_PIN_IO_8": 2,
+  "PER_PIN_IO_9": 2,
+  "PER_PIN_OE_0": 4,
+  "PER_PIN_OE_1": 2,
+  "RACL": 3,
+  "W1C": 2,
+  "i_a_instr": 3,
+  "i_a_intg_flip": 4,
+  "i_a_param": 2,
+  "i_a_valid": 2,
+  "i_d_ready": 2,
+  "i_gpio": 10,
+  "i_strap_en": 3,
+  "o_a_ready": 4,
+  "o_alert": 6,
+  "o_alert_integ_fail": 4,
+  "o_d_intg_err": 4,
+  "o_d_valid": 3,
+  "o_gpio": 8,
+  "o_gpio_en": 8,
+  "o_intr_gpio": 6,
+  "o_straps_data": 5,
+  "o_straps_valid": 5
+ },
+ "warnings": [],
+ "stats": {
+  "sections": 84,
+  "sentences": 516,
+  "normative": 40,
+  "chars": 55303
+ }
+}

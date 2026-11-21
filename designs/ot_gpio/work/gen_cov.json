@@ -1,0 +1,555 @@
+{
+ "module": "nnc_cov",
+ "file": "nnc_cov.sv",
+ "points": [
+  {
+   "id": "COVP-001",
+   "title": "Legal full-word Get handshake",
+   "rules": [
+    "GP-10-27",
+    "GP-10-24",
+    "TL-T2.2-03"
+   ],
+   "checks": [
+    "CHK-013",
+    "CHK-029"
+   ],
+   "condition": "A handshake with opcode Get (4), size 2, mask 1111, word-aligned address, no integrity flip."
+  },
+  {
+   "id": "COVP-002",
+   "title": "Legal PutFullData handshake",
+   "rules": [
+    "GP-10-24",
+    "TL-T3.1.3.4-04"
+   ],
+   "checks": [
+    "CHK-013",
+    "CHK-029"
+   ],
+   "condition": "A handshake with opcode PutFullData (0), size 2, mask 1111, word-aligned address, no integrity flip."
+  },
+  {
+   "id": "COVP-003",
+   "title": "Legal PutPartialData handshake",
+   "rules": [
+    "GP-10-24",
+    "TL-T3.1.3.4-02"
+   ],
+   "checks": [
+    "CHK-013",
+    "CHK-029"
+   ],
+   "condition": "A handshake with opcode PutPartialData (1), size 2, mask 1111, word-aligned address, no integrity flip."
+  },
+  {
+   "id": "COVP-004",
+   "title": "Read response without error",
+   "rules": [
+    "GP-10-27",
+    "TL-T3.1.3.2.3-01"
+   ],
+   "checks": [
+    "CHK-013",
+    "CHK-038"
+   ],
+   "condition": "A D handshake with d_opcode AccessAckData and d_error 0."
+  },
+  {
+   "id": "COVP-005",
+   "title": "Write response without error",
+   "rules": [
+    "GP-10-27",
+    "GP-10-24"
+   ],
+   "checks": [
+    "CHK-013",
+    "CHK-029"
+   ],
+   "condition": "A D handshake with d_opcode AccessAck and d_error 0."
+  },
+  {
+   "id": "COVP-006",
+   "title": "Error response to a read",
+   "rules": [
+    "GP-4.1-06",
+    "RG-T1.4.1-01"
+   ],
+   "checks": [
+    "CHK-035",
+    "CHK-036"
+   ],
+   "condition": "A D handshake with d_opcode AccessAckData and d_error 1."
+  },
+  {
+   "id": "COVP-007",
+   "title": "Error response to a write",
+   "rules": [
+    "GP-4.1-06",
+    "RG-T1.4.1-05"
+   ],
+   "checks": [
+    "CHK-033",
+    "CHK-035"
+   ],
+   "condition": "A D handshake with d_opcode AccessAck and d_error 1."
+  },
+  {
+   "id": "COVP-008",
+   "title": "A-channel back-pressure",
+   "rules": [
+    "GP-4.1-04",
+    "GP-10-26"
+   ],
+   "checks": [
+    "CHK-011",
+    "CHK-038"
+   ],
+   "condition": "i_a_valid is 1 while o_a_ready is 0."
+  },
+  {
+   "id": "COVP-009",
+   "title": "A-channel back-pressure for 3 or more cycles",
+   "rules": [
+    "GP-4.1-04",
+    "GP-10-26"
+   ],
+   "checks": [
+    "CHK-011",
+    "CHK-038"
+   ],
+   "condition": "i_a_valid is 1 and o_a_ready is 0 for the third or later consecutive cycle."
+  },
+  {
+   "id": "COVP-010",
+   "title": "D-channel back-pressure",
+   "rules": [
+    "GP-10-26"
+   ],
+   "checks": [
+    "CHK-012",
+    "CHK-038"
+   ],
+   "condition": "o_d_valid is 1 while i_d_ready is 0."
+  },
+  {
+   "id": "COVP-011",
+   "title": "D-channel back-pressure for 3 or more cycles",
+   "rules": [
+    "GP-10-26"
+   ],
+   "checks": [
+    "CHK-012",
+    "CHK-038"
+   ],
+   "condition": "o_d_valid is 1 and i_d_ready is 0 for the third or later consecutive cycle."
+  },
+  {
+   "id": "COVP-012",
+   "title": "Back-to-back A handshakes",
+   "rules": [
+    "TL-T2.2-03",
+    "GP-10-26"
+   ],
+   "checks": [
+    "CHK-038",
+    "CHK-013"
+   ],
+   "condition": "A handshakes in two consecutive cycles."
+  },
+  {
+   "id": "COVP-013",
+   "title": "Two or more outstanding requests",
+   "rules": [
+    "GP-10-26",
+    "TL-T3.1.3.2-01"
+   ],
+   "checks": [
+    "CHK-013",
+    "CHK-038"
+   ],
+   "condition": "Number of accepted requests not yet answered is at least 2."
+  },
+  {
+   "id": "COVP-014",
+   "title": "Unmapped offset below 0x400",
+   "rules": [
+    "GP-10-20",
+    "TL-T3.1.3.5-03",
+    "RG-T1.4.1-01"
+   ],
+   "checks": [
+    "CHK-036"
+   ],
+   "condition": "A handshake to a word offset in a gap 0x48..0xFF, 0x180..0x1FF or 0x300..0x3FF."
+  },
+  {
+   "id": "COVP-015",
+   "title": "Misaligned address",
+   "rules": [
+    "TL-T3.1.3.5-07",
+    "GP-4.1-06"
+   ],
+   "checks": [
+    "CHK-035"
+   ],
+   "condition": "A handshake with address[1:0] not 0 below 0x400, no integrity flip."
+  },
+  {
+   "id": "COVP-016",
+   "title": "Oversize request",
+   "rules": [
+    "TL-T3.1.3.5-02",
+    "GP-4.1-06"
+   ],
+   "checks": [
+    "CHK-035"
+   ],
+   "condition": "A handshake with a_size 3, no integrity flip."
+  },
+  {
+   "id": "COVP-017",
+   "title": "Undefined opcode",
+   "rules": [
+    "GP-10-28",
+    "TL-T3.1.3.4-05",
+    "RG-T1.4.1-04"
+   ],
+   "checks": [
+    "CHK-035"
+   ],
+   "condition": "A handshake with opcode other than 0, 1 and 4, no integrity flip."
+  },
+  {
+   "id": "COVP-018",
+   "title": "Mask covering inactive lanes",
+   "rules": [
+    "TL-T3.1.3.5-04",
+    "GP-4.1-06"
+   ],
+   "checks": [
+    "CHK-035"
+   ],
+   "condition": "A handshake with size 2 and mask not 1111, or size 0 and mask 1111, no integrity flip."
+  },
+  {
+   "id": "COVP-019",
+   "title": "Byte write to PER_PIN_OE/INTR_CTRL range",
+   "rules": [
+    "GP-10-23",
+    "GP-T4.4-05"
+   ],
+   "checks": [
+    "CHK-033"
+   ],
+   "condition": "A write handshake, size 0, to an address in 0x200..0x2FF, no integrity flip."
+  },
+  {
+   "id": "COVP-020",
+   "title": "Byte write to wide register",
+   "rules": [
+    "GP-10-22",
+    "GP-T4.4-03",
+    "RG-T1.4.1-05"
+   ],
+   "checks": [
+    "CHK-033"
+   ],
+   "condition": "A write handshake, size 0, to a core register offset below 0x48 or to the PER_PIN_IO range, no integrity flip."
+  },
+  {
+   "id": "COVP-021",
+   "title": "Byte read (sub-word, size 0)",
+   "rules": [
+    "RG-T1.4.1-07",
+    "RG-T1.4.1-08"
+   ],
+   "checks": [
+    "CHK-034"
+   ],
+   "condition": "A read handshake with size 0, no integrity flip."
+  },
+  {
+   "id": "COVP-022",
+   "title": "Half-word read (sub-word, size 1)",
+   "rules": [
+    "RG-T1.4.1-07",
+    "RG-T1.4.1-08"
+   ],
+   "checks": [
+    "CHK-034"
+   ],
+   "condition": "A read handshake with size 1, no integrity flip."
+  },
+  {
+   "id": "COVP-023",
+   "title": "Instruction-fetch read",
+   "rules": [
+    "GP-3-01",
+    "GP-4.1-03",
+    "GP-10-19"
+   ],
+   "checks": [
+    "CHK-037"
+   ],
+   "condition": "A read handshake with i_a_instr 1."
+  },
+  {
+   "id": "COVP-024",
+   "title": "Request with corrupted integrity accepted",
+   "rules": [
+    "GP-3-02",
+    "GP-4.2-02",
+    "GP-4.2-03",
+    "GP-10-34"
+   ],
+   "checks": [
+    "CHK-016",
+    "CHK-003"
+   ],
+   "condition": "An A handshake with i_a_intg_flip 1."
+  },
+  {
+   "id": "COVP-025",
+   "title": "Alert pulse observed",
+   "rules": [
+    "GP-3-04",
+    "GP-5-02"
+   ],
+   "checks": [
+    "CHK-002",
+    "CHK-014"
+   ],
+   "condition": "o_alert is 1."
+  },
+  {
+   "id": "COVP-026",
+   "title": "Repeated alert after integrity fault",
+   "rules": [
+    "GP-5-05",
+    "CP-T1.9.1-04",
+    "GP-10-34"
+   ],
+   "checks": [
+    "CHK-016",
+    "CHK-002"
+   ],
+   "condition": "o_alert is 1 after an integrity-fault request and at least one earlier alert pulse since it."
+  },
+  {
+   "id": "COVP-027",
+   "title": "ALERT_TEST fatal_fault write",
+   "rules": [
+    "GP-T5.5.1-02",
+    "GP-5-06",
+    "GP-10-15",
+    "GP-10-17"
+   ],
+   "checks": [
+    "CHK-014",
+    "CHK-003"
+   ],
+   "condition": "A full-word write handshake to 0xC with data bit 0 and bit 31 both 1."
+  },
+  {
+   "id": "COVP-028",
+   "title": "ALERT_TEST regwen clear write",
+   "rules": [
+    "GP-T5.5.1-01",
+    "GP-10-16"
+   ],
+   "checks": [
+    "CHK-015"
+   ],
+   "condition": "A full-word write handshake to 0xC with data bit 31 equal 0."
+  },
+  {
+   "id": "COVP-029",
+   "title": "DATA_OUT direct and masked writes",
+   "rules": [
+    "GP-T2.2-01",
+    "GP-T2.2-02",
+    "GP-T3.2.1-02",
+    "GP-T5.8-01",
+    "GP-T5.9-01"
+   ],
+   "checks": [
+    "CHK-004",
+    "CHK-018",
+    "CHK-019"
+   ],
+   "condition": "A full-word write handshake to 0x14, 0x18 or 0x1C."
+  },
+  {
+   "id": "COVP-030",
+   "title": "DATA_OE direct and masked writes",
+   "rules": [
+    "GP-T3.2.1-05",
+    "GP-T5.10-01",
+    "GP-T5.11-01",
+    "GP-T5.12-01",
+    "GP-10-01"
+   ],
+   "checks": [
+    "CHK-020"
+   ],
+   "condition": "A full-word write handshake to 0x20, 0x24 or 0x28."
+  },
+  {
+   "id": "COVP-031",
+   "title": "PER_PIN_IO write on GPIO 0/15/16/31",
+   "rules": [
+    "GP-T5.1-02",
+    "GP-T5.20-02",
+    "GP-9-07",
+    "GP-9-09"
+   ],
+   "checks": [
+    "CHK-025"
+   ],
+   "condition": "A full-word write handshake to PER_PIN_IO of GPIO 0, 15, 16 or 31."
+  },
+  {
+   "id": "COVP-032",
+   "title": "PER_PIN_OE write on GPIO 0/15/16/31",
+   "rules": [
+    "GP-T5.1-03",
+    "GP-T5.21-02",
+    "GP-T5.23-01",
+    "GP-9-09"
+   ],
+   "checks": [
+    "CHK-026"
+   ],
+   "condition": "A write handshake to PER_PIN_OE (0x200+8*i, 0x204 slot excluded) of GPIO 0, 15, 16 or 31."
+  },
+  {
+   "id": "COVP-033",
+   "title": "PER_PIN_INTR_CTRL write on GPIO 0/15/16/31",
+   "rules": [
+    "GP-T5.1-03",
+    "GP-T5.22-02",
+    "GP-T5.23-01",
+    "GP-9-09"
+   ],
+   "checks": [
+    "CHK-026",
+    "CHK-027"
+   ],
+   "condition": "A write handshake to PER_PIN_INTR_CTRL (0x204+8*i) of GPIO 0, 15, 16 or 31."
+  },
+  {
+   "id": "COVP-034",
+   "title": "Interrupt control and filter register write",
+   "rules": [
+    "GP-T3.2.4-04",
+    "GP-T3.2.3-03",
+    "GP-T2.2-04"
+   ],
+   "checks": [
+    "CHK-017",
+    "CHK-022",
+    "CHK-023"
+   ],
+   "condition": "A full-word write handshake to 0x2C..0x3C (rising, falling, level high, level low, input filter)."
+  },
+  {
+   "id": "COVP-035",
+   "title": "INTR_STATE/INTR_ENABLE/INTR_TEST write",
+   "rules": [
+    "GP-T3.2.4-03",
+    "GP-T5.4.1-01",
+    "CP-T1.8.4-01"
+   ],
+   "checks": [
+    "CHK-006",
+    "CHK-007",
+    "CHK-024"
+   ],
+   "condition": "A full-word write handshake to 0x0, 0x4 or 0x8."
+  },
+  {
+   "id": "COVP-036",
+   "title": "Interrupt output change",
+   "rules": [
+    "GP-T6.3-01",
+    "GP-10-37",
+    "CP-T1.8.5.1-01"
+   ],
+   "checks": [
+    "CHK-006",
+    "CHK-007",
+    "CHK-022"
+   ],
+   "condition": "o_intr_gpio differs from its value in the previous cycle (rise or clear)."
+  },
+  {
+   "id": "COVP-037",
+   "title": "Reset released after activity pending",
+   "rules": [
+    "GP-10-32",
+    "GP-2-05"
+   ],
+   "checks": [
+    "CHK-030",
+    "CHK-008"
+   ],
+   "condition": "First cycle after reset release where a request was outstanding or a response was valid at the last cycle before reset."
+  },
+  {
+   "id": "COVP-038",
+   "title": "Short reset of at most 2 cycles",
+   "rules": [
+    "TL-T3.1.1-02",
+    "GP-2-05"
+   ],
+   "checks": [
+    "CHK-030"
+   ],
+   "condition": "First cycle after reset release following a reset that lasted 1 or 2 cycles."
+  },
+  {
+   "id": "COVP-039",
+   "title": "i_strap_en rising edge",
+   "rules": [
+    "GP-T3.2.3.1-01",
+    "GP-8-01",
+    "GP-10-10"
+   ],
+   "checks": [
+    "CHK-031",
+    "CHK-009"
+   ],
+   "condition": "i_strap_en is 1 and was 0 in the previous cycle."
+  },
+  {
+   "id": "COVP-040",
+   "title": "Strap valid output high",
+   "rules": [
+    "GP-8-02",
+    "GP-8-03",
+    "GP-10-11",
+    "GP-10-13"
+   ],
+   "checks": [
+    "CHK-009",
+    "CHK-031"
+   ],
+   "condition": "o_straps_valid is 1."
+  }
+ ],
+ "status": "lint_clean",
+ "attempts": 1,
+ "problems": [],
+ "lint_errors": "",
+ "usage": {
+  "calls": 1,
+  "cached": 0,
+  "cost_usd": 0.2562,
+  "input_tokens": 2,
+  "output_tokens": 17103,
+  "cache_creation_input_tokens": 20786,
+  "cache_read_input_tokens": 0
+ },
+ "prompt_version": "cov-v2"
+}

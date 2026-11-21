@@ -172,6 +172,29 @@ class FormalTest(unittest.TestCase):
             with self.assertRaises(ValueError):
                 formal.build(contract, rtl, sva, None, frontend="other")
 
+    def test_slang_frontend_sets_dut_parameters_with_G(self):
+        """read_slang elaborates the DUT, so a configuration's parameters go to read_slang (-G) and the formal
+        top instantiates the DUT without overrides (ot_gpio: "does not have a parameter named ...")."""
+        contract = {"top": "m_demo", "checks": [], "interface": {
+            "clock": "clk", "reset": {"name": "rst_n", "active_low": True},
+            "parameters": [{"name": "W", "default": "1"}],
+            "ports": [{"name": n, "direction": "input", "width": "1"} for n in ("clk", "rst_n", "a", "b")]}}
+        with tempfile.TemporaryDirectory() as tmp:
+            rtl, sva = Path(tmp) / "rtl", Path(tmp) / "sva"
+            rtl.mkdir()
+            sva.mkdir()
+            (rtl / "m_demo.sv").write_text("module m_demo #(parameter W = 1) (input logic clk, rst_n, a, b); endmodule\n")
+            (sva / "nnc_chk_demo.sv").write_text(CHK)
+            files, _ = formal.build(contract, rtl, sva, None, params={"W": 0}, frontend="slang")
+            self.assertIn("read_slang  --top m_demo -G W=0 m_demo.sv\n", files["CHK_001.sby"])
+            self.assertIn("chparam -set W 0 nnc_fv_top", files["CHK_001.sby"])
+            top = files["src/nnc_fv_top.sv"]
+            self.assertIn("  m_demo u_dut (", top)
+            self.assertIn("nnc_chk_demo #(.W(W)) u_nnc_chk_demo", top)       # checkers keep the parameter
+            plain, _ = formal.build(contract, rtl, sva, None, params={"W": 0})
+            self.assertIn("  m_demo #(.W(W)) u_dut (", plain["src/nnc_fv_top.sv"])
+            self.assertNotIn("-G", plain["CHK_001.sby"])
+
     def test_falling_clock_checker_is_simulation_only_with_one_clock(self):
         clocks = formal.clock_names({"clock": "clk", "clocks": [{"name": "clk"}, "clk2"]})
         self.assertEqual(clocks, {"clk", "clk2"})
