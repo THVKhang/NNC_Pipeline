@@ -365,6 +365,18 @@ def cmd_mutate_equiv(args) -> int:
     return 0
 
 
+def cmd_stability(args) -> int:
+    from nnc import stability
+    works = {name: _design_path(name, args.root) / "work" for name in args.designs}
+    res = stability.compare(works)
+    md = stability.to_markdown(res)
+    print(md)
+    if args.out:
+        Path(args.out).write_text(md + "\n", encoding="utf-8")
+        Path(args.out).with_suffix(".json").write_text(json.dumps(res, indent=1) + "\n", encoding="utf-8")
+    return 0
+
+
 def cmd_summary(args) -> int:
     from nnc import summary
     if args.readme:
@@ -770,6 +782,12 @@ def build_parser() -> argparse.ArgumentParser:
                                        "committed results; --readme rewrites the table block in README.md")
     s.add_argument("--readme", help="README.md to update in place (between the nnc-summary markers)")
     s.set_defaults(func=cmd_summary)
+
+    s = sub.add_parser("stability", help="agreement of repeated runs on one specification: rules and checks "
+                                         "compared through the specification sentences they cite (no agent)")
+    s.add_argument("designs", nargs="+", help="two or more design folders made from the same specification")
+    s.add_argument("--out", help="write the table to this .md (and the numbers to .json)")
+    s.set_defaults(func=cmd_stability)
 
     s = sub.add_parser("inject", help="run the approved verification on a patched copy of the RTL (bug injection)")
     s.add_argument("design")
