@@ -17,6 +17,10 @@ class StabilityTest(unittest.TestCase):
         w.mkdir(parents=True)
         (w / "rules.json").write_text(json.dumps({"rules": rules}), encoding="utf-8")
         (w / "contract.json").write_text(json.dumps({"checks": checks}), encoding="utf-8")
+        (w / "spec").mkdir()
+        idx = {"doc": {"file": ""}, "sections": [{"id": "1", "sentences": [
+            {"id": "1:s1", "normative": True}, {"id": "1:s2", "normative": False}, {"id": "1:s3", "normative": True}]}]}
+        (w / "spec" / "x.index.json").write_text(json.dumps(idx), encoding="utf-8")
         return w
 
     def test_compare_two_runs(self):
@@ -35,6 +39,8 @@ class StabilityTest(unittest.TestCase):
         self.assertEqual(p["rule_match"], 0.5)                        # only {1:s1} is a rule in both
         self.assertEqual(p["sentences_checked"], round(1 / 3, 3))     # a checks s1..s3, b checks s1
         self.assertEqual(p["strength_equal"], round(2 / 3, 3))        # s1 is MUST in a, SHOULD in b
+        self.assertEqual(res["runs"]["a"]["normative_kept"], 2)       # s1 and s3 are normative
+        self.assertEqual(p["normative_checked"], 0.5)                 # a checks s1, s3; b checks s1
         self.assertIn("| a vs b | 1.0 |", stability.to_markdown(res))
 
 

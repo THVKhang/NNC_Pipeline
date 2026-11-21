@@ -1,0 +1,817 @@
+{
+ "top": "m_uart_lite",
+ "interface": {
+  "ports": [
+   {
+    "name": "i_clk",
+    "direction": "input",
+    "width": "1",
+    "type": "Clock",
+    "reset_value": "Not applicable",
+    "meaning": "Clock, rising edge",
+    "domain": "CLK"
+   },
+   {
+    "name": "i_rst_n",
+    "direction": "input",
+    "width": "1",
+    "type": "Reset (asynchronous assertion, synchronous release)",
+    "reset_value": "Not applicable",
+    "meaning": "Active-low reset",
+    "domain": "CLK"
+   },
+   {
+    "name": "i_tx_valid",
+    "direction": "input",
+    "width": "1",
+    "type": "Data",
+    "reset_value": "Not applicable",
+    "meaning": "Transmit stream: i_tx_data holds a byte to send",
+    "domain": "CLK"
+   },
+   {
+    "name": "o_tx_ready",
+    "direction": "output",
+    "width": "1",
+    "type": "Data",
+    "reset_value": "1",
+    "meaning": "Transmit stream: the transmitter can accept a byte at the next edge",
+    "domain": "CLK"
+   },
+   {
+    "name": "i_tx_data",
+    "direction": "input",
+    "width": "8",
+    "type": "Data",
+    "reset_value": "Not applicable",
+    "meaning": "Transmit stream: byte to send; bit 0 is sent first",
+    "domain": "CLK"
+   },
+   {
+    "name": "o_rx_valid",
+    "direction": "output",
+    "width": "1",
+    "type": "Data",
+    "reset_value": "0",
+    "meaning": "Receive stream: the holding register holds a byte",
+    "domain": "CLK"
+   },
+   {
+    "name": "i_rx_ready",
+    "direction": "input",
+    "width": "1",
+    "type": "Data",
+    "reset_value": "Not applicable",
+    "meaning": "Receive stream: the consumer takes the held byte at this edge",
+    "domain": "CLK"
+   },
+   {
+    "name": "o_rx_data",
+    "direction": "output",
+    "width": "8",
+    "type": "Data",
+    "reset_value": "0",
+    "meaning": "Receive stream: received byte; bit 0 was received first; qualified by o_rx_valid",
+    "domain": "CLK"
+   },
+   {
+    "name": "o_rx_frame_err",
+    "direction": "output",
+    "width": "1",
+    "type": "Data",
+    "reset_value": "0",
+    "meaning": "Receive stream: 1 when the stop bit of the held byte was sampled as 0; qualified by o_rx_valid",
+    "domain": "CLK"
+   },
+   {
+    "name": "o_rx_overrun",
+    "direction": "output",
+    "width": "1",
+    "type": "Data",
+    "reset_value": "0",
+    "meaning": "One-cycle pulse: a received byte was dropped because the holding register was full",
+    "domain": "CLK"
+   },
+   {
+    "name": "o_txd",
+    "direction": "output",
+    "width": "1",
+    "type": "Data",
+    "reset_value": "1",
+    "meaning": "Serial transmit line, idle high",
+    "domain": "CLK"
+   },
+   {
+    "name": "i_rxd",
+    "direction": "input",
+    "width": "1",
+    "type": "Data (asynchronous)",
+    "reset_value": "Not applicable",
+    "meaning": "Serial receive line, idle high, asynchronous to i_clk, synchronised inside the block",
+    "domain": "ASYNC"
+   }
+  ],
+  "parameters": [
+   {
+    "name": "PARA_UART_CLKS_PER_BIT",
+    "default": "16",
+    "legal": "4 to 65535"
+   }
+  ],
+  "clock": "i_clk",
+  "reset": {
+   "name": "i_rst_n",
+   "active_low": true
+  },
+  "clocks": [
+   {
+    "name": "i_clk",
+    "domain": "CLK"
+   }
+  ],
+  "resets": [
+   {
+    "name": "i_rst_n",
+    "active_low": true,
+    "clock": "i_clk"
+   }
+  ],
+  "source_table": {
+   "section": "5",
+   "line": 79
+  }
+ },
+ "checks": [
+  {
+   "id": "CHK-001",
+   "kind": "assertion",
+   "group": "env",
+   "title": "Input ports are never X/Z after reset release",
+   "rules": [
+    "UL-12.1-03",
+    "UL-12.1-05"
+   ],
+   "behavior": "At every rising edge of i_clk after the first edge with i_rst_n=1, i_tx_valid, i_tx_data[7:0], i_rx_ready and i_rxd are 0 or 1 (no X or Z). This is a testbench-sanity check: a failure flags illegal stimulus.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-002",
+   "kind": "assertion",
+   "group": "reset",
+   "title": "Output values while reset is asserted",
+   "rules": [
+    "UL-6.2-02",
+    "UL-5-03",
+    "UL-5-05",
+    "UL-5-07",
+    "UL-5-10",
+    "UL-5-12",
+    "UL-5-13",
+    "UL-14-01"
+   ],
+   "behavior": "At every rising edge of i_clk where i_rst_n=0, and at every sampling point (including mid-cycle) while i_rst_n=0, all of these hold: o_txd=1, o_tx_ready=1, o_rx_valid=0, o_rx_data=8'h00, o_rx_frame_err=0, o_rx_overrun=0.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-003",
+   "kind": "assertion",
+   "group": "reset",
+   "title": "Transmitter after reset: idle, ready at the first edge, abandoned frame not continued",
+   "rules": [
+    "UL-6.2-03",
+    "UL-6.2-07",
+    "UL-6.2-10"
+   ],
+   "behavior": "Let R1 be the first rising edge with i_rst_n=1 after a period with i_rst_n=0. o_tx_ready=1 when sampled at R1. From R1 up to (not including) the first handshake edge Eh >= R1, o_txd=1 and o_tx_ready=1 in the cycle after each edge. An edge with i_rst_n=0 is never a handshake, even if i_tx_valid=1 and o_tx_ready=1. No bit of a frame whose handshake came before the reset is driven after R1. If i_tx_valid=1 at R1, R1 is a handshake and CHK-009 applies with D = i_tx_data at R1.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-004",
+   "kind": "assertion",
+   "group": "rx",
+   "title": "Held byte is stable until taken",
+   "rules": [
+    "UL-7.6-04",
+    "UL-7.8-03",
+    "UL-1.2-05"
+   ],
+   "behavior": "If i_rst_n=1, o_rx_valid=1 and i_rx_ready=0 at rising edge E, and i_rst_n stays 1 until edge E+1, then in the cycle after E: o_rx_valid=1, and o_rx_data and o_rx_frame_err equal their values before E. This also holds at a delivery edge with an overrun.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-005",
+   "kind": "assertion",
+   "group": "rx",
+   "title": "o_rx_data and o_rx_frame_err change only on a load or on reset",
+   "rules": [
+    "UL-7.6-05"
+   ],
+   "behavior": "If i_rst_n=1 at rising edge E and stays 1 until edge E+1, and o_rx_data or o_rx_frame_err in the cycle after E differs from its value before E, then o_rx_valid=1 in the cycle after E, and at E either o_rx_valid=0 or i_rx_ready=1 (a load). While o_rx_valid=0 and no load happens, o_rx_data and o_rx_frame_err keep the last loaded values, or 0 if nothing has been loaded since the last reset.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-006",
+   "kind": "assertion",
+   "group": "rx",
+   "title": "Overrun pulse: condition, one-cycle width, held byte unchanged",
+   "rules": [
+    "UL-7.8-02",
+    "UL-7.8-03",
+    "UL-5-11",
+    "UL-10.2-01",
+    "UL-10.2-02",
+    "UL-7.8-05"
+   ],
+   "behavior": "If o_rx_overrun=1 in the cycle after rising edge E, then at E i_rst_n=1, o_rx_valid=1 and i_rx_ready=0. In the cycle after E, o_rx_valid=1 and o_rx_data and o_rx_frame_err are unchanged from before E. o_rx_overrun=0 in the cycle after edge E+1, with no dependence on i_rx_ready or any handshake. o_rx_overrun is never 1 in the cycle after an edge where i_rx_ready=1 or o_rx_valid=0.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-007",
+   "kind": "assertion",
+   "group": "rxref",
+   "title": "Cycle-accurate receive reference model (s(E) based, Sections 7.4-7.8)",
+   "rules": [
+    "UL-12.2-03",
+    "UL-7.4-03",
+    "UL-7.5-01",
+    "UL-7.5-02",
+    "UL-7.6-01",
+    "UL-7.6-02",
+    "UL-7.6-03",
+    "UL-7.8-01",
+    "UL-7.8-04",
+    "UL-7.7-01",
+    "UL-8.2-01",
+    "UL-1.2-09",
+    "UL-4-02"
+   ],
+   "behavior": "The checker computes s(E) = i_rxd sampled at rising edge E, with s(E)=1 for edges where i_rst_n=0. Let H=floor(PARA_UART_CLKS_PER_BIT/2) and N=PARA_UART_CLKS_PER_BIT. Model: when idle, T0 is detected at E iff s(E-1)=1 and s(E)=0. At T0+H, if s(T0+H)=1 the model returns to idle (glitch); otherwise data bit i = s(T0+H+(i+1)N) for i=0..7 and the stop sample is s(M) with M=T0+H+9N. The model is idle after M (the next T0 can be M+1 or later). At V=M+2: if o_rx_valid=0, load (valid=1, data=byte, frame_err=~s(M)). If o_rx_valid=1 and i_rx_ready=1, take and load at the same edge (valid stays 1, no overrun). If o_rx_valid=1 and i_rx_ready=0, drop the byte and its flag and set overrun for one cycle. At any non-delivery edge with i_rst_n=1, o_rx_valid=1 and i_rx_ready=1, the byte is taken (valid=0). A reset clears the model, including any frame in progress or completed but not yet delivered. Assertion: in the cycle after every rising edge, o_rx_valid, o_rx_data, o_rx_frame_err and o_rx_overrun equal the model prediction exactly.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-008",
+   "kind": "assertion",
+   "group": "tx",
+   "title": "Transmit handshake condition and first-cycle response",
+   "rules": [
+    "UL-7.2-01",
+    "UL-7.2-06",
+    "UL-5-02",
+    "UL-8.1-01",
+    "UL-10.7-01"
+   ],
+   "behavior": "Define handshake HS(E) as i_rst_n=1, i_tx_valid=1 and o_tx_ready=1, all sampled at rising edge E. (a) If HS(E) holds and i_rst_n stays 1, then in the cycle after E (sampled before edge E+1), o_txd=0 (start bit) and o_tx_ready=0. (b) If i_rst_n=1, o_tx_ready=1 and i_tx_valid=0 at edge E, then in the cycle after E o_txd=1 and o_tx_ready=1, whatever i_tx_data is. (c) If o_tx_ready=0 at edge E, then E is not a handshake whatever i_tx_valid and i_tx_data are: in the cycle after E, o_txd and o_tx_ready equal the values CHK-009 and CHK-010 give for the frame already in progress.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-009",
+   "kind": "assertion",
+   "group": "tx",
+   "title": "Transmit frame content, bit order and bit period (cycle accurate)",
+   "rules": [
+    "UL-7.3-01",
+    "UL-7.3-02",
+    "UL-1.1-01",
+    "UL-1.1-02",
+    "UL-5-04",
+    "UL-7.1-01",
+    "UL-7.2-02",
+    "UL-8.1-02",
+    "UL-12.2-04"
+   ],
+   "behavior": "Let N=PARA_UART_CLKS_PER_BIT. For each handshake edge E0 (CHK-008), let D be i_tx_data sampled at E0. Define frame bit j: F(0)=0, F(j)=D[j-1] for j=1..8, F(9)=1. For every k from 0 to 10N-1, provided i_rst_n=1 at every edge E0..E0+k, o_txd in the cycle after edge E0+k equals F(floor(k/N)). So each of the 10 frame bits is driven for exactly N consecutive cycles, LSB first, and the stop bit ends at edge E0+10N. Values of i_tx_data at edges E0+1..E0+10N-1 have no effect.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-010",
+   "kind": "assertion",
+   "group": "tx",
+   "title": "o_tx_ready timing within a frame",
+   "rules": [
+    "UL-7.2-04",
+    "UL-7.2-05",
+    "UL-8.1-03",
+    "UL-12.2-04"
+   ],
+   "behavior": "For each handshake edge E0, provided i_rst_n stays 1: o_tx_ready=0 in the cycle after every edge E0, E0+1, ..., E0+10N-2 (10N-1 cycles), and o_tx_ready=1 in the cycle after edge E0+10N-1 (the last cycle of the stop bit, where o_txd=1).",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-011",
+   "kind": "assertion",
+   "group": "tx",
+   "title": "Idle transmitter drives o_txd=1 and o_tx_ready=1",
+   "rules": [
+    "UL-7.2-03",
+    "UL-7.3-04",
+    "UL-7.3-05",
+    "UL-1.2-01",
+    "UL-5-13",
+    "UL-8.3-01"
+   ],
+   "behavior": "A frame is in progress after edge E if there is a handshake edge E0 with E0 <= E <= E0+10N-1 and i_rst_n=1 at every edge from E0 to E. At every rising edge E where i_rst_n=1 and no frame is in progress after E, o_txd=1 and o_tx_ready=1 in the cycle after E. In particular, if no handshake happens at E0+10N, then o_txd=1 and o_tx_ready=1 from edge E0+10N until the next handshake edge.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-012",
+   "kind": "assertion",
+   "group": "tx",
+   "title": "Handshake spacing and back-to-back frames with no idle cycle",
+   "rules": [
+    "UL-7.3-03",
+    "UL-1.2-04",
+    "UL-7.2-08"
+   ],
+   "behavior": "For any two consecutive handshake edges E0 < E1 with i_rst_n=1 at every edge between them: E1 - E0 >= 10N (only one byte held, no buffering). If E1 = E0+10N, then o_txd=1 in the cycle after edge E0+10N-1 and o_txd=0 in the cycle after edge E1, so the start bit follows the stop bit with no idle cycle.",
+   "stimulus": "",
+   "expected": ""
+  },
+  {
+   "id": "CHK-013",
+   "kind": "test",
+   "group": "cfg",
+   "title": "CFG-MIN: random full-duplex regression at PARA_UART_CLKS_PER_BIT=4",
+   "rules": [
+    "UL-11-01",
+    "UL-4-02"
+   ],
+   "behavior": "Minimum bit period, H=2, minimum sampling margins.",
+   "stimulus": "Build with PARA_UART_CLKS_PER_BIT=4. Run directed tests equivalent to CHK-032, CHK-022 to CHK-024 and CHK-028 to CHK-030, plus 2000 random tx bytes and rx frames with random i_rx_ready, glitches of 1 to 2 samples, and bad stop bits.",
+   "expected": "Frames are 40 cycles long. o_tx_ready=0 for 39 cycles. Deliveries at T0+2+36+2=T0+40. Glitches of 1 to 2 samples are rejected and 3-sample lows are confirmed. All assertions CHK-002 to CHK-012 pass."
+  },
+  {
+   "id": "CHK-014",
+   "kind": "test",
+   "group": "cfg",
+   "title": "CFG-WIDE: regression at PARA_UART_CLKS_PER_BIT=1024",
+   "rules": [
+    "UL-11-02"
+   ],
+   "behavior": "A wide bit counter works across the full bit period.",
+   "stimulus": "Build with PARA_UART_CLKS_PER_BIT=1024. Send 20 tx bytes (including back-to-back) and receive 20 rx frames (including one overrun, one bad stop bit and one glitch of 512 samples).",
+   "expected": "Each tx bit lasts 1024 cycles, the frame 10240 cycles, and o_tx_ready=0 for 10239 cycles. Rx delivery at T0+512+9216+2=T0+9730. The 512-sample glitch is rejected. All assertions pass."
+  },
+  {
+   "id": "CHK-015",
+   "kind": "test",
+   "group": "cfg",
+   "title": "Odd bit period: PARA_UART_CLKS_PER_BIT=5 (floor half-bit)",
+   "rules": [
+    "UL-4-02"
+   ],
+   "behavior": "H=floor(5/2)=2 is used as the mid-bit offset with an odd N.",
+   "stimulus": "Build with PARA_UART_CLKS_PER_BIT=5. Run the sampling-point test of CHK-023 with sample edges at T0+2+5(i+1) and M=T0+47. Run the glitch test with lows of 2 samples (rejected) and 3 samples (confirmed). Add 500 random tx and rx frames.",
+   "expected": "Bytes are recovered only from the samples at T0+2+5(i+1). Delivery at T0+49. Tx frames are 50 cycles with 5 cycles per bit. All assertions pass."
+  },
+  {
+   "id": "CHK-016",
+   "kind": "test",
+   "group": "cross",
+   "title": "Full duplex independence",
+   "rules": [
+    "UL-1.2-11",
+    "UL-7.1-02",
+    "UL-7.1-03",
+    "UL-10.7-03"
+   ],
+   "behavior": "Transmitter and receiver run at the same time. Neither one changes the timing or outputs of the other.",
+   "stimulus": "N=16. Run 1: random tx traffic only (i_rxd=1). Run 2: random rx traffic only (i_tx_valid=0). Run 3: the same tx and rx stimulus sequences together, aligned so that tx handshakes fall on rx delivery edges V and on take edges in at least 20 cases.",
+   "expected": "In run 3, o_txd and o_tx_ready match run 1 cycle for cycle. o_rx_valid, o_rx_data, o_rx_frame_err and o_rx_overrun match run 2 cycle for cycle. All assertions pass."
+  },
+  {
+   "id": "CHK-017",
+   "kind": "test",
+   "group": "cross",
+   "title": "No combinational input-to-output path",
+   "rules": [
+    "UL-7.1-04"
+   ],
+   "behavior": "Outputs change only right after rising edges of i_clk (or on async reset assertion).",
+   "stimulus": "N=16, i_rst_n=1. In states where a change matters (o_tx_ready=1 idle, o_rx_valid=1 held, receiver idle), change i_tx_valid, i_tx_data, i_rx_ready and i_rxd at the falling edge of i_clk. Sample all outputs from just after the falling edge until just before the next rising edge.",
+   "expected": "o_txd, o_tx_ready, o_rx_valid, o_rx_data, o_rx_frame_err and o_rx_overrun do not change between the falling edge and the next rising edge. Changes appear only after rising edges. i_rst_n is excluded because its assertion is asynchronous by design."
+  },
+  {
+   "id": "CHK-018",
+   "kind": "test",
+   "group": "reset",
+   "title": "Asynchronous reset assertion forces all outputs at once",
+   "rules": [
+    "UL-6.2-01",
+    "UL-5-01",
+    "UL-13-05",
+    "UL-6.2-06",
+    "UL-6.2-09",
+    "UL-5-13"
+   ],
+   "behavior": "Reset assertion takes effect without a clock edge, during an active frame and while a byte is held; release is synchronous.",
+   "stimulus": "Default PARA_UART_CLKS_PER_BIT=16. (1) At time 0, i_rst_n=0 before any i_clk edge; hold it for 4 cycles; release synchronously to a rising edge. (2) Accept tx byte 8'h00. Receive a frame with data 8'hC3 and stop bit 0, leave i_rx_ready=0 so o_rx_valid=1, o_rx_data=8'hC3, o_rx_frame_err=1. During tx data bit 2 (o_txd=0, o_tx_ready=0), drive i_rst_n=0 at 1/4 clock period after a rising edge. (3) After release, make an overrun happen (o_rx_overrun=1). Assert i_rst_n=0 at 1/4 period inside that pulse cycle. Release each reset synchronously after at least 2 cycles.",
+   "expected": "(1) Before the first rising edge: o_txd=1, o_tx_ready=1, o_rx_valid=0, o_rx_data=0, o_rx_frame_err=0, o_rx_overrun=0. (2) At 1/2 period after the reset assertion, still before the next rising edge: o_txd=1, o_tx_ready=1, o_rx_valid=0, o_rx_data=8'h00, o_rx_frame_err=0. The held byte does not come back after release. (3) o_rx_overrun=0 before the next rising edge. All outputs keep reset values while i_rst_n=0."
+  },
+  {
+   "id": "CHK-019",
+   "kind": "test",
+   "group": "reset",
+   "title": "Reset during transmission and transmit attempts during reset",
+   "rules": [
+    "UL-6.2-06",
+    "UL-6.2-07",
+    "UL-6.2-03",
+    "UL-6.2-10"
+   ],
+   "behavior": "An abandoned frame is never resumed. Bytes offered during reset are not accepted. A byte can be accepted at the first edge after release.",
+   "stimulus": "N=16. (a) Accept 8'h00 at E0. At edge E0+70 (data bit 3), assert i_rst_n=0 mid-cycle for 3 cycles with i_tx_valid=1 and i_tx_data=8'hFF. Drive i_tx_valid=0 before the release edge R1, then keep i_tx_valid=0 for 400 cycles. (b) Repeat the reset, but drive i_tx_valid=1 and i_tx_data=8'h5A at R1, then i_tx_valid=0.",
+   "expected": "(a) o_txd=1 within the cycle where reset is asserted. o_txd=1 and o_tx_ready=1 at every edge during reset and for all 400 cycles after R1. No start bit appears, so neither 8'h00 nor 8'hFF is sent. (b) o_tx_ready=1 at R1. o_txd=0 in the cycle after R1. The frame of 8'h5A follows (bits 0,0,1,0,1,1,0,1,0,1, each 16 cycles; frame 160 cycles). o_tx_ready=0 after edges R1..R1+158 and 1 after R1+159."
+  },
+  {
+   "id": "CHK-020",
+   "kind": "test",
+   "group": "reset",
+   "title": "Reset during reception and while a byte is held; no detection during reset",
+   "rules": [
+    "UL-6.2-04",
+    "UL-6.2-08",
+    "UL-6.2-09",
+    "UL-6.2-11",
+    "UL-7.4-02"
+   ],
+   "behavior": "Partial frames and the held byte are discarded. While in reset the receiver detects nothing. After release it is idle.",
+   "stimulus": "N=16, i_rxd changed on falling edges. (a) Start a frame of 8'hFF on i_rxd. During data bit 1, assert i_rst_n=0 for 4 cycles. Keep i_rxd=1 through release and for 400 cycles. (b) While i_rst_n=0 for 400 cycles, drive full frames 8'h00 and 8'hA5 on i_rxd, ending with i_rxd=1 before release. (c) Receive 8'h3C, leave it held (i_rx_ready=0), then assert reset. After each case, send a normal frame 8'h3C detected at T0 and take it.",
+   "expected": "(a), (b) and (c): o_rx_valid, o_rx_frame_err and o_rx_overrun stay 0 during reset and after release until the new 8'h3C frame. The new frame is delivered at V=T0+154: o_rx_valid=1, o_rx_data=8'h3C, o_rx_frame_err=0, so the receiver was idle. In (c), o_rx_valid=0 and o_rx_data=0 at once on reset, and 8'h3C (old) never comes back."
+  },
+  {
+   "id": "CHK-021",
+   "kind": "test",
+   "group": "reset",
+   "title": "Line low at reset release: synchronizer reset to 1, one break byte",
+   "rules": [
+    "UL-10.5-01",
+    "UL-6.2-05",
+    "UL-10.4-01",
+    "UL-7.4-04",
+    "UL-7.5-04"
+   ],
+   "behavior": "s(R1)=0 at the first edge after release is detected as T0 because the synchronizer and previous-sample flops reset to 1. A single high sample is enough before a new start.",
+   "stimulus": "N=16. Hold i_rxd=0 during reset and after release for 600 cycles, with i_rx_ready=0. Then drive i_rxd=1 for exactly one clock period (from one falling edge to the next, so exactly one rising-edge sample of 1, at edge Ep), then i_rxd=0 again for 200 cycles. Take bytes only after checking them.",
+   "expected": "Exactly one byte is delivered at edge R1+154: o_rx_valid=1, o_rx_data=8'h00, o_rx_frame_err=1. No other delivery or overrun while the line stays low. After the single high sample, a new start is detected at T0=Ep+1. With i_rx_ready=1 before Ep+155, a second byte 8'h00 with o_rx_frame_err=1 is delivered at edge Ep+155. Without a take, o_rx_overrun pulses for one cycle after Ep+155 instead."
+  },
+  {
+   "id": "CHK-022",
+   "kind": "test",
+   "group": "rx",
+   "title": "Directed receive of good frames with take after delivery",
+   "rules": [
+    "UL-1.1-01",
+    "UL-1.1-02",
+    "UL-7.1-01",
+    "UL-5-06",
+    "UL-5-08",
+    "UL-8.2-01",
+    "UL-8.4-01",
+    "UL-1.2-05",
+    "UL-7.6-01",
+    "UL-7.6-03",
+    "UL-7.4-08"
+   ],
+   "behavior": "Each good frame is delivered at V=T0+H+9N+2 and held until taken.",
+   "stimulus": "N=16, H=8. Drive i_rxd frames at exactly 16 cycles per bit, changing on falling edges, with 3 idle bits between them: 8'hA5, 8'h00, 8'hFF, 8'h55, 8'h01, 8'h80. i_rx_ready=0 until 5 cycles after delivery, then 1 for one cycle.",
+   "expected": "For each frame with T0 = the first rising edge sampling the start bit: o_rx_valid=0 before edge T0+154. After edge V=T0+154: o_rx_valid=1, o_rx_data equals the byte, o_rx_frame_err=0, o_rx_overrun=0. Values stay the same until the take edge. o_rx_valid=0 in the cycle after the take edge, and o_rx_data keeps the byte."
+  },
+  {
+   "id": "CHK-023",
+   "kind": "test",
+   "group": "rx",
+   "title": "Mid-bit sampling points and ignored samples",
+   "rules": [
+    "UL-1.2-08",
+    "UL-7.5-01",
+    "UL-7.5-02",
+    "UL-7.5-03",
+    "UL-4-02",
+    "UL-12.2-03"
+   ],
+   "behavior": "Only s(T0-1), s(T0), s(T0+H), s(T0+H+(i+1)N) and s(M) affect the result.",
+   "stimulus": "N=16, H=8. Before T0, line high. Drive s(T0)=0, s(T0+8)=0, and for each data bit i drive the wanted value D[i] only for the clock period that contains edge T0+8+16(i+1), with the opposite value at every other edge of that bit. Stop: value Sp only at M=T0+152, opposite elsewhere between T0+1 and M-1, then line 1 after M. Run D=8'h5A with Sp=1, D=8'hC3 with Sp=0, and D=8'h00 with Sp=1. Also run frames where the line is correct everywhere except the sample edges (inverted there).",
+   "expected": "Delivery at T0+154 with o_rx_data=D and o_rx_frame_err=~Sp. For the inverted-at-sample-edges runs, o_rx_data is the bitwise inverse of the line pattern elsewhere and o_rx_frame_err follows s(M). CHK-007 matches at every edge."
+  },
+  {
+   "id": "CHK-024",
+   "kind": "test",
+   "group": "rx",
+   "title": "Start-bit glitch rejection and re-detection",
+   "rules": [
+    "UL-1.2-07",
+    "UL-7.4-05",
+    "UL-7.4-07",
+    "UL-10.3-01",
+    "UL-10.3-02",
+    "UL-7.4-02",
+    "UL-7.4-03"
+   ],
+   "behavior": "A low pulse sampled at fewer than H+1 consecutive edges from T0 gives nothing. A new start can be detected at T0+H+1. Falling edges inside a confirmed start bit are ignored.",
+   "stimulus": "N=16, H=8. Line idle high. (a) Low pulses sampled at L=1..8 consecutive edges starting at T0, then high, with 300 high cycles between pulses. (b) Low for exactly 9 samples (T0..T0+8), then high for 200 cycles. (c) 1-sample glitch at T0 with s(T0+8)=1 and s(T0+9)=0, then a frame 8'h69 from T0'=T0+9. (d) s(T0)=0, s(T0+1)=1, s(T0+2..T0+15)=0, then data 8'h96 timed from T0 and a good stop.",
+   "expected": "(a) o_rx_valid, o_rx_frame_err and o_rx_overrun stay 0. (b) The frame is confirmed: at T0+154 o_rx_valid=1, o_rx_data=8'hFF, o_rx_frame_err=0. (c) One byte 8'h69 with o_rx_frame_err=0, delivered at T0'+154 = T0+163. (d) One byte 8'h96 delivered at T0+154, not at T0+156."
+  },
+  {
+   "id": "CHK-025",
+   "kind": "test",
+   "group": "rx",
+   "title": "Frame error delivery and recovery",
+   "rules": [
+    "UL-1.2-09",
+    "UL-5-09",
+    "UL-7.7-01",
+    "UL-7.7-02",
+    "UL-10.1-01",
+    "UL-7.5-05"
+   ],
+   "behavior": "Stop sample 0 still completes the frame at M. The byte comes with o_rx_frame_err=1 and is handled like any byte.",
+   "stimulus": "N=16. Send 8'h3C with the stop bit driven 0 for its 16 cycles, then line 1 for 32 cycles. Send 8'hC3 with a bad stop bit, then a good frame 8'h7E. Take each byte 10 cycles after delivery.",
+   "expected": "8'h3C: at T0+154 o_rx_valid=1, o_rx_data=8'h3C, o_rx_frame_err=1. It is held until the take, after which o_rx_valid=0. Same for 8'hC3 with o_rx_frame_err=1. 8'h7E is delivered at its T0+154 with o_rx_frame_err=0. No overrun pulse."
+  },
+  {
+   "id": "CHK-026",
+   "kind": "test",
+   "group": "rx",
+   "title": "Break (line held low) from idle, with and without a held byte",
+   "rules": [
+    "UL-10.4-01",
+    "UL-10.4-02",
+    "UL-7.7-03",
+    "UL-14-02"
+   ],
+   "behavior": "A line held at 0 produces exactly one frame. No new start is detected until a 1 then 0.",
+   "stimulus": "N=16. (a) From idle, with i_rx_ready=1, drive i_rxd=0 for 3000 cycles, then 1 for 50 cycles, then a good frame 8'h42. (b) Same, but with a byte 8'h11 already held and i_rx_ready=0 for the whole break.",
+   "expected": "(a) Exactly one delivery at T0+154: o_rx_data=8'h00, o_rx_frame_err=1. It is taken. No other delivery during the 3000 low cycles. Then 8'h42 is delivered normally. (b) At T0+154, o_rx_overrun=1 for one cycle. o_rx_valid=1, o_rx_data=8'h11 and o_rx_frame_err=0 are unchanged. No further pulse during the break."
+  },
+  {
+   "id": "CHK-027",
+   "kind": "test",
+   "group": "rx",
+   "title": "Idle line and i_rx_ready while nothing is held",
+   "rules": [
+    "UL-10.4-03",
+    "UL-7.6-06",
+    "UL-10.7-02",
+    "UL-5-14"
+   ],
+   "behavior": "A high line produces nothing. i_rx_ready has no effect while o_rx_valid=0.",
+   "stimulus": "N=16. i_rxd=1 for 2000 cycles with i_rx_ready random every cycle (including long runs of 1). Then receive 8'h24, take it, and toggle i_rx_ready randomly for 500 more idle cycles.",
+   "expected": "o_rx_valid=0, o_rx_overrun=0 and o_rx_frame_err=0 throughout. o_rx_data stays 0 before 8'h24 and stays 8'h24 after the take. The delivery of 8'h24 happens at exactly T0+154 whatever i_rx_ready was before it."
+  },
+  {
+   "id": "CHK-028",
+   "kind": "test",
+   "group": "rx",
+   "title": "Overrun: dropped byte and flag, held byte stays, receiver keeps running",
+   "rules": [
+    "UL-1.2-10",
+    "UL-5-11",
+    "UL-7.8-01",
+    "UL-7.8-02",
+    "UL-7.8-03",
+    "UL-7.8-05",
+    "UL-8.4-02",
+    "UL-10.2-01",
+    "UL-10.2-03",
+    "UL-7.5-06"
+   ],
+   "behavior": "A frame completing while a byte is held and not taken is dropped with a one-cycle pulse.",
+   "stimulus": "N=16, i_rx_ready=0. Receive A=8'h5A (good stop), then B=8'hB4 with a bad stop bit, back to back. Then frame C=8'hC7. Take A with a single-cycle i_rx_ready=1 between B's delivery edge and C's delivery edge.",
+   "expected": "At V_B=T0_B+154: o_rx_overrun=1 in the cycle after V_B and 0 after V_B+1, with no handshake. o_rx_valid=1, o_rx_data=8'h5A and o_rx_frame_err=0 stay unchanged (B's data and frame error never appear). After the take, o_rx_valid=0. C is delivered at exactly T0_C+154 with o_rx_data=8'hC7, so the receiver was never stalled."
+  },
+  {
+   "id": "CHK-029",
+   "kind": "test",
+   "group": "rx",
+   "title": "Take exactly at the delivery edge and delivery order",
+   "rules": [
+    "UL-7.6-02",
+    "UL-10.2-02",
+    "UL-8.2-03",
+    "UL-7.6-07"
+   ],
+   "behavior": "A take at V and a load at V happen together with no overrun. A take before V avoids the overrun. Bytes come out in completion order.",
+   "stimulus": "N=16. Receive A=8'h01 and hold it. Receive B=8'h02 and drive i_rx_ready=1 only for the cycle sampled at V_B. Then hold B, and drive i_rx_ready=1 for the single edge V_C-1 before frame C=8'h03 completes.",
+   "expected": "At V_B: o_rx_valid stays 1, o_rx_data changes from 8'h01 to 8'h02, o_rx_overrun=0. At V_C-1: o_rx_valid=0. At V_C: o_rx_valid=1 with o_rx_data=8'h03 and no overrun. The observed bytes are 01, 02, 03."
+  },
+  {
+   "id": "CHK-030",
+   "kind": "test",
+   "group": "rx",
+   "title": "Back-to-back and fast-sender receive streams",
+   "rules": [
+    "UL-8.2-04",
+    "UL-8.2-02",
+    "UL-7.5-04",
+    "UL-7.6-07"
+   ],
+   "behavior": "Frames with no idle bit are accepted. A start detected at M+1 (spacing H+9N+1) is accepted.",
+   "stimulus": "N=16. (a) 16 random bytes back to back at exactly 16 cycles per bit, no idle. Consumer takes each byte within 20 cycles of delivery. (b) 8 frames where each next start bit's first low sample is at M+1 (s(M)=1 and s(M+1)=0, so start-bit spacing is H+9N+1=153 cycles). Data bits are timed from each new T0.",
+   "expected": "(a) 16 deliveries in order with the right data and o_rx_frame_err=0, at T0_k+154, with T0_k = T0_0+160k. No overrun. (b) 8 deliveries in order, each at T0_k+154, with T0_{k+1}=M_k+1. No byte is lost."
+  },
+  {
+   "id": "CHK-031",
+   "kind": "test",
+   "group": "rx",
+   "title": "Asynchronous i_rxd with random phase against the reference model",
+   "rules": [
+    "UL-5-14",
+    "UL-7.4-01",
+    "UL-12.2-03"
+   ],
+   "behavior": "i_rxd driven asynchronously (away from rising edges) is handled with the two-edge synchronizer latency V=M+2 included in CHK-007.",
+   "stimulus": "N=16. 500 random frames on i_rxd with random bit periods of 15 to 17 cycles. Transitions are placed at random offsets that never coincide with a rising edge of i_clk. Include random idle gaps, random glitches, random bad stop bits and random i_rx_ready.",
+   "expected": "CHK-004 to CHK-007 never fire. Every delivery and overrun happens at exactly the edge CHK-007 predicts from s(E)."
+  },
+  {
+   "id": "CHK-032",
+   "kind": "test",
+   "group": "tx",
+   "title": "Directed transmit frames with gaps",
+   "rules": [
+    "UL-1.1-01",
+    "UL-1.1-02",
+    "UL-5-04",
+    "UL-7.1-01",
+    "UL-8.1-01",
+    "UL-8.1-02",
+    "UL-8.1-03",
+    "UL-8.3-01",
+    "UL-7.3-04"
+   ],
+   "behavior": "Each byte appears on o_txd as 8N1, LSB first, N cycles per bit. The transmitter goes back to idle between frames.",
+   "stimulus": "N=16. Send 8'h00, 8'hFF, 8'h55, 8'hAA, 8'h01, 8'h80 and 8'hA5, each with a single-cycle i_tx_valid=1 when o_tx_ready=1, followed by 37 idle cycles.",
+   "expected": "For each byte accepted at E0: o_txd=0 for 16 cycles after E0, then D[0]..D[7] for 16 cycles each, then 1 for 16 cycles. o_tx_ready=0 for 159 cycles and 1 after E0+159. After E0+160 and during the gap, o_txd=1 and o_tx_ready=1. Example 8'hA5: line bits 0,1,0,1,0,0,1,0,1,1."
+  },
+  {
+   "id": "CHK-033",
+   "kind": "test",
+   "group": "tx",
+   "title": "Continuous transmit stream with i_tx_valid held high",
+   "rules": [
+    "UL-8.1-05",
+    "UL-7.3-03",
+    "UL-1.2-04",
+    "UL-8.1-06",
+    "UL-7.2-08"
+   ],
+   "behavior": "One byte is accepted every 10N cycles. Frames are continuous and in order. No byte is buffered.",
+   "stimulus": "N=16. Hold i_tx_valid=1 for 8 frames. After each handshake, present the next byte of 8'h11, 8'h22, ..., 8'h88 on i_tx_data.",
+   "expected": "Handshake edges at E0, E0+160, E0+320, ..., E0+1120. o_txd shows the 8 frames in order with no idle cycle: the stop bit (1) of frame k in the cycle after E0+160k+159, then the start bit (0) in the cycle after E0+160(k+1). o_tx_ready is 1 for exactly one cycle per frame (after E0+160k+159)."
+  },
+  {
+   "id": "CHK-034",
+   "kind": "test",
+   "group": "tx",
+   "title": "Transmit handshake robustness: unstable valid/data, withdrawn offers, back-pressure",
+   "rules": [
+    "UL-7.2-02",
+    "UL-7.2-06",
+    "UL-7.2-07",
+    "UL-10.7-01",
+    "UL-12.1-06",
+    "UL-8.1-04",
+    "UL-5-02",
+    "UL-7.2-01"
+   ],
+   "behavior": "Only the value of i_tx_data at the handshake edge is sent. Offers made while o_tx_ready=0 are not recorded. An offer held until ready is sent exactly once.",
+   "stimulus": "N=16. (a) After a handshake of 8'h3C at E0, toggle i_tx_valid and i_tx_data randomly every cycle until o_tx_ready=1, with i_tx_valid=0 sampled at the edge where o_tx_ready=1 is first seen. (b) Pulse i_tx_valid=1 with 8'hE7 for one cycle while o_tx_ready=0, then i_tx_valid=0 for 400 cycles. (c) Offer 8'h96 with i_tx_valid=1 held stable while o_tx_ready=0, and keep it until the handshake, then drop i_tx_valid. (d) Random valid/data patterns with a scoreboard.",
+   "expected": "(a) o_txd carries exactly 8'h3C. No second frame starts, and o_txd=1 after E0+160. (b) 8'hE7 is never sent. o_txd stays 1 after the current frame ends. (c) 8'h96 is sent exactly once, starting in the cycle after the edge where o_tx_ready=1 and i_tx_valid=1 are first sampled together. (d) The sequence of frames on o_txd equals the sequence of i_tx_data values at handshake edges. CHK-008 to CHK-012 never fire."
+  }
+ ],
+ "not_verified": [
+  {
+   "rule": "UL-1.2-02",
+   "reason": "static_or_structural",
+   "note": "Parameter legality is fixed at elaboration. Not a simulation property."
+  },
+  {
+   "rule": "UL-4-01",
+   "reason": "static_or_structural",
+   "note": "A sweep over all values 4..65535 is not one simulation. Partly covered by runs at N=4 (CHK-013), 5 (CHK-015), 16 (default) and 1024 (CHK-014)."
+  },
+  {
+   "rule": "UL-4-03",
+   "reason": "static_or_structural",
+   "note": "Elaboration error for an illegal parameter. Elaboration check only."
+  },
+  {
+   "rule": "UL-14-03",
+   "reason": "static_or_structural",
+   "note": "Elaboration error for illegal values. The spec says it is not verified (D-011)."
+  },
+  {
+   "rule": "UL-6.1-01",
+   "reason": "static_or_structural",
+   "note": "Single clock, no gated clocks, no latches: lint or structural review."
+  },
+  {
+   "rule": "UL-10.8-01",
+   "reason": "static_or_structural",
+   "note": "N=65535 is covered by elaboration and synthesis only (CFG-WIDE note, D-012). Counter width is reviewed statically."
+  },
+  {
+   "rule": "UL-12.1-01",
+   "reason": "not_applicable_to_dut",
+   "note": "Binds the environment. Applied as a stimulus constraint in all tests (synchronous reset release)."
+  },
+  {
+   "rule": "UL-12.1-02",
+   "reason": "not_applicable_to_dut",
+   "note": "Binds the environment. Every test holds i_rst_n=0 for at least 2 cycles at the start."
+  },
+  {
+   "rule": "UL-12.1-04",
+   "reason": "not_applicable_to_dut",
+   "note": "Testbench constraint: i_rxd changes away from rising edges (falling edge or random offset). Applied in all rx tests, especially CHK-031."
+  },
+  {
+   "rule": "UL-12.2-02",
+   "reason": "static_or_structural",
+   "note": "The synchronizer structure is checked by lint or structural review. Its latency is checked in CHK-007 and CHK-031."
+  },
+  {
+   "rule": "UL-13-01",
+   "reason": "static_or_structural",
+   "note": "Timing closure at 50 MHz on GF180MCU: STA."
+  },
+  {
+   "rule": "UL-13-02",
+   "reason": "static_or_structural",
+   "note": "Coding-rule compliance: review or lint."
+  },
+  {
+   "rule": "UL-13-03",
+   "reason": "static_or_structural",
+   "note": "Synthesizability and absence of latches: synthesis check."
+  },
+  {
+   "rule": "UL-13-04",
+   "reason": "static_or_structural",
+   "note": "Verilator lint with no warnings."
+  },
+  {
+   "rule": "UL-13-06",
+   "reason": "static_or_structural",
+   "note": "Synthesis attributes on the synchronizer flops: structural review."
+  },
+  {
+   "rule": "UL-13-07",
+   "reason": "design_guideline",
+   "note": "Counter width is implementation advice with nothing to observe at the interface."
+  },
+  {
+   "rule": "UL-13-08",
+   "reason": "design_guideline",
+   "note": "Storage minimisation is advice. Only the one-byte buffering is observable, and it is checked in CHK-012 and CHK-028."
+  }
+ ],
+ "assumptions": [
+  "s(E) is the logic value of i_rxd sampled at rising edge E (stable, because the testbench changes i_rxd away from rising edges). The two-flop synchronizer latency is the 2 edges between M and V=M+2. For any edge with i_rst_n=0, s(E) is taken as 1, so s(R1-1)=1 at the first edge R1 after release.",
+  "'In the cycle after edge E' means the output value sampled after edge E and before edge E+1. N=PARA_UART_CLKS_PER_BIT and H=floor(N/2).",
+  "Tests use the default PARA_UART_CLKS_PER_BIT=16 (H=8, V=T0+154, tx frame 160 cycles) unless a different configuration is stated.",
+  "If reset is asserted after the stop sample M but before the delivery edge V, the completed frame is discarded (all flops reset), so the reference model in CHK-007 drops it.",
+  "An extra build with PARA_UART_CLKS_PER_BIT=5 (legal, odd) can be made for CHK-015, in addition to the CFG-MIN and CFG-WIDE builds.",
+  "Asynchronous reset assertion is the only legal input-to-output path not through a clock edge, so i_rst_n is excluded from the combinational-path test CHK-017."
+ ],
+ "decisions": [],
+ "coverage": {
+  "rules": 134,
+  "in_checks": 117,
+  "not_verified": 17,
+  "uncovered_after_first_pass": 0,
+  "uncovered": [],
+  "unknown_ids": []
+ },
+ "contract": {
+  "prompt_version": "contract-v1",
+  "model": "opus",
+  "date": "2026-11-21T01:13:08+00:00",
+  "usage": {
+   "calls": 1,
+   "cached": 0,
+   "cost_usd": 0.8416,
+   "input_tokens": 2,
+   "output_tokens": 31900,
+   "cache_creation_input_tokens": 25110,
+   "cache_read_input_tokens": 981
+  },
+  "rules_sha_source": [
+   "rules_uart_lite_Design_Specification.json"
+  ],
+  "unreviewed_gates": [
+   "G1_rules"
+  ]
+ }
+}

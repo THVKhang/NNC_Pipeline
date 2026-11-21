@@ -1,0 +1,2857 @@
+{
+ "version": 1,
+ "doc": {
+  "file": "uart_lite_Design_Specification.md",
+  "sha256": "d59f5bd01f2ec706a4fb211253036824bc4bb30099dbe8828ce46bef89d3f330",
+  "length": 422,
+  "location": "line"
+ },
+ "sections": [
+  {
+   "id": "front",
+   "title": "Front matter",
+   "level": 0,
+   "parent": null,
+   "page_start": 1,
+   "page_end": 1,
+   "sentences": []
+  },
+  {
+   "id": "T1",
+   "title": "uart_lite Design Specification",
+   "level": 1,
+   "parent": null,
+   "page_start": 1,
+   "page_end": 3,
+   "sentences": [
+    {
+     "id": "T1:s1",
+     "text": "Revision: 0.1, 2026-11-17.",
+     "page": 3,
+     "normative": false
+    },
+    {
+     "id": "T1:s2",
+     "text": "Top module: m_uart_lite.",
+     "page": 3,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "1",
+   "title": "Overview",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 5,
+   "page_end": 5,
+   "sentences": []
+  },
+  {
+   "id": "1.1",
+   "title": "Purpose",
+   "level": 3,
+   "parent": "1",
+   "page_start": 7,
+   "page_end": 8,
+   "sentences": [
+    {
+     "id": "1.1:s1",
+     "text": "uart_lite is a small UART for a single-clock SoC.",
+     "page": 8,
+     "normative": false
+    },
+    {
+     "id": "1.1:s2",
+     "text": "It sends and receives bytes on a serial line in 8N1 format.",
+     "page": 8,
+     "normative": false
+    },
+    {
+     "id": "1.1:s3",
+     "text": "The bit period is a fixed number of i_clk cycles, set by a parameter.",
+     "page": 8,
+     "normative": false
+    },
+    {
+     "id": "1.1:s4",
+     "text": "The system side has one valid/ready byte stream for transmit and one for receive.",
+     "page": 8,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "1.2",
+   "title": "Features",
+   "level": 3,
+   "parent": "1",
+   "page_start": 10,
+   "page_end": 20,
+   "sentences": [
+    {
+     "id": "1.2:s1",
+     "text": "8N1 framing: one start bit (0), eight data bits with the least significant bit first, no parity, one stop bit (1).",
+     "page": 11,
+     "normative": false
+    },
+    {
+     "id": "1.2:s2",
+     "text": "The line is high when idle.",
+     "page": 11,
+     "normative": false
+    },
+    {
+     "id": "1.2:s3",
+     "text": "Bit period of PARA_UART_CLKS_PER_BIT clock cycles.",
+     "page": 12,
+     "normative": false
+    },
+    {
+     "id": "1.2:s4",
+     "text": "The parameter is fixed at elaboration and its legal range is 4 to 65535.",
+     "page": 12,
+     "normative": true
+    },
+    {
+     "id": "1.2:s5",
+     "text": "Transmit stream input (i_tx_valid, o_tx_ready, i_tx_data) with a valid/ready handshake.",
+     "page": 13,
+     "normative": false
+    },
+    {
+     "id": "1.2:s6",
+     "text": "The only transmit storage is the shift register.",
+     "page": 13,
+     "normative": false
+    },
+    {
+     "id": "1.2:s7",
+     "text": "Bytes sent back to back have no idle bit between the stop bit and the next start bit.",
+     "page": 14,
+     "normative": false
+    },
+    {
+     "id": "1.2:s8",
+     "text": "Receive stream output (o_rx_valid, i_rx_ready, o_rx_data, o_rx_frame_err).",
+     "page": 15,
+     "normative": false
+    },
+    {
+     "id": "1.2:s9",
+     "text": "A one-byte holding register keeps each received byte until it is taken.",
+     "page": 15,
+     "normative": false
+    },
+    {
+     "id": "1.2:s10",
+     "text": "A two-flip-flop synchronizer on the asynchronous serial input i_rxd.",
+     "page": 16,
+     "normative": false
+    },
+    {
+     "id": "1.2:s11",
+     "text": "Start-bit detection on a falling edge, a second start-bit check in the middle of the bit (glitch rejection), and sampling of every data bit and the stop bit in the middle of the bit.",
+     "page": 17,
+     "normative": false
+    },
+    {
+     "id": "1.2:s12",
+     "text": "A frame error flag (stop bit sampled as 0), delivered together with the byte.",
+     "page": 18,
+     "normative": false
+    },
+    {
+     "id": "1.2:s13",
+     "text": "An overrun pulse (o_rx_overrun) when a received byte is dropped because the previous byte has not been taken.",
+     "page": 19,
+     "normative": false
+    },
+    {
+     "id": "1.2:s14",
+     "text": "Full duplex: the transmitter and the receiver work at the same time and do not depend on each other.",
+     "page": 20,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "1.3",
+   "title": "Out of scope",
+   "level": 3,
+   "parent": "1",
+   "page_start": 22,
+   "page_end": 30,
+   "sentences": [
+    {
+     "id": "1.3:s1",
+     "text": "Parity, 5/6/7-bit data, two stop bits and any other frame format.",
+     "page": 23,
+     "normative": false
+    },
+    {
+     "id": "1.3:s2",
+     "text": "Changing the baud rate at run time, fractional baud-rate generation and automatic baud detection.",
+     "page": 24,
+     "normative": false
+    },
+    {
+     "id": "1.3:s3",
+     "text": "Hardware flow control (RTS/CTS), XON/XOFF, and a separate break-detect output.",
+     "page": 25,
+     "normative": false
+    },
+    {
+     "id": "1.3:s4",
+     "text": "Majority-vote or oversampling noise filtering beyond the single middle-of-bit sample and the start-bit check.",
+     "page": 26,
+     "normative": false
+    },
+    {
+     "id": "1.3:s5",
+     "text": "Transmit or receive FIFOs deeper than the transmit shift register and the single receive holding register.",
+     "page": 27,
+     "normative": false
+    },
+    {
+     "id": "1.3:s6",
+     "text": "Software-visible registers, a bus interface and interrupts.",
+     "page": 28,
+     "normative": false
+    },
+    {
+     "id": "1.3:s7",
+     "text": "Any stated tolerance to baud-rate mismatch beyond what follows from the sampling points in Section 7.5.",
+     "page": 29,
+     "normative": false
+    },
+    {
+     "id": "1.3:s8",
+     "text": "Metastability modelling.",
+     "page": 30,
+     "normative": false
+    },
+    {
+     "id": "1.3:s9",
+     "text": "The synchronizer is required by structure, but its metastability behaviour is not checked in simulation.",
+     "page": 30,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "title": "References",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 32,
+   "page_end": 38,
+   "sentences": [
+    {
+     "id": "2:s1",
+     "text": "ID: REF-001; Document: uart_lite design description (designer's input to nnc spec-draft); Revision: 2026-11-17; Used for: All functional requirements",
+     "page": 36,
+     "normative": false
+    },
+    {
+     "id": "2:s2",
+     "text": "ID: REF-002; Document: docs/RTL_RULES.md; Revision: Current revision in the repository; Used for: Coding rules (Section 13)",
+     "page": 37,
+     "normative": false
+    },
+    {
+     "id": "2:s3",
+     "text": "ID: REF-003; Document: GF180MCU process design kit and standard-cell library; Revision: Version used by the project flow; Used for: Target technology (Section 13)",
+     "page": 38,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "title": "Terms",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 40,
+   "page_end": 60,
+   "sentences": [
+    {
+     "id": "3:s1",
+     "text": "Term: N; Meaning: Short name for PARA_UART_CLKS_PER_BIT, the bit period in i_clk cycles",
+     "page": 44,
+     "normative": false
+    },
+    {
+     "id": "3:s2",
+     "text": "Term: H; Meaning: Short name for LPARA_UART_HALF_BIT = floor(N / 2), the offset of the middle-of-bit sampling point",
+     "page": 45,
+     "normative": false
+    },
+    {
+     "id": "3:s3",
+     "text": "Term: Edge; Meaning: A rising edge of i_clk. Edges are numbered in order, so E+1 is the edge after edge E",
+     "page": 46,
+     "normative": false
+    },
+    {
+     "id": "3:s4",
+     "text": "Term: Cycle after edge E; Meaning: The clock period that starts at edge E and ends at edge E+1. A registered output that \"becomes X at edge E\" has value X in the cycle after edge E",
+     "page": 47,
+     "normative": false
+    },
+    {
+     "id": "3:s5",
+     "text": "Term: Value at edge E; Meaning: The value of a synchronous input sampled at edge E",
+     "page": 48,
+     "normative": false
+    },
+    {
+     "id": "3:s6",
+     "text": "Term: Handshake (transmit); Meaning: An edge at which i_tx_valid = 1, o_tx_ready = 1 and i_rst_n = 1. The byte on i_tx_data is accepted",
+     "page": 49,
+     "normative": false
+    },
+    {
+     "id": "3:s7",
+     "text": "Term: Accepting edge E0; Meaning: The edge at which a transmit handshake takes place",
+     "page": 50,
+     "normative": false
+    },
+    {
+     "id": "3:s8",
+     "text": "Term: Take (receive); Meaning: An edge at which o_rx_valid = 1, i_rx_ready = 1 and i_rst_n = 1. The held byte leaves the block",
+     "page": 51,
+     "normative": false
+    },
+    {
+     "id": "3:s9",
+     "text": "Term: Frame; Meaning: Start bit, 8 data bits and stop bit: 10 bits, each N cycles long",
+     "page": 52,
+     "normative": false
+    },
+    {
+     "id": "3:s10",
+     "text": "Term: s(E); Meaning: The value of i_rxd captured by the first synchronizer flip-flop at edge E",
+     "page": 53,
+     "normative": false
+    },
+    {
+     "id": "3:s11",
+     "text": "Term: T0; Meaning: The edge at which the receiver detects the falling edge of a start bit: s(T0-1) = 1 and s(T0) = 0 while the receiver is idle",
+     "page": 54,
+     "normative": false
+    },
+    {
+     "id": "3:s12",
+     "text": "Term: M; Meaning: The stop-bit sampling edge of a frame, M = T0 + H + 9N",
+     "page": 55,
+     "normative": false
+    },
+    {
+     "id": "3:s13",
+     "text": "Term: V; Meaning: The delivery edge of a frame, V = M + 2. The 2 is the synchronizer latency",
+     "page": 56,
+     "normative": false
+    },
+    {
+     "id": "3:s14",
+     "text": "Term: Glitch; Meaning: A detected falling edge whose start-bit check s(T0 + H) gives 1",
+     "page": 57,
+     "normative": false
+    },
+    {
+     "id": "3:s15",
+     "text": "Term: Frame error; Meaning: A completed frame whose stop-bit sample s(M) is 0",
+     "page": 58,
+     "normative": false
+    },
+    {
+     "id": "3:s16",
+     "text": "Term: Overrun; Meaning: A completed frame that is dropped because the holding register is full and is not being emptied at its delivery edge V",
+     "page": 59,
+     "normative": false
+    },
+    {
+     "id": "3:s17",
+     "text": "Term: Holding register; Meaning: The one-byte receive output register behind o_rx_data, o_rx_frame_err and o_rx_valid",
+     "page": 60,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "4",
+   "title": "Parameters",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 62,
+   "page_end": 73,
+   "sentences": [
+    {
+     "id": "4:s1",
+     "text": "Parameter: PARA_UART_CLKS_PER_BIT; Default: 16; Legal values: 4 to 65535; Description: Bit period in i_clk cycles (N), used by the transmitter and the receiver",
+     "page": 66,
+     "normative": true
+    },
+    {
+     "id": "4:s2",
+     "text": "Parameter: LPARA_UART_HALF_BIT; Default: Derived; Legal values: -; Description: PARA_UART_CLKS_PER_BIT / 2 with integer division (floor); the middle-of-bit sampling offset H",
+     "page": 67,
+     "normative": true
+    },
+    {
+     "id": "4:s3",
+     "text": "[REQ-PAR-001] The block shall behave as specified for every value of PARA_UART_CLKS_PER_BIT from 4 to 65535 inclusive, both odd and even.",
+     "page": 69,
+     "normative": true
+    },
+    {
+     "id": "4:s4",
+     "text": "[REQ-PAR-002] LPARA_UART_HALF_BIT shall equal floor(PARA_UART_CLKS_PER_BIT / 2).",
+     "page": 71,
+     "normative": true
+    },
+    {
+     "id": "4:s5",
+     "text": "[REQ-PAR-003] The block should stop elaboration with an error message when PARA_UART_CLKS_PER_BIT is less than 4 or greater than 65535.",
+     "page": 73,
+     "normative": true
+    },
+    {
+     "id": "4:s6",
+     "text": "Behaviour for illegal values is not specified and is not verified.",
+     "page": 73,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "5",
+   "title": "Interface",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 75,
+   "page_end": 92,
+   "sentences": [
+    {
+     "id": "5:s1",
+     "text": "m_uart_lite: all ports (CLK)",
+     "page": 77,
+     "normative": false
+    },
+    {
+     "id": "5:s2",
+     "text": "Port: i_clk; Direction: input; Width: 1; Signal type: Clock; Reset value: Not applicable; Clock domain: CLK; Meaning: Clock, rising edge",
+     "page": 81,
+     "normative": false
+    },
+    {
+     "id": "5:s3",
+     "text": "Port: i_rst_n; Direction: input; Width: 1; Signal type: Reset (asynchronous assertion, synchronous release); Reset value: Not applicable; Clock domain: CLK; Meaning: Active-low reset",
+     "page": 82,
+     "normative": false
+    },
+    {
+     "id": "5:s4",
+     "text": "Port: i_tx_valid; Direction: input; Width: 1; Signal type: Data; Reset value: Not applicable; Clock domain: CLK; Meaning: Transmit stream: i_tx_data holds a byte to send",
+     "page": 83,
+     "normative": false
+    },
+    {
+     "id": "5:s5",
+     "text": "Port: o_tx_ready; Direction: output; Width: 1; Signal type: Data; Reset value: 1; Clock domain: CLK; Meaning: Transmit stream: the transmitter can accept a byte at the next edge",
+     "page": 84,
+     "normative": true
+    },
+    {
+     "id": "5:s6",
+     "text": "Port: i_tx_data; Direction: input; Width: 8; Signal type: Data; Reset value: Not applicable; Clock domain: CLK; Meaning: Transmit stream: byte to send; bit 0 is sent first",
+     "page": 85,
+     "normative": false
+    },
+    {
+     "id": "5:s7",
+     "text": "Port: o_rx_valid; Direction: output; Width: 1; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Receive stream: the holding register holds a byte",
+     "page": 86,
+     "normative": false
+    },
+    {
+     "id": "5:s8",
+     "text": "Port: i_rx_ready; Direction: input; Width: 1; Signal type: Data; Reset value: Not applicable; Clock domain: CLK; Meaning: Receive stream: the consumer takes the held byte at this edge",
+     "page": 87,
+     "normative": false
+    },
+    {
+     "id": "5:s9",
+     "text": "Port: o_rx_data; Direction: output; Width: 8; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Receive stream: received byte; bit 0 was received first; qualified by o_rx_valid",
+     "page": 88,
+     "normative": false
+    },
+    {
+     "id": "5:s10",
+     "text": "Port: o_rx_frame_err; Direction: output; Width: 1; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Receive stream: 1 when the stop bit of the held byte was sampled as 0; qualified by o_rx_valid",
+     "page": 89,
+     "normative": false
+    },
+    {
+     "id": "5:s11",
+     "text": "Port: o_rx_overrun; Direction: output; Width: 1; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: One-cycle pulse: a received byte was dropped because the holding register was full",
+     "page": 90,
+     "normative": false
+    },
+    {
+     "id": "5:s12",
+     "text": "Port: o_txd; Direction: output; Width: 1; Signal type: Data; Reset value: 1; Clock domain: CLK; Meaning: Serial transmit line, idle high",
+     "page": 91,
+     "normative": false
+    },
+    {
+     "id": "5:s13",
+     "text": "Port: i_rxd; Direction: input; Width: 1; Signal type: Data (asynchronous); Reset value: Not applicable; Clock domain: ASYNC; Meaning: Serial receive line, idle high, asynchronous to i_clk, synchronised inside the block",
+     "page": 92,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "6",
+   "title": "Clocks and resets",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 94,
+   "page_end": 94,
+   "sentences": []
+  },
+  {
+   "id": "6.1",
+   "title": "Clocks",
+   "level": 3,
+   "parent": "6",
+   "page_start": 96,
+   "page_end": 99,
+   "sentences": [
+    {
+     "id": "6.1:s1",
+     "text": "The block has one clock, i_clk, which defines the clock domain CLK.",
+     "page": 97,
+     "normative": false
+    },
+    {
+     "id": "6.1:s2",
+     "text": "All flip-flops are clocked on the rising edge of i_clk.",
+     "page": 97,
+     "normative": false
+    },
+    {
+     "id": "6.1:s3",
+     "text": "The target frequency is 50 MHz (Section 13).",
+     "page": 97,
+     "normative": false
+    },
+    {
+     "id": "6.1:s4",
+     "text": "Every port is synchronous to i_clk except i_rxd, which is asynchronous and is synchronised inside the block (Section 7.4).",
+     "page": 97,
+     "normative": false
+    },
+    {
+     "id": "6.1:s5",
+     "text": "The bit rate is f(i_clk) / N.",
+     "page": 97,
+     "normative": false
+    },
+    {
+     "id": "6.1:s6",
+     "text": "For example, at 50 MHz, N = 16 gives 3.125 Mbit/s and N = 434 gives about 115200 bit/s.",
+     "page": 97,
+     "normative": false
+    },
+    {
+     "id": "6.1:s7",
+     "text": "[REQ-CLK-001] All state elements of the block shall be clocked by the rising edge of i_clk only, with no other clock, no gated clock and no latch.",
+     "page": 99,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "6.2",
+   "title": "Resets",
+   "level": 3,
+   "parent": "6",
+   "page_start": 101,
+   "page_end": 122,
+   "sentences": [
+    {
+     "id": "6.2:s1",
+     "text": "i_rst_n is active low.",
+     "page": 102,
+     "normative": false
+    },
+    {
+     "id": "6.2:s2",
+     "text": "Its assertion is asynchronous.",
+     "page": 102,
+     "normative": false
+    },
+    {
+     "id": "6.2:s3",
+     "text": "Its release is synchronous to i_clk: the release is synchronised outside the block (ENV-001), and the block contains no reset synchronizer.",
+     "page": 102,
+     "normative": false
+    },
+    {
+     "id": "6.2:s4",
+     "text": "[REQ-RST-001] When i_rst_n becomes 0, every flip-flop of the block shall take its reset value at once, without waiting for an edge of i_clk.",
+     "page": 104,
+     "normative": true
+    },
+    {
+     "id": "6.2:s5",
+     "text": "[REQ-RST-002] While i_rst_n is 0, the outputs shall have these values: o_txd = 1, o_tx_ready = 1, o_rx_valid = 0, o_rx_data = 0, o_rx_frame_err = 0, o_rx_overrun = 0.",
+     "page": 106,
+     "normative": true
+    },
+    {
+     "id": "6.2:s6",
+     "text": "[REQ-RST-003] While i_rst_n is 0, no transmit byte shall be accepted, even when i_tx_valid = 1 and o_tx_ready = 1.",
+     "page": 108,
+     "normative": true
+    },
+    {
+     "id": "6.2:s7",
+     "text": "[REQ-RST-004] While i_rst_n is 0, the receiver shall not detect a start bit and shall not deliver a byte.",
+     "page": 110,
+     "normative": true
+    },
+    {
+     "id": "6.2:s8",
+     "text": "[REQ-RST-005] Both i_rxd synchronizer flip-flops, and any flip-flop that holds the previous synchronised line value, shall reset to 1.",
+     "page": 112,
+     "normative": true
+    },
+    {
+     "id": "6.2:s9",
+     "text": "[REQ-RST-006] If reset is asserted during a transmission, the frame shall be abandoned: o_txd shall become 1 at once, and the rest of the frame and the byte shall not be sent after the release.",
+     "page": 114,
+     "normative": true
+    },
+    {
+     "id": "6.2:s10",
+     "text": "[REQ-RST-007] If reset is asserted during a reception, the partly received frame shall be discarded and shall not produce o_rx_valid, o_rx_frame_err or o_rx_overrun after the release.",
+     "page": 116,
+     "normative": true
+    },
+    {
+     "id": "6.2:s11",
+     "text": "[REQ-RST-008] If reset is asserted while o_rx_valid = 1, the held byte shall be discarded.",
+     "page": 118,
+     "normative": true
+    },
+    {
+     "id": "6.2:s12",
+     "text": "[REQ-RST-009] After the release of i_rst_n, the transmitter shall be idle with o_tx_ready = 1, and it shall be able to accept a byte at the first edge after the release.",
+     "page": 120,
+     "normative": true
+    },
+    {
+     "id": "6.2:s13",
+     "text": "[REQ-RST-010] After the release of i_rst_n, the receiver shall be idle.",
+     "page": 122,
+     "normative": true
+    },
+    {
+     "id": "6.2:s14",
+     "text": "For the first edge R1 after the release, s(R1-1) shall be taken as 1 (the reset value of the synchronizer).",
+     "page": 122,
+     "normative": true
+    },
+    {
+     "id": "6.2:s15",
+     "text": "So if s(R1) = 0, R1 is detected as T0 (Section 10.5).",
+     "page": 122,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "7",
+   "title": "Functional description",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 124,
+   "page_end": 124,
+   "sentences": []
+  },
+  {
+   "id": "7.1",
+   "title": "General",
+   "level": 3,
+   "parent": "7",
+   "page_start": 126,
+   "page_end": 132,
+   "sentences": [
+    {
+     "id": "7.1:s1",
+     "text": "[REQ-GEN-001] The block shall send and receive frames in 8N1 format: a start bit of value 0, then eight data bits with the least significant bit first, then a stop bit of value 1, with no parity bit.",
+     "page": 128,
+     "normative": true
+    },
+    {
+     "id": "7.1:s2",
+     "text": "[REQ-GEN-002] The transmitter and the receiver shall work at the same time and independently.",
+     "page": 130,
+     "normative": true
+    },
+    {
+     "id": "7.1:s3",
+     "text": "No activity of one shall change the timing or the outputs of the other.",
+     "page": 130,
+     "normative": true
+    },
+    {
+     "id": "7.1:s4",
+     "text": "[REQ-GEN-003] Every output port shall be driven directly by a flip-flop clocked by i_clk, so there is no combinational path from any input port to any output port.",
+     "page": 132,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "7.2",
+   "title": "Transmit stream interface",
+   "level": 3,
+   "parent": "7",
+   "page_start": 134,
+   "page_end": 150,
+   "sentences": [
+    {
+     "id": "7.2:s1",
+     "text": "[REQ-TX-001] The transmitter shall accept a byte at an edge only when, at that edge, i_tx_valid = 1, o_tx_ready = 1 and i_rst_n = 1.",
+     "page": 136,
+     "normative": true
+    },
+    {
+     "id": "7.2:s2",
+     "text": "[REQ-TX-002] The transmitter shall capture i_tx_data at the accepting edge E0.",
+     "page": 138,
+     "normative": true
+    },
+    {
+     "id": "7.2:s3",
+     "text": "The value of i_tx_data at any other edge shall have no effect.",
+     "page": 138,
+     "normative": true
+    },
+    {
+     "id": "7.2:s4",
+     "text": "[REQ-TX-003] While the transmitter is idle (no frame in progress), o_tx_ready shall be 1.",
+     "page": 140,
+     "normative": true
+    },
+    {
+     "id": "7.2:s5",
+     "text": "[REQ-TX-004] After an accepting edge E0, o_tx_ready shall be 0 in the cycles after edges E0 to E0+10N-2 inclusive.",
+     "page": 142,
+     "normative": true
+    },
+    {
+     "id": "7.2:s6",
+     "text": "[REQ-TX-005] After an accepting edge E0, o_tx_ready shall become 1 at edge E0+10N-1, which is the last cycle of the stop bit.",
+     "page": 144,
+     "normative": true
+    },
+    {
+     "id": "7.2:s7",
+     "text": "[REQ-TX-006] If i_tx_valid is 0 at an edge, or o_tx_ready is 0 at that edge, the transmitter shall not accept a byte and its state shall not depend on i_tx_data.",
+     "page": 146,
+     "normative": true
+    },
+    {
+     "id": "7.2:s8",
+     "text": "[REQ-TX-007] The transmitter shall not require i_tx_valid to stay 1 until a handshake.",
+     "page": 148,
+     "normative": true
+    },
+    {
+     "id": "7.2:s9",
+     "text": "If i_tx_valid returns to 0 before a handshake, nothing is sent.",
+     "page": 148,
+     "normative": false
+    },
+    {
+     "id": "7.2:s10",
+     "text": "[REQ-TX-008] The transmitter shall hold at most one byte, the byte being sent, and shall have no transmit buffer beyond it.",
+     "page": 150,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "7.3",
+   "title": "Transmit serial frame",
+   "level": 3,
+   "parent": "7",
+   "page_start": 152,
+   "page_end": 164,
+   "sentences": [
+    {
+     "id": "7.3:s1",
+     "text": "Frame bit j (j = 0 to 9) of a byte D is: bit 0 = 0 (start bit); bit j = D[j-1] for j = 1 to 8; bit 9 = 1 (stop bit).",
+     "page": 154,
+     "normative": false
+    },
+    {
+     "id": "7.3:s2",
+     "text": "[REQ-TX-010] For a byte D accepted at edge E0, o_txd in the cycle after edge E0+k shall equal frame bit floor(k / N) of D, for every k from 0 to 10N-1.",
+     "page": 156,
+     "normative": true
+    },
+    {
+     "id": "7.3:s3",
+     "text": "[REQ-TX-011] Each of the 10 frame bits shall be driven on o_txd for exactly N consecutive cycles.",
+     "page": 158,
+     "normative": true
+    },
+    {
+     "id": "7.3:s4",
+     "text": "[REQ-TX-012] If a new byte is accepted at edge E0+10N, its start bit shall begin at edge E0+10N, with no idle cycle between the stop bit of the previous frame and the new start bit.",
+     "page": 160,
+     "normative": true
+    },
+    {
+     "id": "7.3:s5",
+     "text": "[REQ-TX-013] If no byte is accepted at edge E0+10N, o_txd shall be 1 from edge E0+10N until the edge after which the next accepted frame starts.",
+     "page": 162,
+     "normative": true
+    },
+    {
+     "id": "7.3:s6",
+     "text": "[REQ-TX-014] While the transmitter is idle, o_txd shall be 1.",
+     "page": 164,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "7.4",
+   "title": "Receive line synchronisation and start detection",
+   "level": 3,
+   "parent": "7",
+   "page_start": 166,
+   "page_end": 182,
+   "sentences": [
+    {
+     "id": "7.4:s1",
+     "text": "[REQ-RX-001] i_rxd shall go through a synchronizer of exactly two flip-flops clocked by i_clk, with no logic between them, before any other logic of the block uses it.",
+     "page": 168,
+     "normative": true
+    },
+    {
+     "id": "7.4:s2",
+     "text": "[REQ-RX-002] The receiver shall be in one of two conditions, idle or receiving.",
+     "page": 170,
+     "normative": true
+    },
+    {
+     "id": "7.4:s3",
+     "text": "It shall be idle after reset, after a glitch (REQ-RX-005) and after the stop-bit sample of a frame (REQ-RX-013).",
+     "page": 170,
+     "normative": true
+    },
+    {
+     "id": "7.4:s4",
+     "text": "[REQ-RX-003] While idle, the receiver shall detect a start bit at edge T0 if and only if s(T0-1) = 1 and s(T0) = 0.",
+     "page": 172,
+     "normative": true
+    },
+    {
+     "id": "7.4:s5",
+     "text": "[REQ-RX-004] The receiver shall not need the line to be high for longer than the single sample s(T0-1) = 1 before a start bit.",
+     "page": 174,
+     "normative": true
+    },
+    {
+     "id": "7.4:s6",
+     "text": "[REQ-RX-005] At edge T0+H the receiver shall check the start bit.",
+     "page": 176,
+     "normative": true
+    },
+    {
+     "id": "7.4:s7",
+     "text": "If s(T0+H) = 1, the receiver shall treat the event as a glitch, return to idle and receive no byte.",
+     "page": 176,
+     "normative": true
+    },
+    {
+     "id": "7.4:s8",
+     "text": "[REQ-RX-006] A glitch shall not change o_rx_valid, o_rx_data or o_rx_frame_err, and it shall not make o_rx_overrun pulse.",
+     "page": 178,
+     "normative": true
+    },
+    {
+     "id": "7.4:s9",
+     "text": "[REQ-RX-007] After a glitch checked at edge T0+H, the receiver shall detect a new start bit at any edge T0' > T0+H at which REQ-RX-003 holds.",
+     "page": 180,
+     "normative": true
+    },
+    {
+     "id": "7.4:s10",
+     "text": "[REQ-RX-008] If s(T0+H) = 0, the receiver shall go on to receive the frame.",
+     "page": 182,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "7.5",
+   "title": "Receive sampling and byte assembly",
+   "level": 3,
+   "parent": "7",
+   "page_start": 184,
+   "page_end": 196,
+   "sentences": [
+    {
+     "id": "7.5:s1",
+     "text": "[REQ-RX-010] For a frame detected at T0 and confirmed at T0+H, the receiver shall sample data bit i (i = 0 to 7) at edge T0+H+(i+1)N.",
+     "page": 186,
+     "normative": true
+    },
+    {
+     "id": "7.5:s2",
+     "text": "The received byte bit i shall be s(T0+H+(i+1)N).",
+     "page": 186,
+     "normative": true
+    },
+    {
+     "id": "7.5:s3",
+     "text": "[REQ-RX-011] The receiver shall sample the stop bit at edge M = T0+H+9N.",
+     "page": 188,
+     "normative": true
+    },
+    {
+     "id": "7.5:s4",
+     "text": "[REQ-RX-012] Only the samples s(T0-1), s(T0), s(T0+H), the eight data-bit samples and s(M) shall affect the result of a frame.",
+     "page": 190,
+     "normative": true
+    },
+    {
+     "id": "7.5:s5",
+     "text": "Values of i_rxd at all other edges between T0 and M shall be ignored.",
+     "page": 190,
+     "normative": true
+    },
+    {
+     "id": "7.5:s6",
+     "text": "[REQ-RX-013] Once it has sampled the stop bit at M, the receiver shall be idle.",
+     "page": 192,
+     "normative": true
+    },
+    {
+     "id": "7.5:s7",
+     "text": "It shall detect a new start bit at any edge T0' > M at which REQ-RX-003 holds, including T0' = M+1 when s(M) = 1 and s(M+1) = 0.",
+     "page": 192,
+     "normative": true
+    },
+    {
+     "id": "7.5:s8",
+     "text": "[REQ-RX-014] Every frame confirmed at T0+H shall complete at M, whatever the value of s(M).",
+     "page": 194,
+     "normative": true
+    },
+    {
+     "id": "7.5:s9",
+     "text": "[REQ-RX-015] The receiver shall keep sampling and receiving frames while a byte is waiting in the holding register.",
+     "page": 196,
+     "normative": true
+    },
+    {
+     "id": "7.5:s10",
+     "text": "A low i_rx_ready shall not stall or delay the receiver.",
+     "page": 196,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "7.6",
+   "title": "Receive stream interface",
+   "level": 3,
+   "parent": "7",
+   "page_start": 198,
+   "page_end": 214,
+   "sentences": [
+    {
+     "id": "7.6:s1",
+     "text": "[REQ-RX-020] At the delivery edge V = M+2 of a completed frame, if o_rx_valid = 0, the block shall load the frame into the holding register. o_rx_valid then becomes 1, o_rx_data becomes the received byte and o_rx_frame_err becomes the inverse of s(M).",
+     "page": 200,
+     "normative": true
+    },
+    {
+     "id": "7.6:s2",
+     "text": "[REQ-RX-021] At the delivery edge V of a completed frame, if o_rx_valid = 1 and i_rx_ready = 1, the block shall take the held byte and load the new frame into the holding register at the same edge. o_rx_valid stays 1 and no overrun is reported.",
+     "page": 202,
+     "normative": true
+    },
+    {
+     "id": "7.6:s3",
+     "text": "[REQ-RX-022] The consumer takes a held byte at an edge where o_rx_valid = 1, i_rx_ready = 1 and i_rst_n = 1.",
+     "page": 204,
+     "normative": false
+    },
+    {
+     "id": "7.6:s4",
+     "text": "[REQ-RX-023] If a held byte is taken at an edge and no new byte is loaded at that edge, o_rx_valid shall become 0 at that edge.",
+     "page": 206,
+     "normative": true
+    },
+    {
+     "id": "7.6:s5",
+     "text": "[REQ-RX-024] While o_rx_valid = 1 and the byte is not taken, o_rx_valid, o_rx_data and o_rx_frame_err shall keep their values.",
+     "page": 208,
+     "normative": true
+    },
+    {
+     "id": "7.6:s6",
+     "text": "[REQ-RX-025] o_rx_data and o_rx_frame_err shall change only at an edge where a new byte is loaded, or on reset.",
+     "page": 210,
+     "normative": true
+    },
+    {
+     "id": "7.6:s7",
+     "text": "While o_rx_valid = 0 they shall keep the values of the last loaded byte, or 0 if no byte has been loaded since reset.",
+     "page": 210,
+     "normative": true
+    },
+    {
+     "id": "7.6:s8",
+     "text": "[REQ-RX-026] i_rx_ready shall have no effect while o_rx_valid = 0.",
+     "page": 212,
+     "normative": true
+    },
+    {
+     "id": "7.6:s9",
+     "text": "[REQ-RX-027] Bytes shall be delivered on the receive stream in the order in which their frames completed.",
+     "page": 214,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "7.7",
+   "title": "Frame error",
+   "level": 3,
+   "parent": "7",
+   "page_start": 216,
+   "page_end": 222,
+   "sentences": [
+    {
+     "id": "7.7:s1",
+     "text": "[REQ-FE-001] o_rx_frame_err shall be 1 with a loaded byte if and only if the stop-bit sample s(M) of that frame was 0.",
+     "page": 218,
+     "normative": true
+    },
+    {
+     "id": "7.7:s2",
+     "text": "[REQ-FE-002] A byte with a frame error shall be delivered, held and taken like any other byte, and o_rx_data shall hold its sampled data bits.",
+     "page": 220,
+     "normative": true
+    },
+    {
+     "id": "7.7:s3",
+     "text": "[REQ-FE-003] After a frame with a frame error, the receiver shall not detect a new start bit until s has been 1 at one edge and 0 at the next edge (REQ-RX-003), so a line held at 0 produces exactly one frame.",
+     "page": 222,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "7.8",
+   "title": "Overrun",
+   "level": 3,
+   "parent": "7",
+   "page_start": 224,
+   "page_end": 236,
+   "sentences": [
+    {
+     "id": "7.8:s1",
+     "text": "[REQ-OVR-001] At the delivery edge V of a completed frame, if o_rx_valid = 1 and i_rx_ready = 0, the block shall drop the new byte and its frame-error flag.",
+     "page": 226,
+     "normative": true
+    },
+    {
+     "id": "7.8:s2",
+     "text": "[REQ-OVR-002] When a byte is dropped at edge V, o_rx_overrun shall become 1 at edge V and return to 0 at edge V+1, so it is 1 for exactly one cycle.",
+     "page": 228,
+     "normative": true
+    },
+    {
+     "id": "7.8:s3",
+     "text": "[REQ-OVR-003] When a byte is dropped, o_rx_valid, o_rx_data and o_rx_frame_err shall keep the held byte unchanged.",
+     "page": 230,
+     "normative": true
+    },
+    {
+     "id": "7.8:s4",
+     "text": "[REQ-OVR-004] o_rx_overrun shall be 0 in every cycle except the cycle after an edge at which a byte is dropped.",
+     "page": 232,
+     "normative": true
+    },
+    {
+     "id": "7.8:s5",
+     "text": "[REQ-OVR-005] o_rx_overrun shall not be qualified by o_rx_valid and shall not need a handshake.",
+     "page": 234,
+     "normative": true
+    },
+    {
+     "id": "7.8:s6",
+     "text": "[REQ-OVR-006] A glitch, and a frame cut short by reset, shall not make o_rx_overrun pulse.",
+     "page": 236,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "8",
+   "title": "Timing and protocol",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 238,
+   "page_end": 238,
+   "sentences": []
+  },
+  {
+   "id": "8.1",
+   "title": "Transmit latency and throughput",
+   "level": 3,
+   "parent": "8",
+   "page_start": 240,
+   "page_end": 249,
+   "sentences": [
+    {
+     "id": "8.1:s1",
+     "text": "Latency: the start bit starts on o_txd at the accepting edge E0, which means in the first cycle after the handshake.",
+     "page": 242,
+     "normative": false
+    },
+    {
+     "id": "8.1:s2",
+     "text": "Frame length: 10N cycles.",
+     "page": 243,
+     "normative": false
+    },
+    {
+     "id": "8.1:s3",
+     "text": "The stop bit ends at edge E0+10N.",
+     "page": 243,
+     "normative": false
+    },
+    {
+     "id": "8.1:s4",
+     "text": "o_tx_ready is 0 for 10N-1 cycles after E0 and becomes 1 in the last cycle of the stop bit (REQ-TX-004, REQ-TX-005).",
+     "page": 244,
+     "normative": false
+    },
+    {
+     "id": "8.1:s5",
+     "text": "Back-pressure: while o_tx_ready = 0, the upstream block waits; the block never drops an offered byte.",
+     "page": 245,
+     "normative": true
+    },
+    {
+     "id": "8.1:s6",
+     "text": "[REQ-TIM-001] While i_tx_valid is held at 1, the transmitter shall accept one byte every 10N cycles and shall produce a continuous stream of frames with no idle cycle between them.",
+     "page": 247,
+     "normative": true
+    },
+    {
+     "id": "8.1:s7",
+     "text": "[REQ-TIM-002] Bytes shall be sent on o_txd in the order in which they were accepted.",
+     "page": 249,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "8.2",
+   "title": "Receive latency and throughput",
+   "level": 3,
+   "parent": "8",
+   "page_start": 251,
+   "page_end": 257,
+   "sentences": [
+    {
+     "id": "8.2:s1",
+     "text": "Latency: from start-bit detection T0 to delivery V = T0 + H + 9N + 2 edges.",
+     "page": 253,
+     "normative": false
+    },
+    {
+     "id": "8.2:s2",
+     "text": "Measured from the stop-bit sample M, this is 2 edges: the synchronizer latency.",
+     "page": 253,
+     "normative": false
+    },
+    {
+     "id": "8.2:s3",
+     "text": "Smallest spacing between two detected start bits: H + 9N + 1 cycles (REQ-RX-013).",
+     "page": 254,
+     "normative": false
+    },
+    {
+     "id": "8.2:s4",
+     "text": "A transmitter that runs slightly fast is therefore accepted.",
+     "page": 254,
+     "normative": false
+    },
+    {
+     "id": "8.2:s5",
+     "text": "Back-pressure: there is one holding register.",
+     "page": 255,
+     "normative": false
+    },
+    {
+     "id": "8.2:s6",
+     "text": "To avoid an overrun, the consumer has to take a byte before the delivery edge of the next frame.",
+     "page": 255,
+     "normative": false
+    },
+    {
+     "id": "8.2:s7",
+     "text": "[REQ-TIM-003] The receiver shall accept frames back to back with no idle bit between them: a stop bit followed at once by the next start bit, each bit N cycles long.",
+     "page": 257,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "8.3",
+   "title": "Transmit example (N = 4, D = 0xA5)",
+   "level": 3,
+   "parent": "8",
+   "page_start": 259,
+   "page_end": 279,
+   "sentences": [
+    {
+     "id": "8.3:s1",
+     "text": "D = 0xA5 = 1010_0101b, so data bits sent first to last are 1, 0, 1, 0, 0, 1, 0, 1.",
+     "page": 261,
+     "normative": false
+    },
+    {
+     "id": "8.3:s2",
+     "text": "The byte is accepted at edge E0.",
+     "page": 261,
+     "normative": false
+    },
+    {
+     "id": "8.3:s3",
+     "text": "Cycle after edge: E0-1; i_tx_valid: 1; o_tx_ready: 1; o_txd: 1; Frame bit: idle (handshake at E0)",
+     "page": 265,
+     "normative": false
+    },
+    {
+     "id": "8.3:s4",
+     "text": "Cycle after edge: E0 to E0+3; i_tx_valid: x; o_tx_ready: 0; o_txd: 0; Frame bit: start",
+     "page": 266,
+     "normative": false
+    },
+    {
+     "id": "8.3:s5",
+     "text": "Cycle after edge: E0+4 to E0+7; i_tx_valid: x; o_tx_ready: 0; o_txd: 1; Frame bit: D[0]",
+     "page": 267,
+     "normative": false
+    },
+    {
+     "id": "8.3:s6",
+     "text": "Cycle after edge: E0+8 to E0+11; i_tx_valid: x; o_tx_ready: 0; o_txd: 0; Frame bit: D[1]",
+     "page": 268,
+     "normative": false
+    },
+    {
+     "id": "8.3:s7",
+     "text": "Cycle after edge: E0+12 to E0+15; i_tx_valid: x; o_tx_ready: 0; o_txd: 1; Frame bit: D[2]",
+     "page": 269,
+     "normative": false
+    },
+    {
+     "id": "8.3:s8",
+     "text": "Cycle after edge: E0+16 to E0+19; i_tx_valid: x; o_tx_ready: 0; o_txd: 0; Frame bit: D[3]",
+     "page": 270,
+     "normative": false
+    },
+    {
+     "id": "8.3:s9",
+     "text": "Cycle after edge: E0+20 to E0+23; i_tx_valid: x; o_tx_ready: 0; o_txd: 0; Frame bit: D[4]",
+     "page": 271,
+     "normative": false
+    },
+    {
+     "id": "8.3:s10",
+     "text": "Cycle after edge: E0+24 to E0+27; i_tx_valid: x; o_tx_ready: 0; o_txd: 1; Frame bit: D[5]",
+     "page": 272,
+     "normative": false
+    },
+    {
+     "id": "8.3:s11",
+     "text": "Cycle after edge: E0+28 to E0+31; i_tx_valid: x; o_tx_ready: 0; o_txd: 0; Frame bit: D[6]",
+     "page": 273,
+     "normative": false
+    },
+    {
+     "id": "8.3:s12",
+     "text": "Cycle after edge: E0+32 to E0+35; i_tx_valid: x; o_tx_ready: 0; o_txd: 1; Frame bit: D[7]",
+     "page": 274,
+     "normative": false
+    },
+    {
+     "id": "8.3:s13",
+     "text": "Cycle after edge: E0+36 to E0+38; i_tx_valid: x; o_tx_ready: 0; o_txd: 1; Frame bit: stop",
+     "page": 275,
+     "normative": false
+    },
+    {
+     "id": "8.3:s14",
+     "text": "Cycle after edge: E0+39; i_tx_valid: 1; o_tx_ready: 1; o_txd: 1; Frame bit: stop (last cycle; handshake of the next byte at E0+40)",
+     "page": 276,
+     "normative": false
+    },
+    {
+     "id": "8.3:s15",
+     "text": "Cycle after edge: E0+40; i_tx_valid: x; o_tx_ready: 0; o_txd: 0; Frame bit: start of the next byte (if accepted at E0+40)",
+     "page": 277,
+     "normative": false
+    },
+    {
+     "id": "8.3:s16",
+     "text": "If no byte is accepted at E0+40, then after E0+40 o_tx_ready = 1 and o_txd = 1 (idle).",
+     "page": 279,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "8.4",
+   "title": "Receive example (N = 4, H = 2, received byte 0xA5, stop bit 1)",
+   "level": 3,
+   "parent": "8",
+   "page_start": 281,
+   "page_end": 300,
+   "sentences": [
+    {
+     "id": "8.4:s1",
+     "text": "Edge: T0-1; s(Edge): 1; Receiver action: idle; Outputs after the edge: o_rx_valid = 0",
+     "page": 285,
+     "normative": false
+    },
+    {
+     "id": "8.4:s2",
+     "text": "Edge: T0; s(Edge): 0; Receiver action: start bit detected; Outputs after the edge: o_rx_valid = 0",
+     "page": 286,
+     "normative": false
+    },
+    {
+     "id": "8.4:s3",
+     "text": "Edge: T0+2; s(Edge): 0; Receiver action: start-bit check passes; Outputs after the edge: -",
+     "page": 287,
+     "normative": false
+    },
+    {
+     "id": "8.4:s4",
+     "text": "Edge: T0+6; s(Edge): 1; Receiver action: D[0] = 1; Outputs after the edge: -",
+     "page": 288,
+     "normative": false
+    },
+    {
+     "id": "8.4:s5",
+     "text": "Edge: T0+10; s(Edge): 0; Receiver action: D[1] = 0; Outputs after the edge: -",
+     "page": 289,
+     "normative": false
+    },
+    {
+     "id": "8.4:s6",
+     "text": "Edge: T0+14; s(Edge): 1; Receiver action: D[2] = 1; Outputs after the edge: -",
+     "page": 290,
+     "normative": false
+    },
+    {
+     "id": "8.4:s7",
+     "text": "Edge: T0+18; s(Edge): 0; Receiver action: D[3] = 0; Outputs after the edge: -",
+     "page": 291,
+     "normative": false
+    },
+    {
+     "id": "8.4:s8",
+     "text": "Edge: T0+22; s(Edge): 0; Receiver action: D[4] = 0; Outputs after the edge: -",
+     "page": 292,
+     "normative": false
+    },
+    {
+     "id": "8.4:s9",
+     "text": "Edge: T0+26; s(Edge): 1; Receiver action: D[5] = 1; Outputs after the edge: -",
+     "page": 293,
+     "normative": false
+    },
+    {
+     "id": "8.4:s10",
+     "text": "Edge: T0+30; s(Edge): 0; Receiver action: D[6] = 0; Outputs after the edge: -",
+     "page": 294,
+     "normative": false
+    },
+    {
+     "id": "8.4:s11",
+     "text": "Edge: T0+34; s(Edge): 1; Receiver action: D[7] = 1; Outputs after the edge: -",
+     "page": 295,
+     "normative": false
+    },
+    {
+     "id": "8.4:s12",
+     "text": "Edge: T0+38 (M); s(Edge): 1; Receiver action: stop bit sampled; receiver idle; Outputs after the edge: -",
+     "page": 296,
+     "normative": false
+    },
+    {
+     "id": "8.4:s13",
+     "text": "Edge: T0+40 (V); s(Edge): -; Receiver action: byte loaded; Outputs after the edge: o_rx_valid = 1, o_rx_data = 0xA5, o_rx_frame_err = 0",
+     "page": 297,
+     "normative": false
+    },
+    {
+     "id": "8.4:s14",
+     "text": "Edge: T0+41; s(Edge): -; Receiver action: i_rx_ready = 1: byte taken; Outputs after the edge: o_rx_valid = 0",
+     "page": 298,
+     "normative": false
+    },
+    {
+     "id": "8.4:s15",
+     "text": "If at V the holding register was full and i_rx_ready = 0, then after V o_rx_overrun = 1 for one cycle and the held byte is unchanged.",
+     "page": 300,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "8.5",
+   "title": "Loopback relation (informative)",
+   "level": 3,
+   "parent": "8",
+   "page_start": 302,
+   "page_end": 303,
+   "sentences": [
+    {
+     "id": "8.5:s1",
+     "text": "If i_rxd is connected directly to o_txd, then T0 = E0+1 and the byte is delivered at edge E0 + H + 9N + 3.",
+     "page": 303,
+     "normative": false
+    },
+    {
+     "id": "8.5:s2",
+     "text": "With N = 4 this is E0+41.",
+     "page": 303,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "9",
+   "title": "Registers",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 305,
+   "page_end": 307,
+   "sentences": [
+    {
+     "id": "9:s1",
+     "text": "The block has no software-visible registers.",
+     "page": 307,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "10",
+   "title": "Errors and corner cases",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 309,
+   "page_end": 309,
+   "sentences": []
+  },
+  {
+   "id": "10.1",
+   "title": "Frame error",
+   "level": 3,
+   "parent": "10",
+   "page_start": 311,
+   "page_end": 312,
+   "sentences": [
+    {
+     "id": "10.1:s1",
+     "text": "Detection: the stop-bit sample s(M) is 0.",
+     "page": 312,
+     "normative": false
+    },
+    {
+     "id": "10.1:s2",
+     "text": "Response: the byte is delivered with o_rx_frame_err = 1 (REQ-FE-001, REQ-FE-002).",
+     "page": 312,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "10.2",
+   "title": "Overrun",
+   "level": 3,
+   "parent": "10",
+   "page_start": 314,
+   "page_end": 315,
+   "sentences": [
+    {
+     "id": "10.2:s1",
+     "text": "Detection: a frame completes and, at its delivery edge V, o_rx_valid = 1 and i_rx_ready = 0.",
+     "page": 315,
+     "normative": false
+    },
+    {
+     "id": "10.2:s2",
+     "text": "Response: the new byte is dropped, o_rx_overrun pulses for one cycle and the held byte stays (REQ-OVR-001 to REQ-OVR-003).",
+     "page": 315,
+     "normative": false
+    },
+    {
+     "id": "10.2:s3",
+     "text": "If the held byte is taken at V itself, there is no overrun (REQ-RX-021).",
+     "page": 315,
+     "normative": false
+    },
+    {
+     "id": "10.2:s4",
+     "text": "The frame-error flag of a dropped byte is not reported.",
+     "page": 315,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "10.3",
+   "title": "Glitch on the start bit",
+   "level": 3,
+   "parent": "10",
+   "page_start": 317,
+   "page_end": 318,
+   "sentences": [
+    {
+     "id": "10.3:s1",
+     "text": "Detection: s(T0+H) = 1.",
+     "page": 318,
+     "normative": false
+    },
+    {
+     "id": "10.3:s2",
+     "text": "Response: no byte, no flag and no pulse (REQ-RX-005, REQ-RX-006).",
+     "page": 318,
+     "normative": false
+    },
+    {
+     "id": "10.3:s3",
+     "text": "A low pulse on i_rxd that is sampled at fewer than H+1 edges in a row, starting at T0, is always rejected.",
+     "page": 318,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "10.4",
+   "title": "Line held low (break) and stuck line",
+   "level": 3,
+   "parent": "10",
+   "page_start": 320,
+   "page_end": 323,
+   "sentences": [
+    {
+     "id": "10.4:s1",
+     "text": "[REQ-ERR-001] If i_rxd stays 0 from a start bit through the whole frame, the receiver shall deliver the byte 0x00 with o_rx_frame_err = 1, or drop it with an overrun pulse under the rules of Section 7.8.",
+     "page": 321,
+     "normative": true
+    },
+    {
+     "id": "10.4:s2",
+     "text": "After that it shall receive no further frame until the line has been sampled as 1 and then as 0.",
+     "page": 321,
+     "normative": true
+    },
+    {
+     "id": "10.4:s3",
+     "text": "[REQ-ERR-002] If i_rxd stays 1, the receiver shall stay idle and deliver nothing.",
+     "page": 323,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "10.5",
+   "title": "Line low at reset release",
+   "level": 3,
+   "parent": "10",
+   "page_start": 325,
+   "page_end": 326,
+   "sentences": [
+    {
+     "id": "10.5:s1",
+     "text": "[REQ-ERR-003] If s(R1) = 0 at the first edge R1 after the release of i_rst_n, the receiver shall detect R1 as T0 (REQ-RST-010) and process the frame under Sections 7.4 to 7.8.",
+     "page": 326,
+     "normative": true
+    },
+    {
+     "id": "10.5:s2",
+     "text": "A line that stays low therefore produces one byte 0x00 with o_rx_frame_err = 1.",
+     "page": 326,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "10.6",
+   "title": "Reset during an operation",
+   "level": 3,
+   "parent": "10",
+   "page_start": 328,
+   "page_end": 329,
+   "sentences": [
+    {
+     "id": "10.6:s1",
+     "text": "Section 6.2 covers this (REQ-RST-006 to REQ-RST-008).",
+     "page": 329,
+     "normative": false
+    },
+    {
+     "id": "10.6:s2",
+     "text": "A frame cut short on o_txd may cause a frame error in the remote receiver; that is outside this block.",
+     "page": 329,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "10.7",
+   "title": "Handshake corner cases",
+   "level": 3,
+   "parent": "10",
+   "page_start": 331,
+   "page_end": 336,
+   "sentences": [
+    {
+     "id": "10.7:s1",
+     "text": "[REQ-ERR-004] When i_tx_valid = 1 while o_tx_ready = 0, the transmitter shall not accept the byte and shall not record it.",
+     "page": 332,
+     "normative": true
+    },
+    {
+     "id": "10.7:s2",
+     "text": "The upstream block has to keep offering it.",
+     "page": 332,
+     "normative": false
+    },
+    {
+     "id": "10.7:s3",
+     "text": "[REQ-ERR-005] When i_rx_ready = 1 while o_rx_valid = 0, the block shall do nothing (REQ-RX-026).",
+     "page": 334,
+     "normative": true
+    },
+    {
+     "id": "10.7:s4",
+     "text": "[REQ-ERR-006] A transmit handshake and a receive delivery or take in the same cycle shall be handled independently (REQ-GEN-002).",
+     "page": 336,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "10.8",
+   "title": "Parameter extremes",
+   "level": 3,
+   "parent": "10",
+   "page_start": 338,
+   "page_end": 342,
+   "sentences": [
+    {
+     "id": "10.8:s1",
+     "text": "N = 4 (minimum): H = 2.",
+     "page": 339,
+     "normative": false
+    },
+    {
+     "id": "10.8:s2",
+     "text": "When the bit period is exact, each sample is taken 2 edges after the first edge of the bit and 1 edge before its last edge.",
+     "page": 339,
+     "normative": false
+    },
+    {
+     "id": "10.8:s3",
+     "text": "A frame lasts 40 cycles, and the smallest spacing between start bits is 39 cycles.",
+     "page": 339,
+     "normative": false
+    },
+    {
+     "id": "10.8:s4",
+     "text": "N odd (for example 5): H = floor(N/2) = 2, which is exactly the centre of the bit.",
+     "page": 340,
+     "normative": false
+    },
+    {
+     "id": "10.8:s5",
+     "text": "N = 65535 (maximum): H = 32767.",
+     "page": 341,
+     "normative": false
+    },
+    {
+     "id": "10.8:s6",
+     "text": "A frame lasts 655350 cycles. [REQ-ERR-007] Bit-period and sample-offset counting shall not overflow or wrap early at N = 65535.",
+     "page": 341,
+     "normative": true
+    },
+    {
+     "id": "10.8:s7",
+     "text": "Values outside 4 to 65535 are illegal (REQ-PAR-003).",
+     "page": 342,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "11",
+   "title": "Configurations",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 344,
+   "page_end": 351,
+   "sentences": [
+    {
+     "id": "11:s1",
+     "text": "ID: CFG-BASE; Parameter values: defaults (PARA_UART_CLKS_PER_BIT=16); Purpose: Main configuration",
+     "page": 348,
+     "normative": false
+    },
+    {
+     "id": "11:s2",
+     "text": "ID: CFG-MIN; Parameter values: PARA_UART_CLKS_PER_BIT=4; Purpose: Smallest legal bit period; minimum sampling margins",
+     "page": 349,
+     "normative": true
+    },
+    {
+     "id": "11:s3",
+     "text": "ID: CFG-ODD; Parameter values: PARA_UART_CLKS_PER_BIT=5; Purpose: Odd bit period; checks H = floor(N/2)",
+     "page": 350,
+     "normative": false
+    },
+    {
+     "id": "11:s4",
+     "text": "ID: CFG-WIDE; Parameter values: PARA_UART_CLKS_PER_BIT=1024; Purpose: A wide bit counter. The largest legal value (65535) is covered by elaboration and synthesis only (D-012)",
+     "page": 351,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "12",
+   "title": "Verification requirements",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 353,
+   "page_end": 353,
+   "sentences": []
+  },
+  {
+   "id": "12.1",
+   "title": "Environment obligations",
+   "level": 3,
+   "parent": "12",
+   "page_start": 355,
+   "page_end": 364,
+   "sentences": [
+    {
+     "id": "12.1:s1",
+     "text": "[ENV-001] The environment shall release i_rst_n (0 to 1) synchronously to i_clk, meeting recovery and removal times.",
+     "page": 356,
+     "normative": true
+    },
+    {
+     "id": "12.1:s2",
+     "text": "The block contains no reset synchronizer.",
+     "page": 356,
+     "normative": false
+    },
+    {
+     "id": "12.1:s3",
+     "text": "[ENV-002] The environment shall hold i_rst_n at 0 for at least 2 cycles of i_clk at the start of a simulation.",
+     "page": 358,
+     "normative": true
+    },
+    {
+     "id": "12.1:s4",
+     "text": "[ENV-003] After the release of i_rst_n, the environment shall drive i_tx_valid, i_tx_data and i_rx_ready synchronously to i_clk, with no X or Z values.",
+     "page": 360,
+     "normative": true
+    },
+    {
+     "id": "12.1:s5",
+     "text": "[ENV-004] In simulation, the testbench shall change i_rxd away from rising edges of i_clk (for example on the falling edge or at a random offset that does not coincide with a rising edge), so that s(E) is well defined. i_rxd shall not be X or Z after reset release.",
+     "page": 362,
+     "normative": true
+    },
+    {
+     "id": "12.1:s6",
+     "text": "[ENV-005] The environment has no obligation to keep i_tx_valid or i_tx_data stable before a handshake, and no obligation on when i_rx_ready is asserted.",
+     "page": 364,
+     "normative": true
+    },
+    {
+     "id": "12.1:s7",
+     "text": "The block has to handle any pattern.",
+     "page": 364,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "12.2",
+   "title": "Observability",
+   "level": 3,
+   "parent": "12",
+   "page_start": 366,
+   "page_end": 369,
+   "sentences": [
+    {
+     "id": "12.2:s1",
+     "text": "The synchronizer depth can be seen at the ports only as the fixed latency V = M + 2.",
+     "page": 367,
+     "normative": true
+    },
+    {
+     "id": "12.2:s2",
+     "text": "Its structure (exactly two flip-flops with no logic between them, REQ-RX-001) shall be checked by lint or a structural review.",
+     "page": 367,
+     "normative": true
+    },
+    {
+     "id": "12.2:s3",
+     "text": "The receiver's idle/receiving condition and its sampling edges can be seen only through the delivered bytes, flags and pulses.",
+     "page": 368,
+     "normative": true
+    },
+    {
+     "id": "12.2:s4",
+     "text": "The reference model shall compute s(E) from i_rxd and apply Sections 7.4 to 7.8 exactly.",
+     "page": 368,
+     "normative": true
+    },
+    {
+     "id": "12.2:s5",
+     "text": "The transmit timing can be seen fully on o_txd and o_tx_ready.",
+     "page": 369,
+     "normative": true
+    },
+    {
+     "id": "12.2:s6",
+     "text": "The checker shall check REQ-TX-004, REQ-TX-005 and REQ-TX-010 cycle by cycle.",
+     "page": 369,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "12.3",
+   "title": "Special setups",
+   "level": 3,
+   "parent": "12",
+   "page_start": 371,
+   "page_end": 376,
+   "sentences": [
+    {
+     "id": "12.3:s1",
+     "text": "Sampling-point test: drive i_rxd so that each bit has its correct value only at the specified sampling edge and the wrong value at the edges just before and after it, where N allows that.",
+     "page": 372,
+     "normative": false
+    },
+    {
+     "id": "12.3:s2",
+     "text": "This checks the exact sampling edges T0+H+(i+1)N and M.",
+     "page": 372,
+     "normative": false
+    },
+    {
+     "id": "12.3:s3",
+     "text": "Glitch test: low pulses on i_rxd lasting 1 to H samples (rejected) and H+1 samples (accepted as a start bit).",
+     "page": 373,
+     "normative": false
+    },
+    {
+     "id": "12.3:s4",
+     "text": "Loopback test: connect o_txd to i_rxd and check the latency in Section 8.5 and the byte integrity.",
+     "page": 374,
+     "normative": false
+    },
+    {
+     "id": "12.3:s5",
+     "text": "Reset tests: assert i_rst_n in the middle of a transmit frame, in the middle of a receive frame and while o_rx_valid = 1, with an asynchronous assertion between clock edges.",
+     "page": 375,
+     "normative": false
+    },
+    {
+     "id": "12.3:s6",
+     "text": "Line low at reset release (REQ-ERR-003) and break (REQ-ERR-001).",
+     "page": 376,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "12.4",
+   "title": "Required coverage",
+   "level": 3,
+   "parent": "12",
+   "page_start": 378,
+   "page_end": 386,
+   "sentences": [
+    {
+     "id": "12.4:s1",
+     "text": "Data bytes 0x00, 0xFF, 0x55, 0xAA and random bytes, in both directions.",
+     "page": 379,
+     "normative": false
+    },
+    {
+     "id": "12.4:s2",
+     "text": "Back-to-back transmit with i_tx_valid held at 1, and transmit with idle gaps of various lengths.",
+     "page": 380,
+     "normative": false
+    },
+    {
+     "id": "12.4:s3",
+     "text": "Back-to-back receive frames with the next start bit right after the stop bit.",
+     "page": 381,
+     "normative": false
+    },
+    {
+     "id": "12.4:s4",
+     "text": "Frame error with o_rx_valid = 0, and frame error with the byte dropped by overrun.",
+     "page": 382,
+     "normative": false
+    },
+    {
+     "id": "12.4:s5",
+     "text": "Overrun, and the case where the held byte is taken at the delivery edge V itself (no overrun).",
+     "page": 383,
+     "normative": false
+    },
+    {
+     "id": "12.4:s6",
+     "text": "i_rx_ready held at 1, toggling at random, and held at 0 for several frames.",
+     "page": 384,
+     "normative": false
+    },
+    {
+     "id": "12.4:s7",
+     "text": "i_tx_valid that drops before a handshake.",
+     "page": 385,
+     "normative": false
+    },
+    {
+     "id": "12.4:s8",
+     "text": "Transmit and receive active at the same time.",
+     "page": 386,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "13",
+   "title": "Implementation constraints",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 388,
+   "page_end": 402,
+   "sentences": [
+    {
+     "id": "13:s1",
+     "text": "[REQ-IMP-001] The block shall meet timing at 50 MHz (20 ns period) on GF180MCU for every legal value of PARA_UART_CLKS_PER_BIT.",
+     "page": 390,
+     "normative": true
+    },
+    {
+     "id": "13:s2",
+     "text": "[REQ-IMP-002] The RTL shall follow docs/RTL_RULES.md.",
+     "page": 392,
+     "normative": true
+    },
+    {
+     "id": "13:s3",
+     "text": "[REQ-IMP-003] The RTL shall be synthesizable, contain no latches and pass Verilator lint with no warnings.",
+     "page": 394,
+     "normative": true
+    },
+    {
+     "id": "13:s4",
+     "text": "[REQ-IMP-004] All flip-flops shall use the asynchronous active-low reset i_rst_n.",
+     "page": 396,
+     "normative": true
+    },
+    {
+     "id": "13:s5",
+     "text": "[REQ-IMP-005] The two i_rxd synchronizer flip-flops should be marked so that synthesis does not merge, duplicate or retime them.",
+     "page": 398,
+     "normative": true
+    },
+    {
+     "id": "13:s6",
+     "text": "[REQ-IMP-006] The bit-period counters should be only as wide as PARA_UART_CLKS_PER_BIT needs (16 bits at most).",
+     "page": 400,
+     "normative": true
+    },
+    {
+     "id": "13:s7",
+     "text": "No area budget is given.",
+     "page": 402,
+     "normative": false
+    },
+    {
+     "id": "13:s8",
+     "text": "The block should use only the storage this specification requires: the transmit shift register, the receive shift register, the holding register, counters and flags.",
+     "page": 402,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "14",
+   "title": "Decisions and open questions",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 404,
+   "page_end": 422,
+   "sentences": [
+    {
+     "id": "14:s1",
+     "text": "ID: D-001; Question: Value of o_tx_ready while i_rst_n = 0; Decision: 1 (its idle value); no handshake is possible during reset (REQ-RST-003); By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17",
+     "page": 408,
+     "normative": true
+    },
+    {
+     "id": "14:s2",
+     "text": "ID: D-002; Question: Exact middle-of-bit sampling point; Decision: H = floor(N/2) edges after T0, then every N edges; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17",
+     "page": 409,
+     "normative": false
+    },
+    {
+     "id": "14:s3",
+     "text": "ID: D-003; Question: Exact cycle of o_rx_valid \"the cycle after the middle of the stop bit\"; Decision: Delivery at V = M + 2, where M is the sample edge of i_rxd and 2 is the synchronizer latency; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17",
+     "page": 410,
+     "normative": false
+    },
+    {
+     "id": "14:s4",
+     "text": "ID: D-004; Question: Held byte taken at the same edge at which a new byte completes; Decision: The new byte is loaded and there is no overrun; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17",
+     "page": 411,
+     "normative": false
+    },
+    {
+     "id": "14:s5",
+     "text": "ID: D-005; Question: Start detection after a frame error with the line still low; Decision: A 1-to-0 transition is required, so a break gives one byte; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17",
+     "page": 412,
+     "normative": true
+    },
+    {
+     "id": "14:s6",
+     "text": "ID: D-006; Question: Synchronizer reset value and a low line at reset release; Decision: Reset to 1; a low line at release is detected as a start bit; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17",
+     "page": 413,
+     "normative": false
+    },
+    {
+     "id": "14:s7",
+     "text": "ID: D-007; Question: o_rx_data and o_rx_frame_err while o_rx_valid = 0; Decision: Keep the last loaded values; 0 after reset; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17",
+     "page": 414,
+     "normative": false
+    },
+    {
+     "id": "14:s8",
+     "text": "ID: D-008; Question: Reset release synchronisation; Decision: Done outside the block (ENV-001); By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17",
+     "page": 415,
+     "normative": false
+    },
+    {
+     "id": "14:s9",
+     "text": "ID: D-009; Question: Reset during a transmission; Decision: Frame abandoned, o_txd = 1 at once, byte lost; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17",
+     "page": 416,
+     "normative": false
+    },
+    {
+     "id": "14:s10",
+     "text": "ID: D-010; Question: Frame-error flag of a dropped byte; Decision: Not reported; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17",
+     "page": 417,
+     "normative": false
+    },
+    {
+     "id": "14:s11",
+     "text": "ID: D-011; Question: Illegal parameter values; Decision: Elaboration error recommended (should); not verified; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17",
+     "page": 418,
+     "normative": true
+    },
+    {
+     "id": "14:s12",
+     "text": "ID: D-012; Question: Configurations beyond default and minimum; Decision: CFG-ODD (5) and CFG-WIDE (1024) are simulated. CFG-MAX (65535) is not simulated (655350 cycles per frame); the largest value is covered by elaboration and synthesis only; By: Claude (delegated by GabrielHCMUT); Date: 2026-11-17",
+     "page": 419,
+     "normative": false
+    },
+    {
+     "id": "14:s13",
+     "text": "ID: OQ-001; Question: Is an area budget required for GF180MCU?; Decision: No area budget; area is reported, not checked; By: Claude (delegated by GabrielHCMUT); Date: 2026-11-17",
+     "page": 420,
+     "normative": true
+    },
+    {
+     "id": "14:s14",
+     "text": "ID: OQ-002; Question: Which PVT corner does the 50 MHz target apply to?; Decision: The slow corner (GF180MCU SS, 125 C, 4.5 V); By: Claude (delegated by GabrielHCMUT); Date: 2026-11-17",
+     "page": 421,
+     "normative": false
+    },
+    {
+     "id": "14:s15",
+     "text": "ID: OQ-003; Question: Is the simulation time of CFG-MAX acceptable in the regression?; Decision: No: CFG-MAX is not simulated (D-012); By: Claude (delegated by GabrielHCMUT); Date: 2026-11-17",
+     "page": 422,
+     "normative": false
+    }
+   ]
+  }
+ ],
+ "tables": [
+  {
+   "section": "2",
+   "header": [
+    "ID",
+    "Document",
+    "Revision",
+    "Used for"
+   ],
+   "rows": [
+    [
+     "REF-001",
+     "uart_lite design description (designer's input to nnc spec-draft)",
+     "2026-11-17",
+     "All functional requirements"
+    ],
+    [
+     "REF-002",
+     "docs/RTL_RULES.md",
+     "Current revision in the repository",
+     "Coding rules (Section 13)"
+    ],
+    [
+     "REF-003",
+     "GF180MCU process design kit and standard-cell library",
+     "Version used by the project flow",
+     "Target technology (Section 13)"
+    ]
+   ],
+   "line": 34,
+   "units": [
+    "2:s1",
+    "2:s2",
+    "2:s3"
+   ]
+  },
+  {
+   "section": "3",
+   "header": [
+    "Term",
+    "Meaning"
+   ],
+   "rows": [
+    [
+     "N",
+     "Short name for PARA_UART_CLKS_PER_BIT, the bit period in i_clk cycles"
+    ],
+    [
+     "H",
+     "Short name for LPARA_UART_HALF_BIT = floor(N / 2), the offset of the middle-of-bit sampling point"
+    ],
+    [
+     "Edge",
+     "A rising edge of i_clk. Edges are numbered in order, so E+1 is the edge after edge E"
+    ],
+    [
+     "Cycle after edge E",
+     "The clock period that starts at edge E and ends at edge E+1. A registered output that \"becomes X at edge E\" has value X in the cycle after edge E"
+    ],
+    [
+     "Value at edge E",
+     "The value of a synchronous input sampled at edge E"
+    ],
+    [
+     "Handshake (transmit)",
+     "An edge at which i_tx_valid = 1, o_tx_ready = 1 and i_rst_n = 1. The byte on i_tx_data is accepted"
+    ],
+    [
+     "Accepting edge E0",
+     "The edge at which a transmit handshake takes place"
+    ],
+    [
+     "Take (receive)",
+     "An edge at which o_rx_valid = 1, i_rx_ready = 1 and i_rst_n = 1. The held byte leaves the block"
+    ],
+    [
+     "Frame",
+     "Start bit, 8 data bits and stop bit: 10 bits, each N cycles long"
+    ],
+    [
+     "s(E)",
+     "The value of i_rxd captured by the first synchronizer flip-flop at edge E"
+    ],
+    [
+     "T0",
+     "The edge at which the receiver detects the falling edge of a start bit: s(T0-1) = 1 and s(T0) = 0 while the receiver is idle"
+    ],
+    [
+     "M",
+     "The stop-bit sampling edge of a frame, M = T0 + H + 9N"
+    ],
+    [
+     "V",
+     "The delivery edge of a frame, V = M + 2. The 2 is the synchronizer latency"
+    ],
+    [
+     "Glitch",
+     "A detected falling edge whose start-bit check s(T0 + H) gives 1"
+    ],
+    [
+     "Frame error",
+     "A completed frame whose stop-bit sample s(M) is 0"
+    ],
+    [
+     "Overrun",
+     "A completed frame that is dropped because the holding register is full and is not being emptied at its delivery edge V"
+    ],
+    [
+     "Holding register",
+     "The one-byte receive output register behind o_rx_data, o_rx_frame_err and o_rx_valid"
+    ]
+   ],
+   "line": 42,
+   "units": [
+    "3:s1",
+    "3:s2",
+    "3:s3",
+    "3:s4",
+    "3:s5",
+    "3:s6",
+    "3:s7",
+    "3:s8",
+    "3:s9",
+    "3:s10",
+    "3:s11",
+    "3:s12",
+    "3:s13",
+    "3:s14",
+    "3:s15",
+    "3:s16",
+    "3:s17"
+   ]
+  },
+  {
+   "section": "4",
+   "header": [
+    "Parameter",
+    "Default",
+    "Legal values",
+    "Description"
+   ],
+   "rows": [
+    [
+     "PARA_UART_CLKS_PER_BIT",
+     "16",
+     "4 to 65535",
+     "Bit period in i_clk cycles (N), used by the transmitter and the receiver"
+    ],
+    [
+     "LPARA_UART_HALF_BIT",
+     "Derived",
+     "-",
+     "PARA_UART_CLKS_PER_BIT / 2 with integer division (floor); the middle-of-bit sampling offset H"
+    ]
+   ],
+   "line": 64,
+   "units": [
+    "4:s1",
+    "4:s2"
+   ]
+  },
+  {
+   "section": "5",
+   "header": [
+    "Port",
+    "Direction",
+    "Width",
+    "Signal type",
+    "Reset value",
+    "Clock domain",
+    "Meaning"
+   ],
+   "rows": [
+    [
+     "i_clk",
+     "input",
+     "1",
+     "Clock",
+     "Not applicable",
+     "CLK",
+     "Clock, rising edge"
+    ],
+    [
+     "i_rst_n",
+     "input",
+     "1",
+     "Reset (asynchronous assertion, synchronous release)",
+     "Not applicable",
+     "CLK",
+     "Active-low reset"
+    ],
+    [
+     "i_tx_valid",
+     "input",
+     "1",
+     "Data",
+     "Not applicable",
+     "CLK",
+     "Transmit stream: i_tx_data holds a byte to send"
+    ],
+    [
+     "o_tx_ready",
+     "output",
+     "1",
+     "Data",
+     "1",
+     "CLK",
+     "Transmit stream: the transmitter can accept a byte at the next edge"
+    ],
+    [
+     "i_tx_data",
+     "input",
+     "8",
+     "Data",
+     "Not applicable",
+     "CLK",
+     "Transmit stream: byte to send; bit 0 is sent first"
+    ],
+    [
+     "o_rx_valid",
+     "output",
+     "1",
+     "Data",
+     "0",
+     "CLK",
+     "Receive stream: the holding register holds a byte"
+    ],
+    [
+     "i_rx_ready",
+     "input",
+     "1",
+     "Data",
+     "Not applicable",
+     "CLK",
+     "Receive stream: the consumer takes the held byte at this edge"
+    ],
+    [
+     "o_rx_data",
+     "output",
+     "8",
+     "Data",
+     "0",
+     "CLK",
+     "Receive stream: received byte; bit 0 was received first; qualified by o_rx_valid"
+    ],
+    [
+     "o_rx_frame_err",
+     "output",
+     "1",
+     "Data",
+     "0",
+     "CLK",
+     "Receive stream: 1 when the stop bit of the held byte was sampled as 0; qualified by o_rx_valid"
+    ],
+    [
+     "o_rx_overrun",
+     "output",
+     "1",
+     "Data",
+     "0",
+     "CLK",
+     "One-cycle pulse: a received byte was dropped because the holding register was full"
+    ],
+    [
+     "o_txd",
+     "output",
+     "1",
+     "Data",
+     "1",
+     "CLK",
+     "Serial transmit line, idle high"
+    ],
+    [
+     "i_rxd",
+     "input",
+     "1",
+     "Data (asynchronous)",
+     "Not applicable",
+     "ASYNC",
+     "Serial receive line, idle high, asynchronous to i_clk, synchronised inside the block"
+    ]
+   ],
+   "line": 79,
+   "units": [
+    "5:s2",
+    "5:s3",
+    "5:s4",
+    "5:s5",
+    "5:s6",
+    "5:s7",
+    "5:s8",
+    "5:s9",
+    "5:s10",
+    "5:s11",
+    "5:s12",
+    "5:s13"
+   ],
+   "caption": "m_uart_lite: all ports (CLK)"
+  },
+  {
+   "section": "8.3",
+   "header": [
+    "Cycle after edge",
+    "i_tx_valid",
+    "o_tx_ready",
+    "o_txd",
+    "Frame bit"
+   ],
+   "rows": [
+    [
+     "E0-1",
+     "1",
+     "1",
+     "1",
+     "idle (handshake at E0)"
+    ],
+    [
+     "E0 to E0+3",
+     "x",
+     "0",
+     "0",
+     "start"
+    ],
+    [
+     "E0+4 to E0+7",
+     "x",
+     "0",
+     "1",
+     "D[0]"
+    ],
+    [
+     "E0+8 to E0+11",
+     "x",
+     "0",
+     "0",
+     "D[1]"
+    ],
+    [
+     "E0+12 to E0+15",
+     "x",
+     "0",
+     "1",
+     "D[2]"
+    ],
+    [
+     "E0+16 to E0+19",
+     "x",
+     "0",
+     "0",
+     "D[3]"
+    ],
+    [
+     "E0+20 to E0+23",
+     "x",
+     "0",
+     "0",
+     "D[4]"
+    ],
+    [
+     "E0+24 to E0+27",
+     "x",
+     "0",
+     "1",
+     "D[5]"
+    ],
+    [
+     "E0+28 to E0+31",
+     "x",
+     "0",
+     "0",
+     "D[6]"
+    ],
+    [
+     "E0+32 to E0+35",
+     "x",
+     "0",
+     "1",
+     "D[7]"
+    ],
+    [
+     "E0+36 to E0+38",
+     "x",
+     "0",
+     "1",
+     "stop"
+    ],
+    [
+     "E0+39",
+     "1",
+     "1",
+     "1",
+     "stop (last cycle; handshake of the next byte at E0+40)"
+    ],
+    [
+     "E0+40",
+     "x",
+     "0",
+     "0",
+     "start of the next byte (if accepted at E0+40)"
+    ]
+   ],
+   "line": 263,
+   "units": [
+    "8.3:s3",
+    "8.3:s4",
+    "8.3:s5",
+    "8.3:s6",
+    "8.3:s7",
+    "8.3:s8",
+    "8.3:s9",
+    "8.3:s10",
+    "8.3:s11",
+    "8.3:s12",
+    "8.3:s13",
+    "8.3:s14",
+    "8.3:s15"
+   ],
+   "caption": "D = 0xA5 = 1010_0101b, so data bits sent first to last are 1, 0, 1, 0, 0, 1, 0, 1. The byte is accepted at edge E0."
+  },
+  {
+   "section": "8.4",
+   "header": [
+    "Edge",
+    "s(Edge)",
+    "Receiver action",
+    "Outputs after the edge"
+   ],
+   "rows": [
+    [
+     "T0-1",
+     "1",
+     "idle",
+     "o_rx_valid = 0"
+    ],
+    [
+     "T0",
+     "0",
+     "start bit detected",
+     "o_rx_valid = 0"
+    ],
+    [
+     "T0+2",
+     "0",
+     "start-bit check passes",
+     "-"
+    ],
+    [
+     "T0+6",
+     "1",
+     "D[0] = 1",
+     "-"
+    ],
+    [
+     "T0+10",
+     "0",
+     "D[1] = 0",
+     "-"
+    ],
+    [
+     "T0+14",
+     "1",
+     "D[2] = 1",
+     "-"
+    ],
+    [
+     "T0+18",
+     "0",
+     "D[3] = 0",
+     "-"
+    ],
+    [
+     "T0+22",
+     "0",
+     "D[4] = 0",
+     "-"
+    ],
+    [
+     "T0+26",
+     "1",
+     "D[5] = 1",
+     "-"
+    ],
+    [
+     "T0+30",
+     "0",
+     "D[6] = 0",
+     "-"
+    ],
+    [
+     "T0+34",
+     "1",
+     "D[7] = 1",
+     "-"
+    ],
+    [
+     "T0+38 (M)",
+     "1",
+     "stop bit sampled; receiver idle",
+     "-"
+    ],
+    [
+     "T0+40 (V)",
+     "-",
+     "byte loaded",
+     "o_rx_valid = 1, o_rx_data = 0xA5, o_rx_frame_err = 0"
+    ],
+    [
+     "T0+41",
+     "-",
+     "i_rx_ready = 1: byte taken",
+     "o_rx_valid = 0"
+    ]
+   ],
+   "line": 283,
+   "units": [
+    "8.4:s1",
+    "8.4:s2",
+    "8.4:s3",
+    "8.4:s4",
+    "8.4:s5",
+    "8.4:s6",
+    "8.4:s7",
+    "8.4:s8",
+    "8.4:s9",
+    "8.4:s10",
+    "8.4:s11",
+    "8.4:s12",
+    "8.4:s13",
+    "8.4:s14"
+   ]
+  },
+  {
+   "section": "11",
+   "header": [
+    "ID",
+    "Parameter values",
+    "Purpose"
+   ],
+   "rows": [
+    [
+     "CFG-BASE",
+     "defaults (PARA_UART_CLKS_PER_BIT=16)",
+     "Main configuration"
+    ],
+    [
+     "CFG-MIN",
+     "PARA_UART_CLKS_PER_BIT=4",
+     "Smallest legal bit period; minimum sampling margins"
+    ],
+    [
+     "CFG-ODD",
+     "PARA_UART_CLKS_PER_BIT=5",
+     "Odd bit period; checks H = floor(N/2)"
+    ],
+    [
+     "CFG-WIDE",
+     "PARA_UART_CLKS_PER_BIT=1024",
+     "A wide bit counter. The largest legal value (65535) is covered by elaboration and synthesis only (D-012)"
+    ]
+   ],
+   "line": 346,
+   "units": [
+    "11:s1",
+    "11:s2",
+    "11:s3",
+    "11:s4"
+   ]
+  },
+  {
+   "section": "14",
+   "header": [
+    "ID",
+    "Question",
+    "Decision",
+    "By",
+    "Date"
+   ],
+   "rows": [
+    [
+     "D-001",
+     "Value of o_tx_ready while i_rst_n = 0",
+     "1 (its idle value); no handshake is possible during reset (REQ-RST-003)",
+     "Claude (delegated by GabrielHCMUT), confirmed",
+     "2026-11-17"
+    ],
+    [
+     "D-002",
+     "Exact middle-of-bit sampling point",
+     "H = floor(N/2) edges after T0, then every N edges",
+     "Claude (delegated by GabrielHCMUT), confirmed",
+     "2026-11-17"
+    ],
+    [
+     "D-003",
+     "Exact cycle of o_rx_valid \"the cycle after the middle of the stop bit\"",
+     "Delivery at V = M + 2, where M is the sample edge of i_rxd and 2 is the synchronizer latency",
+     "Claude (delegated by GabrielHCMUT), confirmed",
+     "2026-11-17"
+    ],
+    [
+     "D-004",
+     "Held byte taken at the same edge at which a new byte completes",
+     "The new byte is loaded and there is no overrun",
+     "Claude (delegated by GabrielHCMUT), confirmed",
+     "2026-11-17"
+    ],
+    [
+     "D-005",
+     "Start detection after a frame error with the line still low",
+     "A 1-to-0 transition is required, so a break gives one byte",
+     "Claude (delegated by GabrielHCMUT), confirmed",
+     "2026-11-17"
+    ],
+    [
+     "D-006",
+     "Synchronizer reset value and a low line at reset release",
+     "Reset to 1; a low line at release is detected as a start bit",
+     "Claude (delegated by GabrielHCMUT), confirmed",
+     "2026-11-17"
+    ],
+    [
+     "D-007",
+     "o_rx_data and o_rx_frame_err while o_rx_valid = 0",
+     "Keep the last loaded values; 0 after reset",
+     "Claude (delegated by GabrielHCMUT), confirmed",
+     "2026-11-17"
+    ],
+    [
+     "D-008",
+     "Reset release synchronisation",
+     "Done outside the block (ENV-001)",
+     "Claude (delegated by GabrielHCMUT), confirmed",
+     "2026-11-17"
+    ],
+    [
+     "D-009",
+     "Reset during a transmission",
+     "Frame abandoned, o_txd = 1 at once, byte lost",
+     "Claude (delegated by GabrielHCMUT), confirmed",
+     "2026-11-17"
+    ],
+    [
+     "D-010",
+     "Frame-error flag of a dropped byte",
+     "Not reported",
+     "Claude (delegated by GabrielHCMUT), confirmed",
+     "2026-11-17"
+    ],
+    [
+     "D-011",
+     "Illegal parameter values",
+     "Elaboration error recommended (should); not verified",
+     "Claude (delegated by GabrielHCMUT), confirmed",
+     "2026-11-17"
+    ],
+    [
+     "D-012",
+     "Configurations beyond default and minimum",
+     "CFG-ODD (5) and CFG-WIDE (1024) are simulated. CFG-MAX (65535) is not simulated (655350 cycles per frame); the largest value is covered by elaboration and synthesis only",
+     "Claude (delegated by GabrielHCMUT)",
+     "2026-11-17"
+    ],
+    [
+     "OQ-001",
+     "Is an area budget required for GF180MCU?",
+     "No area budget; area is reported, not checked",
+     "Claude (delegated by GabrielHCMUT)",
+     "2026-11-17"
+    ],
+    [
+     "OQ-002",
+     "Which PVT corner does the 50 MHz target apply to?",
+     "The slow corner (GF180MCU SS, 125 C, 4.5 V)",
+     "Claude (delegated by GabrielHCMUT)",
+     "2026-11-17"
+    ],
+    [
+     "OQ-003",
+     "Is the simulation time of CFG-MAX acceptable in the regression?",
+     "No: CFG-MAX is not simulated (D-012)",
+     "Claude (delegated by GabrielHCMUT)",
+     "2026-11-17"
+    ]
+   ],
+   "line": 406,
+   "units": [
+    "14:s1",
+    "14:s2",
+    "14:s3",
+    "14:s4",
+    "14:s5",
+    "14:s6",
+    "14:s7",
+    "14:s8",
+    "14:s9",
+    "14:s10",
+    "14:s11",
+    "14:s12",
+    "14:s13",
+    "14:s14",
+    "14:s15"
+   ]
+  }
+ ],
+ "signals": {
+  "CLK": 13,
+  "GF180MCU": 4,
+  "LPARA_UART_HALF_BIT": 3,
+  "PARA_UART_CLKS_PER_BIT": 13,
+  "RTL": 2,
+  "RTL_RULES": 2,
+  "i_clk": 19,
+  "i_rst_n": 19,
+  "i_rx_ready": 15,
+  "i_rxd": 18,
+  "i_tx_data": 9,
+  "i_tx_valid": 27,
+  "o_rx_data": 12,
+  "o_rx_frame_err": 16,
+  "o_rx_overrun": 11,
+  "o_rx_valid": 30,
+  "o_tx_ready": 30,
+  "o_txd": 28
+ },
+ "warnings": [],
+ "stats": {
+  "sections": 45,
+  "sentences": 277,
+  "normative": 114,
+  "chars": 29989
+ }
+}

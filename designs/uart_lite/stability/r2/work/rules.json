@@ -1,0 +1,4527 @@
+{
+ "sources": [
+  "rules_uart_lite_Design_Specification.json"
+ ],
+ "review": {
+  "prompt_version": "review-v1",
+  "model": "sonnet",
+  "chunks": 13,
+  "date": "2026-11-21T01:01:26+00:00",
+  "usage": {
+   "calls": 14,
+   "cached": 0,
+   "cost_usd": 0.4925,
+   "input_tokens": 32,
+   "output_tokens": 16631,
+   "cache_creation_input_tokens": 45523,
+   "cache_read_input_tokens": 23903
+  },
+  "errors": [],
+  "unknown_ids": []
+ },
+ "counts": {
+  "input": 159,
+  "kept": 145,
+  "fixed": 17,
+  "merged": 2,
+  "rejected": 12,
+  "unreviewed": 0,
+  "questions_raised": 24,
+  "questions_answered": 23,
+  "questions_duplicate": 0
+ },
+ "rules": [
+  {
+   "id": "UL-1.1-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "1.1",
+   "section_title": "Purpose",
+   "page": 8,
+   "quote": "It sends and receives bytes on a serial line in 8N1 format. 8N1 framing: one start bit (0), eight data bits with the least significant bit first, no parity, one stop bit (1).",
+   "spec_refs": [],
+   "sentences": [
+    "1.1:s2",
+    "1.2:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "The UART sends and receives bytes in 8N1 format: one start bit (0), eight data bits LSB first, no parity, one stop bit (1).",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Framing explicitly stated; checkable by scenario and serial-line monitoring."
+   }
+  },
+  {
+   "id": "UL-1.1-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "1.1",
+   "section_title": "Purpose",
+   "page": 8,
+   "quote": "The bit period is a fixed number of i_clk cycles, set by a parameter. Bit period of PARA_UART_CLKS_PER_BIT clock cycles.",
+   "spec_refs": [],
+   "sentences": [
+    "1.1:s3",
+    "1.2:s3"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_clk",
+    "PARA_UART_CLKS_PER_BIT"
+   ],
+   "condition": "",
+   "statement": "The bit period is a fixed number of i_clk cycles equal to PARA_UART_CLKS_PER_BIT.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Bit period fixed to PARA_UART_CLKS_PER_BIT cycles is stated."
+   }
+  },
+  {
+   "id": "UL-1.2-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "1.2",
+   "section_title": "Features",
+   "page": 11,
+   "quote": "The line is high when idle.",
+   "spec_refs": [],
+   "sentences": [
+    "1.2:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "When the serial line is idle",
+   "statement": "The serial line is held high when idle.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Line high when idle is stated; checkable on o_txd."
+   }
+  },
+  {
+   "id": "UL-1.2-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "1.2",
+   "section_title": "Features",
+   "page": 12,
+   "quote": "The parameter is fixed at elaboration and its legal range is 4 to 65535.",
+   "spec_refs": [],
+   "sentences": [
+    "1.2:s4"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "PARA_UART_CLKS_PER_BIT"
+   ],
+   "condition": "",
+   "statement": "PARA_UART_CLKS_PER_BIT is fixed at elaboration and must be within the legal range 4 to 65535.",
+   "check": "none",
+   "review": {
+    "verdict": "keep",
+    "reason": "Parameter legal range is a constraint on the integrator/configuration, not checkable at runtime; actor is any/system and check none is fine, but it is a design constraint. Keep as constraint with no check."
+   }
+  },
+  {
+   "id": "UL-1.2-04",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "1.2",
+   "section_title": "Features",
+   "page": 14,
+   "quote": "Bytes sent back to back have no idle bit between the stop bit and the next start bit.",
+   "spec_refs": [],
+   "sentences": [
+    "1.2:s7"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "When bytes are sent back to back",
+   "statement": "No idle bit is inserted between the stop bit and the next start bit.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Back-to-back bytes with no idle bit is stated and checkable."
+   }
+  },
+  {
+   "id": "UL-1.2-05",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "1.2",
+   "section_title": "Features",
+   "page": 15,
+   "quote": "A one-byte holding register keeps each received byte until it is taken.",
+   "spec_refs": [],
+   "sentences": [
+    "1.2:s9"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "o_rx_data",
+    "o_rx_valid"
+   ],
+   "condition": "After a byte is received until it is taken",
+   "statement": "A one-byte holding register keeps each received byte until it is taken.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Holding register keeps byte until taken; checkable via data stability while o_rx_valid and not ready."
+   }
+  },
+  {
+   "id": "UL-1.2-07",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "1.2",
+   "section_title": "Features",
+   "page": 17,
+   "quote": "Start-bit detection on a falling edge, a second start-bit check in the middle of the bit (glitch rejection), and sampling of every data bit and the stop bit in the middle of the bit.",
+   "spec_refs": [],
+   "sentences": [
+    "1.2:s11"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rxd"
+   ],
+   "condition": "",
+   "statement": "Start bit is detected on a falling edge and checked again at mid-bit to reject glitches.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Behaviour is right but it is a multi-part quote; the mid-bit start recheck is checked by driving a glitch scenario. Check scenario is correct, but strength/actor fine; keep as scenario."
+   }
+  },
+  {
+   "id": "UL-1.2-08",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "1.2",
+   "section_title": "Features",
+   "page": 17,
+   "quote": "Start-bit detection on a falling edge, a second start-bit check in the middle of the bit (glitch rejection), and sampling of every data bit and the stop bit in the middle of the bit.",
+   "spec_refs": [],
+   "sentences": [
+    "1.2:s11"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rxd"
+   ],
+   "condition": "",
+   "statement": "Every data bit and the stop bit are sampled in the middle of the bit.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Mid-bit sampling of data and stop bits is stated; exercised by scenario with skewed bits."
+   }
+  },
+  {
+   "id": "UL-1.2-09",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "1.2",
+   "section_title": "Features",
+   "page": 18,
+   "quote": "A frame error flag (stop bit sampled as 0), delivered together with the byte.",
+   "spec_refs": [],
+   "sentences": [
+    "1.2:s12"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "o_rx_frame_err",
+    "o_rx_valid"
+   ],
+   "condition": "When the stop bit is sampled as 0",
+   "statement": "o_rx_frame_err is set and delivered together with the received byte.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Frame error flag on stop bit 0 delivered with byte is stated."
+   }
+  },
+  {
+   "id": "UL-1.2-10",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "1.2",
+   "section_title": "Features",
+   "page": 19,
+   "quote": "An overrun pulse (o_rx_overrun) when a received byte is dropped because the previous byte has not been taken.",
+   "spec_refs": [],
+   "sentences": [
+    "1.2:s13"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "o_rx_overrun"
+   ],
+   "condition": "When a received byte is dropped because the previous byte has not been taken",
+   "statement": "An overrun pulse is generated on o_rx_overrun.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Overrun pulse when byte dropped is stated."
+   }
+  },
+  {
+   "id": "UL-1.2-11",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "1.2",
+   "section_title": "Features",
+   "page": 20,
+   "quote": "Full duplex: the transmitter and the receiver work at the same time and do not depend on each other.",
+   "spec_refs": [],
+   "sentences": [
+    "1.2:s14"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "Transmitter and receiver operate simultaneously and independently of each other (full duplex).",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Full duplex independence is stated and exercisable by scenario."
+   }
+  },
+  {
+   "id": "UL-3-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "3",
+   "section_title": "Terms",
+   "page": 59,
+   "quote": "Term: Overrun; Meaning: A completed frame that is dropped because the holding register is full and is not being emptied at its delivery edge V",
+   "spec_refs": [],
+   "sentences": [
+    "3:s16"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_rx_valid",
+    "i_rx_ready"
+   ],
+   "condition": "A frame completes while the holding register is full and is not being emptied at its delivery edge V",
+   "statement": "The completed frame must be dropped (overrun) and must not replace the byte held in the holding register.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "The quote defines overrun as a completed frame dropped when the holding register is full and not being emptied at its delivery edge. Dropping the frame means it does not replace the held byte, so the rule follows from the quote. The condition depends on internal state, so a scenario check fits. Strength MUST and actor slave are acceptable."
+   }
+  },
+  {
+   "id": "UL-4-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "4",
+   "section_title": "Parameters",
+   "page": 66,
+   "quote": "Parameter: PARA_UART_CLKS_PER_BIT; Default: 16; Legal values: 4 to 65535; Description: Bit period in i_clk cycles (N), used by the transmitter and the receiver [REQ-PAR-001] The block shall behave as specified for every value of PARA_UART_CLKS_PER_BIT from 4 to 65535 inclusive, both odd and even.",
+   "spec_refs": [
+    "REQ-PAR-001"
+   ],
+   "sentences": [
+    "4:s1",
+    "4:s3"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "PARA_UART_CLKS_PER_BIT",
+    "i_clk"
+   ],
+   "condition": "for every PARA_UART_CLKS_PER_BIT value from 4 to 65535 inclusive, odd or even",
+   "statement": "The block must behave as specified for every PARA_UART_CLKS_PER_BIT from 4 to 65535, odd and even, with the bit period equal to N i_clk cycles in transmitter and receiver.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote requires specified behavior for every legal PARA_UART_CLKS_PER_BIT (4..65535, odd/even); a parameter sweep scenario is the right check."
+   }
+  },
+  {
+   "id": "UL-4-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "4",
+   "section_title": "Parameters",
+   "page": 67,
+   "quote": "Parameter: LPARA_UART_HALF_BIT; Default: Derived; Legal values: -; Description: PARA_UART_CLKS_PER_BIT / 2 with integer division (floor); the middle-of-bit sampling offset H [REQ-PAR-002] LPARA_UART_HALF_BIT shall equal floor(PARA_UART_CLKS_PER_BIT / 2).",
+   "spec_refs": [
+    "REQ-PAR-002"
+   ],
+   "sentences": [
+    "4:s2",
+    "4:s4"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "LPARA_UART_HALF_BIT",
+    "PARA_UART_CLKS_PER_BIT"
+   ],
+   "condition": "",
+   "statement": "LPARA_UART_HALF_BIT must equal floor(PARA_UART_CLKS_PER_BIT / 2), the middle-of-bit sampling offset H.",
+   "check": "none",
+   "review": {
+    "verdict": "fix",
+    "reason": "Quote states LPARA_UART_HALF_BIT equals floor(N/2). It is an elaboration-time localparam, not an interface signal, so it can't be checked as a per-cycle assertion. Its effect shows only through sampling behavior, which is already covered by the sweep. Strength MUST (shall) and actor system are fine.",
+    "changes": {
+     "check": [
+      "assertion",
+      "none"
+     ]
+    }
+   }
+  },
+  {
+   "id": "UL-4-03",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "4",
+   "section_title": "Parameters",
+   "page": 73,
+   "quote": "[REQ-PAR-003] The block should stop elaboration with an error message when PARA_UART_CLKS_PER_BIT is less than 4 or greater than 65535.",
+   "spec_refs": [
+    "REQ-PAR-003"
+   ],
+   "sentences": [
+    "4:s5"
+   ],
+   "strength": "SHOULD",
+   "actor": "system",
+   "signals": [
+    "PARA_UART_CLKS_PER_BIT"
+   ],
+   "condition": "when PARA_UART_CLKS_PER_BIT is less than 4 or greater than 65535",
+   "statement": "The block should stop elaboration with an error message when PARA_UART_CLKS_PER_BIT is outside 4 to 65535.",
+   "check": "none",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote says 'should' stop elaboration with an error for out-of-range values. Strength SHOULD is correct. Elaboration-time behavior cannot be checked by a runtime assertion or a simulation scenario, since the simulation would not run, so check=none is right. The only field to fix is check: in the original, none is already stated, so this is effectively keep."
+   }
+  },
+  {
+   "id": "UL-5-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "5",
+   "section_title": "Interface",
+   "page": 82,
+   "quote": "Port: i_rst_n; Direction: input; Width: 1; Signal type: Reset (asynchronous assertion, synchronous release); Reset value: Not applicable; Clock domain: CLK; Meaning: Active-low reset",
+   "spec_refs": [],
+   "sentences": [
+    "5:s3"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rst_n"
+   ],
+   "condition": "",
+   "statement": "i_rst_n is active-low reset, asserted asynchronously and released synchronously to i_clk.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote states async assertion, sync release, active-low. Reset behaviour is exercised by scenario."
+   }
+  },
+  {
+   "id": "UL-5-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "5",
+   "section_title": "Interface",
+   "page": 84,
+   "quote": "Port: o_tx_ready; Direction: output; Width: 1; Signal type: Data; Reset value: 1; Clock domain: CLK; Meaning: Transmit stream: the transmitter can accept a byte at the next edge",
+   "spec_refs": [],
+   "sentences": [
+    "5:s5"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_tx_ready"
+   ],
+   "condition": "after reset",
+   "statement": "o_tx_ready must reset to 1 and be asserted only when the transmitter can accept a byte at the next clock edge.",
+   "check": "scenario",
+   "review": {
+    "verdict": "fix",
+    "reason": "Reset value 1 is stated, but 'asserted only when transmitter can accept a byte' is only a meaning description, with no internal-state observable. Reset value is assertion-checkable; the rest is not defined from interface signals. Keep as scenario-only for the readiness semantics.",
+    "changes": {
+     "check": [
+      "both",
+      "scenario"
+     ]
+    }
+   }
+  },
+  {
+   "id": "UL-5-03",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "5",
+   "section_title": "Interface",
+   "page": 85,
+   "quote": "Port: i_tx_data; Direction: input; Width: 8; Signal type: Data; Reset value: Not applicable; Clock domain: CLK; Meaning: Transmit stream: byte to send; bit 0 is sent first",
+   "spec_refs": [],
+   "sentences": [
+    "5:s6"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "i_tx_data",
+    "o_txd"
+   ],
+   "condition": "transmitting a byte",
+   "statement": "The transmitter must send bit 0 of i_tx_data first.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Bit 0 sent first is stated and requires a transmit scenario to check the serial order."
+   }
+  },
+  {
+   "id": "UL-5-04",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "5",
+   "section_title": "Interface",
+   "page": 86,
+   "quote": "Port: o_rx_valid; Direction: output; Width: 1; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Receive stream: the holding register holds a byte Port: o_rx_data; Direction: output; Width: 8; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Receive stream: received byte; bit 0 was received first; qualified by o_rx_valid Port: o_rx_frame_err; Direction: output; Width: 1; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Receive stream: 1 when the stop bit of the held byte was sampled as 0; qualified by o_rx_valid Port: o_rx_overrun; Direction: output; Width: 1; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: One-cycle pulse: a received byte was dropped because the holding register was full Port: o_txd; Direction: output; Width: 1; Signal type: Data; Reset value: 1; Clock domain: CLK; Meaning: Serial transmit line, idle high",
+   "spec_refs": [],
+   "sentences": [
+    "5:s7",
+    "5:s9",
+    "5:s10",
+    "5:s11",
+    "5:s12"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_rx_valid",
+    "o_rx_data",
+    "o_rx_frame_err",
+    "o_rx_overrun",
+    "o_txd"
+   ],
+   "condition": "during/after reset",
+   "statement": "On reset, o_rx_valid, o_rx_data, o_rx_frame_err and o_rx_overrun must be 0 and o_txd must be 1.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Reset values are stated for the rx outputs and o_txd, so the rule is right. The quote is truncated but o_txd reset 1 is stated elsewhere. Reset values are checkable every cycle while reset is active, so assertion is fine; check=both is acceptable. Reject not warranted. Minor: the o_txd reset value is not in the visible quote."
+   }
+  },
+  {
+   "id": "UL-5-05",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "5",
+   "section_title": "Interface",
+   "page": 88,
+   "quote": "Port: o_rx_data; Direction: output; Width: 8; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Receive stream: received byte; bit 0 was received first; qualified by o_rx_valid",
+   "spec_refs": [],
+   "sentences": [
+    "5:s9"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_rx_data",
+    "o_rx_valid",
+    "i_rxd"
+   ],
+   "condition": "o_rx_valid is 1",
+   "statement": "o_rx_data must hold the received byte, with bit 0 being the first bit received, qualified by o_rx_valid.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated by quote: byte is received LSB first and qualified by o_rx_valid. A scenario is needed to check the received data."
+   }
+  },
+  {
+   "id": "UL-5-06",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "5",
+   "section_title": "Interface",
+   "page": 89,
+   "quote": "Port: o_rx_frame_err; Direction: output; Width: 1; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: Receive stream: 1 when the stop bit of the held byte was sampled as 0; qualified by o_rx_valid",
+   "spec_refs": [],
+   "sentences": [
+    "5:s10"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_rx_frame_err",
+    "o_rx_valid"
+   ],
+   "condition": "o_rx_valid is 1",
+   "statement": "o_rx_frame_err must be 1 when the stop bit of the held byte was sampled as 0, and is qualified by o_rx_valid.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated by quote; requires a stop-bit-0 scenario."
+   }
+  },
+  {
+   "id": "UL-5-07",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "5",
+   "section_title": "Interface",
+   "page": 90,
+   "quote": "Port: o_rx_overrun; Direction: output; Width: 1; Signal type: Data; Reset value: 0; Clock domain: CLK; Meaning: One-cycle pulse: a received byte was dropped because the holding register was full",
+   "spec_refs": [],
+   "sentences": [
+    "5:s11"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_rx_overrun"
+   ],
+   "condition": "a received byte is dropped because the holding register is full",
+   "statement": "o_rx_overrun must pulse high for exactly one cycle when a received byte is dropped because the holding register is full.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "One-cycle pulse on dropped byte is stated. The pulse width can be checked by assertion and the drop condition needs a scenario."
+   }
+  },
+  {
+   "id": "UL-5-08",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "5",
+   "section_title": "Interface",
+   "page": 91,
+   "quote": "Port: o_txd; Direction: output; Width: 1; Signal type: Data; Reset value: 1; Clock domain: CLK; Meaning: Serial transmit line, idle high",
+   "spec_refs": [],
+   "sentences": [
+    "5:s12"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_txd"
+   ],
+   "condition": "idle",
+   "statement": "o_txd must be high when the serial transmit line is idle.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Idle high and reset value 1 are stated; o_txd high when idle is checkable."
+   }
+  },
+  {
+   "id": "UL-6.1-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "6.1",
+   "section_title": "Clocks",
+   "page": 99,
+   "quote": "[REQ-CLK-001] All state elements of the block shall be clocked by the rising edge of i_clk only, with no other clock, no gated clock and no latch.",
+   "spec_refs": [
+    "REQ-CLK-001"
+   ],
+   "sentences": [
+    "6.1:s7"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_clk"
+   ],
+   "condition": "",
+   "statement": "All state elements shall be clocked only by the rising edge of i_clk, with no other clock, no gated clock and no latch.",
+   "check": "scenario",
+   "review": {
+    "verdict": "fix",
+    "reason": "Clocking/structural requirement; not checkable from interface signals every cycle, and a gated clock or latch is a design/lint check. Check=none leaves nothing to verify; best handled as structural lint, so keep as scenario-less structural. Chosen: none is acceptable.",
+    "changes": {
+     "check": [
+      "none",
+      "scenario"
+     ]
+    }
+   }
+  },
+  {
+   "id": "UL-6.2-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "6.2",
+   "section_title": "Resets",
+   "page": 104,
+   "quote": "[REQ-RST-001] When i_rst_n becomes 0, every flip-flop of the block shall take its reset value at once, without waiting for an edge of i_clk.",
+   "spec_refs": [
+    "REQ-RST-001"
+   ],
+   "sentences": [
+    "6.2:s4"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rst_n"
+   ],
+   "condition": "When i_rst_n becomes 0",
+   "statement": "Every flip-flop shall take its reset value at once, without waiting for an i_clk edge.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote states asynchronous reset; checkable by asserting reset between clock edges and observing outputs."
+   }
+  },
+  {
+   "id": "UL-6.2-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "6.2",
+   "section_title": "Resets",
+   "page": 106,
+   "quote": "[REQ-RST-002] While i_rst_n is 0, the outputs shall have these values: o_txd = 1, o_tx_ready = 1, o_rx_valid = 0, o_rx_data = 0, o_rx_frame_err = 0, o_rx_overrun = 0.",
+   "spec_refs": [
+    "REQ-RST-002"
+   ],
+   "sentences": [
+    "6.2:s5"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rst_n",
+    "o_txd",
+    "o_tx_ready",
+    "o_rx_valid",
+    "o_rx_data",
+    "o_rx_frame_err",
+    "o_rx_overrun"
+   ],
+   "condition": "While i_rst_n is 0",
+   "statement": "Outputs shall be o_txd=1, o_tx_ready=1, o_rx_valid=0, o_rx_data=0, o_rx_frame_err=0, o_rx_overrun=0.",
+   "check": "assertion",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote lists output values during reset; checkable every cycle from interface signals."
+   }
+  },
+  {
+   "id": "UL-6.2-03",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "6.2",
+   "section_title": "Resets",
+   "page": 108,
+   "quote": "[REQ-RST-003] While i_rst_n is 0, no transmit byte shall be accepted, even when i_tx_valid = 1 and o_tx_ready = 1.",
+   "spec_refs": [
+    "REQ-RST-003"
+   ],
+   "sentences": [
+    "6.2:s6"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "system",
+   "signals": [
+    "i_rst_n",
+    "i_tx_valid",
+    "o_tx_ready"
+   ],
+   "condition": "While i_rst_n is 0, even when i_tx_valid=1 and o_tx_ready=1",
+   "statement": "No transmit byte shall be accepted.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote states no byte accepted during reset even with tx_valid and tx_ready high; observable via o_txd staying 1 and no frame after release."
+   }
+  },
+  {
+   "id": "UL-6.2-04",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "6.2",
+   "section_title": "Resets",
+   "page": 110,
+   "quote": "[REQ-RST-004] While i_rst_n is 0, the receiver shall not detect a start bit and shall not deliver a byte.",
+   "spec_refs": [
+    "REQ-RST-004"
+   ],
+   "sentences": [
+    "6.2:s7"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "system",
+   "signals": [
+    "i_rst_n",
+    "o_rx_valid"
+   ],
+   "condition": "While i_rst_n is 0",
+   "statement": "The receiver shall not detect a start bit and shall not deliver a byte.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote states receiver does not detect start or deliver byte during reset; observable on o_rx_valid and with rxd stimulus."
+   }
+  },
+  {
+   "id": "UL-6.2-05",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "6.2",
+   "section_title": "Resets",
+   "page": 112,
+   "quote": "[REQ-RST-005] Both i_rxd synchronizer flip-flops, and any flip-flop that holds the previous synchronised line value, shall reset to 1.",
+   "spec_refs": [
+    "REQ-RST-005"
+   ],
+   "sentences": [
+    "6.2:s8"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rxd"
+   ],
+   "condition": "On reset",
+   "statement": "Both i_rxd synchronizer flip-flops and any flip-flop holding the previous synchronised line value shall reset to 1.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Reset value of synchronizer flops is internal; observable only through behaviour after release (see UL-6.2-12), so scenario is right."
+   }
+  },
+  {
+   "id": "UL-6.2-06",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "6.2",
+   "section_title": "Resets",
+   "page": 114,
+   "quote": "[REQ-RST-006] If reset is asserted during a transmission, the frame shall be abandoned: o_txd shall become 1 at once, and the rest of the frame and the byte shall not be sent after the release.",
+   "spec_refs": [
+    "REQ-RST-006"
+   ],
+   "sentences": [
+    "6.2:s9"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rst_n",
+    "o_txd"
+   ],
+   "condition": "Reset asserted during a transmission",
+   "statement": "o_txd shall become 1 at once and the frame is abandoned.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote requires o_txd to become 1 at once on reset during transmission, which is checkable every cycle; the not-sent-after-release part is covered separately. Check should be both."
+   },
+   "merged_from": [
+    {
+     "id": "UL-6.2-07",
+     "quote": "[REQ-RST-006] If reset is asserted during a transmission, the frame shall be abandoned: o_txd shall become 1 at once, and the rest of the frame and the byte shall not be sent after the release.",
+     "sentences": [
+      "6.2:s9"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "UL-6.2-08",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "6.2",
+   "section_title": "Resets",
+   "page": 116,
+   "quote": "[REQ-RST-007] If reset is asserted during a reception, the partly received frame shall be discarded and shall not produce o_rx_valid, o_rx_frame_err or o_rx_overrun after the release.",
+   "spec_refs": [
+    "REQ-RST-007"
+   ],
+   "sentences": [
+    "6.2:s10"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rst_n",
+    "o_rx_valid",
+    "o_rx_frame_err",
+    "o_rx_overrun"
+   ],
+   "condition": "Reset asserted during a reception",
+   "statement": "The partly received frame shall be discarded and shall not produce o_rx_valid, o_rx_frame_err or o_rx_overrun after the release.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote states partial frame discarded with no valid, frame_err or overrun after release; needs a scenario."
+   }
+  },
+  {
+   "id": "UL-6.2-09",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "6.2",
+   "section_title": "Resets",
+   "page": 118,
+   "quote": "[REQ-RST-008] If reset is asserted while o_rx_valid = 1, the held byte shall be discarded.",
+   "spec_refs": [
+    "REQ-RST-008"
+   ],
+   "sentences": [
+    "6.2:s11"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rst_n",
+    "o_rx_valid"
+   ],
+   "condition": "Reset asserted while o_rx_valid=1",
+   "statement": "The held byte shall be discarded.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote states held byte is discarded on reset; scenario with o_rx_valid=1 then reset."
+   }
+  },
+  {
+   "id": "UL-6.2-10",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "6.2",
+   "section_title": "Resets",
+   "page": 120,
+   "quote": "[REQ-RST-009] After the release of i_rst_n, the transmitter shall be idle with o_tx_ready = 1, and it shall be able to accept a byte at the first edge after the release.",
+   "spec_refs": [
+    "REQ-RST-009"
+   ],
+   "sentences": [
+    "6.2:s12"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rst_n",
+    "o_tx_ready",
+    "i_tx_valid"
+   ],
+   "condition": "After release of i_rst_n",
+   "statement": "The transmitter shall be idle with o_tx_ready=1 and shall accept a byte at the first edge after the release.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote states idle with o_tx_ready=1 and byte accepted at first edge after release; both check is suitable."
+   }
+  },
+  {
+   "id": "UL-6.2-11",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "6.2",
+   "section_title": "Resets",
+   "page": 122,
+   "quote": "[REQ-RST-010] After the release of i_rst_n, the receiver shall be idle.",
+   "spec_refs": [
+    "REQ-RST-010"
+   ],
+   "sentences": [
+    "6.2:s13"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rst_n"
+   ],
+   "condition": "After release of i_rst_n",
+   "statement": "The receiver shall be idle.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote states receiver idle after release; scenario check."
+   }
+  },
+  {
+   "id": "UL-6.2-12",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "6.2",
+   "section_title": "Resets",
+   "page": 122,
+   "quote": "For the first edge R1 after the release, s(R1-1) shall be taken as 1 (the reset value of the synchronizer). So if s(R1) = 0, R1 is detected as T0 (Section 10.5).",
+   "spec_refs": [],
+   "sentences": [
+    "6.2:s14",
+    "6.2:s15"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rxd"
+   ],
+   "condition": "First edge R1 after reset release",
+   "statement": "The previous synchronised value s(R1-1) shall be taken as 1, so if s(R1)=0 it is detected as T0.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote states s(R1-1) taken as 1 so s(R1)=0 is detected as T0; scenario check."
+   }
+  },
+  {
+   "id": "UL-7.1-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.1",
+   "section_title": "General",
+   "page": 128,
+   "quote": "[REQ-GEN-001] The block shall send and receive frames in 8N1 format: a start bit of value 0, then eight data bits with the least significant bit first, then a stop bit of value 1, with no parity bit.",
+   "spec_refs": [
+    "REQ-GEN-001"
+   ],
+   "sentences": [
+    "7.1:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "o_txd",
+    "i_rxd"
+   ],
+   "condition": "",
+   "statement": "The block shall send and receive 8N1 frames: start bit 0, eight data bits LSB first, stop bit 1, no parity bit.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote states 8N1 frame format."
+   }
+  },
+  {
+   "id": "UL-7.1-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.1",
+   "section_title": "General",
+   "page": 130,
+   "quote": "[REQ-GEN-002] The transmitter and the receiver shall work at the same time and independently. No activity of one shall change the timing or the outputs of the other.",
+   "spec_refs": [
+    "REQ-GEN-002"
+   ],
+   "sentences": [
+    "7.1:s2",
+    "7.1:s3"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "Transmitter and receiver shall operate concurrently and independently; activity of one shall not change the timing or outputs of the other.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Independence of TX and RX is stated."
+   }
+  },
+  {
+   "id": "UL-7.1-03",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.1",
+   "section_title": "General",
+   "page": 132,
+   "quote": "[REQ-GEN-003] Every output port shall be driven directly by a flip-flop clocked by i_clk, so there is no combinational path from any input port to any output port.",
+   "spec_refs": [
+    "REQ-GEN-003"
+   ],
+   "sentences": [
+    "7.1:s4"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_clk"
+   ],
+   "condition": "",
+   "statement": "Every output port shall be driven directly by a flip-flop clocked by i_clk, with no combinational path from any input port to any output port.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Registered outputs and no combinational input-to-output path are stated."
+   }
+  },
+  {
+   "id": "UL-7.2-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.2",
+   "section_title": "Transmit stream interface",
+   "page": 136,
+   "quote": "[REQ-TX-001] The transmitter shall accept a byte at an edge only when, at that edge, i_tx_valid = 1, o_tx_ready = 1 and i_rst_n = 1.",
+   "spec_refs": [
+    "REQ-TX-001"
+   ],
+   "sentences": [
+    "7.2:s1"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "slave",
+   "signals": [
+    "i_tx_valid",
+    "o_tx_ready",
+    "i_rst_n"
+   ],
+   "condition": "at an edge",
+   "statement": "The transmitter shall accept a byte at an edge only when i_tx_valid = 1, o_tx_ready = 1 and i_rst_n = 1.",
+   "check": "assertion",
+   "review": {
+    "verdict": "fix",
+    "reason": "'Accept only when' restricts acceptance, so it is MUST_NOT.",
+    "changes": {
+     "strength": [
+      "MUST",
+      "MUST_NOT"
+     ]
+    }
+   }
+  },
+  {
+   "id": "UL-7.2-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.2",
+   "section_title": "Transmit stream interface",
+   "page": 138,
+   "quote": "[REQ-TX-002] The transmitter shall capture i_tx_data at the accepting edge E0. The value of i_tx_data at any other edge shall have no effect.",
+   "spec_refs": [
+    "REQ-TX-002"
+   ],
+   "sentences": [
+    "7.2:s2",
+    "7.2:s3"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "i_tx_data"
+   ],
+   "condition": "byte accepted at edge E0",
+   "statement": "The transmitter shall capture i_tx_data at the accepting edge E0; the value of i_tx_data at any other edge shall have no effect.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Capture at E0 only is stated."
+   }
+  },
+  {
+   "id": "UL-7.2-03",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.2",
+   "section_title": "Transmit stream interface",
+   "page": 140,
+   "quote": "[REQ-TX-003] While the transmitter is idle (no frame in progress), o_tx_ready shall be 1.",
+   "spec_refs": [
+    "REQ-TX-003"
+   ],
+   "sentences": [
+    "7.2:s4"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_tx_ready"
+   ],
+   "condition": "transmitter idle, no frame in progress",
+   "statement": "While the transmitter is idle, o_tx_ready shall be 1.",
+   "check": "assertion",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.2-04",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.2",
+   "section_title": "Transmit stream interface",
+   "page": 142,
+   "quote": "[REQ-TX-004] After an accepting edge E0, o_tx_ready shall be 0 in the cycles after edges E0 to E0+10N-2 inclusive.",
+   "spec_refs": [
+    "REQ-TX-004"
+   ],
+   "sentences": [
+    "7.2:s5"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_tx_ready"
+   ],
+   "condition": "after accepting edge E0",
+   "statement": "o_tx_ready shall be 0 in the cycles after edges E0 to E0+10N-2 inclusive.",
+   "check": "assertion",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.2-05",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.2",
+   "section_title": "Transmit stream interface",
+   "page": 144,
+   "quote": "[REQ-TX-005] After an accepting edge E0, o_tx_ready shall become 1 at edge E0+10N-1, which is the last cycle of the stop bit.",
+   "spec_refs": [
+    "REQ-TX-005"
+   ],
+   "sentences": [
+    "7.2:s6"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_tx_ready"
+   ],
+   "condition": "after accepting edge E0",
+   "statement": "o_tx_ready shall become 1 at edge E0+10N-1, the last cycle of the stop bit.",
+   "check": "assertion",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.2-06",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.2",
+   "section_title": "Transmit stream interface",
+   "page": 146,
+   "quote": "[REQ-TX-006] If i_tx_valid is 0 at an edge, or o_tx_ready is 0 at that edge, the transmitter shall not accept a byte and its state shall not depend on i_tx_data.",
+   "spec_refs": [
+    "REQ-TX-006"
+   ],
+   "sentences": [
+    "7.2:s7"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "i_tx_valid",
+    "o_tx_ready",
+    "i_tx_data"
+   ],
+   "condition": "i_tx_valid = 0 or o_tx_ready = 0 at an edge",
+   "statement": "The transmitter shall not accept a byte and its state shall not depend on i_tx_data.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.2-07",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.2",
+   "section_title": "Transmit stream interface",
+   "page": 148,
+   "quote": "[REQ-TX-007] The transmitter shall not require i_tx_valid to stay 1 until a handshake. If i_tx_valid returns to 0 before a handshake, nothing is sent.",
+   "spec_refs": [
+    "REQ-TX-007"
+   ],
+   "sentences": [
+    "7.2:s8",
+    "7.2:s9"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "slave",
+   "signals": [
+    "i_tx_valid"
+   ],
+   "condition": "",
+   "statement": "The transmitter shall not require i_tx_valid to stay 1 until a handshake; if it returns to 0 before a handshake, nothing is sent.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.2-08",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.2",
+   "section_title": "Transmit stream interface",
+   "page": 150,
+   "quote": "[REQ-TX-008] The transmitter shall hold at most one byte, the byte being sent, and shall have no transmit buffer beyond it.",
+   "spec_refs": [
+    "REQ-TX-008"
+   ],
+   "sentences": [
+    "7.2:s10"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [],
+   "condition": "",
+   "statement": "The transmitter shall hold at most one byte, the byte being sent, with no transmit buffer beyond it.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated; observable through ready and data behaviour."
+   }
+  },
+  {
+   "id": "UL-7.3-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.3",
+   "section_title": "Transmit serial frame",
+   "page": 154,
+   "quote": "Frame bit j (j = 0 to 9) of a byte D is: bit 0 = 0 (start bit); bit j = D[j-1] for j = 1 to 8; bit 9 = 1 (stop bit). [REQ-TX-010] For a byte D accepted at edge E0, o_txd in the cycle after edge E0+k shall equal frame bit floor(k / N) of D, for every k from 0 to 10N-1.",
+   "spec_refs": [
+    "REQ-TX-010"
+   ],
+   "sentences": [
+    "7.3:s1",
+    "7.3:s2"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_txd"
+   ],
+   "condition": "byte D accepted at edge E0, k from 0 to 10N-1",
+   "statement": "o_txd in the cycle after edge E0+k shall equal frame bit floor(k/N) of D (bit0=0, bit j=D[j-1], bit9=1).",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.3-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.3",
+   "section_title": "Transmit serial frame",
+   "page": 158,
+   "quote": "[REQ-TX-011] Each of the 10 frame bits shall be driven on o_txd for exactly N consecutive cycles.",
+   "spec_refs": [
+    "REQ-TX-011"
+   ],
+   "sentences": [
+    "7.3:s3"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_txd"
+   ],
+   "condition": "",
+   "statement": "Each of the 10 frame bits shall be driven on o_txd for exactly N consecutive cycles.",
+   "check": "assertion",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.3-03",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.3",
+   "section_title": "Transmit serial frame",
+   "page": 160,
+   "quote": "[REQ-TX-012] If a new byte is accepted at edge E0+10N, its start bit shall begin at edge E0+10N, with no idle cycle between the stop bit of the previous frame and the new start bit.",
+   "spec_refs": [
+    "REQ-TX-012"
+   ],
+   "sentences": [
+    "7.3:s4"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_txd"
+   ],
+   "condition": "new byte accepted at edge E0+10N",
+   "statement": "Its start bit shall begin at edge E0+10N with no idle cycle between the previous stop bit and the new start bit.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.3-04",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.3",
+   "section_title": "Transmit serial frame",
+   "page": 162,
+   "quote": "[REQ-TX-013] If no byte is accepted at edge E0+10N, o_txd shall be 1 from edge E0+10N until the edge after which the next accepted frame starts.",
+   "spec_refs": [
+    "REQ-TX-013"
+   ],
+   "sentences": [
+    "7.3:s5"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_txd"
+   ],
+   "condition": "no byte accepted at edge E0+10N",
+   "statement": "o_txd shall be 1 from edge E0+10N until the edge after which the next accepted frame starts.",
+   "check": "assertion",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.3-05",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.3",
+   "section_title": "Transmit serial frame",
+   "page": 164,
+   "quote": "[REQ-TX-014] While the transmitter is idle, o_txd shall be 1.",
+   "spec_refs": [
+    "REQ-TX-014"
+   ],
+   "sentences": [
+    "7.3:s6"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_txd"
+   ],
+   "condition": "transmitter idle",
+   "statement": "While the transmitter is idle, o_txd shall be 1.",
+   "check": "assertion",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.4-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.4",
+   "section_title": "Receive line synchronisation and start detection",
+   "page": 168,
+   "quote": "[REQ-RX-001] i_rxd shall go through a synchronizer of exactly two flip-flops clocked by i_clk, with no logic between them, before any other logic of the block uses it.",
+   "spec_refs": [
+    "REQ-RX-001"
+   ],
+   "sentences": [
+    "7.4:s1"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "i_rxd",
+    "i_clk"
+   ],
+   "condition": "",
+   "statement": "i_rxd shall pass through a synchronizer of exactly two i_clk flip-flops with no logic between them before any other logic uses it.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated; exercised via input-to-detection latency."
+   }
+  },
+  {
+   "id": "UL-7.4-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.4",
+   "section_title": "Receive line synchronisation and start detection",
+   "page": 170,
+   "quote": "[REQ-RX-002] The receiver shall be in one of two conditions, idle or receiving. It shall be idle after reset, after a glitch (REQ-RX-005) and after the stop-bit sample of a frame (REQ-RX-013).",
+   "spec_refs": [
+    "REQ-RX-002",
+    "REQ-RX-005",
+    "REQ-RX-013"
+   ],
+   "sentences": [
+    "7.4:s2",
+    "7.4:s3"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [],
+   "condition": "",
+   "statement": "The receiver shall be either idle or receiving, and shall be idle after reset, after a glitch and after the stop-bit sample of a frame.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.4-03",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.4",
+   "section_title": "Receive line synchronisation and start detection",
+   "page": 172,
+   "quote": "[REQ-RX-003] While idle, the receiver shall detect a start bit at edge T0 if and only if s(T0-1) = 1 and s(T0) = 0.",
+   "spec_refs": [
+    "REQ-RX-003"
+   ],
+   "sentences": [
+    "7.4:s4"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [],
+   "condition": "receiver idle",
+   "statement": "The receiver shall detect a start bit at edge T0 if and only if s(T0-1) = 1 and s(T0) = 0.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.4-04",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.4",
+   "section_title": "Receive line synchronisation and start detection",
+   "page": 174,
+   "quote": "[REQ-RX-004] The receiver shall not need the line to be high for longer than the single sample s(T0-1) = 1 before a start bit.",
+   "spec_refs": [
+    "REQ-RX-004"
+   ],
+   "sentences": [
+    "7.4:s5"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "slave",
+   "signals": [],
+   "condition": "before a start bit",
+   "statement": "The receiver shall not need the line high for longer than the single sample s(T0-1) = 1.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.4-05",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.4",
+   "section_title": "Receive line synchronisation and start detection",
+   "page": 176,
+   "quote": "[REQ-RX-005] At edge T0+H the receiver shall check the start bit. If s(T0+H) = 1, the receiver shall treat the event as a glitch, return to idle and receive no byte.",
+   "spec_refs": [
+    "REQ-RX-005"
+   ],
+   "sentences": [
+    "7.4:s6",
+    "7.4:s7"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [],
+   "condition": "s(T0+H) = 1 at start-bit check",
+   "statement": "At edge T0+H the receiver shall check the start bit; if s(T0+H) = 1 it shall treat it as a glitch, return to idle and receive no byte.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.4-06",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.4",
+   "section_title": "Receive line synchronisation and start detection",
+   "page": 178,
+   "quote": "[REQ-RX-006] A glitch shall not change o_rx_valid, o_rx_data or o_rx_frame_err, and it shall not make o_rx_overrun pulse.",
+   "spec_refs": [
+    "REQ-RX-006"
+   ],
+   "sentences": [
+    "7.4:s8"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "slave",
+   "signals": [
+    "o_rx_valid",
+    "o_rx_data",
+    "o_rx_frame_err",
+    "o_rx_overrun"
+   ],
+   "condition": "glitch",
+   "statement": "A glitch shall not change o_rx_valid, o_rx_data or o_rx_frame_err, and shall not make o_rx_overrun pulse.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.4-07",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.4",
+   "section_title": "Receive line synchronisation and start detection",
+   "page": 180,
+   "quote": "[REQ-RX-007] After a glitch checked at edge T0+H, the receiver shall detect a new start bit at any edge T0' > T0+H at which REQ-RX-003 holds.",
+   "spec_refs": [
+    "REQ-RX-003",
+    "REQ-RX-007"
+   ],
+   "sentences": [
+    "7.4:s9"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [],
+   "condition": "after glitch checked at T0+H",
+   "statement": "The receiver shall detect a new start bit at any edge T0' > T0+H at which REQ-RX-003 holds.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.4-08",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.4",
+   "section_title": "Receive line synchronisation and start detection",
+   "page": 182,
+   "quote": "[REQ-RX-008] If s(T0+H) = 0, the receiver shall go on to receive the frame.",
+   "spec_refs": [
+    "REQ-RX-008"
+   ],
+   "sentences": [
+    "7.4:s10"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [],
+   "condition": "s(T0+H) = 0",
+   "statement": "The receiver shall go on to receive the frame.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.5-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.5",
+   "section_title": "Receive sampling and byte assembly",
+   "page": 186,
+   "quote": "[REQ-RX-010] For a frame detected at T0 and confirmed at T0+H, the receiver shall sample data bit i (i = 0 to 7) at edge T0+H+(i+1)N. The received byte bit i shall be s(T0+H+(i+1)N).",
+   "spec_refs": [
+    "REQ-RX-010"
+   ],
+   "sentences": [
+    "7.5:s1",
+    "7.5:s2"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [],
+   "condition": "frame detected at T0 and confirmed at T0+H",
+   "statement": "The receiver shall sample data bit i (0 to 7) at edge T0+H+(i+1)N, and received byte bit i shall equal that sample.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.5-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.5",
+   "section_title": "Receive sampling and byte assembly",
+   "page": 188,
+   "quote": "[REQ-RX-011] The receiver shall sample the stop bit at edge M = T0+H+9N.",
+   "spec_refs": [
+    "REQ-RX-011"
+   ],
+   "sentences": [
+    "7.5:s3"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [],
+   "condition": "",
+   "statement": "The receiver shall sample the stop bit at edge M = T0+H+9N.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.5-03",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.5",
+   "section_title": "Receive sampling and byte assembly",
+   "page": 190,
+   "quote": "[REQ-RX-012] Only the samples s(T0-1), s(T0), s(T0+H), the eight data-bit samples and s(M) shall affect the result of a frame. Values of i_rxd at all other edges between T0 and M shall be ignored.",
+   "spec_refs": [
+    "REQ-RX-012"
+   ],
+   "sentences": [
+    "7.5:s4",
+    "7.5:s5"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "i_rxd"
+   ],
+   "condition": "",
+   "statement": "Only s(T0-1), s(T0), s(T0+H), the eight data samples and s(M) shall affect a frame result; i_rxd at all other edges between T0 and M shall be ignored.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.5-04",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.5",
+   "section_title": "Receive sampling and byte assembly",
+   "page": 192,
+   "quote": "[REQ-RX-013] Once it has sampled the stop bit at M, the receiver shall be idle. It shall detect a new start bit at any edge T0' > M at which REQ-RX-003 holds, including T0' = M+1 when s(M) = 1 and s(M+1) = 0.",
+   "spec_refs": [
+    "REQ-RX-003",
+    "REQ-RX-013"
+   ],
+   "sentences": [
+    "7.5:s6",
+    "7.5:s7"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [],
+   "condition": "after sampling stop bit at M",
+   "statement": "The receiver shall be idle and shall detect a new start bit at any edge T0' > M where REQ-RX-003 holds, including M+1 when s(M)=1 and s(M+1)=0.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.5-05",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.5",
+   "section_title": "Receive sampling and byte assembly",
+   "page": 194,
+   "quote": "[REQ-RX-014] Every frame confirmed at T0+H shall complete at M, whatever the value of s(M).",
+   "spec_refs": [
+    "REQ-RX-014"
+   ],
+   "sentences": [
+    "7.5:s8"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [],
+   "condition": "frame confirmed at T0+H",
+   "statement": "Every confirmed frame shall complete at M, whatever the value of s(M).",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.5-06",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.5",
+   "section_title": "Receive sampling and byte assembly",
+   "page": 196,
+   "quote": "[REQ-RX-015] The receiver shall keep sampling and receiving frames while a byte is waiting in the holding register. A low i_rx_ready shall not stall or delay the receiver.",
+   "spec_refs": [
+    "REQ-RX-015"
+   ],
+   "sentences": [
+    "7.5:s9",
+    "7.5:s10"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "i_rx_ready"
+   ],
+   "condition": "byte waiting in holding register",
+   "statement": "The receiver shall keep sampling and receiving frames; a low i_rx_ready shall not stall or delay it.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.6-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.6",
+   "section_title": "Receive stream interface",
+   "page": 200,
+   "quote": "[REQ-RX-020] At the delivery edge V = M+2 of a completed frame, if o_rx_valid = 0, the block shall load the frame into the holding register. o_rx_valid then becomes 1, o_rx_data becomes the received byte and o_rx_frame_err becomes the inverse of s(M).",
+   "spec_refs": [
+    "REQ-RX-020"
+   ],
+   "sentences": [
+    "7.6:s1"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_rx_valid",
+    "o_rx_data",
+    "o_rx_frame_err"
+   ],
+   "condition": "delivery edge V = M+2 of a completed frame and o_rx_valid = 0",
+   "statement": "The block shall load the frame: o_rx_valid becomes 1, o_rx_data the received byte, o_rx_frame_err the inverse of s(M).",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.6-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.6",
+   "section_title": "Receive stream interface",
+   "page": 202,
+   "quote": "[REQ-RX-021] At the delivery edge V of a completed frame, if o_rx_valid = 1 and i_rx_ready = 1, the block shall take the held byte and load the new frame into the holding register at the same edge. o_rx_valid stays 1 and no overrun is reported.",
+   "spec_refs": [
+    "REQ-RX-021"
+   ],
+   "sentences": [
+    "7.6:s2"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_rx_valid",
+    "i_rx_ready",
+    "o_rx_overrun"
+   ],
+   "condition": "delivery edge V, o_rx_valid = 1 and i_rx_ready = 1",
+   "statement": "The block shall take the held byte and load the new frame at the same edge; o_rx_valid stays 1 and no overrun is reported.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.6-03",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.6",
+   "section_title": "Receive stream interface",
+   "page": 204,
+   "quote": "[REQ-RX-022] The consumer takes a held byte at an edge where o_rx_valid = 1, i_rx_ready = 1 and i_rst_n = 1. [REQ-RX-023] If a held byte is taken at an edge and no new byte is loaded at that edge, o_rx_valid shall become 0 at that edge.",
+   "spec_refs": [
+    "REQ-RX-022",
+    "REQ-RX-023"
+   ],
+   "sentences": [
+    "7.6:s3",
+    "7.6:s4"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_rx_valid",
+    "i_rx_ready",
+    "i_rst_n"
+   ],
+   "condition": "held byte taken (o_rx_valid=1, i_rx_ready=1, i_rst_n=1) and no new byte loaded at that edge",
+   "statement": "o_rx_valid shall become 0 at that edge.",
+   "check": "assertion",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.6-04",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.6",
+   "section_title": "Receive stream interface",
+   "page": 208,
+   "quote": "[REQ-RX-024] While o_rx_valid = 1 and the byte is not taken, o_rx_valid, o_rx_data and o_rx_frame_err shall keep their values.",
+   "spec_refs": [
+    "REQ-RX-024"
+   ],
+   "sentences": [
+    "7.6:s5"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_rx_valid",
+    "o_rx_data",
+    "o_rx_frame_err"
+   ],
+   "condition": "o_rx_valid = 1 and byte not taken",
+   "statement": "o_rx_valid, o_rx_data and o_rx_frame_err shall keep their values.",
+   "check": "assertion",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.6-05",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.6",
+   "section_title": "Receive stream interface",
+   "page": 210,
+   "quote": "[REQ-RX-025] o_rx_data and o_rx_frame_err shall change only at an edge where a new byte is loaded, or on reset. While o_rx_valid = 0 they shall keep the values of the last loaded byte, or 0 if no byte has been loaded since reset.",
+   "spec_refs": [
+    "REQ-RX-025"
+   ],
+   "sentences": [
+    "7.6:s6",
+    "7.6:s7"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_rx_data",
+    "o_rx_frame_err",
+    "o_rx_valid"
+   ],
+   "condition": "",
+   "statement": "o_rx_data and o_rx_frame_err shall change only when a new byte is loaded or on reset; while o_rx_valid = 0 they keep the last loaded values, or 0 if none since reset.",
+   "check": "assertion",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.6-06",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.6",
+   "section_title": "Receive stream interface",
+   "page": 212,
+   "quote": "[REQ-RX-026] i_rx_ready shall have no effect while o_rx_valid = 0.",
+   "spec_refs": [
+    "REQ-RX-026"
+   ],
+   "sentences": [
+    "7.6:s8"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "i_rx_ready",
+    "o_rx_valid"
+   ],
+   "condition": "o_rx_valid = 0",
+   "statement": "i_rx_ready shall have no effect.",
+   "check": "assertion",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.6-07",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.6",
+   "section_title": "Receive stream interface",
+   "page": 214,
+   "quote": "[REQ-RX-027] Bytes shall be delivered on the receive stream in the order in which their frames completed.",
+   "spec_refs": [
+    "REQ-RX-027"
+   ],
+   "sentences": [
+    "7.6:s9"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [],
+   "condition": "",
+   "statement": "Bytes shall be delivered on the receive stream in the order in which their frames completed.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.7-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.7",
+   "section_title": "Frame error",
+   "page": 218,
+   "quote": "[REQ-FE-001] o_rx_frame_err shall be 1 with a loaded byte if and only if the stop-bit sample s(M) of that frame was 0.",
+   "spec_refs": [
+    "REQ-FE-001"
+   ],
+   "sentences": [
+    "7.7:s1"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_rx_frame_err"
+   ],
+   "condition": "byte loaded",
+   "statement": "o_rx_frame_err shall be 1 if and only if the stop-bit sample s(M) of that frame was 0.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.7-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.7",
+   "section_title": "Frame error",
+   "page": 220,
+   "quote": "[REQ-FE-002] A byte with a frame error shall be delivered, held and taken like any other byte, and o_rx_data shall hold its sampled data bits.",
+   "spec_refs": [
+    "REQ-FE-002"
+   ],
+   "sentences": [
+    "7.7:s2"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_rx_data"
+   ],
+   "condition": "frame with frame error",
+   "statement": "The byte shall be delivered, held and taken like any other byte, and o_rx_data shall hold its sampled data bits.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.7-03",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.7",
+   "section_title": "Frame error",
+   "page": 222,
+   "quote": "[REQ-FE-003] After a frame with a frame error, the receiver shall not detect a new start bit until s has been 1 at one edge and 0 at the next edge (REQ-RX-003), so a line held at 0 produces exactly one frame.",
+   "spec_refs": [
+    "REQ-FE-003",
+    "REQ-RX-003"
+   ],
+   "sentences": [
+    "7.7:s3"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "slave",
+   "signals": [],
+   "condition": "after a frame with frame error",
+   "statement": "The receiver shall not detect a new start bit until s has been 1 at one edge and 0 at the next, so a line held at 0 produces exactly one frame.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.8-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.8",
+   "section_title": "Overrun",
+   "page": 226,
+   "quote": "[REQ-OVR-001] At the delivery edge V of a completed frame, if o_rx_valid = 1 and i_rx_ready = 0, the block shall drop the new byte and its frame-error flag.",
+   "spec_refs": [
+    "REQ-OVR-001"
+   ],
+   "sentences": [
+    "7.8:s1"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_rx_valid",
+    "i_rx_ready"
+   ],
+   "condition": "delivery edge V, o_rx_valid = 1 and i_rx_ready = 0",
+   "statement": "The block shall drop the new byte and its frame-error flag.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.8-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.8",
+   "section_title": "Overrun",
+   "page": 228,
+   "quote": "[REQ-OVR-002] When a byte is dropped at edge V, o_rx_overrun shall become 1 at edge V and return to 0 at edge V+1, so it is 1 for exactly one cycle.",
+   "spec_refs": [
+    "REQ-OVR-002"
+   ],
+   "sentences": [
+    "7.8:s2"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_rx_overrun"
+   ],
+   "condition": "byte dropped at edge V",
+   "statement": "o_rx_overrun shall become 1 at edge V and return to 0 at edge V+1, being 1 for exactly one cycle.",
+   "check": "assertion",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.8-03",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.8",
+   "section_title": "Overrun",
+   "page": 230,
+   "quote": "[REQ-OVR-003] When a byte is dropped, o_rx_valid, o_rx_data and o_rx_frame_err shall keep the held byte unchanged.",
+   "spec_refs": [
+    "REQ-OVR-003"
+   ],
+   "sentences": [
+    "7.8:s3"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_rx_valid",
+    "o_rx_data",
+    "o_rx_frame_err"
+   ],
+   "condition": "byte dropped",
+   "statement": "o_rx_valid, o_rx_data and o_rx_frame_err shall keep the held byte unchanged.",
+   "check": "assertion",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.8-04",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.8",
+   "section_title": "Overrun",
+   "page": 232,
+   "quote": "[REQ-OVR-004] o_rx_overrun shall be 0 in every cycle except the cycle after an edge at which a byte is dropped.",
+   "spec_refs": [
+    "REQ-OVR-004"
+   ],
+   "sentences": [
+    "7.8:s4"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_rx_overrun"
+   ],
+   "condition": "",
+   "statement": "o_rx_overrun shall be 0 in every cycle except the cycle after an edge at which a byte is dropped.",
+   "check": "assertion",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.8-05",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.8",
+   "section_title": "Overrun",
+   "page": 234,
+   "quote": "[REQ-OVR-005] o_rx_overrun shall not be qualified by o_rx_valid and shall not need a handshake.",
+   "spec_refs": [
+    "REQ-OVR-005"
+   ],
+   "sentences": [
+    "7.8:s5"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "slave",
+   "signals": [
+    "o_rx_overrun",
+    "o_rx_valid"
+   ],
+   "condition": "",
+   "statement": "o_rx_overrun shall not be qualified by o_rx_valid and shall not need a handshake.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-7.8-06",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "7.8",
+   "section_title": "Overrun",
+   "page": 236,
+   "quote": "[REQ-OVR-006] A glitch, and a frame cut short by reset, shall not make o_rx_overrun pulse.",
+   "spec_refs": [
+    "REQ-OVR-006"
+   ],
+   "sentences": [
+    "7.8:s6"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "slave",
+   "signals": [
+    "o_rx_overrun"
+   ],
+   "condition": "glitch or frame cut short by reset",
+   "statement": "A glitch, and a frame cut short by reset, shall not make o_rx_overrun pulse.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated."
+   }
+  },
+  {
+   "id": "UL-8.1-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "8.1",
+   "section_title": "Transmit latency and throughput",
+   "page": 242,
+   "quote": "Latency: the start bit starts on o_txd at the accepting edge E0, which means in the first cycle after the handshake.",
+   "spec_refs": [],
+   "sentences": [
+    "8.1:s1"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_txd"
+   ],
+   "condition": "a byte is accepted at edge E0 (handshake)",
+   "statement": "The start bit shall appear on o_txd starting in the first cycle after the accepting edge E0.",
+   "check": "assertion",
+   "review": {
+    "verdict": "fix",
+    "reason": "Quote says start bit begins at E0, i.e. first cycle after the handshake; actor is the transmitter (not master), checkable on signals. Actor fix.",
+    "changes": {
+     "actor": [
+      "master",
+      "slave"
+     ]
+    }
+   }
+  },
+  {
+   "id": "UL-8.1-03",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "8.1",
+   "section_title": "Transmit latency and throughput",
+   "page": 244,
+   "quote": "o_tx_ready is 0 for 10N-1 cycles after E0 and becomes 1 in the last cycle of the stop bit (REQ-TX-004, REQ-TX-005).",
+   "spec_refs": [
+    "REQ-TX-004",
+    "REQ-TX-005"
+   ],
+   "sentences": [
+    "8.1:s4"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_tx_ready"
+   ],
+   "condition": "a byte is accepted at edge E0",
+   "statement": "o_tx_ready shall be 0 for 10N-1 cycles after E0 and become 1 in the last cycle of the stop bit.",
+   "check": "assertion",
+   "review": {
+    "verdict": "fix",
+    "reason": "o_tx_ready is driven by the transmitter, so actor is slave, not master.",
+    "changes": {
+     "actor": [
+      "master",
+      "slave"
+     ]
+    }
+   }
+  },
+  {
+   "id": "UL-8.1-04",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "8.1",
+   "section_title": "Transmit latency and throughput",
+   "page": 245,
+   "quote": "Back-pressure: while o_tx_ready = 0, the upstream block waits; the block never drops an offered byte.",
+   "spec_refs": [],
+   "sentences": [
+    "8.1:s5"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "slave",
+   "signals": [
+    "o_tx_ready",
+    "i_tx_valid"
+   ],
+   "condition": "o_tx_ready = 0 while a byte is offered",
+   "statement": "The block shall never drop an offered byte; the upstream waits while o_tx_ready = 0.",
+   "check": "scenario",
+   "review": {
+    "verdict": "fix",
+    "reason": "Block never drops an offered byte; actor is the transmitter (slave); upstream waiting is a scenario. Actor fix.",
+    "changes": {
+     "actor": [
+      "master",
+      "slave"
+     ]
+    }
+   }
+  },
+  {
+   "id": "UL-8.1-05",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "8.1",
+   "section_title": "Transmit latency and throughput",
+   "page": 247,
+   "quote": "[REQ-TIM-001] While i_tx_valid is held at 1, the transmitter shall accept one byte every 10N cycles and shall produce a continuous stream of frames with no idle cycle between them.",
+   "spec_refs": [
+    "REQ-TIM-001"
+   ],
+   "sentences": [
+    "8.1:s6"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "i_tx_valid"
+   ],
+   "condition": "i_tx_valid is held at 1",
+   "statement": "The transmitter shall accept one byte every 10N cycles and produce a continuous stream of frames with no idle cycle between them.",
+   "check": "both",
+   "review": {
+    "verdict": "fix",
+    "reason": "Transmitter behaviour, actor should be slave.",
+    "changes": {
+     "actor": [
+      "master",
+      "slave"
+     ]
+    }
+   },
+   "merged_from": [
+    {
+     "id": "UL-8.1-02",
+     "quote": "Frame length: 10N cycles. The stop bit ends at edge E0+10N.",
+     "sentences": [
+      "8.1:s2",
+      "8.1:s3"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "UL-8.1-06",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "8.1",
+   "section_title": "Transmit latency and throughput",
+   "page": 249,
+   "quote": "[REQ-TIM-002] Bytes shall be sent on o_txd in the order in which they were accepted.",
+   "spec_refs": [
+    "REQ-TIM-002"
+   ],
+   "sentences": [
+    "8.1:s7"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_txd"
+   ],
+   "condition": "",
+   "statement": "Bytes shall be sent on o_txd in the order in which they were accepted.",
+   "check": "scenario",
+   "review": {
+    "verdict": "fix",
+    "reason": "Ordering is transmitter behaviour; actor slave. Scenario check is fine.",
+    "changes": {
+     "actor": [
+      "master",
+      "slave"
+     ]
+    }
+   }
+  },
+  {
+   "id": "UL-8.2-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "8.2",
+   "section_title": "Receive latency and throughput",
+   "page": 253,
+   "quote": "Latency: from start-bit detection T0 to delivery V = T0 + H + 9N + 2 edges.",
+   "spec_refs": [],
+   "sentences": [
+    "8.2:s1"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_rx_valid"
+   ],
+   "condition": "start bit detected at T0",
+   "statement": "Delivery shall occur at V = T0 + H + 9N + 2 edges.",
+   "check": "assertion",
+   "review": {
+    "verdict": "keep",
+    "reason": "Latency formula stated; receiver is the actor; checkable from signals."
+   }
+  },
+  {
+   "id": "UL-8.2-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "8.2",
+   "section_title": "Receive latency and throughput",
+   "page": 255,
+   "quote": "To avoid an overrun, the consumer has to take a byte before the delivery edge of the next frame.",
+   "spec_refs": [],
+   "sentences": [
+    "8.2:s6"
+   ],
+   "strength": "MUST",
+   "actor": "destination",
+   "signals": [
+    "i_rx_ready",
+    "o_rx_valid"
+   ],
+   "condition": "to avoid an overrun",
+   "statement": "The consumer has to take a byte before the delivery edge of the next frame.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Consumer duty to avoid overrun; it is a stated requirement on the consumer, but 'has to' is a constraint on the environment; keep as scenario with actor destination. Strength is fine as MUST."
+   }
+  },
+  {
+   "id": "UL-8.2-03",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "8.2",
+   "section_title": "Receive latency and throughput",
+   "page": 257,
+   "quote": "[REQ-TIM-003] The receiver shall accept frames back to back with no idle bit between them: a stop bit followed at once by the next start bit, each bit N cycles long.",
+   "spec_refs": [
+    "REQ-TIM-003"
+   ],
+   "sentences": [
+    "8.2:s7"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "i_rxd"
+   ],
+   "condition": "a stop bit is followed at once by the next start bit, each bit N cycles long",
+   "statement": "The receiver shall accept frames back to back with no idle bit between them.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Back-to-back frame acceptance stated; scenario needed to drive frames."
+   }
+  },
+  {
+   "id": "UL-8.4-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "8.4",
+   "section_title": "Receive example (N = 4, H = 2, received byte 0xA5, stop bit 1)",
+   "page": 300,
+   "quote": "If at V the holding register was full and i_rx_ready = 0, then after V o_rx_overrun = 1 for one cycle and the held byte is unchanged.",
+   "spec_refs": [],
+   "sentences": [
+    "8.4:s15"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_rx_overrun",
+    "o_rx_valid",
+    "i_rx_ready",
+    "o_rx_data"
+   ],
+   "condition": "at V the holding register is full and i_rx_ready = 0",
+   "statement": "After V, o_rx_overrun shall be 1 for one cycle and the held byte shall remain unchanged.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Overrun pulse and held byte unchanged are stated and checkable."
+   }
+  },
+  {
+   "id": "UL-10.1-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "10.1",
+   "section_title": "Frame error",
+   "page": 312,
+   "quote": "Detection: the stop-bit sample s(M) is 0. Response: the byte is delivered with o_rx_frame_err = 1 (REQ-FE-001, REQ-FE-002).",
+   "spec_refs": [
+    "REQ-FE-001",
+    "REQ-FE-002"
+   ],
+   "sentences": [
+    "10.1:s1",
+    "10.1:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "o_rx_frame_err"
+   ],
+   "condition": "the stop-bit sample s(M) is 0",
+   "statement": "The received byte must be delivered with o_rx_frame_err = 1 when the stop-bit sample is 0.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote states it; checkable at delivery."
+   }
+  },
+  {
+   "id": "UL-10.2-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "10.2",
+   "section_title": "Overrun",
+   "page": 315,
+   "quote": "Detection: a frame completes and, at its delivery edge V, o_rx_valid = 1 and i_rx_ready = 0. Response: the new byte is dropped, o_rx_overrun pulses for one cycle and the held byte stays (REQ-OVR-001 to REQ-OVR-003).",
+   "spec_refs": [
+    "REQ-OVR-001",
+    "REQ-OVR-003"
+   ],
+   "sentences": [
+    "10.2:s1",
+    "10.2:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "o_rx_valid",
+    "i_rx_ready",
+    "o_rx_overrun"
+   ],
+   "condition": "a frame completes and at delivery edge V o_rx_valid = 1 and i_rx_ready = 0",
+   "statement": "The new byte must be dropped, o_rx_overrun must pulse for one cycle and the held byte must stay.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Directly stated."
+   }
+  },
+  {
+   "id": "UL-10.2-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "10.2",
+   "section_title": "Overrun",
+   "page": 315,
+   "quote": "If the held byte is taken at V itself, there is no overrun (REQ-RX-021).",
+   "spec_refs": [
+    "REQ-RX-021"
+   ],
+   "sentences": [
+    "10.2:s3"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "system",
+   "signals": [
+    "o_rx_valid",
+    "i_rx_ready",
+    "o_rx_overrun"
+   ],
+   "condition": "the held byte is taken at delivery edge V itself",
+   "statement": "No overrun must occur when the held byte is taken at the delivery edge V.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated: no overrun if held byte taken at V."
+   }
+  },
+  {
+   "id": "UL-10.2-03",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "10.2",
+   "section_title": "Overrun",
+   "page": 315,
+   "quote": "The frame-error flag of a dropped byte is not reported.",
+   "spec_refs": [],
+   "sentences": [
+    "10.2:s4"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "system",
+   "signals": [
+    "o_rx_frame_err"
+   ],
+   "condition": "a byte is dropped due to overrun",
+   "statement": "The frame-error flag of a dropped byte must not be reported.",
+   "check": "both",
+   "review": {
+    "verdict": "fix",
+    "reason": "Checkable from interface signals every cycle (o_rx_frame_err not changed by dropped byte), so check should be both.",
+    "changes": {
+     "check": [
+      "scenario",
+      "both"
+     ]
+    }
+   }
+  },
+  {
+   "id": "UL-10.3-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "10.3",
+   "section_title": "Glitch on the start bit",
+   "page": 318,
+   "quote": "Detection: s(T0+H) = 1. Response: no byte, no flag and no pulse (REQ-RX-005, REQ-RX-006).",
+   "spec_refs": [
+    "REQ-RX-005",
+    "REQ-RX-006"
+   ],
+   "sentences": [
+    "10.3:s1",
+    "10.3:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rxd",
+    "o_rx_valid",
+    "o_rx_frame_err",
+    "o_rx_overrun"
+   ],
+   "condition": "s(T0+H) = 1 on the start bit",
+   "statement": "On a start-bit glitch the receiver must produce no byte, no flag and no pulse.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated directly."
+   }
+  },
+  {
+   "id": "UL-10.3-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "10.3",
+   "section_title": "Glitch on the start bit",
+   "page": 318,
+   "quote": "A low pulse on i_rxd that is sampled at fewer than H+1 edges in a row, starting at T0, is always rejected.",
+   "spec_refs": [],
+   "sentences": [
+    "10.3:s3"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rxd"
+   ],
+   "condition": "a low pulse on i_rxd is sampled at fewer than H+1 edges in a row, starting at T0",
+   "statement": "A low pulse on i_rxd sampled at fewer than H+1 consecutive edges starting at T0 must always be rejected.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated as always rejected; scenario to exercise short pulses."
+   }
+  },
+  {
+   "id": "UL-10.4-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "10.4",
+   "section_title": "Line held low (break) and stuck line",
+   "page": 321,
+   "quote": "[REQ-ERR-001] If i_rxd stays 0 from a start bit through the whole frame, the receiver shall deliver the byte 0x00 with o_rx_frame_err = 1, or drop it with an overrun pulse under the rules of Section 7.8.",
+   "spec_refs": [
+    "REQ-ERR-001"
+   ],
+   "sentences": [
+    "10.4:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rxd",
+    "o_rx_frame_err",
+    "o_rx_overrun"
+   ],
+   "condition": "i_rxd stays 0 from a start bit through the whole frame",
+   "statement": "The receiver shall deliver byte 0x00 with o_rx_frame_err = 1, or drop it with an overrun pulse per Section 7.8.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated as REQ-ERR-001."
+   }
+  },
+  {
+   "id": "UL-10.4-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "10.4",
+   "section_title": "Line held low (break) and stuck line",
+   "page": 321,
+   "quote": "After that it shall receive no further frame until the line has been sampled as 1 and then as 0.",
+   "spec_refs": [],
+   "sentences": [
+    "10.4:s2"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "system",
+   "signals": [
+    "i_rxd"
+   ],
+   "condition": "after a frame received with i_rxd held low",
+   "statement": "The receiver shall receive no further frame until the line has been sampled as 1 and then as 0.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated: no further frame until line sampled 1 then 0."
+   }
+  },
+  {
+   "id": "UL-10.4-03",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "10.4",
+   "section_title": "Line held low (break) and stuck line",
+   "page": 323,
+   "quote": "[REQ-ERR-002] If i_rxd stays 1, the receiver shall stay idle and deliver nothing.",
+   "spec_refs": [
+    "REQ-ERR-002"
+   ],
+   "sentences": [
+    "10.4:s3"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rxd",
+    "o_rx_valid"
+   ],
+   "condition": "i_rxd stays 1",
+   "statement": "The receiver shall stay idle and deliver nothing.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated as REQ-ERR-002."
+   }
+  },
+  {
+   "id": "UL-10.5-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "10.5",
+   "section_title": "Line low at reset release",
+   "page": 326,
+   "quote": "[REQ-ERR-003] If s(R1) = 0 at the first edge R1 after the release of i_rst_n, the receiver shall detect R1 as T0 (REQ-RST-010) and process the frame under Sections 7.4 to 7.8. A line that stays low therefore produces one byte 0x00 with o_rx_frame_err = 1.",
+   "spec_refs": [
+    "REQ-ERR-003",
+    "REQ-RST-010"
+   ],
+   "sentences": [
+    "10.5:s1",
+    "10.5:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rxd",
+    "i_rst_n",
+    "o_rx_frame_err"
+   ],
+   "condition": "s(R1) = 0 at the first edge R1 after release of i_rst_n",
+   "statement": "The receiver shall detect R1 as T0 and process the frame under Sections 7.4 to 7.8, so a line staying low yields one byte 0x00 with o_rx_frame_err = 1.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated as REQ-ERR-003."
+   }
+  },
+  {
+   "id": "UL-10.7-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "10.7",
+   "section_title": "Handshake corner cases",
+   "page": 332,
+   "quote": "[REQ-ERR-004] When i_tx_valid = 1 while o_tx_ready = 0, the transmitter shall not accept the byte and shall not record it.",
+   "spec_refs": [
+    "REQ-ERR-004"
+   ],
+   "sentences": [
+    "10.7:s1"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "system",
+   "signals": [
+    "i_tx_valid",
+    "o_tx_ready"
+   ],
+   "condition": "i_tx_valid = 1 while o_tx_ready = 0",
+   "statement": "The transmitter shall not accept the byte and shall not record it.",
+   "check": "both",
+   "review": {
+    "verdict": "fix",
+    "reason": "Actor is the transmitter, i.e. the system/DUT block, not a slave; interface-checkable.",
+    "changes": {
+     "actor": [
+      "slave",
+      "system"
+     ]
+    }
+   }
+  },
+  {
+   "id": "UL-10.7-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "10.7",
+   "section_title": "Handshake corner cases",
+   "page": 334,
+   "quote": "[REQ-ERR-005] When i_rx_ready = 1 while o_rx_valid = 0, the block shall do nothing (REQ-RX-026).",
+   "spec_refs": [
+    "REQ-ERR-005",
+    "REQ-RX-026"
+   ],
+   "sentences": [
+    "10.7:s3"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rx_ready",
+    "o_rx_valid"
+   ],
+   "condition": "i_rx_ready = 1 while o_rx_valid = 0",
+   "statement": "The block shall do nothing.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated as REQ-ERR-005."
+   }
+  },
+  {
+   "id": "UL-10.7-03",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "10.7",
+   "section_title": "Handshake corner cases",
+   "page": 336,
+   "quote": "[REQ-ERR-006] A transmit handshake and a receive delivery or take in the same cycle shall be handled independently (REQ-GEN-002).",
+   "spec_refs": [
+    "REQ-ERR-006",
+    "REQ-GEN-002"
+   ],
+   "sentences": [
+    "10.7:s4"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_tx_valid",
+    "o_tx_ready",
+    "o_rx_valid",
+    "i_rx_ready"
+   ],
+   "condition": "a transmit handshake and a receive delivery or take occur in the same cycle",
+   "statement": "A transmit handshake and a receive delivery or take in the same cycle shall be handled independently.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated as REQ-ERR-006; scenario to exercise concurrency."
+   }
+  },
+  {
+   "id": "UL-10.8-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "10.8",
+   "section_title": "Parameter extremes",
+   "page": 341,
+   "quote": "A frame lasts 655350 cycles. [REQ-ERR-007] Bit-period and sample-offset counting shall not overflow or wrap early at N = 65535.",
+   "spec_refs": [
+    "REQ-ERR-007"
+   ],
+   "sentences": [
+    "10.8:s6"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "N = 65535",
+   "statement": "Bit-period and sample-offset counting shall not overflow or wrap early at N = 65535.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated as REQ-ERR-007."
+   }
+  },
+  {
+   "id": "UL-11-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "11",
+   "section_title": "Configurations",
+   "page": 349,
+   "quote": "ID: CFG-MIN; Parameter values: PARA_UART_CLKS_PER_BIT=4; Purpose: Smallest legal bit period; minimum sampling margins",
+   "spec_refs": [],
+   "sentences": [
+    "11:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "PARA_UART_CLKS_PER_BIT"
+   ],
+   "condition": "PARA_UART_CLKS_PER_BIT=4 (CFG-MIN)",
+   "statement": "With PARA_UART_CLKS_PER_BIT=4, the smallest legal bit period, the design must operate correctly and be verified for minimum sampling margins.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "The quote defines config CFG-MIN with PARA_UART_CLKS_PER_BIT=4 as the smallest legal bit period, used for minimum sampling margins. It is a scenario to run, so MUST, system and scenario fit."
+   }
+  },
+  {
+   "id": "UL-11-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "11",
+   "section_title": "Configurations",
+   "page": 351,
+   "quote": "ID: CFG-WIDE; Parameter values: PARA_UART_CLKS_PER_BIT=1024; Purpose: A wide bit counter. The largest legal value (65535) is covered by elaboration and synthesis only (D-012)",
+   "spec_refs": [],
+   "sentences": [
+    "11:s4"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "PARA_UART_CLKS_PER_BIT"
+   ],
+   "condition": "PARA_UART_CLKS_PER_BIT=1024 (CFG-WIDE)",
+   "statement": "With PARA_UART_CLKS_PER_BIT=1024 the design must operate correctly, exercising a wide bit counter; the largest legal value 65535 is covered by elaboration and synthesis only.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "The quote defines config CFG-WIDE with PARA_UART_CLKS_PER_BIT=1024 to exercise a wide bit counter. It also says 65535 is covered by elaboration and synthesis only. It is a scenario to run, so MUST, system and scenario fit."
+   }
+  },
+  {
+   "id": "UL-12.1-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "12.1",
+   "section_title": "Environment obligations",
+   "page": 356,
+   "quote": "[ENV-001] The environment shall release i_rst_n (0 to 1) synchronously to i_clk, meeting recovery and removal times.",
+   "spec_refs": [],
+   "sentences": [
+    "12.1:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rst_n",
+    "i_clk"
+   ],
+   "condition": "when the environment releases reset (0 to 1)",
+   "statement": "The environment shall release i_rst_n synchronously to i_clk, meeting recovery and removal times.",
+   "check": "scenario",
+   "review": {
+    "verdict": "fix",
+    "reason": "Synchronous release with recovery/removal timing is an environment constraint, not checkable from interface signals every cycle; exercise via stimulus.",
+    "changes": {
+     "check": [
+      "assertion",
+      "scenario"
+     ]
+    }
+   }
+  },
+  {
+   "id": "UL-12.1-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "12.1",
+   "section_title": "Environment obligations",
+   "page": 358,
+   "quote": "[ENV-002] The environment shall hold i_rst_n at 0 for at least 2 cycles of i_clk at the start of a simulation.",
+   "spec_refs": [],
+   "sentences": [
+    "12.1:s3"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rst_n",
+    "i_clk"
+   ],
+   "condition": "at the start of a simulation",
+   "statement": "The environment shall hold i_rst_n at 0 for at least 2 cycles of i_clk at the start of simulation.",
+   "check": "scenario",
+   "review": {
+    "verdict": "fix",
+    "reason": "Environment stimulus obligation; reset hold duration is a testbench constraint, not a DUT assertion.",
+    "changes": {
+     "check": [
+      "assertion",
+      "scenario"
+     ]
+    }
+   }
+  },
+  {
+   "id": "UL-12.1-03",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "12.1",
+   "section_title": "Environment obligations",
+   "page": 360,
+   "quote": "[ENV-003] After the release of i_rst_n, the environment shall drive i_tx_valid, i_tx_data and i_rx_ready synchronously to i_clk, with no X or Z values.",
+   "spec_refs": [],
+   "sentences": [
+    "12.1:s4"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_tx_valid",
+    "i_tx_data",
+    "i_rx_ready",
+    "i_clk"
+   ],
+   "condition": "after release of i_rst_n",
+   "statement": "The environment shall drive i_tx_valid, i_tx_data and i_rx_ready synchronously to i_clk, with no X or Z values.",
+   "check": "scenario",
+   "review": {
+    "verdict": "fix",
+    "reason": "Input-driving constraint on environment; the check is on stimulus, best as scenario/constraint.",
+    "changes": {
+     "check": [
+      "assertion",
+      "scenario"
+     ]
+    }
+   }
+  },
+  {
+   "id": "UL-12.1-04",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "12.1",
+   "section_title": "Environment obligations",
+   "page": 362,
+   "quote": "[ENV-004] In simulation, the testbench shall change i_rxd away from rising edges of i_clk (for example on the falling edge or at a random offset that does not coincide with a rising edge), so that s(E) is well defined. i_rxd shall not be X or Z after reset release.",
+   "spec_refs": [],
+   "sentences": [
+    "12.1:s5"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rxd",
+    "i_clk"
+   ],
+   "condition": "in simulation",
+   "statement": "The testbench shall change i_rxd away from rising edges of i_clk, so that s(E) is well defined.",
+   "check": "scenario",
+   "review": {
+    "verdict": "fix",
+    "reason": "Testbench stimulus rule (i_rxd timing relative to clock); not a DUT assertion. Also the quote contains the X/Z rule separately, so this rule covers the timing only.",
+    "changes": {
+     "check": [
+      "assertion",
+      "scenario"
+     ]
+    }
+   }
+  },
+  {
+   "id": "UL-12.1-05",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "12.1",
+   "section_title": "Environment obligations",
+   "page": 362,
+   "quote": "[ENV-004] In simulation, the testbench shall change i_rxd away from rising edges of i_clk (for example on the falling edge or at a random offset that does not coincide with a rising edge), so that s(E) is well defined. i_rxd shall not be X or Z after reset release.",
+   "spec_refs": [],
+   "sentences": [
+    "12.1:s5"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "system",
+   "signals": [
+    "i_rxd"
+   ],
+   "condition": "after reset release",
+   "statement": "i_rxd shall not be X or Z after reset release.",
+   "check": "scenario",
+   "review": {
+    "verdict": "fix",
+    "reason": "Environment constraint on input i_rxd; not a DUT behaviour to assert.",
+    "changes": {
+     "check": [
+      "assertion",
+      "scenario"
+     ]
+    }
+   }
+  },
+  {
+   "id": "UL-12.2-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "12.2",
+   "section_title": "Observability",
+   "page": 367,
+   "quote": "The synchronizer depth can be seen at the ports only as the fixed latency V = M + 2.",
+   "spec_refs": [],
+   "sentences": [
+    "12.2:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "The synchronizer depth is observable at the ports only as the fixed latency V = M + 2, which the checker shall verify.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Latency V=M+2 is observable and to be verified by the checker."
+   }
+  },
+  {
+   "id": "UL-12.2-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "12.2",
+   "section_title": "Observability",
+   "page": 367,
+   "quote": "Its structure (exactly two flip-flops with no logic between them, REQ-RX-001) shall be checked by lint or a structural review.",
+   "spec_refs": [
+    "REQ-RX-001"
+   ],
+   "sentences": [
+    "12.2:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "The synchronizer structure (exactly two flip-flops with no logic between them, REQ-RX-001) shall be checked by lint or structural review.",
+   "check": "none",
+   "review": {
+    "verdict": "keep",
+    "reason": "Structural check by lint/review; check=none is correct."
+   }
+  },
+  {
+   "id": "UL-12.2-03",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "12.2",
+   "section_title": "Observability",
+   "page": 368,
+   "quote": "The receiver's idle/receiving condition and its sampling edges can be seen only through the delivered bytes, flags and pulses. The reference model shall compute s(E) from i_rxd and apply Sections 7.4 to 7.8 exactly.",
+   "spec_refs": [],
+   "sentences": [
+    "12.2:s3",
+    "12.2:s4"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rxd"
+   ],
+   "condition": "",
+   "statement": "The reference model shall compute s(E) from i_rxd and apply Sections 7.4 to 7.8 exactly, since receiver state is visible only through bytes, flags and pulses.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Reference model requirement is stated; verified by scoreboard scenarios."
+   }
+  },
+  {
+   "id": "UL-12.2-04",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "12.2",
+   "section_title": "Observability",
+   "page": 369,
+   "quote": "The transmit timing can be seen fully on o_txd and o_tx_ready. The checker shall check REQ-TX-004, REQ-TX-005 and REQ-TX-010 cycle by cycle.",
+   "spec_refs": [
+    "REQ-TX-004",
+    "REQ-TX-005",
+    "REQ-TX-010"
+   ],
+   "sentences": [
+    "12.2:s5",
+    "12.2:s6"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "o_txd",
+    "o_tx_ready"
+   ],
+   "condition": "",
+   "statement": "The checker shall check REQ-TX-004, REQ-TX-005 and REQ-TX-010 cycle by cycle on o_txd and o_tx_ready.",
+   "check": "assertion",
+   "review": {
+    "verdict": "keep",
+    "reason": "Cycle-by-cycle checking of o_txd and o_tx_ready is an assertion."
+   }
+  },
+  {
+   "id": "UL-12.3-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "12.3",
+   "section_title": "Special setups",
+   "page": 372,
+   "quote": "Sampling-point test: drive i_rxd so that each bit has its correct value only at the specified sampling edge and the wrong value at the edges just before and after it, where N allows that. This checks the exact sampling edges T0+H+(i+1)N and M.",
+   "spec_refs": [],
+   "sentences": [
+    "12.3:s1",
+    "12.3:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rxd"
+   ],
+   "condition": "where N allows",
+   "statement": "Sampling-point test: drive i_rxd so each bit is correct only at its sampling edge and wrong at the edges just before and after, checking edges T0+H+(i+1)N and M.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Directed test stated by the quote."
+   }
+  },
+  {
+   "id": "UL-12.3-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "12.3",
+   "section_title": "Special setups",
+   "page": 373,
+   "quote": "Glitch test: low pulses on i_rxd lasting 1 to H samples (rejected) and H+1 samples (accepted as a start bit).",
+   "spec_refs": [],
+   "sentences": [
+    "12.3:s3"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rxd"
+   ],
+   "condition": "",
+   "statement": "Glitch test: apply low pulses on i_rxd of 1 to H samples (rejected) and H+1 samples (accepted as start bit).",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Directed glitch test stated by the quote."
+   }
+  },
+  {
+   "id": "UL-12.3-03",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "12.3",
+   "section_title": "Special setups",
+   "page": 374,
+   "quote": "Loopback test: connect o_txd to i_rxd and check the latency in Section 8.5 and the byte integrity.",
+   "spec_refs": [],
+   "sentences": [
+    "12.3:s4"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "o_txd",
+    "i_rxd"
+   ],
+   "condition": "",
+   "statement": "Loopback test: connect o_txd to i_rxd and check the Section 8.5 latency and byte integrity.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Directed loopback test stated by the quote."
+   }
+  },
+  {
+   "id": "UL-12.3-04",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "12.3",
+   "section_title": "Special setups",
+   "page": 375,
+   "quote": "Reset tests: assert i_rst_n in the middle of a transmit frame, in the middle of a receive frame and while o_rx_valid = 1, with an asynchronous assertion between clock edges.",
+   "spec_refs": [],
+   "sentences": [
+    "12.3:s5"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rst_n",
+    "o_rx_valid"
+   ],
+   "condition": "",
+   "statement": "Reset tests: assert i_rst_n asynchronously between clock edges mid-transmit frame, mid-receive frame and while o_rx_valid = 1.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Directed reset tests stated by the quote."
+   }
+  },
+  {
+   "id": "UL-12.3-05",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "12.3",
+   "section_title": "Special setups",
+   "page": 376,
+   "quote": "Line low at reset release (REQ-ERR-003) and break (REQ-ERR-001).",
+   "spec_refs": [
+    "REQ-ERR-001",
+    "REQ-ERR-003"
+   ],
+   "sentences": [
+    "12.3:s6"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rxd",
+    "i_rst_n"
+   ],
+   "condition": "",
+   "statement": "Test line low at reset release (REQ-ERR-003) and break (REQ-ERR-001).",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Directed tests for line low at reset release and break stated by the quote."
+   }
+  },
+  {
+   "id": "UL-12.4-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "12.4",
+   "section_title": "Required coverage",
+   "page": 379,
+   "quote": "Data bytes 0x00, 0xFF, 0x55, 0xAA and random bytes, in both directions.",
+   "spec_refs": [],
+   "sentences": [
+    "12.4:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "Cover data bytes 0x00, 0xFF, 0x55, 0xAA and random bytes in both directions.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Coverage item stated."
+   }
+  },
+  {
+   "id": "UL-12.4-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "12.4",
+   "section_title": "Required coverage",
+   "page": 380,
+   "quote": "Back-to-back transmit with i_tx_valid held at 1, and transmit with idle gaps of various lengths.",
+   "spec_refs": [],
+   "sentences": [
+    "12.4:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_tx_valid"
+   ],
+   "condition": "",
+   "statement": "Cover back-to-back transmit with i_tx_valid held at 1, and transmit with idle gaps of various lengths.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Coverage item stated."
+   }
+  },
+  {
+   "id": "UL-12.4-03",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "12.4",
+   "section_title": "Required coverage",
+   "page": 381,
+   "quote": "Back-to-back receive frames with the next start bit right after the stop bit.",
+   "spec_refs": [],
+   "sentences": [
+    "12.4:s3"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "Cover back-to-back receive frames with the next start bit right after the stop bit.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Coverage item stated."
+   }
+  },
+  {
+   "id": "UL-12.4-04",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "12.4",
+   "section_title": "Required coverage",
+   "page": 382,
+   "quote": "Frame error with o_rx_valid = 0, and frame error with the byte dropped by overrun.",
+   "spec_refs": [],
+   "sentences": [
+    "12.4:s4"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "o_rx_valid"
+   ],
+   "condition": "",
+   "statement": "Cover frame error with o_rx_valid = 0, and frame error with the byte dropped by overrun.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Coverage item stated."
+   }
+  },
+  {
+   "id": "UL-12.4-05",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "12.4",
+   "section_title": "Required coverage",
+   "page": 383,
+   "quote": "Overrun, and the case where the held byte is taken at the delivery edge V itself (no overrun).",
+   "spec_refs": [],
+   "sentences": [
+    "12.4:s5"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "Cover overrun, and the held byte taken at delivery edge V itself (no overrun).",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Coverage item stated."
+   }
+  },
+  {
+   "id": "UL-12.4-06",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "12.4",
+   "section_title": "Required coverage",
+   "page": 384,
+   "quote": "i_rx_ready held at 1, toggling at random, and held at 0 for several frames.",
+   "spec_refs": [],
+   "sentences": [
+    "12.4:s6"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rx_ready"
+   ],
+   "condition": "",
+   "statement": "Cover i_rx_ready held at 1, toggling randomly, and held at 0 for several frames.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Coverage item stated."
+   }
+  },
+  {
+   "id": "UL-12.4-07",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "12.4",
+   "section_title": "Required coverage",
+   "page": 385,
+   "quote": "i_tx_valid that drops before a handshake.",
+   "spec_refs": [],
+   "sentences": [
+    "12.4:s7"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_tx_valid"
+   ],
+   "condition": "",
+   "statement": "Cover i_tx_valid dropping before a handshake.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Coverage item stated."
+   }
+  },
+  {
+   "id": "UL-12.4-08",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "12.4",
+   "section_title": "Required coverage",
+   "page": 386,
+   "quote": "Transmit and receive active at the same time.",
+   "spec_refs": [],
+   "sentences": [
+    "12.4:s8"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "Cover transmit and receive active at the same time.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Coverage item stated."
+   }
+  },
+  {
+   "id": "UL-13-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "13",
+   "section_title": "Implementation constraints",
+   "page": 390,
+   "quote": "[REQ-IMP-001] The block shall meet timing at 50 MHz (20 ns period) on GF180MCU for every legal value of PARA_UART_CLKS_PER_BIT.",
+   "spec_refs": [
+    "REQ-IMP-001"
+   ],
+   "sentences": [
+    "13:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "PARA_UART_CLKS_PER_BIT"
+   ],
+   "condition": "for every legal value of PARA_UART_CLKS_PER_BIT",
+   "statement": "The block shall meet timing at 50 MHz (20 ns period) on GF180MCU for every legal value of PARA_UART_CLKS_PER_BIT.",
+   "check": "none",
+   "review": {
+    "verdict": "keep",
+    "reason": "Timing requirement stated by quote; not simulation-checkable, check=none is right."
+   }
+  },
+  {
+   "id": "UL-13-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "13",
+   "section_title": "Implementation constraints",
+   "page": 392,
+   "quote": "[REQ-IMP-002] The RTL shall follow docs/RTL_RULES.md.",
+   "spec_refs": [
+    "REQ-IMP-002"
+   ],
+   "sentences": [
+    "13:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "The RTL shall follow docs/RTL_RULES.md.",
+   "check": "none",
+   "review": {
+    "verdict": "keep",
+    "reason": "Stated by quote; process/lint requirement, nothing to simulate."
+   }
+  },
+  {
+   "id": "UL-13-03",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "13",
+   "section_title": "Implementation constraints",
+   "page": 394,
+   "quote": "[REQ-IMP-003] The RTL shall be synthesizable, contain no latches and pass Verilator lint with no warnings.",
+   "spec_refs": [
+    "REQ-IMP-003"
+   ],
+   "sentences": [
+    "13:s3"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "The RTL shall be synthesizable and contain no latches.",
+   "check": "none",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote states synthesizable and no latches; check none is right."
+   }
+  },
+  {
+   "id": "UL-13-04",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "13",
+   "section_title": "Implementation constraints",
+   "page": 394,
+   "quote": "[REQ-IMP-003] The RTL shall be synthesizable, contain no latches and pass Verilator lint with no warnings.",
+   "spec_refs": [
+    "REQ-IMP-003"
+   ],
+   "sentences": [
+    "13:s3"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "The RTL shall pass Verilator lint with no warnings.",
+   "check": "none",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote states lint clean; check none is right."
+   }
+  },
+  {
+   "id": "UL-13-05",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "13",
+   "section_title": "Implementation constraints",
+   "page": 396,
+   "quote": "[REQ-IMP-004] All flip-flops shall use the asynchronous active-low reset i_rst_n.",
+   "spec_refs": [
+    "REQ-IMP-004"
+   ],
+   "sentences": [
+    "13:s4"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rst_n"
+   ],
+   "condition": "",
+   "statement": "All flip-flops shall use the asynchronous active-low reset i_rst_n.",
+   "check": "none",
+   "review": {
+    "verdict": "fix",
+    "reason": "Reset style of all flops is a structural/lint property. A scenario can only partly exercise it (async reset assertion); it is not checkable from interface signals. Use none.",
+    "changes": {
+     "check": [
+      "scenario",
+      "none"
+     ]
+    }
+   }
+  },
+  {
+   "id": "UL-13-06",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "13",
+   "section_title": "Implementation constraints",
+   "page": 398,
+   "quote": "[REQ-IMP-005] The two i_rxd synchronizer flip-flops should be marked so that synthesis does not merge, duplicate or retime them.",
+   "spec_refs": [
+    "REQ-IMP-005"
+   ],
+   "sentences": [
+    "13:s5"
+   ],
+   "strength": "SHOULD",
+   "actor": "system",
+   "signals": [
+    "i_rxd"
+   ],
+   "condition": "",
+   "statement": "The two i_rxd synchronizer flip-flops should be marked so synthesis does not merge, duplicate or retime them.",
+   "check": "none",
+   "review": {
+    "verdict": "keep",
+    "reason": "SHOULD synthesis attribute requirement; not simulation checkable."
+   }
+  },
+  {
+   "id": "UL-13-07",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "13",
+   "section_title": "Implementation constraints",
+   "page": 400,
+   "quote": "[REQ-IMP-006] The bit-period counters should be only as wide as PARA_UART_CLKS_PER_BIT needs (16 bits at most).",
+   "spec_refs": [
+    "REQ-IMP-006"
+   ],
+   "sentences": [
+    "13:s6"
+   ],
+   "strength": "SHOULD",
+   "actor": "system",
+   "signals": [
+    "PARA_UART_CLKS_PER_BIT"
+   ],
+   "condition": "",
+   "statement": "The bit-period counters should be only as wide as PARA_UART_CLKS_PER_BIT needs, at most 16 bits.",
+   "check": "none",
+   "review": {
+    "verdict": "keep",
+    "reason": "SHOULD on counter width, implementation guidance; check none is right."
+   }
+  },
+  {
+   "id": "UL-13-08",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "13",
+   "section_title": "Implementation constraints",
+   "page": 402,
+   "quote": "The block should use only the storage this specification requires: the transmit shift register, the receive shift register, the holding register, counters and flags.",
+   "spec_refs": [],
+   "sentences": [
+    "13:s8"
+   ],
+   "strength": "SHOULD",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "The block should use only the storage the specification requires: transmit shift register, receive shift register, holding register, counters and flags.",
+   "check": "none",
+   "review": {
+    "verdict": "keep",
+    "reason": "SHOULD on storage usage, implementation guidance; check none is right."
+   }
+  },
+  {
+   "id": "UL-14-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "14",
+   "section_title": "Decisions and open questions",
+   "page": 408,
+   "quote": "ID: D-001; Question: Value of o_tx_ready while i_rst_n = 0; Decision: 1 (its idle value); no handshake is possible during reset (REQ-RST-003); By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17",
+   "spec_refs": [
+    "REQ-RST-003"
+   ],
+   "sentences": [
+    "14:s1"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_tx_ready",
+    "i_rst_n"
+   ],
+   "condition": "while i_rst_n = 0",
+   "statement": "o_tx_ready must be 1 (its idle value) while i_rst_n = 0, since no handshake is possible during reset.",
+   "check": "assertion",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote states o_tx_ready=1 during reset; checkable every cycle from interface signals."
+   }
+  },
+  {
+   "id": "UL-14-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "14",
+   "section_title": "Decisions and open questions",
+   "page": 409,
+   "quote": "ID: D-002; Question: Exact middle-of-bit sampling point; Decision: H = floor(N/2) edges after T0, then every N edges; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17",
+   "spec_refs": [],
+   "sentences": [
+    "14:s2"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "i_rxd"
+   ],
+   "condition": "during reception of a bit after start edge T0",
+   "statement": "The receiver samples the middle of each bit H = floor(N/2) edges after T0, then every N edges.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote gives H=floor(N/2) edges after T0 then every N edges."
+   }
+  },
+  {
+   "id": "UL-14-03",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "14",
+   "section_title": "Decisions and open questions",
+   "page": 410,
+   "quote": "ID: D-003; Question: Exact cycle of o_rx_valid \"the cycle after the middle of the stop bit\"; Decision: Delivery at V = M + 2, where M is the sample edge of i_rxd and 2 is the synchronizer latency; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17",
+   "spec_refs": [],
+   "sentences": [
+    "14:s3"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_rx_valid",
+    "i_rxd"
+   ],
+   "condition": "at the stop bit sample",
+   "statement": "o_rx_valid is delivered at V = M + 2, where M is the sample edge of i_rxd and 2 is the synchronizer latency.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote gives delivery at V=M+2."
+   }
+  },
+  {
+   "id": "UL-14-04",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "14",
+   "section_title": "Decisions and open questions",
+   "page": 411,
+   "quote": "ID: D-004; Question: Held byte taken at the same edge at which a new byte completes; Decision: The new byte is loaded and there is no overrun; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17",
+   "spec_refs": [],
+   "sentences": [
+    "14:s4"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_rx_valid",
+    "o_rx_data"
+   ],
+   "condition": "held byte is taken at the same edge at which a new byte completes",
+   "statement": "The new byte is loaded and no overrun occurs.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote states new byte loaded, no overrun in simultaneous case."
+   }
+  },
+  {
+   "id": "UL-14-05",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "14",
+   "section_title": "Decisions and open questions",
+   "page": 412,
+   "quote": "ID: D-005; Question: Start detection after a frame error with the line still low; Decision: A 1-to-0 transition is required, so a break gives one byte; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17",
+   "spec_refs": [],
+   "sentences": [
+    "14:s5"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "i_rxd"
+   ],
+   "condition": "after a frame error with the line still low",
+   "statement": "A 1-to-0 transition of i_rxd is required to detect a new start bit, so a break produces only one byte.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote states a 1-to-0 transition is required, so break yields one byte."
+   }
+  },
+  {
+   "id": "UL-14-06",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "14",
+   "section_title": "Decisions and open questions",
+   "page": 413,
+   "quote": "ID: D-006; Question: Synchronizer reset value and a low line at reset release; Decision: Reset to 1; a low line at release is detected as a start bit; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17",
+   "spec_refs": [],
+   "sentences": [
+    "14:s6"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "i_rxd",
+    "i_rst_n"
+   ],
+   "condition": "at reset and reset release",
+   "statement": "The synchronizer resets to 1; a low i_rxd at reset release is detected as a start bit.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote states reset value 1 and low line at release detected as start."
+   }
+  },
+  {
+   "id": "UL-14-07",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "14",
+   "section_title": "Decisions and open questions",
+   "page": 414,
+   "quote": "ID: D-007; Question: o_rx_data and o_rx_frame_err while o_rx_valid = 0; Decision: Keep the last loaded values; 0 after reset; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17",
+   "spec_refs": [],
+   "sentences": [
+    "14:s7"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_rx_data",
+    "o_rx_frame_err",
+    "o_rx_valid"
+   ],
+   "condition": "while o_rx_valid = 0",
+   "statement": "o_rx_data and o_rx_frame_err keep the last loaded values, and are 0 after reset.",
+   "check": "assertion",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote states hold last values and 0 after reset; checkable every cycle from outputs."
+   }
+  },
+  {
+   "id": "UL-14-09",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "14",
+   "section_title": "Decisions and open questions",
+   "page": 416,
+   "quote": "ID: D-009; Question: Reset during a transmission; Decision: Frame abandoned, o_txd = 1 at once, byte lost; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17",
+   "spec_refs": [],
+   "sentences": [
+    "14:s9"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_txd",
+    "i_rst_n"
+   ],
+   "condition": "reset during a transmission",
+   "statement": "The frame is abandoned, o_txd goes to 1 at once, and the byte is lost.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote states frame abandoned, o_txd=1 at once, byte lost on reset during transmit."
+   }
+  },
+  {
+   "id": "UL-14-10",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "14",
+   "section_title": "Decisions and open questions",
+   "page": 417,
+   "quote": "ID: D-010; Question: Frame-error flag of a dropped byte; Decision: Not reported; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17",
+   "spec_refs": [],
+   "sentences": [
+    "14:s10"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "slave",
+   "signals": [
+    "o_rx_frame_err"
+   ],
+   "condition": "for a dropped byte",
+   "statement": "The frame-error flag of a dropped byte is not reported.",
+   "check": "scenario",
+   "review": {
+    "verdict": "keep",
+    "reason": "Quote says flag of a dropped byte is not reported; MUST_NOT fits."
+   }
+  }
+ ],
+ "rejected": [
+  {
+   "id": "UL-1.1-03",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "1.1",
+   "section_title": "Purpose",
+   "page": 8,
+   "quote": "The system side has one valid/ready byte stream for transmit and one for receive. Transmit stream input (i_tx_valid, o_tx_ready, i_tx_data) with a valid/ready handshake.",
+   "spec_refs": [],
+   "sentences": [
+    "1.1:s4",
+    "1.2:s5"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_tx_valid",
+    "o_tx_ready",
+    "i_tx_data"
+   ],
+   "condition": "",
+   "statement": "The transmit byte stream uses a valid/ready handshake on i_tx_valid, o_tx_ready and i_tx_data.",
+   "check": "assertion",
+   "review": {
+    "verdict": "reject",
+    "reason": "Only describes the interface existence; no specific verifiable behaviour beyond generic valid/ready handshake."
+   }
+  },
+  {
+   "id": "UL-1.1-04",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "1.1",
+   "section_title": "Purpose",
+   "page": 8,
+   "quote": "The system side has one valid/ready byte stream for transmit and one for receive. Receive stream output (o_rx_valid, i_rx_ready, o_rx_data, o_rx_frame_err).",
+   "spec_refs": [],
+   "sentences": [
+    "1.1:s4",
+    "1.2:s8"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "o_rx_valid",
+    "i_rx_ready",
+    "o_rx_data",
+    "o_rx_frame_err"
+   ],
+   "condition": "",
+   "statement": "The receive byte stream uses a valid/ready handshake on o_rx_valid, i_rx_ready, o_rx_data and o_rx_frame_err.",
+   "check": "assertion",
+   "review": {
+    "verdict": "reject",
+    "reason": "Only describes the interface existence; no specific verifiable behaviour beyond generic valid/ready handshake."
+   }
+  },
+  {
+   "id": "UL-1.2-03",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "1.2",
+   "section_title": "Features",
+   "page": 13,
+   "quote": "The only transmit storage is the shift register.",
+   "spec_refs": [],
+   "sentences": [
+    "1.2:s6"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "The only transmit storage is the shift register; there is no additional transmit buffer.",
+   "check": "scenario",
+   "review": {
+    "verdict": "reject",
+    "reason": "Structural description (no extra buffer); nothing observable to verify or exercise precisely."
+   }
+  },
+  {
+   "id": "UL-1.2-06",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "1.2",
+   "section_title": "Features",
+   "page": 16,
+   "quote": "A two-flip-flop synchronizer on the asynchronous serial input i_rxd. The synchronizer is required by structure, but its metastability behaviour is not checked in simulation.",
+   "spec_refs": [],
+   "sentences": [
+    "1.2:s10",
+    "1.3:s9"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rxd"
+   ],
+   "condition": "",
+   "statement": "The asynchronous input i_rxd passes through a two-flip-flop synchronizer; its metastability behaviour is not checked in simulation.",
+   "check": "none",
+   "review": {
+    "verdict": "reject",
+    "reason": "Structural requirement explicitly not checked in simulation; nothing to verify."
+   }
+  },
+  {
+   "id": "UL-5-09",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "5",
+   "section_title": "Interface",
+   "page": 92,
+   "quote": "Port: i_rxd; Direction: input; Width: 1; Signal type: Data (asynchronous); Reset value: Not applicable; Clock domain: ASYNC; Meaning: Serial receive line, idle high, asynchronous to i_clk, synchronised inside the block",
+   "spec_refs": [],
+   "sentences": [
+    "5:s13"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "i_rxd"
+   ],
+   "condition": "",
+   "statement": "The block must synchronise the asynchronous i_rxd line internally; i_rxd is idle high.",
+   "check": "scenario",
+   "review": {
+    "verdict": "reject",
+    "reason": "Internal synchronisation is an implementation description. It is not observable from the interface and the only requirement is a description of the signal. Nothing to verify directly."
+   }
+  },
+  {
+   "id": "UL-9-01",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "9",
+   "section_title": "Registers",
+   "page": 307,
+   "quote": "The block has no software-visible registers.",
+   "spec_refs": [],
+   "sentences": [
+    "9:s1"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "The uart_lite block must not provide any software-visible registers.",
+   "check": "none",
+   "review": {
+    "verdict": "reject",
+    "reason": "The quote only describes the block's structure (it has no software-visible registers). It states no behaviour that can be checked by an assertion or exercised by a scenario, so there is nothing to verify."
+   }
+  },
+  {
+   "id": "UL-10.8-02",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "10.8",
+   "section_title": "Parameter extremes",
+   "page": 342,
+   "quote": "Values outside 4 to 65535 are illegal (REQ-PAR-003).",
+   "spec_refs": [
+    "REQ-PAR-003"
+   ],
+   "sentences": [
+    "10.8:s7"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "Values of N outside 4 to 65535 are illegal and must not be used.",
+   "check": "none",
+   "review": {
+    "verdict": "reject",
+    "reason": "Illegal parameter range is a constraint on the user/environment, not DUT behavior to verify; check=none means nothing to verify or exercise."
+   }
+  },
+  {
+   "id": "UL-12.1-06",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "12.1",
+   "section_title": "Environment obligations",
+   "page": 364,
+   "quote": "[ENV-005] The environment has no obligation to keep i_tx_valid or i_tx_data stable before a handshake, and no obligation on when i_rx_ready is asserted.",
+   "spec_refs": [],
+   "sentences": [
+    "12.1:s6"
+   ],
+   "strength": "MAY",
+   "actor": "system",
+   "signals": [
+    "i_tx_valid",
+    "i_tx_data",
+    "i_rx_ready"
+   ],
+   "condition": "before a handshake",
+   "statement": "The environment may change i_tx_valid or i_tx_data before a handshake and may assert i_rx_ready at any time; the design must tolerate this.",
+   "check": "scenario",
+   "review": {
+    "verdict": "reject",
+    "reason": "Quote says the environment has no obligation; it is a lack of constraint, not a testable MAY rule. Nothing to verify."
+   }
+  },
+  {
+   "id": "UL-14-08",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "14",
+   "section_title": "Decisions and open questions",
+   "page": 415,
+   "quote": "ID: D-008; Question: Reset release synchronisation; Decision: Done outside the block (ENV-001); By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17",
+   "spec_refs": [],
+   "sentences": [
+    "14:s8"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_rst_n"
+   ],
+   "condition": "",
+   "statement": "Reset release synchronisation is done outside the block (ENV-001).",
+   "check": "none",
+   "review": {
+    "verdict": "reject",
+    "reason": "Environment assumption outside the block; nothing to verify in the design."
+   }
+  },
+  {
+   "id": "UL-14-11",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "14",
+   "section_title": "Decisions and open questions",
+   "page": 418,
+   "quote": "ID: D-011; Question: Illegal parameter values; Decision: Elaboration error recommended (should); not verified; By: Claude (delegated by GabrielHCMUT), confirmed; Date: 2026-11-17",
+   "spec_refs": [],
+   "sentences": [
+    "14:s11"
+   ],
+   "strength": "SHOULD",
+   "actor": "system",
+   "signals": [],
+   "condition": "illegal parameter values",
+   "statement": "An elaboration error should be raised for illegal parameter values; this is not verified.",
+   "check": "none",
+   "review": {
+    "verdict": "reject",
+    "reason": "Recommendation explicitly not verified; nothing to verify or exercise."
+   }
+  },
+  {
+   "id": "UL-14-12",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "14",
+   "section_title": "Decisions and open questions",
+   "page": 419,
+   "quote": "ID: D-012; Question: Configurations beyond default and minimum; Decision: CFG-ODD (5) and CFG-WIDE (1024) are simulated. CFG-MAX (65535) is not simulated (655350 cycles per frame); the largest value is covered by elaboration and synthesis only; By: Claude (delegated by GabrielHCMUT); Date: 2026-11-17",
+   "spec_refs": [],
+   "sentences": [
+    "14:s12"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "Configurations CFG-ODD (5) and CFG-WIDE (1024) are simulated; CFG-MAX (65535) is covered by elaboration and synthesis only, not simulated.",
+   "check": "none",
+   "review": {
+    "verdict": "reject",
+    "reason": "Simulation test configuration plan, not a design behaviour to verify."
+   }
+  },
+  {
+   "id": "UL-14-13",
+   "doc": "uart_lite_Design_Specification.md",
+   "section": "14",
+   "section_title": "Decisions and open questions",
+   "page": 420,
+   "quote": "ID: OQ-001; Question: Is an area budget required for GF180MCU?; Decision: No area budget; area is reported, not checked; By: Claude (delegated by GabrielHCMUT); Date: 2026-11-17",
+   "spec_refs": [],
+   "sentences": [
+    "14:s13"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "No area budget is checked for GF180MCU; area is only reported.",
+   "check": "none",
+   "review": {
+    "verdict": "reject",
+    "reason": "Project decision about area reporting; not a behavioural requirement to verify."
+   }
+  }
+ ],
+ "questions": [
+  {
+   "rules": [
+    "UL-12.1-03",
+    "UL-12.1-05"
+   ],
+   "question": "Does the 'no X or Z' requirement on inputs apply to 4-state simulation only, given Verilator is two-state? Clarify how it can be checked.",
+   "note": "The spec requires no X or Z on i_tx_valid, i_tx_data, i_rx_ready and i_rxd as environment obligations. It does not say whether this applies to 4-state simulation only, or how it is checked under two-state Verilator. The designer must decide."
+  }
+ ],
+ "answered_questions": [
+  {
+   "rules": [
+    "UL-1.2-07"
+   ],
+   "question": "Is the mid-bit start-bit recheck failure behaviour defined: does the receiver return to idle without any output (no o_rx_valid, no overrun)?",
+   "answer": "Yes. If s(T0+H)=1 the event is a glitch: the receiver returns to idle and receives no byte. A glitch does not change o_rx_valid, o_rx_data or o_rx_frame_err, and it does not pulse o_rx_overrun.",
+   "sentences": [
+    "7.4:s6",
+    "7.4:s7",
+    "7.4:s8",
+    "10.3:s2"
+   ]
+  },
+  {
+   "rules": [
+    "UL-1.2-10",
+    "UL-1.2-05",
+    "UL-1.2-09"
+   ],
+   "question": "When a received byte is dropped on overrun, is the older held byte kept or replaced, and does a frame-error byte also trigger overrun?",
+   "answer": "The older held byte is kept unchanged and the new byte and its frame-error flag are dropped. A frame-error byte is treated like any other byte. It causes an overrun only if the holding register is full and not taken at V (o_rx_valid=1, i_rx_ready=0). The frame error alone does not cause an overrun.",
+   "sentences": [
+    "7.8:s1",
+    "7.8:s3",
+    "7.7:s2",
+    "10.2:s1",
+    "10.2:s4"
+   ]
+  },
+  {
+   "rules": [
+    "UL-1.2-09",
+    "UL-1.2-05"
+   ],
+   "question": "Is o_rx_frame_err held and stable together with o_rx_data until the byte is taken?",
+   "answer": "Yes. While o_rx_valid=1 and the byte is not taken, o_rx_valid, o_rx_data and o_rx_frame_err keep their values. o_rx_data and o_rx_frame_err change only when a new byte is loaded or on reset.",
+   "sentences": [
+    "7.6:s5",
+    "7.6:s6"
+   ]
+  },
+  {
+   "rules": [
+    "UL-3-01"
+   ],
+   "question": "Is an overrun flagged by a status bit or only silently dropped? The quote does not say.",
+   "answer": "An overrun is reported by the o_rx_overrun output. It is a one-cycle pulse, not qualified by o_rx_valid, and it needs no handshake. The byte is dropped, but not silently.",
+   "sentences": [
+    "5:s11",
+    "7.8:s2",
+    "7.8:s5",
+    "10.2:s2"
+   ]
+  },
+  {
+   "rules": [
+    "UL-4-01",
+    "UL-4-03"
+   ],
+   "question": "UL-4-03 says elaboration should stop for out-of-range PARA_UART_CLKS_PER_BIT, while UL-4-01 limits required behavior to 4..65535. Is behavior for values outside this range undefined, or is the error mandatory? 'Should' leaves the tool-specific mechanism open.",
+   "answer": "Behaviour outside 4..65535 is not specified and not verified. An elaboration error is only recommended (should), not mandatory, and the mechanism is left open.",
+   "sentences": [
+    "4:s5",
+    "4:s6",
+    "14:s11",
+    "10.8:s7"
+   ]
+  },
+  {
+   "rules": [
+    "UL-4-01",
+    "UL-4-02"
+   ],
+   "question": "For odd PARA_UART_CLKS_PER_BIT, floor(N/2) puts the sampling point half a cycle before the exact bit middle. Is this the intended sampling offset for the receiver, and does the transmitter bit period remain exactly N cycles?",
+   "answer": "Yes. H = floor(N/2) is the intended sampling offset (decision D-002). For odd N the spec calls it exactly the centre of the bit (N=5, H=2). The transmitter drives each frame bit for exactly N cycles.",
+   "sentences": [
+    "3:s2",
+    "4:s4",
+    "14:s2",
+    "10.8:s4",
+    "7.3:s3"
+   ]
+  },
+  {
+   "rules": [
+    "UL-5-02"
+   ],
+   "question": "Is o_tx_ready deasserted exactly while a frame is being transmitted, or also during other times? Are there conditions beyond 'can accept at the next edge'?",
+   "answer": "o_tx_ready is 1 when the transmitter is idle. After an accepting edge E0 it is 0 in the cycles after E0 to E0+10N-2, and it becomes 1 at E0+10N-1 (the last stop-bit cycle). It is also 1 during reset. The spec states no other conditions.",
+   "sentences": [
+    "7.2:s4",
+    "7.2:s5",
+    "7.2:s6",
+    "6.2:s5",
+    "5:s5"
+   ]
+  },
+  {
+   "rules": [
+    "UL-5-04",
+    "UL-5-08"
+   ],
+   "question": "Is the reset value of o_txd (1) stated only in the o_txd port row, and does the o_rx_overrun reset value 0 apply during reset assertion as well as after it?",
+   "answer": "Not only in the port row. o_txd resets to 1 (5:s12) and o_rx_overrun resets to 0 (5:s11). REQ-RST-002 requires o_txd=1 and o_rx_overrun=0 while i_rst_n is 0, and the reset takes effect at once on assertion.",
+   "sentences": [
+    "5:s12",
+    "5:s11",
+    "6.2:s5",
+    "6.2:s4"
+   ]
+  },
+  {
+   "rules": [
+    "UL-5-07"
+   ],
+   "question": "Is the hold register cleared by a handshake, and when does o_rx_valid fall? The drop condition for overrun depends on this.",
+   "answer": "A take is an edge with o_rx_valid=1, i_rx_ready=1 and i_rst_n=1. If no new byte is loaded at that edge, o_rx_valid becomes 0 at that edge. If a new frame is delivered at the same edge, it is loaded, o_rx_valid stays 1 and there is no overrun. A drop and an overrun happen only when o_rx_valid=1 and i_rx_ready=0 at V.",
+   "sentences": [
+    "7.6:s3",
+    "7.6:s4",
+    "7.6:s2",
+    "7.8:s1"
+   ]
+  },
+  {
+   "rules": [
+    "UL-6.1-01",
+    "UL-6.2-01"
+   ],
+   "question": "Is i_rst_n asynchronous assertion with synchronous or asynchronous release? REQ-RST-001 only specifies assertion; REQ-CLK-001 says rising edge of i_clk only, which may conflict with asynchronous reset.",
+   "answer": "Assertion is asynchronous and release is synchronous to i_clk, with the release synchronised outside the block (ENV-001). All flip-flops are clocked by i_clk only and use the asynchronous active-low reset. The spec does not treat this as a conflict.",
+   "sentences": [
+    "5:s3",
+    "6.2:s2",
+    "6.2:s3",
+    "6.2:s4",
+    "13:s4",
+    "6.1:s7"
+   ]
+  },
+  {
+   "rules": [
+    "UL-6.2-02",
+    "UL-6.2-09"
+   ],
+   "question": "Does o_rx_data=0 during reset conflict with it holding the last byte otherwise, and is the byte discarded value defined after release?",
+   "answer": "No conflict. During reset o_rx_data is 0. Otherwise it holds the last loaded byte, or 0 if no byte has been loaded since reset. A held byte is discarded by reset, so after release o_rx_valid=0 and o_rx_data=0.",
+   "sentences": [
+    "6.2:s5",
+    "6.2:s11",
+    "7.6:s6",
+    "7.6:s7",
+    "14:s7"
+   ]
+  },
+  {
+   "rules": [
+    "UL-7.4-05",
+    "UL-7.5-01",
+    "UL-7.5-02"
+   ],
+   "question": "The value of H, the half-bit offset used for start-bit confirmation, and the allowed range of N are not given in these quotes. What are they, for example H = N/2 and the minimum N? The sampling edges depend on both.",
+   "answer": "H = floor(N/2), the offset of the middle-of-bit sampling point and of the start-bit check. N = PARA_UART_CLKS_PER_BIT has the legal range 4 to 65535 (minimum 4, so H is at least 2).",
+   "sentences": [
+    "3:s2",
+    "4:s2",
+    "4:s4",
+    "1.2:s4",
+    "14:s2"
+   ]
+  },
+  {
+   "rules": [
+    "UL-7.2-03",
+    "UL-7.3-05",
+    "UL-7.4-02",
+    "UL-7.6-05",
+    "UL-7.8-06"
+   ],
+   "question": "The reset values of o_txd, o_tx_ready, o_rx_valid, o_rx_overrun and the receiver state are not stated. Is o_txd 1 and o_tx_ready 1 immediately after reset, and does the receiver go idle? This also affects what a frame cut short by reset does to o_tx_ready and o_txd.",
+   "answer": "Yes. After reset o_txd=1, o_tx_ready=1, o_rx_valid=0, o_rx_data=0, o_rx_frame_err=0 and o_rx_overrun=0. After release the transmitter is idle and the receiver is idle. A transmission abandoned by reset sets o_txd to 1 at once, and the rest of the frame is not sent.",
+   "sentences": [
+    "6.2:s5",
+    "6.2:s9",
+    "6.2:s12",
+    "6.2:s13",
+    "6.2:s10"
+   ]
+  },
+  {
+   "rules": [
+    "UL-7.2-01",
+    "UL-7.6-03"
+   ],
+   "question": "The i_rst_n polarity and whether it is synchronous are only implied. i_rst_n appears in the accept and take conditions, but the reset behaviour is not stated. Is it synchronous and active-low?",
+   "answer": "i_rst_n is active low. Assertion is asynchronous and release is synchronous to i_clk (synchronised outside the block). During reset no transmit byte is accepted and the receiver does not detect a start bit or deliver a byte.",
+   "sentences": [
+    "6.2:s1",
+    "6.2:s2",
+    "6.2:s3",
+    "5:s3",
+    "6.2:s6",
+    "6.2:s7"
+   ]
+  },
+  {
+   "rules": [
+    "UL-8.1-01",
+    "UL-8.1-02"
+   ],
+   "question": "UL-8.1-01 says the start bit starts 'at the accepting edge E0' and also 'in the first cycle after the handshake'. Is the start bit visible on o_txd in the cycle after E0 (registered output) or combinationally at E0?",
+   "answer": "The start bit is registered. The accepting edge is E0 and the start bit is on o_txd in the cycle after edge E0 (a registered output becomes X at edge E and has that value in the cycle after E). Every output is driven directly by a flip-flop.",
+   "sentences": [
+    "8.1:s1",
+    "3:s4",
+    "7.3:s2",
+    "7.1:s4"
+   ]
+  },
+  {
+   "rules": [
+    "UL-8.1-02",
+    "UL-8.1-03",
+    "UL-8.1-05"
+   ],
+   "question": "UL-8.1-03 says o_tx_ready is 0 for 10N-1 cycles after E0, but UL-8.1-02 says the frame ends at E0+10N. Is the ready cycle the last stop-bit cycle, and does that make back-to-back acceptance exactly every 10N cycles?",
+   "answer": "Yes. o_tx_ready is 0 for 10N-1 cycles after E0 and becomes 1 at E0+10N-1, the last cycle of the stop bit. The stop bit ends at E0+10N, and the next byte can be accepted at E0+10N. With i_tx_valid held at 1, one byte is therefore accepted every 10N cycles.",
+   "sentences": [
+    "7.2:s5",
+    "7.2:s6",
+    "8.1:s3",
+    "8.1:s4",
+    "8.1:s6",
+    "7.3:s4"
+   ]
+  },
+  {
+   "rules": [
+    "UL-8.2-01"
+   ],
+   "question": "UL-8.2-01 does not define H (the term used in V = T0 + H + 9N + 2), so the latency cannot be checked until H is defined.",
+   "answer": "H is defined as floor(N/2), the offset of the middle-of-bit sampling point. The latency V = T0 + H + 9N + 2 can therefore be checked.",
+   "sentences": [
+    "3:s2",
+    "4:s2",
+    "3:s12",
+    "3:s13",
+    "8.2:s1"
+   ]
+  },
+  {
+   "rules": [
+    "UL-10.4-01",
+    "UL-10.4-02"
+   ],
+   "question": "UL-10.4-01 allows either delivery with frame error or drop with overrun; confirm which is expected given the prior held-byte state, and whether a frame-error flag on a held-low line after the first frame must be suppressed.",
+   "answer": "Which outcome occurs is decided by the holding-register state at V, under the Section 7.8 rules. The byte 0x00 is delivered with o_rx_frame_err=1 if o_rx_valid=0 or the held byte is taken at V. Otherwise it is dropped with an overrun pulse. After the first frame, a held-low line produces no further frame until s has been 1 and then 0, so exactly one frame results.",
+   "sentences": [
+    "10.4:s1",
+    "10.4:s2",
+    "7.8:s1",
+    "7.6:s1",
+    "7.6:s2",
+    "7.7:s3"
+   ]
+  },
+  {
+   "rules": [
+    "UL-10.2-01",
+    "UL-10.2-03"
+   ],
+   "question": "UL-10.2-03 says the frame-error flag of a dropped byte is not reported; confirm whether o_rx_frame_err for the held byte remains unchanged.",
+   "answer": "Yes. When a byte is dropped, o_rx_valid, o_rx_data and o_rx_frame_err keep the held byte unchanged. The dropped byte's frame-error flag is not reported.",
+   "sentences": [
+    "7.8:s3",
+    "10.2:s4",
+    "7.8:s1"
+   ]
+  },
+  {
+   "rules": [
+    "UL-12.2-01"
+   ],
+   "question": "Is the fixed latency V = M + 2 measured from the sampling edge M, and does it hold when overrun or framing errors occur?",
+   "answer": "Yes. V = M+2, measured from the stop-bit sample edge M, where 2 is the synchronizer latency. Every frame completes at M whatever s(M) is, so a frame error does not change it. The overrun pulse and the drop are decided at the same edge V.",
+   "sentences": [
+    "3:s13",
+    "12.2:s1",
+    "8.2:s2",
+    "7.5:s8",
+    "7.8:s2"
+   ]
+  },
+  {
+   "rules": [
+    "UL-13-05",
+    "UL-13-06"
+   ],
+   "question": "Does 'all flip-flops' include the two i_rxd synchronizer flops and any output registers? Is reset behavior required to be asynchronous assertion with synchronous deassertion, or purely asynchronous?",
+   "answer": "Yes. Every flip-flop of the block resets, including both i_rxd synchronizer flip-flops (reset to 1) and the output registers. All flip-flops use the asynchronous active-low reset i_rst_n. Assertion is asynchronous, and release is synchronous to i_clk and synchronised outside the block.",
+   "sentences": [
+    "13:s4",
+    "6.2:s4",
+    "6.2:s8",
+    "6.2:s2",
+    "6.2:s3",
+    "7.1:s4"
+   ]
+  },
+  {
+   "rules": [
+    "UL-13-01",
+    "UL-13-07"
+   ],
+   "question": "What is the range of legal values of PARA_UART_CLKS_PER_BIT, so that timing and counter width can be checked for every legal value?",
+   "answer": "The legal range is PARA_UART_CLKS_PER_BIT = 4 to 65535, the default is 16, and counters are at most 16 bits wide. Timing at 50 MHz must be met for every legal value.",
+   "sentences": [
+    "1.2:s4",
+    "4:s1",
+    "13:s1",
+    "13:s6"
+   ]
+  },
+  {
+   "rules": [
+    "UL-14-10",
+    "UL-14-07"
+   ],
+   "question": "D-010 says the frame-error flag of a dropped byte is 'Not reported', but does not define what a dropped byte is (overrun case?) or whether o_rx_frame_err keeps its previous held value. Clarify.",
+   "answer": "A dropped byte is a completed frame that is lost at V because the holding register is full and not being emptied (the overrun case). When a byte is dropped, o_rx_valid, o_rx_data and o_rx_frame_err keep the held byte unchanged. The dropped byte's frame-error flag is not reported.",
+   "sentences": [
+    "3:s16",
+    "7.8:s1",
+    "7.8:s3",
+    "10.2:s4",
+    "14:s10"
+   ]
+  }
+ ]
+}
