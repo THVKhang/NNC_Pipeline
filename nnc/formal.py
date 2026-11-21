@@ -75,6 +75,24 @@ def nonsynth(text: str) -> str | None:
     return None
 
 
+def clock_names(iface: dict) -> set[str]:
+    """Names of the interface clocks (the main clock and every clock domain)."""
+    names = {iface.get("clock")} | {c if isinstance(c, str) else (c or {}).get("name")
+                                    for c in (iface.get("clocks") or [])}
+    return {n for n in names if n}
+
+
+def falling_clock(text: str, clocks: set[str]) -> str | None:
+    """Why a checker cannot run in a one-global-clock formal model (`multiclock off`): it samples a clock
+    on its falling edge, which Yosys can only model with clk2fflogic. None when it does not."""
+    code = re.sub(r"//[^\n]*", "", re.sub(r"/\*.*?\*/", "", text, flags=re.S))
+    for clk in sorted(clocks):
+        m = re.search(r"\bnegedge\s+" + re.escape(clk) + r"\b", code)
+        if m:
+            return f"falling clock edge in a one-clock model (`{m.group(0)}`)"
+    return None
+
+
 @dataclass
 class Prop:
     check: str                  # CHK-001
@@ -337,17 +355,23 @@ setundef -zero -init {checkers}
 def build(contract: dict, rtl_dir: Path, sva_dir: Path, env_file: Path | None, *, depth: int = DEFAULT_DEPTH,
           defines: list[str] | None = None, solver: str = "yices", params: dict | None = None,
           task_timeout_s: int = DEFAULT_TIMEOUT_S, prove_engines: str = PROVE_ENGINES,
-          only: set[str] | None = None) -> tuple[dict, list[Prop]]:
+          only: set[str] | None = None, frontend: str = "verilog") -> tuple[dict, list[Prop]]:
     """Input files of the formal run: per supported check an .sby project (only the checks in `only`, when
-    given), plus the shared sources."""
+    given), plus the shared sources. `frontend` "slang" reads the DUT RTL with the yosys-slang plugin
+    (SystemVerilog that Yosys' own parser rejects, e.g. OpenTitan packages); the checkers, the environment
+    and the formal top are always read with `read_verilog -sv -formal`."""
+    if frontend not in ("verilog", "slang"):
+        raise ValueError(f"formal frontend must be 'verilog' or 'slang', not {frontend!r}")
     rtl = rtl_files(rtl_dir)
     chk = [f for f in checker_files(sva_dir) if f.name.startswith("nnc_chk_")]
     files: dict[str, object] = {f"src/{f.name}": f for f in rtl}
     props: list[Prop] = []
     used = []
+    one_clock = not is_async(contract["interface"])
+    clocks = clock_names(contract["interface"])
     for f in chk:
         view, ps = formal_view(f.read_text(encoding="utf-8"))
-        why = nonsynth(view)
+        why = nonsynth(view) or (falling_clock(view, clocks) if one_clock else None)
         if why:          # a simulation-only checker (event timing, scoreboard queue): not in the formal top
             for p in ps:
                 p.unsupported = p.unsupported or f"checker {f.stem} is simulation-only: {why}"
@@ -371,7 +395,13 @@ def build(contract: dict, rtl_dir: Path, sva_dir: Path, env_file: Path | None, *
         if only is not None and cid not in only:
             continue
         tag = cid.replace("-", "_")
-        read = f"read_verilog -sv -formal {defs} -DNNC_FV_{tag} " + " ".join(srcs)
+        if frontend == "slang":
+            rtl_srcs = [f.name for f in rtl]
+            other = [s for s in srcs if s not in rtl_srcs]
+            read = (f"read_slang {defs} --top {contract['top']} " + " ".join(rtl_srcs) + "\n"
+                    f"read_verilog -sv -formal {defs} -DNNC_FV_{tag} " + " ".join(other))
+        else:
+            read = f"read_verilog -sv -formal {defs} -DNNC_FV_{tag} " + " ".join(srcs)
         if gen:
             read += f"\n{gen}"
         files[f"{tag}.sby"] = SBY.format(depth=depth, multiclock=multiclock, solver=solver, read=read,
@@ -418,9 +448,10 @@ def parse_status(out_dir: Path, tag: str) -> dict:
 
 def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, env_file: Path | None = None, *,
         depth: int = DEFAULT_DEPTH, defines: list[str] | None = None, parallel: int = 4,
-        task_timeout_s: int = DEFAULT_TIMEOUT_S, params: dict | None = None, max_depth: int = 0) -> dict:
+        task_timeout_s: int = DEFAULT_TIMEOUT_S, params: dict | None = None, max_depth: int = 0,
+        frontend: str = "verilog") -> dict:
     files, props = build(contract, rtl_dir, sva_dir, env_file, depth=depth, defines=defines,
-                         task_timeout_s=task_timeout_s, params=params)
+                         task_timeout_s=task_timeout_s, params=params, frontend=frontend)
     n = len([k for k in files if k.endswith(".sby")])
     timeout_s = 600 + 3 * task_timeout_s * max(1, -(-n // max(1, parallel)))
     res = host.run(files, RUN.format(parallel=parallel),
@@ -449,7 +480,7 @@ def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, env_file: P
             break
         cur = min(cur * 2, max_depth)
         f2, _ = build(contract, rtl_dir, sva_dir, env_file, depth=cur, defines=defines,
-                      task_timeout_s=task_timeout_s, params=params, only=vac)
+                      task_timeout_s=task_timeout_s, params=params, only=vac, frontend=frontend)
         r2 = host.run(f2, RUN.format(parallel=parallel),
                       ["CHK_*.log", "CHK_*_bmc/status", "CHK_*_prove/status", "CHK_*_bmc/engine_*/trace*.vcd",
                        "CHK_*_cover/status", "CHK_*_bmc/logfile.txt", "CHK_*_prove/logfile.txt"],

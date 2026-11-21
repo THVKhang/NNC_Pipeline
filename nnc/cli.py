@@ -361,7 +361,7 @@ def cmd_fix_verif(args) -> int:
 
 def cmd_mutate_equiv(args) -> int:
     d = _open(args)
-    flow.mutate_equiv(d, flow.Options(), depth=args.depth, timeout_s=args.timeout)
+    flow.mutate_equiv(d, flow.Options(), depth=args.depth, timeout_s=args.timeout, redo=args.redo)
     return 0
 
 
@@ -723,6 +723,8 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("design")
     s.add_argument("--depth", type=int, help="BMC depth (default: config formal_depth, else 20)")
     s.add_argument("--timeout", type=int, default=900, help="seconds per SymbiYosys task (default 900)")
+    s.add_argument("--redo", action="store_true", help="check every surviving mutant again (default: keep the "
+                                                       "conclusions of a run with the same depth and frontend)")
     s.set_defaults(func=cmd_mutate_equiv)
 
     s = sub.add_parser("kit", help="rewrite the reproduction kit designs/<ip>/sim (and sim/configs/ for a run set) "

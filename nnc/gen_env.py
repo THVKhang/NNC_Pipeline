@@ -24,7 +24,7 @@ from nnc.agents.runtime import Usage
 from nnc.contract import module_header
 from nnc.simhost import SimHost
 
-PROMPT_VERSION = "env-v1"
+PROMPT_VERSION = "env-v2"   # v2: each rule shows its condition (WHEN ...)
 SYSTEM_PROMPT = (
     "You are a formal-verification engineer writing the environment constraints of a block: what the "
     "specification requires from the blocks driving its inputs. You use only the specification text and "
@@ -84,7 +84,8 @@ def build_prompt(contract: dict, rules_doc: dict, feedback: list[dict] | None = 
     ports = "\n".join(f"  {p['name']} ({p['direction']} of the DUT, width {p['width']}): {p.get('meaning', '')}"
                       for p in iface["ports"])
     clocks = ", ".join(c["name"] for c in iface.get("clocks") or []) or iface.get("clock") or ""
-    rules = "\n".join(f"  {r['id']}: {r['statement']}" for r in rules_doc["rules"])
+    rules = "\n".join(f"  {r['id']}: {r['statement']}" + (f" WHEN {r['condition']}" if r.get("condition") else "")
+                      for r in rules_doc["rules"])
     return (f"INTERFACE (directions as seen by the DUT; constrain the inputs)\n{ports}\n"
             f"Clocks: {clocks}. Clock relation: {iface.get('clock_relation') or 'synchronous'}.\n\n"
             f"EXISTING HEADER\n```systemverilog\n{header(iface)}\n```\n\n"

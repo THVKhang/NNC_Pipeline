@@ -1,0 +1,99 @@
+{
+ "file": "C:\\Users\\Admin\\OneDrive\\ドキュメント\\GitHub\\NNC_Pipeline\\designs\\ot_rv_timer\\verif\\formal\\nnc_env.sv",
+ "status": "lint_clean",
+ "attempts": 1,
+ "problems": [],
+ "lint_errors": "NNC_RC=0",
+ "assumptions": [
+  {
+   "id": "ENV-01",
+   "obligation": "No request (i_a_valid = 0) while rst_ni is asserted",
+   "rules": [
+    "RT-8-29",
+    "RT-2-03",
+    "CP-T1.5.2-04"
+   ]
+  },
+  {
+   "id": "ENV-09",
+   "obligation": "No request in the first cycle after reset release",
+   "rules": [
+    "RT-8-29"
+   ]
+  },
+  {
+   "id": "ENV-02",
+   "obligation": "TL-UL host rule: a_valid held and all A-channel signals (incl. instr type and integrity flip) stable while a_valid=1 and a_ready=0",
+   "rules": [
+    "RT-4.1-04",
+    "RT-4.1-01"
+   ]
+  },
+  {
+   "id": "ENV-03",
+   "obligation": "a_param driven to 0",
+   "rules": [
+    "RT-8-34"
+   ]
+  },
+  {
+   "id": "ENV-04",
+   "obligation": "Requests at offset 0x200 and above are not used",
+   "rules": [
+    "RT-8-20"
+   ]
+  },
+  {
+   "id": "ENV-05",
+   "obligation": "Writes with i_a_instr = 1 are not used",
+   "rules": [
+    "RT-8-18"
+   ]
+  },
+  {
+   "id": "ENV-06",
+   "obligation": "Distinct a_source per outstanding request",
+   "rules": [
+    "RT-8-25",
+    "TL-T3.1.3.2-01"
+   ]
+  },
+  {
+   "id": "ENV-07",
+   "obligation": "The combined ALERT_TEST write (fatal_fault=1 with regwen=0) is not used: any aligned word write to ALERT_TEST whose mask reaches lanes 0 and 3 (full-mask PutFullData or PutPartialData with mask[0]&mask[3]) with good integrity does not have data[0]=1 and data[31]=0; malformed/byte/flipped writes stay legal",
+   "rules": [
+    "RT-8-15",
+    "RT-8-21",
+    "RT-4.1-05"
+   ]
+  },
+  {
+   "id": "ENV-08",
+   "obligation": "Any write request to CFG0, TIMER_V_LOWER0 or TIMER_V_UPPER0 only while CTRL.active_0 = 0 (no CTRL write in flight)",
+   "rules": [
+    "RT-8-03",
+    "RT-T4.1-01",
+    "RT-T4.1-02",
+    "RT-8-33"
+   ]
+  },
+  {
+   "id": "ENV-10",
+   "obligation": "Timer not activated while a write to CFG0 / TIMER_V_* is still in flight",
+   "rules": [
+    "RT-8-03",
+    "RT-T4.1-02"
+   ]
+  }
+ ],
+ "usage": {
+  "calls": 1,
+  "cached": 0,
+  "cost_usd": 0.3482,
+  "input_tokens": 2,
+  "output_tokens": 9205,
+  "cache_creation_input_tokens": 20239,
+  "cache_read_input_tokens": 707
+ },
+ "prompt_version": "env-v2"
+}

@@ -1,0 +1,3055 @@
+{
+ "version": 1,
+ "doc": {
+  "file": "opentitan_tlul_bus_specification.md",
+  "sha256": "7b07c0572d341ac5147eda51f1fb18fc537f289da6302030aa72808e26cf47b2",
+  "length": 702,
+  "location": "line"
+ },
+ "sections": [
+  {
+   "id": "front",
+   "title": "Front matter",
+   "level": 0,
+   "parent": null,
+   "page_start": 1,
+   "page_end": 1,
+   "sentences": []
+  },
+  {
+   "id": "T1",
+   "title": "Bus Specification",
+   "level": 1,
+   "parent": null,
+   "page_start": 3,
+   "page_end": 3,
+   "sentences": []
+  },
+  {
+   "id": "T2",
+   "title": "Overview",
+   "level": 1,
+   "parent": null,
+   "page_start": 5,
+   "page_end": 7,
+   "sentences": [
+    {
+     "id": "T2:s1",
+     "text": "This document specifies the bus functionality within a Comportable top level system.",
+     "page": 7,
+     "normative": false
+    },
+    {
+     "id": "T2:s2",
+     "text": "This includes the bus protocol and all hardware IP that supports creating the network on chip within that framework.",
+     "page": 7,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T2.1",
+   "title": "Features",
+   "level": 2,
+   "parent": "T2",
+   "page_start": 11,
+   "page_end": 24,
+   "sentences": [
+    {
+     "id": "T2.1:s1",
+     "text": "Support for multiple bus hosts and bus devices1",
+     "page": 13,
+     "normative": false
+    },
+    {
+     "id": "T2.1:s2",
+     "text": "Support for multiple clock domains",
+     "page": 14,
+     "normative": false
+    },
+    {
+     "id": "T2.1:s3",
+     "text": "Support for multiple outstanding requests",
+     "page": 15,
+     "normative": false
+    },
+    {
+     "id": "T2.1:s4",
+     "text": "Extendability for 32b or 64b data widths",
+     "page": 16,
+     "normative": false
+    },
+    {
+     "id": "T2.1:s5",
+     "text": "Extendability for flexible address widths",
+     "page": 17,
+     "normative": false
+    },
+    {
+     "id": "T2.1:s6",
+     "text": "Extendability for security features",
+     "page": 18,
+     "normative": false
+    },
+    {
+     "id": "T2.1:s7",
+     "text": "Low pin-count / area overhead",
+     "page": 19,
+     "normative": false
+    },
+    {
+     "id": "T2.1:s8",
+     "text": "Support for transaction sizes up to bus width (byte, 2B, 4B); no support for bursts",
+     "page": 20,
+     "normative": false
+    },
+    {
+     "id": "T2.1:s9",
+     "text": "Suite of bus primitives to aid in fast fabric generation",
+     "page": 22,
+     "normative": false
+    },
+    {
+     "id": "T2.1:s10",
+     "text": "1lowRISC is avoiding the fraught terms master/slave and defaulting to host/device where applicable.",
+     "page": 24,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T2.2",
+   "title": "Description",
+   "level": 2,
+   "parent": "T2",
+   "page_start": 27,
+   "page_end": 51,
+   "sentences": [
+    {
+     "id": "T2.2:s1",
+     "text": "For chip-level interconnect, Comportable devices will be using TileLink as its bus fabric protocol.",
+     "page": 29,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s2",
+     "text": "For the purposes of our performance requirement needs, the Uncached Lightweight (TL-UL) variant will suffice.",
+     "page": 29,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s3",
+     "text": "There is one minor modification to add the user extensions.",
+     "page": 29,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s4",
+     "text": "This is highlighted below, but otherwise all functionality follows the official specification.",
+     "page": 29,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s5",
+     "text": "The main signal names are kept the same as TL-UL and the user extension signal groups follow the same timing and naming conventions used in the TL-UL specification.",
+     "page": 29,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s6",
+     "text": "Existing TL-UL IP blocks may be used directly in devices that do not need the additional sideband signals, or can be straightforwardly adapted to use the added features.",
+     "page": 29,
+     "normative": true
+    },
+    {
+     "id": "T2.2:s7",
+     "text": "TL-UL is a lightweight bus that combines the point-to-point split-transaction features of the powerful TileLink (or AMBA AXI) 5-channel bus without the high pin-count overhead.",
+     "page": 41,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s8",
+     "text": "It is intended to be about on par of pincount with APB but with the transaction performance of AXI-4, modulo the following assumptions.",
+     "page": 41,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s9",
+     "text": "Only one request (read or write) per cycle",
+     "page": 47,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s10",
+     "text": "Only one response (read or write) per cycle",
+     "page": 48,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s11",
+     "text": "No burst transactions",
+     "page": 49,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s12",
+     "text": "Bus primitives are provided in the lowRISC IP library.",
+     "page": 51,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s13",
+     "text": "These are described later in this document.",
+     "page": 51,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s14",
+     "text": "These primitives can be combined to form a flexible crossbar of any M hosts to any N devices.",
+     "page": 51,
+     "normative": true
+    },
+    {
+     "id": "T2.2:s15",
+     "text": "As of this writing, these crossbars are generated programmatically through usage of configuration files.",
+     "page": 51,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s16",
+     "text": "See the tlgen reference manual for more details.",
+     "page": 51,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T2.3",
+   "title": "Compatibility",
+   "level": 2,
+   "parent": "T2",
+   "page_start": 57,
+   "page_end": 59,
+   "sentences": [
+    {
+     "id": "T2.3:s1",
+     "text": "With the exception of the user extensions, the bus is compliant with TileLink-UL.",
+     "page": 59,
+     "normative": false
+    },
+    {
+     "id": "T2.3:s2",
+     "text": "The bus primitives, hosts and peripherals developed using the extended specification can be used with blocks using the base specification.",
+     "page": 59,
+     "normative": true
+    },
+    {
+     "id": "T2.3:s3",
+     "text": "As a receiver baseline blocks ignore the user signals and as a source will generate a project-specific default value.",
+     "page": 59,
+     "normative": false
+    },
+    {
+     "id": "T2.3:s4",
+     "text": "Alternatively, the blocks can be easily modified to make use of the user extensions.",
+     "page": 59,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T3",
+   "title": "Theory of Operations",
+   "level": 1,
+   "parent": null,
+   "page_start": 67,
+   "page_end": 67,
+   "sentences": []
+  },
+  {
+   "id": "T3.1",
+   "title": "Signals",
+   "level": 2,
+   "parent": "T3",
+   "page_start": 69,
+   "page_end": 126,
+   "sentences": [
+    {
+     "id": "T3.1:s1",
+     "text": "The table below lists all of the TL-UL signals.",
+     "page": 71,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s2",
+     "text": "\"Direction\" is w.r.t. a bus host, signals marked as output will be in the verilog typedef struct tagged as host-to-device (tl_h2d_t) and those marked as input will be in the device-to-host struct (tl_d2h_t).",
+     "page": 71,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s3",
+     "text": "The literal typedef structs follow.",
+     "page": 71,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s4",
+     "text": "Size qualifiers are described below.",
+     "page": 71,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s5",
+     "text": "The table and structs include the additional (non-TL-UL standard) user extension signals per direction to carry chip specific user bits.",
+     "page": 71,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s6",
+     "text": "The function of the user bits are separately described in a separate table.",
+     "page": 79,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s7",
+     "text": "Signal Name: a_valid; Direction: output; Description: Request from host is valid",
+     "page": 83,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s8",
+     "text": "Signal Name: a_ready; Direction: input; Description: Request from host is accepted by device",
+     "page": 84,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s9",
+     "text": "Signal Name: a_opcode[2:0]; Direction: output; Description: Request opcode (read, write, or partial write)",
+     "page": 85,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s10",
+     "text": "Signal Name: a_param[2:0]; Direction: output; Description: unused",
+     "page": 86,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s11",
+     "text": "Signal Name: a_address[AW-1:0]; Direction: output; Description: Request address of configurable width",
+     "page": 87,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s12",
+     "text": "Signal Name: a_data[DW-1:0]; Direction: output; Description: Write request data of configurable width",
+     "page": 88,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s13",
+     "text": "Signal Name: a_source[AIW-1:0]; Direction: output; Description: Request identifier of configurable width",
+     "page": 89,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s14",
+     "text": "Signal Name: a_size[SZW-1:0]; Direction: output; Description: Request size (requested size is 2^a_size, thus 0 = byte, 1 = 16b, 2 = 32b, 3 = 64b, etc)",
+     "page": 90,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s15",
+     "text": "Signal Name: a_mask[DBW-1:0]; Direction: output; Description: Write strobe, one bit per byte indicating which lanes of data are valid for this write request",
+     "page": 91,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s16",
+     "text": "Signal Name: a_user; Direction: output; Description: Request attributes of configurable width, use TBD. This is an augmentation to the TL-UL specification.",
+     "page": 92,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s17",
+     "text": "Signal Name: d_valid; Direction: input; Description: Response from device is valid",
+     "page": 93,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s18",
+     "text": "Signal Name: d_ready; Direction: output; Description: Response from device is accepted by host",
+     "page": 94,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s19",
+     "text": "Signal Name: d_opcode[2:0]; Direction: input; Description: Response opcode (Ack or Data)",
+     "page": 95,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s20",
+     "text": "Signal Name: d_error; Direction: input; Description: Response is in error",
+     "page": 96,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s21",
+     "text": "Signal Name: d_param[2:0]; Direction: input; Description: Response parameter (unused)",
+     "page": 97,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s22",
+     "text": "Signal Name: d_size[SZW-1:0]; Direction: input; Description: Response data size",
+     "page": 98,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s23",
+     "text": "Signal Name: d_data[DW-1:0]; Direction: input; Description: Response data of configurable width",
+     "page": 99,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s24",
+     "text": "Signal Name: d_source[AIW-1:0]; Direction: input; Description: Bouncing of request ID of configurable width",
+     "page": 100,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s25",
+     "text": "Signal Name: d_sink[DIW-1:0]; Direction: input; Description: Response ID of configurable width (possibly unused)",
+     "page": 101,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s26",
+     "text": "Signal Name: d_user[DUW-1:0]; Direction: input; Description: Response attributes of configurable width; includes error responses plus other attributes TBD. This is an augmentation to the TL-UL specification.",
+     "page": 102,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s27",
+     "text": "The a_user bus contains several signals",
+     "page": 104,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s28",
+     "text": "instr_type - controls whether the transaction is an instruction fetch type",
+     "page": 105,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s29",
+     "text": "cmd_intg - carries the command integrity of the transaction",
+     "page": 106,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s30",
+     "text": "data_intg - carries the write data integrity of the transaction",
+     "page": 107,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s31",
+     "text": "The d_user bus contains several signals",
+     "page": 109,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s32",
+     "text": "rsp_intg - carries the response integrity of the transaction",
+     "page": 110,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s33",
+     "text": "data_intg - carries the read data integrity of the transaction",
+     "page": 111,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s34",
+     "text": "The user bus is primarily used to distinguish data / instruction transactions while also supporting the bus integrity scheme.",
+     "page": 113,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s35",
+     "text": "There are eight bus width parameters, defined here.",
+     "page": 115,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s36",
+     "text": "Some are generated widths based upon the other parameter sizes.",
+     "page": 115,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s37",
+     "text": "AW: width of address bus, default 32",
+     "page": 118,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s38",
+     "text": "DW: width of data bus, default 32",
+     "page": 119,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s39",
+     "text": "DBW: number of data bytes, generated == DW/8",
+     "page": 120,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s40",
+     "text": "SZW: size width, covers 2^(x) <= DBW; (2 bit for 4B)",
+     "page": 121,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s41",
+     "text": "AIW: width of address source (ID) bus, default 8",
+     "page": 122,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s42",
+     "text": "DUW: width of device user bits, default 4",
+     "page": 123,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s43",
+     "text": "DIW: width of sink bits, default 1",
+     "page": 124,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s44",
+     "text": "All widths are expected to be fixed for an entire project and referred to in (what is currently called) top_pkg.",
+     "page": 126,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s45",
+     "text": "The contents of top_pkg (to define the widths) and tlul_pkg (to define the bus structs) are given below.",
+     "page": 126,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3.1.1",
+   "title": "Reset Timing",
+   "level": 3,
+   "parent": "T3.1",
+   "page_start": 131,
+   "page_end": 133,
+   "sentences": [
+    {
+     "id": "T3.1.1:s1",
+     "text": "Section 3.2.2 of the TileLink specification (1.7.1) has a requirement on TL-UL hosts (\"masters\" in TileLink terminology) that \"valid signals must be driven LOW for at least 100 cycles while reset is asserted.\" The TL-UL collateral within this library does not have this requirement on its TL-UL host drivers.",
+     "page": 133,
+     "normative": true
+    },
+    {
+     "id": "T3.1.1:s2",
+     "text": "TL-UL devices within the library can tolerate shorter reset windows.",
+     "page": 133,
+     "normative": true
+    },
+    {
+     "id": "T3.1.1:s3",
+     "text": "(See the reset section of the Comportability Specification for details on reset requirements.)",
+     "page": 133,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3.1.2",
+   "title": "Signal and Struct Definitions",
+   "level": 3,
+   "parent": "T3.1",
+   "page_start": 141,
+   "page_end": 143,
+   "sentences": [
+    {
+     "id": "T3.1.2:s1",
+     "text": "The following shows Verilog structs to define the above parameters and signals.",
+     "page": 143,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3.1.3",
+   "title": "Usage of Signals",
+   "level": 3,
+   "parent": "T3.1",
+   "page_start": 207,
+   "page_end": 207,
+   "sentences": []
+  },
+  {
+   "id": "T3.1.3.1",
+   "title": "Usage of Address",
+   "level": 4,
+   "parent": "T3.1.3",
+   "page_start": 209,
+   "page_end": 211,
+   "sentences": [
+    {
+     "id": "T3.1.3.1:s1",
+     "text": "All signaling for host-request routing is encapsulated in the a_addr signal.",
+     "page": 211,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.1:s2",
+     "text": "(See section 5.3 of the TileLink specification).",
+     "page": 211,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.1:s3",
+     "text": "For a bus host to designate which device it is talking to, it only needs to indicate the correct device register/memory address.",
+     "page": 211,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.1:s4",
+     "text": "The other host signals (namely a_source and a_user) do not enter into the address calculation.",
+     "page": 211,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.1:s5",
+     "text": "All request steering must thus be made as a function of the address.",
+     "page": 211,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T3.1.3.2",
+   "title": "Usage of Source and Sink ID Bits",
+   "level": 4,
+   "parent": "T3.1.3",
+   "page_start": 217,
+   "page_end": 226,
+   "sentences": [
+    {
+     "id": "T3.1.3.2:s1",
+     "text": "The a_source and d_source signals are used to steer the response from a device back to a host through bus primitives.",
+     "page": 219,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.2:s2",
+     "text": "(See primitives section that follows).",
+     "page": 219,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.2:s3",
+     "text": "It can also be used to ascribe request identifiers by a host when response reordering is required (since TL-UL does not guarantee in-order responses).",
+     "page": 219,
+     "normative": true
+    },
+    {
+     "id": "T3.1.3.2:s4",
+     "text": "For permission detection, static host identifiers will be transmitted in the user field (see below).",
+     "page": 219,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.2:s5",
+     "text": "Some bus primitives, such as M:1 sockets, need to add source bits during request routing in order to be able to correctly route the response.",
+     "page": 226,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.2:s6",
+     "text": "For instance, if one destination is addressed by N potential hosts, log2N more source ID bits need to be added to the outgoing request.",
+     "page": 226,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.2:s7",
+     "text": "The fabric architect needs to ensure that the attribute AIW is big enough to cover the number of outstanding requests hosts can make and the maximum source ID growth that could be added by bus primitives.",
+     "page": 226,
+     "normative": true
+    },
+    {
+     "id": "T3.1.3.2:s8",
+     "text": "At this time, AIW is assumed to be 8 bits of ID growth, but this is likely overkill.",
+     "page": 226,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.2:s9",
+     "text": "The fabric also needs to allow for how many host ID bits are needed, for instance if converting from an AXI host that uses RID or WID, enough bits must be provided to maintain those ID values.",
+     "page": 226,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T3.1.3.2.1",
+   "title": "Source ID growth",
+   "level": 5,
+   "parent": "T3.1.3.2",
+   "page_start": 238,
+   "page_end": 240,
+   "sentences": [
+    {
+     "id": "T3.1.3.2.1:s1",
+     "text": "When a bus primitive needs to add source ID bits, it shifts left the incoming a_source and post-pends its necessary sub-source bits.",
+     "page": 240,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.2.1:s2",
+     "text": "For instance, if a 5:1 socket is needed, 3 sub-source bits are generated to distinguish between hosts 0 through 4.",
+     "page": 240,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.2.1:s3",
+     "text": "So an 8-bit outgoing a_source would be {a_source_inbound[4:0],subsource[2:0]}.",
+     "page": 240,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.2.1:s4",
+     "text": "When the response returns, those 3 sub-source bits are shifted off, with '0' bits shifted into the top, and returned to the originator's d_source.",
+     "page": 240,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.2.1:s5",
+     "text": "It is recommended to have assertions in place to ensure no significant bits of a_source are lost in M:1 sockets.",
+     "page": 240,
+     "normative": true
+    },
+    {
+     "id": "T3.1.3.2.1:s6",
+     "text": "See the M:1 socket primitive for more details.",
+     "page": 240,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3.1.3.2.2",
+   "title": "Source ID requirements for host elements",
+   "level": 5,
+   "parent": "T3.1.3.2",
+   "page_start": 251,
+   "page_end": 253,
+   "sentences": [
+    {
+     "id": "T3.1.3.2.2:s1",
+     "text": "The potential for source ID growth (and contraction in the response) implies that hosts may only use the low bits of the identifier and cannot assume the entire AIW bits will be returned intact.",
+     "page": 253,
+     "normative": true
+    },
+    {
+     "id": "T3.1.3.2.2:s2",
+     "text": "If there are any hosts that need more source bits returned than the host's maximum number of outstanding transactions (for example the host uses some source bits as internal sub-unit identifiers and some bits as transaction IDs from that subunit) then the AIW value needs to be set accordingly.",
+     "page": 253,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3.1.3.2.3",
+   "title": "Source ID requirements for device elements",
+   "level": 5,
+   "parent": "T3.1.3.2",
+   "page_start": 261,
+   "page_end": 263,
+   "sentences": [
+    {
+     "id": "T3.1.3.2.3:s1",
+     "text": "All bus devices must simply return the associated a_source on the response d_source bus.",
+     "page": 263,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T3.1.3.2.4",
+   "title": "Source ID requirements for bus primitives",
+   "level": 5,
+   "parent": "T3.1.3.2",
+   "page_start": 266,
+   "page_end": 268,
+   "sentences": [
+    {
+     "id": "T3.1.3.2.4:s1",
+     "text": "Most bus primitives simply pass source ID bits opaquely from host end to device end.",
+     "page": 268,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.2.4:s2",
+     "text": "The exception is for M:1 sockets (see ID growth above).",
+     "page": 268,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.2.4:s3",
+     "text": "Other elements (1:N sockets, domain crossing FIFOs, etc) should not modify the a_source and d_source values, but pass them along.",
+     "page": 268,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T3.1.3.2.5",
+   "title": "Sink ID Usage",
+   "level": 5,
+   "parent": "T3.1.3.2",
+   "page_start": 273,
+   "page_end": 275,
+   "sentences": [
+    {
+     "id": "T3.1.3.2.5:s1",
+     "text": "At this time there is no defined use for d_sink, but the TileLink-UL protocol allows configurable bits to be passed back to the host to indicate who responded.",
+     "page": 275,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.2.5:s2",
+     "text": "In theory this could be used as a security guarantee, to ensure that the appropriate responder was targeted.",
+     "page": 275,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.2.5:s3",
+     "text": "At this time the configurable width for sink is turned down to one bit.",
+     "page": 275,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3.1.3.3",
+   "title": "Usage of User Bits",
+   "level": 4,
+   "parent": "T3.1.3",
+   "page_start": 281,
+   "page_end": 315,
+   "sentences": [
+    {
+     "id": "T3.1.3.3:s1",
+     "text": "User bits are added to the TileLink-UL specification in order to prepare for command and response modification in future IP.",
+     "page": 283,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.3:s2",
+     "text": "These are effectively modifiers to the transactions that can qualify the request and the response.",
+     "page": 283,
+     "normative": true
+    },
+    {
+     "id": "T3.1.3.3:s3",
+     "text": "The user bits follow the same timing as the source ID bits: a_user matches a_source and d_user matches d_source.",
+     "page": 283,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.3:s4",
+     "text": "Usage of user bits within a project must be assigned project-wide, but the bus fabric does not rely on them for transport, and should pass the user bits on blindly.",
+     "page": 283,
+     "normative": true
+    },
+    {
+     "id": "T3.1.3.3:s5",
+     "text": "Bus hosts and devices must understand their usage and apply them appropriately.",
+     "page": 283,
+     "normative": true
+    },
+    {
+     "id": "T3.1.3.3:s6",
+     "text": "The following list gives examples of future usage for a_user and d_user bits.",
+     "page": 293,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.3:s7",
+     "text": "a_user modifications",
+     "page": 296,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.3:s8",
+     "text": "Instruction Type",
+     "page": 297,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.3:s9",
+     "text": "This indicates whether the transaction originates from a code fetch or data fetch.",
+     "page": 298,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.3:s10",
+     "text": "This attribute is used by downstream consumers to provide separate privilege control based on transaction type.",
+     "page": 299,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.3:s11",
+     "text": "Command Integrity",
+     "page": 300,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.3:s12",
+     "text": "This is the calculated integrity of the instruction type, transaction address, transaction op code and mask.",
+     "page": 301,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.3:s13",
+     "text": "The integrity is checked by downstream consumers to ensure the transaction has not been tampered.",
+     "page": 302,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.3:s14",
+     "text": "Data Integrity",
+     "page": 304,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.3:s15",
+     "text": "This is calculated integrity of the write data.",
+     "page": 305,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.3:s16",
+     "text": "The integrity is checked by downstream consumers to ensure the transaction has not been tampered.",
+     "page": 306,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.3:s17",
+     "text": "d_user modifications",
+     "page": 308,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.3:s18",
+     "text": "Response Integrity",
+     "page": 309,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.3:s19",
+     "text": "This is the calculated integrity of the response op code, response size and response error.",
+     "page": 310,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.3:s20",
+     "text": "This integrity is checked by the transaction originator to ensure the response has not been tampered.",
+     "page": 311,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.3:s21",
+     "text": "Data Integrity",
+     "page": 313,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.3:s22",
+     "text": "This is the calculated integrity of the response read data.",
+     "page": 314,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.3:s23",
+     "text": "This integrity is checked by the transaction originator to ensure the response has not been tampered.",
+     "page": 315,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3.1.3.4",
+   "title": "Usage of Opcode, Size and Mask",
+   "level": 4,
+   "parent": "T3.1.3",
+   "page_start": 317,
+   "page_end": 353,
+   "sentences": [
+    {
+     "id": "T3.1.3.4:s1",
+     "text": "The request opcode (a_opcode) can designate between a write ('Put') and a read ('Get') transaction.",
+     "page": 319,
+     "normative": true
+    },
+    {
+     "id": "T3.1.3.4:s2",
+     "text": "Writes can be designated as full ('PutFullData') or partial ('PutPartialData') within the opcode space.",
+     "page": 319,
+     "normative": true
+    },
+    {
+     "id": "T3.1.3.4:s3",
+     "text": "The request size (a_size) and mask (a_mask) is defined for all read and write operations.",
+     "page": 319,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.4:s4",
+     "text": "Opcode (a_opcode) definitions are shown below.",
+     "page": 319,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.4:s5",
+     "text": "Responses also have opcodes (d_opcode) to indicate read response ('AccessAckData') and write response ('AccessAck').",
+     "page": 319,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.4:s6",
+     "text": "Error indications are available on either with the d_error bit.",
+     "page": 319,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.4:s7",
+     "text": "Each bus device has an option to support or not support the full variety of bus transaction sizes.",
+     "page": 319,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.4:s8",
+     "text": "Their support will be documented in the device specification.",
+     "page": 319,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.4:s9",
+     "text": "It should be noted that, even though non-contiguous a_mask values like 0b1001 are permitted by the TL-UL spec, the TL-UL hosts within this project do not leverage non-contiguous masks.",
+     "page": 331,
+     "normative": true
+    },
+    {
+     "id": "T3.1.3.4:s10",
+     "text": "I.e., the TL-UL hosts will only assert a_mask values from the following restricted set for 32bit transfers:",
+     "page": 331,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.4:s11",
+     "text": "The TL-UL devices within the project may or may not support certain subword masks (both non-contiguous or contiguous ones), and they have the right to assert d_error if they don't.",
+     "page": 338,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.4:s12",
+     "text": "a_opcode[2:0] value: 3'b000; Name: PutFullData; Definition: Write of full bus width. a_size should be 'h2 to indicate 32b write (or 'h3 if/when 64b bus width is supported), though the bus specification allows these to be defined otherwise (see PutPartialData below)",
+     "page": 344,
+     "normative": true
+    },
+    {
+     "id": "T3.1.3.4:s13",
+     "text": "a_opcode[2:0] value: 3'b001; Name: PutPartialData; Definition: Write of partial bus width. a_size[SZW-1:0] indicates how many bytes are transmitted. The encoding is 2^a_size so 'h0 indicates 1 byte, 'h1 indicates 2 bytes, 'h2 indicates 4 bytes, etc. The lower bits of a_address are valid to indicate sub-word addressing, and the bits of a_mask[DBW-1:0] should indicate valid byte lanes.",
+     "page": 345,
+     "normative": true
+    },
+    {
+     "id": "T3.1.3.4:s14",
+     "text": "a_opcode[2:0] value: 3'b100; Name: Get; Definition: Read of full bus width. The bus specification allows these to be defined otherwise (see PutPartialData above) for reads of sub-bus-width.",
+     "page": 346,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.4:s15",
+     "text": "a_opcode[2:0] value: 3'b01x, 3'b101, 3'b11x; Name: undefined; Definition: All other opcodes are undefined. Bus devices should return an error.",
+     "page": 347,
+     "normative": true
+    },
+    {
+     "id": "T3.1.3.4:s16",
+     "text": "d_opcode[2:0] value: 3'b000; Name: AccessAck; Definition: Write command acknowledgement, no data",
+     "page": 351,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.4:s17",
+     "text": "d_opcode[2:0] value: 3'b001; Name: AccessAckData; Definition: Read command acknowledgement, data valid on d_data",
+     "page": 352,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.4:s18",
+     "text": "d_opcode[2:0] value: 3'b01x, 3'b1xx; Name: undefined; Definition: All other opcodes are undefined and should return an error.",
+     "page": 353,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T3.1.3.5",
+   "title": "Explicit Error Cases",
+   "level": 4,
+   "parent": "T3.1.3",
+   "page_start": 355,
+   "page_end": 380,
+   "sentences": [
+    {
+     "id": "T3.1.3.5:s1",
+     "text": "The TL-UL devices in this project contain a set of HW protocol checkers that raise a runtime error (d_error) if the request is in violation.",
+     "page": 357,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.5:s2",
+     "text": "In particular, the following properties are checked:",
+     "page": 357,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.5:s3",
+     "text": "Wrong opcode,",
+     "page": 360,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.5:s4",
+     "text": "Wrong combination of a_addr[1:0], a_size, a_mask, for example:",
+     "page": 361,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.5:s5",
+     "text": "a_size must not be greater than 2,",
+     "page": 362,
+     "normative": true
+    },
+    {
+     "id": "T3.1.3.5:s6",
+     "text": "Inactive lanes must be marked with 'b0 in a_mask,",
+     "page": 363,
+     "normative": true
+    },
+    {
+     "id": "T3.1.3.5:s7",
+     "text": "PutFullData must mark all active lanes with a 'b1 in a_mask,",
+     "page": 364,
+     "normative": true
+    },
+    {
+     "id": "T3.1.3.5:s8",
+     "text": "Non-contiguous mask may lead to an error, depending on the device support (see previous section),",
+     "page": 365,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.5:s9",
+     "text": "Register files always assume aligned 32bit accesses, see also register tool manual,",
+     "page": 366,
+     "normative": true
+    },
+    {
+     "id": "T3.1.3.5:s10",
+     "text": "Accesses to non-existent addresses.",
+     "page": 367,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.5:s11",
+     "text": "On the host side, orphaned responses (i.e. responses that do not have a valid request counterpart) and responses with the wrong opcode will be discarded.",
+     "page": 369,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.5:s12",
+     "text": "It is planned to raise a critical hardware error that can be detected and reacted upon via other subsystems in those cases, but that feature has not been implemented yet.",
+     "page": 369,
+     "normative": true
+    },
+    {
+     "id": "T3.1.3.5:s13",
+     "text": "Note that the above checks also cover cases which are in principle allowed by the TL-UL spec, but are not supported by the hosts and devices within this project.",
+     "page": 372,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.5:s14",
+     "text": "Further, devices and hosts may implement additional more restrictive checks, if needed.",
+     "page": 372,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.5:s15",
+     "text": "The remaining, basic properties as specified in the TL-UL spec are enforced at design time using assertions, and hence no additional hardware checkers are implemented to check for those properties (see also TL-UL Protocol Checker Specification).",
+     "page": 375,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.5:s16",
+     "text": "The interconnect does not possess additional hardware mechanisms to detect and handle interconnect deadlocks due to malicious tampering attempts.",
+     "page": 377,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.5:s17",
+     "text": "The reasons for this are that",
+     "page": 377,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.5:s18",
+     "text": "the space of potential errors and resolutions would be very large, thus unnecessarily complicating the design,",
+     "page": 379,
+     "normative": false
+    },
+    {
+     "id": "T3.1.3.5:s19",
+     "text": "any tampering attempt leading to an unresponsive system will eventually be detected by other subsystems within the top level system.",
+     "page": 380,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3.1.4",
+   "title": "Bus Integrity Scheme",
+   "level": 3,
+   "parent": "T3.1",
+   "page_start": 382,
+   "page_end": 383,
+   "sentences": [
+    {
+     "id": "T3.1.4:s1",
+     "text": "To be filled in.",
+     "page": 383,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3.2",
+   "title": "Timing Diagrams",
+   "level": 2,
+   "parent": "T3",
+   "page_start": 386,
+   "page_end": 388,
+   "sentences": [
+    {
+     "id": "T3.2:s1",
+     "text": "This section shows the timing relationship on the bus for writes with response, and reads with response.",
+     "page": 388,
+     "normative": false
+    },
+    {
+     "id": "T3.2:s2",
+     "text": "This shows a few transactions, see the TileLink specification for more examples.",
+     "page": 388,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3.3",
+   "title": "Bus Primitives",
+   "level": 2,
+   "parent": "T3",
+   "page_start": 450,
+   "page_end": 462,
+   "sentences": [
+    {
+     "id": "T3.3:s1",
+     "text": "The bus primitives are defined in the following table and described in detail below.",
+     "page": 452,
+     "normative": false
+    },
+    {
+     "id": "T3.3:s2",
+     "text": "Element: tlul_fifo_sync; Description: FIFO connecting one TL-UL host to one TL-UL device in a synchronous manner. Used to create elasticity in the bus, or as a sub-element within other elements. TL-UL protocol is maintained on both sides of the device. Parameters control many features of the FIFO (see detailed description that follows).",
+     "page": 457,
+     "normative": false
+    },
+    {
+     "id": "T3.3:s3",
+     "text": "Element: tlul_fifo_async; Description: FIFO connecting one TL-UL host to one TL-UL device in an asynchronous manner. Used to create elasticity in the bus, or to cross clock domains, or as a sub-element within other elements. TL-UL protocol is maintained on both sides of the device. Parameters control many features of the FIFO (see detailed description that follows).",
+     "page": 458,
+     "normative": false
+    },
+    {
+     "id": "T3.3:s4",
+     "text": "Element: tlul_socket_1n; Description: Demultiplexing element that connects 1 TL-UL host to N TL-UL devices. TL-UL protocol is maintained on the host side and with all devices. Parameter settings control many of the features of the socket (see detailed description that follows).",
+     "page": 459,
+     "normative": false
+    },
+    {
+     "id": "T3.3:s5",
+     "text": "Element: tlul_socket_m1; Description: Multiplexing element that connects M TL-UL hosts to 1 TL-UL device. TL-UL protocol is maintained with all hosts and on the device side. Parameter settings control many of the features of the socket (see detailed description that follows).",
+     "page": 460,
+     "normative": false
+    },
+    {
+     "id": "T3.3:s6",
+     "text": "Element: tlul_xbar; Description: Crossbar that connects M TL-UL hosts with N TL-UL devices. The connectivity matrix may be sparse, and not all nodes are required to be the same clock or reset domain. TL-UL protocol is maintained with all hosts and with all devices. Parameters and configuration settings control many of the features of the switch. This is not specified at this time, and will be done at a later date based upon project goals.",
+     "page": 461,
+     "normative": true
+    },
+    {
+     "id": "T3.3:s7",
+     "text": "Element: tlul_adapter_sram; Description: Adapter that connects a TL-UL host to an sram type interface.",
+     "page": 462,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3.3.1.1",
+   "title": "A Note on Directions",
+   "level": 4,
+   "parent": "T3.3",
+   "page_start": 464,
+   "page_end": 466,
+   "sentences": [
+    {
+     "id": "T3.3.1.1:s1",
+     "text": "In each of these devices, ports are named with respect to their usage, not their direction.",
+     "page": 466,
+     "normative": false
+    },
+    {
+     "id": "T3.3.1.1:s2",
+     "text": "For instance, a 1:N socket connects one host to N devices.",
+     "page": 466,
+     "normative": false
+    },
+    {
+     "id": "T3.3.1.1:s3",
+     "text": "Thus the TL-UL port coming in is called the \"host bus\", and the N device ports are called \"device bus\" 0 through N-1.",
+     "page": 466,
+     "normative": false
+    },
+    {
+     "id": "T3.3.1.1:s4",
+     "text": "Within the Verilog module, the \"host bus\" is actually a device in the sense that it receives requests and returns responses.",
+     "page": 466,
+     "normative": false
+    },
+    {
+     "id": "T3.3.1.1:s5",
+     "text": "This terminology can be confusing within the bus element itself but should maintain consistency in naming at the higher levels.",
+     "page": 466,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T3.3.1",
+   "title": "tlul_fifo_sync",
+   "level": 3,
+   "parent": "T3.3",
+   "page_start": 475,
+   "page_end": 508,
+   "sentences": [
+    {
+     "id": "T3.3.1:s1",
+     "text": "The TL-UL FIFO is a 1:1 bus element that provides elasticity (the ability for transactions to stall on one side without affecting the other side) on the bus.",
+     "page": 477,
+     "normative": false
+    },
+    {
+     "id": "T3.3.1:s2",
+     "text": "It is also used as a sub-element in other elements, like sockets.",
+     "page": 477,
+     "normative": false
+    },
+    {
+     "id": "T3.3.1:s3",
+     "text": "Parameterization of the module is described in the table below.",
+     "page": 477,
+     "normative": false
+    },
+    {
+     "id": "T3.3.1:s4",
+     "text": "name: ReqPass; description: If 1, allow requests to pass through the FIFO with no clock delay if the request FIFO is empty (this may have timing implications). If false, at least one clock cycle of latency is created. Default is 1.",
+     "page": 484,
+     "normative": false
+    },
+    {
+     "id": "T3.3.1:s5",
+     "text": "name: RspPass; description: If 1, allow responses to pass through the FIFO with no clock delay if the response FIFO is empty (this may have timing implications). If false, at least one clock cycle of latency is created. Default is 1.",
+     "page": 485,
+     "normative": false
+    },
+    {
+     "id": "T3.3.1:s6",
+     "text": "name: ReqDepth[4]; description: Depth of request FIFO. Depth of zero is allowed only if ReqPass is 1. The maximum value for ReqDepth is 15. Default is 2.",
+     "page": 486,
+     "normative": true
+    },
+    {
+     "id": "T3.3.1:s7",
+     "text": "name: RspDepth[4]; description: Depth of response FIFO. Depth of zero is allowed only if RspPass is 1. The maximum value for RspDepth is 15. Default is 2.",
+     "page": 487,
+     "normative": true
+    },
+    {
+     "id": "T3.3.1:s8",
+     "text": "name: SpareReqW; description: The FIFO has spare bits in the request direction for auxiliary use by other bus elements. This parameter defines the size, default 1, must be >= 1 to avoid compilation errors. If the bit is not needed, the spare input should be tied to zero, and the spare output ignored.",
+     "page": 488,
+     "normative": true
+    },
+    {
+     "id": "T3.3.1:s9",
+     "text": "name: SpareRspW; description: The FIFO has spare bits in the response direction for auxiliary use by other bus elements. This parameter defines the size, default 1, must be >= 1 to avoid compilation error. If the bit is not needed, the spare input should be tied to zero, and the spare output ignored.",
+     "page": 489,
+     "normative": true
+    },
+    {
+     "id": "T3.3.1:s10",
+     "text": "When Pass is 1 and its corresponding Depth is 0, the FIFO feeds through the signals completely.",
+     "page": 491,
+     "normative": false
+    },
+    {
+     "id": "T3.3.1:s11",
+     "text": "This allows more flexible control at compile-time on the FIFO overhead / latency trade-off without needing to re-code the design.",
+     "page": 491,
+     "normative": false
+    },
+    {
+     "id": "T3.3.1:s12",
+     "text": "The IO of the module are given in this table.",
+     "page": 494,
+     "normative": false
+    },
+    {
+     "id": "T3.3.1:s13",
+     "text": "See the struct above for TL-UL typedef definitions.",
+     "page": 494,
+     "normative": false
+    },
+    {
+     "id": "T3.3.1:s14",
+     "text": "direction: input; name: clk_i; description: clock",
+     "page": 499,
+     "normative": false
+    },
+    {
+     "id": "T3.3.1:s15",
+     "text": "direction: input; name: rst_ni; description: active low reset",
+     "page": 500,
+     "normative": false
+    },
+    {
+     "id": "T3.3.1:s16",
+     "text": "direction: input; type / size: tl_h2d_t; name: tl_h_i; description: Incoming host request struct",
+     "page": 501,
+     "normative": false
+    },
+    {
+     "id": "T3.3.1:s17",
+     "text": "direction: output; type / size: tl_d2h_t; name: tl_h_o; description: Outgoing host response struct",
+     "page": 502,
+     "normative": false
+    },
+    {
+     "id": "T3.3.1:s18",
+     "text": "direction: output; type / size: tl_h2d_t; name: tl_d_o; description: Outgoing device request struct",
+     "page": 503,
+     "normative": false
+    },
+    {
+     "id": "T3.3.1:s19",
+     "text": "direction: input; type / size: tl_d2h_t; name: tl_d_i; description: Incoming device response struct",
+     "page": 504,
+     "normative": false
+    },
+    {
+     "id": "T3.3.1:s20",
+     "text": "direction: input; type / size: [SpareReqW-1:0]; name: spare_req_i; description: Spare request bits in",
+     "page": 505,
+     "normative": false
+    },
+    {
+     "id": "T3.3.1:s21",
+     "text": "direction: output; type / size: [SpareReqW-1:0]; name: spare_req_o; description: Spare request bits out",
+     "page": 506,
+     "normative": false
+    },
+    {
+     "id": "T3.3.1:s22",
+     "text": "direction: input; type / size: [SpareRspW-1:0]; name: spare_rsp_i; description: Spare response bits in",
+     "page": 507,
+     "normative": false
+    },
+    {
+     "id": "T3.3.1:s23",
+     "text": "direction: output; type / size: [SpareRspW-1:0]; name: spare_rsp_o; description: Spare response bits out",
+     "page": 508,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3.3.2",
+   "title": "tlul_fifo_async",
+   "level": 3,
+   "parent": "T3.3",
+   "page_start": 510,
+   "page_end": 533,
+   "sentences": [
+    {
+     "id": "T3.3.2:s1",
+     "text": "The TL-UL asynchronous FIFO is a 1:1 bus element that can be used to cross clock domains.",
+     "page": 512,
+     "normative": true
+    },
+    {
+     "id": "T3.3.2:s2",
+     "text": "Parameterization of the module is described in the table below.",
+     "page": 512,
+     "normative": false
+    },
+    {
+     "id": "T3.3.2:s3",
+     "text": "name: ReqDepth[4]; description: Depth of request FIFO. Depth of request FIFO. ReqDepth must be >= 2, and the maximum value is 15.",
+     "page": 518,
+     "normative": true
+    },
+    {
+     "id": "T3.3.2:s4",
+     "text": "name: RspDepth[4]; description: Depth of response FIFO. RspDepth must be >= 2, and the maximum value is 15.",
+     "page": 519,
+     "normative": true
+    },
+    {
+     "id": "T3.3.2:s5",
+     "text": "The IO of the module are given in this table.",
+     "page": 521,
+     "normative": false
+    },
+    {
+     "id": "T3.3.2:s6",
+     "text": "See the struct above for TL-UL typedef definitions.",
+     "page": 521,
+     "normative": false
+    },
+    {
+     "id": "T3.3.2:s7",
+     "text": "direction: input; name: clk_h_i; description: Host side clock",
+     "page": 526,
+     "normative": false
+    },
+    {
+     "id": "T3.3.2:s8",
+     "text": "direction: input; name: rst_h_ni; description: Host side active low reset",
+     "page": 527,
+     "normative": false
+    },
+    {
+     "id": "T3.3.2:s9",
+     "text": "direction: input; name: clk_d_i; description: Device side clock",
+     "page": 528,
+     "normative": false
+    },
+    {
+     "id": "T3.3.2:s10",
+     "text": "direction: input; name: rst_d_ni; description: Device side active low reset",
+     "page": 529,
+     "normative": false
+    },
+    {
+     "id": "T3.3.2:s11",
+     "text": "direction: input; type / size: tl_h2d_t; name: tl_h_i; description: Incoming host request struct",
+     "page": 530,
+     "normative": false
+    },
+    {
+     "id": "T3.3.2:s12",
+     "text": "direction: output; type / size: tl_d2h_t; name: tl_h_o; description: Outgoing host response struct",
+     "page": 531,
+     "normative": false
+    },
+    {
+     "id": "T3.3.2:s13",
+     "text": "direction: output; type / size: tl_h2d_t; name: tl_d_o; description: Outgoing device request struct",
+     "page": 532,
+     "normative": false
+    },
+    {
+     "id": "T3.3.2:s14",
+     "text": "direction: input; type / size: tl_d2h_t; name: tl_d_i; description: Incoming device response struct",
+     "page": 533,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3.3.3",
+   "title": "tlul_socket_1n",
+   "level": 3,
+   "parent": "T3.3",
+   "page_start": 535,
+   "page_end": 590,
+   "sentences": [
+    {
+     "id": "T3.3.3:s1",
+     "text": "The TL-UL socket 1:N is a bus element that connects 1 TL-UL host to N TL-UL devices.",
+     "page": 537,
+     "normative": false
+    },
+    {
+     "id": "T3.3.3:s2",
+     "text": "It is a fundamental building block of the TL-UL switch, and uses tlul_fifo_sync as its building block.",
+     "page": 537,
+     "normative": false
+    },
+    {
+     "id": "T3.3.3:s3",
+     "text": "It has a several parameterization settings available, summarized here.",
+     "page": 537,
+     "normative": false
+    },
+    {
+     "id": "T3.3.3:s4",
+     "text": "Note tlul_socket_1n is always synchronous.",
+     "page": 537,
+     "normative": true
+    },
+    {
+     "id": "T3.3.3:s5",
+     "text": "If asynchronous behavior is desired, an tlul_fifo_async should be placed on the desired bus.",
+     "page": 537,
+     "normative": true
+    },
+    {
+     "id": "T3.3.3:s6",
+     "text": "name: N; description: Number of devices the socket communicates with, 2 <= N <= 15.",
+     "page": 546,
+     "normative": false
+    },
+    {
+     "id": "T3.3.3:s7",
+     "text": "name: HReqPass; description: If 1, allow requests to pass through the host-side FIFO with no clock delay if the request FIFO is empty. If 0, at least one clock cycle of latency is created. Default is 1.",
+     "page": 547,
+     "normative": false
+    },
+    {
+     "id": "T3.3.3:s8",
+     "text": "name: HRspPass; description: If 1, allow responses to pass through the host-side FIFO with no clock delay if the response FIFO is empty. If 0, at least one clock cycle of latency is created. Default is 1.",
+     "page": 548,
+     "normative": false
+    },
+    {
+     "id": "T3.3.3:s9",
+     "text": "name: HReqDepth[4]; description: Depth of host-side request FIFO. Depth of zero is allowed if ReqPass is 1. A maximum value of 15 is allowed, default is 2.",
+     "page": 549,
+     "normative": true
+    },
+    {
+     "id": "T3.3.3:s10",
+     "text": "name: HRspDepth[4]; description: Depth of host-side response FIFO. Depth of zero is allowed if RspPass is 1. A maximum value of 15 is allowed, default is 2.",
+     "page": 550,
+     "normative": true
+    },
+    {
+     "id": "T3.3.3:s11",
+     "text": "name: DReqPass[N]; description: If 1, allow requests to pass through device i FIFO with no clock delay if the request FIFO is empty. If false, at least one clock cycle of latency is created. Default is 1.",
+     "page": 551,
+     "normative": false
+    },
+    {
+     "id": "T3.3.3:s12",
+     "text": "name: DRspPass[N]; description: If 1, allow responses to pass through the device i FIFO with no clock delay if the response FIFO is empty. If 0, at least one clock cycle of latency is created. Default is 1.",
+     "page": 552,
+     "normative": false
+    },
+    {
+     "id": "T3.3.3:s13",
+     "text": "name: DReqDepth[N*4]; description: Depth of device i request FIFO. Depth of zero is allowed if ReqPass is 1. A maximum value of 15 is allowed, default is 2.",
+     "page": 553,
+     "normative": true
+    },
+    {
+     "id": "T3.3.3:s14",
+     "text": "name: DRspDepth[N*4]; description: Depth of device i response FIFO. Depth of zero is allowed if RspPass is 1. A maximum value of 15 is allowed, default is 2.",
+     "page": 554,
+     "normative": true
+    },
+    {
+     "id": "T3.3.3:s15",
+     "text": "The diagram below shows the dataflow of the tlul_socket_1n and how the tlul_fifo_sync modules are allocated.",
+     "page": 556,
+     "normative": false
+    },
+    {
+     "id": "T3.3.3:s16",
+     "text": "In this diagram, the full socket (1:4 in this case) is shown, with its single host port and four device ports.",
+     "page": 561,
+     "normative": false
+    },
+    {
+     "id": "T3.3.3:s17",
+     "text": "Also shown is the critical device select input, which controls the transaction steering.",
+     "page": 561,
+     "normative": false
+    },
+    {
+     "id": "T3.3.3:s18",
+     "text": "To allow flexibility the address decoding is done outside the socket.",
+     "page": 561,
+     "normative": false
+    },
+    {
+     "id": "T3.3.3:s19",
+     "text": "The TL-UL specification requires that the decode only use the address bits, but no other constraints are placed on how the external decode logic converts the address to the output device selection signal (dev_sel).",
+     "page": 561,
+     "normative": true
+    },
+    {
+     "id": "T3.3.3:s20",
+     "text": "The timing of dev_sel is such that it must be valid whenever a_valid is true in order to steer the associated request.",
+     "page": 561,
+     "normative": true
+    },
+    {
+     "id": "T3.3.3:s21",
+     "text": "The address decoder can trigger an error response: if the value of dev_sel is not between 0 and N-1, then tlul_socket_1n will provide the error response to the request.",
+     "page": 571,
+     "normative": true
+    },
+    {
+     "id": "T3.3.3:s22",
+     "text": "This is implemented with a separate piece of logic inside the socket which handles all requests to dev_sel >= N and replies with an error.",
+     "page": 571,
+     "normative": false
+    },
+    {
+     "id": "T3.3.3:s23",
+     "text": "The IO of the socket are given in this table.",
+     "page": 577,
+     "normative": false
+    },
+    {
+     "id": "T3.3.3:s24",
+     "text": "See the struct above for TL-UL typedef definitions.",
+     "page": 577,
+     "normative": false
+    },
+    {
+     "id": "T3.3.3:s25",
+     "text": "direction: input; name: clk_i; description: clock",
+     "page": 582,
+     "normative": false
+    },
+    {
+     "id": "T3.3.3:s26",
+     "text": "direction: input; name: rst_ni; description: active low reest",
+     "page": 583,
+     "normative": false
+    },
+    {
+     "id": "T3.3.3:s27",
+     "text": "direction: input; type / size: tl_h2d_t; name: tl_h_i; description: incoming host request struct",
+     "page": 584,
+     "normative": false
+    },
+    {
+     "id": "T3.3.3:s28",
+     "text": "direction: output; type / size: tl_d2h_t; name: tl_h_o; description: outgoing host response struct",
+     "page": 585,
+     "normative": false
+    },
+    {
+     "id": "T3.3.3:s29",
+     "text": "direction: output; type / size: tl_h2d_t; name: tl_d_o[N]; description: Outgoing device request struct for device port *i* (where *i* is from 0 to *N-1*)",
+     "page": 586,
+     "normative": false
+    },
+    {
+     "id": "T3.3.3:s30",
+     "text": "direction: input; type / size: tl_d2h_t; name: tl_d_i[N]; description: Incoming device response struct for device port *i* (where *i* is from 0 to *N-1*)",
+     "page": 587,
+     "normative": false
+    },
+    {
+     "id": "T3.3.3:s31",
+     "text": "direction: input; type / size: [log2(N+1)-1:0]; name: dev_sel; description: Device select for the current transaction provided in tl_h_i bus. Legal values from 0 to N-1 steer to the corresponding device port. Any other value returns an automatic error response.",
+     "page": 588,
+     "normative": true
+    },
+    {
+     "id": "T3.3.3:s32",
+     "text": "In the current implementation, outstanding requests are tracked so that no new requests can go to a device port if there already are outstanding requests to a different device.",
+     "page": 590,
+     "normative": true
+    },
+    {
+     "id": "T3.3.3:s33",
+     "text": "This ensures that all transactions are returned in order.",
+     "page": 590,
+     "normative": false
+    },
+    {
+     "id": "T3.3.3:s34",
+     "text": "This feature is still in discussion.",
+     "page": 590,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3.3.4",
+   "title": "tlul_socket_m1",
+   "level": 3,
+   "parent": "T3.3",
+   "page_start": 595,
+   "page_end": 638,
+   "sentences": [
+    {
+     "id": "T3.3.4:s1",
+     "text": "The TL-UL socket M:1 is a bus element that connects M TL-UL hosts to 1 TL-UL device.",
+     "page": 597,
+     "normative": false
+    },
+    {
+     "id": "T3.3.4:s2",
+     "text": "Along with a tlul_socket_1n, this could be used to build the TL-UL fabric, and uses tlul_fifo as its building block. tlul_socket_m1 has several parameterization settings available.",
+     "page": 597,
+     "normative": false
+    },
+    {
+     "id": "T3.3.4:s3",
+     "text": "The tlul_socket_m1 is synchronous, so a tlul_fifo_async must be instantiated on any ports that run asynchronously.",
+     "page": 597,
+     "normative": true
+    },
+    {
+     "id": "T3.3.4:s4",
+     "text": "name: M; description: Number of hosts the socket communicates with, 2 <= M <= 15.",
+     "page": 606,
+     "normative": false
+    },
+    {
+     "id": "T3.3.4:s5",
+     "text": "name: HReqPass[M]; description: M bit array to allow requests to pass through the host i FIFO with no clock delay if the request FIFO is empty. If 1'b0, at least one clock cycle of latency is created. Default is 1'b1.",
+     "page": 607,
+     "normative": false
+    },
+    {
+     "id": "T3.3.4:s6",
+     "text": "name: HRspPass[M]; description: M bit array. If bit[i]=1, allow responses to pass through the host *i* FIFO with no clock delay if the response FIFO is empty. If false, at least one clock cycle of latency is created. Default is 1.",
+     "page": 608,
+     "normative": false
+    },
+    {
+     "id": "T3.3.4:s7",
+     "text": "name: HReqDepth[4*M]; description: Mx4 bit array. bit[i*4+:4] is depth of host *i* request FIFO. Depth of zero is allowed if ReqPass is true. A maximum value of 15 is allowed, default is 2.",
+     "page": 609,
+     "normative": true
+    },
+    {
+     "id": "T3.3.4:s8",
+     "text": "name: HRspDepth[4*M]; description: Mx4 bit array. bit[i*4+:4] is depth of host *i* response FIFO. Depth of zero is allowed if RspPass is true. A maximum value of 15 is allowed, default is 2.",
+     "page": 610,
+     "normative": true
+    },
+    {
+     "id": "T3.3.4:s9",
+     "text": "name: DReqPass; description: If 1, allow requests to pass through device FIFO with no clock delay if the request FIFO is empty. If false, at least one clock cycle of latency is created. Default is 1.",
+     "page": 611,
+     "normative": false
+    },
+    {
+     "id": "T3.3.4:s10",
+     "text": "name: DRspPass; description: If 1, allow responses to pass through the device FIFO with no clock delay if the response FIFO is empty. If false, at least one clock cycle of latency is created. Default is 1.",
+     "page": 612,
+     "normative": false
+    },
+    {
+     "id": "T3.3.4:s11",
+     "text": "name: DReqDepth[4]; description: Depth of device i request FIFO. Depth of zero is allowed if ReqPass is true. A maximum value of 15 is allowed, default is 2.",
+     "page": 613,
+     "normative": true
+    },
+    {
+     "id": "T3.3.4:s12",
+     "text": "name: DRspDepth[4]; description: Depth of device i response FIFO. Depth of zero is allowed if RspPass is true. A maximum value of 15 is allowed, default is 2.",
+     "page": 614,
+     "normative": true
+    },
+    {
+     "id": "T3.3.4:s13",
+     "text": "The diagram below shows the dataflow of tlul_socket_m1 for 4:1 case and how the tlul_fifo_sync modules are allocated.",
+     "page": 616,
+     "normative": false
+    },
+    {
+     "id": "T3.3.4:s14",
+     "text": "Requests coming from each host ports are arbitrated in the socket based on round-robin scheme. tlul_socket_m1, unlike the 1:N socket, doesn't require the dev_sel input.",
+     "page": 621,
+     "normative": false
+    },
+    {
+     "id": "T3.3.4:s15",
+     "text": "As the request is forwarded, the request ID (a_source) is modified as described in the ID Growth section.",
+     "page": 621,
+     "normative": false
+    },
+    {
+     "id": "T3.3.4:s16",
+     "text": "The ID returned with a response (d_source) can thus be directly used to steer the response to the appropriate host.",
+     "page": 621,
+     "normative": true
+    },
+    {
+     "id": "T3.3.4:s17",
+     "text": "The IO of M:1 socket are given in this table.",
+     "page": 628,
+     "normative": false
+    },
+    {
+     "id": "T3.3.4:s18",
+     "text": "See the struct above for TL typedef definitions.",
+     "page": 628,
+     "normative": false
+    },
+    {
+     "id": "T3.3.4:s19",
+     "text": "direction: input; name: clk_i; description: clock",
+     "page": 633,
+     "normative": false
+    },
+    {
+     "id": "T3.3.4:s20",
+     "text": "direction: input; name: rst_ni; description: active low reest",
+     "page": 634,
+     "normative": false
+    },
+    {
+     "id": "T3.3.4:s21",
+     "text": "direction: input; type / size: tl_h2d_t; name: tl_h_i[M]; description: unpacked array of incoming host request structs",
+     "page": 635,
+     "normative": false
+    },
+    {
+     "id": "T3.3.4:s22",
+     "text": "direction: output; type / size: tl_d2h_t; name: tl_h_o[M]; description: unpacked array of outgoing host response structs",
+     "page": 636,
+     "normative": false
+    },
+    {
+     "id": "T3.3.4:s23",
+     "text": "direction: output; type / size: tl_h2d_t; name: tl_d_o; description: outgoing device request struct",
+     "page": 637,
+     "normative": false
+    },
+    {
+     "id": "T3.3.4:s24",
+     "text": "direction: input; type / size: tl_d2h_t; name: tl_d_i; description: incoming device response struct",
+     "page": 638,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3.3.5",
+   "title": "tlul_xbar",
+   "level": 3,
+   "parent": "T3.3",
+   "page_start": 640,
+   "page_end": 642,
+   "sentences": [
+    {
+     "id": "T3.3.5:s1",
+     "text": "For details of the tlul_xbar, please refer to the tlgen reference manual.",
+     "page": 642,
+     "normative": false
+    },
+    {
+     "id": "T3.3.5:s2",
+     "text": "In general, tlgen stitches together various components described in the previous sections to create a full blown fabric switch.",
+     "page": 642,
+     "normative": false
+    },
+    {
+     "id": "T3.3.5:s3",
+     "text": "Specifically, it implements the address to dev_sel steering logic and ensures the right connections are made from host to device.",
+     "page": 642,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3.3.6",
+   "title": "tlul_adapter_sram",
+   "level": 3,
+   "parent": "T3.3",
+   "page_start": 647,
+   "page_end": 681,
+   "sentences": [
+    {
+     "id": "T3.3.6:s1",
+     "text": "The TL-UL sram adapter is a bus element that connects a TL-UL interface to a memory like interface.",
+     "page": 649,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6:s2",
+     "text": "The memory interface is defined as follows:",
+     "page": 649,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6:s3",
+     "text": "name: req; direction: output; description: Memory interface transaction request",
+     "page": 654,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6:s4",
+     "text": "name: gnt; direction: input; description: Memory interface transaction grant",
+     "page": 655,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6:s5",
+     "text": "name: we; direction: output; description: Transaction write enable",
+     "page": 656,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6:s6",
+     "text": "name: addr; direction: output; description: Transaction address",
+     "page": 657,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6:s7",
+     "text": "name: wdata; direction: output; description: Transaction write data",
+     "page": 658,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6:s8",
+     "text": "name: wmask; direction: output; description: Transaction write mask",
+     "page": 659,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6:s9",
+     "text": "name: rvalid; direction: input; description: Transaction read valid from downstream",
+     "page": 660,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6:s10",
+     "text": "name: rdata; direction: input; description: Transaction read data from downstream",
+     "page": 661,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6:s11",
+     "text": "name: rerror; direction: input; description: Transaction read error from downstream",
+     "page": 662,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6:s12",
+     "text": "The diagram below is a block diagram that shows the construction of the adapter.",
+     "page": 664,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6:s13",
+     "text": "All incoming transactions are checked for protocol errors and integrity.",
+     "page": 667,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6:s14",
+     "text": "The transactions are then forwarded to the tlul_sram_byte module, which determines whether the incoming transaction is a write, and whether the write transaction must be transformed to a read-modified-write.",
+     "page": 667,
+     "normative": true
+    },
+    {
+     "id": "T3.3.6:s15",
+     "text": "The transformation is done when integrity is enabled on the downstream storage and the incoming transaction is a legal partial write.",
+     "page": 670,
+     "normative": true
+    },
+    {
+     "id": "T3.3.6:s16",
+     "text": "During this scenario, in order to correctly compute the storage integrity, the adapter must first read back whatever is present in memory so that the full integrity can be computed.",
+     "page": 670,
+     "normative": true
+    },
+    {
+     "id": "T3.3.6:s17",
+     "text": "If an error is present during the protocol and integrity checks, or if the transaction is not a partial write (read or full write), then the transaction is passed through directly to the TL-UL-sram conversion.",
+     "page": 670,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6:s18",
+     "text": "If the transaction is a legal partial write, the tlul_sram_byte instead transforms the transaction into two: a full read followed by a full write for a read-modified-write of the intended address.",
+     "page": 670,
+     "normative": true
+    },
+    {
+     "id": "T3.3.6:s19",
+     "text": "Once past the tlul_sram_byte, a transaction accepted by downstream consumers has some of its attributes (type of operation, presence of error, size, source) stored in the request fifo.",
+     "page": 675,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6:s20",
+     "text": "This is needed to correctly construct the TL-UL d-channel response when the transaction is complete.",
+     "page": 675,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6:s21",
+     "text": "The internally computed \"read mask\" is also stored in the sramreqfifo for read transactions.",
+     "page": 678,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6:s22",
+     "text": "This is needed to correctly mask off uninteresting bytes during a partial read.",
+     "page": 678,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6:s23",
+     "text": "Any returning read data from downstream is stored inside the rspfifo.",
+     "page": 681,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6:s24",
+     "text": "This is needed in case the upstream TL-UL host back pressures the d-channel.",
+     "page": 681,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3.3.6.1",
+   "title": "Life of a Write Transaction",
+   "level": 4,
+   "parent": "T3.3.6",
+   "page_start": 684,
+   "page_end": 685,
+   "sentences": [
+    {
+     "id": "T3.3.6.1:s1",
+     "text": "When a write transaction is received, the above steps are followed; however, nothing is stored in the sramreqfifo.",
+     "page": 685,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6.1:s2",
+     "text": "When downstream completes the write transaction, the stored reqfifo entry is used to construct the TL-UL response.",
+     "page": 685,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6.1:s3",
+     "text": "When the response is accepted by an upstream TL-UL host, the reqfifo entry popped.",
+     "page": 685,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3.3.6.2",
+   "title": "Life of a Read Transaction",
+   "level": 4,
+   "parent": "T3.3.6",
+   "page_start": 689,
+   "page_end": 695,
+   "sentences": [
+    {
+     "id": "T3.3.6.2:s1",
+     "text": "When a read transaction is received, both the reqfifo and the sramreqfifo store a new entry.",
+     "page": 690,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6.2:s2",
+     "text": "The former stores transaction attributes, while the latter stores the read mask and read offset (in case the downstream read is larger than TL-UL bus width).",
+     "page": 690,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6.2:s3",
+     "text": "When downstream completes the read transaction through rvalid_i, the relevant data, as determined by the stored read mask and offset in sramreqfifo, is stored in the rspfifo.",
+     "page": 690,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6.2:s4",
+     "text": "The act of storing into the rspfifo also pops sramreqfifo entry.",
+     "page": 690,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6.2:s5",
+     "text": "The reqfifo entry is used to construct the TL-UL response.",
+     "page": 695,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6.2:s6",
+     "text": "When the response is accepted by an upstream TL-UL host, the reqfifo and rspfifo entries are both popped.",
+     "page": 695,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3.3.6.3",
+   "title": "Readback Mode",
+   "level": 4,
+   "parent": "T3.3.6",
+   "page_start": 698,
+   "page_end": 699,
+   "sentences": [
+    {
+     "id": "T3.3.6.3:s1",
+     "text": "When enabled using the SRAM_CTRL.READBACK register, the tlul_sram_byte module is capable of reading back and checking each issued read and write.",
+     "page": 699,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6.3:s2",
+     "text": "On an integrity failure, for example caused by a fault injection attack, a fatal alert is raised and the alert register STATUS.READBACK_ERROR is set.",
+     "page": 699,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6.3:s3",
+     "text": "When the host issues a read, the tlul_sram_byte module performs the read, internally stores the received data from the memory, issues a second read, and compares the values of the first and second reads.",
+     "page": 699,
+     "normative": false
+    },
+    {
+     "id": "T3.3.6.3:s4",
+     "text": "Similarily, on a write, the module temporarily stores the data to write, performs the write, issues a readback, and compares the read back value to the temporarily stored write data to ensure that the data correctly got written into the memory.",
+     "page": 699,
+     "normative": false
+    }
+   ]
+  }
+ ],
+ "tables": [
+  {
+   "section": "T3.1",
+   "header": [
+    "Signal Name",
+    "Direction",
+    "Description"
+   ],
+   "rows": [
+    [
+     "a_valid",
+     "output",
+     "Request from host is valid"
+    ],
+    [
+     "a_ready",
+     "input",
+     "Request from host is accepted by device"
+    ],
+    [
+     "a_opcode[2:0]",
+     "output",
+     "Request opcode (read, write, or partial write)"
+    ],
+    [
+     "a_param[2:0]",
+     "output",
+     "unused"
+    ],
+    [
+     "a_address[AW-1:0]",
+     "output",
+     "Request address of configurable width"
+    ],
+    [
+     "a_data[DW-1:0]",
+     "output",
+     "Write request data of configurable width"
+    ],
+    [
+     "a_source[AIW-1:0]",
+     "output",
+     "Request identifier of configurable width"
+    ],
+    [
+     "a_size[SZW-1:0]",
+     "output",
+     "Request size (requested size is 2^a_size, thus 0 = byte, 1 = 16b, 2 = 32b, 3 = 64b, etc)"
+    ],
+    [
+     "a_mask[DBW-1:0]",
+     "output",
+     "Write strobe, one bit per byte indicating which lanes of data are valid for this write request"
+    ],
+    [
+     "a_user",
+     "output",
+     "Request attributes of configurable width, use TBD. This is an augmentation to the TL-UL specification."
+    ],
+    [
+     "d_valid",
+     "input",
+     "Response from device is valid"
+    ],
+    [
+     "d_ready",
+     "output",
+     "Response from device is accepted by host"
+    ],
+    [
+     "d_opcode[2:0]",
+     "input",
+     "Response opcode (Ack or Data)"
+    ],
+    [
+     "d_error",
+     "input",
+     "Response is in error"
+    ],
+    [
+     "d_param[2:0]",
+     "input",
+     "Response parameter (unused)"
+    ],
+    [
+     "d_size[SZW-1:0]",
+     "input",
+     "Response data size"
+    ],
+    [
+     "d_data[DW-1:0]",
+     "input",
+     "Response data of configurable width"
+    ],
+    [
+     "d_source[AIW-1:0]",
+     "input",
+     "Bouncing of request ID of configurable width"
+    ],
+    [
+     "d_sink[DIW-1:0]",
+     "input",
+     "Response ID of configurable width (possibly unused)"
+    ],
+    [
+     "d_user[DUW-1:0]",
+     "input",
+     "Response attributes of configurable width; includes error responses plus other attributes TBD. This is an augmentation to the TL-UL specification."
+    ]
+   ],
+   "line": 81,
+   "units": [
+    "T3.1:s7",
+    "T3.1:s8",
+    "T3.1:s9",
+    "T3.1:s10",
+    "T3.1:s11",
+    "T3.1:s12",
+    "T3.1:s13",
+    "T3.1:s14",
+    "T3.1:s15",
+    "T3.1:s16",
+    "T3.1:s17",
+    "T3.1:s18",
+    "T3.1:s19",
+    "T3.1:s20",
+    "T3.1:s21",
+    "T3.1:s22",
+    "T3.1:s23",
+    "T3.1:s24",
+    "T3.1:s25",
+    "T3.1:s26"
+   ],
+   "caption": "The function of the user bits are separately described in a separate table."
+  },
+  {
+   "section": "T3.1.3.4",
+   "header": [
+    "a_opcode[2:0] value",
+    "Name",
+    "Definition"
+   ],
+   "rows": [
+    [
+     "3'b000",
+     "PutFullData",
+     "Write of full bus width. a_size should be 'h2 to indicate 32b write (or 'h3 if/when 64b bus width is supported), though the bus specification allows these to be defined otherwise (see PutPartialData below)"
+    ],
+    [
+     "3'b001",
+     "PutPartialData",
+     "Write of partial bus width. a_size[SZW-1:0] indicates how many bytes are transmitted. The encoding is 2^a_size so 'h0 indicates 1 byte, 'h1 indicates 2 bytes, 'h2 indicates 4 bytes, etc. The lower bits of a_address are valid to indicate sub-word addressing, and the bits of a_mask[DBW-1:0] should indicate valid byte lanes."
+    ],
+    [
+     "3'b100",
+     "Get",
+     "Read of full bus width. The bus specification allows these to be defined otherwise (see PutPartialData above) for reads of sub-bus-width."
+    ],
+    [
+     "3'b01x, 3'b101, 3'b11x",
+     "undefined",
+     "All other opcodes are undefined. Bus devices should return an error."
+    ]
+   ],
+   "line": 342,
+   "units": [
+    "T3.1.3.4:s12",
+    "T3.1.3.4:s13",
+    "T3.1.3.4:s14",
+    "T3.1.3.4:s15"
+   ],
+   "caption": "assert d_error if they don't."
+  },
+  {
+   "section": "T3.1.3.4",
+   "header": [
+    "d_opcode[2:0] value",
+    "Name",
+    "Definition"
+   ],
+   "rows": [
+    [
+     "3'b000",
+     "AccessAck",
+     "Write command acknowledgement, no data"
+    ],
+    [
+     "3'b001",
+     "AccessAckData",
+     "Read command acknowledgement, data valid on d_data"
+    ],
+    [
+     "3'b01x, 3'b1xx",
+     "undefined",
+     "All other opcodes are undefined and should return an error."
+    ]
+   ],
+   "line": 349,
+   "units": [
+    "T3.1.3.4:s16",
+    "T3.1.3.4:s17",
+    "T3.1.3.4:s18"
+   ]
+  },
+  {
+   "section": "T3.3",
+   "header": [
+    "Element",
+    "Description"
+   ],
+   "rows": [
+    [
+     "tlul_fifo_sync",
+     "FIFO connecting one TL-UL host to one TL-UL device in a synchronous manner. Used to create elasticity in the bus, or as a sub-element within other elements. TL-UL protocol is maintained on both sides of the device. Parameters control many features of the FIFO (see detailed description that follows)."
+    ],
+    [
+     "tlul_fifo_async",
+     "FIFO connecting one TL-UL host to one TL-UL device in an asynchronous manner. Used to create elasticity in the bus, or to cross clock domains, or as a sub-element within other elements. TL-UL protocol is maintained on both sides of the device. Parameters control many features of the FIFO (see detailed description that follows)."
+    ],
+    [
+     "tlul_socket_1n",
+     "Demultiplexing element that connects 1 TL-UL host to N TL-UL devices. TL-UL protocol is maintained on the host side and with all devices. Parameter settings control many of the features of the socket (see detailed description that follows)."
+    ],
+    [
+     "tlul_socket_m1",
+     "Multiplexing element that connects M TL-UL hosts to 1 TL-UL device. TL-UL protocol is maintained with all hosts and on the device side. Parameter settings control many of the features of the socket (see detailed description that follows)."
+    ],
+    [
+     "tlul_xbar",
+     "Crossbar that connects M TL-UL hosts with N TL-UL devices. The connectivity matrix may be sparse, and not all nodes are required to be the same clock or reset domain. TL-UL protocol is maintained with all hosts and with all devices. Parameters and configuration settings control many of the features of the switch. This is not specified at this time, and will be done at a later date based upon project goals."
+    ],
+    [
+     "tlul_adapter_sram",
+     "Adapter that connects a TL-UL host to an sram type interface."
+    ]
+   ],
+   "line": 455,
+   "units": [
+    "T3.3:s2",
+    "T3.3:s3",
+    "T3.3:s4",
+    "T3.3:s5",
+    "T3.3:s6",
+    "T3.3:s7"
+   ],
+   "caption": "detail below."
+  },
+  {
+   "section": "T3.3.1",
+   "header": [
+    "name",
+    "description"
+   ],
+   "rows": [
+    [
+     "ReqPass",
+     "If 1, allow requests to pass through the FIFO with no clock delay if the request FIFO is empty (this may have timing implications). If false, at least one clock cycle of latency is created. Default is 1."
+    ],
+    [
+     "RspPass",
+     "If 1, allow responses to pass through the FIFO with no clock delay if the response FIFO is empty (this may have timing implications). If false, at least one clock cycle of latency is created. Default is 1."
+    ],
+    [
+     "ReqDepth[4]",
+     "Depth of request FIFO. Depth of zero is allowed only if ReqPass is 1. The maximum value for ReqDepth is 15. Default is 2."
+    ],
+    [
+     "RspDepth[4]",
+     "Depth of response FIFO. Depth of zero is allowed only if RspPass is 1. The maximum value for RspDepth is 15. Default is 2."
+    ],
+    [
+     "SpareReqW",
+     "The FIFO has spare bits in the request direction for auxiliary use by other bus elements. This parameter defines the size, default 1, must be >= 1 to avoid compilation errors. If the bit is not needed, the spare input should be tied to zero, and the spare output ignored."
+    ],
+    [
+     "SpareRspW",
+     "The FIFO has spare bits in the response direction for auxiliary use by other bus elements. This parameter defines the size, default 1, must be >= 1 to avoid compilation error. If the bit is not needed, the spare input should be tied to zero, and the spare output ignored."
+    ]
+   ],
+   "line": 482,
+   "units": [
+    "T3.3.1:s4",
+    "T3.3.1:s5",
+    "T3.3.1:s6",
+    "T3.3.1:s7",
+    "T3.3.1:s8",
+    "T3.3.1:s9"
+   ],
+   "caption": "sockets. Parameterization of the module is described in the table below."
+  },
+  {
+   "section": "T3.3.1",
+   "header": [
+    "direction",
+    "type / size",
+    "name",
+    "description"
+   ],
+   "rows": [
+    [
+     "input",
+     "",
+     "clk_i",
+     "clock"
+    ],
+    [
+     "input",
+     "",
+     "rst_ni",
+     "active low reset"
+    ],
+    [
+     "input",
+     "tl_h2d_t",
+     "tl_h_i",
+     "Incoming host request struct"
+    ],
+    [
+     "output",
+     "tl_d2h_t",
+     "tl_h_o",
+     "Outgoing host response struct"
+    ],
+    [
+     "output",
+     "tl_h2d_t",
+     "tl_d_o",
+     "Outgoing device request struct"
+    ],
+    [
+     "input",
+     "tl_d2h_t",
+     "tl_d_i",
+     "Incoming device response struct"
+    ],
+    [
+     "input",
+     "[SpareReqW-1:0]",
+     "spare_req_i",
+     "Spare request bits in"
+    ],
+    [
+     "output",
+     "[SpareReqW-1:0]",
+     "spare_req_o",
+     "Spare request bits out"
+    ],
+    [
+     "input",
+     "[SpareRspW-1:0]",
+     "spare_rsp_i",
+     "Spare response bits in"
+    ],
+    [
+     "output",
+     "[SpareRspW-1:0]",
+     "spare_rsp_o",
+     "Spare response bits out"
+    ]
+   ],
+   "line": 497,
+   "units": [
+    "T3.3.1:s14",
+    "T3.3.1:s15",
+    "T3.3.1:s16",
+    "T3.3.1:s17",
+    "T3.3.1:s18",
+    "T3.3.1:s19",
+    "T3.3.1:s20",
+    "T3.3.1:s21",
+    "T3.3.1:s22",
+    "T3.3.1:s23"
+   ],
+   "caption": "TL-UL typedef definitions."
+  },
+  {
+   "section": "T3.3.2",
+   "header": [
+    "name",
+    "description"
+   ],
+   "rows": [
+    [
+     "ReqDepth[4]",
+     "Depth of request FIFO. Depth of request FIFO. ReqDepth must be >= 2, and the maximum value is 15."
+    ],
+    [
+     "RspDepth[4]",
+     "Depth of response FIFO. RspDepth must be >= 2, and the maximum value is 15."
+    ]
+   ],
+   "line": 516,
+   "units": [
+    "T3.3.2:s3",
+    "T3.3.2:s4"
+   ],
+   "caption": "table below."
+  },
+  {
+   "section": "T3.3.2",
+   "header": [
+    "direction",
+    "type / size",
+    "name",
+    "description"
+   ],
+   "rows": [
+    [
+     "input",
+     "",
+     "clk_h_i",
+     "Host side clock"
+    ],
+    [
+     "input",
+     "",
+     "rst_h_ni",
+     "Host side active low reset"
+    ],
+    [
+     "input",
+     "",
+     "clk_d_i",
+     "Device side clock"
+    ],
+    [
+     "input",
+     "",
+     "rst_d_ni",
+     "Device side active low reset"
+    ],
+    [
+     "input",
+     "tl_h2d_t",
+     "tl_h_i",
+     "Incoming host request struct"
+    ],
+    [
+     "output",
+     "tl_d2h_t",
+     "tl_h_o",
+     "Outgoing host response struct"
+    ],
+    [
+     "output",
+     "tl_h2d_t",
+     "tl_d_o",
+     "Outgoing device request struct"
+    ],
+    [
+     "input",
+     "tl_d2h_t",
+     "tl_d_i",
+     "Incoming device response struct"
+    ]
+   ],
+   "line": 524,
+   "units": [
+    "T3.3.2:s7",
+    "T3.3.2:s8",
+    "T3.3.2:s9",
+    "T3.3.2:s10",
+    "T3.3.2:s11",
+    "T3.3.2:s12",
+    "T3.3.2:s13",
+    "T3.3.2:s14"
+   ],
+   "caption": "TL-UL typedef definitions."
+  },
+  {
+   "section": "T3.3.3",
+   "header": [
+    "name",
+    "description"
+   ],
+   "rows": [
+    [
+     "N",
+     "Number of devices the socket communicates with, 2 <= N <= 15."
+    ],
+    [
+     "HReqPass",
+     "If 1, allow requests to pass through the host-side FIFO with no clock delay if the request FIFO is empty. If 0, at least one clock cycle of latency is created. Default is 1."
+    ],
+    [
+     "HRspPass",
+     "If 1, allow responses to pass through the host-side FIFO with no clock delay if the response FIFO is empty. If 0, at least one clock cycle of latency is created. Default is 1."
+    ],
+    [
+     "HReqDepth[4]",
+     "Depth of host-side request FIFO. Depth of zero is allowed if ReqPass is 1. A maximum value of 15 is allowed, default is 2."
+    ],
+    [
+     "HRspDepth[4]",
+     "Depth of host-side response FIFO. Depth of zero is allowed if RspPass is 1. A maximum value of 15 is allowed, default is 2."
+    ],
+    [
+     "DReqPass[N]",
+     "If 1, allow requests to pass through device i FIFO with no clock delay if the request FIFO is empty. If false, at least one clock cycle of latency is created. Default is 1."
+    ],
+    [
+     "DRspPass[N]",
+     "If 1, allow responses to pass through the device i FIFO with no clock delay if the response FIFO is empty. If 0, at least one clock cycle of latency is created. Default is 1."
+    ],
+    [
+     "DReqDepth[N*4]",
+     "Depth of device i request FIFO. Depth of zero is allowed if ReqPass is 1. A maximum value of 15 is allowed, default is 2."
+    ],
+    [
+     "DRspDepth[N*4]",
+     "Depth of device i response FIFO. Depth of zero is allowed if RspPass is 1. A maximum value of 15 is allowed, default is 2."
+    ]
+   ],
+   "line": 544,
+   "units": [
+    "T3.3.3:s6",
+    "T3.3.3:s7",
+    "T3.3.3:s8",
+    "T3.3.3:s9",
+    "T3.3.3:s10",
+    "T3.3.3:s11",
+    "T3.3.3:s12",
+    "T3.3.3:s13",
+    "T3.3.3:s14"
+   ],
+   "caption": "desired, an tlul_fifo_async should be placed on the desired bus."
+  },
+  {
+   "section": "T3.3.3",
+   "header": [
+    "direction",
+    "type / size",
+    "name",
+    "description"
+   ],
+   "rows": [
+    [
+     "input",
+     "",
+     "clk_i",
+     "clock"
+    ],
+    [
+     "input",
+     "",
+     "rst_ni",
+     "active low reest"
+    ],
+    [
+     "input",
+     "tl_h2d_t",
+     "tl_h_i",
+     "incoming host request struct"
+    ],
+    [
+     "output",
+     "tl_d2h_t",
+     "tl_h_o",
+     "outgoing host response struct"
+    ],
+    [
+     "output",
+     "tl_h2d_t",
+     "tl_d_o[N]",
+     "Outgoing device request struct for device port *i* (where *i* is from 0 to *N-1*)"
+    ],
+    [
+     "input",
+     "tl_d2h_t",
+     "tl_d_i[N]",
+     "Incoming device response struct for device port *i* (where *i* is from 0 to *N-1*)"
+    ],
+    [
+     "input",
+     "[log2(N+1)-1:0]",
+     "dev_sel",
+     "Device select for the current transaction provided in tl_h_i bus. Legal values from 0 to N-1 steer to the corresponding device port. Any other value returns an automatic error response."
+    ]
+   ],
+   "line": 580,
+   "units": [
+    "T3.3.3:s25",
+    "T3.3.3:s26",
+    "T3.3.3:s27",
+    "T3.3.3:s28",
+    "T3.3.3:s29",
+    "T3.3.3:s30",
+    "T3.3.3:s31"
+   ],
+   "caption": "TL-UL typedef definitions."
+  },
+  {
+   "section": "T3.3.4",
+   "header": [
+    "name",
+    "description"
+   ],
+   "rows": [
+    [
+     "M",
+     "Number of hosts the socket communicates with, 2 <= M <= 15."
+    ],
+    [
+     "HReqPass[M]",
+     "M bit array to allow requests to pass through the host i FIFO with no clock delay if the request FIFO is empty. If 1'b0, at least one clock cycle of latency is created. Default is 1'b1."
+    ],
+    [
+     "HRspPass[M]",
+     "M bit array. If bit[i]=1, allow responses to pass through the host *i* FIFO with no clock delay if the response FIFO is empty. If false, at least one clock cycle of latency is created. Default is 1."
+    ],
+    [
+     "HReqDepth[4*M]",
+     "Mx4 bit array. bit[i*4+:4] is depth of host *i* request FIFO. Depth of zero is allowed if ReqPass is true. A maximum value of 15 is allowed, default is 2."
+    ],
+    [
+     "HRspDepth[4*M]",
+     "Mx4 bit array. bit[i*4+:4] is depth of host *i* response FIFO. Depth of zero is allowed if RspPass is true. A maximum value of 15 is allowed, default is 2."
+    ],
+    [
+     "DReqPass",
+     "If 1, allow requests to pass through device FIFO with no clock delay if the request FIFO is empty. If false, at least one clock cycle of latency is created. Default is 1."
+    ],
+    [
+     "DRspPass",
+     "If 1, allow responses to pass through the device FIFO with no clock delay if the response FIFO is empty. If false, at least one clock cycle of latency is created. Default is 1."
+    ],
+    [
+     "DReqDepth[4]",
+     "Depth of device i request FIFO. Depth of zero is allowed if ReqPass is true. A maximum value of 15 is allowed, default is 2."
+    ],
+    [
+     "DRspDepth[4]",
+     "Depth of device i response FIFO. Depth of zero is allowed if RspPass is true. A maximum value of 15 is allowed, default is 2."
+    ]
+   ],
+   "line": 604,
+   "units": [
+    "T3.3.4:s4",
+    "T3.3.4:s5",
+    "T3.3.4:s6",
+    "T3.3.4:s7",
+    "T3.3.4:s8",
+    "T3.3.4:s9",
+    "T3.3.4:s10",
+    "T3.3.4:s11",
+    "T3.3.4:s12"
+   ],
+   "caption": "must be instantiated on any ports that run asynchronously."
+  },
+  {
+   "section": "T3.3.4",
+   "header": [
+    "direction",
+    "type / size",
+    "name",
+    "description"
+   ],
+   "rows": [
+    [
+     "input",
+     "",
+     "clk_i",
+     "clock"
+    ],
+    [
+     "input",
+     "",
+     "rst_ni",
+     "active low reest"
+    ],
+    [
+     "input",
+     "tl_h2d_t",
+     "tl_h_i[M]",
+     "unpacked array of incoming host request structs"
+    ],
+    [
+     "output",
+     "tl_d2h_t",
+     "tl_h_o[M]",
+     "unpacked array of outgoing host response structs"
+    ],
+    [
+     "output",
+     "tl_h2d_t",
+     "tl_d_o",
+     "outgoing device request struct"
+    ],
+    [
+     "input",
+     "tl_d2h_t",
+     "tl_d_i",
+     "incoming device response struct"
+    ]
+   ],
+   "line": 631,
+   "units": [
+    "T3.3.4:s19",
+    "T3.3.4:s20",
+    "T3.3.4:s21",
+    "T3.3.4:s22",
+    "T3.3.4:s23",
+    "T3.3.4:s24"
+   ],
+   "caption": "TL typedef definitions."
+  },
+  {
+   "section": "T3.3.6",
+   "header": [
+    "name",
+    "direction",
+    "description"
+   ],
+   "rows": [
+    [
+     "req",
+     "output",
+     "Memory interface transaction request"
+    ],
+    [
+     "gnt",
+     "input",
+     "Memory interface transaction grant"
+    ],
+    [
+     "we",
+     "output",
+     "Transaction write enable"
+    ],
+    [
+     "addr",
+     "output",
+     "Transaction address"
+    ],
+    [
+     "wdata",
+     "output",
+     "Transaction write data"
+    ],
+    [
+     "wmask",
+     "output",
+     "Transaction write mask"
+    ],
+    [
+     "rvalid",
+     "input",
+     "Transaction read valid from downstream"
+    ],
+    [
+     "rdata",
+     "input",
+     "Transaction read data from downstream"
+    ],
+    [
+     "rerror",
+     "input",
+     "Transaction read error from downstream"
+    ]
+   ],
+   "line": 652,
+   "units": [
+    "T3.3.6:s3",
+    "T3.3.6:s4",
+    "T3.3.6:s5",
+    "T3.3.6:s6",
+    "T3.3.6:s7",
+    "T3.3.6:s8",
+    "T3.3.6:s9",
+    "T3.3.6:s10",
+    "T3.3.6:s11"
+   ],
+   "caption": "The memory interface is defined as follows:"
+  }
+ ],
+ "signals": {
+  "AIW": 5,
+  "DBW": 2,
+  "FIFO": 30,
+  "TBD": 2
+ },
+ "warnings": [],
+ "stats": {
+  "sections": 33,
+  "sentences": 320,
+  "normative": 59,
+  "chars": 34772
+ }
+}

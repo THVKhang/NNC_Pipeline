@@ -90,6 +90,24 @@ class MutantEquivTest(unittest.TestCase):
         self.assertEqual(s["by_status"], {"CEX": 1, "PROVEN": 1})
         self.assertEqual(s["score_without_equivalent"], 90.0)        # 9 / (9 + 2 - 1)
 
+    def test_run_resumes_and_saves_after_each_mutant(self):
+        line = "    if (!i_rst_n) o_q <= 1'b0;"
+        kept = {**_mutant(3, line), "equivalence": {"status": "PROVEN", "depth": 20, "frontend": "verilog",
+                                                    "mutated": line, "per_config": {}}}
+        error = {**_mutant(3, line), "id": "M2", "equivalence": {"status": "ERROR", "depth": 20,
+                                                                 "frontend": "verilog", "mutated": line}}
+        other = {**_mutant(3, line), "id": "M3", "equivalence": {"status": "CEX", "depth": 20,
+                                                                 "frontend": "slang", "mutated": line}}
+        mutation = {"killed": 1, "mutants": [kept, error, other]}
+        host, saved = FakeHost(), []
+        mutequiv.run(host, CONTRACT, self.rtl, mutation, None, say=lambda _: None,
+                     save=lambda mu: saved.append(mu["equivalence"]["by_status"]))
+        self.assertEqual(len(host.calls), 2)                       # M2 (ERROR) and M3 (other frontend) again
+        self.assertEqual(len(saved), 2)
+        self.assertEqual(mutation["equivalence"]["by_status"], {"PROVEN": 3})
+        mutequiv.run(host, CONTRACT, self.rtl, mutation, None, say=lambda _: None, redo=True)
+        self.assertEqual(len(host.calls), 5)
+
 
 if __name__ == "__main__":
     unittest.main()

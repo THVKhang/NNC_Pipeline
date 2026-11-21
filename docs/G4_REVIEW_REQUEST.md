@@ -93,6 +93,25 @@ Which reading binds? There are three options:
 
 `nnc spec-lint gen_sync_fifo` (agent A18, specification only, US$0.97) lists this case as GAP-002 [high], with three readings: a pending flop latches the pulse, a short pulse is lost, or a pulse in REQ/PTR merges into the running sequence. The generated RTL took the first reading; the delivered RTL and the checker took the second. See [spec_lint.md](../designs/gen_sync_fifo/work/spec_lint.md) for this and 11 other gaps.
 
+### An industrial design: OpenTitan rv_timer
+
+| Design | Packet | State | Main questions for you |
+|---|---|---|---|
+| ot_rv_timer | [packet](../designs/ot_rv_timer/work/review_packet.md), [spec](../designs/ot_rv_timer/spec/rv_timer_Design_Specification.md) (decisions D-001..D-020 in §8), [formal triage](../designs/ot_rv_timer/work/formal_triage.md), [A17 changes](../designs/ot_rv_timer/NOTICE.md) | 23/23 tests, 13/13 assertions, 2 seeds; formal 7 proven, 2 bounded, 1 timeout (CHK-011), 2 simulation-only, **1 counterexample (CHK-008)**; mutation 21/36, of the 15 survivors 11 proven equivalent (84.0 % without them); no hand fix | The OpenTitan RTL is unchanged; only the wrapper `ot_rv_timer_nnc.sv` was written here. Are the delegated decisions D-001..D-020 sound readings of the OpenTitan documents? Are the A17 changes (4 simulation failures, 2 formal counterexamples, all judged verification faults) corrections, not relaxations? See CHK-008 below. |
+
+**ot_rv_timer, CHK-008: may the test bench send a non-contiguous byte mask?** CHK-008 checks only the stimulus. Formal finds a request with `a_mask` = `0101`; the DUT answers `d_error` = 1, which TL-UL allows. Two passages disagree:
+- the TL-UL specification says hosts in OpenTitan "do not leverage non-contiguous masks" (rule TL-T3.1.3.4-02, which CHK-008 checks);
+- the rv_timer integration text (RT-4.1-05) says requests the TL-UL specification lists as error cases, "bad size or mask" among them, are legal stimulus. The formal environment follows this.
+
+Triage judged it a missing environment assumption (E). The formal-environment agent declined to add the assumption, citing RT-4.1-05 and D-013. By the project owner's decision nothing was changed. Which reading binds?
+- If non-contiguous masks are forbidden, the assumption suggested in `formal_triage.md` (ENV-11) is added.
+- If they are legal error stimulus, the mask term of CHK-008 and TL-T3.1.3.4-02 leave the check.
+
+**ot_rv_timer, other open items.**
+- CHK-011 (`d_error` for each kind of request) did not finish in formal within 600 s per task. It passes in simulation.
+- Three surviving mutants change behaviour, but only in cases the decisions leave unchecked: instruction fetches (M01, D-011), `d_data` of error responses (M14, D-015), and alert timing after an integrity error (M19, D-010). Should any of these become checked?
+- Per-requirement mutation is below 85 % for 9 rules, mostly alert and integrity rules.
+
 ## What the evidence is, and is not
 
 - **It is:**

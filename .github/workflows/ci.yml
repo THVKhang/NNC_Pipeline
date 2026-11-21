@@ -10,8 +10,9 @@
 #                PROVEN / BOUNDED / TIMEOUT changes are reported (they depend on the solver time limit).
 # kit-configs and formal take long: they run on main, on pull requests, weekly and by hand, not on every
 # push to a feature branch. Tool versions are pinned to the ones the committed results were produced with.
-# Designs: the 6 upstream designs, the 3 regenerated or drafted in phases 5-10, and spi_master and
-# axil_regfile (phase 16, made from a short description).
+# Designs: the 6 upstream designs, the 3 regenerated or drafted in phases 5-10, spi_master and
+# axil_regfile (phase 16, made from a short description), and ot_rv_timer (OpenTitan rv_timer, Apache-2.0;
+# its formal reads the RTL with the yosys-slang plugin of the OSS CAD Suite).
 name: CI
 
 on:
@@ -49,7 +50,8 @@ jobs:
       fail-fast: false
       matrix:
         design: [sync_fifo, apb_tlul_bridge, axi2apb_bridge, async_gray_fifo, async_apb_bridge,
-                 ahb2axi_bridge, gen_apb_tlul_bridge, gen_sync_fifo, uart_lite, spi_master, axil_regfile]
+                 ahb2axi_bridge, gen_apb_tlul_bridge, gen_sync_fifo, uart_lite, spi_master, axil_regfile,
+                 ot_rv_timer]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -90,7 +92,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        design: [async_gray_fifo, async_apb_bridge, ahb2axi_bridge, uart_lite, spi_master, axil_regfile]
+        design: [async_gray_fifo, async_apb_bridge, ahb2axi_bridge, uart_lite, spi_master, axil_regfile, ot_rv_timer]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -124,7 +126,7 @@ jobs:
       fail-fast: false
       matrix:
         design: [sync_fifo, apb_tlul_bridge, axi2apb_bridge, async_gray_fifo, async_apb_bridge,
-                 ahb2axi_bridge, gen_apb_tlul_bridge, gen_sync_fifo, axil_regfile]
+                 ahb2axi_bridge, gen_apb_tlul_bridge, gen_sync_fifo, axil_regfile, ot_rv_timer]
         config: [""]
         # A design whose rerun is too long for one runner: one job per formal configuration.
         include:

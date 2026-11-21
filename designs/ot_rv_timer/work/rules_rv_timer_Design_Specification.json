@@ -1,0 +1,3142 @@
+{
+ "source": {
+  "file": "rv_timer_Design_Specification.md",
+  "sha256": "596f77b1d22de2eafb6a89dbae357606e37645ccddabecc5f956c818257fbc48",
+  "index_version": 1
+ },
+ "extraction": {
+  "prompt_version": "extract-v2",
+  "model": "sonnet",
+  "budget_tokens": 3500,
+  "tag": "RT",
+  "sections": "all",
+  "skip": [],
+  "batches": 14,
+  "date": "2026-11-20T11:02:46+00:00",
+  "usage": {
+   "calls": 14,
+   "cached": 12,
+   "cost_usd": 0.0775,
+   "input_tokens": 4,
+   "output_tokens": 4554,
+   "cache_creation_input_tokens": 7737,
+   "cache_read_input_tokens": 2062
+  },
+  "errors": []
+ },
+ "coverage": {
+  "sentences": 239,
+  "normative_sentences": 36,
+  "normative_cited": 36,
+  "normative_skipped": 0,
+  "uncovered_after_first_pass": 0,
+  "uncovered": [],
+  "invalid_ids": []
+ },
+ "rules": [
+  {
+   "id": "RT-T2.2-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T2.2",
+   "section_title": "Description",
+   "page": 29,
+   "quote": "The timer module provides a configurable number of 64-bit counters where each counter increments by a step value whenever the prescaler times out.",
+   "spec_refs": [],
+   "sentences": [
+    "T2.2:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "whenever the prescaler times out",
+   "statement": "Each 64-bit counter increments by the step value whenever the prescaler times out.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T2.2-02",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T2.2",
+   "section_title": "Description",
+   "page": 29,
+   "quote": "Each timer generates an interrupt if the counter reaches (or is above) a programmed value.",
+   "spec_refs": [],
+   "sentences": [
+    "T2.2:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "when the counter reaches or is above the programmed compare value",
+   "statement": "Each timer generates an interrupt if its counter reaches or exceeds the programmed value.",
+   "check": "both"
+  },
+  {
+   "id": "RT-T2.3-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T2.3",
+   "section_title": "Compatibility",
+   "page": 40,
+   "quote": "The timer IP provides memory-mapped registers equivalent to mtime and mtimecmp which can be used as the machine-mode timer registers defined in the RISC-V privileged spec.",
+   "spec_refs": [],
+   "sentences": [
+    "T2.3:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "mtime",
+    "mtimecmp"
+   ],
+   "condition": "",
+   "statement": "The timer IP provides memory-mapped registers equivalent to mtime and mtimecmp usable as the RISC-V machine-mode timer registers.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T3.1-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T3.1",
+   "section_title": "Block Diagram",
+   "page": 53,
+   "quote": "A tick generator creates a tick every time its internal counter hits the CFG0.prescaler value.",
+   "spec_refs": [],
+   "sentences": [
+    "T3.1:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "CFG0.prescaler"
+   ],
+   "condition": "when the tick generator's internal counter hits the CFG0.prescaler value",
+   "statement": "The tick generator creates a tick every time its internal counter hits the CFG0.prescaler value.",
+   "check": "both"
+  },
+  {
+   "id": "RT-T3.1-02",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T3.1",
+   "section_title": "Block Diagram",
+   "page": 53,
+   "quote": "The tick is used to increment mtime by the CFG0.step value.",
+   "spec_refs": [],
+   "sentences": [
+    "T3.1:s3"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "mtime",
+    "CFG0.step"
+   ],
+   "condition": "on each tick",
+   "statement": "Each tick increments mtime by the CFG0.step value.",
+   "check": "both"
+  },
+  {
+   "id": "RT-T3.1-03",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T3.1",
+   "section_title": "Block Diagram",
+   "page": 53,
+   "quote": "The 64-bit mtime value is compared with the 64-bit mtimecmp. If mtime is greater than or equal to mtimecmp, the timer raises an interrupt.",
+   "spec_refs": [],
+   "sentences": [
+    "T3.1:s4",
+    "T3.1:s5"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "mtime",
+    "mtimecmp"
+   ],
+   "condition": "when the 64-bit mtime is greater than or equal to the 64-bit mtimecmp",
+   "statement": "The timer compares 64-bit mtime with 64-bit mtimecmp and raises an interrupt when mtime is greater than or equal to mtimecmp.",
+   "check": "both"
+  },
+  {
+   "id": "RT-T3.2.1-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T3.2.1",
+   "section_title": "Tick Generator",
+   "page": 63,
+   "quote": "The tick module inside the timer IP is used to generate a fixed period of pulse signal. This allows creation of a call-clock timer tick such as 1us or 10us regardless of the system clock period.",
+   "spec_refs": [],
+   "sentences": [
+    "T3.2.1:s1",
+    "T3.2.1:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "CFG0.prescaler"
+   ],
+   "condition": "",
+   "statement": "The tick generator produces a fixed-period pulse signal, enabling a timer tick such as 1us or 10us regardless of the system clock period.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T3.2.1-02",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T3.2.1",
+   "section_title": "Tick Generator",
+   "page": 70,
+   "quote": "In this version, the timer only supports a single fixed clock, so the firmware should change CFG0.prescaler appropriately.",
+   "spec_refs": [],
+   "sentences": [
+    "T3.2.1:s6"
+   ],
+   "strength": "SHOULD",
+   "actor": "master",
+   "signals": [
+    "CFG0.prescaler"
+   ],
+   "condition": "because the timer supports only a single fixed clock in this version",
+   "statement": "Firmware should change CFG0.prescaler appropriately for the single fixed clock frequency to obtain the desired tick period.",
+   "check": "none"
+  },
+  {
+   "id": "RT-T3.2.2-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T3.2.2",
+   "section_title": "Configurable number of timers and harts",
+   "page": 77,
+   "quote": "Each hart has a set of tick generator and counter. It means the timer IP has the same number of prescalers, steps, and mtime registers as the number of harts.",
+   "spec_refs": [],
+   "sentences": [
+    "T3.2.2:s2",
+    "T3.2.2:s3"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "prescaler",
+    "step",
+    "mtime"
+   ],
+   "condition": "",
+   "statement": "Each hart has its own tick generator and counter, so the number of prescaler, step, and mtime registers equals the number of harts.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T3.2.2-02",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T3.2.2",
+   "section_title": "Configurable number of timers and harts",
+   "page": 81,
+   "quote": "Each hart can have multiple sets of mtimecmp, comparator logic, and expire interrupt signals.",
+   "spec_refs": [],
+   "sentences": [
+    "T3.2.2:s4"
+   ],
+   "strength": "MAY",
+   "actor": "system",
+   "signals": [
+    "mtimecmp"
+   ],
+   "condition": "",
+   "statement": "Each hart can have multiple sets of mtimecmp, comparator logic, and expire interrupt signals.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T3.2.2-03",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T3.2.2",
+   "section_title": "Configurable number of timers and harts",
+   "page": 81,
+   "quote": "This version of the IP is fixed to have one Hart and one Timer per Hart.",
+   "spec_refs": [],
+   "sentences": [
+    "T3.2.2:s5"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "in this version of the IP",
+   "statement": "The IP is fixed to one hart and one timer per hart.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T3.2.2-04",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T3.2.2",
+   "section_title": "Configurable number of timers and harts",
+   "page": 85,
+   "quote": "It has separate interrupts per timer and a set of interrupt enable and state registers per Hart.",
+   "spec_refs": [],
+   "sentences": [
+    "T3.2.2:s7"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "There are separate interrupts per timer and a set of interrupt enable and state registers per hart.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T4.1-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T4.1",
+   "section_title": "Initialization",
+   "page": 174,
+   "quote": "These two fields need to be stable to correctly increment the timer value.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "prescaler",
+    "step"
+   ],
+   "condition": "while the timer is active and incrementing",
+   "statement": "The prescaler and step fields must be stable for the timer value to increment correctly.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T4.1-02",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T4.1",
+   "section_title": "Initialization",
+   "page": 174,
+   "quote": "If software wants to change these fields, it should de-activate the timer and then proceed.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.1:s3"
+   ],
+   "strength": "SHOULD",
+   "actor": "master",
+   "signals": [
+    "prescaler",
+    "step"
+   ],
+   "condition": "when software wants to change prescaler or step",
+   "statement": "Software should de-activate the timer before changing the prescaler or step fields, then proceed with the change.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T4.2-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T4.2",
+   "section_title": "Register Access",
+   "page": 181,
+   "quote": "The CPU cannot access 64-bit data in a single request.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.2:s3"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "master",
+   "signals": [],
+   "condition": "",
+   "statement": "The CPU cannot access a 64-bit value in a single request over the 32-bit register interface; two 32-bit accesses are required.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T4.2-02",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T4.2",
+   "section_title": "Register Access",
+   "page": 181,
+   "quote": "However, when split into two reads, it is possible the timer value can increment between the two requests.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.2:s4"
+   ],
+   "strength": "MAY",
+   "actor": "slave",
+   "signals": [
+    "mtime",
+    "mtimeh"
+   ],
+   "condition": "when a 64-bit timer value is read as two separate 32-bit reads",
+   "statement": "The timer value may increment between the two 32-bit reads of mtime and mtimeh.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T4.2-03",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T4.2",
+   "section_title": "Register Access",
+   "page": 195,
+   "quote": "This condition can be detected in a standard way using a third read.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.2:s9"
+   ],
+   "strength": "MAY",
+   "actor": "master",
+   "signals": [
+    "mtime",
+    "mtimeh"
+   ],
+   "condition": "when reading the 64-bit timer value in two reads",
+   "statement": "A rollover between the two reads can be detected in a standard way using a third read.",
+   "check": "none"
+  },
+  {
+   "id": "RT-T4.2-04",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T4.2",
+   "section_title": "Register Access",
+   "page": 219,
+   "quote": "In typical usage the mtime register would not be written, but if there is a need to set it to an arbitrary, dynamically-determined value, the following sequence should be used to prevent the operation of the timer yielding an indeterminate result:",
+   "spec_refs": [],
+   "sentences": [
+    "T4.2:s13"
+   ],
+   "strength": "SHOULD",
+   "actor": "master",
+   "signals": [
+    "mtime"
+   ],
+   "condition": "when mtime must be set to an arbitrary, dynamically-determined value",
+   "statement": "Software should use the prescribed safe write sequence to set mtime so timer operation does not yield an indeterminate result.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T4.2-05",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T4.2",
+   "section_title": "Register Access",
+   "page": 232,
+   "quote": "In the event that the target value of the lower half is close to 0xFFFF_FFFF, this sequence prevents the timer from assuming an incorrect time between the two 32-bit writes required to set the 64-bit timer value.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.2:s14"
+   ],
+   "strength": "SHOULD",
+   "actor": "master",
+   "signals": [
+    "mtime"
+   ],
+   "condition": "when the target lower half of mtime is close to 0xFFFF_FFFF",
+   "statement": "The safe write sequence should be used so the timer does not assume an incorrect time between the two 32-bit writes.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T4.2-06",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T4.2",
+   "section_title": "Register Access",
+   "page": 236,
+   "quote": "If the value of mtime is modified in this manner then mtimecmp shall be written after mtime in order to clear any pending interrupt condition.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.2:s15"
+   ],
+   "strength": "MUST",
+   "actor": "master",
+   "signals": [
+    "mtime",
+    "mtimecmp"
+   ],
+   "condition": "when mtime is modified",
+   "statement": "mtimecmp shall be written after mtime in order to clear any pending interrupt condition.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T4.3-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T4.3",
+   "section_title": "Timer behaviour close to 2^64",
+   "page": 245,
+   "quote": "With a CFG0.step above 1, one tick can also carry mtime from below mtimecmp past the end of the range, so mtime skips the comparison value and the interrupt is not raised.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.3:s7"
+   ],
+   "strength": "MAY",
+   "actor": "slave",
+   "signals": [
+    "mtime",
+    "mtimecmp",
+    "CFG0.step"
+   ],
+   "condition": "when CFG0.step is above 1 and mtimecmp is close to 0xFFFF_FFFF_FFFF_FFFF",
+   "statement": "One tick can carry mtime from below mtimecmp past the end of the range, so mtime skips mtimecmp and the interrupt is not raised.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T4.3-02",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T4.3",
+   "section_title": "Timer behaviour close to 2^64",
+   "page": 255,
+   "quote": "A possible solution is to have an intermediate interrupt by setting the mtimecmp to 64-bit all-ones, 0xFFFF_FFFF_FFFF_FFFF.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.3:s10"
+   ],
+   "strength": "MAY",
+   "actor": "master",
+   "signals": [
+    "mtimecmp"
+   ],
+   "condition": "when the computed mtime + timeout comparison value overflows",
+   "statement": "Software may set mtimecmp to 0xFFFF_FFFF_FFFF_FFFF to get an intermediate interrupt.",
+   "check": "none"
+  },
+  {
+   "id": "RT-T4.3-03",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T4.3",
+   "section_title": "Timer behaviour close to 2^64",
+   "page": 255,
+   "quote": "Then the service routine for that interrupt will need to poll mtime until it wraps (which could take up to a timer clock tick) before scheduling the required interrupt using the originally computed mtimecmp value.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.3:s11"
+   ],
+   "strength": "MUST",
+   "actor": "master",
+   "signals": [
+    "mtime",
+    "mtimecmp"
+   ],
+   "condition": "in the service routine for the intermediate all-ones interrupt",
+   "statement": "The service routine needs to poll mtime until it wraps before scheduling the required interrupt with the originally computed mtimecmp value.",
+   "check": "none"
+  },
+  {
+   "id": "RT-T4.3-04",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T4.3",
+   "section_title": "Timer behaviour close to 2^64",
+   "page": 255,
+   "quote": "With a step above 1, mtime can step over the all-ones value and this intermediate interrupt is never raised.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.3:s12"
+   ],
+   "strength": "MAY",
+   "actor": "slave",
+   "signals": [
+    "mtime"
+   ],
+   "condition": "when step is above 1",
+   "statement": "mtime can step over the all-ones value so the intermediate interrupt is never raised.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T4.3-05",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T4.3",
+   "section_title": "Timer behaviour close to 2^64",
+   "page": 255,
+   "quote": "Setting mtimecmp to 0xFFFF_FFFF_FFFF_FFFF - step + 1 works for any nonzero step, since the last value of mtime before it wraps is always at least that large.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.3:s13"
+   ],
+   "strength": "MAY",
+   "actor": "master",
+   "signals": [
+    "mtimecmp",
+    "step"
+   ],
+   "condition": "for any nonzero step",
+   "statement": "Setting mtimecmp to 0xFFFF_FFFF_FFFF_FFFF - step + 1 works for the intermediate interrupt, since the last mtime before wrap is at least that large.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T4.4-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T4.4",
+   "section_title": "Interrupt Handling",
+   "page": 271,
+   "quote": "If mtime is greater than or equal to the value of mtimecmp, the interrupt is generated from the RV_TIMER module.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.4:s1"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "mtime",
+    "mtimecmp"
+   ],
+   "condition": "when mtime is greater than or equal to mtimecmp",
+   "statement": "The RV_TIMER module generates the interrupt when mtime is greater than or equal to mtimecmp.",
+   "check": "both"
+  },
+  {
+   "id": "RT-T4.4-02",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T4.4",
+   "section_title": "Interrupt Handling",
+   "page": 271,
+   "quote": "Clearing the interrupt can be done by writing 1 into the Interrupt Status register INTR_STATE0.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.4:s3"
+   ],
+   "strength": "MAY",
+   "actor": "master",
+   "signals": [
+    "INTR_STATE0"
+   ],
+   "condition": "",
+   "statement": "The interrupt can be cleared by writing 1 to the Interrupt Status register INTR_STATE0.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T4.4-03",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T4.4",
+   "section_title": "Interrupt Handling",
+   "page": 271,
+   "quote": "The RV_TIMER module also follows RISC-V Privileged spec that requires the interrupt to be cleared by updating mtimecmp memory-mapped CSRs. In this case both COMPARE_LOWER0_0 and COMPARE_UPPER0_0 can clear the interrupt source.",
+   "spec_refs": [],
+   "sentences": [
+    "T4.4:s4",
+    "T4.4:s5"
+   ],
+   "strength": "MAY",
+   "actor": "master",
+   "signals": [
+    "COMPARE_LOWER0_0",
+    "COMPARE_UPPER0_0",
+    "mtimecmp"
+   ],
+   "condition": "",
+   "statement": "The interrupt can be cleared by updating mtimecmp; a write to either COMPARE_LOWER0_0 or COMPARE_UPPER0_0 clears the interrupt source.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T5.1-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T5.1",
+   "section_title": "Summary",
+   "page": 290,
+   "quote": "Name: rv_timer.ALERT_TEST; Offset: 0x0; Length: 4; Description: Alert Test Register Offset: 0x0",
+   "spec_refs": [],
+   "sentences": [
+    "T5.1:s1",
+    "T5.2:s2"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [],
+   "condition": "",
+   "statement": "ALERT_TEST register must be located at offset 0x0 with length 4 bytes.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T5.1-02",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T5.1",
+   "section_title": "Summary",
+   "page": 291,
+   "quote": "Name: rv_timer.CTRL; Offset: 0x4; Length: 4; Description: Control register Offset: 0x4 Reset default: 0x0 Reset mask: 0x1",
+   "spec_refs": [],
+   "sentences": [
+    "T5.1:s2",
+    "T5.3:s2",
+    "T5.3:s3",
+    "T5.3:s4"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "CTRL"
+   ],
+   "condition": "",
+   "statement": "CTRL must be at offset 0x4, length 4, reset to 0x0 with reset mask 0x1.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T5.1-03",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T5.1",
+   "section_title": "Summary",
+   "page": 292,
+   "quote": "Name: rv_timer.INTR_ENABLE0; Offset: 0x100; Length: 4; Description: Interrupt Enable Offset: 0x100 Reset default: 0x0 Reset mask: 0x1",
+   "spec_refs": [],
+   "sentences": [
+    "T5.1:s3",
+    "T5.4:s2",
+    "T5.4:s3",
+    "T5.4:s4"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "INTR_ENABLE0"
+   ],
+   "condition": "",
+   "statement": "INTR_ENABLE0 must be at offset 0x100, length 4, reset to 0x0 with reset mask 0x1.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T5.1-04",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T5.1",
+   "section_title": "Summary",
+   "page": 293,
+   "quote": "Name: rv_timer.INTR_STATE0; Offset: 0x104; Length: 4; Description: Interrupt Status Offset: 0x104 Reset default: 0x0 Reset mask: 0x1",
+   "spec_refs": [],
+   "sentences": [
+    "T5.1:s4",
+    "T5.5:s2",
+    "T5.5:s3",
+    "T5.5:s4"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "INTR_STATE0"
+   ],
+   "condition": "",
+   "statement": "INTR_STATE0 must be at offset 0x104, length 4, reset to 0x0 with reset mask 0x1.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T5.1-05",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T5.1",
+   "section_title": "Summary",
+   "page": 294,
+   "quote": "Name: rv_timer.INTR_TEST0; Offset: 0x108; Length: 4; Description: Interrupt test register Offset: 0x108 Reset default: 0x0 Reset mask: 0x1",
+   "spec_refs": [],
+   "sentences": [
+    "T5.1:s5",
+    "T5.6:s2",
+    "T5.6:s3",
+    "T5.6:s4"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "INTR_TEST0"
+   ],
+   "condition": "",
+   "statement": "INTR_TEST0 must be at offset 0x108, length 4, reset value 0x0 with reset mask 0x1.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T5.1-06",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T5.1",
+   "section_title": "Summary",
+   "page": 295,
+   "quote": "Name: rv_timer.CFG0; Offset: 0x10c; Length: 4; Description: Configuration for Hart 0 Offset: 0x10c Reset default: 0x10000 Reset mask: 0xff0fff",
+   "spec_refs": [],
+   "sentences": [
+    "T5.1:s6",
+    "T5.7:s2",
+    "T5.7:s3",
+    "T5.7:s4"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "CFG0"
+   ],
+   "condition": "",
+   "statement": "CFG0 must be at offset 0x10c, length 4, reset to 0x10000 with reset mask 0xff0fff.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T5.1-07",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T5.1",
+   "section_title": "Summary",
+   "page": 296,
+   "quote": "Name: rv_timer.TIMER_V_LOWER0; Offset: 0x110; Length: 4; Description: Timer value Lower Offset: 0x110 Reset default: 0x0 Reset mask: 0xffffffff Bits: 31:0; Type: rw; Reset: 0x0; Name: v; Description: Timer value [31:0]",
+   "spec_refs": [],
+   "sentences": [
+    "T5.1:s7",
+    "T5.8:s2",
+    "T5.8:s3",
+    "T5.8:s4",
+    "T5.8.1:s1"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "TIMER_V_LOWER0"
+   ],
+   "condition": "",
+   "statement": "TIMER_V_LOWER0 at offset 0x110 holds timer value [31:0] as rw field v, reset 0x0, mask 0xffffffff.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T5.1-08",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T5.1",
+   "section_title": "Summary",
+   "page": 297,
+   "quote": "Name: rv_timer.TIMER_V_UPPER0; Offset: 0x114; Length: 4; Description: Timer value Upper Offset: 0x114 Reset default: 0x0 Reset mask: 0xffffffff Bits: 31:0; Type: rw; Reset: 0x0; Name: v; Description: Timer value [63:32]",
+   "spec_refs": [],
+   "sentences": [
+    "T5.1:s8",
+    "T5.9:s2",
+    "T5.9:s3",
+    "T5.9:s4",
+    "T5.9.1:s1"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "TIMER_V_UPPER0"
+   ],
+   "condition": "",
+   "statement": "TIMER_V_UPPER0 at offset 0x114 holds timer value [63:32] as rw field v, reset 0x0, mask 0xffffffff.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T5.1-09",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T5.1",
+   "section_title": "Summary",
+   "page": 298,
+   "quote": "Name: rv_timer.COMPARE_LOWER0_0; Offset: 0x118; Length: 4; Description: Timer value Lower Offset: 0x118 Reset default: 0xffffffff Reset mask: 0xffffffff Bits: 31:0; Type: rw; Reset: 0xffffffff; Name: v; Description: Timer compare value [31:0]",
+   "spec_refs": [],
+   "sentences": [
+    "T5.1:s9",
+    "T5.10:s2",
+    "T5.10:s3",
+    "T5.10:s4",
+    "T5.10.1:s1"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "COMPARE_LOWER0_0"
+   ],
+   "condition": "",
+   "statement": "COMPARE_LOWER0_0 at offset 0x118 holds compare value [31:0] as rw field v, reset 0xffffffff, mask 0xffffffff.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T5.1-10",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T5.1",
+   "section_title": "Summary",
+   "page": 299,
+   "quote": "Name: rv_timer.COMPARE_UPPER0_0; Offset: 0x11c; Length: 4; Description: Timer value Upper Offset: 0x11c Reset default: 0xffffffff Reset mask: 0xffffffff Bits: 31:0; Type: rw; Reset: 0xffffffff; Name: v; Description: Timer compare value [63:32]",
+   "spec_refs": [],
+   "sentences": [
+    "T5.1:s10",
+    "T5.11:s2",
+    "T5.11:s3",
+    "T5.11:s4",
+    "T5.11.1:s1"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "COMPARE_UPPER0_0"
+   ],
+   "condition": "",
+   "statement": "COMPARE_UPPER0_0 at offset 0x11c holds compare value [63:32] as rw field v, reset 0xffffffff, mask 0xffffffff.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T5.2-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T5.2",
+   "section_title": "ALERT_TEST",
+   "page": 304,
+   "quote": "Reset default: 0x80000000 Reset mask: 0x80000001",
+   "spec_refs": [],
+   "sentences": [
+    "T5.2:s3",
+    "T5.2:s4"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "ALERT_TEST"
+   ],
+   "condition": "After reset",
+   "statement": "ALERT_TEST must reset to 0x80000000 with reset mask 0x80000001.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T5.2.1-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T5.2.1",
+   "section_title": "Fields",
+   "page": 315,
+   "quote": "Bits: 31; Type: rw0c; Reset: 0x1; Name: regwen; Description: Write 0 to disable alert testing until the next reset.",
+   "spec_refs": [],
+   "sentences": [
+    "T5.2.1:s1"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "regwen"
+   ],
+   "condition": "Software writes 0 to ALERT_TEST regwen bit 31 (rw0c, reset 0x1)",
+   "statement": "Writing 0 to regwen disables alert testing until the next reset; regwen can only be cleared, not set, by writes.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T5.2.1-02",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T5.2.1",
+   "section_title": "Fields",
+   "page": 316,
+   "quote": "Bits: 30:1; Description: Reserved",
+   "spec_refs": [],
+   "sentences": [
+    "T5.2.1:s2"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [],
+   "condition": "",
+   "statement": "ALERT_TEST bits 30:1 are reserved.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T5.2.1-03",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T5.2.1",
+   "section_title": "Fields",
+   "page": 317,
+   "quote": "Bits: 0; Type: wo; Reset: 0x0; Name: fatal_fault; Description: Write 1 to trigger one alert event of this kind.",
+   "spec_refs": [],
+   "sentences": [
+    "T5.2.1:s3"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "fatal_fault"
+   ],
+   "condition": "Write 1 to ALERT_TEST bit 0 (wo, reset 0x0) while alert testing is enabled",
+   "statement": "Writing 1 to fatal_fault triggers one alert event of the fatal kind.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T5.3.1-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T5.3.1",
+   "section_title": "Fields",
+   "page": 333,
+   "quote": "Bits: 31:1; Description: Reserved Bits: 0; Type: rw; Reset: 0x0; Name: active_0; Description: If 1, timer operates",
+   "spec_refs": [],
+   "sentences": [
+    "T5.3.1:s1",
+    "T5.3.1:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "active_0"
+   ],
+   "condition": "CTRL.active_0 (rw, reset 0x0) is 1",
+   "statement": "When active_0 is 1 the timer operates; bits 31:1 of CTRL are reserved.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T5.4.1-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T5.4.1",
+   "section_title": "Fields",
+   "page": 350,
+   "quote": "Bits: 31:1; Description: Reserved Bits: 0; Type: rw; Reset: 0x0; Name: IE_0; Description: Interrupt Enable for timer",
+   "spec_refs": [],
+   "sentences": [
+    "T5.4.1:s1",
+    "T5.4.1:s2"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "IE_0"
+   ],
+   "condition": "",
+   "statement": "IE_0 (bit 0, rw, reset 0x0) is the interrupt enable for the timer; bits 31:1 are reserved.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T5.5.1-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T5.5.1",
+   "section_title": "Fields",
+   "page": 367,
+   "quote": "Bits: 31:1; Description: Reserved Bits: 0; Type: rw1c; Reset: 0x0; Name: IS_0; Description: Interrupt status for timer",
+   "spec_refs": [],
+   "sentences": [
+    "T5.5.1:s1",
+    "T5.5.1:s2"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "IS_0"
+   ],
+   "condition": "",
+   "statement": "IS_0 (bit 0, rw1c, reset 0x0) holds the timer interrupt status and is cleared by writing 1; bits 31:1 are reserved.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T5.6.1-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T5.6.1",
+   "section_title": "Fields",
+   "page": 384,
+   "quote": "Bits: 31:1; Description: Reserved Bits: 0; Type: wo; Reset: x; Name: T_0; Description: Interrupt test for timer",
+   "spec_refs": [],
+   "sentences": [
+    "T5.6.1:s1",
+    "T5.6.1:s2"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "T_0"
+   ],
+   "condition": "",
+   "statement": "T_0 (bit 0, wo, reset x) is the interrupt test for timer; bits 31:1 are reserved.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T5.7.1-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T5.7.1",
+   "section_title": "Fields",
+   "page": 401,
+   "quote": "Bits: 31:24; Description: Reserved Bits: 23:16; Type: rw; Reset: 0x1; Name: step; Description: Incremental value for each tick Bits: 15:12; Description: Reserved Bits: 11:0; Type: rw; Reset: 0x0; Name: prescale; Description: Prescaler to generate tick",
+   "spec_refs": [],
+   "sentences": [
+    "T5.7.1:s1",
+    "T5.7.1:s2",
+    "T5.7.1:s3",
+    "T5.7.1:s4"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "step",
+    "prescale"
+   ],
+   "condition": "",
+   "statement": "CFG0 step (bits 23:16, rw, reset 0x1) is the increment per tick; prescale (bits 11:0, rw, reset 0x0) generates the tick; other bits reserved.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T6.1-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T6.1",
+   "section_title": "Inter-Module Signals",
+   "page": 489,
+   "quote": "Port Name: racl_policies; Package::Struct: top_racl_pkg::racl_policy_vec; Type: uni; Act: rcv; Width: 1; Description: Incoming RACL policy vector from a racl_ctrl instance. The policy selection vector (parameter) selects the policy for each register.",
+   "spec_refs": [],
+   "sentences": [
+    "T6.1:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "racl_policies"
+   ],
+   "condition": "",
+   "statement": "The racl_policies input must carry the incoming RACL policy vector from a racl_ctrl instance, with the policy selection vector parameter selecting the policy for each register.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T6.1-02",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T6.1",
+   "section_title": "Inter-Module Signals",
+   "page": 490,
+   "quote": "Port Name: racl_error; Package::Struct: top_racl_pkg::racl_error_log; Type: uni; Act: req; Width: 1; Description: RACL error log information of this module.",
+   "spec_refs": [],
+   "sentences": [
+    "T6.1:s2"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "racl_error"
+   ],
+   "condition": "",
+   "statement": "The module must output RACL error log information of this module on racl_error.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T6.2-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T6.2",
+   "section_title": "Interrupts",
+   "page": 497,
+   "quote": "Interrupt Name: timer_expired_hart0_timer0; Type: Event; Description: raised if hart0's timer0 expired (mtime >= mtimecmp)",
+   "spec_refs": [],
+   "sentences": [
+    "T6.2:s1"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "timer_expired_hart0_timer0"
+   ],
+   "condition": "hart0's timer0 expired (mtime >= mtimecmp)",
+   "statement": "The module must raise interrupt timer_expired_hart0_timer0 when hart0's timer0 has expired (mtime >= mtimecmp).",
+   "check": "both"
+  },
+  {
+   "id": "RT-T6.3-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T6.3",
+   "section_title": "Security Alerts",
+   "page": 503,
+   "quote": "Alert Name: fatal_fault; Description: This fatal alert is triggered when a fatal TL-UL bus integrity fault is detected inside the RV_TIMER unit.",
+   "spec_refs": [],
+   "sentences": [
+    "T6.3:s1"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "fatal_fault"
+   ],
+   "condition": "a fatal TL-UL bus integrity fault is detected inside the RV_TIMER unit",
+   "statement": "The fatal_fault alert must be triggered when a fatal TL-UL bus integrity fault is detected inside RV_TIMER.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T6.4-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T6.4",
+   "section_title": "Security Countermeasures",
+   "page": 509,
+   "quote": "Countermeasure ID: RV_TIMER.BUS.INTEGRITY; Description: End-to-end bus integrity scheme.",
+   "spec_refs": [],
+   "sentences": [
+    "T6.4:s1"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "tl"
+   ],
+   "condition": "",
+   "statement": "The module must implement the RV_TIMER.BUS.INTEGRITY countermeasure, an end-to-end bus integrity scheme on the TL-UL interface.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-T7-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T7",
+   "section_title": "ot_rv_timer_nnc: integration of the OpenTitan rv_timer for verification",
+   "page": 518,
+   "quote": "This document describes the verification top ot_rv_timer_nnc: the OpenTitan rv_timer (specified by the OpenTitan parts of this document, above) plus a thin wrapper that flattens its struct ports and closes two protocols.",
+   "spec_refs": [],
+   "sentences": [
+    "T7:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "The verification top ot_rv_timer_nnc must consist of the OpenTitan rv_timer plus a thin wrapper that flattens its struct ports and closes two protocols.",
+   "check": "none"
+  },
+  {
+   "id": "RT-T7-02",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "T7",
+   "section_title": "ot_rv_timer_nnc: integration of the OpenTitan rv_timer for verification",
+   "page": 518,
+   "quote": "The behaviour of rv_timer itself is specified only by the OpenTitan documents; this document adds the port mapping, the fixed configuration and what the wrapper does.",
+   "spec_refs": [],
+   "sentences": [
+    "T7:s3"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "The behaviour of rv_timer itself must follow only the OpenTitan documents; the wrapper adds only port mapping, fixed configuration and wrapper behaviour.",
+   "check": "none"
+  },
+  {
+   "id": "RT-1-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "1",
+   "section_title": "Configuration",
+   "page": 532,
+   "quote": "[INT-CFG-001] The design under verification has one hart and one timer (N_HARTS = 1, N_TIMERS = 1), as stated in the rv_timer Features and Theory of Operation sections.",
+   "spec_refs": [],
+   "sentences": [
+    "1:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "The design under verification has exactly one hart and one timer (N_HARTS = 1, N_TIMERS = 1).",
+   "check": "none"
+  },
+  {
+   "id": "RT-1-02",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "1",
+   "section_title": "Configuration",
+   "page": 535,
+   "quote": "[INT-CFG-002] RACL (register access control) is disabled: every register access is permitted, and no access is rejected for an access-control reason.",
+   "spec_refs": [],
+   "sentences": [
+    "1:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "RACL is disabled",
+   "statement": "Every register access is permitted when RACL is disabled.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-1-03",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "1",
+   "section_title": "Configuration",
+   "page": 535,
+   "quote": "[INT-CFG-002] RACL (register access control) is disabled: every register access is permitted, and no access is rejected for an access-control reason.",
+   "spec_refs": [],
+   "sentences": [
+    "1:s2"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "system",
+   "signals": [],
+   "condition": "RACL is disabled",
+   "statement": "No register access is rejected for an access-control reason.",
+   "check": "both"
+  },
+  {
+   "id": "RT-1-04",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "1",
+   "section_title": "Configuration",
+   "page": 538,
+   "quote": "[INT-CFG-003] The alert sender of rv_timer and the alert receiver of the wrapper both use the synchronous clocking scheme (no synchronizer flops on the differential pairs).",
+   "spec_refs": [],
+   "sentences": [
+    "1:s3"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "The alert sender of rv_timer and the alert receiver of the wrapper both use the synchronous clocking scheme, with no synchronizer flops on the differential pairs.",
+   "check": "none"
+  },
+  {
+   "id": "RT-1-05",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "1",
+   "section_title": "Configuration",
+   "page": 538,
+   "quote": "Ping requests are never issued.",
+   "spec_refs": [],
+   "sentences": [
+    "1:s4"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "Alert ping requests are never issued.",
+   "check": "assertion"
+  },
+  {
+   "id": "RT-1-06",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "1",
+   "section_title": "Configuration",
+   "page": 541,
+   "quote": "[INT-CFG-004] There is no design parameter to vary: every run uses this one configuration.",
+   "spec_refs": [],
+   "sentences": [
+    "1:s5"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "Every run uses the single fixed configuration; there is no design parameter to vary.",
+   "check": "none"
+  },
+  {
+   "id": "RT-2-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "2",
+   "section_title": "Clock and reset",
+   "page": 545,
+   "quote": "[INT-CLK-001] clk_i is the only clock.",
+   "spec_refs": [],
+   "sentences": [
+    "2:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "clk_i"
+   ],
+   "condition": "",
+   "statement": "clk_i is the only clock in the design.",
+   "check": "none"
+  },
+  {
+   "id": "RT-2-02",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "2",
+   "section_title": "Clock and reset",
+   "page": 545,
+   "quote": "All inputs are sampled and all outputs change at its rising edge, except for the effect of rst_ni.",
+   "spec_refs": [],
+   "sentences": [
+    "2:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "clk_i"
+   ],
+   "condition": "",
+   "statement": "All inputs are sampled and all outputs change at the rising edge of clk_i, except for the effect of rst_ni.",
+   "check": "assertion"
+  },
+  {
+   "id": "RT-2-03",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "2",
+   "section_title": "Clock and reset",
+   "page": 548,
+   "quote": "[INT-RST-001] rst_ni is the active-low reset, asserted asynchronously and released synchronously to clk_i (the reset strategy of the comportability specification).",
+   "spec_refs": [],
+   "sentences": [
+    "2:s3"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "rst_ni",
+    "clk_i"
+   ],
+   "condition": "",
+   "statement": "rst_ni is active-low and may be asserted asynchronously, but its release must be synchronous to clk_i.",
+   "check": "both"
+  },
+  {
+   "id": "RT-2-04",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "2",
+   "section_title": "Clock and reset",
+   "page": 548,
+   "quote": "While rst_ni is 0, every register holds its reset value as given in the register tables of the rv_timer specification.",
+   "spec_refs": [],
+   "sentences": [
+    "2:s4"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "rst_ni"
+   ],
+   "condition": "While rst_ni is 0",
+   "statement": "Every register holds its reset value as given in the rv_timer specification register tables.",
+   "check": "both"
+  },
+  {
+   "id": "RT-3-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "3",
+   "section_title": "Ports",
+   "page": 560,
+   "quote": "Port: i_a_opcode; Direction: input; Width: 3; Meaning: TL-UL a_opcode (Get = 4, PutFullData = 0, PutPartialData = 1)",
+   "spec_refs": [],
+   "sentences": [
+    "3:s5"
+   ],
+   "strength": "MUST",
+   "actor": "master",
+   "signals": [
+    "i_a_opcode"
+   ],
+   "condition": "",
+   "statement": "i_a_opcode must encode TL-UL request types as Get = 4, PutFullData = 0 and PutPartialData = 1.",
+   "check": "assertion"
+  },
+  {
+   "id": "RT-3-02",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "3",
+   "section_title": "Ports",
+   "page": 567,
+   "quote": "Port: i_a_instr; Direction: input; Width: 1; Meaning: 1: the request is an instruction fetch (a_user.instr_type = MuBi4True); 0: a data access (MuBi4False)",
+   "spec_refs": [],
+   "sentences": [
+    "3:s12"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_a_instr"
+   ],
+   "condition": "",
+   "statement": "i_a_instr = 1 marks the request as an instruction fetch (a_user.instr_type = MuBi4True); i_a_instr = 0 marks a data access (MuBi4False).",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-3-03",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "3",
+   "section_title": "Ports",
+   "page": 568,
+   "quote": "Port: i_a_intg_flip; Direction: input; Width: 1; Meaning: 1: the A-channel integrity sent with the request is corrupted (see 4.2)",
+   "spec_refs": [],
+   "sentences": [
+    "3:s13"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_a_intg_flip"
+   ],
+   "condition": "i_a_intg_flip is 1",
+   "statement": "When i_a_intg_flip is 1, the A-channel integrity sent with the request is corrupted.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-3-04",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "3",
+   "section_title": "Ports",
+   "page": 571,
+   "quote": "Port: o_d_opcode; Direction: output; Width: 3; Meaning: TL-UL d_opcode (AccessAck = 0, AccessAckData = 1)",
+   "spec_refs": [],
+   "sentences": [
+    "3:s16"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_d_opcode"
+   ],
+   "condition": "",
+   "statement": "o_d_opcode must encode TL-UL response types as AccessAck = 0 and AccessAckData = 1.",
+   "check": "assertion"
+  },
+  {
+   "id": "RT-3-05",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "3",
+   "section_title": "Ports",
+   "page": 578,
+   "quote": "Port: o_d_intg_err; Direction: output; Width: 1; Meaning: Response integrity of the D-channel beat is wrong (see 4.3)",
+   "spec_refs": [],
+   "sentences": [
+    "3:s23"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "o_d_intg_err",
+    "o_d_valid"
+   ],
+   "condition": "the response integrity of the D-channel beat is wrong",
+   "statement": "o_d_intg_err indicates that the response integrity of the D-channel beat is wrong.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-3-06",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "3",
+   "section_title": "Ports",
+   "page": 579,
+   "quote": "Port: o_alert; Direction: output; Width: 1; Meaning: Alert fatal_fault received (see 5)",
+   "spec_refs": [],
+   "sentences": [
+    "3:s24"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "o_alert"
+   ],
+   "condition": "alert fatal_fault is received",
+   "statement": "o_alert indicates that the alert fatal_fault was received.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-3-07",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "3",
+   "section_title": "Ports",
+   "page": 580,
+   "quote": "Port: o_alert_integ_fail; Direction: output; Width: 1; Meaning: Signal integrity failure on the alert differential pairs (see 5)",
+   "spec_refs": [],
+   "sentences": [
+    "3:s25"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "o_alert_integ_fail"
+   ],
+   "condition": "a signal integrity failure occurs on the alert differential pairs",
+   "statement": "o_alert_integ_fail indicates a signal integrity failure on the alert differential pairs.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-4.1-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "4.1",
+   "section_title": "Mapping",
+   "page": 587,
+   "quote": "[INT-TL-001] The i_a_*, o_a_ready, o_d_* (except o_d_intg_err) and i_d_ready ports are the fields of the same name of the TL-UL device interface tl of rv_timer, with the meaning given by the TL-UL bus specification.",
+   "spec_refs": [],
+   "sentences": [
+    "4.1:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_a_*",
+    "o_a_ready",
+    "o_d_*",
+    "o_d_intg_err",
+    "i_d_ready"
+   ],
+   "condition": "",
+   "statement": "The i_a_*, o_a_ready, o_d_* (except o_d_intg_err) and i_d_ready ports must be the same-named fields of the rv_timer TL-UL device interface tl, with TL-UL meaning.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-4.1-02",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "4.1",
+   "section_title": "Mapping",
+   "page": 590,
+   "quote": "[INT-TL-002] a_user.rsvd is 0. a_user.instr_type is MuBi4True when i_a_instr is 1 and MuBi4False when it is 0.",
+   "spec_refs": [],
+   "sentences": [
+    "4.1:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "a_user.rsvd"
+   ],
+   "condition": "",
+   "statement": "a_user.rsvd is 0.",
+   "check": "assertion"
+  },
+  {
+   "id": "RT-4.1-03",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "4.1",
+   "section_title": "Mapping",
+   "page": 590,
+   "quote": "[INT-TL-002] a_user.rsvd is 0. a_user.instr_type is MuBi4True when i_a_instr is 1 and MuBi4False when it is 0.",
+   "spec_refs": [],
+   "sentences": [
+    "4.1:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "a_user.instr_type",
+    "i_a_instr"
+   ],
+   "condition": "",
+   "statement": "a_user.instr_type is MuBi4True when i_a_instr is 1 and MuBi4False when i_a_instr is 0.",
+   "check": "assertion"
+  },
+  {
+   "id": "RT-4.1-04",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "4.1",
+   "section_title": "Mapping",
+   "page": 592,
+   "quote": "[INT-TL-003] The test bench acts as the TL-UL host. It shall follow the host rules of the TL-UL bus specification (for example, the A-channel signals stay stable while a_valid is 1 and a_ready is 0).",
+   "spec_refs": [],
+   "sentences": [
+    "4.1:s3",
+    "4.1:s4"
+   ],
+   "strength": "MUST",
+   "actor": "master",
+   "signals": [
+    "a_valid",
+    "a_ready"
+   ],
+   "condition": "test bench acting as TL-UL host",
+   "statement": "The test bench must follow the TL-UL host rules, including keeping A-channel signals stable while a_valid is 1 and a_ready is 0.",
+   "check": "assertion"
+  },
+  {
+   "id": "RT-4.1-05",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "4.1",
+   "section_title": "Mapping",
+   "page": 592,
+   "quote": "Requests that the TL-UL specification lists as error cases (unsupported opcode, bad size or mask, misaligned address) are legal stimulus: the device answers them with d_error = 1 as the specifications require.",
+   "spec_refs": [],
+   "sentences": [
+    "4.1:s5"
+   ],
+   "strength": "MAY",
+   "actor": "master",
+   "signals": [],
+   "condition": "",
+   "statement": "The test bench may send requests listed as TL-UL error cases (unsupported opcode, bad size or mask, misaligned address) as legal stimulus.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-4.1-06",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "4.1",
+   "section_title": "Mapping",
+   "page": 592,
+   "quote": "Requests that the TL-UL specification lists as error cases (unsupported opcode, bad size or mask, misaligned address) are legal stimulus: the device answers them with d_error = 1 as the specifications require.",
+   "spec_refs": [],
+   "sentences": [
+    "4.1:s5"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "d_error"
+   ],
+   "condition": "request is a TL-UL error case (unsupported opcode, bad size or mask, misaligned address)",
+   "statement": "The device must answer such error-case requests with d_error = 1.",
+   "check": "both"
+  },
+  {
+   "id": "RT-4.2-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "4.2",
+   "section_title": "Request integrity",
+   "page": 599,
+   "quote": "[INT-INTG-001] The wrapper computes a_user.cmd_intg and a_user.data_intg of every request with OpenTitan's integrity generator for TL-UL hosts (the section Bus Integrity Scheme of the TL-UL bus specification is not written yet; the code is not part of this specification). A request with i_a_intg_flip = 0 therefore always carries correct integrity, and the test bench does not compute integrity itself.",
+   "spec_refs": [],
+   "sentences": [
+    "4.2:s1",
+    "4.2:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "a_user.cmd_intg",
+    "a_user.data_intg",
+    "i_a_intg_flip"
+   ],
+   "condition": "i_a_intg_flip = 0",
+   "statement": "The wrapper must compute a_user.cmd_intg and a_user.data_intg with the OpenTitan TL-UL host integrity generator, so the request carries correct integrity.",
+   "check": "assertion"
+  },
+  {
+   "id": "RT-4.2-02",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "4.2",
+   "section_title": "Request integrity",
+   "page": 604,
+   "quote": "[INT-INTG-002] When i_a_intg_flip is 1, bit 0 of a_user.cmd_intg is inverted.",
+   "spec_refs": [],
+   "sentences": [
+    "4.2:s3"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "i_a_intg_flip",
+    "a_user.cmd_intg"
+   ],
+   "condition": "i_a_intg_flip is 1",
+   "statement": "Bit 0 of a_user.cmd_intg must be inverted.",
+   "check": "assertion"
+  },
+  {
+   "id": "RT-4.2-03",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "4.2",
+   "section_title": "Request integrity",
+   "page": 604,
+   "quote": "The request then has a command integrity error: a fatal TL-UL bus integrity fault in the sense of the rv_timer Security Alerts table, which triggers the fatal_fault alert (section 5).",
+   "spec_refs": [],
+   "sentences": [
+    "4.2:s4"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "i_a_intg_flip",
+    "a_user.cmd_intg"
+   ],
+   "condition": "request has command integrity error (i_a_intg_flip is 1)",
+   "statement": "Such a request is a fatal TL-UL bus integrity fault that triggers the fatal_fault alert.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-4.3-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "4.3",
+   "section_title": "Response integrity",
+   "page": 611,
+   "quote": "[INT-INTG-003] The wrapper checks d_user.rsp_intg of every D-channel beat against the response fields with OpenTitan's response integrity checker for TL-UL hosts. o_d_intg_err is 1 in a cycle where o_d_valid is 1 and this check fails, and 0 otherwise.",
+   "spec_refs": [],
+   "sentences": [
+    "4.3:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "d_user.rsp_intg",
+    "o_d_intg_err",
+    "o_d_valid"
+   ],
+   "condition": "",
+   "statement": "o_d_intg_err must be 1 in a cycle where o_d_valid is 1 and the d_user.rsp_intg check fails, and 0 otherwise.",
+   "check": "assertion"
+  },
+  {
+   "id": "RT-4.3-02",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "4.3",
+   "section_title": "Response integrity",
+   "page": 611,
+   "quote": "A correct device never makes it 1.",
+   "spec_refs": [],
+   "sentences": [
+    "4.3:s2"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "slave",
+   "signals": [
+    "o_d_intg_err"
+   ],
+   "condition": "",
+   "statement": "A correct device must never make o_d_intg_err 1.",
+   "check": "assertion"
+  },
+  {
+   "id": "RT-5-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "5",
+   "section_title": "Alert",
+   "page": 617,
+   "quote": "[INT-ALERT-001] rv_timer has one alert, fatal_fault, sent through an alert sender.",
+   "spec_refs": [],
+   "sentences": [
+    "5:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "rv_timer has one alert, fatal_fault, sent through an alert sender.",
+   "check": "none"
+  },
+  {
+   "id": "RT-5-02",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "5",
+   "section_title": "Alert",
+   "page": 617,
+   "quote": "The wrapper connects it to an alert receiver as described in the alert handler theory of operation (Differential Alert Signaling). o_alert is the alert_o output of that receiver: it is 1 for one clock cycle for each alert handshake that the receiver detects.",
+   "spec_refs": [],
+   "sentences": [
+    "5:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "o_alert"
+   ],
+   "condition": "When the alert receiver detects an alert handshake",
+   "statement": "o_alert is the receiver's alert_o output and is 1 for one clock cycle for each alert handshake the receiver detects.",
+   "check": "both"
+  },
+  {
+   "id": "RT-5-03",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "5",
+   "section_title": "Alert",
+   "page": 622,
+   "quote": "[INT-ALERT-002] o_alert_integ_fail is the integ_fail_o output of the receiver.",
+   "spec_refs": [],
+   "sentences": [
+    "5:s3"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "o_alert_integ_fail"
+   ],
+   "condition": "",
+   "statement": "o_alert_integ_fail is the integ_fail_o output of the alert receiver.",
+   "check": "assertion"
+  },
+  {
+   "id": "RT-5-04",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "5",
+   "section_title": "Alert",
+   "page": 622,
+   "quote": "A correct sender never makes it 1.",
+   "spec_refs": [],
+   "sentences": [
+    "5:s4"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "slave",
+   "signals": [
+    "o_alert_integ_fail"
+   ],
+   "condition": "With a correct alert sender",
+   "statement": "A correct sender never makes o_alert_integ_fail 1.",
+   "check": "assertion"
+  },
+  {
+   "id": "RT-5-05",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "5",
+   "section_title": "Alert",
+   "page": 625,
+   "quote": "[INT-ALERT-003] A fatal alert is repeated until reset (comportability specification, Alerts per Module), so after a bus integrity fault o_alert pulses repeatedly until rst_ni is asserted.",
+   "spec_refs": [],
+   "sentences": [
+    "5:s5"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "o_alert",
+    "rst_ni"
+   ],
+   "condition": "After a bus integrity fault, until rst_ni is asserted",
+   "statement": "o_alert pulses repeatedly after a bus integrity fault until rst_ni is asserted, as a fatal alert is repeated until reset.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-5-06",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "5",
+   "section_title": "Alert",
+   "page": 625,
+   "quote": "A write of 1 to ALERT_TEST.fatal_fault triggers one alert event, as the register description says.",
+   "spec_refs": [],
+   "sentences": [
+    "5:s6"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "ALERT_TEST.fatal_fault"
+   ],
+   "condition": "A write of 1 to ALERT_TEST.fatal_fault",
+   "statement": "A write of 1 to ALERT_TEST.fatal_fault triggers exactly one alert event.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-6-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "6",
+   "section_title": "Interrupt",
+   "page": 631,
+   "quote": "[INT-INTR-001] o_intr_timer_expired is the interrupt output intr_timer_expired_hart0_timer0_o of rv_timer, an event-type interrupt as defined in the comportability specification, with the registers INTR_ENABLE0, INTR_STATE0 and INTR_TEST0.",
+   "spec_refs": [],
+   "sentences": [
+    "6:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "o_intr_timer_expired",
+    "intr_timer_expired_hart0_timer0_o"
+   ],
+   "condition": "",
+   "statement": "o_intr_timer_expired must be the interrupt output intr_timer_expired_hart0_timer0_o of rv_timer.",
+   "check": "assertion"
+  },
+  {
+   "id": "RT-6-02",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "6",
+   "section_title": "Interrupt",
+   "page": 631,
+   "quote": "[INT-INTR-001] o_intr_timer_expired is the interrupt output intr_timer_expired_hart0_timer0_o of rv_timer, an event-type interrupt as defined in the comportability specification, with the registers INTR_ENABLE0, INTR_STATE0 and INTR_TEST0.",
+   "spec_refs": [],
+   "sentences": [
+    "6:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "o_intr_timer_expired",
+    "INTR_ENABLE0",
+    "INTR_STATE0",
+    "INTR_TEST0"
+   ],
+   "condition": "",
+   "statement": "o_intr_timer_expired must behave as an event-type interrupt per the comportability specification, with registers INTR_ENABLE0, INTR_STATE0 and INTR_TEST0.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-7-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "7",
+   "section_title": "Verification scope",
+   "page": 637,
+   "quote": "[INT-VER-001] The verification shall cover, through the ports above: reset values of every register; the access type of every register field as given in the register tables (rw, rw1c, wo, rw0c); the tick generator (prescaler) and the step; counting of the 64-bit timer value, including writes to it and the carry from the lower to the upper half; the compare and the interrupt (state, enable, test, clearing by writing the compare registers); ALERT_TEST with its regwen field; bus error responses (unmapped addresses, sub-word writes, instruction fetches, integrity errors) and the fatal_fault alert.",
+   "spec_refs": [],
+   "sentences": [
+    "7:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "Verification shall cover reset values of every register through the ports.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-7-02",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "7",
+   "section_title": "Verification scope",
+   "page": 637,
+   "quote": "[INT-VER-001] The verification shall cover, through the ports above: reset values of every register; the access type of every register field as given in the register tables (rw, rw1c, wo, rw0c); the tick generator (prescaler) and the step; counting of the 64-bit timer value, including writes to it and the carry from the lower to the upper half; the compare and the interrupt (state, enable, test, clearing by writing the compare registers); ALERT_TEST with its regwen field; bus error responses (unmapped addresses, sub-word writes, instruction fetches, integrity errors) and the fatal_fault alert.",
+   "spec_refs": [],
+   "sentences": [
+    "7:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "Verification shall cover the access type of every register field as given in the register tables (rw, rw1c, wo, rw0c).",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-7-03",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "7",
+   "section_title": "Verification scope",
+   "page": 637,
+   "quote": "[INT-VER-001] The verification shall cover, through the ports above: reset values of every register; the access type of every register field as given in the register tables (rw, rw1c, wo, rw0c); the tick generator (prescaler) and the step; counting of the 64-bit timer value, including writes to it and the carry from the lower to the upper half; the compare and the interrupt (state, enable, test, clearing by writing the compare registers); ALERT_TEST with its regwen field; bus error responses (unmapped addresses, sub-word writes, instruction fetches, integrity errors) and the fatal_fault alert.",
+   "spec_refs": [],
+   "sentences": [
+    "7:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "Verification shall cover the tick generator (prescaler) and the step.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-7-04",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "7",
+   "section_title": "Verification scope",
+   "page": 637,
+   "quote": "[INT-VER-001] The verification shall cover, through the ports above: reset values of every register; the access type of every register field as given in the register tables (rw, rw1c, wo, rw0c); the tick generator (prescaler) and the step; counting of the 64-bit timer value, including writes to it and the carry from the lower to the upper half; the compare and the interrupt (state, enable, test, clearing by writing the compare registers); ALERT_TEST with its regwen field; bus error responses (unmapped addresses, sub-word writes, instruction fetches, integrity errors) and the fatal_fault alert.",
+   "spec_refs": [],
+   "sentences": [
+    "7:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "Verification shall cover counting of the 64-bit timer value, including writes to it and the carry from the lower to the upper half.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-7-05",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "7",
+   "section_title": "Verification scope",
+   "page": 637,
+   "quote": "[INT-VER-001] The verification shall cover, through the ports above: reset values of every register; the access type of every register field as given in the register tables (rw, rw1c, wo, rw0c); the tick generator (prescaler) and the step; counting of the 64-bit timer value, including writes to it and the carry from the lower to the upper half; the compare and the interrupt (state, enable, test, clearing by writing the compare registers); ALERT_TEST with its regwen field; bus error responses (unmapped addresses, sub-word writes, instruction fetches, integrity errors) and the fatal_fault alert.",
+   "spec_refs": [],
+   "sentences": [
+    "7:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "Verification shall cover the compare and the interrupt: state, enable, test, and clearing by writing the compare registers.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-7-06",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "7",
+   "section_title": "Verification scope",
+   "page": 637,
+   "quote": "[INT-VER-001] The verification shall cover, through the ports above: reset values of every register; the access type of every register field as given in the register tables (rw, rw1c, wo, rw0c); the tick generator (prescaler) and the step; counting of the 64-bit timer value, including writes to it and the carry from the lower to the upper half; the compare and the interrupt (state, enable, test, clearing by writing the compare registers); ALERT_TEST with its regwen field; bus error responses (unmapped addresses, sub-word writes, instruction fetches, integrity errors) and the fatal_fault alert.",
+   "spec_refs": [],
+   "sentences": [
+    "7:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "ALERT_TEST"
+   ],
+   "condition": "",
+   "statement": "Verification shall cover ALERT_TEST with its regwen field.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-7-07",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "7",
+   "section_title": "Verification scope",
+   "page": 637,
+   "quote": "[INT-VER-001] The verification shall cover, through the ports above: reset values of every register; the access type of every register field as given in the register tables (rw, rw1c, wo, rw0c); the tick generator (prescaler) and the step; counting of the 64-bit timer value, including writes to it and the carry from the lower to the upper half; the compare and the interrupt (state, enable, test, clearing by writing the compare registers); ALERT_TEST with its regwen field; bus error responses (unmapped addresses, sub-word writes, instruction fetches, integrity errors) and the fatal_fault alert.",
+   "spec_refs": [],
+   "sentences": [
+    "7:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "fatal_fault"
+   ],
+   "condition": "",
+   "statement": "Verification shall cover bus error responses (unmapped addresses, sub-word writes, instruction fetches, integrity errors) and the fatal_fault alert.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-7-08",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "7",
+   "section_title": "Verification scope",
+   "page": 644,
+   "quote": "[INT-VER-002] The 64-bit timer value cannot be run through its whole range in simulation. Behaviour close to 2^64 shall be reached by writing the timer value registers.",
+   "spec_refs": [],
+   "sentences": [
+    "7:s2",
+    "7:s3"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "Because the 64-bit timer value cannot be run through its whole range in simulation",
+   "statement": "Behaviour close to 2^64 shall be reached by writing the timer value registers.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-8-01",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 659,
+   "quote": "ID: D-001; Question: Tick period (gaps 004, 005; question 1); Decision: With CTRL.active_0 = 1 and CFG0 unchanged, the timer value increases by CFG0.step (modulo 2^64) once every CFG0.prescale + 1 cycles (the 48 MHz example: prescale 47 gives a tick every 48 cycles), so prescale 0 gives a tick every cycle. The cycle of the first tick after active_0 becomes 1 is not specified; it shall come no later than CFG0.prescale + 1 + 4 cycles after the write response.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s5"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "CTRL.active_0 = 1 and CFG0 unchanged",
+   "statement": "Timer value increases by CFG0.step (modulo 2^64) once every CFG0.prescale + 1 cycles; prescale 0 gives a tick every cycle.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-8-02",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 659,
+   "quote": "ID: D-001; Question: Tick period (gaps 004, 005; question 1); Decision: With CTRL.active_0 = 1 and CFG0 unchanged, the timer value increases by CFG0.step (modulo 2^64) once every CFG0.prescale + 1 cycles (the 48 MHz example: prescale 47 gives a tick every 48 cycles), so prescale 0 gives a tick every cycle. The cycle of the first tick after active_0 becomes 1 is not specified; it shall come no later than CFG0.prescale + 1 + 4 cycles after the write response.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s5"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "after CTRL.active_0 becomes 1",
+   "statement": "The first tick shall come no later than CFG0.prescale + 1 + 4 cycles after the write response.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-8-03",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 660,
+   "quote": "ID: D-002; Question: Changing CFG0 or writing the timer value while active (gaps 005, 006; question 4); Decision: A software obligation (Programmer's Guide). Tests write CFG0 and TIMER_V_* only while CTRL.active_0 = 0. Behaviour after such a write while active is not checked.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s6"
+   ],
+   "strength": "MUST",
+   "actor": "master",
+   "signals": [],
+   "condition": "writing CFG0 or TIMER_V_*",
+   "statement": "Tests write CFG0 and TIMER_V_* only while CTRL.active_0 = 0; behaviour after such a write while active is not checked.",
+   "check": "none"
+  },
+  {
+   "id": "RT-8-04",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 661,
+   "quote": "ID: D-003; Question: Interrupt event (gap 001; question 2); Decision: The event is the condition mtime >= mtimecmp (the interrupt description, and Event type in the comportability specification: \"if the event itself is still active, the INTR_STATE register will return to true\"). While the condition holds and the timer is active, INTR_STATE0.IS_0 shall read 1 within 4 cycles after a write of 1 to it.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s7"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "mtime >= mtimecmp holds and timer is active, after a write of 1 to INTR_STATE0.IS_0",
+   "statement": "INTR_STATE0.IS_0 shall read 1 within 4 cycles after a write of 1 to it.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-8-05",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 663,
+   "quote": "ID: D-005; Question: Latencies (gap 007; question 2); Decision: When the condition becomes true by a tick, IS_0 shall be 1 no later than 4 cycles after that tick; when it becomes true by a register write while active, no later than CFG0.prescale + 1 + 4 cycles after the write response. o_intr_timer_expired shall equal IS_0 AND IE_0 except in the 2 cycles after either changes.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s9"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "condition mtime >= mtimecmp becomes true by a tick",
+   "statement": "IS_0 shall be 1 no later than 4 cycles after that tick.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-8-06",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 663,
+   "quote": "ID: D-005; Question: Latencies (gap 007; question 2); Decision: When the condition becomes true by a tick, IS_0 shall be 1 no later than 4 cycles after that tick; when it becomes true by a register write while active, no later than CFG0.prescale + 1 + 4 cycles after the write response. o_intr_timer_expired shall equal IS_0 AND IE_0 except in the 2 cycles after either changes.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s9"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "condition becomes true by a register write while active",
+   "statement": "IS_0 shall be 1 no later than CFG0.prescale + 1 + 4 cycles after the write response.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-8-07",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 663,
+   "quote": "ID: D-005; Question: Latencies (gap 007; question 2); Decision: When the condition becomes true by a tick, IS_0 shall be 1 no later than 4 cycles after that tick; when it becomes true by a register write while active, no later than CFG0.prescale + 1 + 4 cycles after the write response. o_intr_timer_expired shall equal IS_0 AND IE_0 except in the 2 cycles after either changes.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s9"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "o_intr_timer_expired"
+   ],
+   "condition": "except in the 2 cycles after IS_0 or IE_0 changes",
+   "statement": "o_intr_timer_expired shall equal IS_0 AND IE_0.",
+   "check": "assertion"
+  },
+  {
+   "id": "RT-8-08",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 664,
+   "quote": "ID: D-006; Question: Clearing by a compare write (gap 002; question 3); Decision: A write to COMPARE_LOWER0_0 or COMPARE_UPPER0_0 after which mtimecmp > mtime (and stays so) shall leave IS_0 = 0 and the interrupt 0 within 4 cycles. If mtime >= mtimecmp still holds after the write, IS_0 shall be 1 again within 4 cycles; a dip in between is not checked.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s10"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "after a write to COMPARE_LOWER0_0 or COMPARE_UPPER0_0 leaves mtimecmp > mtime and it stays so",
+   "statement": "IS_0 shall be 0 and the interrupt deasserted within 4 cycles.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-8-09",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 664,
+   "quote": "ID: D-006; Question: Clearing by a compare write (gap 002; question 3); Decision: A write to COMPARE_LOWER0_0 or COMPARE_UPPER0_0 after which mtimecmp > mtime (and stays so) shall leave IS_0 = 0 and the interrupt 0 within 4 cycles. If mtime >= mtimecmp still holds after the write, IS_0 shall be 1 again within 4 cycles; a dip in between is not checked.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s10"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "after a compare write mtime >= mtimecmp still holds",
+   "statement": "IS_0 shall be 1 again within 4 cycles; an intermediate dip is not checked.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-8-10",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 666,
+   "quote": "ID: D-008; Question: Reads of write-only fields and reserved bits (gap 019; questions 5, 6, 7); Decision: A wo field has no read path (register tool, Type WO): it reads 0. Reserved bits read 0 and writes to them have no effect. After reset INTR_TEST0 reads 0x0 and ALERT_TEST reads 0x8000_0000.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s12"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [],
+   "condition": "",
+   "statement": "Write-only fields read 0, reserved bits read 0 and writes to them have no effect.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-8-11",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 666,
+   "quote": "ID: D-008; Question: Reads of write-only fields and reserved bits (gap 019; questions 5, 6, 7); Decision: A wo field has no read path (register tool, Type WO): it reads 0. Reserved bits read 0 and writes to them have no effect. After reset INTR_TEST0 reads 0x0 and ALERT_TEST reads 0x8000_0000.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s12"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [],
+   "condition": "after reset",
+   "statement": "INTR_TEST0 reads 0x0 and ALERT_TEST reads 0x8000_0000.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-8-12",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 667,
+   "quote": "ID: D-009; Question: ALERT_TEST (gaps 008, 009; questions 10, 18); Decision: Tests that trigger an alert write 0x8000_0001 (regwen kept at 1); the combined write 0x0000_0001 is not used. A write with bit 31 = 0 sets regwen to 0 until reset; afterwards a write of 0x8000_0001 completes with d_error = 0, triggers no alert, and regwen still reads 0. One write of 1 to fatal_fault, with no other alert cause and no other such write within 32 cycles, gives exactly one o_alert pulse, no later than 16 cycles after the write response. For writes closer together, at least one pulse and no more pulses than writes.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s13"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "d_error",
+    "o_alert"
+   ],
+   "condition": "after a write to ALERT_TEST with bit 31 = 0 (regwen cleared until reset)",
+   "statement": "Regwen reads 0 until reset; a later write of 0x8000_0001 completes with d_error = 0, triggers no alert.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-8-13",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 667,
+   "quote": "ID: D-009; Question: ALERT_TEST (gaps 008, 009; questions 10, 18); Decision: Tests that trigger an alert write 0x8000_0001 (regwen kept at 1); the combined write 0x0000_0001 is not used. A write with bit 31 = 0 sets regwen to 0 until reset; afterwards a write of 0x8000_0001 completes with d_error = 0, triggers no alert, and regwen still reads 0. One write of 1 to fatal_fault, with no other alert cause and no other such write within 32 cycles, gives exactly one o_alert pulse, no later than 16 cycles after the write response. For writes closer together, at least one pulse and no more pulses than writes.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s13"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_alert"
+   ],
+   "condition": "one write of 1 to fatal_fault, no other alert cause, no other such write within 32 cycles",
+   "statement": "Exactly one o_alert pulse shall occur, no later than 16 cycles after the write response.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-8-14",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 667,
+   "quote": "ID: D-009; Question: ALERT_TEST (gaps 008, 009; questions 10, 18); Decision: Tests that trigger an alert write 0x8000_0001 (regwen kept at 1); the combined write 0x0000_0001 is not used. A write with bit 31 = 0 sets regwen to 0 until reset; afterwards a write of 0x8000_0001 completes with d_error = 0, triggers no alert, and regwen still reads 0. One write of 1 to fatal_fault, with no other alert cause and no other such write within 32 cycles, gives exactly one o_alert pulse, no later than 16 cycles after the write response. For writes closer together, at least one pulse and no more pulses than writes.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s13"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_alert"
+   ],
+   "condition": "fatal_fault writes closer than 32 cycles apart",
+   "statement": "At least one o_alert pulse and no more pulses than writes shall occur.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-8-15",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 667,
+   "quote": "ID: D-009; Question: ALERT_TEST (gaps 008, 009; questions 10, 18); Decision: Tests that trigger an alert write 0x8000_0001 (regwen kept at 1); the combined write 0x0000_0001 is not used. A write with bit 31 = 0 sets regwen to 0 until reset; afterwards a write of 0x8000_0001 completes with d_error = 0, triggers no alert, and regwen still reads 0. One write of 1 to fatal_fault, with no other alert cause and no other such write within 32 cycles, gives exactly one o_alert pulse, no later than 16 cycles after the write response. For writes closer together, at least one pulse and no more pulses than writes.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s13"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "master",
+   "signals": [],
+   "condition": "triggering an alert",
+   "statement": "Tests do not use the combined write 0x0000_0001; they write 0x8000_0001.",
+   "check": "none"
+  },
+  {
+   "id": "RT-8-16",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 668,
+   "quote": "ID: D-010; Question: Fatal alert after a command integrity error (gap 010; questions 9, 11); Decision: o_alert shall pulse no later than 16 cycles after the request with i_a_intg_flip = 1 is accepted, and then at least once in every 32 cycles until rst_ni is asserted. The D-channel response to that request and the behaviour of later requests are not checked; the test bench does not wait more than 32 cycles for that response. After such a test, the test resets the design.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s14"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_alert",
+    "i_a_intg_flip",
+    "rst_ni"
+   ],
+   "condition": "request with i_a_intg_flip = 1 accepted",
+   "statement": "o_alert shall pulse no later than 16 cycles after acceptance, then at least once every 32 cycles until rst_ni is asserted.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-8-17",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 668,
+   "quote": "ID: D-010; Question: Fatal alert after a command integrity error (gap 010; questions 9, 11); Decision: o_alert shall pulse no later than 16 cycles after the request with i_a_intg_flip = 1 is accepted, and then at least once in every 32 cycles until rst_ni is asserted. The D-channel response to that request and the behaviour of later requests are not checked; the test bench does not wait more than 32 cycles for that response. After such a test, the test resets the design.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s14"
+   ],
+   "strength": "MUST",
+   "actor": "master",
+   "signals": [
+    "i_a_intg_flip"
+   ],
+   "condition": "after a test with i_a_intg_flip = 1",
+   "statement": "The test resets the design.",
+   "check": "none"
+  },
+  {
+   "id": "RT-8-18",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 669,
+   "quote": "ID: D-011; Question: Instruction fetches (gap 011); Decision: Not stated for registers in these documents. A request with i_a_instr = 1 is not checked for d_error; a write with i_a_instr = 1 is not used.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s15"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "master",
+   "signals": [
+    "i_a_instr"
+   ],
+   "condition": "",
+   "statement": "A write with i_a_instr = 1 is not used.",
+   "check": "none"
+  },
+  {
+   "id": "RT-8-19",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 670,
+   "quote": "ID: D-012; Question: Address decoding (gap 012; question 16); Decision: Following the register tool example (registers up to 0x84 use 8 address bits), the registers 0x0..0x11c use the offsets 0x000..0x1FF. A request to an unmapped offset in 0x000..0x1FF returns d_error = 1 and changes no register. Requests at 0x200 and above are not used.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s16"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "d_error"
+   ],
+   "condition": "request to an unmapped offset in 0x000..0x1FF",
+   "statement": "The slave returns d_error = 1 and changes no register.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-8-20",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 670,
+   "quote": "ID: D-012; Question: Address decoding (gap 012; question 16); Decision: Following the register tool example (registers up to 0x84 use 8 address bits), the registers 0x0..0x11c use the offsets 0x000..0x1FF. A request to an unmapped offset in 0x000..0x1FF returns d_error = 1 and changes no register. Requests at 0x200 and above are not used.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s16"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "master",
+   "signals": [],
+   "condition": "",
+   "statement": "Requests at offset 0x200 and above are not used.",
+   "check": "none"
+  },
+  {
+   "id": "RT-8-21",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 671,
+   "quote": "ID: D-013; Question: Sub-word and partial writes (gap 013; question 14); Decision: Per the register tool: a write is an error when it is smaller than the register, where the register width is set by its highest field bit, or when its size is below 32 bits and the address is not 4-byte aligned. Checked cases: full-word writes with mask 1111 succeed; a byte write (a_size 0, mask 0001, offset aligned) to CFG0, TIMER_V_*, COMPARE_* or ALERT_TEST returns d_error = 1 and changes nothing; a byte write to byte 0 of CTRL, INTR_ENABLE0, INTR_STATE0 or INTR_TEST0 completes with d_error = 0 and has the effect of the write. Non-contiguous masks and other sub-word cases are not checked. Reads of any size return the full register (register tool).",
+   "spec_refs": [],
+   "sentences": [
+    "8:s17"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "d_error",
+    "a_size"
+   ],
+   "condition": "byte write (a_size 0, mask 0001, aligned) to CFG0, TIMER_V_*, COMPARE_* or ALERT_TEST",
+   "statement": "Returns d_error = 1 and changes nothing.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-8-22",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 671,
+   "quote": "ID: D-013; Question: Sub-word and partial writes (gap 013; question 14); Decision: Per the register tool: a write is an error when it is smaller than the register, where the register width is set by its highest field bit, or when its size is below 32 bits and the address is not 4-byte aligned. Checked cases: full-word writes with mask 1111 succeed; a byte write (a_size 0, mask 0001, offset aligned) to CFG0, TIMER_V_*, COMPARE_* or ALERT_TEST returns d_error = 1 and changes nothing; a byte write to byte 0 of CTRL, INTR_ENABLE0, INTR_STATE0 or INTR_TEST0 completes with d_error = 0 and has the effect of the write. Non-contiguous masks and other sub-word cases are not checked. Reads of any size return the full register (register tool).",
+   "spec_refs": [],
+   "sentences": [
+    "8:s17"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "d_error"
+   ],
+   "condition": "byte write to byte 0 of CTRL, INTR_ENABLE0, INTR_STATE0 or INTR_TEST0",
+   "statement": "Completes with d_error = 0 and has the effect of the write.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-8-23",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 671,
+   "quote": "ID: D-013; Question: Sub-word and partial writes (gap 013; question 14); Decision: Per the register tool: a write is an error when it is smaller than the register, where the register width is set by its highest field bit, or when its size is below 32 bits and the address is not 4-byte aligned. Checked cases: full-word writes with mask 1111 succeed; a byte write (a_size 0, mask 0001, offset aligned) to CFG0, TIMER_V_*, COMPARE_* or ALERT_TEST returns d_error = 1 and changes nothing; a byte write to byte 0 of CTRL, INTR_ENABLE0, INTR_STATE0 or INTR_TEST0 completes with d_error = 0 and has the effect of the write. Non-contiguous masks and other sub-word cases are not checked. Reads of any size return the full register (register tool).",
+   "spec_refs": [],
+   "sentences": [
+    "8:s17"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "d_error"
+   ],
+   "condition": "full-word write with mask 1111",
+   "statement": "The write succeeds with d_error = 0.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-8-24",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 671,
+   "quote": "ID: D-013; Question: Sub-word and partial writes (gap 013; question 14); Decision: Per the register tool: a write is an error when it is smaller than the register, where the register width is set by its highest field bit, or when its size is below 32 bits and the address is not 4-byte aligned. Checked cases: full-word writes with mask 1111 succeed; a byte write (a_size 0, mask 0001, offset aligned) to CFG0, TIMER_V_*, COMPARE_* or ALERT_TEST returns d_error = 1 and changes nothing; a byte write to byte 0 of CTRL, INTR_ENABLE0, INTR_STATE0 or INTR_TEST0 completes with d_error = 0 and has the effect of the write. Non-contiguous masks and other sub-word cases are not checked. Reads of any size return the full register (register tool).",
+   "spec_refs": [],
+   "sentences": [
+    "8:s17"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [],
+   "condition": "read of any size",
+   "statement": "Returns the full register.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-8-25",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 672,
+   "quote": "ID: D-014; Question: Outstanding requests and back-pressure (gap 015); Decision: TL-UL allows several outstanding requests and does not guarantee order. The test bench matches responses by d_source, uses a distinct a_source per outstanding request, and does not assume o_a_ready = 1. A read of TIMER_V_* while active is checked only to lie between the values before the request and after the response.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s18"
+   ],
+   "strength": "MUST",
+   "actor": "master",
+   "signals": [
+    "d_source",
+    "a_source",
+    "o_a_ready"
+   ],
+   "condition": "outstanding requests",
+   "statement": "Match responses by d_source, use distinct a_source per outstanding request, and do not assume o_a_ready = 1.",
+   "check": "none"
+  },
+  {
+   "id": "RT-8-26",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 672,
+   "quote": "ID: D-014; Question: Outstanding requests and back-pressure (gap 015); Decision: TL-UL allows several outstanding requests and does not guarantee order. The test bench matches responses by d_source, uses a distinct a_source per outstanding request, and does not assume o_a_ready = 1. A read of TIMER_V_* while active is checked only to lie between the values before the request and after the response.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s18"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [],
+   "condition": "read of TIMER_V_* while active",
+   "statement": "Returned value lies between values before the request and after the response.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-8-27",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 673,
+   "quote": "ID: D-015; Question: Fields of a response (gap 016); Decision: Checked: d_error, d_source (echo of a_source), d_size (echo of a_size), d_opcode (AccessAckData for Get, AccessAck for PutFullData and PutPartialData). d_data is checked only for a Get without error. For an undefined opcode only d_error = 1 is checked. d_param and d_sink are not checked.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s19"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "d_error",
+    "d_source",
+    "a_source",
+    "d_size",
+    "a_size",
+    "d_opcode"
+   ],
+   "condition": "response",
+   "statement": "d_error is correct, d_source echoes a_source, d_size echoes a_size, d_opcode is AccessAckData for Get and AccessAck for PutFullData and PutPartialData.",
+   "check": "assertion"
+  },
+  {
+   "id": "RT-8-28",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 673,
+   "quote": "ID: D-015; Question: Fields of a response (gap 016); Decision: Checked: d_error, d_source (echo of a_source), d_size (echo of a_size), d_opcode (AccessAckData for Get, AccessAck for PutFullData and PutPartialData). d_data is checked only for a Get without error. For an undefined opcode only d_error = 1 is checked. d_param and d_sink are not checked.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s19"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "d_error"
+   ],
+   "condition": "undefined opcode",
+   "statement": "d_error = 1 is returned.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-8-29",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 674,
+   "quote": "ID: D-016; Question: Reset (gap 018; question 8); Decision: The test bench keeps i_a_valid = 0 while rst_ni = 0 and in the first cycle after release. While rst_ni = 0, o_d_valid, o_alert, o_alert_integ_fail and o_intr_timer_expired shall be 0; o_a_ready is not checked. A response pending at reset is discarded. The rule that outputs change only at rising clock edges is not applied in cycles where rst_ni is 0 or falls.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s20"
+   ],
+   "strength": "MUST",
+   "actor": "master",
+   "signals": [
+    "i_a_valid",
+    "rst_ni"
+   ],
+   "condition": "rst_ni = 0 and first cycle after release",
+   "statement": "The test bench keeps i_a_valid = 0.",
+   "check": "none"
+  },
+  {
+   "id": "RT-8-30",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 674,
+   "quote": "ID: D-016; Question: Reset (gap 018; question 8); Decision: The test bench keeps i_a_valid = 0 while rst_ni = 0 and in the first cycle after release. While rst_ni = 0, o_d_valid, o_alert, o_alert_integ_fail and o_intr_timer_expired shall be 0; o_a_ready is not checked. A response pending at reset is discarded. The rule that outputs change only at rising clock edges is not applied in cycles where rst_ni is 0 or falls.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s20"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "rst_ni",
+    "o_d_valid",
+    "o_alert",
+    "o_alert_integ_fail",
+    "o_intr_timer_expired"
+   ],
+   "condition": "rst_ni = 0",
+   "statement": "o_d_valid, o_alert, o_alert_integ_fail and o_intr_timer_expired shall be 0.",
+   "check": "assertion"
+  },
+  {
+   "id": "RT-8-31",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 674,
+   "quote": "ID: D-016; Question: Reset (gap 018; question 8); Decision: The test bench keeps i_a_valid = 0 while rst_ni = 0 and in the first cycle after release. While rst_ni = 0, o_d_valid, o_alert, o_alert_integ_fail and o_intr_timer_expired shall be 0; o_a_ready is not checked. A response pending at reset is discarded. The rule that outputs change only at rising clock edges is not applied in cycles where rst_ni is 0 or falls.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s20"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "rst_ni"
+   ],
+   "condition": "response pending at reset",
+   "statement": "The pending response is discarded.",
+   "check": "scenario"
+  },
+  {
+   "id": "RT-8-32",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 675,
+   "quote": "ID: D-017; Question: Integrity outputs; Decision: o_d_intg_err and o_alert_integ_fail shall be 0 in every cycle with rst_ni = 1 (a correct device and sender never set them), including during a test with i_a_intg_flip = 1.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s21"
+   ],
+   "strength": "MUST",
+   "actor": "slave",
+   "signals": [
+    "o_d_intg_err",
+    "o_alert_integ_fail",
+    "rst_ni",
+    "i_a_intg_flip"
+   ],
+   "condition": "rst_ni = 1, including during i_a_intg_flip = 1",
+   "statement": "o_d_intg_err and o_alert_integ_fail shall be 0 in every cycle.",
+   "check": "assertion"
+  },
+  {
+   "id": "RT-8-33",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 676,
+   "quote": "ID: D-018; Question: Natural carry at 2^32 and behaviour near 2^64 (question 12); Decision: Reached only by writing the timer value registers (while inactive) to values close to the carry, then counting.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s22"
+   ],
+   "strength": "MUST",
+   "actor": "master",
+   "signals": [],
+   "condition": "testing carry at 2^32 and near 2^64",
+   "statement": "Reached only by writing the timer value registers while inactive to values near the carry, then counting.",
+   "check": "none"
+  },
+  {
+   "id": "RT-8-34",
+   "doc": "rv_timer_Design_Specification.md",
+   "section": "8",
+   "section_title": "Decisions for verification",
+   "page": 677,
+   "quote": "ID: D-019; Question: Out of scope (questions 13, 15; gaps 017, 020); Decision: User-bit default values, Status-type interrupts (rv_timer has none), requests with a non-zero a_param, and the bit layout of a_user/d_user (the wrapper produces them) are not checked; tests drive i_a_param = 0.",
+   "spec_refs": [],
+   "sentences": [
+    "8:s23"
+   ],
+   "strength": "MUST",
+   "actor": "master",
+   "signals": [
+    "i_a_param"
+   ],
+   "condition": "",
+   "statement": "Tests drive i_a_param = 0.",
+   "check": "none"
+  }
+ ],
+ "skipped": [
+  {
+   "sentence": "T2:s1",
+   "reason": "descriptive",
+   "text": "This document specifies RISC-V Timer hardware IP functionality."
+  },
+  {
+   "sentence": "T2:s2",
+   "reason": "cross_reference",
+   "text": "This module conforms to the Comportable guideline for peripheral functionality."
+  },
+  {
+   "sentence": "T2:s3",
+   "reason": "cross_reference",
+   "text": "See that document for integration overview within the broader top level system."
+  },
+  {
+   "sentence": "T2.1:s1",
+   "reason": "descriptive",
+   "text": "64-bit timer with 12-bit prescaler and 8-bit step register"
+  },
+  {
+   "sentence": "T2.1:s2",
+   "reason": "descriptive",
+   "text": "Compliant with RISC-V privileged specification v1.11"
+  },
+  {
+   "sentence": "T2.1:s3",
+   "reason": "descriptive",
+   "text": "Configurable number of timers per hart and number of harts"
+  },
+  {
+   "sentence": "T2.1:s4",
+   "reason": "informative_note",
+   "text": "Note: Although the number of timers is indeed configurable, the implementation currently only connects up one timer for one hart."
+  },
+  {
+   "sentence": "T2.2:s3",
+   "reason": "descriptive",
+   "text": "The timer is intended to be used by the processors to check the current time relative to the reset or the system power-on."
+  },
+  {
+   "sentence": "T2.2:s4",
+   "reason": "informative_note",
+   "text": "In this version, the timer doesn't consider low-power modes and assumes the clock is neither turned off nor changed during runtime."
+  },
+  {
+   "sentence": "T2.3:s2",
+   "reason": "descriptive",
+   "text": "Additional features such as prescaler, step, and a configurable number of timers and harts have been added."
+  },
+  {
+   "sentence": "T3.1:s1",
+   "reason": "descriptive",
+   "text": "The timer module is composed of tick generators, counters, and comparators."
+  },
+  {
+   "sentence": "T3.2.1:s3",
+   "reason": "informative_note",
+   "text": "It is useful if the system has more than one clock as a clock source."
+  },
+  {
+   "sentence": "T3.2.1:s4",
+   "reason": "informative_note",
+   "text": "The firmware just needs to adjust the CFG0.prescaler value and the actual timer interrupt handling routine does not need a variable clock period to update mtimecmp."
+  },
+  {
+   "sentence": "T3.2.1:s5",
+   "reason": "example_or_figure",
+   "text": "For instance, if a system switches between 48MHz and 200MHz clocks, a prescaler value of 47 for 48MHz and 199 for 200MHz will generate a 1us tick."
+  },
+  {
+   "sentence": "T3.2.2:s1",
+   "reason": "descriptive",
+   "text": "The timer IP supports more than one HART and/or more than one timer per hart."
+  },
+  {
+   "sentence": "T3.2.2:s6",
+   "reason": "example_or_figure",
+   "text": "Below is an example configuration file for N_TIMER 2 and N_HARTS 2."
+  },
+  {
+   "sentence": "T4.1:s1",
+   "reason": "descriptive",
+   "text": "Software is expected to configure prescaler and step before activating the timer."
+  },
+  {
+   "sentence": "T4.2:s1",
+   "reason": "descriptive",
+   "text": "The timer IP has 64-bit timer value registers and 64-bit compare registers."
+  },
+  {
+   "sentence": "T4.2:s2",
+   "reason": "descriptive",
+   "text": "The register interface, however, is set to 32-bit data width."
+  },
+  {
+   "sentence": "T4.2:s5",
+   "reason": "descriptive",
+   "text": "The IP doesn't have a latching or blocking mechanism to avoid this issue."
+  },
+  {
+   "sentence": "T4.2:s6",
+   "reason": "descriptive",
+   "text": "It is the programmer's responsibility to ensure the correct value is read."
+  },
+  {
+   "sentence": "T4.2:s7",
+   "reason": "example_or_figure",
+   "text": "For instance, if the CPU reads 0xFFFF_FFFF from lower 32-bit timer value (mtime) and 0x0000_0001 from upper 32-bit timer value (mtimeh), there is a chance that rather than having the value 0x1_FFFF_FFFF the timer value has changed from 0x0_FFFF_FFFF to 0x1_0000_0000 between the two reads."
+  },
+  {
+   "sentence": "T4.2:s8",
+   "reason": "descriptive",
+   "text": "If there is the possibility of an interrupt between the two reads then the counter could have advanced even more."
+  },
+  {
+   "sentence": "T4.2:s10",
+   "reason": "cross_reference",
+   "text": "Figure 10.1 in the RISC-V unprivileged specification explains how to avoid this."
+  },
+  {
+   "sentence": "T4.2:s11",
+   "reason": "descriptive",
+   "text": "Updating mtimecmp register also follows a similar approach to avoid a spurious interrupt during the register update."
+  },
+  {
+   "sentence": "T4.2:s12",
+   "reason": "cross_reference",
+   "text": "Please refer to the mtimecmp section in the RISC-V privileged specification."
+  },
+  {
+   "sentence": "T4.3:s1",
+   "reason": "descriptive",
+   "text": "There are some peculiarities when mtime and mtimecmp get close to the end of the 64-bit integer range."
+  },
+  {
+   "sentence": "T4.3:s2",
+   "reason": "descriptive",
+   "text": "In particular, because an unsigned comparison is done between mtime and mtimecmp care is needed."
+  },
+  {
+   "sentence": "T4.3:s3",
+   "reason": "list_lead_in",
+   "text": "A couple of cases are:"
+  },
+  {
+   "sentence": "T4.3:s4",
+   "reason": "descriptive",
+   "text": "mtimecmp close to 0xFFFF_FFFF_FFFF_FFFF."
+  },
+  {
+   "sentence": "T4.3:s5",
+   "reason": "descriptive",
+   "text": "In this case the time-out event will be signaled when mtime passes the comparison value, the interrupt will be raised and the source indicated in the corresponding bit of the interrupt status register."
+  },
+  {
+   "sentence": "T4.3:s6",
+   "reason": "descriptive",
+   "text": "However, if there is a delay in servicing the interrupt the mtime value could wrap to zero (and continue to increment) so the value read by the interrupt service routine will be less than the comparison value."
+  },
+  {
+   "sentence": "T4.3:s8",
+   "reason": "descriptive",
+   "text": "When the timer is setup to trigger a timeout some number of timer ticks into the future, the computation of the comparison value mtime + timeout may overflow."
+  },
+  {
+   "sentence": "T4.3:s9",
+   "reason": "descriptive",
+   "text": "If this value is set in mtimecmp it would make mtime greater than mtimecmp and immediately signal an interrupt."
+  },
+  {
+   "sentence": "T4.4:s2",
+   "reason": "descriptive",
+   "text": "If the core enables the timer interrupt in MIE CSR, it jumps into the timer interrupt service routine."
+  },
+  {
+   "sentence": "T4.5:s1",
+   "reason": "descriptive",
+   "text": "Device Interface Functions"
+  },
+  {
+   "sentence": "T5.2:s1",
+   "reason": "descriptive",
+   "text": "Alert Test Register"
+  },
+  {
+   "sentence": "T5.3:s1",
+   "reason": "descriptive",
+   "text": "Control register"
+  },
+  {
+   "sentence": "T5.4:s1",
+   "reason": "descriptive",
+   "text": "Interrupt Enable"
+  },
+  {
+   "sentence": "T5.5:s1",
+   "reason": "descriptive",
+   "text": "Interrupt Status"
+  },
+  {
+   "sentence": "T5.6:s1",
+   "reason": "descriptive",
+   "text": "Interrupt test register"
+  },
+  {
+   "sentence": "T5.7:s1",
+   "reason": "descriptive",
+   "text": "Configuration for Hart 0"
+  },
+  {
+   "sentence": "T5.8:s1",
+   "reason": "descriptive",
+   "text": "Timer value Lower"
+  },
+  {
+   "sentence": "T5.9:s1",
+   "reason": "descriptive",
+   "text": "Timer value Upper"
+  },
+  {
+   "sentence": "T5.10:s1",
+   "reason": "descriptive",
+   "text": "Timer value Lower"
+  },
+  {
+   "sentence": "T5.11:s1",
+   "reason": "descriptive",
+   "text": "Timer value Upper"
+  },
+  {
+   "sentence": "T6:s1",
+   "reason": "descriptive",
+   "text": "Referring to the Comportable guideline for peripheral device functionality, the module rv_timer has the following hardware interfaces defined"
+  },
+  {
+   "sentence": "T6:s2",
+   "reason": "descriptive",
+   "text": "Primary Clock: clk_i"
+  },
+  {
+   "sentence": "T6:s3",
+   "reason": "descriptive",
+   "text": "Other Clocks: *none*"
+  },
+  {
+   "sentence": "T6:s4",
+   "reason": "descriptive",
+   "text": "Bus Device Interfaces (TL-UL): tl"
+  },
+  {
+   "sentence": "T6:s5",
+   "reason": "descriptive",
+   "text": "Bus Host Interfaces (TL-UL): *none*"
+  },
+  {
+   "sentence": "T6:s6",
+   "reason": "descriptive",
+   "text": "Peripheral Pins for Chip IO: *none*"
+  },
+  {
+   "sentence": "T6.1:s3",
+   "reason": "descriptive",
+   "text": "Port Name: tl; Package::Struct: tlul_pkg::tl; Type: req_rsp; Act: rsp; Width: 1"
+  },
+  {
+   "sentence": "T7:s1",
+   "reason": "descriptive",
+   "text": "Written for NNC Pipeline."
+  },
+  {
+   "sentence": "T7:s4",
+   "reason": "list_lead_in",
+   "text": "Normative references:"
+  },
+  {
+   "sentence": "T7:s5",
+   "reason": "cross_reference",
+   "text": "the OpenTitan parts of this document (above): the timer, its registers, interrupt and alert."
+  },
+  {
+   "sentence": "T7:s6",
+   "reason": "cross_reference",
+   "text": "standards/opentitan_tlul_bus_specification.md: the TL-UL bus, including the bus integrity scheme."
+  },
+  {
+   "sentence": "T7:s7",
+   "reason": "cross_reference",
+   "text": "standards/opentitan_comportability.md: interrupt and alert conventions of OpenTitan peripherals."
+  },
+  {
+   "sentence": "T7:s8",
+   "reason": "cross_reference",
+   "text": "standards/opentitan_register_tool.md: register access types and bus error responses of generated register blocks."
+  },
+  {
+   "sentence": "T7:s9",
+   "reason": "cross_reference",
+   "text": "standards/opentitan_alert_handler_theory_of_operation.md: the differential alert handshake and the alert receiver."
+  },
+  {
+   "sentence": "3:s1",
+   "reason": "descriptive",
+   "text": "Port: clk_i; Direction: input; Width: 1; Meaning: Clock"
+  },
+  {
+   "sentence": "3:s2",
+   "reason": "descriptive",
+   "text": "Port: rst_ni; Direction: input; Width: 1; Meaning: Active-low reset"
+  },
+  {
+   "sentence": "3:s3",
+   "reason": "descriptive",
+   "text": "Port: i_a_valid; Direction: input; Width: 1; Meaning: TL-UL a_valid"
+  },
+  {
+   "sentence": "3:s4",
+   "reason": "descriptive",
+   "text": "Port: o_a_ready; Direction: output; Width: 1; Meaning: TL-UL a_ready"
+  },
+  {
+   "sentence": "3:s6",
+   "reason": "descriptive",
+   "text": "Port: i_a_param; Direction: input; Width: 3; Meaning: TL-UL a_param"
+  },
+  {
+   "sentence": "3:s7",
+   "reason": "descriptive",
+   "text": "Port: i_a_size; Direction: input; Width: 2; Meaning: TL-UL a_size (log2 of the number of bytes)"
+  },
+  {
+   "sentence": "3:s8",
+   "reason": "descriptive",
+   "text": "Port: i_a_source; Direction: input; Width: 8; Meaning: TL-UL a_source"
+  },
+  {
+   "sentence": "3:s9",
+   "reason": "descriptive",
+   "text": "Port: i_a_address; Direction: input; Width: 32; Meaning: TL-UL a_address (byte address; the register offsets of the rv_timer specification are relative to 0)"
+  },
+  {
+   "sentence": "3:s10",
+   "reason": "descriptive",
+   "text": "Port: i_a_mask; Direction: input; Width: 4; Meaning: TL-UL a_mask"
+  },
+  {
+   "sentence": "3:s11",
+   "reason": "descriptive",
+   "text": "Port: i_a_data; Direction: input; Width: 32; Meaning: TL-UL a_data"
+  },
+  {
+   "sentence": "3:s14",
+   "reason": "descriptive",
+   "text": "Port: o_d_valid; Direction: output; Width: 1; Meaning: TL-UL d_valid"
+  },
+  {
+   "sentence": "3:s15",
+   "reason": "descriptive",
+   "text": "Port: i_d_ready; Direction: input; Width: 1; Meaning: TL-UL d_ready"
+  },
+  {
+   "sentence": "3:s17",
+   "reason": "descriptive",
+   "text": "Port: o_d_param; Direction: output; Width: 3; Meaning: TL-UL d_param"
+  },
+  {
+   "sentence": "3:s18",
+   "reason": "descriptive",
+   "text": "Port: o_d_size; Direction: output; Width: 2; Meaning: TL-UL d_size"
+  },
+  {
+   "sentence": "3:s19",
+   "reason": "descriptive",
+   "text": "Port: o_d_source; Direction: output; Width: 8; Meaning: TL-UL d_source"
+  },
+  {
+   "sentence": "3:s20",
+   "reason": "descriptive",
+   "text": "Port: o_d_sink; Direction: output; Width: 1; Meaning: TL-UL d_sink"
+  },
+  {
+   "sentence": "3:s21",
+   "reason": "descriptive",
+   "text": "Port: o_d_data; Direction: output; Width: 32; Meaning: TL-UL d_data"
+  },
+  {
+   "sentence": "3:s22",
+   "reason": "descriptive",
+   "text": "Port: o_d_error; Direction: output; Width: 1; Meaning: TL-UL d_error"
+  },
+  {
+   "sentence": "3:s26",
+   "reason": "descriptive",
+   "text": "Port: o_intr_timer_expired; Direction: output; Width: 1; Meaning: Interrupt timer_expired_hart0_timer0"
+  },
+  {
+   "sentence": "4.2:s5",
+   "reason": "descriptive",
+   "text": "These documents do not specify the D-channel response to such a request."
+  },
+  {
+   "sentence": "8:s1",
+   "reason": "descriptive",
+   "text": "These decisions answer questions that the documents above leave open (gaps found by nnc spec-lint before gate G1, and the open questions of the rule review)."
+  },
+  {
+   "sentence": "8:s2",
+   "reason": "descriptive",
+   "text": "They were made by Claude on the delegation of the project owner (GabrielHCMUT), on 2026-11-20, from the documents only; they are not OpenTitan requirements and not a hardware designer's review."
+  },
+  {
+   "sentence": "8:s3",
+   "reason": "descriptive",
+   "text": "Where the documents do not decide a behaviour, the decision is that the verification does not demand one reading: it checks only what every reading has in common, or a bound."
+  },
+  {
+   "sentence": "8:s4",
+   "reason": "informative_note",
+   "text": "The numeric bounds in this section are verification bounds chosen to be generous, not timing requirements of rv_timer."
+  },
+  {
+   "sentence": "8:s8",
+   "reason": "descriptive",
+   "text": "ID: D-004; Question: Expiry while inactive (gap 003); Decision: Not specified. INTR_STATE0 and the interrupt are not checked while CTRL.active_0 = 0 with mtime >= mtimecmp."
+  },
+  {
+   "sentence": "8:s11",
+   "reason": "descriptive",
+   "text": "ID: D-007; Question: Software write to INTR_STATE0 at the same time as an expiry (question 17); Decision: Software has precedence for that cycle; if the condition still holds, IS_0 returns to 1 (register tool, simultaneous access). Only the result after 4 cycles is checked."
+  },
+  {
+   "sentence": "8:s24",
+   "reason": "descriptive",
+   "text": "ID: D-020; Question: Access type of INTR_STATE0.IS_0 (gap 014); Decision: The register tables bind: IS_0 is rw1c. The hjson text in the Theory of Operation is an example for two harts and two timers, not this configuration."
+  }
+ ]
+}

@@ -1,0 +1,1853 @@
+{
+ "mutants": [
+  {
+   "id": "M01",
+   "file": "prim_mubi_pkg.sv",
+   "line": 72,
+   "operator": "ne_to_eq",
+   "original": "return MuBi4True != val;",
+   "mutated": "    return MuBi4True == val;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "equivalence": {
+    "status": "CEX",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "    return MuBi4True == val;",
+    "per_config": {
+     "base.s1": {
+      "status": "CEX",
+      "overrides": {},
+      "first_difference": "outputs differ at step 4 after reset: o_d_data (original 11111111111111111111111111111111, mutant 00000000000000000000000000000000), o_d_error (original 1, mutant 0)",
+      "trace": "work/mutation_equiv/M01_base.s1.vcd"
+     }
+    }
+   }
+  },
+  {
+   "id": "M02",
+   "file": "tlul_err.sv",
+   "line": 28,
+   "operator": "eq_to_ne",
+   "original": "assign op_get     = (tl_i.a_opcode == Get);",
+   "mutated": "  assign op_get     = (tl_i.a_opcode != Get);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M03",
+   "file": "prim_secded_inv_39_32_enc.sv",
+   "line": 17,
+   "operator": "one_to_zero",
+   "original": "data_o[35] = (^(data_i & 32'h31234ED1)) ^ 1'b1;",
+   "mutated": "    data_o[35] = (^(data_i & 32'h31234ED1)) ^ 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_fatal_fault",
+    "test_chk_015_alert_regwen_rw0c",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_chk_017_unmapped_offsets",
+    "test_chk_018_byte_writes",
+    "test_chk_019_protocol_errors",
+    "test_chk_020_subword_reads",
+    "test_chk_021_instruction_fetch",
+    "test_chk_022_intr_by_tick",
+    "test_chk_023_intr_by_compare_write",
+    "test_chk_024_clear_by_compare_write",
+    "test_chk_025_intr_state_rw1c",
+    "test_chk_026_intr_enable_masking",
+    "test_chk_027_intr_test",
+    "test_chk_028_reset_values",
+    "test_chk_029_rw_fields",
+    "test_chk_030_async_reset",
+    "test_chk_031_tick_and_step",
+    "test_chk_032_inactive_and_first_tick",
+    "test_chk_033_carry_and_64bit_compare",
+    "test_chk_034_wrap_2_64",
+    "test_chk_035_outstanding_backpressure",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-011",
+    "CHK-003"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M04",
+   "file": "prim_subreg.sv",
+   "line": 75,
+   "operator": "and_to_or",
+   "original": "assign qs = de && we ? d : q;",
+   "mutated": "    assign qs = de || we ? d : q;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "equivalence": {
+    "status": "PROVEN",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "    assign qs = de || we ? d : q;",
+    "per_config": {
+     "base.s1": {
+      "status": "PROVEN",
+      "overrides": {}
+     }
+    }
+   }
+  },
+  {
+   "id": "M05",
+   "file": "prim_secded_inv_64_57_enc.sv",
+   "line": 17,
+   "operator": "one_to_zero",
+   "original": "data_o[60] = (^(data_i & 57'h1DEEE3B8E388E22)) ^ 1'b1;",
+   "mutated": "    data_o[60] = (^(data_i & 57'h1DEEE3B8E388E22)) ^ 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_fatal_fault",
+    "test_chk_015_alert_regwen_rw0c",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_chk_017_unmapped_offsets",
+    "test_chk_018_byte_writes",
+    "test_chk_019_protocol_errors",
+    "test_chk_020_subword_reads",
+    "test_chk_021_instruction_fetch",
+    "test_chk_022_intr_by_tick",
+    "test_chk_023_intr_by_compare_write",
+    "test_chk_024_clear_by_compare_write",
+    "test_chk_025_intr_state_rw1c",
+    "test_chk_026_intr_enable_masking",
+    "test_chk_027_intr_test",
+    "test_chk_028_reset_values",
+    "test_chk_029_rw_fields",
+    "test_chk_030_async_reset",
+    "test_chk_031_tick_and_step",
+    "test_chk_032_inactive_and_first_tick",
+    "test_chk_033_carry_and_64bit_compare",
+    "test_chk_034_wrap_2_64",
+    "test_chk_035_outstanding_backpressure",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-011",
+    "CHK-013",
+    "CHK-003"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M06",
+   "file": "prim_alert_sender.sv",
+   "line": 199,
+   "operator": "one_to_zero",
+   "original": "alert_nd  = 1'b1;",
+   "mutated": "    alert_nd  = 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_fatal_fault",
+    "test_chk_015_alert_regwen_rw0c",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-001"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M07",
+   "file": "prim_subreg_arb.sv",
+   "line": 34,
+   "operator": "eq_to_ne",
+   "original": "assign wr_data = (we == 1'b1) ? wd : d; // SW higher priority",
+   "mutated": "    assign wr_data = (we != 1'b1) ? wd : d; // SW higher priority",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_018_byte_writes",
+    "test_chk_020_subword_reads",
+    "test_chk_021_instruction_fetch",
+    "test_chk_022_intr_by_tick",
+    "test_chk_023_intr_by_compare_write",
+    "test_chk_024_clear_by_compare_write",
+    "test_chk_025_intr_state_rw1c",
+    "test_chk_026_intr_enable_masking",
+    "test_chk_027_intr_test",
+    "test_chk_029_rw_fields",
+    "test_chk_030_async_reset",
+    "test_chk_031_tick_and_step",
+    "test_chk_032_inactive_and_first_tick",
+    "test_chk_033_carry_and_64bit_compare",
+    "test_chk_034_wrap_2_64",
+    "test_chk_035_outstanding_backpressure",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M08",
+   "file": "tlul_adapter_reg.sv",
+   "line": 156,
+   "operator": "eq_to_ne",
+   "original": "assign rd_req  = a_ack & (tl_i.a_opcode == Get);",
+   "mutated": "  assign rd_req  = a_ack & (tl_i.a_opcode != Get);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_fatal_fault",
+    "test_chk_015_alert_regwen_rw0c",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_chk_017_unmapped_offsets",
+    "test_chk_018_byte_writes",
+    "test_chk_019_protocol_errors",
+    "test_chk_020_subword_reads",
+    "test_chk_021_instruction_fetch",
+    "test_chk_022_intr_by_tick",
+    "test_chk_023_intr_by_compare_write",
+    "test_chk_024_clear_by_compare_write",
+    "test_chk_025_intr_state_rw1c",
+    "test_chk_026_intr_enable_masking",
+    "test_chk_027_intr_test",
+    "test_chk_028_reset_values",
+    "test_chk_029_rw_fields",
+    "test_chk_030_async_reset",
+    "test_chk_031_tick_and_step",
+    "test_chk_032_inactive_and_first_tick",
+    "test_chk_033_carry_and_64bit_compare",
+    "test_chk_034_wrap_2_64",
+    "test_chk_035_outstanding_backpressure",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-010",
+    "CHK-011"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M09",
+   "file": "tlul_err.sv",
+   "line": 79,
+   "operator": "one_to_zero",
+   "original": "mask_chk     = 1'b1;",
+   "mutated": "          mask_chk     = 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_fatal_fault",
+    "test_chk_015_alert_regwen_rw0c",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_chk_017_unmapped_offsets",
+    "test_chk_018_byte_writes",
+    "test_chk_019_protocol_errors",
+    "test_chk_020_subword_reads",
+    "test_chk_021_instruction_fetch",
+    "test_chk_022_intr_by_tick",
+    "test_chk_023_intr_by_compare_write",
+    "test_chk_024_clear_by_compare_write",
+    "test_chk_025_intr_state_rw1c",
+    "test_chk_026_intr_enable_masking",
+    "test_chk_027_intr_test",
+    "test_chk_028_reset_values",
+    "test_chk_029_rw_fields",
+    "test_chk_030_async_reset",
+    "test_chk_031_tick_and_step",
+    "test_chk_032_inactive_and_first_tick",
+    "test_chk_033_carry_and_64bit_compare",
+    "test_chk_034_wrap_2_64",
+    "test_chk_035_outstanding_backpressure",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-011"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M10",
+   "file": "timer_core.sv",
+   "line": 32,
+   "operator": "eq_to_ne",
+   "original": "end else if (tick_count == prescaler) begin",
+   "mutated": "    end else if (tick_count != prescaler) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_022_intr_by_tick",
+    "test_chk_023_intr_by_compare_write",
+    "test_chk_024_clear_by_compare_write",
+    "test_chk_031_tick_and_step",
+    "test_chk_032_inactive_and_first_tick",
+    "test_chk_033_carry_and_64bit_compare"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M11",
+   "file": "rv_timer_reg_top.sv",
+   "line": 81,
+   "operator": "one_to_zero",
+   "original": "err_q <= 1'b1;",
+   "mutated": "      err_q <= 1'b0;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "equivalence": {
+    "status": "PROVEN",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "      err_q <= 1'b0;",
+    "per_config": {
+     "base.s1": {
+      "status": "PROVEN",
+      "overrides": {}
+     }
+    }
+   }
+  },
+  {
+   "id": "M12",
+   "file": "prim_diff_decode.sv",
+   "line": 234,
+   "operator": "negate_if",
+   "original": "if (!rst_ni) begin",
+   "mutated": "      if (!(!rst_ni)) begin",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "equivalence": {
+    "status": "ERROR",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "      if (!(!rst_ni)) begin",
+    "per_config": {
+     "base.s1": {
+      "status": "ERROR",
+      "overrides": {},
+      "detail": "gate/prim_diff_decode.sv:234: ERROR: polarity of condition doesn't match edge sensitivity\nERROR: Design elaboration failed; see full log for details"
+     }
+    }
+   }
+  },
+  {
+   "id": "M13",
+   "file": "tlul_adapter_reg.sv",
+   "line": 171,
+   "operator": "one_to_zero",
+   "original": "else if (a_ack) outstanding_q <= 1'b1;",
+   "mutated": "    else if (a_ack) outstanding_q <= 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_fatal_fault",
+    "test_chk_015_alert_regwen_rw0c",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_chk_017_unmapped_offsets",
+    "test_chk_018_byte_writes",
+    "test_chk_019_protocol_errors",
+    "test_chk_020_subword_reads",
+    "test_chk_021_instruction_fetch",
+    "test_chk_022_intr_by_tick",
+    "test_chk_023_intr_by_compare_write",
+    "test_chk_024_clear_by_compare_write",
+    "test_chk_025_intr_state_rw1c",
+    "test_chk_026_intr_enable_masking",
+    "test_chk_027_intr_test",
+    "test_chk_028_reset_values",
+    "test_chk_029_rw_fields",
+    "test_chk_030_async_reset",
+    "test_chk_031_tick_and_step",
+    "test_chk_032_inactive_and_first_tick",
+    "test_chk_033_carry_and_64bit_compare",
+    "test_chk_034_wrap_2_64",
+    "test_chk_035_outstanding_backpressure",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M14",
+   "file": "tlul_adapter_reg.sv",
+   "line": 221,
+   "operator": "or_to_and",
+   "original": "rdata_q <= (error_i || err_internal || wr_req) ? '1 : rdata_i;",
+   "mutated": "        rdata_q <= (error_i && err_internal || wr_req) ? '1 : rdata_i;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "equivalence": {
+    "status": "CEX",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "        rdata_q <= (error_i && err_internal || wr_req) ? '1 : rdata_i;",
+    "per_config": {
+     "base.s1": {
+      "status": "CEX",
+      "overrides": {},
+      "first_difference": "outputs differ at step 4 after reset: o_d_data (original 11111111111111111111111111111111, mutant 00000000000000000000000000000000)",
+      "trace": "work/mutation_equiv/M14_base.s1.vcd"
+     }
+    }
+   }
+  },
+  {
+   "id": "M15",
+   "file": "timer_core.sv",
+   "line": 28,
+   "operator": "negate_if",
+   "original": "if (!rst_ni) begin",
+   "mutated": "    if (!(!rst_ni)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_022_intr_by_tick",
+    "test_chk_023_intr_by_compare_write",
+    "test_chk_024_clear_by_compare_write",
+    "test_chk_031_tick_and_step",
+    "test_chk_032_inactive_and_first_tick",
+    "test_chk_033_carry_and_64bit_compare"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M16",
+   "file": "tlul_err.sv",
+   "line": 61,
+   "operator": "negate_if",
+   "original": "if (tl_i.a_valid) begin",
+   "mutated": "    if (!(tl_i.a_valid)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_fatal_fault",
+    "test_chk_015_alert_regwen_rw0c",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_chk_017_unmapped_offsets",
+    "test_chk_018_byte_writes",
+    "test_chk_019_protocol_errors",
+    "test_chk_020_subword_reads",
+    "test_chk_021_instruction_fetch",
+    "test_chk_022_intr_by_tick",
+    "test_chk_023_intr_by_compare_write",
+    "test_chk_024_clear_by_compare_write",
+    "test_chk_025_intr_state_rw1c",
+    "test_chk_026_intr_enable_masking",
+    "test_chk_027_intr_test",
+    "test_chk_028_reset_values",
+    "test_chk_029_rw_fields",
+    "test_chk_030_async_reset",
+    "test_chk_031_tick_and_step",
+    "test_chk_032_inactive_and_first_tick",
+    "test_chk_033_carry_and_64bit_compare",
+    "test_chk_034_wrap_2_64",
+    "test_chk_035_outstanding_backpressure",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-011"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M17",
+   "file": "prim_flop.sv",
+   "line": 16,
+   "operator": "negate_if",
+   "original": "if (!rst_ni) begin",
+   "mutated": "    if (!(!rst_ni)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_fatal_fault",
+    "test_chk_015_alert_regwen_rw0c",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_chk_024_clear_by_compare_write",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M18",
+   "file": "timer_core.sv",
+   "line": 35,
+   "operator": "one_to_zero",
+   "original": "tick_count <= tick_count + 1'b1;",
+   "mutated": "      tick_count <= tick_count + 1'b0;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_022_intr_by_tick",
+    "test_chk_023_intr_by_compare_write",
+    "test_chk_024_clear_by_compare_write",
+    "test_chk_031_tick_and_step",
+    "test_chk_032_inactive_and_first_tick",
+    "test_chk_033_carry_and_64bit_compare"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M19",
+   "file": "prim_alert_sender.sv",
+   "line": 223,
+   "operator": "negate_if",
+   "original": "if (!ack_level) begin",
+   "mutated": "        if (!(!ack_level)) begin",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "equivalence": {
+    "status": "CEX",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "        if (!(!ack_level)) begin",
+    "per_config": {
+     "base.s1": {
+      "status": "CEX",
+      "overrides": {},
+      "first_difference": "outputs differ at step 30 after reset: o_alert (original 0, mutant 1)",
+      "trace": "work/mutation_equiv/M19_base.s1.vcd"
+     }
+    }
+   }
+  },
+  {
+   "id": "M20",
+   "file": "tlul_adapter_reg.sv",
+   "line": 217,
+   "operator": "negate_if",
+   "original": "if (!rst_ni) begin",
+   "mutated": "      if (!(!rst_ni)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_fatal_fault",
+    "test_chk_015_alert_regwen_rw0c",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_chk_017_unmapped_offsets",
+    "test_chk_018_byte_writes",
+    "test_chk_019_protocol_errors",
+    "test_chk_020_subword_reads",
+    "test_chk_021_instruction_fetch",
+    "test_chk_022_intr_by_tick",
+    "test_chk_023_intr_by_compare_write",
+    "test_chk_024_clear_by_compare_write",
+    "test_chk_025_intr_state_rw1c",
+    "test_chk_026_intr_enable_masking",
+    "test_chk_027_intr_test",
+    "test_chk_028_reset_values",
+    "test_chk_029_rw_fields",
+    "test_chk_030_async_reset",
+    "test_chk_031_tick_and_step",
+    "test_chk_032_inactive_and_first_tick",
+    "test_chk_033_carry_and_64bit_compare",
+    "test_chk_034_wrap_2_64",
+    "test_chk_035_outstanding_backpressure",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-010",
+    "CHK-011"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M21",
+   "file": "prim_secded_inv_64_57_dec.sv",
+   "line": 62,
+   "operator": "eq_to_ne",
+   "original": "data_o[37] = (syndrome_o == 7'h4F) ^ data_i[37];",
+   "mutated": "    data_o[37] = (syndrome_o != 7'h4F) ^ data_i[37];",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "equivalence": {
+    "status": "PROVEN",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "    data_o[37] = (syndrome_o != 7'h4F) ^ data_i[37];",
+    "per_config": {
+     "base.s1": {
+      "status": "PROVEN",
+      "overrides": {}
+     }
+    }
+   }
+  },
+  {
+   "id": "M22",
+   "file": "rv_timer_reg_top.sv",
+   "line": 583,
+   "operator": "zero_to_one",
+   "original": "assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0 ;",
+   "mutated": "  assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b1 ;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "equivalence": {
+    "status": "PROVEN",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "  assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b1 ;",
+    "per_config": {
+     "base.s1": {
+      "status": "PROVEN",
+      "overrides": {}
+     }
+    }
+   }
+  },
+  {
+   "id": "M23",
+   "file": "prim_onehot_check.sv",
+   "line": 98,
+   "operator": "and_to_or",
+   "original": "assign err_tree[Pa] = (or_tree[C0] && or_tree[C1]) || err_tree[C0] || err_tree[C1];",
+   "mutated": "        assign err_tree[Pa] = (or_tree[C0] || or_tree[C1]) || err_tree[C0] || err_tree[C1];",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_fatal_fault",
+    "test_chk_015_alert_regwen_rw0c",
+    "test_chk_021_instruction_fetch",
+    "test_chk_035_outstanding_backpressure",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-003"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M24",
+   "file": "prim_intr_hw.sv",
+   "line": 97,
+   "operator": "negate_if",
+   "original": "if (!rst_ni) begin",
+   "mutated": "      if (!(!rst_ni)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_022_intr_by_tick",
+    "test_chk_023_intr_by_compare_write",
+    "test_chk_024_clear_by_compare_write",
+    "test_chk_025_intr_state_rw1c",
+    "test_chk_026_intr_enable_masking",
+    "test_chk_027_intr_test",
+    "test_chk_030_async_reset",
+    "test_chk_033_carry_and_64bit_compare",
+    "test_chk_034_wrap_2_64",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-006"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M25",
+   "file": "prim_alert_receiver.sv",
+   "line": 109,
+   "operator": "and_to_or",
+   "original": "assign ping_rise   = ping_req_d && !ping_req_q;",
+   "mutated": "  assign ping_rise   = ping_req_d || !ping_req_q;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_fatal_fault",
+    "test_chk_015_alert_regwen_rw0c",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M26",
+   "file": "prim_alert_sender.sv",
+   "line": 206,
+   "operator": "or_to_and",
+   "original": "if (alert_trigger || ping_trigger) begin",
+   "mutated": "        if (alert_trigger && ping_trigger) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_fatal_fault",
+    "test_chk_015_alert_regwen_rw0c",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M27",
+   "file": "prim_alert_sender.sv",
+   "line": 171,
+   "operator": "zero_to_one",
+   "original": "assign alert_set_d = (alert_clr) ? 1'b0 : alert_req_trigger;",
+   "mutated": "    assign alert_set_d = (alert_clr) ? 1'b1 : alert_req_trigger;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "equivalence": {
+    "status": "PROVEN",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "    assign alert_set_d = (alert_clr) ? 1'b1 : alert_req_trigger;",
+    "per_config": {
+     "base.s1": {
+      "status": "PROVEN",
+      "overrides": {}
+     }
+    }
+   }
+  },
+  {
+   "id": "M28",
+   "file": "prim_subreg.sv",
+   "line": 63,
+   "operator": "negate_if",
+   "original": "end else if (wr_en) begin",
+   "mutated": "    end else if (!(wr_en)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_015_alert_regwen_rw0c",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_chk_017_unmapped_offsets",
+    "test_chk_018_byte_writes",
+    "test_chk_019_protocol_errors",
+    "test_chk_020_subword_reads",
+    "test_chk_021_instruction_fetch",
+    "test_chk_022_intr_by_tick",
+    "test_chk_023_intr_by_compare_write",
+    "test_chk_024_clear_by_compare_write",
+    "test_chk_025_intr_state_rw1c",
+    "test_chk_026_intr_enable_masking",
+    "test_chk_027_intr_test",
+    "test_chk_028_reset_values",
+    "test_chk_029_rw_fields",
+    "test_chk_030_async_reset",
+    "test_chk_031_tick_and_step",
+    "test_chk_032_inactive_and_first_tick",
+    "test_chk_033_carry_and_64bit_compare",
+    "test_chk_034_wrap_2_64",
+    "test_chk_035_outstanding_backpressure",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [],
+   "run": "base.s1"
+  },
+  {
+   "id": "M29",
+   "file": "prim_alert_receiver.sv",
+   "line": 202,
+   "operator": "zero_to_one",
+   "original": "send_ping = 1'b0;",
+   "mutated": "        send_ping = 1'b1;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "equivalence": {
+    "status": "PROVEN",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "        send_ping = 1'b1;",
+    "per_config": {
+     "base.s1": {
+      "status": "PROVEN",
+      "overrides": {}
+     }
+    }
+   }
+  },
+  {
+   "id": "M30",
+   "file": "prim_secded_inv_39_32_dec.sv",
+   "line": 49,
+   "operator": "eq_to_ne",
+   "original": "data_o[24] = (syndrome_o == 7'h2C) ^ data_i[24];",
+   "mutated": "    data_o[24] = (syndrome_o != 7'h2C) ^ data_i[24];",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "equivalence": {
+    "status": "PROVEN",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "    data_o[24] = (syndrome_o != 7'h2C) ^ data_i[24];",
+    "per_config": {
+     "base.s1": {
+      "status": "PROVEN",
+      "overrides": {}
+     }
+    }
+   }
+  },
+  {
+   "id": "M31",
+   "file": "prim_alert_receiver.sv",
+   "line": 249,
+   "operator": "one_to_zero",
+   "original": "integ_fail_o = 1'b1;",
+   "mutated": "        integ_fail_o = 1'b0;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "equivalence": {
+    "status": "PROVEN",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "        integ_fail_o = 1'b0;",
+    "per_config": {
+     "base.s1": {
+      "status": "PROVEN",
+      "overrides": {}
+     }
+    }
+   }
+  },
+  {
+   "id": "M32",
+   "file": "prim_alert_receiver.sv",
+   "line": 226,
+   "operator": "or_to_and",
+   "original": "send_ping = ping_rise || ping_pending_q;",
+   "mutated": "          send_ping = ping_rise && ping_pending_q;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "equivalence": {
+    "status": "PROVEN",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "          send_ping = ping_rise && ping_pending_q;",
+    "per_config": {
+     "base.s1": {
+      "status": "PROVEN",
+      "overrides": {}
+     }
+    }
+   }
+  },
+  {
+   "id": "M33",
+   "file": "rv_timer_reg_top.sv",
+   "line": 583,
+   "operator": "or_to_and",
+   "original": "assign addrmiss = (reg_re || reg_we) ? ~|addr_hit : 1'b0 ;",
+   "mutated": "  assign addrmiss = (reg_re && reg_we) ? ~|addr_hit : 1'b0 ;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_017_unmapped_offsets",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-011"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M34",
+   "file": "prim_onehot_check.sv",
+   "line": 108,
+   "operator": "or_to_and",
+   "original": "assign err_o = oh0_err || enable_err || addr_err;",
+   "mutated": "  assign err_o = oh0_err && enable_err || addr_err;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "equivalence": {
+    "status": "PROVEN",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "  assign err_o = oh0_err && enable_err || addr_err;",
+    "per_config": {
+     "base.s1": {
+      "status": "PROVEN",
+      "overrides": {}
+     }
+    }
+   }
+  },
+  {
+   "id": "M35",
+   "file": "prim_mubi_pkg.sv",
+   "line": 44,
+   "operator": "eq_to_ne",
+   "original": "return MuBi4True == val;",
+   "mutated": "    return MuBi4True != val;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_014_alert_test_fatal_fault",
+    "test_chk_015_alert_regwen_rw0c",
+    "test_chk_016_intg_error_fatal_alert",
+    "test_chk_017_unmapped_offsets",
+    "test_chk_018_byte_writes",
+    "test_chk_019_protocol_errors",
+    "test_chk_020_subword_reads",
+    "test_chk_021_instruction_fetch",
+    "test_chk_022_intr_by_tick",
+    "test_chk_023_intr_by_compare_write",
+    "test_chk_024_clear_by_compare_write",
+    "test_chk_025_intr_state_rw1c",
+    "test_chk_026_intr_enable_masking",
+    "test_chk_027_intr_test",
+    "test_chk_028_reset_values",
+    "test_chk_029_rw_fields",
+    "test_chk_030_async_reset",
+    "test_chk_031_tick_and_step",
+    "test_chk_032_inactive_and_first_tick",
+    "test_chk_033_carry_and_64bit_compare",
+    "test_chk_034_wrap_2_64",
+    "test_chk_035_outstanding_backpressure",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-011"
+   ],
+   "run": "base.s1"
+  },
+  {
+   "id": "M36",
+   "file": "prim_diff_decode.sv",
+   "line": 235,
+   "operator": "zero_to_one",
+   "original": "diff_pq  <= 1'b0;",
+   "mutated": "        diff_pq  <= 1'b1;",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": [],
+   "run": "base.s1",
+   "equivalence": {
+    "status": "PROVEN",
+    "depth": 32,
+    "frontend": "slang",
+    "mutated": "        diff_pq  <= 1'b1;",
+    "per_config": {
+     "base.s1": {
+      "status": "PROVEN",
+      "overrides": {}
+     }
+    }
+   }
+  }
+ ],
+ "candidates": 235,
+ "count": 36,
+ "killed": 21,
+ "survived": 15,
+ "not_compiled": 0,
+ "score": 58.3,
+ "seed": 1,
+ "excluded_uncovered": {
+  "files": [
+   "ot_rv_timer_nnc.sv",
+   "prim_alert_pkg.sv",
+   "prim_assert.sv",
+   "prim_assert_sec_cm.svh",
+   "prim_flop_macros.sv",
+   "prim_onehot_enc.sv",
+   "prim_secded_pkg.sv",
+   "prim_util_pkg.sv",
+   "rv_timer.sv",
+   "tlul_cmd_intg_gen.sv",
+   "tlul_pkg.sv",
+   "tlul_rsp_intg_chk.sv",
+   "tlul_rsp_intg_gen.sv"
+  ],
+  "lines": 1695
+ },
+ "baseline_failing": {
+  "tests": [],
+  "checks": []
+ },
+ "runs": {
+  "available": [
+   "base.s1",
+   "base.s2"
+  ],
+  "used": [
+   "base.s1"
+  ],
+  "second_chance_sims": 0
+ },
+ "threshold": 85.0,
+ "attribution": {
+  "mutants": {
+   "M01": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "mubi4_test_false_loose is only called inside assertions in prim_alert_receiver. It drives no logic and no port, so the change is unobservable."
+   },
+   "M02": {
+    "rules": [
+     "TL-T3.1.3.5-04",
+     "RT-4.1-06",
+     "RT-8-28",
+     "TL-T3.1.3.5-03",
+     "RG-T1.4.1-07"
+    ],
+    "equivalent": false,
+    "reason": "op_get is inverted, so the 'PutFullData must set all active lanes' check (fulldata_chk) is skipped for PutFullData, and a Get with an incomplete mask is wrongly flagged as an error. A PutFullData with mask 0111 would be accepted without d_error."
+   },
+   "M03": {
+    "rules": [
+     "RT-4.2-01",
+     "RT-4.3-02",
+     "RT-4.3-01",
+     "RT-8-32",
+     "RT-3-05"
+    ],
+    "equivalent": false,
+    "reason": "Check bit 35 of the 39/32 data-integrity encoder loses its inversion. Request data_intg then fails the device's check (spurious fatal alert) and response data_intg fails the wrapper's check (o_d_intg_err=1)."
+   },
+   "M04": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "The line sits in the gen_rc branch, which is elaborated only for SwAccessRC. rv_timer has no RC fields, so the branch never exists and qs=q regardless."
+   },
+   "M05": {
+    "rules": [
+     "RT-4.2-01",
+     "RT-4.3-02",
+     "RT-4.3-01",
+     "RT-8-32",
+     "RT-3-05"
+    ],
+    "equivalent": false,
+    "reason": "Check bit 60 of the 64/57 encoder loses its inversion. Both the command integrity (request) and the response integrity (D channel) are then wrong, giving a spurious alert and o_d_intg_err."
+   },
+   "M06": {
+    "rules": [
+     "RT-5-04",
+     "RT-3-07",
+     "RT-8-32",
+     "AH-T1.3.2-01"
+    ],
+    "equivalent": false,
+    "reason": "The default (idle) alert_n becomes 0 together with alert_p=0, so the diff pair is no longer complementary. The receiver sees a signal-integrity error and o_alert_integ_fail goes high."
+   },
+   "M07": {
+    "rules": [
+     "RG-T1.5.1-01",
+     "RT-8-23",
+     "RT-T5.7.1-01",
+     "RT-T5.3.1-01",
+     "RT-7-02"
+    ],
+    "equivalent": false,
+    "reason": "For RW/WO fields the write data select is inverted: a software write (we=1) stores the hardware value d, and a hardware update stores wd. Register read-back and the timer update break."
+   },
+   "M08": {
+    "rules": [
+     "RT-8-27",
+     "RT-3-04",
+     "RT-3-01",
+     "TL-T3.1.3.4-07",
+     "RT-4.1-01"
+    ],
+    "equivalent": false,
+    "reason": "rd_req is true for non-Get opcodes. A Get is answered with AccessAck instead of AccessAckData, a Put is answered with AccessAckData, and re_o is wrong."
+   },
+   "M09": {
+    "rules": [
+     "RT-8-23",
+     "RG-T1.4.1-02",
+     "TL-T3.1.3.4-04",
+     "TL-T3.1.3.4-05",
+     "RT-1-02"
+    ],
+    "equivalent": false,
+    "reason": "For a_size=2, mask_chk is forced to 0, so every 4-byte access is judged illegal and gets d_error=1. Full-word reads and writes to mapped registers fail."
+   },
+   "M10": {
+    "rules": [
+     "RT-T3.1-01",
+     "RT-8-01",
+     "RT-T2.2-01",
+     "RT-T3.1-02",
+     "RT-7-03"
+    ],
+    "equivalent": false,
+    "reason": "The tick counter restarts at 0 on every cycle where it is not equal to the prescaler. For prescale>0 it stays at 0, so ticks never occur and mtime never advances. The tick period is wrong."
+   },
+   "M11": {
+    "rules": [
+     "RT-5-05",
+     "RT-8-16",
+     "CP-T1.9.1-04",
+     "RT-4.2-03",
+     "RT-T6.3-01"
+    ],
+    "equivalent": false,
+    "reason": "The sticky err_q is never set, so intg_err_o is asserted only while the corrupted request is on the bus. The fatal alert is no longer repeated until reset."
+   },
+   "M12": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "In the synchronous decoder this inverts the reset of diff_pq/level_q. The only effects are that diff_pq/level_q are held at 0 instead of tracking the input. rise_o/fall_o could matter only on the sender's ping pair, which stays constant (ping_req_i is tied to 0). level_q matters only during sigint, and every FSM output is overridden then. Nothing reaches a port."
+   },
+   "M13": {
+    "rules": [
+     "RT-4.1-01",
+     "TL-T3.1.3.2.3-01",
+     "RT-8-27",
+     "RT-8-25",
+     "TL-T3.1.3.2-01"
+    ],
+    "equivalent": false,
+    "reason": "outstanding_q is cleared on a_ack instead of set, so d_valid never rises. Accepted requests get no response."
+   },
+   "M14": {
+    "rules": [],
+    "equivalent": false,
+    "reason": "The mask becomes (error_i && err_internal) || wr_req. For error reads, d_data now carries the register's read data instead of all-ones (for example a Get with a_size=3 to 0x110, or a Get to an unmapped offset). Only d_data differs, and no rule defines d_data on errors, so no requirement is broken."
+   },
+   "M15": {
+    "rules": [
+     "RT-T3.1-01",
+     "RT-8-01",
+     "RT-T2.2-01",
+     "RT-7-03",
+     "RT-T3.1-02"
+    ],
+    "equivalent": false,
+    "reason": "The reset branch is taken when rst_ni=1, so tick_count is held at 0 during operation. For prescale>0 no tick is ever generated and mtime stays frozen."
+   },
+   "M16": {
+    "rules": [
+     "RG-T1.4.1-02",
+     "RT-8-23",
+     "RT-1-02",
+     "TL-T3.1.3.4-01",
+     "RT-8-22"
+    ],
+    "equivalent": false,
+    "reason": "The configuration checks run only when a_valid=0, so they stay at 0 whenever a request is valid. Every request is judged an error and gets d_error=1."
+   },
+   "M17": {
+    "rules": [
+     "RT-5-06",
+     "RT-5-02",
+     "RT-3-06",
+     "AH-T1.3.2-01",
+     "RT-5-05"
+    ],
+    "equivalent": false,
+    "reason": "prim_flop is held in reset while rst_ni=1, so the alert sender and receiver flops stay at their reset values. The handshake never starts and no o_alert pulse occurs."
+   },
+   "M18": {
+    "rules": [
+     "RT-T3.1-01",
+     "RT-8-01",
+     "RT-T2.2-01",
+     "RT-T3.1-02",
+     "RT-7-03"
+    ],
+    "equivalent": false,
+    "reason": "tick_count increments by 0 and stays at 0. For prescale>0 there is never a tick and mtime does not count."
+   },
+   "M19": {
+    "rules": [
+     "AH-T1.3.2-01",
+     "AH-T1.3.2-03",
+     "AH-T1.3.2-02",
+     "RT-5-02",
+     "RT-5-05"
+    ],
+    "equivalent": false,
+    "reason": "The sender leaves AlertHsPhase2 while ack is still high instead of waiting for ack to deassert. The four-phase handshake is cut short and the repeat period of a fatal alert shrinks (6 cycles instead of 7), a visible o_alert timing change."
+   },
+   "M20": {
+    "rules": [
+     "RT-8-19",
+     "RT-8-28",
+     "RT-4.1-06",
+     "RT-7-01"
+    ],
+    "equivalent": false,
+    "reason": "The rdata_q/error_q reset is inverted, so they are held at 0 during operation. All read data is 0 and d_error is never set."
+   },
+   "M21": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "data_o of prim_secded_inv_64_57_dec is left unconnected in every user (tlul_cmd_intg_chk, tlul_rsp_intg_chk). Only syndrome/err_o are used, and they do not depend on data_o."
+   },
+   "M22": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "The mutant makes addrmiss=1 when neither reg_re nor reg_we is active. error_i is only sampled when a request is accepted. In that case reg_re/reg_we is 1, unless err_internal is set, where the response is already an error with all-ones data. Write enables are also gated by reg_we, and the we-check enable also needs reg_we. No port changes."
+   },
+   "M23": {
+    "rules": [
+     "RT-8-14",
+     "RT-5-06",
+     "RT-8-12",
+     "RT-T6.3-01"
+    ],
+    "equivalent": false,
+    "reason": "The error tree uses OR instead of AND, so any single set write-enable bit counts as multi-hot. Each register write raises reg_we_err, giving spurious fatal alerts and o_alert pulses."
+   },
+   "M24": {
+    "rules": [
+     "RT-8-07",
+     "CP-T1.8.6-04",
+     "RT-T6.2-01",
+     "RT-T4.4-01",
+     "CP-T1.8.1-01"
+    ],
+    "equivalent": false,
+    "reason": "The interrupt output flop is held at 0 while rst_ni=1, so o_intr_timer_expired never asserts."
+   },
+   "M25": {
+    "rules": [
+     "RT-5-02",
+     "RT-5-06",
+     "AH-T1.3.2-04",
+     "RT-3-06"
+    ],
+    "equivalent": false,
+    "reason": "ping_rise becomes ping_req_d || !ping_req_q, which is constantly 1. The receiver issues pings and marks pending, so alerts are reported as ping responses and o_alert never pulses."
+   },
+   "M26": {
+    "rules": [
+     "RT-5-06",
+     "RT-T5.2.1-03",
+     "RT-8-13",
+     "RT-T6.3-01",
+     "RT-5-05"
+    ],
+    "equivalent": false,
+    "reason": "A handshake now needs alert_trigger AND ping_trigger. Pings never occur, so the sender never sends an alert."
+   },
+   "M27": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "The line is in gen_recov, which is elaborated only for IsFatal=0. rv_timer instantiates the sender with IsFatal=1, so the line does not exist in the design."
+   },
+   "M28": {
+    "rules": [
+     "RT-7-02",
+     "RT-8-23",
+     "RG-T1.5.1-03",
+     "RT-T5.7.1-01",
+     "RT-T5.3.1-01"
+    ],
+    "equivalent": false,
+    "reason": "The register updates when wr_en is false and ignores real writes. Software writes are not stored, and idle registers load wr_data."
+   },
+   "M29": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "send_ping in the InitReq state only feeds ping_tog_pd, which is forced to 0 by send_init in the same state. The change has no effect."
+   },
+   "M30": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "data_o of prim_secded_inv_39_32_dec is left unconnected in tlul_data_integ_dec. Only err_o is used, and it depends on the syndrome, not on data_o."
+   },
+   "M31": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "The clamp only triggers on a sigint on the alert pair outside InitReq/InitAckWait. In this integration the only sigint is the deliberate one during the post-reset init sequence, where the receiver is in InitReq/InitAckWait and the clamp is skipped. No legal stimulus produces it, so integ_fail_o is always 0 either way."
+   },
+   "M32": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "ping_req_i is tied to 0 in the wrapper, so ping_rise and ping_pending_q are always 0. send_ping is 0 under both || and &&."
+   },
+   "M33": {
+    "rules": [
+     "RT-8-19",
+     "TL-T3.1.3.5-05",
+     "RG-T1.4.1-01",
+     "RG-T1.4.1-03",
+     "RT-T3.2.2-03"
+    ],
+    "equivalent": false,
+    "reason": "addrmiss is only evaluated when re AND we are both active, which never happens. Accesses to unmapped offsets no longer get d_error=1."
+   },
+   "M34": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "oh0_err and enable_err are both 0 unless the write-enable vector is multi-hot or a write enable fires without en_i. Both need an internal fault, because write enables require reg_we and an address hit. addr_err is off (AddrCheck=0). With oh0_err=enable_err=0, && and || give the same result."
+   },
+   "M35": {
+    "rules": [
+     "RT-8-22",
+     "RT-8-23",
+     "RT-5-06",
+     "RT-5-02",
+     "RT-3-06"
+    ],
+    "equivalent": false,
+    "reason": "mubi4_test_true_strict is inverted. In tlul_err every write with instr=0 is flagged as an instruction write and gets d_error. In the alert receiver init_trig_i=False now counts as true, so the receiver stays in init and no o_alert is reported."
+   },
+   "M36": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "A reset value of 1 for diff_pq in the sender's ping decoder creates a spurious fall event (ping_event=1) in the first cycle after reset. That cycle coincides with the receiver's init sigint on the ack pair, whose sigint_detected override sends the sender to Idle and clears ping_set_q. The receiver is in InitReq and ignores the stray alert level, so nothing is visible at the ports."
+   }
+  },
+  "unknown_ids": [
+   "RT-1-05",
+   "RT-8-24"
+  ],
+  "model": "sonnet",
+  "cost_usd": 0.9085095
+ },
+ "rule_scores": {
+  "AH-T1.3.2-01": {
+   "relevant": 3,
+   "killed": 2,
+   "survived": [
+    "M19"
+   ],
+   "claimed_equivalent": [],
+   "score": 66.7,
+   "meets_threshold": false
+  },
+  "AH-T1.3.2-02": {
+   "relevant": 1,
+   "killed": 0,
+   "survived": [
+    "M19"
+   ],
+   "claimed_equivalent": [],
+   "score": 0.0,
+   "meets_threshold": false
+  },
+  "AH-T1.3.2-03": {
+   "relevant": 1,
+   "killed": 0,
+   "survived": [
+    "M19"
+   ],
+   "claimed_equivalent": [],
+   "score": 0.0,
+   "meets_threshold": false
+  },
+  "AH-T1.3.2-04": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "CP-T1.8.1-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "CP-T1.8.6-04": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "CP-T1.9.1-04": {
+   "relevant": 1,
+   "killed": 0,
+   "survived": [
+    "M11"
+   ],
+   "claimed_equivalent": [],
+   "score": 0.0,
+   "meets_threshold": false
+  },
+  "RG-T1.4.1-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RG-T1.4.1-02": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RG-T1.4.1-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RG-T1.4.1-07": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RG-T1.5.1-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RG-T1.5.1-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-1-02": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-3-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-3-04": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-3-05": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-3-06": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-3-07": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-4.1-01": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-4.1-06": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-4.2-01": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-4.2-03": {
+   "relevant": 1,
+   "killed": 0,
+   "survived": [
+    "M11"
+   ],
+   "claimed_equivalent": [],
+   "score": 0.0,
+   "meets_threshold": false
+  },
+  "RT-4.3-01": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-4.3-02": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-5-02": {
+   "relevant": 4,
+   "killed": 3,
+   "survived": [
+    "M19"
+   ],
+   "claimed_equivalent": [],
+   "score": 75.0,
+   "meets_threshold": false
+  },
+  "RT-5-04": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-5-05": {
+   "relevant": 4,
+   "killed": 2,
+   "survived": [
+    "M11",
+    "M19"
+   ],
+   "claimed_equivalent": [],
+   "score": 50.0,
+   "meets_threshold": false
+  },
+  "RT-5-06": {
+   "relevant": 5,
+   "killed": 5,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-7-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-7-02": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-7-03": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-8-01": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-8-07": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-8-12": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-8-13": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-8-14": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-8-16": {
+   "relevant": 1,
+   "killed": 0,
+   "survived": [
+    "M11"
+   ],
+   "claimed_equivalent": [],
+   "score": 0.0,
+   "meets_threshold": false
+  },
+  "RT-8-19": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-8-22": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-8-23": {
+   "relevant": 5,
+   "killed": 5,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-8-25": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-8-27": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-8-28": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-8-32": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-T2.2-01": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-T3.1-01": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-T3.1-02": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-T3.2.2-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-T4.4-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-T5.2.1-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-T5.3.1-01": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-T5.7.1-01": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-T6.2-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RT-T6.3-01": {
+   "relevant": 3,
+   "killed": 2,
+   "survived": [
+    "M11"
+   ],
+   "claimed_equivalent": [],
+   "score": 66.7,
+   "meets_threshold": false
+  },
+  "TL-T3.1.3.2-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "TL-T3.1.3.2.3-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "TL-T3.1.3.4-01": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "TL-T3.1.3.4-04": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "TL-T3.1.3.4-05": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "TL-T3.1.3.4-07": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "TL-T3.1.3.5-03": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "TL-T3.1.3.5-04": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "TL-T3.1.3.5-05": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ "equivalence": {
+  "by_status": {
+   "CEX": 3,
+   "ERROR": 1,
+   "PROVEN": 11
+  },
+  "proven_equivalent": 11,
+  "score_without_equivalent": 84.0
+ }
+}

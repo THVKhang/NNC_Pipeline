@@ -148,6 +148,51 @@ class FormalTest(unittest.TestCase):
             res = formal.run(DepthHost(), contract, rtl, sva, None, depth=20)            # default: no escalation
             self.assertEqual(res["checks"]["CHK-001"]["status"], "VACUOUS")
 
+    def test_slang_frontend_reads_only_the_rtl(self):
+        contract = {"top": "m_demo", "checks": [], "interface": {
+            "clock": "clk", "reset": {"name": "rst_n", "active_low": True}, "parameters": [],
+            "ports": [{"name": n, "direction": "input", "width": "1"} for n in ("clk", "rst_n", "a", "b")]}}
+        with tempfile.TemporaryDirectory() as tmp:
+            rtl, sva = Path(tmp) / "rtl", Path(tmp) / "sva"
+            rtl.mkdir()
+            sva.mkdir()
+            (rtl / "pkg.sv").write_text("package p; endpackage\n")
+            (rtl / "m_demo.sv").write_text("module m_demo(input logic clk, rst_n, a, b); endmodule\n")
+            (rtl / "filelist.f").write_text("pkg.sv\nm_demo.sv\n")
+            (sva / "nnc_chk_demo.sv").write_text(CHK)
+            files, _ = formal.build(contract, rtl, sva, None, defines=["SYNTHESIS"], frontend="slang")
+            script = files["CHK_001.sby"]
+            self.assertIn("read_slang -DSYNTHESIS --top m_demo pkg.sv m_demo.sv\n", script)
+            line = next(l for l in script.splitlines() if l.startswith("read_verilog"))
+            self.assertIn("-DNNC_FV_CHK_001", line)
+            self.assertIn("nnc_chk_demo.sv", line)
+            self.assertNotIn("m_demo.sv", line.replace("nnc_chk_demo.sv", ""))
+            plain, _ = formal.build(contract, rtl, sva, None)
+            self.assertNotIn("read_slang", plain["CHK_001.sby"])
+            with self.assertRaises(ValueError):
+                formal.build(contract, rtl, sva, None, frontend="other")
+
+    def test_falling_clock_checker_is_simulation_only_with_one_clock(self):
+        clocks = formal.clock_names({"clock": "clk", "clocks": [{"name": "clk"}, "clk2"]})
+        self.assertEqual(clocks, {"clk", "clk2"})
+        self.assertIsNotNone(formal.falling_clock("always_ff @(negedge clk) q <= d;", clocks))
+        self.assertIsNone(formal.falling_clock("always_ff @(posedge clk or negedge rst_n) q <= d;", clocks))
+        self.assertIsNone(formal.falling_clock("// always_ff @(negedge clk)\n", clocks))
+        self.assertIsNone(formal.falling_clock("always_ff @(negedge clk_x) q <= d;", clocks))
+        contract = {"top": "m_demo", "checks": [], "interface": {
+            "clock": "clk", "reset": {"name": "rst_n", "active_low": True}, "parameters": [],
+            "ports": [{"name": n, "direction": "input", "width": "1"} for n in ("clk", "rst_n", "a", "b")]}}
+        with tempfile.TemporaryDirectory() as tmp:
+            rtl, sva = Path(tmp) / "rtl", Path(tmp) / "sva"
+            rtl.mkdir()
+            sva.mkdir()
+            (rtl / "m_demo.sv").write_text("module m_demo(input logic clk, rst_n, a, b); endmodule\n")
+            (sva / "nnc_chk_demo.sv").write_text(CHK.replace("endmodule", "  logic s;\n  always_ff @(negedge clk) s <= a;\nendmodule"))
+            files, props = formal.build(contract, rtl, sva, None)
+            self.assertNotIn("CHK_001.sby", files)
+            self.assertTrue(all("falling clock edge" in p.unsupported for p in props))
+            self.assertNotIn("src/nnc_chk_demo.sv", files)
+
     def test_spec_lint_references(self):
         from nnc import speclint
         files = {"Spec.md": ["l1", "l2", "l3"]}
@@ -163,6 +208,17 @@ class FormalTest(unittest.TestCase):
         self.assertTrue(gen_env.validate_body(good + "  always @(posedge c) assert (a);\n"))
         self.assertTrue(gen_env.validate_body(good + "  always @(posedge c) assume (a ##1 b);\n"))
         self.assertTrue(gen_env.validate_body("  always @(*) assume (!a);\n"))            # no ENV label
+
+    def test_env_prompt_shows_rule_conditions(self):
+        contract = {"top": "m", "interface": {"clock": "clk", "reset": {"name": "rst_n", "active_low": True},
+                                              "parameters": [], "ports": [
+            {"name": n, "direction": "input", "width": "1", "meaning": ""} for n in ("clk", "rst_n", "v")]}}
+        rules = {"rules": [{"id": "R-1", "statement": "The test bench keeps v = 0.",
+                            "condition": "rst_n = 0 and first cycle after release"},
+                           {"id": "R-2", "statement": "v is a request.", "condition": ""}]}
+        prompt = gen_env.build_prompt(contract, rules)
+        self.assertIn("R-1: The test bench keeps v = 0. WHEN rst_n = 0 and first cycle after release\n", prompt)
+        self.assertIn("R-2: v is a request.\n", prompt)
 
 
 if __name__ == "__main__":

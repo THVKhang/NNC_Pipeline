@@ -1,0 +1,2153 @@
+{
+ "version": 1,
+ "doc": {
+  "file": "opentitan_alert_handler_theory_of_operation.md",
+  "sha256": "b232624126f8a7bc6f941cdbc2d8f1e2db39f55f1b694749b3f2bef42b712545",
+  "length": 788,
+  "location": "line"
+ },
+ "sections": [
+  {
+   "id": "front",
+   "title": "Front matter",
+   "level": 0,
+   "parent": null,
+   "page_start": 1,
+   "page_end": 1,
+   "sentences": []
+  },
+  {
+   "id": "T1",
+   "title": "Theory of Operation",
+   "level": 1,
+   "parent": null,
+   "page_start": 3,
+   "page_end": 3,
+   "sentences": []
+  },
+  {
+   "id": "T1.1",
+   "title": "Block Diagram",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 5,
+   "page_end": 13,
+   "sentences": [
+    {
+     "id": "T1.1:s1",
+     "text": "The figure below shows a block diagram of the alert handler module, as well as a few examples of alert senders in other peripheral modules.",
+     "page": 7,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s2",
+     "text": "In this diagram, there are seven sources of alerts: three sources from external modules (two from periph0 and one from periph1), and four local sources (alert_ping_fail, alert_sig_int, esc_ping_fail, esc_sig_int).",
+     "page": 7,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s3",
+     "text": "The local sources represent alerts that are created by this module itself.",
+     "page": 7,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s4",
+     "text": "See the later section on special local alerts.",
+     "page": 7,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s5",
+     "text": "Also shown are internal modules for classification, interrupt generation, accumulation, escalation, ping generation and alert-channel low-power control.",
+     "page": 13,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s6",
+     "text": "These are described later in the document.",
+     "page": 13,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s7",
+     "text": "Note that the differential alert sender and receiver blocks used for alert signaling support both _asynchronous_ and _synchronous_ clocking schemes, and hence peripherals able to raise alerts may be placed in clock domains different from that of the alert handler (Jittered clock domains are also supported in the asynchronous clocking scheme).",
+     "page": 13,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s8",
+     "text": "Proper care must however be taken when formulating the timing constraints for the diff pairs, and when determining clock-dependent parameters (such as the ping timeout) of the design.",
+     "page": 13,
+     "normative": true
+    },
+    {
+     "id": "T1.1:s9",
+     "text": "On the escalation sender / receiver side, the differential signaling blocks employ a fully synchronous clocking scheme throughout.",
+     "page": 13,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.2",
+   "title": "Hardware Interfaces",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 19,
+   "page_end": 19,
+   "sentences": []
+  },
+  {
+   "id": "T1.2.1",
+   "title": "Parameters",
+   "level": 3,
+   "parent": "T1.2",
+   "page_start": 21,
+   "page_end": 39,
+   "sentences": [
+    {
+     "id": "T1.2.1:s1",
+     "text": "The following table lists the main parameters used throughout the alert handler design.",
+     "page": 23,
+     "normative": false
+    },
+    {
+     "id": "T1.2.1:s2",
+     "text": "Note that the alert handler is generated based on the system configuration, and hence these parameters are placed into a package as \"localparams\".",
+     "page": 23,
+     "normative": false
+    },
+    {
+     "id": "T1.2.1:s3",
+     "text": "The parameterization rules are explained in more detail in the architectural description.",
+     "page": 23,
+     "normative": false
+    },
+    {
+     "id": "T1.2.1:s4",
+     "text": "Localparam | Default (Max) | This Core | Description ---------------|-----------------------|----------------|--------------- NAlerts | 8 (248) | 69 | Number of alert instances.",
+     "page": 27,
+     "normative": false
+    },
+    {
+     "id": "T1.2.1:s5",
+     "text": "Maximum number bounded by LFSR implementation that generates ping timing.",
+     "page": 27,
+     "normative": false
+    },
+    {
+     "id": "T1.2.1:s6",
+     "text": "NLpg | 1 | 28 | Number of unique low-power groups as determined by topgen.",
+     "page": 27,
+     "normative": false
+    },
+    {
+     "id": "T1.2.1:s7",
+     "text": "LpgMap | {0} | see RTL | Array mapping each alert to a unique low-power group as determined by topgen.",
+     "page": 27,
+     "normative": false
+    },
+    {
+     "id": "T1.2.1:s8",
+     "text": "EscCntWidth | 32 (32) | 32 | Width of the escalation counters in bit.",
+     "page": 27,
+     "normative": false
+    },
+    {
+     "id": "T1.2.1:s9",
+     "text": "AccuCntWidth | 16 (32) | 16 | Width of the alert accumulation counters in bit.",
+     "page": 27,
+     "normative": false
+    },
+    {
+     "id": "T1.2.1:s10",
+     "text": "AsyncOn | '0 (2^NAlerts-1) | see RTL | This is a bit array specifying whether a certain alert sender / receiver pair goes across an asynchronous boundary or not.",
+     "page": 27,
+     "normative": false
+    },
+    {
+     "id": "T1.2.1:s11",
+     "text": "The next table lists free parameters in the prim_alert_sender and prim_alert receiver submodules.",
+     "page": 36,
+     "normative": false
+    },
+    {
+     "id": "T1.2.1:s12",
+     "text": "Parameter | Default (Max) | Description ---------------|------------------|--------------- AsyncOn | 1'b0 (1'b1) | 0: Synchronous, 1: Asynchronous, determines whether additional synchronizer flops and logic need to be instantiated.",
+     "page": 39,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.2.2",
+   "title": "Signals",
+   "level": 3,
+   "parent": "T1.2",
+   "page_start": 44,
+   "page_end": 52,
+   "sentences": [
+    {
+     "id": "T1.2.2:s1",
+     "text": "Interface Tables",
+     "page": 46,
+     "normative": false
+    },
+    {
+     "id": "T1.2.2:s2",
+     "text": "The table below lists other alert handler module signals.",
+     "page": 48,
+     "normative": false
+    },
+    {
+     "id": "T1.2.2:s3",
+     "text": "The number of alert instances is parametric and hence alert and ping diff pairs are grouped together in packed arrays.",
+     "page": 48,
+     "normative": false
+    },
+    {
+     "id": "T1.2.2:s4",
+     "text": "The diff pair signals are indexed with the corresponding alert instance .",
+     "page": 48,
+     "normative": false
+    },
+    {
+     "id": "T1.2.2:s5",
+     "text": "Signal | Direction | Type | Description -------------------------|------------------|---------------- |--------------- edn_o | output | otp_edn_req_t | Entropy request to the entropy distribution network for LFSR reseeding and ephemeral key derivation. edn_i | input | otp_edn_rsp_t | Entropy acknowledgment to the entropy distribution network for LFSR reseeding and ephemeral key derivation. alert_tx_i[] | input | packed alert_tx_t array | Incoming alert or ping response(s), differentially encoded.",
+     "page": 52,
+     "normative": false
+    },
+    {
+     "id": "T1.2.2:s6",
+     "text": "Index range: [NAlerts-1:0] alert_rx_o[] | output | packed alert_rx_t array | Outgoing alert acknowledgment and ping requests, differentially encoded.",
+     "page": 52,
+     "normative": false
+    },
+    {
+     "id": "T1.2.2:s7",
+     "text": "Index range: [NAlerts-1:0] esc_tx_o[] | output | packed esc_tx_t array | Escalation or ping request, differentially encoded.",
+     "page": 52,
+     "normative": false
+    },
+    {
+     "id": "T1.2.2:s8",
+     "text": "Index corresponds to severity level, and ranges from 0 to 3. esc_rx_i[] | input | packed esc_rx_t array | Escalation ping response, differentially encoded.",
+     "page": 52,
+     "normative": false
+    },
+    {
+     "id": "T1.2.2:s9",
+     "text": "Index corresponds to severity level, and ranges from 0 to 3. lpg_cg_en_i[] | input | packed mubi4_t array | Incoming clock gated indication from clock manager.",
+     "page": 52,
+     "normative": false
+    },
+    {
+     "id": "T1.2.2:s10",
+     "text": "Index range: [NLpg-1:0] lpg_rst_en_i[] | input | packed mubi4_t array | Incoming reset asserted indication from reset manager.",
+     "page": 52,
+     "normative": false
+    },
+    {
+     "id": "T1.2.2:s11",
+     "text": "Index range: [NLpg-1:0] crashdump_o | output | packed struct | This is a collection of alert handler state registers that can be latched by hardware debugging circuitry, if needed.",
+     "page": 52,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T1.2.2.1",
+   "title": "Entropy Network Connections",
+   "level": 4,
+   "parent": "T1.2.2",
+   "page_start": 64,
+   "page_end": 66,
+   "sentences": [
+    {
+     "id": "T1.2.2.1:s1",
+     "text": "The LFSR ping timer needs to be periodically reseeded.",
+     "page": 66,
+     "normative": false
+    },
+    {
+     "id": "T1.2.2.1:s2",
+     "text": "Therefore, the alert handler is connected to the entropy distribution network via the edn_i/o signals.",
+     "page": 66,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.2.2.2",
+   "title": "Alert Channels",
+   "level": 4,
+   "parent": "T1.2.2",
+   "page_start": 69,
+   "page_end": 71,
+   "sentences": [
+    {
+     "id": "T1.2.2.2:s1",
+     "text": "For each alert, there is a pair of input and two pairs of output signals.",
+     "page": 71,
+     "normative": false
+    },
+    {
+     "id": "T1.2.2.2:s2",
+     "text": "These signals are connected to a differential sender module within the source, and a differential receiver module within the alert handler.",
+     "page": 71,
+     "normative": false
+    },
+    {
+     "id": "T1.2.2.2:s3",
+     "text": "Both of these modules are described in more detail in the following section.",
+     "page": 71,
+     "normative": false
+    },
+    {
+     "id": "T1.2.2.2:s4",
+     "text": "These signal pairs carry differentially encoded messages that enable two types of signaling: a native alert and a ping/response test of the alert mechanism.",
+     "page": 71,
+     "normative": false
+    },
+    {
+     "id": "T1.2.2.2:s5",
+     "text": "The latter is to ensure that all alert senders are always active and have not been the target of an attack.",
+     "page": 71,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T1.2.2.3",
+   "title": "Escalation Channels",
+   "level": 4,
+   "parent": "T1.2.2",
+   "page_start": 77,
+   "page_end": 79,
+   "sentences": [
+    {
+     "id": "T1.2.2.3:s1",
+     "text": "For each escalation action in the system, there is a pair of input and a pair of output signals, encapsulated in the esc_rx_t and esc_tx_t types.",
+     "page": 79,
+     "normative": false
+    },
+    {
+     "id": "T1.2.2.3:s2",
+     "text": "These signals are connected to a differential sender module within the alert handler, and a differential receiver module within the module that performs a particular escalation action (for example the reset manager or life cycle controllers).",
+     "page": 79,
+     "normative": false
+    },
+    {
+     "id": "T1.2.2.3:s3",
+     "text": "The signal pairs carry differentially encoded messages that enable two types of signaling: a native escalation and a ping/response test of the escalation mechanism.",
+     "page": 79,
+     "normative": false
+    },
+    {
+     "id": "T1.2.2.3:s4",
+     "text": "The latter is to ensure that all escalation receivers are always active and have not been the target of an attack.",
+     "page": 79,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T1.2.2.4",
+   "title": "Low-power Indication Signals",
+   "level": 4,
+   "parent": "T1.2.2",
+   "page_start": 84,
+   "page_end": 86,
+   "sentences": [
+    {
+     "id": "T1.2.2.4:s1",
+     "text": "The lpg_cg_en_i and lpg_rst_en_i are two arrays with multibit indication signals from the clock and reset managers.",
+     "page": 86,
+     "normative": false
+    },
+    {
+     "id": "T1.2.2.4:s2",
+     "text": "These indication signals convey whether a specific group of alert senders are either clock gated or in reset.",
+     "page": 86,
+     "normative": false
+    },
+    {
+     "id": "T1.2.2.4:s3",
+     "text": "As explained in more detail below, this information is used to temporarily halt the ping timer mechanism on channels that are in a low-power state in order to prevent false positives.",
+     "page": 86,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.2.2.5",
+   "title": "Crashdump Output",
+   "level": 4,
+   "parent": "T1.2.2",
+   "page_start": 90,
+   "page_end": 110,
+   "sentences": [
+    {
+     "id": "T1.2.2.5:s1",
+     "text": "The crashdump_o struct outputs a snapshot of CSRs and alert handler state bits that can be read by hardware debugging circuitry:",
+     "page": 92,
+     "normative": true
+    },
+    {
+     "id": "T1.2.2.5:s2",
+     "text": "This can be useful for extracting more information about possible failures or bugs without having to use the tile-link bus interface (which may become unresponsive under certain circumstances).",
+     "page": 107,
+     "normative": true
+    },
+    {
+     "id": "T1.2.2.5:s3",
+     "text": "It is recommended for the top level to store this information in an always-on location.",
+     "page": 107,
+     "normative": true
+    },
+    {
+     "id": "T1.2.2.5:s4",
+     "text": "Note that the crashdump state is continuously output via crashdump_o until the latching trigger condition is true for the first time (see CLASSA_CRASHDUMP_TRIGGER_SHADOWED).",
+     "page": 110,
+     "normative": false
+    },
+    {
+     "id": "T1.2.2.5:s5",
+     "text": "After that, the crashdump_o is held constant until all classes that have escalated are cleared.",
+     "page": 110,
+     "normative": false
+    },
+    {
+     "id": "T1.2.2.5:s6",
+     "text": "This is done so that it is possible to capture the true alert cause before spurious alert events start to pop up due to escalation countermeasures with excessive side effects (like life cycle scrapping for example).",
+     "page": 110,
+     "normative": true
+    },
+    {
+     "id": "T1.2.2.5:s7",
+     "text": "If classes that have escalated are not configured as clearable, then it is not possible to re-arm the crashdump latching mechanism at runtime and the alert handler has to be reset.",
+     "page": 110,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T1.3",
+   "title": "Design Details",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 115,
+   "page_end": 117,
+   "sentences": [
+    {
+     "id": "T1.3:s1",
+     "text": "This section gives the full design details of the alert handler module and its submodules.",
+     "page": 117,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.3.1",
+   "title": "Alert Definition",
+   "level": 3,
+   "parent": "T1.3",
+   "page_start": 120,
+   "page_end": 122,
+   "sentences": [
+    {
+     "id": "T1.3.1:s1",
+     "text": "Alerts are defined as events that have security implications, and should be handled by the main processor, or escalated to other hardware modules to take action.",
+     "page": 122,
+     "normative": true
+    },
+    {
+     "id": "T1.3.1:s2",
+     "text": "Each peripheral has the option to define one or more alert signals.",
+     "page": 122,
+     "normative": false
+    },
+    {
+     "id": "T1.3.1:s3",
+     "text": "Those peripherals should instantiate one module (prim_alert_sender) to convert the event associated with that alert into a signal to the alert handler module.",
+     "page": 122,
+     "normative": true
+    },
+    {
+     "id": "T1.3.1:s4",
+     "text": "The alert handler instantiates one receiver module (prim_alert_receiver) per alert, then handles the classification, accumulation, and escalation of the received signal.",
+     "page": 122,
+     "normative": false
+    },
+    {
+     "id": "T1.3.1:s5",
+     "text": "The differential signaling submodules may either use a synchronous or asynchronous clocking scheme, since the message type to be transferred is a single discrete event.",
+     "page": 122,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.3.2",
+   "title": "Differential Alert Signaling",
+   "level": 3,
+   "parent": "T1.3",
+   "page_start": 129,
+   "page_end": 177,
+   "sentences": [
+    {
+     "id": "T1.3.2:s1",
+     "text": "Each alert sender is connected to the corresponding alert receiver via the 3 differential pairs alert_tx_i/o.alert_p/n, alert_rx_i/o.ack_p/n and alert_rx_i/o.ping_p/n, as illustrated below:",
+     "page": 131,
+     "normative": false
+    },
+    {
+     "id": "T1.3.2:s2",
+     "text": "Alerts are encoded differentially and signaled using a full handshake on the alert_tx_i/o.alert_p/n and alert_rx_i/o.ack_p/n wires.",
+     "page": 135,
+     "normative": false
+    },
+    {
+     "id": "T1.3.2:s3",
+     "text": "The use of a full handshake protocol allows this mechanism to be used with an asynchronous clocking strategy, where peripherals may reside in a different clock domain than the alert handler.",
+     "page": 135,
+     "normative": false
+    },
+    {
+     "id": "T1.3.2:s4",
+     "text": "The full handshake guarantees that alert messages are correctly back-pressured and no alert is \"lost\" at the asynchronous boundary due to (possibly variable) clock ratios greater or less than 1.0.",
+     "page": 135,
+     "normative": false
+    },
+    {
+     "id": "T1.3.2:s5",
+     "text": "The \"native alert message\" will be repeated on the output wires as long as the alert event is still true within the peripheral.",
+     "page": 135,
+     "normative": false
+    },
+    {
+     "id": "T1.3.2:s6",
+     "text": "The wave pattern below illustrates differential full handshake mechanism.",
+     "page": 140,
+     "normative": false
+    },
+    {
+     "id": "T1.3.2:s7",
+     "text": "The handshake pattern is repeated as long as the alert is true.",
+     "page": 170,
+     "normative": false
+    },
+    {
+     "id": "T1.3.2:s8",
+     "text": "The sender will wait for 2 cycles between handshakes.",
+     "page": 170,
+     "normative": false
+    },
+    {
+     "id": "T1.3.2:s9",
+     "text": "Note that the alert is immediately propagated to alert_o once the initial level change on alert_tx_i.alert_p/n has been received and synchronized to the local clock on the receiver side.",
+     "page": 173,
+     "normative": false
+    },
+    {
+     "id": "T1.3.2:s10",
+     "text": "This ensures that the first occurrence of an alert is always propagated - even if the handshake lines have been manipulated to emulate backpressure.",
+     "page": 173,
+     "normative": true
+    },
+    {
+     "id": "T1.3.2:s11",
+     "text": "(In such a scenario, all subsequent alerts would be back-pressured and eventually the ping testing mechanism described in the next subsection would detect that the wires have been tampered with.)",
+     "page": 173,
+     "normative": false
+    },
+    {
+     "id": "T1.3.2:s12",
+     "text": "The alert sender and receiver modules can either be used synchronously or asynchronously.",
+     "page": 177,
+     "normative": true
+    },
+    {
+     "id": "T1.3.2:s13",
+     "text": "The signaling protocol remains the same in both cases, but the additional synchronizer flops at the diff pair inputs may be omitted, which results in lower signaling latency.",
+     "page": 177,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T1.3.3",
+   "title": "Ping Testing",
+   "level": 3,
+   "parent": "T1.3",
+   "page_start": 180,
+   "page_end": 227,
+   "sentences": [
+    {
+     "id": "T1.3.3:s1",
+     "text": "In order to ensure that the event sending modules have not been compromised, the alert receiver module prim_alert_receiver will \"ping\" or line-test the senders periodically every few microseconds.",
+     "page": 182,
+     "normative": false
+    },
+    {
+     "id": "T1.3.3:s2",
+     "text": "Pings timing is randomized so their appearance can not be predicted.",
+     "page": 182,
+     "normative": true
+    },
+    {
+     "id": "T1.3.3:s3",
+     "text": "The ping timing is generated by a central LFSR-based timer within the alert handler that randomly asserts the ping_req_i signal of a particular prim_alert_receiver module.",
+     "page": 186,
+     "normative": false
+    },
+    {
+     "id": "T1.3.3:s4",
+     "text": "Once ping_req_i is asserted, the receiver module encodes the ping message as a level change on the differential alert_rx_o.ping_p/n output, and waits until the sender responds with a full handshake on the alert_tx_i.alert_p/n and alert_rx_o.ack_p/n lines.",
+     "page": 186,
+     "normative": false
+    },
+    {
+     "id": "T1.3.3:s5",
+     "text": "Once that handshake is complete, the ping_ok_o signal is asserted.",
+     "page": 186,
+     "normative": false
+    },
+    {
+     "id": "T1.3.3:s6",
+     "text": "The LFSR timer has a programmable ping timeout, after which it will automatically assert a \"pingfail\" alert.",
+     "page": 186,
+     "normative": false
+    },
+    {
+     "id": "T1.3.3:s7",
+     "text": "That timeout is a function of the clock ratios present in the system, and has to be programmed accordingly at system startup (as explained later in the LFSR timer subsection).",
+     "page": 186,
+     "normative": false
+    },
+    {
+     "id": "T1.3.3:s8",
+     "text": "The following wave diagram illustrates a correct ping sequence, viewed from the receiver side:",
+     "page": 192,
+     "normative": false
+    },
+    {
+     "id": "T1.3.3:s9",
+     "text": "In the unlikely case that a ping request collides with a native alert at the sender side, the native alert is held back until the ping handshake has been completed.",
+     "page": 222,
+     "normative": false
+    },
+    {
+     "id": "T1.3.3:s10",
+     "text": "This slightly delays the transmission of a native alert, but the alert will eventually be signaled.",
+     "page": 222,
+     "normative": false
+    },
+    {
+     "id": "T1.3.3:s11",
+     "text": "Further, if an alert is sent out right before a ping requests comes in at the sender side, the receiver will treat the alert as a ping response.",
+     "page": 222,
+     "normative": false
+    },
+    {
+     "id": "T1.3.3:s12",
+     "text": "However, the \"true\" ping response will be returned right after the alert handshake completed, and thus the alert will eventually be signaled with a slight delay.",
+     "page": 222,
+     "normative": false
+    },
+    {
+     "id": "T1.3.3:s13",
+     "text": "Note that in both collision cases mentioned, the delay will be in the order of the handshake length, plus the constant amount of pause cycles between handshakes (2 sender cycles).",
+     "page": 227,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.3.4",
+   "title": "Monitoring of Signal Integrity Issues",
+   "level": 3,
+   "parent": "T1.3",
+   "page_start": 230,
+   "page_end": 268,
+   "sentences": [
+    {
+     "id": "T1.3.4:s1",
+     "text": "All differential pairs are monitored for signal integrity issues, and if an encoding failure is detected, the receiver module asserts a signal integrity alert via integ_fail_o.",
+     "page": 232,
+     "normative": false
+    },
+    {
+     "id": "T1.3.4:s2",
+     "text": "In particular, this covers the following failure cases:",
+     "page": 232,
+     "normative": false
+    },
+    {
+     "id": "T1.3.4:s3",
+     "text": "The alert_tx_i.alert_p/n pair is not correctly encoded on the receiver side.",
+     "page": 234,
+     "normative": false
+    },
+    {
+     "id": "T1.3.4:s4",
+     "text": "This can be directly flagged as an integrity failure on the receiver side.",
+     "page": 234,
+     "normative": true
+    },
+    {
+     "id": "T1.3.4:s5",
+     "text": "The alert_rx_i.ping_p/n or the alert_rx_i.ack_p/n pairs are not correctly encoded on the sender side.",
+     "page": 237,
+     "normative": false
+    },
+    {
+     "id": "T1.3.4:s6",
+     "text": "This is signaled to the receiver by setting the alert_tx_o.alert_p/n wires to the same value, and that value will be continuously toggled.",
+     "page": 237,
+     "normative": false
+    },
+    {
+     "id": "T1.3.4:s7",
+     "text": "This implicitly triggers a signal integrity alert on the receiver side.",
+     "page": 237,
+     "normative": false
+    },
+    {
+     "id": "T1.3.4:s8",
+     "text": "Some of these failure patterns are illustrated in the wave diagram below:",
+     "page": 241,
+     "normative": false
+    },
+    {
+     "id": "T1.3.4:s9",
+     "text": "Note that if signal integrity failures occur during ping or alert handshaking, it is possible that the protocol state-machines lock up and the alert sender and receiver modules become unresponsive.",
+     "page": 268,
+     "normative": true
+    },
+    {
+     "id": "T1.3.4:s10",
+     "text": "However, the above mechanisms ensure that this will always trigger either a signal integrity alert or eventually a \"pingfail\" alert.",
+     "page": 268,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T1.3.5",
+   "title": "Skew on Asynchronous Differential Pairs",
+   "level": 3,
+   "parent": "T1.3",
+   "page_start": 270,
+   "page_end": 295,
+   "sentences": [
+    {
+     "id": "T1.3.5:s1",
+     "text": "Note that there is likely a (small) skew present within each differential pair of the signaling mechanism above.",
+     "page": 272,
+     "normative": false
+    },
+    {
+     "id": "T1.3.5:s2",
+     "text": "Since these pairs cross clock domain boundaries, it may thus happen that a level change appears in staggered manner after resynchronization, as illustrated below:",
+     "page": 272,
+     "normative": false
+    },
+    {
+     "id": "T1.3.5:s3",
+     "text": "This behavior is permissible, but needs to be accounted for in the protocol logic.",
+     "page": 295,
+     "normative": false
+    },
+    {
+     "id": "T1.3.5:s4",
+     "text": "Further, the skew within the differential pair should be constrained to be smaller than the shortest clock period in the system.",
+     "page": 295,
+     "normative": true
+    },
+    {
+     "id": "T1.3.5:s5",
+     "text": "This ensures that the staggered level changes appear at most 1 cycle apart from each other.",
+     "page": 295,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.3.6",
+   "title": "LFSR Timer",
+   "level": 3,
+   "parent": "T1.3",
+   "page_start": 300,
+   "page_end": 331,
+   "sentences": [
+    {
+     "id": "T1.3.6:s1",
+     "text": "The ping_req_i inputs of all signaling modules (prim_alert_receiver, prim_esc_sender) instantiated within the alert handler are connected to a central ping timer that alternatingly pings either an alert line or an escalation line after waiting for a pseudo-random amount of clock cycles.",
+     "page": 302,
+     "normative": false
+    },
+    {
+     "id": "T1.3.6:s2",
+     "text": "Further, this ping timer also randomly selects a particular alert line to be pinged (escalation senders are always pinged in-order due to the ping monitoring mechanism on the escalation side).",
+     "page": 302,
+     "normative": true
+    },
+    {
+     "id": "T1.3.6:s3",
+     "text": "That should make it more difficult to predict the next ping occurrence based on past observations.",
+     "page": 302,
+     "normative": true
+    },
+    {
+     "id": "T1.3.6:s4",
+     "text": "The ping timer is implemented using an LFSR-based PRNG of Galois type.",
+     "page": 306,
+     "normative": false
+    },
+    {
+     "id": "T1.3.6:s5",
+     "text": "This ping timer is reseeded with fresh entropy from EDN roughly every 500k cycles which corresponds to around 16 ping operations on average.",
+     "page": 306,
+     "normative": false
+    },
+    {
+     "id": "T1.3.6:s6",
+     "text": "The LFSR is 32bits wide, but only 24bits of its state are actually being used to generate the random timer count and select the alert line to be pinged.",
+     "page": 306,
+     "normative": false
+    },
+    {
+     "id": "T1.3.6:s7",
+     "text": "I.e., the 32bits first go through a fixed permutation function, and then bits [23:16] are used to determine which alert line to ping.",
+     "page": 306,
+     "normative": false
+    },
+    {
+     "id": "T1.3.6:s8",
+     "text": "The random cycle count is created by OR'ing bits [15:0] with the constant 3'b100 as follows:",
+     "page": 306,
+     "normative": false
+    },
+    {
+     "id": "T1.3.6:s9",
+     "text": "This constant DC offset introduces a minimum ping spacing of 4 cycles (1 cycle + margin) to ensure that the handshake protocols of the sender/receiver pairs work.",
+     "page": 316,
+     "normative": false
+    },
+    {
+     "id": "T1.3.6:s10",
+     "text": "After selecting one of the peripherals to ping, the LFSR timer waits until either the corresponding *_ping_ok[] signal is asserted, or until the programmable ping timeout value is reached.",
+     "page": 318,
+     "normative": false
+    },
+    {
+     "id": "T1.3.6:s11",
+     "text": "In both cases, the LFSR timer proceeds with the next ping, but in the second case it will additionally raise a \"pingfail\" alert.",
+     "page": 318,
+     "normative": false
+    },
+    {
+     "id": "T1.3.6:s12",
+     "text": "The ping enable signal remains asserted during the time where the LFSR counter waits.",
+     "page": 318,
+     "normative": true
+    },
+    {
+     "id": "T1.3.6:s13",
+     "text": "The timeout value is a function of the ratios between the alert handler clock and peripheral clocks present in the system, and can be programmed at startup time via the register PING_TIMEOUT_CYC_SHADOWED.",
+     "page": 322,
+     "normative": true
+    },
+    {
+     "id": "T1.3.6:s14",
+     "text": "Note that the ping timer directly flags a \"pingfail\" alert if a spurious \"ping ok\" message comes in that has not been requested.",
+     "page": 324,
+     "normative": false
+    },
+    {
+     "id": "T1.3.6:s15",
+     "text": "As described in the programmers guide below, the ping timer has to be enabled explicitly.",
+     "page": 327,
+     "normative": false
+    },
+    {
+     "id": "T1.3.6:s16",
+     "text": "Only alerts that have been *enabled and locked* will be pinged in order to avoid spurious alerts.",
+     "page": 327,
+     "normative": false
+    },
+    {
+     "id": "T1.3.6:s17",
+     "text": "Escalation channels are always enabled, and hence will always be pinged once this mechanism has been turned on.",
+     "page": 327,
+     "normative": true
+    },
+    {
+     "id": "T1.3.6:s18",
+     "text": "In addition to the ping timer mechanism described above, the escalation receivers contain monitoring counters that monitor the liveness of the alert handler (described in more detail in this section.",
+     "page": 331,
+     "normative": false
+    },
+    {
+     "id": "T1.3.6:s19",
+     "text": "This mechanism requires that the maximum wait time between escalation receiver pings is bounded.",
+     "page": 331,
+     "normative": true
+    },
+    {
+     "id": "T1.3.6:s20",
+     "text": "To that end, escalation senders are pinged in-order every second ping operation (i.e., the wait time is randomized, but the selection of the escalation line is not).",
+     "page": 331,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.3.7",
+   "title": "Alert Receiving",
+   "level": 3,
+   "parent": "T1.3",
+   "page_start": 335,
+   "page_end": 337,
+   "sentences": [
+    {
+     "id": "T1.3.7:s1",
+     "text": "The alert handler module contains one alert receiver module (prim_alert_receiver) per sending module.",
+     "page": 337,
+     "normative": false
+    },
+    {
+     "id": "T1.3.7:s2",
+     "text": "This receiver module has three outputs based upon the signaling of the input alert.",
+     "page": 337,
+     "normative": false
+    },
+    {
+     "id": "T1.3.7:s3",
+     "text": "Primary is the signal of a received native alert, shown in the top-level diagram as alert_triggered[].",
+     "page": 337,
+     "normative": false
+    },
+    {
+     "id": "T1.3.7:s4",
+     "text": "Also generated are two other outputs, one that signals a differential encoding error (alert_integ_fail[]), and one that signals the receipt of a ping response (alert_ping_ok[]).",
+     "page": 337,
+     "normative": false
+    },
+    {
+     "id": "T1.3.7:s5",
+     "text": "Each \"triggered\" alert received is sent into the classification block for individual configuration.",
+     "page": 337,
+     "normative": false
+    },
+    {
+     "id": "T1.3.7:s6",
+     "text": "All of the integ_fail signals are OR'ed together to create one alert for classification.",
+     "page": 337,
+     "normative": false
+    },
+    {
+     "id": "T1.3.7:s7",
+     "text": "The ping responses are fed to the LFSR timer, which determines whether a ping has correctly completed within the timeout window or not.",
+     "page": 337,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.3.8",
+   "title": "Alert Classification and Interrupts",
+   "level": 3,
+   "parent": "T1.3",
+   "page_start": 346,
+   "page_end": 362,
+   "sentences": [
+    {
+     "id": "T1.3.8:s1",
+     "text": "Each of the incoming and local alert signals can be classified generically to one of four classes, or disabled for no classification at all.",
+     "page": 348,
+     "normative": true
+    },
+    {
+     "id": "T1.3.8:s2",
+     "text": "These are the classes A, B, C, and D.",
+     "page": 348,
+     "normative": false
+    },
+    {
+     "id": "T1.3.8:s3",
+     "text": "There is no pre-determined definition of a class, that is left to software.",
+     "page": 348,
+     "normative": false
+    },
+    {
+     "id": "T1.3.8:s4",
+     "text": "But for guidance, software can consider that some alert types are similar to others; some alert types are more \"noisy\" than others (i.e. when triggered they stay on for long periods of time); some are more critical than others, etc.",
+     "page": 348,
+     "normative": true
+    },
+    {
+     "id": "T1.3.8:s5",
+     "text": "For each alert class (A-D), an interrupt is generally sent.",
+     "page": 353,
+     "normative": false
+    },
+    {
+     "id": "T1.3.8:s6",
+     "text": "Like all other peripheral interrupts, there is a triad of registers: enable, status, test.",
+     "page": 353,
+     "normative": false
+    },
+    {
+     "id": "T1.3.8:s7",
+     "text": "Thus like all other interrupts, software should handle the source of the interrupt (in this case, the original alert), then clear the state.",
+     "page": 353,
+     "normative": true
+    },
+    {
+     "id": "T1.3.8:s8",
+     "text": "Since the interrupt class is disassociated with the original alert (due to the classification process), software can access cause registers to determine which alerts have fired since the last clearing.",
+     "page": 353,
+     "normative": true
+    },
+    {
+     "id": "T1.3.8:s9",
+     "text": "Since alerts are expected to be rare (if ever) events, the complexity of dealing with multiple interrupts per class firing during the same time period should not be of concern.",
+     "page": 353,
+     "normative": true
+    },
+    {
+     "id": "T1.3.8:s10",
+     "text": "See the programming section on interrupt clearing.",
+     "page": 353,
+     "normative": false
+    },
+    {
+     "id": "T1.3.8:s11",
+     "text": "Each of the four interrupts can optionally trigger a timeout counter that triggers escalation if the interrupt is not handled and cleared within a certain time frame.",
+     "page": 359,
+     "normative": true
+    },
+    {
+     "id": "T1.3.8:s12",
+     "text": "This feature is explained in more detail in the next subsection about escalation mechanisms.",
+     "page": 359,
+     "normative": false
+    },
+    {
+     "id": "T1.3.8:s13",
+     "text": "Note that an interrupt always fires once an alert has been registered in the corresponding class.",
+     "page": 362,
+     "normative": true
+    },
+    {
+     "id": "T1.3.8:s14",
+     "text": "Interrupts are not dependent on escalation mechanisms like alert accumulation or timeout as described in the next subsection.",
+     "page": 362,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.3.9",
+   "title": "Escalation Mechanisms",
+   "level": 3,
+   "parent": "T1.3",
+   "page_start": 366,
+   "page_end": 395,
+   "sentences": [
+    {
+     "id": "T1.3.9:s1",
+     "text": "There are two mechanisms per class that can trigger the corresponding escalation protocol:",
+     "page": 368,
+     "normative": true
+    },
+    {
+     "id": "T1.3.9:s2",
+     "text": "The first consists of an accumulation counter that counts the amount of alert occurrences within a particular class.",
+     "page": 371,
+     "normative": false
+    },
+    {
+     "id": "T1.3.9:s3",
+     "text": "An alert classified to class A indicates that on every received alert trigger, the accumulation counter for class A is incremented.",
+     "page": 371,
+     "normative": false
+    },
+    {
+     "id": "T1.3.9:s4",
+     "text": "Note: since alerts are expected to be rare or never occur, the module does not attempt to count every alert per cycle, but rather all triggers per class are ORd before sending to the accumulation counter as an increment signal.",
+     "page": 371,
+     "normative": true
+    },
+    {
+     "id": "T1.3.9:s5",
+     "text": "Once the threshold has been reached, the next occurrence triggers the escalation escalation protocol for this particular class.",
+     "page": 371,
+     "normative": false
+    },
+    {
+     "id": "T1.3.9:s6",
+     "text": "The counter is a saturation counter, meaning that it will not wrap around once it hits the maximum representable count.",
+     "page": 371,
+     "normative": false
+    },
+    {
+     "id": "T1.3.9:s7",
+     "text": "This mechanism has two associated CSRs:",
+     "page": 371,
+     "normative": false
+    },
+    {
+     "id": "T1.3.9:s8",
+     "text": "Accumulation max value.",
+     "page": 378,
+     "normative": false
+    },
+    {
+     "id": "T1.3.9:s9",
+     "text": "This is the total number (sum of all alerts classified in this group) of alerts required to enter escalation phase (see below).",
+     "page": 378,
+     "normative": true
+    },
+    {
+     "id": "T1.3.9:s10",
+     "text": "Example register is CLASSA_ACCUM_THRESH_SHADOWED.",
+     "page": 378,
+     "normative": false
+    },
+    {
+     "id": "T1.3.9:s11",
+     "text": "Current accumulation register.",
+     "page": 381,
+     "normative": false
+    },
+    {
+     "id": "T1.3.9:s12",
+     "text": "This clearable register indicates how many alerts have been accumulated to date.",
+     "page": 381,
+     "normative": false
+    },
+    {
+     "id": "T1.3.9:s13",
+     "text": "Software should clear before it reaches the accumulation setting to avoid escalation.",
+     "page": 381,
+     "normative": true
+    },
+    {
+     "id": "T1.3.9:s14",
+     "text": "Example register is CLASSA_ACCUM_CNT.",
+     "page": 381,
+     "normative": false
+    },
+    {
+     "id": "T1.3.9:s15",
+     "text": "The second way is an interrupt timeout counter which triggers escalation if an alert interrupt is not handled within the programmable timeout window.",
+     "page": 386,
+     "normative": false
+    },
+    {
+     "id": "T1.3.9:s16",
+     "text": "Once the counter hits the timeout threshold, the escalation protocol is triggered.",
+     "page": 386,
+     "normative": false
+    },
+    {
+     "id": "T1.3.9:s17",
+     "text": "The corresponding CSRs are:",
+     "page": 386,
+     "normative": false
+    },
+    {
+     "id": "T1.3.9:s18",
+     "text": "Interrupt timeout value in cycles CLASSA_TIMEOUT_CYC_SHADOWED.",
+     "page": 390,
+     "normative": false
+    },
+    {
+     "id": "T1.3.9:s19",
+     "text": "The interrupt timeout is disabled if this is set to 0 (default).",
+     "page": 390,
+     "normative": false
+    },
+    {
+     "id": "T1.3.9:s20",
+     "text": "The current interrupt timeout value can be read via CLASSA_ESC_CNT if CLASSA_STATE is in the Timeout state.",
+     "page": 392,
+     "normative": true
+    },
+    {
+     "id": "T1.3.9:s21",
+     "text": "Software should clear the corresponding interrupt state bit INTR_STATE.CLASSA before the timeout expires to avoid escalation.",
+     "page": 392,
+     "normative": true
+    },
+    {
+     "id": "T1.3.9:s22",
+     "text": "Technically, the interrupt timeout feature (2. above) is implemented using the same counter used to time the escalation phases.",
+     "page": 395,
+     "normative": false
+    },
+    {
+     "id": "T1.3.9:s23",
+     "text": "This is possible since escalation phases or interrupt timeout periods are non-overlapping (escalation always takes precedence should it be triggered).",
+     "page": 395,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T1.3.10",
+   "title": "Programmable Escalation Protocol",
+   "level": 3,
+   "parent": "T1.3",
+   "page_start": 399,
+   "page_end": 504,
+   "sentences": [
+    {
+     "id": "T1.3.10:s1",
+     "text": "There are four output escalation signals, 0, 1, 2, and 3.",
+     "page": 401,
+     "normative": false
+    },
+    {
+     "id": "T1.3.10:s2",
+     "text": "There is no predetermined definition of an escalation signal, that is left to the top-level integration.",
+     "page": 401,
+     "normative": false
+    },
+    {
+     "id": "T1.3.10:s3",
+     "text": "Examples could be processor Non Maskable Interrupt (NMI), privilege lowering, secret wiping, chip reset, etc. Typically the assumption is that escalation level 0 is the first to trigger, followed by 1, 2, and then 3, emulating a \"fuse\" that is lit that can't be stopped once the first triggers (this is however not a requirement).",
+     "page": 401,
+     "normative": true
+    },
+    {
+     "id": "T1.3.10:s4",
+     "text": "See register section for discussion of counter clearing and register locking to determine the finality of accumulation triggers.",
+     "page": 401,
+     "normative": false
+    },
+    {
+     "id": "T1.3.10:s5",
+     "text": "Each class can be programmed with its own escalation protocol.",
+     "page": 408,
+     "normative": true
+    },
+    {
+     "id": "T1.3.10:s6",
+     "text": "If one of the two mechanisms described above fires, a timer for that particular class is started.",
+     "page": 408,
+     "normative": false
+    },
+    {
+     "id": "T1.3.10:s7",
+     "text": "The timer can be programmed with up to 4 delays (e.g., CLASSA_PHASE0_CYC), each representing a distinct escalation phase (0 - 3).",
+     "page": 408,
+     "normative": true
+    },
+    {
+     "id": "T1.3.10:s8",
+     "text": "Each of the four escalation severity outputs (0 - 3) are by default configured to be asserted during the corresponding phase, e.g., severity 0 in phase 0, severity 1 in phase 1, etc. However, this mapping can be freely reassigned by modifying the corresponding enable/phase mappings (e.g., CLASSA_CTRL_SHADOWED.E0_MAP for enable bit 0 of class A).",
+     "page": 408,
+     "normative": true
+    },
+    {
+     "id": "T1.3.10:s9",
+     "text": "This mapping will be locked in together with the alert enable configuration after initial configuration.",
+     "page": 408,
+     "normative": false
+    },
+    {
+     "id": "T1.3.10:s10",
+     "text": "SW can stop a triggered escalation protocol by clearing the corresponding escalation counter (e.g., CLASSA_ESC_CNT).",
+     "page": 415,
+     "normative": true
+    },
+    {
+     "id": "T1.3.10:s11",
+     "text": "Protection of this clearing is up to software, see the register control section that follows for CLASSA_CTRL_SHADOWED.LOCK.",
+     "page": 415,
+     "normative": false
+    },
+    {
+     "id": "T1.3.10:s12",
+     "text": "It should be noted that each of the escalation phases have a duration of at least 1 clock cycle, even if the cycle count of a particular phase has been set to 0.",
+     "page": 418,
+     "normative": true
+    },
+    {
+     "id": "T1.3.10:s13",
+     "text": "The next waveform shows the gathering of alerts of one class until eventually the escalation protocol is engaged.",
+     "page": 421,
+     "normative": false
+    },
+    {
+     "id": "T1.3.10:s14",
+     "text": "In this diagram, two different alerts are shown for class A, and the gathering and escalation configuration values are shown.",
+     "page": 421,
+     "normative": false
+    },
+    {
+     "id": "T1.3.10:s15",
+     "text": "In this diagram, the first alert triggers an interrupt to class A.",
+     "page": 464,
+     "normative": false
+    },
+    {
+     "id": "T1.3.10:s16",
+     "text": "The assumption is that the processor is wedged or taken over, in which case it does not handle the interrupt.",
+     "page": 464,
+     "normative": false
+    },
+    {
+     "id": "T1.3.10:s17",
+     "text": "Once enough interrupts gather (16 in this case), the first escalation phase is entered, followed by three more (each phase has its own programmable length).",
+     "page": 464,
+     "normative": false
+    },
+    {
+     "id": "T1.3.10:s18",
+     "text": "Note that the accumulator threshold is set to 15 in order to trigger on the 16th occurrence.",
+     "page": 464,
+     "normative": false
+    },
+    {
+     "id": "T1.3.10:s19",
+     "text": "If escalation shall be triggered on the first occurrence within an alert class, the accumulation threshold shall be set to 0.",
+     "page": 464,
+     "normative": true
+    },
+    {
+     "id": "T1.3.10:s20",
+     "text": "Also note that it takes one cycle to activate escalation and enter phase 0.",
+     "page": 464,
+     "normative": false
+    },
+    {
+     "id": "T1.3.10:s21",
+     "text": "The next wave shows a case where an interrupt remains unhandled and hence the interrupt timeout counter triggers escalation.",
+     "page": 471,
+     "normative": true
+    },
+    {
+     "id": "T1.3.10:s22",
+     "text": "It should be noted here that the differential escalation signaling protocol distinguishes 'true' escalation conditions from mere pings by encoding them as pulses that are N + 1 cycles long.",
+     "page": 504,
+     "normative": true
+    },
+    {
+     "id": "T1.3.10:s23",
+     "text": "This is reflected in the two wave diagrams above.",
+     "page": 504,
+     "normative": false
+    },
+    {
+     "id": "T1.3.10:s24",
+     "text": "Refer to the subsequent section on escalation signaling for more details.",
+     "page": 504,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.3.11",
+   "title": "Escalation Signaling",
+   "level": 3,
+   "parent": "T1.3",
+   "page_start": 508,
+   "page_end": 561,
+   "sentences": [
+    {
+     "id": "T1.3.11:s1",
+     "text": "For each of the four escalation severities, the alert handler instantiates a prim_esc_sender module and each of the four escalation countermeasures instantiates an prim_esc_receiver module.",
+     "page": 510,
+     "normative": false
+    },
+    {
+     "id": "T1.3.11:s2",
+     "text": "The signaling mechanism has similarities with the alert signaling mechanism - but it is a fully synchronous protocol.",
+     "page": 510,
+     "normative": false
+    },
+    {
+     "id": "T1.3.11:s3",
+     "text": "Hence, it must be ensured at the top-level that all escalation sender and receiver modules are using the same clock and reset signals.",
+     "page": 510,
+     "normative": true
+    },
+    {
+     "id": "T1.3.11:s4",
+     "text": "As illustrated in the following block diagram, a sender-receiver pair is connected with two differential lines, one going from sender to receiver and the other going from receiver to sender.",
+     "page": 515,
+     "normative": false
+    },
+    {
+     "id": "T1.3.11:s5",
+     "text": "Upon receiving an escalation enable pulse of width N > 0 at the esc_req_i input, the escalation sender encodes that signal as a differential pulse of width N+1 on esc_tx.esc_p/n.",
+     "page": 519,
+     "normative": false
+    },
+    {
+     "id": "T1.3.11:s6",
+     "text": "The receiver decodes that message and asserts the esc_req_o output after one cycle of delay.",
+     "page": 519,
+     "normative": false
+    },
+    {
+     "id": "T1.3.11:s7",
+     "text": "Further, it acknowledges the receipt of that message by continuously toggling the esc_rx.resp_p/n signals as long as the escalation signal is asserted.",
+     "page": 519,
+     "normative": false
+    },
+    {
+     "id": "T1.3.11:s8",
+     "text": "Any failure to respond correctly will trigger a integ_fail_o alert, as illustrated below:",
+     "page": 519,
+     "normative": false
+    },
+    {
+     "id": "T1.3.11:s9",
+     "text": "Further, any differential signal mismatch on both the esc_tx_i.esc_p/n and esc_rx_i.resp_p/n lines will trigger an integ_fail_o alert.",
+     "page": 553,
+     "normative": false
+    },
+    {
+     "id": "T1.3.11:s10",
+     "text": "Mismatches on esc_rx_i.resp_p/n can be directly detected at the sender.",
+     "page": 553,
+     "normative": true
+    },
+    {
+     "id": "T1.3.11:s11",
+     "text": "Mismatches on the esc_tx_i.esc_p/n line will be signaled back to the sender by setting both the positive and negative response wires to the same value - and that value is being toggled each cycle.",
+     "page": 553,
+     "normative": false
+    },
+    {
+     "id": "T1.3.11:s12",
+     "text": "This implicitly triggers a signal integrity alert on the sender side.",
+     "page": 553,
+     "normative": false
+    },
+    {
+     "id": "T1.3.11:s13",
+     "text": "In addition to that, a signal integrity error on the esc_tx_i.esc_p/n lines will lead to assertion of the esc_req_o output, since it cannot be guaranteed that the back signalling mechanism always works when the sender / receiver pair is being tampered with.",
+     "page": 553,
+     "normative": true
+    },
+    {
+     "id": "T1.3.11:s14",
+     "text": "This back-signaling mechanism can be leveraged to fast-track escalation and use another countermeasure in case it is detected that a particular escalation signaling path has been tampered with.",
+     "page": 559,
+     "normative": true
+    },
+    {
+     "id": "T1.3.11:s15",
+     "text": "Some signal integrity failure cases are illustrated in the wave diagram below:",
+     "page": 561,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.3.12",
+   "title": "Ping Testing of the Escalation Signals",
+   "level": 3,
+   "parent": "T1.3",
+   "page_start": 593,
+   "page_end": 638,
+   "sentences": [
+    {
+     "id": "T1.3.12:s1",
+     "text": "Similarly to the alert signaling scheme, the escalation signaling lines can be pinged / line tested in order to test whether the escalation receiver has been tampered with.",
+     "page": 596,
+     "normative": true
+    },
+    {
+     "id": "T1.3.12:s2",
+     "text": "This is achieved by asserting ping_req_i at the escalation sender module.",
+     "page": 596,
+     "normative": false
+    },
+    {
+     "id": "T1.3.12:s3",
+     "text": "A ping request is encoded as a single cycle pulse on the esc_tx_o.esc_p/n outputs.",
+     "page": 596,
+     "normative": false
+    },
+    {
+     "id": "T1.3.12:s4",
+     "text": "Hence, the receiver module will not decode this single cycle pulse as an escalation enable message, but it will respond to it with a \"1010\" pattern on the esc_rx_i.resp_p/n lines.",
+     "page": 596,
+     "normative": false
+    },
+    {
+     "id": "T1.3.12:s5",
+     "text": "The escalation sender module will assert ping_ok_o if that pattern is received correctly after one cycle of latency.",
+     "page": 596,
+     "normative": false
+    },
+    {
+     "id": "T1.3.12:s6",
+     "text": "Otherwise, the escalation sender will first assert integ_fail_o later, after the programmable ping timeout is reached, the LFSR timer will raise a \"pingfail\" alert.",
+     "page": 596,
+     "normative": false
+    },
+    {
+     "id": "T1.3.12:s7",
+     "text": "The integ_fail_o triggers in this case since \"no ping response\" and \"wrong ping response\" are ambiguous in this setting, and it has been decided to not suppress integrity failures when expecting a ping response.",
+     "page": 596,
+     "normative": false
+    },
+    {
+     "id": "T1.3.12:s8",
+     "text": "This mechanism is illustrated below from the viewpoint of the sender module.",
+     "page": 604,
+     "normative": false
+    },
+    {
+     "id": "T1.3.12:s9",
+     "text": "Note that the escalation signal always takes precedence, and the ping_req_i will just be acknowledged with ping_ok_o in case esc_req_i is already asserted.",
+     "page": 635,
+     "normative": true
+    },
+    {
+     "id": "T1.3.12:s10",
+     "text": "An ongoing ping sequence will be aborted immediately.",
+     "page": 635,
+     "normative": false
+    },
+    {
+     "id": "T1.3.12:s11",
+     "text": "Another thing to note is that the ping and escalation response sequences have to start _exactly_ one cycle after either a ping or escalation event has been signaled.",
+     "page": 638,
+     "normative": false
+    },
+    {
+     "id": "T1.3.12:s12",
+     "text": "Otherwise the escalation sender will assert integ_fail_o immediately.",
+     "page": 638,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.3.13",
+   "title": "Monitoring of Pings at the Escalation Receiver Side",
+   "level": 3,
+   "parent": "T1.3",
+   "page_start": 641,
+   "page_end": 654,
+   "sentences": [
+    {
+     "id": "T1.3.13:s1",
+     "text": "Escalation receivers contain a mechanism to monitor the liveness of the alert handler itself.",
+     "page": 643,
+     "normative": false
+    },
+    {
+     "id": "T1.3.13:s2",
+     "text": "In particular, the receivers passively monitor the ping requests sent out by the alert handler using a timeout counter.",
+     "page": 643,
+     "normative": false
+    },
+    {
+     "id": "T1.3.13:s3",
+     "text": "If ping requests are absent for too long, the corresponding escalation action will be automatically asserted until reset.",
+     "page": 643,
+     "normative": false
+    },
+    {
+     "id": "T1.3.13:s4",
+     "text": "The monitoring mechanism builds on top of the following properties of the alert handler system:",
+     "page": 647,
+     "normative": false
+    },
+    {
+     "id": "T1.3.13:s5",
+     "text": "the ping mechanism can only be enabled, but not disabled.",
+     "page": 648,
+     "normative": true
+    },
+    {
+     "id": "T1.3.13:s6",
+     "text": "This allows us to start the timeout counter once the first ping request arrives at a particular escalation receiver.",
+     "page": 648,
+     "normative": false
+    },
+    {
+     "id": "T1.3.13:s7",
+     "text": "the escalation receivers are in the same clock/reset domain as the alert handler.",
+     "page": 651,
+     "normative": false
+    },
+    {
+     "id": "T1.3.13:s8",
+     "text": "This ensures that we are seeing the same clock frequency, and the mechanism is properly reset together with the alert handler logic.",
+     "page": 651,
+     "normative": false
+    },
+    {
+     "id": "T1.3.13:s9",
+     "text": "the maximum cycle count between subsequent pings on the same escalation line is bounded, even though the wait counts are randomized.",
+     "page": 654,
+     "normative": false
+    },
+    {
+     "id": "T1.3.13:s10",
+     "text": "This allows us to compute a safe and fixed timeout threshold based on design constants.",
+     "page": 654,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.3.14",
+   "title": "Low-power Management of Alert Channels",
+   "level": 3,
+   "parent": "T1.3",
+   "page_start": 658,
+   "page_end": 663,
+   "sentences": [
+    {
+     "id": "T1.3.14:s1",
+     "text": "Due to the various clock and reset domains in the OpenTitan system, the alert handler ping mechanism needs to have additional logic to deal with alert senders that are either held in reset, or that are clock gated.",
+     "page": 660,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14:s2",
+     "text": "This is needed to ensure that no false alarms are produced by the ping mechanism when an alert channel (sender / receiver pair) does not respond due to the sender being either in reset or clock gated.",
+     "page": 660,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14:s3",
+     "text": "Since the FSMs associated with an alert channel may end up in an inconsistent state when the sender is reset or gated while an asynchronous event handshake is in progress, this logic also needs to be able to re-initialize affected alert channels whenever the channels comes back from reset / clock gated state.",
+     "page": 663,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.3.14.1",
+   "title": "Assumptions",
+   "level": 4,
+   "parent": "T1.3.14",
+   "page_start": 665,
+   "page_end": 682,
+   "sentences": [
+    {
+     "id": "T1.3.14.1:s1",
+     "text": "The following diagram shows a typical arrangement of alert sender (TX) and receiver (RX) pairs.",
+     "page": 667,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.1:s2",
+     "text": "It is assumed that:",
+     "page": 671,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.1:s3",
+     "text": "The alert handler clock domain cannot be gated by SW.",
+     "page": 673,
+     "normative": true
+    },
+    {
+     "id": "T1.3.14.1:s4",
+     "text": "This means that this clock domain is only ever disabled as part of the power-down sequence of the corresponding power domain.",
+     "page": 673,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.1:s5",
+     "text": "The alert senders are in general located within different clock and reset domains than the alert receivers within the alert handler, and thus use the asynchronous event handshake mode.",
+     "page": 675,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.1:s6",
+     "text": "Some alert senders may be located in an always-on (AON) power domain, within different clock and reset groups than the alert handler.",
+     "page": 676,
+     "normative": true
+    },
+    {
+     "id": "T1.3.14.1:s7",
+     "text": "The alert handler may be located in an non-AON power domain, and may thus undergo a reset cycle where it cannot be guaranteed that all alert senders are reset as well (i.e., some alert senders may retain their state).",
+     "page": 677,
+     "normative": true
+    },
+    {
+     "id": "T1.3.14.1:s8",
+     "text": "Further, we assume that we can get the following side-band information from the clock and reset managers in the system:",
+     "page": 679,
+     "normative": true
+    },
+    {
+     "id": "T1.3.14.1:s9",
+     "text": "All relevant reset signals pertaining to alert sender domains",
+     "page": 681,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.1:s10",
+     "text": "All relevant clock enable signals pertaining to alert sender domains",
+     "page": 682,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.3.14.2",
+   "title": "Scenarios",
+   "level": 4,
+   "parent": "T1.3.14",
+   "page_start": 684,
+   "page_end": 686,
+   "sentences": [
+    {
+     "id": "T1.3.14.2:s1",
+     "text": "With the assumptions above, the following two problematic scenarios can occur.",
+     "page": 686,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T1.3.14.2.1",
+   "title": "Alert Handler in Reset",
+   "level": 5,
+   "parent": "T1.3.14.2",
+   "page_start": 688,
+   "page_end": 693,
+   "sentences": [
+    {
+     "id": "T1.3.14.2.1:s1",
+     "text": "It may happen that the alert handler is reset while some alert senders (e.g. those located in the AON domain) are not.",
+     "page": 690,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.2.1:s2",
+     "text": "In general, if the associated alert channels are idle during an alert handler reset cycle, no problems arise.",
+     "page": 690,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.2.1:s3",
+     "text": "However, if an alert channel is reset while it is handling a ping request or an alert event, the sender / receiver FSMs may end up in an inconsistent state upon deassertion of the alert handler reset.",
+     "page": 693,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.2.1:s4",
+     "text": "This can either lead to spurious alert or ping events, or a completely locked up alert channel which will be flagged eventually by the ping mechanism.",
+     "page": 693,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T1.3.14.2.2",
+   "title": "Alert Sender in Reset or Clock-gated",
+   "level": 5,
+   "parent": "T1.3.14.2",
+   "page_start": 696,
+   "page_end": 700,
+   "sentences": [
+    {
+     "id": "T1.3.14.2.2:s1",
+     "text": "If any of the alert senders is either put into reset or its clock is disabled while the alert handler is operational, the ping mechanism inside the alert handler will eventually report a ping failure because of missing ping responses from the affected alert channel(s).",
+     "page": 698,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.2.2:s2",
+     "text": "Further, if the alert sender is reset while the corresponding alert channel is handling a ping request or an alert event, the sender / receiver FSMs may end up in an inconsistent state after reset deassertion.",
+     "page": 700,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.3.14.3",
+   "title": "Employed Solution",
+   "level": 4,
+   "parent": "T1.3.14",
+   "page_start": 702,
+   "page_end": 726,
+   "sentences": [
+    {
+     "id": "T1.3.14.3:s1",
+     "text": "As elaborated before, the side effects of resetting / clock gating either the alert handler or any of the alert senders are inconsistent FSM states, leading to locked up alert channels, or spurious alert or ping events.",
+     "page": 704,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.3:s2",
+     "text": "To address these issues, we have to:",
+     "page": 704,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.3:s3",
+     "text": "make sure spurious events (alert and ping_ok outputs of the alert receivers) are suppressed if an alert channel is clock gated or in reset,",
+     "page": 707,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.3:s4",
+     "text": "provide a mechanism for resetting an alert channel to an operational state once the associated clock is re-enabled, or the associated reset is released,",
+     "page": 708,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.3:s5",
+     "text": "trigger this reset mechanism on all alert channels whenever the alert handler itself has been reset.",
+     "page": 709,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.3:s6",
+     "text": "To attain this, the idea is to make use of side-band information available from the clock and reset managers to detect whether an alert channel (or a group of alert channels with the same clock and reset on the sender side) has to be put into a low-power state.",
+     "page": 711,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.3:s7",
+     "text": "In the following we will refer to such a clock / reset domain grouping as a low-power group (LPG).",
+     "page": 711,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.3:s8",
+     "text": "The mechanism is illustrated below for a single LPG (in practice, this logic is replicated for each LPG that is identified in the system):",
+     "page": 714,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.3:s9",
+     "text": "The clock gating enable (lpg_cg_en) and reset enable (lpg_rst_en) indications are routed as multibit signals to the alert handler, where they are synchronized to the alert handler clock and logically combined using an OR function to form a combined low-power indication signal that is multibit encoded.",
+     "page": 718,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.3:s10",
+     "text": "This multibit indication signal is then routed to all alert receivers, where it is used to trigger re-initialization of each alert channel, and bypass the ping requests from the ping mechanism.",
+     "page": 720,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.3:s11",
+     "text": "To that end, two extra *init states* are added to the alert receiver FSMs to perform this in-band reset, as indicated in the state diagram below:",
+     "page": 722,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.3:s12",
+     "text": "Whenever the init_trig multibit signal of an LPG is asserted, all corresponding sender FSMs are moved into the InitReq state.",
+     "page": 726,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.3:s13",
+     "text": "In that state, the alert receivers immediately acknowledge ping requests from the ping mechanism, and ignore alert events from the sender side.",
+     "page": 726,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.3:s14",
+     "text": "In addition to that, the receivers intentionally place a signal integrity error onto the ping_p / ping_n, ack_p / ack_n lines going from receivers to the senders.",
+     "page": 726,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.3:s15",
+     "text": "This causes the senders to 1) move into the signal integrity error state, and 2) respond by placing a signal integrity error onto the alert_p / alert_n lines, which serves as an initialization \"acknowledge\" signal in this case.",
+     "page": 726,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.3:s16",
+     "text": "Since the sender FSMs fall back into the Idle state once the signal integrity error disappears, this procedure essentially implements an in-band reset mechanism with an acknowledgement handshake that can be used to determine whether the reset has been successful.",
+     "page": 726,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T1.3.14.4",
+   "title": "Implementation Aspects",
+   "level": 4,
+   "parent": "T1.3.14",
+   "page_start": 732,
+   "page_end": 732,
+   "sentences": []
+  },
+  {
+   "id": "T1.3.14.4.1",
+   "title": "Ping Mechanism Bypass",
+   "level": 5,
+   "parent": "T1.3.14.4",
+   "page_start": 734,
+   "page_end": 738,
+   "sentences": [
+    {
+     "id": "T1.3.14.4.1:s1",
+     "text": "Note that the ping bypass mechanism is to be implemented in a way that pings are only ack'ed immediately if 1) the FSM is in the InitReq state, and 2) the init_trig signal is still asserted.",
+     "page": 736,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.4.1:s2",
+     "text": "This allows to subject the initialization process of each alert channel to the ping mechanism for channels that are recovering from a reset or clock gated cycle on the sender side.",
+     "page": 738,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.4.1:s3",
+     "text": "I.e., alert channels that get stuck during the initialization process can be detected by the ping mechanism since ping requests are not immediately ack'ed anymore once init_trig is deasserted.",
+     "page": 738,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T1.3.14.4.2",
+   "title": "FSM Encoding",
+   "level": 5,
+   "parent": "T1.3.14.4",
+   "page_start": 741,
+   "page_end": 743,
+   "sentences": [
+    {
+     "id": "T1.3.14.4.2:s1",
+     "text": "Since there are many alert channels in the design, the receiver and sender FSMs themselves are not sparsely encoded.",
+     "page": 743,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.4.2:s2",
+     "text": "Instead, we rely on the ping mechanism to detect alert channels that are in a bad state.",
+     "page": 743,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.4.2:s3",
+     "text": "The specific implementation of the ping bypass mentioned in the previous subsection ensures that the ping mechanism can also be used to monitor the initialization sequence of alert channels.",
+     "page": 743,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T1.3.14.4.3",
+   "title": "Latency / Skew Considerations",
+   "level": 5,
+   "parent": "T1.3.14.4",
+   "page_start": 747,
+   "page_end": 756,
+   "sentences": [
+    {
+     "id": "T1.3.14.4.3:s1",
+     "text": "Due to asynchronous transitions and different path latencies in the system, a change in reset or clock gating state will experience a different latency through the alert channels than through the indication signals (rst_n and clk_en) that are connected to the low-power control logic.",
+     "page": 749,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.4.3:s2",
+     "text": "It is consequently possible for a group of alert senders to already be in reset or clock gated state, while the corresponding LPG logic does not yet know about this state change - and vice versa.",
+     "page": 751,
+     "normative": true
+    },
+    {
+     "id": "T1.3.14.4.3:s3",
+     "text": "In practice, this means that ping requests may be pending for several cycles until the LPG logic detects a reset or clock-gated condition and disables the corresponding alert channel(s).",
+     "page": 753,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.4.3:s4",
+     "text": "Fortunately, such delay can be tolerated by setting the ping timeout to a sufficiently large value (see CLASSA_TIMEOUT_CYC_SHADOWED).",
+     "page": 753,
+     "normative": true
+    },
+    {
+     "id": "T1.3.14.4.3:s5",
+     "text": "As for alert events, this latency difference should not pose a problem.",
+     "page": 756,
+     "normative": true
+    },
+    {
+     "id": "T1.3.14.4.3:s6",
+     "text": "Alert events may get stuck in the alert sender due to a reset or clock-gated condition - but this is to be expected.",
+     "page": 756,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.3.14.4.4",
+   "title": "Integration Considerations",
+   "level": 5,
+   "parent": "T1.3.14.4",
+   "page_start": 759,
+   "page_end": 764,
+   "sentences": [
+    {
+     "id": "T1.3.14.4.4:s1",
+     "text": "Note that due to the aforementioned latency tolerance built into the ping timer, it is permissible to connect any reset or clock enable indication signal from the relevant clock group to the LPG logic.",
+     "page": 761,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.4.4:s2",
+     "text": "I.e., the only requirement is that the indication signals are logically related to the resets and clocks routed to the alert senders, and that the skew between reset / clock state changes and the indication signals is bounded.",
+     "page": 761,
+     "normative": false
+    },
+    {
+     "id": "T1.3.14.4.4:s3",
+     "text": "The topgen script is extended so that it can identify all LPGs and the associated alert channels.",
+     "page": 764,
+     "normative": true
+    },
+    {
+     "id": "T1.3.14.4.4:s4",
+     "text": "This information is then used to parameterize the alert handler design, and make the necessary top-level connections from the reset and clock management controllers to the alert handler.",
+     "page": 764,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.3.15",
+   "title": "Hardening Against Glitch Attacks",
+   "level": 3,
+   "parent": "T1.3",
+   "page_start": 767,
+   "page_end": 788,
+   "sentences": [
+    {
+     "id": "T1.3.15:s1",
+     "text": "In addition to the differential alert and escalation signalling scheme, the internal state machines and counters are hardened against glitch attacks as described bellow:",
+     "page": 769,
+     "normative": false
+    },
+    {
+     "id": "T1.3.15:s2",
+     "text": "Ping Timer:",
+     "page": 771,
+     "normative": false
+    },
+    {
+     "id": "T1.3.15:s3",
+     "text": "The FSM is sparsely encoded.",
+     "page": 772,
+     "normative": false
+    },
+    {
+     "id": "T1.3.15:s4",
+     "text": "The LFSR and the counter are duplicated.",
+     "page": 773,
+     "normative": false
+    },
+    {
+     "id": "T1.3.15:s5",
+     "text": "If the FSM or counter are glitched into an invalid state, all internal ping fail alerts will be permanently asserted.",
+     "page": 774,
+     "normative": false
+    },
+    {
+     "id": "T1.3.15:s6",
+     "text": "Escalation Timers:",
+     "page": 776,
+     "normative": false
+    },
+    {
+     "id": "T1.3.15:s7",
+     "text": "The escalation timer FSMs are sparsely encoded.",
+     "page": 777,
+     "normative": false
+    },
+    {
+     "id": "T1.3.15:s8",
+     "text": "The escalation timer counters are duplicated.",
+     "page": 778,
+     "normative": false
+    },
+    {
+     "id": "T1.3.15:s9",
+     "text": "The escalation accumulators are duplicated.",
+     "page": 779,
+     "normative": false
+    },
+    {
+     "id": "T1.3.15:s10",
+     "text": "If one of these FSMs, counters or accumulators are glitched into an invalid state, all escalation actions will be triggered and the affected FSM goes into a terminal FsmError state.",
+     "page": 780,
+     "normative": false
+    },
+    {
+     "id": "T1.3.15:s11",
+     "text": "CSRs:",
+     "page": 782,
+     "normative": false
+    },
+    {
+     "id": "T1.3.15:s12",
+     "text": "Critical configuration CSRs are shadowed.",
+     "page": 783,
+     "normative": false
+    },
+    {
+     "id": "T1.3.15:s13",
+     "text": "The shadow CSRs can trigger additional internal alerts for CSR storage and update failures.",
+     "page": 784,
+     "normative": true
+    },
+    {
+     "id": "T1.3.15:s14",
+     "text": "These internal alerts are fed back into the alert classifier in the same manner as the ping and integrity failure alerts.",
+     "page": 784,
+     "normative": false
+    },
+    {
+     "id": "T1.3.15:s15",
+     "text": "LPGs:",
+     "page": 787,
+     "normative": false
+    },
+    {
+     "id": "T1.3.15:s16",
+     "text": "Clock-gated and reset-asserted indication signals that are routed from clock and reset managers to the alert handler are encoded with multibit signals.",
+     "page": 788,
+     "normative": false
+    }
+   ]
+  }
+ ],
+ "tables": [],
+ "signals": {
+  "AON": 2,
+  "CLASSA_CTRL_SHADOWED": 2,
+  "CLASSA_ESC_CNT": 2,
+  "CLASSA_TIMEOUT_CYC_SHADOWED": 2,
+  "FSM": 5,
+  "LFSR": 12,
+  "LPG": 6,
+  "RTL": 2
+ },
+ "warnings": [],
+ "stats": {
+  "sections": 36,
+  "sentences": 293,
+  "normative": 69,
+  "chars": 37982
+ }
+}

@@ -50,7 +50,9 @@ def in_sim_only(text: str, line: int) -> bool:
 
 
 def check_mutant(host: SimHost, contract: dict, rtl_dir: Path, m: dict, run_set: dict | None, *,
-                 depth: int = 20, timeout_s: int = 900, trace_dir: Path | None = None) -> dict:
+                 depth: int = 20, timeout_s: int = 900, trace_dir: Path | None = None,
+                 frontend: str = "verilog", defines: list[str] | None = None) -> dict:
+    """`frontend` and `defines` are those of the formal run (config formal_frontend, formal_defines)."""
     files = sim.rtl_files(rtl_dir)
     original = {f.name: f.read_text(encoding="utf-8", errors="replace") for f in files}
     order = [f.name for f in files]
@@ -63,12 +65,13 @@ def check_mutant(host: SimHost, contract: dict, rtl_dir: Path, m: dict, run_set:
     lines[m["line"] - 1] = m["mutated"]
     mutant = dict(original)
     mutant[m["file"]] = "\n".join(lines) + "\n"
-    macros = sorted({mac for n in order for mac, _ in rtlcheck.sim_only(rtlcheck.strip_comments(original[n]))[1]})
+    macros = sorted({mac for n in order for mac, _ in rtlcheck.sim_only(rtlcheck.strip_comments(original[n]))[1]}
+                    | set(defines or []))
     per: dict[str, dict] = {}
     for conf in _configs(m, run_set):
         values = params.resolve(contract["interface"], conf["overrides"])
         eq = equiv.run(host, contract, values, original, order, mutant, order, defines=macros, depth=depth,
-                       timeout_s=timeout_s, multiclock=is_async(contract["interface"]))
+                       timeout_s=timeout_s, multiclock=is_async(contract["interface"]), frontend=frontend)
         rec = {"status": eq["status"], "overrides": conf["overrides"]}
         if eq["status"] == "CEX":
             rec["first_difference"] = equiv.cex_outputs(eq.get("trace"), contract).replace("rewritten", "mutant")
@@ -83,21 +86,43 @@ def check_mutant(host: SimHost, contract: dict, rtl_dir: Path, m: dict, run_set:
     sts = [v["status"] for v in per.values()]
     status = ("CEX" if "CEX" in sts else "PROVEN" if sts and all(s == "PROVEN" for s in sts)
               else "ERROR" if "ERROR" in sts else "BOUNDED")
-    return {"status": status, "depth": depth, "per_config": per}
+    return {"status": status, "depth": depth, "frontend": frontend, "mutated": m["mutated"], "per_config": per}
+
+
+FINAL = ("PROVEN", "CEX", "BOUNDED", "SIM_ONLY")
+
+
+def reusable(m: dict, depth: int, frontend: str) -> bool:
+    """Is the recorded result of mutant `m` one this run would compute again (same mutated line, depth and
+    frontend, and a conclusion rather than ERROR)? Such a result is kept, so an interrupted run resumes."""
+    e = m.get("equivalence") or {}
+    return (e.get("status") in FINAL and e.get("depth") == depth and e.get("frontend") == frontend
+            and e.get("mutated") == m.get("mutated"))
 
 
 def run(host: SimHost, contract: dict, rtl_dir: Path, mutation: dict, run_set: dict | None, *,
-        depth: int = 20, timeout_s: int = 900, trace_dir: Path | None = None, say=print) -> dict:
+        depth: int = 20, timeout_s: int = 900, trace_dir: Path | None = None, say=print,
+        frontend: str = "verilog", defines: list[str] | None = None, redo: bool = False, save=None) -> dict:
     """Check every surviving mutant; write the result into mutation["mutants"][i]["equivalence"] and a
-    summary into mutation["equivalence"]. The recorded kill/survive results are not changed."""
+    summary into mutation["equivalence"]. The recorded kill/survive results are not changed.
+    A result that `reusable` accepts is kept unless `redo`; `save(mutation)` is called after each mutant."""
     for m in mutation["mutants"]:
         if m["status"] != "survived":
             continue
+        if not redo and reusable(m, depth, frontend):
+            say(f"[mutate-equiv] {m['id']} {m['file']}:{m['line']}: {m['equivalence']['status']} (kept from the last run)")
+            continue
+        if trace_dir is not None and trace_dir.is_dir():
+            for old in trace_dir.glob(f"{m['id']}_*.vcd"):
+                old.unlink()
         m["equivalence"] = check_mutant(host, contract, rtl_dir, m, run_set, depth=depth, timeout_s=timeout_s,
-                                        trace_dir=trace_dir)
+                                        trace_dir=trace_dir, frontend=frontend, defines=defines)
         e = m["equivalence"]
         diff = next((v.get("first_difference") for v in e["per_config"].values() if v.get("first_difference")), "")
         say(f"[mutate-equiv] {m['id']} {m['file']}:{m['line']}: {e['status']}" + (f" — {diff}" if diff else ""))
+        if save is not None:
+            mutation["equivalence"] = summary(mutation)
+            save(mutation)
     mutation["equivalence"] = summary(mutation)
     return mutation
 

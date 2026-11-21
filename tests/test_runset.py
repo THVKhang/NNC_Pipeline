@@ -116,6 +116,13 @@ class MergeTest(unittest.TestCase):
         self.assertIn("fails in off.s1", md)
         conds = {n: ok for n, ok, _ in report.signoff_conditions(rep)}
         self.assertFalse(conds["Every run of the run set built and ran"])
+        mutation = {"count": 4, "killed": 2, "survived": 2, "not_compiled": 0, "score": 50.0, "mutants": [],
+                    "equivalence": {"by_status": {"CEX": 1, "PROVEN": 1}, "proven_equivalent": 1,
+                                    "score_without_equivalent": 66.7}}
+        rep = report.build("demo", [], rules, CONTRACT, {**m, "integration": {"ok": True}}, mutation, None,
+                           {"total_usd": 0, "calls": 0, "by_agent": {}}, [])
+        md = report.to_markdown(rep, CONTRACT, mutation)
+        self.assertIn("score without the proven-equivalent mutants 66.7 %", md)
 
     def test_all_runs_failed_to_build(self):
         m = runset.merge([_run("a.s1", {}, status="build_failed")], {"status": "not_measured"}, {})

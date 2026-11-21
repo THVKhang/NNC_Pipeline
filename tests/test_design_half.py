@@ -73,6 +73,17 @@ class EquivTest(unittest.TestCase):
         self.assertIn("miter -equiv -flatten -make_assert nnc_gold nnc_gate nnc_miter", ys)
         self.assertIn("prove: abc pdr", files["eq.sby"])
 
+    def test_build_with_the_slang_frontend(self):
+        files, _ = equiv.build({"top": "m_x", "interface": IFACE}, {"P_W": 8}, {"a.sv": "x"}, ["a.sv"],
+                               {"b.sv": "y"}, ["b.sv"], defines=["SYNTHESIS"], frontend="slang")
+        ys = files["nnc_miter.ys"]
+        self.assertIn("read_slang -DSYNTHESIS --top m_x -G P_W=8 gold/a.sv\n", ys)
+        self.assertIn("read_slang -DSYNTHESIS --top m_x -G P_W=8 gate/b.sv\n", ys)
+        self.assertNotIn("read_verilog", ys)
+        self.assertNotIn("chparam", ys)
+        with self.assertRaises(ValueError):
+            equiv.build({"top": "m_x", "interface": IFACE}, {}, {}, [], {}, [], frontend="other")
+
     def test_cex_outputs_names_the_first_difference(self):
         vcd = """$scope module nnc_eq_top $end
 $scope module u_miter $end

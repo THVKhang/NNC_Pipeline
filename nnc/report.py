@@ -149,6 +149,7 @@ def build(design_name: str, gates: list, rules_doc: dict, contract: dict, result
         "mutation": None if not mutation else {
             **{k: mutation[k] for k in ("count", "killed", "survived", "not_compiled", "score")},
             "threshold": mutation.get("threshold"),
+            "equivalence": mutation.get("equivalence"),
             "rules_attributed": len(mutation.get("rule_scores") or {}),
             "rules_below_threshold": sorted(r for r, v in (mutation.get("rule_scores") or {}).items()
                                             if not v["meets_threshold"])},
@@ -244,6 +245,9 @@ def to_markdown(rep: dict, contract: dict, mutation: dict | None) -> str:
             f"| Integration | {'OK' if (sim.get('integration') or {}).get('ok') else sim.get('integration')} |",
             *_coverage_rows(cov),
             f"| Mutation score | {str(rep['mutation']['score']) + ' % (' + str(rep['mutation']['killed']) + ' killed / ' + str(rep['mutation']['survived']) + ' survived / ' + str(rep['mutation']['not_compiled']) + ' not compiled)' if rep['mutation'] else 'not run'} |",
+            *([f"| Surviving mutants, formal equivalence (`nnc mutate-equiv`) | {eqv['by_status']}; score without the "
+               f"proven-equivalent mutants {eqv['score_without_equivalent']} % |"]
+              if rep['mutation'] and (eqv := rep['mutation'].get('equivalence')) else []),
             *_closure_rows(rep),
             *([f"| Formal (SymbiYosys, depth {rep['formal']['depth']}) | {rep['formal']['by_status']} — "
                f"{rep['formal']['environment']}, work/formal.md |"] if rep.get("formal") else []),

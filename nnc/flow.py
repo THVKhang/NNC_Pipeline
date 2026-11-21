@@ -553,14 +553,24 @@ def stage_gen_env(d: Design, o: Options) -> None:
           + " -> verif/formal/nnc_env.sv (review it at G3)")
 
 
+def _formal_defines(cfg: dict) -> list[str]:
+    """Macros of the formal tools (config formal_defines; default: the simulation defines)."""
+    return [x.strip() for x in str(cfg.get("formal_defines", ",".join(sim.sim_options(cfg)["defines"])))
+            .replace(";", ",").split(",") if x.strip()]
+
+
+def _formal_frontend(cfg: dict) -> str:
+    """How the formal tools read the RTL: "verilog" (Yosys) or "slang" (yosys-slang plugin)."""
+    return str(cfg.get("formal_frontend", "verilog")).strip().lower()
+
+
 def _formal_runs(d: Design, o: Options, contract: dict, tdir: Path | None,
                  only_config: str | None = None) -> tuple[dict, int]:
     """SymbiYosys on every formal configuration of the design configuration; the merged result and the
     depth. Counterexample traces are copied to `tdir` (None: not kept). `only_config`: run that formal
     configuration alone (formal-check --config, to split a long rerun over several CI jobs)."""
     cfg = d.config()
-    defines = [x.strip() for x in str(cfg.get("formal_defines", ",".join(sim.sim_options(cfg)["defines"])))
-               .replace(";", ",").split(",") if x.strip()]
+    defines = _formal_defines(cfg)
     depth = int(cfg.get("formal_depth", formal.DEFAULT_DEPTH))
     # formal_configs: "all" (every parameter set of the run set, the default when there is one) or "default"
     which = str(cfg.get("formal_configs", "all")).strip().lower()
@@ -575,7 +585,8 @@ def _formal_runs(d: Design, o: Options, contract: dict, tdir: Path | None,
         r = formal.run(default_host(), contract, d.root / "rtl", d.root / "verif" / "sva", env_file(d),
                        depth=depth, defines=defines, parallel=o.workers, params=conf["params"],
                        max_depth=int(cfg.get("formal_max_depth", 0) or 0),
-                       task_timeout_s=int(cfg.get("formal_timeout", formal.DEFAULT_TIMEOUT_S)))
+                       task_timeout_s=int(cfg.get("formal_timeout", formal.DEFAULT_TIMEOUT_S)),
+                       frontend=_formal_frontend(cfg))
         out = Path(r.pop("out_dir"))
         for cid, v in r["checks"].items():
             for t in v.get("traces", [])[:1]:
@@ -918,9 +929,11 @@ def fix_verif_apply(d: Design, by: str) -> list[str]:
     return files
 
 
-def mutate_equiv(d: Design, o: Options, depth: int | None = None, timeout_s: int = 900) -> dict:
+def mutate_equiv(d: Design, o: Options, depth: int | None = None, timeout_s: int = 900, redo: bool = False) -> dict:
     """`nnc mutate-equiv`: formal equivalence of every surviving mutant of work/mutation.json with the RTL
-    (nnc/mutequiv.py, no agent). Adds the results to work/mutation.json; kill/survive is not changed."""
+    (nnc/mutequiv.py, no agent). Adds the results to work/mutation.json; kill/survive is not changed.
+    The file is written after each mutant, and a later run keeps the conclusions it would compute again
+    (same depth and frontend), so an interrupted run resumes; `redo` checks every mutant again."""
     from nnc import mutequiv
     path = d.work / "mutation.json"
     if not path.is_file():
@@ -928,17 +941,19 @@ def mutate_equiv(d: Design, o: Options, depth: int | None = None, timeout_s: int
     mutation = _read(path)
     run_set = (_read(d.work / "results.json") if (d.work / "results.json").is_file() else {}).get("run_set")
     tdir = d.work / "mutation_equiv"
-    if tdir.is_dir():
-        for old in tdir.glob("*.vcd"):
-            old.unlink()
-    depth = depth or int(d.config().get("formal_depth", formal.DEFAULT_DEPTH))
+    cfg = d.config()
+    depth = depth or int(cfg.get("formal_depth", formal.DEFAULT_DEPTH))
+
+    def save(mut: dict) -> None:
+        for m in mut["mutants"]:
+            for v in (m.get("equivalence") or {}).get("per_config", {}).values():
+                if v.get("trace") and Path(v["trace"]).is_absolute():
+                    v["trace"] = Path(v["trace"]).relative_to(d.root).as_posix()
+        _write(path, mut)
     mutequiv.run(default_host(), _read(d.work / "contract.json"), d.root / "rtl", mutation, run_set,
-                 depth=depth, timeout_s=timeout_s, trace_dir=tdir, say=o.say)
-    for m in mutation["mutants"]:
-        for v in (m.get("equivalence") or {}).get("per_config", {}).values():
-            if v.get("trace"):
-                v["trace"] = Path(v["trace"]).relative_to(d.root).as_posix()
-    _write(path, mutation)
+                 depth=depth, timeout_s=timeout_s, trace_dir=tdir, say=o.say,
+                 frontend=_formal_frontend(cfg), defines=_formal_defines(cfg), redo=redo, save=save)
+    save(mutation)
     s = mutation["equivalence"]
     o.say(f"[mutate-equiv] depth {depth}: {s['by_status']}; score without proven-equivalent mutants: "
           f"{s['score_without_equivalent']} % (recorded score {mutation.get('score')} %) -> work/mutation.json")

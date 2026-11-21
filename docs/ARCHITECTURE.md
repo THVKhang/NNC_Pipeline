@@ -680,3 +680,43 @@ Số đo: [EVALUATION.md §8](EVALUATION.md).
 - axil_regfile: ước lượng của ABC cho đường tổ hợp dài nhất ở góc SS là 31,5 ns, dài hơn chu kỳ 20 ns mà REQ-IMP-001 đòi. Cần STA thật, flow này không có.
 
 **Sửa lỗi chọn dòng của mutation.** Từ giai đoạn 12, mutation chỉ đột biến dòng đã chạy. Nhưng Verilator ghi coverage của một lệnh `assign` trong module con được inline vào dòng **khai báo** tín hiệu đích, không phải dòng `assign`. Vì thế các dòng `assign` bị bỏ sót dù đã chạy. Nay `assign_lines` coi dòng `assign` là đã chạy khi dòng khai báo tín hiệu đích đã chạy (có unit test). Ở các thiết kế cũ, số ứng viên tăng từ 0 đến 13; điểm cũ chưa chạy lại.
+
+## 23. Thiết kế công nghiệp: OpenTitan rv_timer (2026-11-20 đến 2026-11-21)
+
+Số đo: [EVALUATION.md §9](EVALUATION.md).
+
+**Vì sao.** Các thiết kế trước đều nhỏ và viết cho repo này. `rv_timer` của OpenTitan là IP mã nguồn mở cấp công nghiệp. Nó có spec công khai, bus TL-UL sinh từ register tool, alert vi sai và logic kiểm tra toàn vẹn bus. Giai đoạn này thử xem flow có chạy được với RTL dùng SystemVerilog đầy đủ (package, struct, các `prim_*`) và với spec nằm rải trên 5 tài liệu không.
+
+**Cách làm.**
+- RTL OpenTitan (44 file, Apache-2.0) được giữ nguyên, có ghi NOTICE. Repo chỉ viết thêm một wrapper nhỏ (`ot_rv_timer_nnc.sv`) để làm phẳng cổng struct; wrapper không đổi hành vi.
+- Agent viết check và test không bao giờ thấy RTL. Testbench UVM của OpenTitan không được chép vào.
+- Các lỗ hổng spec (20 mục từ `spec-lint`) và câu hỏi mở được trả lời thành các quyết định D-001..D-020, chỉ dựa trên tài liệu. Chỗ nào tài liệu không nói rõ thì check chỉ kiểm giới hạn (bound), không kiểm số chu kỳ chính xác.
+
+**Kết quả chính.**
+- Mô phỏng: 23/23 test và 13/13 assertion pass với 2 seed. 4 lỗi mô phỏng ban đầu đều là lỗi của verification (B); agent A17 sửa qua 2 lượt.
+- Formal (độ sâu 32): 7 PROVEN, 2 BOUNDED, 1 TIMEOUT (CHK-011), 2 chỉ kiểm bằng mô phỏng (CHK-006/007).
+  - 2 phản ví dụ (CHK-003, CHK-004) là lỗi checker; A17 sửa ở lượt thứ ba.
+  - Còn 1 phản ví dụ, **CHK-008**: nó chỉ liên quan đến stimulus, DUT không gây ra. Theo quyết định của người dùng, CHK-008 giữ nguyên và để người duyệt G4 trả lời (xem dưới).
+- Mutation: 58,3 % (21/36). Formal chứng minh 11/15 mutant sống sót là tương đương, nên điểm thực chất là 84,0 %. 3 mutant còn lại khác hành vi, nhưng chỉ ở các chỗ mà quyết định spec để ngỏ (D-011, D-015, D-010). M12 không kiểm được vì mutant có reset sai cực tính so với danh sách sensitivity.
+- Không có sửa tay. Chi phí agent là US$22,09 cho 70 lần gọi.
+
+**Câu hỏi mở cho G4: CHK-008.** Formal tìm được một request có mask byte không liền khối (`0101`). Hai đoạn tài liệu nói ngược nhau:
+- luật host TL-UL nói host trong OpenTitan không dùng mask như vậy;
+- RT-4.1-05 nói các request lỗi ("bad size or mask") là stimulus hợp lệ.
+
+Môi trường formal theo RT-4.1-05, còn CHK-008 theo luật host. DUT trả `d_error` = 1 đúng như chuẩn cho phép. Câu hỏi là đọc theo đoạn nào, và người có chuyên môn phải trả lời.
+
+**Lỗi của flow tìm thấy và đã sửa (mỗi lỗi có unit test).**
+1. Formal không đọc được RTL OpenTitan bằng parser của Yosys. Nay formal đọc DUT bằng plugin yosys-slang (`formal_frontend=slang`, `formal_defines=SYNTHESIS`). Mô phỏng thêm include directory cho file `.svh`.
+2. Checker lấy mẫu ở cạnh xuống của clock từng làm formal báo ERROR. Nay một checker như vậy được đánh dấu là chỉ kiểm bằng mô phỏng.
+3. Prompt của A13 (môi trường formal) và A6 (cover point) làm mất điều kiện `condition` của luật. Vì thế A13 không thấy "chu kỳ đầu sau reset" của D-016. Nay cả hai prompt đều hiện `WHEN <điều kiện>`.
+4. `mutate-equiv` từng dùng parser của Yosys, nên báo ERROR cho mọi mutant OpenTitan. Nay nó dùng frontend và macro của formal.
+5. `mutate-equiv` mất hết kết quả khi bị ngắt, và chạy BMC trước PDR. Riêng BMC của M19 hết giờ sau 15 phút, trong khi PDR tìm ra khác biệt chỉ trong 7 giây. Cách sửa:
+   - `work/mutation.json` được ghi sau mỗi mutant;
+   - kết luận của lần chạy cùng độ sâu và frontend được giữ lại (`--redo` để kiểm lại tất cả);
+   - PDR chạy trước, BMC chỉ chạy khi PDR chưa kết luận.
+6. Báo cáo hiện kết quả tương đương ngay cạnh điểm mutation.
+
+**CI.** ot_rv_timer được thêm vào các job kit, kit-configs và formal. Kit đã chạy thử trong WSL theo đúng cách của CI: cả 2 seed cho kết quả giống bản đã ghi.
+
+**Bước tiếp theo:** [ROADMAP.md](ROADMAP.md) (GĐ17 đóng gói, GĐ18 IP OpenTitan thứ hai và đo độ ổn định).

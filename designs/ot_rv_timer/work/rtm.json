@@ -1,0 +1,5291 @@
+[
+ {
+  "rule": "RT-T2.2-01",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T2.2",
+  "sentences": [
+   "T2.2:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Each 64-bit counter increments by the step value whenever the prescaler times out.",
+  "checks": [
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-031": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-T2.2-02",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T2.2",
+  "sentences": [
+   "T2.2:s2"
+  ],
+  "strength": "MUST",
+  "statement": "Each timer generates an interrupt if its counter reaches or exceeds the programmed value.",
+  "checks": [
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T3.1-01",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T3.1",
+  "sentences": [
+   "T3.1:s2"
+  ],
+  "strength": "MUST",
+  "statement": "The tick generator creates a tick every time its internal counter hits the CFG0.prescaler value.",
+  "checks": [
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-031": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-T3.1-02",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T3.1",
+  "sentences": [
+   "T3.1:s3"
+  ],
+  "strength": "MUST",
+  "statement": "Each tick increments mtime by the CFG0.step value.",
+  "checks": [
+   "CHK-031",
+   "CHK-032"
+  ],
+  "check_status": {
+   "CHK-031": "PASS",
+   "CHK-032": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-T3.1-03",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T3.1",
+  "sentences": [
+   "T3.1:s4",
+   "T3.1:s5"
+  ],
+  "strength": "MUST",
+  "statement": "The timer compares 64-bit mtime with 64-bit mtimecmp and raises an interrupt when mtime is greater than or equal to mtimecmp.",
+  "checks": [
+   "CHK-022",
+   "CHK-023",
+   "CHK-033"
+  ],
+  "check_status": {
+   "CHK-022": "PASS",
+   "CHK-023": "PASS",
+   "CHK-033": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T3.2.2-01",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T3.2.2",
+  "sentences": [
+   "T3.2.2:s2",
+   "T3.2.2:s3"
+  ],
+  "strength": "MUST",
+  "statement": "Each hart has its own tick generator and counter, so the number of prescaler, step, and mtime registers equals the number of harts.",
+  "checks": [
+   "CHK-028"
+  ],
+  "check_status": {
+   "CHK-028": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T3.2.2-03",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T3.2.2",
+  "sentences": [
+   "T3.2.2:s5"
+  ],
+  "strength": "MUST",
+  "statement": "The IP is fixed to one hart and one timer per hart.",
+  "checks": [
+   "CHK-017"
+  ],
+  "check_status": {
+   "CHK-017": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-T3.2.2-04",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T3.2.2",
+  "sentences": [
+   "T3.2.2:s7"
+  ],
+  "strength": "MUST",
+  "statement": "There are separate interrupts per timer and a set of interrupt enable and state registers per hart.",
+  "checks": [
+   "CHK-028"
+  ],
+  "check_status": {
+   "CHK-028": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T4.1-01",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T4.1",
+  "sentences": [
+   "T4.1:s2"
+  ],
+  "strength": "MUST",
+  "statement": "The prescaler and step fields must be stable for the timer value to increment correctly.",
+  "checks": [
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-031": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T4.1-02",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T4.1",
+  "sentences": [
+   "T4.1:s3"
+  ],
+  "strength": "SHOULD",
+  "statement": "Software should de-activate the timer before changing the prescaler or step fields, then proceed with the change.",
+  "checks": [
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-031": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T4.2-06",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T4.2",
+  "sentences": [
+   "T4.2:s15"
+  ],
+  "strength": "MUST",
+  "statement": "mtimecmp shall be written after mtime in order to clear any pending interrupt condition.",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T4.3-02",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T4.3",
+  "sentences": [
+   "T4.3:s10"
+  ],
+  "strength": "MAY",
+  "statement": "Software may set mtimecmp to 0xFFFF_FFFF_FFFF_FFFF to get an intermediate interrupt.",
+  "checks": [
+   "CHK-034"
+  ],
+  "check_status": {
+   "CHK-034": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T4.3-05",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T4.3",
+  "sentences": [
+   "T4.3:s13"
+  ],
+  "strength": "MAY",
+  "statement": "Setting mtimecmp to 0xFFFF_FFFF_FFFF_FFFF - step + 1 works for the intermediate interrupt, since the last mtime before wrap is at least that large.",
+  "checks": [
+   "CHK-034"
+  ],
+  "check_status": {
+   "CHK-034": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T4.4-01",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T4.4",
+  "sentences": [
+   "T4.4:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The RV_TIMER module generates the interrupt when mtime is greater than or equal to mtimecmp.",
+  "checks": [
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-T4.4-02",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T4.4",
+  "sentences": [
+   "T4.4:s3"
+  ],
+  "strength": "MAY",
+  "statement": "The interrupt can be cleared by writing 1 to the Interrupt Status register INTR_STATE0.",
+  "checks": [
+   "CHK-025"
+  ],
+  "check_status": {
+   "CHK-025": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T4.4-03",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T4.4",
+  "sentences": [
+   "T4.4:s4",
+   "T4.4:s5"
+  ],
+  "strength": "MUST",
+  "statement": "The interrupt can be cleared by updating mtimecmp; a write to either COMPARE_LOWER0_0 or COMPARE_UPPER0_0 clears the interrupt source.",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T5.1-01",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T5.1",
+  "sentences": [
+   "T5.1:s1",
+   "T5.2:s2"
+  ],
+  "strength": "MUST",
+  "statement": "ALERT_TEST register must be located at offset 0x0 with length 4 bytes.",
+  "checks": [
+   "CHK-014",
+   "CHK-028"
+  ],
+  "check_status": {
+   "CHK-014": "PASS",
+   "CHK-028": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T5.1-02",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T5.1",
+  "sentences": [
+   "T5.1:s2",
+   "T5.3:s2",
+   "T5.3:s3",
+   "T5.3:s4"
+  ],
+  "strength": "MUST",
+  "statement": "CTRL must be at offset 0x4, length 4, reset to 0x0 with reset mask 0x1.",
+  "checks": [
+   "CHK-028",
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-028": "PASS",
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T5.1-03",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T5.1",
+  "sentences": [
+   "T5.1:s3",
+   "T5.4:s2",
+   "T5.4:s3",
+   "T5.4:s4"
+  ],
+  "strength": "MUST",
+  "statement": "INTR_ENABLE0 must be at offset 0x100, length 4, reset to 0x0 with reset mask 0x1.",
+  "checks": [
+   "CHK-028",
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-028": "PASS",
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T5.1-04",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T5.1",
+  "sentences": [
+   "T5.1:s4",
+   "T5.5:s2",
+   "T5.5:s3",
+   "T5.5:s4"
+  ],
+  "strength": "MUST",
+  "statement": "INTR_STATE0 must be at offset 0x104, length 4, reset to 0x0 with reset mask 0x1.",
+  "checks": [
+   "CHK-028"
+  ],
+  "check_status": {
+   "CHK-028": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T5.1-05",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T5.1",
+  "sentences": [
+   "T5.1:s5",
+   "T5.6:s2",
+   "T5.6:s3",
+   "T5.6:s4"
+  ],
+  "strength": "MUST",
+  "statement": "INTR_TEST0 must be at offset 0x108, length 4, reset value 0x0 with reset mask 0x1.",
+  "checks": [
+   "CHK-028"
+  ],
+  "check_status": {
+   "CHK-028": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T5.1-06",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T5.1",
+  "sentences": [
+   "T5.1:s6",
+   "T5.7:s2",
+   "T5.7:s3",
+   "T5.7:s4"
+  ],
+  "strength": "MUST",
+  "statement": "CFG0 must be at offset 0x10c, length 4, reset to 0x10000 with reset mask 0xff0fff.",
+  "checks": [
+   "CHK-028",
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-028": "PASS",
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T5.1-07",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T5.1",
+  "sentences": [
+   "T5.1:s7",
+   "T5.8:s2",
+   "T5.8:s3",
+   "T5.8:s4",
+   "T5.8.1:s1"
+  ],
+  "strength": "MUST",
+  "statement": "TIMER_V_LOWER0 at offset 0x110 holds timer value [31:0] as rw field v, reset 0x0, mask 0xffffffff.",
+  "checks": [
+   "CHK-028",
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-028": "PASS",
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T5.1-08",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T5.1",
+  "sentences": [
+   "T5.1:s8",
+   "T5.9:s2",
+   "T5.9:s3",
+   "T5.9:s4",
+   "T5.9.1:s1"
+  ],
+  "strength": "MUST",
+  "statement": "TIMER_V_UPPER0 at offset 0x114 holds timer value [63:32] as rw field v, reset 0x0, mask 0xffffffff.",
+  "checks": [
+   "CHK-028",
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-028": "PASS",
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T5.1-09",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T5.1",
+  "sentences": [
+   "T5.1:s9",
+   "T5.10:s2",
+   "T5.10:s3",
+   "T5.10:s4",
+   "T5.10.1:s1"
+  ],
+  "strength": "MUST",
+  "statement": "COMPARE_LOWER0_0 at offset 0x118 holds compare value [31:0] as rw field v, reset 0xffffffff, mask 0xffffffff.",
+  "checks": [
+   "CHK-028",
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-028": "PASS",
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T5.1-10",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T5.1",
+  "sentences": [
+   "T5.1:s10",
+   "T5.11:s2",
+   "T5.11:s3",
+   "T5.11:s4",
+   "T5.11.1:s1"
+  ],
+  "strength": "MUST",
+  "statement": "COMPARE_UPPER0_0 at offset 0x11c holds compare value [63:32] as rw field v, reset 0xffffffff, mask 0xffffffff.",
+  "checks": [
+   "CHK-028",
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-028": "PASS",
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T5.2-01",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T5.2",
+  "sentences": [
+   "T5.2:s3",
+   "T5.2:s4"
+  ],
+  "strength": "MUST",
+  "statement": "ALERT_TEST must reset to 0x80000000 with reset mask 0x80000001.",
+  "checks": [
+   "CHK-015",
+   "CHK-028"
+  ],
+  "check_status": {
+   "CHK-015": "PASS",
+   "CHK-028": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T5.2.1-01",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T5.2.1",
+  "sentences": [
+   "T5.2.1:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Writing 0 to regwen disables alert testing until the next reset; regwen can only be cleared, not set, by writes.",
+  "checks": [
+   "CHK-015"
+  ],
+  "check_status": {
+   "CHK-015": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T5.2.1-03",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T5.2.1",
+  "sentences": [
+   "T5.2.1:s3"
+  ],
+  "strength": "MUST",
+  "statement": "Writing 1 to fatal_fault triggers one alert event of the fatal kind.",
+  "checks": [
+   "CHK-014"
+  ],
+  "check_status": {
+   "CHK-014": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-T5.3.1-01",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T5.3.1",
+  "sentences": [
+   "T5.3.1:s1",
+   "T5.3.1:s2"
+  ],
+  "strength": "MUST",
+  "statement": "When active_0 is 1 the timer operates; bits 31:1 of CTRL are reserved.",
+  "checks": [
+   "CHK-029",
+   "CHK-031",
+   "CHK-032"
+  ],
+  "check_status": {
+   "CHK-029": "PASS",
+   "CHK-031": "PASS",
+   "CHK-032": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-T5.4.1-01",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T5.4.1",
+  "sentences": [
+   "T5.4.1:s1",
+   "T5.4.1:s2"
+  ],
+  "strength": "MUST",
+  "statement": "IE_0 (bit 0, rw, reset 0x0) is the interrupt enable for the timer; bits 31:1 are reserved.",
+  "checks": [
+   "CHK-004",
+   "CHK-026",
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-004": "PASS",
+   "CHK-026": "PASS",
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T5.5.1-01",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T5.5.1",
+  "sentences": [
+   "T5.5.1:s1",
+   "T5.5.1:s2"
+  ],
+  "strength": "MUST",
+  "statement": "IS_0 (bit 0, rw1c, reset 0x0) holds the timer interrupt status and is cleared by writing 1; bits 31:1 are reserved.",
+  "checks": [
+   "CHK-025"
+  ],
+  "check_status": {
+   "CHK-025": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T5.6.1-01",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T5.6.1",
+  "sentences": [
+   "T5.6.1:s1",
+   "T5.6.1:s2"
+  ],
+  "strength": "MUST",
+  "statement": "T_0 (bit 0, wo, reset x) is the interrupt test for timer; bits 31:1 are reserved.",
+  "checks": [
+   "CHK-027"
+  ],
+  "check_status": {
+   "CHK-027": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-T5.7.1-01",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T5.7.1",
+  "sentences": [
+   "T5.7.1:s1",
+   "T5.7.1:s2",
+   "T5.7.1:s3",
+   "T5.7.1:s4"
+  ],
+  "strength": "MUST",
+  "statement": "CFG0 step (bits 23:16, rw, reset 0x1) is the increment per tick; prescale (bits 11:0, rw, reset 0x0) generates the tick; other bits reserved.",
+  "checks": [
+   "CHK-029",
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-029": "PASS",
+   "CHK-031": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-T6.1-01",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T6.1",
+  "sentences": [
+   "T6.1:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The racl_policies input must carry the incoming RACL policy vector from a racl_ctrl instance, with the policy selection vector parameter selecting the policy for each register.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RT-T6.1-01",
+   "reason": "not_applicable_to_dut",
+   "note": "The DUT interface has no racl_policies port, and RACL is disabled (RT-1-02)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RT-T6.2-01",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T6.2",
+  "sentences": [
+   "T6.2:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The module must raise interrupt timer_expired_hart0_timer0 when hart0's timer0 has expired (mtime >= mtimecmp).",
+  "checks": [
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-T6.3-01",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "T6.3",
+  "sentences": [
+   "T6.3:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The fatal_fault alert must be triggered when a fatal TL-UL bus integrity fault is detected inside RV_TIMER.",
+  "checks": [
+   "CHK-016"
+  ],
+  "check_status": {
+   "CHK-016": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 3,
+   "killed": 2,
+   "survived": [
+    "M11"
+   ],
+   "claimed_equivalent": [],
+   "score": 66.7,
+   "meets_threshold": false
+  }
+ },
+ {
+  "rule": "RT-1-01",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "1",
+  "sentences": [
+   "1:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The design under verification has exactly one hart and one timer (N_HARTS = 1, N_TIMERS = 1).",
+  "checks": [
+   "CHK-017"
+  ],
+  "check_status": {
+   "CHK-017": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-1-02",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "1",
+  "sentences": [
+   "1:s2"
+  ],
+  "strength": "MUST",
+  "statement": "Every register access is permitted when RACL is disabled.",
+  "checks": [
+   "CHK-011",
+   "CHK-029",
+   "CHK-035"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-029": "PASS",
+   "CHK-035": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-1-04",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "1",
+  "sentences": [
+   "1:s3"
+  ],
+  "strength": "MUST",
+  "statement": "The alert sender of rv_timer and the alert receiver of the wrapper both use the synchronous clocking scheme, with no synchronizer flops on the differential pairs.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RT-1-04",
+   "reason": "static_or_structural",
+   "note": "The alert sender/receiver clocking scheme is a structural choice inside the wrapper."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RT-1-06",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "1",
+  "sentences": [
+   "1:s5"
+  ],
+  "strength": "MUST",
+  "statement": "Every run uses the single fixed configuration; there is no design parameter to vary.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RT-1-06",
+   "reason": "static_or_structural",
+   "note": "There is a single fixed configuration and no parameter to sweep."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RT-2-02",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "2",
+  "sentences": [
+   "2:s2"
+  ],
+  "strength": "MUST",
+  "statement": "All inputs are sampled and all outputs change at the rising edge of clk_i, except for the effect of rst_ni.",
+  "checks": [
+   "CHK-007"
+  ],
+  "check_status": {
+   "CHK-007": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-2-03",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "2",
+  "sentences": [
+   "2:s3"
+  ],
+  "strength": "MUST",
+  "statement": "rst_ni is active-low and may be asserted asynchronously, but its release must be synchronous to clk_i.",
+  "checks": [
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-030": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-2-04",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "2",
+  "sentences": [
+   "2:s4"
+  ],
+  "strength": "MUST",
+  "statement": "Every register holds its reset value as given in the rv_timer specification register tables.",
+  "checks": [
+   "CHK-006",
+   "CHK-028",
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-006": "PASS",
+   "CHK-028": "PASS",
+   "CHK-030": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-3-01",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s5"
+  ],
+  "strength": "MUST",
+  "statement": "i_a_opcode must encode TL-UL request types as Get = 4, PutFullData = 0 and PutPartialData = 1.",
+  "checks": [
+   "CHK-010"
+  ],
+  "check_status": {
+   "CHK-010": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-3-02",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s12"
+  ],
+  "strength": "MUST",
+  "statement": "i_a_instr = 1 marks the request as an instruction fetch (a_user.instr_type = MuBi4True); i_a_instr = 0 marks a data access (MuBi4False).",
+  "checks": [
+   "CHK-021"
+  ],
+  "check_status": {
+   "CHK-021": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-3-03",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s13"
+  ],
+  "strength": "MUST",
+  "statement": "When i_a_intg_flip is 1, the A-channel integrity sent with the request is corrupted.",
+  "checks": [
+   "CHK-016"
+  ],
+  "check_status": {
+   "CHK-016": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-3-04",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s16"
+  ],
+  "strength": "MUST",
+  "statement": "o_d_opcode must encode TL-UL response types as AccessAck = 0 and AccessAckData = 1.",
+  "checks": [
+   "CHK-010"
+  ],
+  "check_status": {
+   "CHK-010": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-3-05",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s23"
+  ],
+  "strength": "MUST",
+  "statement": "o_d_intg_err indicates that the response integrity of the D-channel beat is wrong.",
+  "checks": [
+   "CHK-013"
+  ],
+  "check_status": {
+   "CHK-013": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-3-06",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s24"
+  ],
+  "strength": "MUST",
+  "statement": "o_alert indicates that the alert fatal_fault was received.",
+  "checks": [
+   "CHK-014",
+   "CHK-016"
+  ],
+  "check_status": {
+   "CHK-014": "PASS",
+   "CHK-016": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-3-07",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "3",
+  "sentences": [
+   "3:s25"
+  ],
+  "strength": "MUST",
+  "statement": "o_alert_integ_fail indicates a signal integrity failure on the alert differential pairs.",
+  "checks": [
+   "CHK-001"
+  ],
+  "check_status": {
+   "CHK-001": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-4.1-01",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "4.1",
+  "sentences": [
+   "4.1:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The i_a_*, o_a_ready, o_d_* (except o_d_intg_err) and i_d_ready ports must be the same-named fields of the rv_timer TL-UL device interface tl, with TL-UL meaning.",
+  "checks": [
+   "CHK-009",
+   "CHK-010",
+   "CHK-012"
+  ],
+  "check_status": {
+   "CHK-009": "PASS",
+   "CHK-010": "PASS",
+   "CHK-012": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-4.1-03",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "4.1",
+  "sentences": [
+   "4.1:s2"
+  ],
+  "strength": "MUST",
+  "statement": "a_user.instr_type is MuBi4True when i_a_instr is 1 and MuBi4False when i_a_instr is 0.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RT-4.1-03",
+   "reason": "not_observable_at_interface",
+   "note": "a_user.instr_type is generated inside the wrapper. Its effect is exercised by CHK-021."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RT-4.1-04",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "4.1",
+  "sentences": [
+   "4.1:s3",
+   "4.1:s4"
+  ],
+  "strength": "MUST",
+  "statement": "The test bench must follow the TL-UL host rules, including keeping A-channel signals stable while a_valid is 1 and a_ready is 0.",
+  "checks": [
+   "CHK-008",
+   "CHK-035"
+  ],
+  "check_status": {
+   "CHK-008": "PASS",
+   "CHK-035": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-4.1-05",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "4.1",
+  "sentences": [
+   "4.1:s5"
+  ],
+  "strength": "MAY",
+  "statement": "The test bench may send requests listed as TL-UL error cases (unsupported opcode, bad size or mask, misaligned address) as legal stimulus.",
+  "checks": [
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-4.1-06",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "4.1",
+  "sentences": [
+   "4.1:s5"
+  ],
+  "strength": "MUST",
+  "statement": "The device must answer such error-case requests with d_error = 1.",
+  "checks": [
+   "CHK-011",
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-4.2-01",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "4.2",
+  "sentences": [
+   "4.2:s1",
+   "4.2:s2"
+  ],
+  "strength": "MUST",
+  "statement": "The wrapper must compute a_user.cmd_intg and a_user.data_intg with the OpenTitan TL-UL host integrity generator, so the request carries correct integrity.",
+  "checks": [
+   "CHK-003",
+   "CHK-013"
+  ],
+  "check_status": {
+   "CHK-003": "PASS",
+   "CHK-013": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-4.2-02",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "4.2",
+  "sentences": [
+   "4.2:s3"
+  ],
+  "strength": "MUST",
+  "statement": "Bit 0 of a_user.cmd_intg must be inverted.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RT-4.2-02",
+   "reason": "not_observable_at_interface",
+   "note": "The inverted cmd_intg bit is internal. Its consequence (the fatal alert) is checked by CHK-016."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RT-4.2-03",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "4.2",
+  "sentences": [
+   "4.2:s4"
+  ],
+  "strength": "MUST",
+  "statement": "Such a request is a fatal TL-UL bus integrity fault that triggers the fatal_fault alert.",
+  "checks": [
+   "CHK-016"
+  ],
+  "check_status": {
+   "CHK-016": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 0,
+   "survived": [
+    "M11"
+   ],
+   "claimed_equivalent": [],
+   "score": 0.0,
+   "meets_threshold": false
+  }
+ },
+ {
+  "rule": "RT-4.3-01",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "4.3",
+  "sentences": [
+   "4.3:s1"
+  ],
+  "strength": "MUST",
+  "statement": "o_d_intg_err must be 1 in a cycle where o_d_valid is 1 and the d_user.rsp_intg check fails, and 0 otherwise.",
+  "checks": [
+   "CHK-013"
+  ],
+  "check_status": {
+   "CHK-013": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-4.3-02",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "4.3",
+  "sentences": [
+   "4.3:s2"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "A correct device must never make o_d_intg_err 1.",
+  "checks": [
+   "CHK-013"
+  ],
+  "check_status": {
+   "CHK-013": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-5-01",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s1"
+  ],
+  "strength": "MUST",
+  "statement": "rv_timer has one alert, fatal_fault, sent through an alert sender.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RT-5-01",
+   "reason": "static_or_structural",
+   "note": "The single alert and its sender are structural. Alert behaviour is checked by CHK-014 and CHK-016."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RT-5-02",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s2"
+  ],
+  "strength": "MUST",
+  "statement": "o_alert is the receiver's alert_o output and is 1 for one clock cycle for each alert handshake the receiver detects.",
+  "checks": [
+   "CHK-002",
+   "CHK-014"
+  ],
+  "check_status": {
+   "CHK-002": "PASS",
+   "CHK-014": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 4,
+   "killed": 3,
+   "survived": [
+    "M19"
+   ],
+   "claimed_equivalent": [],
+   "score": 75.0,
+   "meets_threshold": false
+  }
+ },
+ {
+  "rule": "RT-5-04",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s4"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "A correct sender never makes o_alert_integ_fail 1.",
+  "checks": [
+   "CHK-001"
+  ],
+  "check_status": {
+   "CHK-001": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-5-05",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s5"
+  ],
+  "strength": "MUST",
+  "statement": "o_alert pulses repeatedly after a bus integrity fault until rst_ni is asserted, as a fatal alert is repeated until reset.",
+  "checks": [
+   "CHK-016"
+  ],
+  "check_status": {
+   "CHK-016": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 4,
+   "killed": 2,
+   "survived": [
+    "M11",
+    "M19"
+   ],
+   "claimed_equivalent": [],
+   "score": 50.0,
+   "meets_threshold": false
+  }
+ },
+ {
+  "rule": "RT-5-06",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "5",
+  "sentences": [
+   "5:s6"
+  ],
+  "strength": "MUST",
+  "statement": "A write of 1 to ALERT_TEST.fatal_fault triggers exactly one alert event.",
+  "checks": [
+   "CHK-003",
+   "CHK-014"
+  ],
+  "check_status": {
+   "CHK-003": "PASS",
+   "CHK-014": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 5,
+   "killed": 5,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-6-02",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "6",
+  "sentences": [
+   "6:s1"
+  ],
+  "strength": "MUST",
+  "statement": "o_intr_timer_expired must behave as an event-type interrupt per the comportability specification, with registers INTR_ENABLE0, INTR_STATE0 and INTR_TEST0.",
+  "checks": [
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-026": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-7-01",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "7",
+  "sentences": [
+   "7:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Verification shall cover reset values of every register through the ports.",
+  "checks": [
+   "CHK-028"
+  ],
+  "check_status": {
+   "CHK-028": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-7-02",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "7",
+  "sentences": [
+   "7:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Verification shall cover the access type of every register field as given in the register tables (rw, rw1c, wo, rw0c).",
+  "checks": [
+   "CHK-015",
+   "CHK-025",
+   "CHK-027",
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-015": "PASS",
+   "CHK-025": "PASS",
+   "CHK-027": "PASS",
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-7-03",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "7",
+  "sentences": [
+   "7:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Verification shall cover the tick generator (prescaler) and the step.",
+  "checks": [
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-031": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-7-04",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "7",
+  "sentences": [
+   "7:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Verification shall cover counting of the 64-bit timer value, including writes to it and the carry from the lower to the upper half.",
+  "checks": [
+   "CHK-031",
+   "CHK-033",
+   "CHK-034"
+  ],
+  "check_status": {
+   "CHK-031": "PASS",
+   "CHK-033": "PASS",
+   "CHK-034": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-7-05",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "7",
+  "sentences": [
+   "7:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Verification shall cover the compare and the interrupt: state, enable, test, and clearing by writing the compare registers.",
+  "checks": [
+   "CHK-022",
+   "CHK-023",
+   "CHK-024",
+   "CHK-026",
+   "CHK-027",
+   "CHK-033"
+  ],
+  "check_status": {
+   "CHK-022": "PASS",
+   "CHK-023": "PASS",
+   "CHK-024": "PASS",
+   "CHK-026": "PASS",
+   "CHK-027": "PASS",
+   "CHK-033": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-7-06",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "7",
+  "sentences": [
+   "7:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Verification shall cover ALERT_TEST with its regwen field.",
+  "checks": [
+   "CHK-014",
+   "CHK-015"
+  ],
+  "check_status": {
+   "CHK-014": "PASS",
+   "CHK-015": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-7-07",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "7",
+  "sentences": [
+   "7:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Verification shall cover bus error responses (unmapped addresses, sub-word writes, instruction fetches, integrity errors) and the fatal_fault alert.",
+  "checks": [
+   "CHK-016",
+   "CHK-017",
+   "CHK-018",
+   "CHK-019",
+   "CHK-021"
+  ],
+  "check_status": {
+   "CHK-016": "PASS",
+   "CHK-017": "PASS",
+   "CHK-018": "PASS",
+   "CHK-019": "PASS",
+   "CHK-021": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-7-08",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "7",
+  "sentences": [
+   "7:s2",
+   "7:s3"
+  ],
+  "strength": "MUST",
+  "statement": "Behaviour close to 2^64 shall be reached by writing the timer value registers.",
+  "checks": [
+   "CHK-033",
+   "CHK-034"
+  ],
+  "check_status": {
+   "CHK-033": "PASS",
+   "CHK-034": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-8-01",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s5"
+  ],
+  "strength": "MUST",
+  "statement": "Timer value increases by CFG0.step (modulo 2^64) once every CFG0.prescale + 1 cycles; prescale 0 gives a tick every cycle.",
+  "checks": [
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-031": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-8-02",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s5"
+  ],
+  "strength": "MUST",
+  "statement": "The first tick shall come no later than CFG0.prescale + 1 + 4 cycles after the write response.",
+  "checks": [
+   "CHK-032"
+  ],
+  "check_status": {
+   "CHK-032": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-8-03",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s6"
+  ],
+  "strength": "MUST",
+  "statement": "Tests write CFG0 and TIMER_V_* only while CTRL.active_0 = 0; behaviour after such a write while active is not checked.",
+  "checks": [
+   "CHK-008"
+  ],
+  "check_status": {
+   "CHK-008": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-8-04",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s7"
+  ],
+  "strength": "MUST",
+  "statement": "INTR_STATE0.IS_0 shall read 1 within 4 cycles after a write of 1 to it.",
+  "checks": [
+   "CHK-025"
+  ],
+  "check_status": {
+   "CHK-025": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-8-05",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s9"
+  ],
+  "strength": "MUST",
+  "statement": "IS_0 shall be 1 no later than 4 cycles after that tick.",
+  "checks": [
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-8-06",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s9"
+  ],
+  "strength": "MUST",
+  "statement": "IS_0 shall be 1 no later than CFG0.prescale + 1 + 4 cycles after the write response.",
+  "checks": [
+   "CHK-023"
+  ],
+  "check_status": {
+   "CHK-023": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-8-07",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s9"
+  ],
+  "strength": "MUST",
+  "statement": "o_intr_timer_expired shall equal IS_0 AND IE_0.",
+  "checks": [
+   "CHK-004",
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-004": "PASS",
+   "CHK-026": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-8-08",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s10"
+  ],
+  "strength": "MUST",
+  "statement": "IS_0 shall be 0 and the interrupt deasserted within 4 cycles.",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-8-09",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s10"
+  ],
+  "strength": "MUST",
+  "statement": "IS_0 shall be 1 again within 4 cycles; an intermediate dip is not checked.",
+  "checks": [
+   "CHK-024"
+  ],
+  "check_status": {
+   "CHK-024": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-8-10",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s12"
+  ],
+  "strength": "MUST",
+  "statement": "Write-only fields read 0, reserved bits read 0 and writes to them have no effect.",
+  "checks": [
+   "CHK-014",
+   "CHK-027",
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-014": "PASS",
+   "CHK-027": "PASS",
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-8-11",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s12"
+  ],
+  "strength": "MUST",
+  "statement": "INTR_TEST0 reads 0x0 and ALERT_TEST reads 0x8000_0000.",
+  "checks": [
+   "CHK-027",
+   "CHK-028"
+  ],
+  "check_status": {
+   "CHK-027": "PASS",
+   "CHK-028": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-8-12",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s13"
+  ],
+  "strength": "MUST",
+  "statement": "Regwen reads 0 until reset; a later write of 0x8000_0001 completes with d_error = 0, triggers no alert.",
+  "checks": [
+   "CHK-003",
+   "CHK-015"
+  ],
+  "check_status": {
+   "CHK-003": "PASS",
+   "CHK-015": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-8-13",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s13"
+  ],
+  "strength": "MUST",
+  "statement": "Exactly one o_alert pulse shall occur, no later than 16 cycles after the write response.",
+  "checks": [
+   "CHK-014"
+  ],
+  "check_status": {
+   "CHK-014": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-8-14",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s13"
+  ],
+  "strength": "MUST",
+  "statement": "At least one o_alert pulse and no more pulses than writes shall occur.",
+  "checks": [
+   "CHK-003",
+   "CHK-014"
+  ],
+  "check_status": {
+   "CHK-003": "PASS",
+   "CHK-014": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-8-15",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s13"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "Tests do not use the combined write 0x0000_0001; they write 0x8000_0001.",
+  "checks": [
+   "CHK-008"
+  ],
+  "check_status": {
+   "CHK-008": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-8-16",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s14"
+  ],
+  "strength": "MUST",
+  "statement": "o_alert shall pulse no later than 16 cycles after acceptance, then at least once every 32 cycles until rst_ni is asserted.",
+  "checks": [
+   "CHK-016"
+  ],
+  "check_status": {
+   "CHK-016": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 0,
+   "survived": [
+    "M11"
+   ],
+   "claimed_equivalent": [],
+   "score": 0.0,
+   "meets_threshold": false
+  }
+ },
+ {
+  "rule": "RT-8-17",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s14"
+  ],
+  "strength": "MUST",
+  "statement": "The test resets the design.",
+  "checks": [
+   "CHK-016"
+  ],
+  "check_status": {
+   "CHK-016": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-8-18",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s15"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "A write with i_a_instr = 1 is not used.",
+  "checks": [
+   "CHK-008"
+  ],
+  "check_status": {
+   "CHK-008": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-8-19",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s16"
+  ],
+  "strength": "MUST",
+  "statement": "The slave returns d_error = 1 and changes no register.",
+  "checks": [
+   "CHK-011",
+   "CHK-017"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-017": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-8-20",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s16"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "Requests at offset 0x200 and above are not used.",
+  "checks": [
+   "CHK-008"
+  ],
+  "check_status": {
+   "CHK-008": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-8-21",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s17"
+  ],
+  "strength": "MUST",
+  "statement": "Returns d_error = 1 and changes nothing.",
+  "checks": [
+   "CHK-011",
+   "CHK-018"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-018": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-8-22",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s17"
+  ],
+  "strength": "MUST",
+  "statement": "Completes with d_error = 0 and has the effect of the write.",
+  "checks": [
+   "CHK-011",
+   "CHK-018"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-018": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-8-23",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s17"
+  ],
+  "strength": "MUST",
+  "statement": "The write succeeds with d_error = 0.",
+  "checks": [
+   "CHK-011",
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 5,
+   "killed": 5,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-8-25",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s18"
+  ],
+  "strength": "MUST",
+  "statement": "Match responses by d_source, use distinct a_source per outstanding request, and do not assume o_a_ready = 1.",
+  "checks": [
+   "CHK-008",
+   "CHK-035"
+  ],
+  "check_status": {
+   "CHK-008": "PASS",
+   "CHK-035": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-8-26",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s18"
+  ],
+  "strength": "MUST",
+  "statement": "Returned value lies between values before the request and after the response.",
+  "checks": [
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-031": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-8-27",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s19"
+  ],
+  "strength": "MUST",
+  "statement": "d_error is correct, d_source echoes a_source, d_size echoes a_size, d_opcode is AccessAckData for Get and AccessAck for PutFullData and PutPartialData.",
+  "checks": [
+   "CHK-010"
+  ],
+  "check_status": {
+   "CHK-010": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-8-28",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s19"
+  ],
+  "strength": "MUST",
+  "statement": "d_error = 1 is returned.",
+  "checks": [
+   "CHK-011",
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-8-29",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s20"
+  ],
+  "strength": "MUST",
+  "statement": "The test bench keeps i_a_valid = 0.",
+  "checks": [
+   "CHK-008",
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-008": "PASS",
+   "CHK-030": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-8-30",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s20"
+  ],
+  "strength": "MUST",
+  "statement": "o_d_valid, o_alert, o_alert_integ_fail and o_intr_timer_expired shall be 0.",
+  "checks": [
+   "CHK-006"
+  ],
+  "check_status": {
+   "CHK-006": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-8-31",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s20"
+  ],
+  "strength": "MUST",
+  "statement": "The pending response is discarded.",
+  "checks": [
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-030": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-8-32",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s21"
+  ],
+  "strength": "MUST",
+  "statement": "o_d_intg_err and o_alert_integ_fail shall be 0 in every cycle.",
+  "checks": [
+   "CHK-001",
+   "CHK-013"
+  ],
+  "check_status": {
+   "CHK-001": "PASS",
+   "CHK-013": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RT-8-33",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s22"
+  ],
+  "strength": "MUST",
+  "statement": "Reached only by writing the timer value registers while inactive to values near the carry, then counting.",
+  "checks": [
+   "CHK-033",
+   "CHK-034"
+  ],
+  "check_status": {
+   "CHK-033": "PASS",
+   "CHK-034": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RT-8-34",
+  "spec_refs": [],
+  "doc": "rv_timer_Design_Specification.md",
+  "section": "8",
+  "sentences": [
+   "8:s23"
+  ],
+  "strength": "MUST",
+  "statement": "Tests drive i_a_param = 0.",
+  "checks": [
+   "CHK-008"
+  ],
+  "check_status": {
+   "CHK-008": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "TL-T2.2-01",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T2.2",
+  "sentences": [
+   "T2.2:s6"
+  ],
+  "strength": "MAY",
+  "statement": "Existing TL-UL IP blocks may be used directly in devices that do not need the additional sideband signals.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T2.2-01",
+   "reason": "not_applicable_to_dut",
+   "note": "This is about reusing base TL-UL IP. The wrapper produces the sideband (user) signals."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T2.2-03",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T2.2",
+  "sentences": [
+   "T2.2:s9",
+   "T2.2:s10",
+   "T2.2:s11"
+  ],
+  "strength": "MUST",
+  "statement": "The bus carries only one request and one response per cycle, and no burst transactions.",
+  "checks": [
+   "CHK-009"
+  ],
+  "check_status": {
+   "CHK-009": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "TL-T2.3-01",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T2.3",
+  "sentences": [
+   "T2.3:s2"
+  ],
+  "strength": "MAY",
+  "statement": "Bus primitives, hosts and peripherals developed with the extended specification can be used with blocks using the base specification.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T2.3-01",
+   "reason": "not_applicable_to_dut",
+   "note": "This is about compatibility between base and extended blocks. User bits are out of scope (D-019)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T2.3-02",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T2.3",
+  "sentences": [
+   "T2.3:s3"
+  ],
+  "strength": "MUST",
+  "statement": "As a receiver, a baseline block ignores the user signals.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T2.3-02",
+   "reason": "not_applicable_to_dut",
+   "note": "This binds baseline blocks. The DUT is an extended (OpenTitan) device, and user bits are out of scope (D-019)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T2.3-03",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T2.3",
+  "sentences": [
+   "T2.3:s3"
+  ],
+  "strength": "MUST",
+  "statement": "As a source, a baseline block generates a project-specific default value for the user signals.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T2.3-03",
+   "reason": "not_applicable_to_dut",
+   "note": "User-bit default values are not checked (D-019)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.1-02",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.1",
+  "sentences": [
+   "T3.1.1:s2"
+  ],
+  "strength": "MUST",
+  "statement": "TL-UL devices tolerate reset windows shorter than 100 cycles.",
+  "checks": [
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-030": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.1-01",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.1",
+  "sentences": [
+   "T3.1.3.1:s1",
+   "T3.1.3.1:s3",
+   "T3.1.3.1:s4",
+   "T3.1.3.1:s5"
+  ],
+  "strength": "MUST",
+  "statement": "Request steering must be a function of the address only; a_source and a_user must not enter into the address calculation.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T3.1.3.1-01",
+   "reason": "not_applicable_to_dut",
+   "note": "This binds the interconnect's request steering. There is no fabric between the test bench and the DUT."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.2-01",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.2",
+  "sentences": [
+   "T3.1.3.2:s3"
+  ],
+  "strength": "MAY",
+  "statement": "A host may use a_source/d_source to ascribe request identifiers, since TL-UL does not guarantee in-order responses.",
+  "checks": [
+   "CHK-035"
+  ],
+  "check_status": {
+   "CHK-035": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "TL-T3.1.3.2-02",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.2",
+  "sentences": [
+   "T3.1.3.2:s7"
+  ],
+  "strength": "MUST",
+  "statement": "The fabric architect must ensure AIW covers the host outstanding requests and the maximum source ID growth added by bus primitives.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T3.1.3.2-02",
+   "reason": "not_applicable_to_dut",
+   "note": "This is a fabric architect obligation (AIW sizing)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.2-03",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.2",
+  "sentences": [
+   "T3.1.3.2:s9"
+  ],
+  "strength": "MUST",
+  "statement": "The fabric must provide enough host ID bits to maintain those ID values.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T3.1.3.2-03",
+   "reason": "not_applicable_to_dut",
+   "note": "This is a fabric obligation for host ID bits."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.2.1-01",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.2.1",
+  "sentences": [
+   "T3.1.3.2.1:s1",
+   "T3.1.3.2.1:s4"
+  ],
+  "strength": "MUST",
+  "statement": "The primitive shifts a_source left and post-pends sub-source bits; on the response it shifts them off, shifting zeros into the top, and returns the result on d_source.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T3.1.3.2.1-01",
+   "reason": "not_applicable_to_dut",
+   "note": "This binds bus primitives that grow source IDs. There are none in this environment."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.2.1-02",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.2.1",
+  "sentences": [
+   "T3.1.3.2.1:s5"
+  ],
+  "strength": "SHOULD",
+  "statement": "Assertions should ensure no significant bits of a_source are lost in M:1 sockets.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T3.1.3.2.1-02",
+   "reason": "not_applicable_to_dut",
+   "note": "This is a recommendation for M:1 sockets."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.2.2-01",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.2.2",
+  "sentences": [
+   "T3.1.3.2.2:s1"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "Hosts may only use the low bits of the source identifier and must not assume all AIW bits are returned intact.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T3.1.3.2.2-01",
+   "reason": "not_applicable_to_dut",
+   "note": "This binds hosts behind a fabric. The DUT is a device, and its full d_source echo is checked by CHK-009."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.2.3-01",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.2.3",
+  "sentences": [
+   "T3.1.3.2.3:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Devices must return the associated a_source on the response d_source.",
+  "checks": [
+   "CHK-009"
+  ],
+  "check_status": {
+   "CHK-009": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "TL-T3.1.3.3-01",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.3",
+  "sentences": [
+   "T3.1.3.3:s2",
+   "T3.1.3.3:s5"
+  ],
+  "strength": "MUST",
+  "statement": "Bus hosts and devices must understand the usage of user bits and apply them appropriately.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T3.1.3.3-01",
+   "reason": "design_guideline",
+   "note": "This is general advice on user-bit usage. User-bit layout is out of scope (D-019)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.3-03",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.3",
+  "sentences": [
+   "T3.1.3.3:s4"
+  ],
+  "strength": "SHOULD",
+  "statement": "The bus fabric must not rely on user bits for transport and must pass them on blindly; usage must be assigned project-wide.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T3.1.3.3-03",
+   "reason": "not_applicable_to_dut",
+   "note": "This binds the bus fabric."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.4-01",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.4",
+  "sentences": [
+   "T3.1.3.4:s1",
+   "T3.1.3.4:s2"
+  ],
+  "strength": "MAY",
+  "statement": "a_opcode may designate a write (Put) or read (Get); writes may be full (PutFullData) or partial (PutPartialData).",
+  "checks": [
+   "CHK-029",
+   "CHK-035"
+  ],
+  "check_status": {
+   "CHK-029": "PASS",
+   "CHK-035": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "TL-T3.1.3.4-02",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.4",
+  "sentences": [
+   "T3.1.3.4:s9"
+  ],
+  "strength": "SHOULD_NOT",
+  "statement": "TL-UL hosts in this project should not use non-contiguous a_mask values such as 0b1001.",
+  "checks": [
+   "CHK-008"
+  ],
+  "check_status": {
+   "CHK-008": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.4-03",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.4",
+  "sentences": [
+   "T3.1.3.4:s11"
+  ],
+  "strength": "MAY",
+  "statement": "Devices may assert d_error if they do not support a particular subword a_mask.",
+  "checks": [
+   "CHK-018"
+  ],
+  "check_status": {
+   "CHK-018": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.4-04",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.4",
+  "sentences": [
+   "T3.1.3.4:s12"
+  ],
+  "strength": "SHOULD",
+  "statement": "For PutFullData, a_size should be 'h2 for a 32b write ('h3 for 64b bus).",
+  "checks": [
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "TL-T3.1.3.4-05",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.4",
+  "sentences": [
+   "T3.1.3.4:s13"
+  ],
+  "strength": "SHOULD",
+  "statement": "For PutPartialData, a_size should encode 2^a_size bytes and the a_mask bits should indicate the valid byte lanes.",
+  "checks": [
+   "CHK-029"
+  ],
+  "check_status": {
+   "CHK-029": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "TL-T3.1.3.4-06",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.4",
+  "sentences": [
+   "T3.1.3.4:s15"
+  ],
+  "strength": "SHOULD",
+  "statement": "Devices should return an error for undefined request opcodes.",
+  "checks": [
+   "CHK-011",
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.4-07",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.4",
+  "sentences": [
+   "T3.1.3.4:s18"
+  ],
+  "strength": "SHOULD",
+  "statement": "Undefined response opcodes d_opcode 3'b01x and 3'b1xx should return an error.",
+  "checks": [
+   "CHK-010"
+  ],
+  "check_status": {
+   "CHK-010": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "TL-T3.1.3.5-01",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.5",
+  "sentences": [
+   "T3.1.3.5:s1",
+   "T3.1.3.5:s2",
+   "T3.1.3.5:s3"
+  ],
+  "strength": "MUST",
+  "statement": "TL-UL devices must raise a runtime error via d_error when a request carries a wrong opcode.",
+  "checks": [
+   "CHK-011",
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.5-02",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.5",
+  "sentences": [
+   "T3.1.3.5:s1",
+   "T3.1.3.5:s2",
+   "T3.1.3.5:s4",
+   "T3.1.3.5:s5"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "a_size must not be greater than 2; a request violating this is flagged by the device with d_error.",
+  "checks": [
+   "CHK-011",
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.5-03",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.5",
+  "sentences": [
+   "T3.1.3.5:s1",
+   "T3.1.3.5:s2",
+   "T3.1.3.5:s4",
+   "T3.1.3.5:s6"
+  ],
+  "strength": "MUST",
+  "statement": "Inactive lanes must be marked with 'b0 in a_mask; violation is flagged by the device with d_error.",
+  "checks": [
+   "CHK-011",
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "TL-T3.1.3.5-04",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.5",
+  "sentences": [
+   "T3.1.3.5:s1",
+   "T3.1.3.5:s2",
+   "T3.1.3.5:s4",
+   "T3.1.3.5:s7"
+  ],
+  "strength": "MUST",
+  "statement": "PutFullData must mark all active lanes with a 'b1 in a_mask; violation is flagged by the device with d_error.",
+  "checks": [
+   "CHK-011",
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "TL-T3.1.3.5-05",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.5",
+  "sentences": [
+   "T3.1.3.5:s1",
+   "T3.1.3.5:s2",
+   "T3.1.3.5:s10"
+  ],
+  "strength": "MUST",
+  "statement": "TL-UL devices must raise a runtime error via d_error for accesses to non-existent addresses.",
+  "checks": [
+   "CHK-011",
+   "CHK-017"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-017": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "TL-T3.1.3.5-07",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.5",
+  "sentences": [
+   "T3.1.3.5:s9"
+  ],
+  "strength": "MUST",
+  "statement": "Register files always assume aligned 32-bit accesses, so accesses to them must be aligned 32-bit.",
+  "checks": [
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.5-08",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.5",
+  "sentences": [
+   "T3.1.3.5:s11"
+  ],
+  "strength": "MUST",
+  "statement": "A host must discard orphaned responses (no valid request counterpart) and responses with the wrong opcode.",
+  "checks": [
+   "CHK-009"
+  ],
+  "check_status": {
+   "CHK-009": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "TL-T3.1.3.5-10",
+  "spec_refs": [],
+  "doc": "opentitan_tlul_bus_specification.md",
+  "section": "T3.1.3.5",
+  "sentences": [
+   "T3.1.3.5:s14"
+  ],
+  "strength": "MAY",
+  "statement": "Devices and hosts may implement additional, more restrictive checks if needed.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "TL-T3.1.3.5-10",
+   "reason": "design_guideline",
+   "note": "This only permits additional checks. There is nothing specific to observe."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.2-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.2",
+  "sentences": [
+   "T1.5.2:s2",
+   "T1.5.2:s3",
+   "T1.5.2:s4",
+   "T1.5.2:s5"
+  ],
+  "strength": "MUST",
+  "statement": "Each peripheral must specify clocking via a nonempty list of clocking items, each defining clock and reset in fields named clock and reset.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.2-01",
+   "reason": "static_or_structural",
+   "note": "This is clocking metadata in the hjson description."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.2-02",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.2",
+  "sentences": [
+   "T1.5.2:s8"
+  ],
+  "strength": "SHOULD",
+  "statement": "Exactly one clocking item dictionary should have boolean field primary set to true.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.2-02",
+   "reason": "static_or_structural",
+   "note": "This is clocking metadata."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.2-03",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.2",
+  "sentences": [
+   "T1.5.2:s9"
+  ],
+  "strength": "MUST",
+  "statement": "The primary clock is used to clock any device interfaces.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.2-03",
+   "reason": "static_or_structural",
+   "note": "This is a clock assignment. The DUT has the single clock clk_i."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.2-04",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.2",
+  "sentences": [
+   "T1.5.2:s10",
+   "T1.5.2.1:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Resets within the design are asynchronous active low: assertion is asynchronous to any clock, deassertion is synchronized to the clock of the associated storage element.",
+  "checks": [
+   "CHK-030"
+  ],
+  "check_status": {
+   "CHK-030": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.2-05",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.2",
+  "sentences": [
+   "T1.5.2:s11",
+   "T1.5.2.1:s4",
+   "T1.5.2.1:s5"
+  ],
+  "strength": "SHOULD",
+  "statement": "Security sensitive storage elements need special care, e.g. synchronous reset after chip-wide reset to a randomized value.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.2-05",
+   "reason": "design_guideline",
+   "note": "This is advice for security-sensitive storage. There is nothing specified to observe."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.2-06",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.2",
+  "sentences": [
+   "T1.5.2:s15"
+  ],
+  "strength": "MAY",
+  "statement": "The clock and reset fields of a clocking item are optional.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.2-06",
+   "reason": "static_or_structural",
+   "note": "This is clocking metadata."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.2-07",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.2",
+  "sentences": [
+   "T1.5.2:s16"
+  ],
+  "strength": "MUST",
+  "statement": "The primary clock item must have both clock and reset fields.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.2-07",
+   "reason": "static_or_structural",
+   "note": "This is clocking metadata."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.3-02",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.3",
+  "sentences": [
+   "T1.5.3:s2"
+  ],
+  "strength": "MUST",
+  "statement": "Every peripheral must expose at least one device interface on the chip bus.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.3-02",
+   "reason": "static_or_structural",
+   "note": "The presence of a device interface is structural."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.3-03",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.3",
+  "sentences": [
+   "T1.5.3:s3"
+  ],
+  "strength": "MAY",
+  "statement": "Peripherals can act as bus host on some occasions, though the processor being primary host is preferred.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.3-03",
+   "reason": "static_or_structural",
+   "note": "This concerns the bus host role. The DUT is a device only."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.3-04",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.3",
+  "sentences": [
+   "T1.5.3:s7"
+  ],
+  "strength": "SHOULD",
+  "statement": "The bus_interfaces attribute should contain a list of dictionaries describing the interfaces the peripheral exposes.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.3-04",
+   "reason": "static_or_structural",
+   "note": "This is hjson metadata."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.3-05",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.3",
+  "sentences": [
+   "T1.5.3:s10",
+   "T1.5.3:s11"
+  ],
+  "strength": "MUST",
+  "statement": "The peripheral must have protocol of tlul since all peripherals use TL-UL.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.3-05",
+   "reason": "static_or_structural",
+   "note": "This is hjson metadata."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.3-06",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.3",
+  "sentences": [
+   "T1.5.3:s14",
+   "T1.5.3:s15"
+  ],
+  "strength": "MUST",
+  "statement": "Each bus interface entry must contain a direction of either host or device.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.3-06",
+   "reason": "static_or_structural",
+   "note": "This is hjson metadata."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.3-07",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.3",
+  "sentences": [
+   "T1.5.3:s16"
+  ],
+  "strength": "MUST",
+  "statement": "All bus hosts must use the same clock as the defined primary host clock.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.3-07",
+   "reason": "static_or_structural",
+   "note": "The single clk_i drives both the test bench host and the DUT."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.3-08",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.3",
+  "sentences": [
+   "T1.5.3:s20",
+   "T1.5.3:s21"
+  ],
+  "strength": "MAY",
+  "statement": "An entry may include a name, which is added as a prefix to the module's top-level port names.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.3-08",
+   "reason": "static_or_structural",
+   "note": "This concerns port naming."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.3-09",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.3",
+  "sentences": [
+   "T1.5.3:s22"
+  ],
+  "strength": "MUST",
+  "statement": "The name field must be provided to avoid port name collisions.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.3-09",
+   "reason": "static_or_structural",
+   "note": "This concerns port naming."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.5.5-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.5.5",
+  "sentences": [
+   "T1.5.5:s4"
+  ],
+  "strength": "MUST",
+  "statement": "The module must have an output named intr_name_o for each interrupt name.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.5.5-01",
+   "reason": "static_or_structural",
+   "note": "This concerns the interrupt port name inside rv_timer."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.6-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.6",
+  "sentences": [
+   "T1.6:s2"
+  ],
+  "strength": "MUST",
+  "statement": "All lowRISC peripheral designs must conform to the register specification.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.6-01",
+   "reason": "static_or_structural",
+   "note": "This is a general conformance statement. The register behaviour itself is checked by CHK-017, CHK-018, CHK-019, CHK-020, CHK-028, CHK-029."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8",
+  "sentences": [
+   "T1.8:s2"
+  ],
+  "strength": "SHOULD",
+  "statement": "All interrupts shall have common naming, hardware interfaces, and software interfaces.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.8-01",
+   "reason": "static_or_structural",
+   "note": "This concerns interrupt naming and interface conventions."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.1-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.1",
+  "sentences": [
+   "T1.8.1:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Wired CIP interrupts use active-high level-triggering.",
+  "checks": [
+   "CHK-005",
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-005": "PASS",
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "CP-T1.8.2-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.2",
+  "sentences": [
+   "T1.8.2:s2",
+   "T1.8.2:s4"
+  ],
+  "strength": "MUST",
+  "statement": "Each interrupt_list entry must have a required name key of type string.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.8.2-01",
+   "reason": "static_or_structural",
+   "note": "This is hjson schema."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.2-02",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.2",
+  "sentences": [
+   "T1.8.2:s5"
+  ],
+  "strength": "MAY",
+  "statement": "Each interrupt_list entry may have an optional desc string.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.8.2-02",
+   "reason": "static_or_structural",
+   "note": "This is hjson schema."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.2-03",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.2",
+  "sentences": [
+   "T1.8.2:s6"
+  ],
+  "strength": "MAY",
+  "statement": "Each entry may have an optional type, Event or Status, defaulting to Event if unspecified.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.8.2-03",
+   "reason": "static_or_structural",
+   "note": "This is hjson schema. rv_timer's interrupt is of Event type."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.3-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.3",
+  "sentences": [
+   "T1.8.3:s1"
+  ],
+  "strength": "MUST",
+  "statement": "A peripheral generates a separate wired interrupt for each interrupt source.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.8.3-01",
+   "reason": "static_or_structural",
+   "note": "There is one interrupt source and one wired output port, o_intr_timer_expired."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.3-02",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.3",
+  "sentences": [
+   "T1.8.3:s4"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "Peripherals do not send a single combined interrupt for the processor to disambiguate by querying the peripheral.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.8.3-02",
+   "reason": "static_or_structural",
+   "note": "This is an interrupt architecture statement."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.4-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.4",
+  "sentences": [
+   "T1.8.4:s1",
+   "T1.8.4:s2",
+   "T1.8.4:s3"
+  ],
+  "strength": "MUST",
+  "statement": "INTR_STATE, INTR_ENABLE and INTR_TEST registers are created at the top of the address map in that order, one bitfield per interrupt.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.8.4-01",
+   "reason": "not_applicable_to_dut",
+   "note": "The rv_timer register table puts INTR_ENABLE0, INTR_STATE0 and INTR_TEST0 at 0x100, 0x104 and 0x108, which overrides the generic placement. These offsets are checked in CHK-028, CHK-026 and CHK-027."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.4-02",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.4",
+  "sentences": [
+   "T1.8.4:s4"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "The .hjson must not define more than 32 interrupts per peripheral.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.8.4-02",
+   "reason": "static_or_structural",
+   "note": "This is an hjson limit."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.4-03",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.4",
+  "sentences": [
+   "T1.8.4:s5",
+   "T1.8.4:s6",
+   "T1.8.4:s7"
+  ],
+  "strength": "MUST",
+  "statement": "INTR_STATE at offset 0x0 holds interrupt state, INTR_ENABLE at 0x4 masks it to intr_o, INTR_TEST at 0x8 is write-only and asserts the interrupt.",
+  "checks": [
+   "CHK-026",
+   "CHK-027"
+  ],
+  "check_status": {
+   "CHK-026": "PASS",
+   "CHK-027": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.4-04",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.4",
+  "sentences": [
+   "T1.8.4:s8"
+  ],
+  "strength": "MUST",
+  "statement": "INTR_STATE shows raw latched interrupt events and is not qualified by INTR_ENABLE.",
+  "checks": [
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-026": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.5-02",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.5",
+  "sentences": [
+   "T1.8.5:s8",
+   "T1.8.5.1:s6"
+  ],
+  "strength": "MUST",
+  "statement": "The interrupt is cleared only by a software W1C write of the INTR_STATE bitfield.",
+  "checks": [
+   "CHK-005",
+   "CHK-025"
+  ],
+  "check_status": {
+   "CHK-005": "PASS",
+   "CHK-025": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.5-03",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.5",
+  "sentences": [
+   "T1.8.5:s9"
+  ],
+  "strength": "MUST",
+  "statement": "Interrupt requests are triggered while input is true, including immediately after the previous request is acknowledged.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.8.5-03",
+   "reason": "not_applicable_to_dut",
+   "note": "This is Status-type behaviour. rv_timer has only an Event-type interrupt (designer decision, D-019)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.5.1-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.5.1",
+  "sentences": [
+   "T1.8.5.1:s3",
+   "T1.8.5.1:s5"
+  ],
+  "strength": "MUST",
+  "statement": "When the event occurs it is latched into the INTR_STATE bitfield and intr_o is latched high until acknowledged, then low.",
+  "checks": [
+   "CHK-005",
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-005": "PASS",
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.5.2-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.5.2",
+  "sentences": [
+   "T1.8.5.2:s1",
+   "T1.8.5.2:s2"
+  ],
+  "strength": "MUST",
+  "statement": "A status type interrupt must drive a wired level-triggered interrupt directly from the hardware input signal, qualified only by INTR_ENABLE, staying asserted while the input is asserted.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.8.5.2-01",
+   "reason": "not_applicable_to_dut",
+   "note": "This is a Status-type interrupt rule, out of scope by designer decision."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.5.2-02",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.5.2",
+  "sentences": [
+   "T1.8.5.2:s3",
+   "T1.8.5.2:s4"
+  ],
+  "strength": "MUST",
+  "statement": "The wired status interrupt must not deassert until the root cause of the hardware input signal is addressed by software intervention.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.8.5.2-02",
+   "reason": "not_applicable_to_dut",
+   "note": "This is a Status-type interrupt rule, out of scope by designer decision."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.5.2-03",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.5.2",
+  "sentences": [
+   "T1.8.5.2:s5"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "Software cannot acknowledge a status type interrupt through INTR_STATE, which is read-only (ro) in this context.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.8.5.2-03",
+   "reason": "not_applicable_to_dut",
+   "note": "This is a Status-type interrupt rule, out of scope by designer decision."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.5.2-05",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.5.2",
+  "sentences": [
+   "T1.8.5.2:s8"
+  ],
+  "strength": "SHOULD",
+  "statement": "Software should mask the interrupt, at the peripheral or further up the tree such as the PLIC.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.8.5.2-05",
+   "reason": "not_applicable_to_dut",
+   "note": "This is software advice for Status-type interrupts."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.5.2-06",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.5.2",
+  "sentences": [
+   "T1.8.5.2:s9"
+  ],
+  "strength": "MAY",
+  "statement": "Masking at the peripheral can be achieved by clearing the corresponding bit in INTR_ENABLE.",
+  "checks": [
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-026": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.6-02",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.6",
+  "sentences": [
+   "T1.8.6:s7"
+  ],
+  "strength": "MUST",
+  "statement": "The event must set the associated bit in INTR_STATE to 1.",
+  "checks": [
+   "CHK-022"
+  ],
+  "check_status": {
+   "CHK-022": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.6-03",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.6",
+  "sentences": [
+   "T1.8.6:s8"
+  ],
+  "strength": "MAY",
+  "statement": "A write of 1 to the associated foo bit of INTR_TEST can set the corresponding INTR_STATE bit.",
+  "checks": [
+   "CHK-027"
+  ],
+  "check_status": {
+   "CHK-027": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.6-04",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.6",
+  "sentences": [
+   "T1.8.6:s9"
+  ],
+  "strength": "MUST",
+  "statement": "The outgoing interrupt intr_foo_o must be the INTR_STATE output ANDed with INTR_ENABLE.",
+  "checks": [
+   "CHK-004",
+   "CHK-026"
+  ],
+  "check_status": {
+   "CHK-004": "PASS",
+   "CHK-026": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "CP-T1.8.6-05",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.6",
+  "sentences": [
+   "T1.8.6:s10",
+   "T1.8.6:s11"
+  ],
+  "strength": "MUST",
+  "statement": "A write of 1 to an INTR_STATE bit clears the latched value, but INTR_STATE returns to true if the event is still active.",
+  "checks": [
+   "CHK-025"
+  ],
+  "check_status": {
+   "CHK-025": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.8.6-06",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.8.6",
+  "sentences": [
+   "T1.8.6:s12"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "Hardware must not clear the latched interrupt state; only software can clear it.",
+  "checks": [
+   "CHK-005"
+  ],
+  "check_status": {
+   "CHK-005": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.1-03",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.1",
+  "sentences": [
+   "T1.9.1:s4",
+   "T1.9.1:s5",
+   "T1.9.1:s6",
+   "T1.9.1:s7"
+  ],
+  "strength": "MUST",
+  "statement": "A recoverable alert must be one-time triggered: the alert sender transmits a single alert event when the error condition is asserted.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.9.1-03",
+   "reason": "not_applicable_to_dut",
+   "note": "rv_timer has no recoverable alert."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.1-04",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.1",
+  "sentences": [
+   "T1.9.1:s4",
+   "T1.9.1:s8",
+   "T1.9.1:s9",
+   "T1.9.1:s10"
+  ],
+  "strength": "MUST",
+  "statement": "A fatal alert must be continuously transmitted by the alert sender until the system is reset.",
+  "checks": [
+   "CHK-016"
+  ],
+  "check_status": {
+   "CHK-016": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 0,
+   "survived": [
+    "M11"
+   ],
+   "claimed_equivalent": [],
+   "score": 0.0,
+   "meets_threshold": false
+  }
+ },
+ {
+  "rule": "CP-T1.9.1-05",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.1",
+  "sentences": [
+   "T1.9.1:s11"
+  ],
+  "strength": "SHOULD",
+  "statement": "Fatal alerts should also trigger local security countermeasures.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.9.1-05",
+   "reason": "design_guideline",
+   "note": "This is a recommendation about local countermeasures. None are specified for rv_timer."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.1-07",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.1",
+  "sentences": [
+   "T1.9.1:s17",
+   "T1.9.1:s18"
+  ],
+  "strength": "MAY",
+  "statement": "A peripheral may optionally send a regular IRQ for any alert event, if needed by the programming model.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.9.1-07",
+   "reason": "design_guideline",
+   "note": "This is an optional IRQ per alert. rv_timer specifies none."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.2-02",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.2",
+  "sentences": [
+   "T1.9.2:s4"
+  ],
+  "strength": "MUST",
+  "statement": "Recoverable alerts must be prefixed with recov_ and fatal alerts must be prefixed with fatal_.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.9.2-02",
+   "reason": "static_or_structural",
+   "note": "This concerns alert naming (fatal_fault)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.2-03",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.2",
+  "sentences": [
+   "T1.9.2:s7",
+   "T1.9.2:s8"
+  ],
+  "strength": "MAY",
+  "statement": "Alert names may default to just recov and/or fatal, implying no more than one alert of that type is exposed.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.9.2-03",
+   "reason": "static_or_structural",
+   "note": "This concerns alert naming."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.3-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.3",
+  "sentences": [
+   "T1.9.3:s1",
+   "T1.9.3:s2"
+  ],
+  "strength": "MUST",
+  "statement": "Every peripheral has a write-only (wo) ALERT_TEST register for software to test alert reporting in the alert handler.",
+  "checks": [
+   "CHK-014"
+  ],
+  "check_status": {
+   "CHK-014": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.3-02",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.3",
+  "sentences": [
+   "T1.9.3:s3"
+  ],
+  "strength": "MUST",
+  "statement": "Every alert has one field bit in ALERT_TEST, connected to the test input of the corresponding prim_alert_sender.",
+  "checks": [
+   "CHK-014"
+  ],
+  "check_status": {
+   "CHK-014": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.4-01",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.4",
+  "sentences": [
+   "T1.9.4:s1"
+  ],
+  "strength": "MUST",
+  "statement": "Internal events are sent active-high to the prim_alert_sender within the peripheral.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.9.4-01",
+   "reason": "covered_by_other_check",
+   "note": "The internal event polarity is not visible. Its effect is checked by CHK-014 and CHK-016."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.4-02",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.4",
+  "sentences": [
+   "T1.9.4:s2"
+  ],
+  "strength": "MUST",
+  "statement": "One prim_alert_sender must be instantiated per distinct alert event, with IsFatal set to 1 for fatal alerts so the alert is latched until reset.",
+  "checks": [
+   "CHK-016"
+  ],
+  "check_status": {
+   "CHK-016": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.4-03",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.4",
+  "sentences": [
+   "T1.9.4:s3"
+  ],
+  "strength": "MAY",
+  "statement": "The peripheral maintainer determines distinct alert events; multiple sources can be bundled depending on the required distinction.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.9.4-03",
+   "reason": "design_guideline",
+   "note": "This is maintainer's choice of alert bundling."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.4-04",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.4",
+  "sentences": [
+   "T1.9.4:s4"
+  ],
+  "strength": "SHOULD",
+  "statement": "Each peripheral should bundle alert sources into one or two distinct alerts, for example one fatal and one recoverable.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.9.4-04",
+   "reason": "design_guideline",
+   "note": "This is a bundling recommendation."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.4-05",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.4",
+  "sentences": [
+   "T1.9.4:s6"
+  ],
+  "strength": "SHOULD",
+  "statement": "The IP should expose a cause register for disambiguation.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.9.4-05",
+   "reason": "not_applicable_to_dut",
+   "note": "rv_timer has a single alert and no cause register."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.4-06",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.4",
+  "sentences": [
+   "T1.9.4:s7"
+  ],
+  "strength": "MUST",
+  "statement": "Cause registers for recoverable alerts must be clearable by SW or automatically cleared by HW.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.9.4-06",
+   "reason": "not_applicable_to_dut",
+   "note": "rv_timer has no recoverable alert or cause register."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.4-07",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.4",
+  "sentences": [
+   "T1.9.4:s8"
+  ],
+  "strength": "MUST",
+  "statement": "Cause registers for fatal alerts must not be clearable in any way and must be read-only.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.9.4-07",
+   "reason": "not_applicable_to_dut",
+   "note": "rv_timer has no fatal cause register (designer decision)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "CP-T1.9.4-08",
+  "spec_refs": [],
+  "doc": "opentitan_comportability.md",
+  "section": "T1.9.4",
+  "sentences": [
+   "T1.9.4:s9"
+  ],
+  "strength": "MUST",
+  "statement": "The prim_alert_sender converts the event into a differentially encoded signal pair routed to the hardware alert handler.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "CP-T1.9.4-08",
+   "reason": "covered_by_other_check",
+   "note": "The differential pair is internal. Correct signalling is shown by the o_alert pulses in CHK-014 and CHK-016 and by o_alert_integ_fail=0 in CHK-001."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.3-03",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.3",
+  "sentences": [
+   "T1.3:s8"
+  ],
+  "strength": "MUST",
+  "statement": "The name_reg2hw_t structure contains the signals driven from the register module to the rest of the hardware, including required .q, .qe and .re signals.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.3-03",
+   "reason": "static_or_structural",
+   "note": "This concerns internal reg2hw struct contents."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.3-04",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.3",
+  "sentences": [
+   "T1.3:s9"
+  ],
+  "strength": "MUST",
+  "statement": "The name_hw2reg_t structure contains the signals driven from the rest of the hardware to the register module, including required .d and .de signals.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.3-04",
+   "reason": "static_or_structural",
+   "note": "This concerns internal hw2reg struct contents."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.4.1-01",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.4.1",
+  "sentences": [
+   "T1.4.1:s3"
+  ],
+  "strength": "SHOULD",
+  "statement": "Accesses to unmapped target addresses fully representable with internal address bits typically return an error.",
+  "checks": [
+   "CHK-017"
+  ],
+  "check_status": {
+   "CHK-017": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RG-T1.4.1-02",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.4.1",
+  "sentences": [
+   "T1.4.1:s6",
+   "T1.4.1:s11"
+  ],
+  "strength": "MUST",
+  "statement": "If the stripped address is mapped, the request is forwarded to the register and no error is returned.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.4.1-02",
+   "reason": "not_applicable_to_dut",
+   "note": "Requests at 0x200 and above are not used (D-012, RT-8-20), so address aliasing is not exercised."
+  },
+  "mutation": {
+   "relevant": 2,
+   "killed": 2,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RG-T1.4.1-03",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.4.1",
+  "sentences": [
+   "T1.4.1:s8",
+   "T1.4.1:s9"
+  ],
+  "strength": "SHOULD",
+  "statement": "A request to unmapped address 0x88 typically returns an error.",
+  "checks": [
+   "CHK-017"
+  ],
+  "check_status": {
+   "CHK-017": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RG-T1.4.1-04",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.4.1",
+  "sentences": [
+   "T1.4.1:s13"
+  ],
+  "strength": "MUST",
+  "statement": "An error response is returned when TL-UL a_opcode has an illegal value.",
+  "checks": [
+   "CHK-011",
+   "CHK-019"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-019": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.4.1-05",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.4.1",
+  "sentences": [
+   "T1.4.1:s14",
+   "T1.4.1:s17"
+  ],
+  "strength": "MUST",
+  "statement": "A write smaller than the register size must return an error.",
+  "checks": [
+   "CHK-011",
+   "CHK-018"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-018": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.4.1-06",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.4.1",
+  "sentences": [
+   "T1.4.1:s19",
+   "T1.4.1:s20"
+  ],
+  "strength": "MUST",
+  "statement": "Writes smaller than 32b that are not word-aligned must return an error.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.4.1-06",
+   "reason": "covered_by_other_check",
+   "note": "This is only partly covered. CHK-018 checks the aligned sub-word write cases that D-013 selects. D-013 excludes unaligned sub-word writes from checking."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.4.1-07",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.4.1",
+  "sentences": [
+   "T1.4.1:s21"
+  ],
+  "strength": "MUST",
+  "statement": "Reads smaller than a full word return the full register content and do not signal an error.",
+  "checks": [
+   "CHK-011",
+   "CHK-020"
+  ],
+  "check_status": {
+   "CHK-011": "PASS",
+   "CHK-020": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RG-T1.4.1-08",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.4.1",
+  "sentences": [
+   "T1.4.1:s22"
+  ],
+  "strength": "MUST",
+  "statement": "Read response data is always in its byte channel, e.g. a one-byte read to 0x3 returns the full word with the correct byte in bits [31:24].",
+  "checks": [
+   "CHK-020"
+  ],
+  "check_status": {
+   "CHK-020": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.4.1-09",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.4.1",
+  "sentences": [
+   "T1.4.1:s26"
+  ],
+  "strength": "SHOULD",
+  "statement": "Windows should follow the error rules based on the declared validbits, though this may be relaxed in some cases.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.4.1-09",
+   "reason": "not_applicable_to_dut",
+   "note": "rv_timer has no register windows."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.1-01",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.1",
+  "sentences": [
+   "T1.5.1:s6",
+   "T1.5.1:s11"
+  ],
+  "strength": "MUST",
+  "statement": "The software-written value takes priority over the hardware update.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.5.1-01",
+   "reason": "not_observable_at_interface",
+   "note": "A software write in the same cycle as a hardware update cannot be aligned through the bus. Writes to TIMER_V and CFG0 while active are excluded (D-002)."
+  },
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RG-T1.5.1-02",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.1",
+  "sentences": [
+   "T1.5.1:s9"
+  ],
+  "strength": "MAY",
+  "statement": "The hardware can present updated values through de and d.",
+  "checks": [
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-031": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.1-03",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.1",
+  "sentences": [
+   "T1.5.1:s10"
+  ],
+  "strength": "MUST",
+  "statement": "The register content is updated with d.",
+  "checks": [
+   "CHK-031"
+  ],
+  "check_status": {
+   "CHK-031": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RG-T1.5.1-05",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.1",
+  "sentences": [
+   "T1.5.1:s18",
+   "T1.5.1:s19"
+  ],
+  "strength": "MUST",
+  "statement": "qe is a registered version of the bus write enable we, aligned with the change in q.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.5.1-05",
+   "reason": "not_observable_at_interface",
+   "note": "qe is an internal register-to-hardware signal."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.3-02",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.3",
+  "sentences": [
+   "T1.5.3:s5"
+  ],
+  "strength": "MUST",
+  "statement": "A software read returns a hardwired value equal to the register default value.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.5.3-02",
+   "reason": "not_applicable_to_dut",
+   "note": "rv_timer has no ro hwext hardwired registers."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.4-01",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.4",
+  "sentences": [
+   "T1.5.4:s2"
+  ],
+  "strength": "MUST",
+  "statement": "When re indicates the register is being read, the register contents are set to zero.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.5.4-01",
+   "reason": "not_applicable_to_dut",
+   "note": "rv_timer has no read-clear (RC) registers."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.6.1-01",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.6.1",
+  "sentences": [
+   "T1.5.6.1:s1"
+  ],
+  "strength": "MUST",
+  "statement": "The subreg for R0W1C/RW1S/RW1C/RW0C types must handle simultaneous hardware and software write attempts.",
+  "checks": [
+   "CHK-025"
+  ],
+  "check_status": {
+   "CHK-025": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.6.1-02",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.6.1",
+  "sentences": [
+   "T1.5.6.1:s2"
+  ],
+  "strength": "MUST",
+  "statement": "Software has precedence over hardware, as for the RW type.",
+  "checks": [
+   "CHK-025"
+  ],
+  "check_status": {
+   "CHK-025": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.6.1-04",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.6.1",
+  "sentences": [
+   "T1.5.6.1:s9",
+   "T1.5.6.1:s10"
+  ],
+  "strength": "SHOULD",
+  "statement": "Hardware should feed the q value back into d, only setting bits with new events, to avoid collisions with software clearing.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.5.6.1-04",
+   "reason": "design_guideline",
+   "note": "This is an implementation recommendation for the hardware feeding RW1C registers."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.6.1-05",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.6.1",
+  "sentences": [
+   "T1.5.6.1:s16",
+   "T1.5.6.1:s17"
+  ],
+  "strength": "MUST",
+  "statement": "The software clear must still take effect for one cycle to create a new interrupt edge, then q returns to 1 since d is still 1.",
+  "checks": [
+   "CHK-025"
+  ],
+  "check_status": {
+   "CHK-025": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.6.2-01",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.6.2",
+  "sentences": [
+   "T1.5.6.2:s1"
+  ],
+  "strength": "MAY",
+  "statement": "RW1C, RW1S and similar register types may be created with hwext true.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.5.6.2-01",
+   "reason": "not_observable_at_interface",
+   "note": "Whether a field is hwext is an implementation choice that cannot be seen through the ports."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.6.2-02",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.6.2",
+  "sentences": [
+   "T1.5.6.2:s2",
+   "T1.5.6.2:s3"
+  ],
+  "strength": "MUST",
+  "statement": "The auto-generated hardware is the same as the hwext RW register, with the implementation done outside the generated register block.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.5.6.2-02",
+   "reason": "not_observable_at_interface",
+   "note": "This concerns the internal implementation of hwext registers."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RG-T1.5.6.2-03",
+  "spec_refs": [],
+  "doc": "opentitan_register_tool.md",
+  "section": "T1.5.6.2",
+  "sentences": [
+   "T1.5.6.2:s5"
+  ],
+  "strength": "MAY",
+  "statement": "hwqe may be set true for these register types.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RG-T1.5.6.2-03",
+   "reason": "not_observable_at_interface",
+   "note": "hwqe is internal."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AH-T1.3.1-02",
+  "spec_refs": [],
+  "doc": "opentitan_alert_handler_theory_of_operation.md",
+  "section": "T1.3.1",
+  "sentences": [
+   "T1.3.1:s3"
+  ],
+  "strength": "SHOULD",
+  "statement": "Peripherals defining alerts should instantiate one prim_alert_sender module to convert the alert event into a signal to the alert handler.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AH-T1.3.1-02",
+   "reason": "static_or_structural",
+   "note": "This concerns instantiation of prim_alert_sender."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AH-T1.3.2-01",
+  "spec_refs": [],
+  "doc": "opentitan_alert_handler_theory_of_operation.md",
+  "section": "T1.3.2",
+  "sentences": [
+   "T1.3.2:s2"
+  ],
+  "strength": "MUST",
+  "statement": "Alerts are encoded differentially and signaled using a full handshake on the alert_p/n and ack_p/n wires.",
+  "checks": [
+   "CHK-014"
+  ],
+  "check_status": {
+   "CHK-014": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 3,
+   "killed": 2,
+   "survived": [
+    "M19"
+   ],
+   "claimed_equivalent": [],
+   "score": 66.7,
+   "meets_threshold": false
+  }
+ },
+ {
+  "rule": "AH-T1.3.2-02",
+  "spec_refs": [],
+  "doc": "opentitan_alert_handler_theory_of_operation.md",
+  "section": "T1.3.2",
+  "sentences": [
+   "T1.3.2:s5",
+   "T1.3.2:s7"
+  ],
+  "strength": "MUST",
+  "statement": "The alert sender must keep repeating the native alert message and handshake pattern on its output wires while the alert is true.",
+  "checks": [
+   "CHK-016"
+  ],
+  "check_status": {
+   "CHK-016": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 0,
+   "survived": [
+    "M19"
+   ],
+   "claimed_equivalent": [],
+   "score": 0.0,
+   "meets_threshold": false
+  }
+ },
+ {
+  "rule": "AH-T1.3.2-03",
+  "spec_refs": [],
+  "doc": "opentitan_alert_handler_theory_of_operation.md",
+  "section": "T1.3.2",
+  "sentences": [
+   "T1.3.2:s8"
+  ],
+  "strength": "MUST",
+  "statement": "The sender waits 2 cycles between handshakes.",
+  "checks": [
+   "CHK-016"
+  ],
+  "check_status": {
+   "CHK-016": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 0,
+   "survived": [
+    "M19"
+   ],
+   "claimed_equivalent": [],
+   "score": 0.0,
+   "meets_threshold": false
+  }
+ },
+ {
+  "rule": "AH-T1.3.2-04",
+  "spec_refs": [],
+  "doc": "opentitan_alert_handler_theory_of_operation.md",
+  "section": "T1.3.2",
+  "sentences": [
+   "T1.3.2:s9",
+   "T1.3.2:s10"
+  ],
+  "strength": "MUST",
+  "statement": "The receiver must immediately propagate the first occurrence of an alert to alert_o.",
+  "checks": [
+   "CHK-014"
+  ],
+  "check_status": {
+   "CHK-014": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 1,
+   "killed": 1,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "AH-T1.3.4-01",
+  "spec_refs": [],
+  "doc": "opentitan_alert_handler_theory_of_operation.md",
+  "section": "T1.3.4",
+  "sentences": [
+   "T1.3.4:s1",
+   "T1.3.4:s3",
+   "T1.3.4:s4"
+  ],
+  "strength": "MUST",
+  "statement": "The receiver must assert integ_fail_o when alert_tx_i.alert_p/n is incorrectly encoded.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AH-T1.3.4-01",
+   "reason": "not_observable_at_interface",
+   "note": "The alert differential pairs are internal to the wrapper, so encoding faults cannot be injected through the ports. The correct case (o_alert_integ_fail=0) is checked by CHK-001."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AH-T1.3.4-02",
+  "spec_refs": [],
+  "doc": "opentitan_alert_handler_theory_of_operation.md",
+  "section": "T1.3.4",
+  "sentences": [
+   "T1.3.4:s1",
+   "T1.3.4:s5",
+   "T1.3.4:s6",
+   "T1.3.4:s7"
+  ],
+  "strength": "MUST",
+  "statement": "The sender must set alert_tx_o.alert_p/n to the same continuously toggling value, which triggers integ_fail_o on the receiver.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AH-T1.3.4-02",
+   "reason": "not_observable_at_interface",
+   "note": "ping/ack encoding faults cannot be injected through the ports. CHK-001 covers the fault-free case."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "AH-T1.3.4-03",
+  "spec_refs": [],
+  "doc": "opentitan_alert_handler_theory_of_operation.md",
+  "section": "T1.3.4",
+  "sentences": [
+   "T1.3.4:s9",
+   "T1.3.4:s10"
+  ],
+  "strength": "MUST",
+  "statement": "Such lock-up must always trigger either a signal integrity alert or eventually a pingfail alert.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "AH-T1.3.4-03",
+   "reason": "not_observable_at_interface",
+   "note": "Lock-up through signal-integrity faults cannot be provoked from the ports."
+  },
+  "mutation": null
+ }
+]

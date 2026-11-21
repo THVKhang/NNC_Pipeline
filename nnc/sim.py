@@ -158,7 +158,7 @@ TOPLEVEL_LANG = verilog
 VERILOG_SOURCES = {' '.join('$(CURDIR)/' + s for s in sources)}
 COCOTB_TOPLEVEL = nnc_tb_top
 COCOTB_TEST_MODULES = {test_module}
-EXTRA_ARGS += --assert --timing -Wno-fatal -Wno-WIDTH -Wno-UNOPTFLAT {gen} {COVERAGE_ARGS if coverage else ''}
+EXTRA_ARGS += --assert --timing -Wno-fatal -Wno-WIDTH -Wno-UNOPTFLAT +incdir+$(CURDIR)/rtl {gen} {COVERAGE_ARGS if coverage else ''}
 {_opts_lines(opts)}SEED ?= 1
 NNC_JOBS ?= 8
 MAKEFLAGS += -j$(NNC_JOBS)
@@ -203,7 +203,7 @@ tool-check:
 \tpython3 --version
 
 lint:
-\t$(VERILATOR) --lint-only -Wno-fatal --top-module $(TOP) $(PARAMS) $(DEFINES) $(RTL)
+\t$(VERILATOR) --lint-only -Wno-fatal --top-module $(TOP) $(PARAMS) $(DEFINES) +incdir+$(TOP_DIR)/rtl $(RTL)
 
 sva-compile:
 \t$(VERILATOR) --lint-only --timing -Wno-fatal --top-module nnc_tb_top $(PARAMS) contract_shell.sv $(SVA) nnc_tb_top.sv
@@ -229,7 +229,7 @@ TOPLEVEL_LANG = verilog
 VERILOG_SOURCES = {sources}
 COCOTB_TOPLEVEL = nnc_tb_top
 COCOTB_TEST_MODULES ?= {tests}
-EXTRA_ARGS += --assert --timing -Wno-fatal -Wno-WIDTH -Wno-UNOPTFLAT {gen} {coverage}
+EXTRA_ARGS += --assert --timing -Wno-fatal -Wno-WIDTH -Wno-UNOPTFLAT +incdir+$(TOP_DIR)/rtl {gen} {coverage}
 {opts}SEED ?= 1
 export NNC_SEED = $(SEED)
 export COCOTB_RANDOM_SEED = $(SEED)
@@ -302,7 +302,7 @@ TOPLEVEL_LANG = verilog
 VERILOG_SOURCES = {sources}
 COCOTB_TOPLEVEL = nnc_tb_top
 COCOTB_TEST_MODULES ?= {tests}
-EXTRA_ARGS += --assert --timing -Wno-fatal -Wno-WIDTH -Wno-UNOPTFLAT {gen} {coverage}
+EXTRA_ARGS += --assert --timing -Wno-fatal -Wno-WIDTH -Wno-UNOPTFLAT +incdir+$(TOP_DIR)/rtl {gen} {coverage}
 {opts}SEED ?= 1
 export NNC_SEED = $(SEED)
 export COCOTB_RANDOM_SEED = $(SEED)

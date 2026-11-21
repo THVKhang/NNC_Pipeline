@@ -1,0 +1,2956 @@
+{
+ "version": 1,
+ "doc": {
+  "file": "opentitan_register_tool.md",
+  "sha256": "bc37a4652b5fda7150274720d8ca4854afa95efeb3f4b93526c3c911657e262a",
+  "length": 1268,
+  "location": "line"
+ },
+ "sections": [
+  {
+   "id": "front",
+   "title": "Front matter",
+   "level": 0,
+   "parent": null,
+   "page_start": 1,
+   "page_end": 1,
+   "sentences": []
+  },
+  {
+   "id": "T1",
+   "title": "Register Tool",
+   "level": 1,
+   "parent": null,
+   "page_start": 3,
+   "page_end": 5,
+   "sentences": [
+    {
+     "id": "T1:s1",
+     "text": "The register tool is used to construct register documentation, register RTL and header files.",
+     "page": 5,
+     "normative": false
+    },
+    {
+     "id": "T1:s2",
+     "text": "It is either used stand-alone or by being invoked as part of Markdown processing.",
+     "page": 5,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.1",
+   "title": "Running standalone regtool.py",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 9,
+   "page_end": 14,
+   "sentences": [
+    {
+     "id": "T1.1:s1",
+     "text": "The standalone regtool.py is a Python 3 tool to read configuration and register descriptions in Hjson and generate various output formats.",
+     "page": 11,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s2",
+     "text": "Currently it can output HTML documentation, standard JSON, compact standard JSON (whitespace removed), Hjson, Verilog RTL and various forms of C header files.",
+     "page": 11,
+     "normative": true
+    },
+    {
+     "id": "T1.1:s3",
+     "text": "The standard --help and --version command line flags are supported to print the usage and version information.",
+     "page": 14,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s4",
+     "text": "Because the version includes information on libraries (which may be different between systems) reporting the version output is sometimes useful when issues are reported.",
+     "page": 14,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.1.1",
+   "title": "Setup and Examples",
+   "level": 3,
+   "parent": "T1.1",
+   "page_start": 17,
+   "page_end": 19,
+   "sentences": [
+    {
+     "id": "T1.1.1:s1",
+     "text": "Setup and examples of the tool are given in the README.md file in the util/reggen directory.",
+     "page": 19,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.2",
+   "title": "Configuration and Register Definition File Format",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 21,
+   "page_end": 525,
+   "sentences": [
+    {
+     "id": "T1.2:s1",
+     "text": "The tool input is an Hjson file containing the Comportable description of the IP block and its registers.",
+     "page": 23,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s2",
+     "text": "A description of Hjson (a variant of JSON) and the recommended style is in the Hjson Usage and Style Guide.",
+     "page": 25,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s3",
+     "text": "The tables below describe valid keys for each context.",
+     "page": 27,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s4",
+     "text": "It is an error if *required* keys are missing from the input JSON. *Optional* keys may be provided in the input file as needed, as noted in the tables the tool may insert them (with default or computed values) during validation so the output generators do not have to special case them.",
+     "page": 27,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s5",
+     "text": "Keys marked as \"inserted by tool\" should not be in the input JSON (they will be silently overwritten if they are there), they are derived by the tool during validation of the input and available to the output generators.",
+     "page": 27,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s6",
+     "text": "For more detail on the non-register entries of the Hjson configuration file, see this section of the Comportability Specification.",
+     "page": 32,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s7",
+     "text": "The tables describe each key and the type of the value.",
+     "page": 39,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s8",
+     "text": "The following types are used:",
+     "page": 39,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s9",
+     "text": "Type | Description ---- | ----------- int | integer (binary 0b, octal 0o, decimal, hex 0x) xint | x for undefined otherwise int bitrange | bit number as decimal integer, or bit-range as decimal integers msb:lsb list | comma separated list enclosed in [] name list | comma separated list enclosed in [] of one or more groups that have just name and dscr keys. e.g. { name: \"name\", desc: \"description\"} name list+ | name list that optionally contains a width, and for split IPs an optional partition key naming the partition that owns the entry. parameter list | parameter list having default value optionally group | comma separated group of key:value enclosed in {} list of group | comma separated group of key:value enclosed in {} the second entry of the list is the sub group format string | string, typically short text | string, may be multi-line enclosed in ''' may use bold, *italic* or !!Reg markup tuple | tuple enclosed in () python int | Native Python type int (generated) python Bool | Native Python type Bool (generated) python list | Native Python type list (generated) python enum | Native Python type enum (generated)",
+     "page": 42,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s10",
+     "text": "Register fields are tagged using the swaccess key to describe the permitted access and side-effects.",
+     "page": 62,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s11",
+     "text": "This key must have one of these values:",
+     "page": 62,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s12",
+     "text": "Key | Description --- | ----------- none | No access ro | Read Only rc | Read Only, reading clears rw | Read/Write r0w1c | Read zero, Write with 1 clears rw1s | Read, Write with 1 sets rw1c | Read, Write with 1 clears rw0c | Read, Write with 0 clears wo | Write Only",
+     "page": 67,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s13",
+     "text": "Register fields are tagged using the hwaccess key to describe the permitted access from hardware logic and side-effects.",
+     "page": 80,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s14",
+     "text": "This key must have one of these values:",
+     "page": 80,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s15",
+     "text": "Key | Description --- | ----------- hro | Read Only hrw | Read/Write hwo | Write Only none | No Access Needed",
+     "page": 85,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s16",
+     "text": "The top level of the JSON is a group containing the following keys:",
+     "page": 93,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s17",
+     "text": "Key | Kind | Type | Description of Value --- | ---- | ---- | -------------------- name | required | string | name of the component cip_id | required | int | unique comportable IP identifier clocking | required | list or group | clocking for the device.",
+     "page": 95,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s18",
+     "text": "Non split IPs have a list.",
+     "page": 95,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s19",
+     "text": "Split IPs have a dict with a list per partition. bus_interfaces | required | list | bus interfaces for the device human_name | optional | string | human-readable name of the component one_line_desc | optional | string | one-line description of the component one_paragraph_desc | optional | string | one-paragraph description of the component revisions | optional | list | list with revision records design_spec | optional | string | path to the design specification, relative to repo root dv_doc | optional | string | path to the DV document, relative to repo root hw_checklist | optional | string | path to the hw_checklist, relative to repo root sw_checklist | optional | string | path to the sw_checklist, relative to repo root design_stage | optional | string | design stage of module dif_stage | optional | string | DIF stage of module verification_stage | optional | string | verification stage of module notes | optional | string | random notes version | optional | string | module version life_stage | optional | string | life stage of module commit_id | optional | string | commit ID of last stage sign-off reinit_list | optional | name list+ | list of register reinitialization inputs alert_list | optional | name list+ | list of peripheral alerts available_inout_list | optional | name list+ | list of available peripheral inouts available_input_list | optional | name list+ | list of available peripheral inputs available_output_list | optional | name list+ | list of available peripheral outputs expose_reg_if | optional | python Bool | if set, expose reg interface in reg2hw signal interrupt_list | optional | name list+ | list of peripheral interrupts inter_signal_list | optional | list | list of inter-module signals is_split_ip | optional | python Bool | if set, this IP is split into partitions.",
+     "page": 95,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s20",
+     "text": "Defaults to false. no_auto_alert_regs | optional | string | Set to true to suppress automatic generation of alert test registers.",
+     "page": 95,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s21",
+     "text": "Defaults to true if no alert_list is present.",
+     "page": 95,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s22",
+     "text": "Otherwise this defaults to false. no_auto_intr_regs | optional | string | Set to true to suppress automatic generation of interrupt registers.",
+     "page": 95,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s23",
+     "text": "Defaults to true if no interrupt_list is present.",
+     "page": 95,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s24",
+     "text": "Otherwise this defaults to false. param_list | optional | parameter list | list of parameters of the IP registers | optional | list | list of register definition groups and offset control groups regwidth | optional | int | width of registers in bits (default 32) reset_request_list | optional | list | list of signals requesting reset scan | optional | python Bool | Indicates the module have scanmode_i scan_reset | optional | python Bool | Indicates the module have scan_rst_ni scan_en | optional | python Bool | Indicates the module has scan_en_i SPDX-License-Identifier | optional | string | License identifier (if using pure json) Only use this if unable to put this information in a comment at the top of the file. wakeup_list | optional | name list+ | list of peripheral wakeups countermeasures | optional | name list | list of countermeasures in this block features | optional | name list | list of functional features in this block memory | optional | list | list of memory definitions",
+     "page": 95,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s25",
+     "text": "The basic structure of a register definition file is thus:",
+     "page": 140,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s26",
+     "text": "The list of registers includes register definition groups containing the following keys:",
+     "page": 155,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s27",
+     "text": "Key | Kind | Type | Description of Value --- | ---- | ---- | -------------------- name | required | string | name of the register desc | required | text | description of the register.",
+     "page": 157,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s28",
+     "text": "This field supports the markdown syntax. fields | required | list | list of register field description groups alias_target | optional | string | name of the register to apply the alias definition to. async | optional | string | indicates the register must cross to a different clock domain before use.",
+     "page": 157,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s29",
+     "text": "The value shown here should correspond to one of the module's clocks. sync | optional | string | indicates the register needs to be on another clock/reset domain.The value shown here should correspond to one of the module's clocks. swaccess | optional | string | software access permission to use for fields that don't specify swaccess hwaccess | optional | string | hardware access permission to use for fields that don't specify hwaccess hwext | optional | string | 'true' if the register is stored outside of the register module hwqe | optional | string | 'true' if hardware uses 'q' enable signal, which is latched signal of software write pulse. hwre | optional | string | 'true' if hardware uses 're' signal, which is latched signal of software read pulse. regwen | optional | string | if register is write-protected by another register, that register name should be given here. empty-string for no register write protection reinit | optional | string | reinit signal that restores the content of the register to its reset state, e.g., at the request of software. inregwen | optional | string | if the writable fields of this register are write-protected by a single-bit field *within the same register*, that field name should be given here.",
+     "page": 157,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s30",
+     "text": "The named control field is stored inside the register block (even when the register is hwext) and gates the write-enable (and hence the 'qe' strobe) of all other writable fields. empty-string for no in-register write protection resval | optional | int | reset value of full register (default 0) tags | optional | string | tags for the register, following the format 'tag_name:item1:item2...' shadowed | optional | string | 'true' if the register is shadowed update_err_alert | optional | string | alert that will be triggered if this shadowed register has update error storage_err_alert | optional | string | alert that will be triggered if this shadowed register has storage error writes_ignore_errors | optional | bitrange | This register may update on a TL write that causes an error response.",
+     "page": 157,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s31",
+     "text": "The basic register definition group will follow this pattern:",
+     "page": 181,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s32",
+     "text": "The name and brief description are required.",
+     "page": 194,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s33",
+     "text": "If the swaccess key is provided it describes the access pattern that will be used by all bitfields in the register that do not override with their own swaccess key.",
+     "page": 194,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s34",
+     "text": "This is a useful shortcut because in most cases a register will have the same access restrictions for all fields.",
+     "page": 194,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s35",
+     "text": "The reset value of the register may also be provided here or in the individual fields.",
+     "page": 194,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s36",
+     "text": "If it is provided in both places then they must match, if it is provided in neither place then the reset value defaults to zero for all except write-only fields when it defaults to x.",
+     "page": 194,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s37",
+     "text": "In the fields list each field definition is a group itself containing the following keys:",
+     "page": 206,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s38",
+     "text": "Key | Kind | Type | Description of Value --- | ---- | ---- | -------------------- bits | required | bitrange | bit or bit range (msb:lsb) name | optional | string | name of the field desc | optional | text | description of field (required if the field has a name).",
+     "page": 208,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s39",
+     "text": "This field supports the markdown syntax. alias_target | optional | string | name of the field to apply the alias definition to. swaccess | optional | string | software access permission, copied from register if not provided in field.",
+     "page": 208,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s40",
+     "text": "(Tool adds if not provided.) hwaccess | optional | string | hardware access permission, copied from register if not provided in field.",
+     "page": 208,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s41",
+     "text": "(Tool adds if not provided.) hwqe | optional | bitrange | 'true' if hardware uses 'q' enable signal, which is latched signal of software write pulse.",
+     "page": 208,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s42",
+     "text": "Copied from register if not provided in field.",
+     "page": 208,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s43",
+     "text": "(Tool adds if not provided.) resval | optional | xint | reset value, comes from register resval if not provided in field.",
+     "page": 208,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s44",
+     "text": "Zero if neither are provided and the field is readable, x if neither are provided and the field is wo.",
+     "page": 208,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s45",
+     "text": "Must match if both are provided. enum | optional | list | list of permitted enumeration groups tags | optional | string | tags for the field, followed by the format 'tag_name:item1:item2...' mubi | optional | bitrange | boolean flag for whether the field is a multi-bit type auto_split | optional | bitrange | boolean flag which determines whether the field should be automatically separated into 1-bit sub-fields.This flag is used as a hint for automatically generated software headers with register description.",
+     "page": 208,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s46",
+     "text": "Field names should be relatively short because they will be used frequently (and need to fit in the register layout picture!) The field description is expected to be longer and will most likely make use of the Hjson ability to include multi-line strings.",
+     "page": 224,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s47",
+     "text": "An example with three fields:",
+     "page": 224,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s48",
+     "text": "In all of these the swaccess parameter is inherited from the register level, and will be added so this key is always available to the backend.",
+     "page": 260,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s49",
+     "text": "The RXS and ENRXS will default to zero reset value (unless something different is provided for the register) and will have the key added, but TXILVL explicitly sets its reset value as 2.",
+     "page": 260,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s50",
+     "text": "The missing bits 17 and 18 will be treated as reserved by the tool, as will any bits between 21 and the maximum in the register.",
+     "page": 266,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s51",
+     "text": "The TXILVL is an example using an enumeration to specify all valid values for the field.",
+     "page": 269,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s52",
+     "text": "In this case all possible values are described, if the list is incomplete then the field is marked with the rsvdenum key so the backend can take appropriate action.",
+     "page": 269,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s53",
+     "text": "(If the enum field is more than 7 bits then the checking is not done.)",
+     "page": 269,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s54",
+     "text": "Definitions in an enumeration group contain:",
+     "page": 277,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s55",
+     "text": "Key | Kind | Type | Description of Value --- | ---- | ---- | -------------------- name | required | string | name of the member of the enum desc | required | text | description when field has this value value | required | int | value of this member of the enum",
+     "page": 279,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s56",
+     "text": "The list of registers may include single entry groups to control the offset, open a window or generate registers:",
+     "page": 286,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s57",
+     "text": "Key | Kind | Type | Description of Value --- | ---- | ---- | -------------------- reserved | optional | int | number of registers to reserve space for skipto | optional | int | set next register offset to value window | optional | group | group defining an address range for something other than standard registers multireg | optional | group | group defining registers generated from a base instance.",
+     "page": 288,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s58",
+     "text": "Registers can protect themselves from software writes by using the register attribute regwen.",
+     "page": 298,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s59",
+     "text": "When not an empty string (the default value), regwen indicates that another register must be true in order to allow writes to this register.",
+     "page": 298,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s60",
+     "text": "This is useful for the prevention of software modification.",
+     "page": 298,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s61",
+     "text": "The register-enable register (call it REGWEN) must be either one bit or 4 bit in width to support a FI-protected multi-bit REGWEN.",
+     "page": 298,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s62",
+     "text": "The default value should be true and be rw1c for preferred security control.",
+     "page": 298,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s63",
+     "text": "This allows all writes to proceed until at some point software disables future modifications by clearing REGWEN.",
+     "page": 298,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s64",
+     "text": "An error is reported if REGWEN does not exist, contains more than one bit, is not rw1c or does not default to true.",
+     "page": 298,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s65",
+     "text": "One REGWEN can protect multiple registers.",
+     "page": 298,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s66",
+     "text": "The REGWEN register must precede those registers that refer to it in the .hjson register list.",
+     "page": 298,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s67",
+     "text": "An example:",
+     "page": 298,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s68",
+     "text": "A window defines an open region of the register space that can be used for things that are not registers (for example access to a buffer ram).",
+     "page": 331,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s69",
+     "text": "Key | Kind | Type | Description of Value --- | ---- | ---- | -------------------- name | required | string | name of the window desc | required | text | description of the window items | required | int | size in fieldaccess width words of the window swaccess | required | string | software access permitted data-intg-passthru | optional | string | True if the window has data integrity pass through.",
+     "page": 335,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s70",
+     "text": "Defaults to false if not present. byte-write | optional | string | True if byte writes are supported.",
+     "page": 335,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s71",
+     "text": "Defaults to false if not present. validbits | optional | int | Number of valid data bits within regwidth sized word.",
+     "page": 335,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s72",
+     "text": "Defaults to regwidth.",
+     "page": 335,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s73",
+     "text": "If smaller than the regwidth then in each word of the window bits [regwidth-1:validbits] are unused and bits [validbits-1:0] are valid. unusual | optional | string | True if window has unusual parameters (set to prevent Unusual: errors).Defaults to false if not present.",
+     "page": 335,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s74",
+     "text": "The multireg expands on the register required fields and will generate a list of the generated registers (that contain all required and generated keys for an actual register).",
+     "page": 347,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s75",
+     "text": "Key | Kind | Type | Description of Value --- | ---- | ---- | -------------------- name | required | string | base name of the registers desc | required | text | description of the registers count | required | string | number of instances to generate.",
+     "page": 352,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s76",
+     "text": "This field can be integer or string matching from param_list. cname | required | string | base name for each instance, mostly useful for referring to instance in messages. fields | required | list | list of register field description groups.",
+     "page": 352,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s77",
+     "text": "Describes bit positions used for base instance. alias_target | optional | string | name of the register to apply the alias definition to. async | optional | string | indicates the register must cross to a different clock domain before use.",
+     "page": 352,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s78",
+     "text": "The value shown here should correspond to one of the module's clocks. sync | optional | string | indicates the register needs to be on another clock/reset domain.The value shown here should correspond to one of the module's clocks. swaccess | optional | string | software access permission to use for fields that don't specify swaccess hwaccess | optional | string | hardware access permission to use for fields that don't specify hwaccess hwext | optional | string | 'true' if the register is stored outside of the register module hwqe | optional | string | 'true' if hardware uses 'q' enable signal, which is latched signal of software write pulse. hwre | optional | string | 'true' if hardware uses 're' signal, which is latched signal of software read pulse. regwen | optional | string | if register is write-protected by another register, that register name should be given here. empty-string for no register write protection reinit | optional | string | reinit signal that restores the content of the register to its reset state, e.g., at the request of software. inregwen | optional | string | if the writable fields of this register are write-protected by a single-bit field *within the same register*, that field name should be given here.",
+     "page": 352,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s79",
+     "text": "The named control field is stored inside the register block (even when the register is hwext) and gates the write-enable (and hence the 'qe' strobe) of all other writable fields. empty-string for no in-register write protection resval | optional | int | reset value of full register (default 0) tags | optional | string | tags for the register, following the format 'tag_name:item1:item2...' shadowed | optional | string | 'true' if the register is shadowed update_err_alert | optional | string | alert that will be triggered if this shadowed register has update error storage_err_alert | optional | string | alert that will be triggered if this shadowed register has storage error writes_ignore_errors | optional | bitrange | This register may update on a TL write that causes an error response. regwen_multi | optional | python Bool | If true, regwen term increments along with current multireg count. compact | optional | python Bool | If true, allow multireg compacting.If false, do not compact. cdc | optional | string | indicates the register must cross to a different clock domain before use.",
+     "page": 352,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s80",
+     "text": "The value shown here should correspond to one of the module's clocks.",
+     "page": 352,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s81",
+     "text": "(end of output generated by regtool.py --doc)",
+     "page": 381,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s82",
+     "text": "The tool will normally generate the register address offset by starting from 0 and allocating the registers in the order they are in the input file.",
+     "page": 386,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s83",
+     "text": "Between each register the offset is incremented by the number of bytes in the regwidth (4 bytes for the default 32-bit regwidth), so the registers end up packed into the smallest space.",
+     "page": 386,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s84",
+     "text": "Space may be held for future registers (or to match some other layout) by reserving register slots.",
+     "page": 389,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s85",
+     "text": "A group containing just the reserved key can be inserted in the list of registers to reserve space.",
+     "page": 389,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s86",
+     "text": "For example to reserve space for four registers between REGA and REGB (thus make REGB offset be REGA offset plus 5 times the size in bytes of a register):",
+     "page": 389,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s87",
+     "text": "In other cases, such as separating functional groups of registers, the absolute offset can be specified.",
+     "page": 403,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s88",
+     "text": "The next register will have the offset specified.",
+     "page": 403,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s89",
+     "text": "It is an error if the requested offset is less than the current offset.",
+     "page": 403,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s90",
+     "text": "For example to place ITCR at offset 0x100:",
+     "page": 403,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s91",
+     "text": "The tool can reserve an area of the memory space for something that is not a simple register, for example access to a buffer memory.",
+     "page": 416,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s92",
+     "text": "This is done with a window declaration.",
+     "page": 416,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s93",
+     "text": "The window size is specified as items: where each item is a regwidth wide word.",
+     "page": 416,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s94",
+     "text": "The size in bytes is thus (items * (regwidth/8)) bytes.",
+     "page": 416,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s95",
+     "text": "If byte writes are supported the byte-write: \"True\" flag can be given.",
+     "page": 416,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s96",
+     "text": "The tool will normally increment the offset to align the region based on its size.",
+     "page": 416,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s97",
+     "text": "The tool will give a warning if the size is not a power of 2.",
+     "page": 436,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s98",
+     "text": "The tool will also give a warning if the window has software access other than read-only, write-only or read-write.",
+     "page": 436,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s99",
+     "text": "Both of these warnings are suppressed if the description acknowledges there is something special about this window by setting unusual: \"True\" in the window declaration.",
+     "page": 436,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s100",
+     "text": "The tool will increment the offset to align the region based on its size.",
+     "page": 440,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s101",
+     "text": "The start address is aligned such that the base item in the window is at an address with all zeros in the low bits.",
+     "page": 440,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s102",
+     "text": "For instance, if the current offset is 0x104, and the window size in 32-bit words is between 0x11 and 0x20 (inclusive) (i.e. 65-128 bytes), the window base will be set to 0x180.",
+     "page": 440,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s103",
+     "text": "The next register will immediately follow the window, so will be at the window base address plus the window size in bytes.",
+     "page": 440,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s104",
+     "text": "Sometimes the window may need to map a structure that is not a full word wide (for example providing debug access to a the memory in a 12-bit wide FIFO).",
+     "page": 445,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s105",
+     "text": "In this case it may be convenient to have only the low bits of each word valid and use the word address directly as an index (rather than presenting a \"packed\" structure with the sub-word items packed into as few words as possible).",
+     "page": 445,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s106",
+     "text": "The window declaration can be annotated to document this.",
+     "page": 445,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s107",
+     "text": "For example debug access to a 64 entry 12-bit wide FIFO could use a window:",
+     "page": 445,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s108",
+     "text": "The tool can generate registers that follow a base pattern, for example when there are configuration fields for multiple instances.",
+     "page": 465,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s109",
+     "text": "The base pattern defines the bits (which need not be contiguous) used for the first instance and the tool uses this to pack the required number of instances into one or more registers.",
+     "page": 465,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s110",
+     "text": "For example a fancy GPIO interrupt configuration may have 4 bits per GPIO to allow generation on rising and falling edge and a two bit enum to determine the interrupt severity.",
+     "page": 468,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s111",
+     "text": "In this case the multireg can be used to build the multiple registers needed.",
+     "page": 468,
+     "normative": true
+    },
+    {
+     "id": "T1.2:s112",
+     "text": "The description below shows the fields given for GPIO0 and requests generation of 32 instances.",
+     "page": 468,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s113",
+     "text": "If the registers are 32 bits wide then the tool will pack the four bit instances into four registers INT_CTRL_0, INT_CTRL_1, INT_CTRL_2 and INT_CTRL_3.",
+     "page": 468,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s114",
+     "text": "Note that the definition bits for the base instance need not be contiguous.",
+     "page": 502,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s115",
+     "text": "In this case the tool will match the pattern for the other instances.",
+     "page": 502,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s116",
+     "text": "For example the data bits and mask bits could be in the lower and upper parts of a register:",
+     "page": 502,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s117",
+     "text": "In this case instance 1 will use bits 1 and 17, instance 2 will use 2 and 18 and so on.",
+     "page": 525,
+     "normative": false
+    },
+    {
+     "id": "T1.2:s118",
+     "text": "Instance 16 does not fit, so will start a new register.",
+     "page": 525,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.2.1.1",
+   "title": "Vendor-specific fields",
+   "level": 4,
+   "parent": "T1.2",
+   "page_start": 528,
+   "page_end": 534,
+   "sentences": [
+    {
+     "id": "T1.2.1.1:s1",
+     "text": "Regtool supports vendor-specific fields/attributes in the .hjson files.",
+     "page": 529,
+     "normative": false
+    },
+    {
+     "id": "T1.2.1.1:s2",
+     "text": "To add a vendor-specific field, one can use the argument --vendor-specific-fields when invoking regtool.py.",
+     "page": 529,
+     "normative": true
+    },
+    {
+     "id": "T1.2.1.1:s3",
+     "text": "These fields will not affect any of the regtool outputs.",
+     "page": 529,
+     "normative": false
+    },
+    {
+     "id": "T1.2.1.1:s4",
+     "text": "Therefore, they can be used by vendor-specific tools that also ingest the HJSON files; regtool merely tolerates these fields.",
+     "page": 529,
+     "normative": true
+    },
+    {
+     "id": "T1.2.1.1:s5",
+     "text": "This is a contrived example of how the vendor-specific HJSON configuration file:",
+     "page": 534,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.2.1",
+   "title": "Verification Tags Definition and Format",
+   "level": 3,
+   "parent": "T1.2",
+   "page_start": 552,
+   "page_end": 584,
+   "sentences": [
+    {
+     "id": "T1.2.1:s1",
+     "text": "This section documents the usage of tags in the register Hjson file.",
+     "page": 554,
+     "normative": false
+    },
+    {
+     "id": "T1.2.1:s2",
+     "text": "Tags is a list of strings that could add into a register, field, or memory.",
+     "page": 554,
+     "normative": false
+    },
+    {
+     "id": "T1.2.1:s3",
+     "text": "It can store special information such as csr register/field exclusion, memory exclusion, reset test exclusion, etc. Adding a tag follows the string format \"tag_name:item1:item2...\".",
+     "page": 554,
+     "normative": true
+    },
+    {
+     "id": "T1.2.1:s4",
+     "text": "For example:",
+     "page": 554,
+     "normative": false
+    },
+    {
+     "id": "T1.2.1:s5",
+     "text": "Current tags supports:",
+     "page": 564,
+     "normative": false
+    },
+    {
+     "id": "T1.2.1:s6",
+     "text": "CSR tests exclusions: Simulation based verification will run four CSR tests (if applicable to the module) through automation.",
+     "page": 565,
+     "normative": false
+    },
+    {
+     "id": "T1.2.1:s7",
+     "text": "Detailed description of this methodology is documented in CSR utilities.",
+     "page": 565,
+     "normative": false
+    },
+    {
+     "id": "T1.2.1:s8",
+     "text": "The tag name is excl, and items are enum values for what CSR tests to exclude from, and what type of exclusions.",
+     "page": 565,
+     "normative": false
+    },
+    {
+     "id": "T1.2.1:s9",
+     "text": "The enum types for exclusion test are:",
+     "page": 565,
+     "normative": false
+    },
+    {
+     "id": "T1.2.1:s10",
+     "text": "The enum types for exclusion type are:",
+     "page": 584,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.3",
+   "title": "Register Tool Hardware Generation",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 596,
+   "page_end": 642,
+   "sentences": [
+    {
+     "id": "T1.3:s1",
+     "text": "This section details the register generation for hardware instantiation.",
+     "page": 598,
+     "normative": false
+    },
+    {
+     "id": "T1.3:s2",
+     "text": "The input to the tool for this generation is the same .hjson file described above.",
+     "page": 598,
+     "normative": false
+    },
+    {
+     "id": "T1.3:s3",
+     "text": "The output is two Verilog files that can be instantiated by a peripheral that follows the Comportability Guidelines.",
+     "page": 598,
+     "normative": true
+    },
+    {
+     "id": "T1.3:s4",
+     "text": "The register generation tool will generate the RTL if it is invoked with the -r flag.",
+     "page": 602,
+     "normative": false
+    },
+    {
+     "id": "T1.3:s5",
+     "text": "The -t flag is used to specify the output directory where the two files will be written.",
+     "page": 602,
+     "normative": false
+    },
+    {
+     "id": "T1.3:s6",
+     "text": "As an example the tool can be invoked from the top project directory to generate the uart registers with:",
+     "page": 602,
+     "normative": true
+    },
+    {
+     "id": "T1.3:s7",
+     "text": "The first created file (name_reg_pkg.sv, from name.hjson) contains a SystemVerilog package definition that includes type definitions for two packed structures that have details of the registers and fields (all names are converted to lowercase).",
+     "page": 610,
+     "normative": false
+    },
+    {
+     "id": "T1.3:s8",
+     "text": "The name_reg2hw_t structure contains the signals that are driven from the register module to the rest of the hardware (this contains any required .q, .qe, and .re signals described below).",
+     "page": 610,
+     "normative": true
+    },
+    {
+     "id": "T1.3:s9",
+     "text": "The name_hw2reg_t structure contains the signals that are driven from the rest of the hardware to the register module (this contains any required .d and .de signals described below).",
+     "page": 610,
+     "normative": true
+    },
+    {
+     "id": "T1.3:s10",
+     "text": "The file also contains parameters giving the byte address offsets of the registers (these are prefixed with the peripheral name and converted to uppercase).",
+     "page": 610,
+     "normative": false
+    },
+    {
+     "id": "T1.3:s11",
+     "text": "The second file (name_reg_top.sv) is a SystemVerilog file that contains a module (name_reg_top) that instantiates the registers.",
+     "page": 615,
+     "normative": false
+    },
+    {
+     "id": "T1.3:s12",
+     "text": "This module connects to the TL-UL system bus interface and provides the register connections to the rest of the hardware.",
+     "page": 615,
+     "normative": false
+    },
+    {
+     "id": "T1.3:s13",
+     "text": "If the register definition contains memory windows then there will be subordinate TL-UL bus connections for each window.",
+     "page": 615,
+     "normative": false
+    },
+    {
+     "id": "T1.3:s14",
+     "text": "The module signature is:",
+     "page": 615,
+     "normative": false
+    },
+    {
+     "id": "T1.3:s15",
+     "text": "The sections below describe the hardware functionality of each register type both in terms of the RTL created, and the wires in the structures that will come along with the register.",
+     "page": 642,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.4",
+   "title": "Overall block diagram",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 644,
+   "page_end": 667,
+   "sentences": [
+    {
+     "id": "T1.4:s1",
+     "text": "The diagram below gives an overview of the register module, name_reg_top.",
+     "page": 646,
+     "normative": false
+    },
+    {
+     "id": "T1.4:s2",
+     "text": "In this diagram, the TL-UL bus is shown on the left.",
+     "page": 650,
+     "normative": false
+    },
+    {
+     "id": "T1.4:s3",
+     "text": "Logic then breaks down individual write requests and read requests based upon the assigned address of the bus requests.",
+     "page": 650,
+     "normative": false
+    },
+    {
+     "id": "T1.4:s4",
+     "text": "Writes that match an address create an internal write enable to an individual register (or collection of registers in the case of a field), and return a successful write response.",
+     "page": 650,
+     "normative": false
+    },
+    {
+     "id": "T1.4:s5",
+     "text": "Reads that match an address return the associated data content for that register.",
+     "page": 650,
+     "normative": false
+    },
+    {
+     "id": "T1.4:s6",
+     "text": "See the section below on requests that don't match any register address.",
+     "page": 650,
+     "normative": false
+    },
+    {
+     "id": "T1.4:s7",
+     "text": "In the middle are the collections of registers, which are a function of the hjson input, and a definition of the functionality of each register (read-only, read-write, etc), detailed below.",
+     "page": 656,
+     "normative": false
+    },
+    {
+     "id": "T1.4:s8",
+     "text": "These are instantiations of the primitives prim_subreg, prim_subreg_ext and prim_subreg_shadow found in the lowRISC primitive library (lowrisc:prim:all).",
+     "page": 656,
+     "normative": false
+    },
+    {
+     "id": "T1.4:s9",
+     "text": "These take as inputs the write requests from the bus as well as the hardware struct inputs associated with that register.",
+     "page": 656,
+     "normative": false
+    },
+    {
+     "id": "T1.4:s10",
+     "text": "They create as output the current state of the register and a potential write enable.",
+     "page": 656,
+     "normative": false
+    },
+    {
+     "id": "T1.4:s11",
+     "text": "The prim_subreg module takes a parameter SwAccess that is used to adjust the implementation to the access type required.",
+     "page": 656,
+     "normative": true
+    },
+    {
+     "id": "T1.4:s12",
+     "text": "On the right are the typedef structs that gather the q and qes into one output bundle, and receive the bundled d and de inputs.",
+     "page": 662,
+     "normative": false
+    },
+    {
+     "id": "T1.4:s13",
+     "text": "The address decode and TL-UL 1:N adapter shown at the bottom are created only if the register definition includes one or more window: descriptions.",
+     "page": 664,
+     "normative": true
+    },
+    {
+     "id": "T1.4:s14",
+     "text": "Each window is given its own TL-UL connection and the implementation must provide a device interface.",
+     "page": 664,
+     "normative": true
+    },
+    {
+     "id": "T1.4:s15",
+     "text": "It is notable that in the current definition, each field of a register has its own register instantiation.",
+     "page": 667,
+     "normative": false
+    },
+    {
+     "id": "T1.4:s16",
+     "text": "This is required because the definitions allow unique swaccess and hwaccess values per field, but could be done at the register level otherwise.",
+     "page": 667,
+     "normative": true
+    },
+    {
+     "id": "T1.4:s17",
+     "text": "The individual bundled wires are associated with the fields rather than the full register, so the designer of the rest of the peripheral does not need to know the bit range association of the individual fields.",
+     "page": 667,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.4.1",
+   "title": "Error responses",
+   "level": 3,
+   "parent": "T1.4",
+   "page_start": 671,
+   "page_end": 700,
+   "sentences": [
+    {
+     "id": "T1.4.1:s1",
+     "text": "Writes and reads that target addresses that are not mapped within the register list may return an error.",
+     "page": 673,
+     "normative": false
+    },
+    {
+     "id": "T1.4.1:s2",
+     "text": "Whether an error is returned depends on the target address and the number of address bits used internally:",
+     "page": 673,
+     "normative": false
+    },
+    {
+     "id": "T1.4.1:s3",
+     "text": "Accesses to unmapped target addresses that can be fully represented with the internally used address bits typically return an error.",
+     "page": 675,
+     "normative": true
+    },
+    {
+     "id": "T1.4.1:s4",
+     "text": "Since excess address bits are stripped off during address decoding, other accesses are mapped to the internally available address space.",
+     "page": 676,
+     "normative": false
+    },
+    {
+     "id": "T1.4.1:s5",
+     "text": "They typically return an error if the resulting address is not mapped.",
+     "page": 676,
+     "normative": false
+    },
+    {
+     "id": "T1.4.1:s6",
+     "text": "If the resulting address is mapped, the request is forwarded to the corresponding register and no error is returned.",
+     "page": 676,
+     "normative": false
+    },
+    {
+     "id": "T1.4.1:s7",
+     "text": "For example, consider a module with registers in the address range 0x0 to 0x84 and that hence uses 8 address bits internally.",
+     "page": 680,
+     "normative": false
+    },
+    {
+     "id": "T1.4.1:s8",
+     "text": "A request to address 0x88 can be represented using the 8 internal address bits but there is no register mapped at this address.",
+     "page": 681,
+     "normative": true
+    },
+    {
+     "id": "T1.4.1:s9",
+     "text": "Typical implementations return an error for such a request.",
+     "page": 681,
+     "normative": false
+    },
+    {
+     "id": "T1.4.1:s10",
+     "text": "In contrast, a request to address 0x184 is mapped to address 0x84 internally which is a valid address.",
+     "page": 683,
+     "normative": false
+    },
+    {
+     "id": "T1.4.1:s11",
+     "text": "No error is returned for this request.",
+     "page": 683,
+     "normative": false
+    },
+    {
+     "id": "T1.4.1:s12",
+     "text": "Error responses are also returned for other reasons, including the following:",
+     "page": 686,
+     "normative": false
+    },
+    {
+     "id": "T1.4.1:s13",
+     "text": "TL-UL a_opcode illegal value",
+     "page": 688,
+     "normative": true
+    },
+    {
+     "id": "T1.4.1:s14",
+     "text": "TL-UL writes of size smaller than register size",
+     "page": 689,
+     "normative": false
+    },
+    {
+     "id": "T1.4.1:s15",
+     "text": "Disallowing such writes makes the implementation simpler.",
+     "page": 690,
+     "normative": false
+    },
+    {
+     "id": "T1.4.1:s16",
+     "text": "It also strengthens the security of the system, by making it hard to use a fault injection to cause only part of a register to be updated.",
+     "page": 691,
+     "normative": false
+    },
+    {
+     "id": "T1.4.1:s17",
+     "text": "This can be seen with an 8b write to a register which is larger than 8 bits, or a 16b write to a register which is larger than 16 bits.",
+     "page": 692,
+     "normative": true
+    },
+    {
+     "id": "T1.4.1:s18",
+     "text": "The width of the register is determined by the location of its fields.",
+     "page": 693,
+     "normative": false
+    },
+    {
+     "id": "T1.4.1:s19",
+     "text": "TL-UL writes of size smaller than 32b that are not word-aligned",
+     "page": 694,
+     "normative": false
+    },
+    {
+     "id": "T1.4.1:s20",
+     "text": "I.e. writes of size 8b or 16b that are not to an address that is 4B aligned return in error.",
+     "page": 695,
+     "normative": false
+    },
+    {
+     "id": "T1.4.1:s21",
+     "text": "Reads of size smaller than full word (32b) return the full register content and do not signal error.",
+     "page": 697,
+     "normative": false
+    },
+    {
+     "id": "T1.4.1:s22",
+     "text": "Reads response data is always in its byte-channel, i.e. a one-byte read to address 0x3 will return the full word with the correct MSB in bits [31:24] on the TL-UL response bus (as well as the not-asked-for bytes 2:0 in [23:0]).",
+     "page": 697,
+     "normative": true
+    },
+    {
+     "id": "T1.4.1:s23",
+     "text": "Note with the windowing option, a new TL-UL bus (or more) is spawned and managed outside of this register module.",
+     "page": 700,
+     "normative": false
+    },
+    {
+     "id": "T1.4.1:s24",
+     "text": "Any window that makes use of the byte masks will include the byte-write: \"true\" keyword in their definition.",
+     "page": 700,
+     "normative": false
+    },
+    {
+     "id": "T1.4.1:s25",
+     "text": "Error handling by that TL-UL bus is completely under the control of the logic that manages this bus.",
+     "page": 700,
+     "normative": false
+    },
+    {
+     "id": "T1.4.1:s26",
+     "text": "It is recommended to follow the above error rules based on the declared number of validbits: for the window, but there are some cases where this might be relaxed.",
+     "page": 700,
+     "normative": true
+    },
+    {
+     "id": "T1.4.1:s27",
+     "text": "For example, if the termination of the TL-UL bus is a memory that handles byte and halfword writes via masking, errors do not need be returned for unaligned sub-word writes.",
+     "page": 700,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.5",
+   "title": "Register definitions per type",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 706,
+   "page_end": 716,
+   "sentences": [
+    {
+     "id": "T1.5:s1",
+     "text": "The definition of what exactly is in each register type is described in this section.",
+     "page": 708,
+     "normative": false
+    },
+    {
+     "id": "T1.5:s2",
+     "text": "As shown above, the maximally featured register has inputs and outputs to/from both the bus interface side of the design as well as the hardware interface side.",
+     "page": 708,
+     "normative": false
+    },
+    {
+     "id": "T1.5:s3",
+     "text": "Some register types don't require all of these inputs and outputs.",
+     "page": 708,
+     "normative": false
+    },
+    {
+     "id": "T1.5:s4",
+     "text": "For instance, a read-only register does not require write data from the bus interface (this is configured by the SwAccess parameter to the prim_subreg module).",
+     "page": 708,
+     "normative": false
+    },
+    {
+     "id": "T1.5:s5",
+     "text": "The maximally defined inputs to this register block (termed the subreg from here forward) are given in the table below.",
+     "page": 708,
+     "normative": false
+    },
+    {
+     "id": "T1.5:s6",
+     "text": "Note that these are instantiated per field, not per register, so the width is the width of the field.",
+     "page": 708,
+     "normative": false
+    },
+    {
+     "id": "T1.5:s7",
+     "text": "The direction is the Verilog signal definition of subreg for that type.",
+     "page": 708,
+     "normative": false
+    },
+    {
+     "id": "T1.5:s8",
+     "text": "name direction description reinit_i input Reinitialization input, scalar, to restore the register field its reset value. we input Write enable from the bus interface, scalar wd[] input Write data from the bus interface, size == field size qs[] output Output to read response data mux, size == field_size.",
+     "page": 716,
+     "normative": false
+    },
+    {
+     "id": "T1.5:s9",
+     "text": "This is typically the same as q[] except for hwext registers. de input Hardware data enable from peripheral logic, scalar, should be set when the hardware wishes to update the register field d[] input Hardware data from peripheral logic, size == field size qe output Output register enable, scalar, true when bus interface writes to subreg q[] output Output register content, size == field size.",
+     "page": 716,
+     "normative": true
+    },
+    {
+     "id": "T1.5:s10",
+     "text": "This output typically goes to both the hardware bundle output q as well as the software read response mux output qs[]. re output Indicates to hwext registers that the bus is reading the register.",
+     "page": 716,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.5.1",
+   "title": "Type RW",
+   "level": 3,
+   "parent": "T1.5",
+   "page_start": 801,
+   "page_end": 828,
+   "sentences": [
+    {
+     "id": "T1.5.1:s1",
+     "text": "The first register type is the read-write register, invoked with an hjson attribute swaccess type of rw.",
+     "page": 803,
+     "normative": false
+    },
+    {
+     "id": "T1.5.1:s2",
+     "text": "There is a variant of this below, this is the default variant.",
+     "page": 803,
+     "normative": false
+    },
+    {
+     "id": "T1.5.1:s3",
+     "text": "This uses the prim_subreg with the connections shown.",
+     "page": 803,
+     "normative": false
+    },
+    {
+     "id": "T1.5.1:s4",
+     "text": "The connectivity to the hardware struct bundles are a function of the hwaccess and hwqe attributes, and will be discussed here as well.",
+     "page": 803,
+     "normative": false
+    },
+    {
+     "id": "T1.5.1:s5",
+     "text": "In this diagram, the maximum connection for subreg_rw is shown.",
+     "page": 811,
+     "normative": false
+    },
+    {
+     "id": "T1.5.1:s6",
+     "text": "Coming in from the left (bus) are the software write enable and write data, which has the highest priority in modifying the register contents.",
+     "page": 811,
+     "normative": false
+    },
+    {
+     "id": "T1.5.1:s7",
+     "text": "These are present for all RW types.",
+     "page": 811,
+     "normative": false
+    },
+    {
+     "id": "T1.5.1:s8",
+     "text": "The \"final answer\" for the register content is stored in the subreg module, and presented to the peripheral hardware as the output q and to bus reads as the output qs.",
+     "page": 811,
+     "normative": false
+    },
+    {
+     "id": "T1.5.1:s9",
+     "text": "Optionally, if the hwaccess attribute allows writes from the hardware, the hardware can present updated values in the form of data enable (de) and update data (d).",
+     "page": 811,
+     "normative": true
+    },
+    {
+     "id": "T1.5.1:s10",
+     "text": "If the data enable is true, the register content is updated with the update data.",
+     "page": 811,
+     "normative": false
+    },
+    {
+     "id": "T1.5.1:s11",
+     "text": "If both software and hardware request an update in the same clock cycle (i.e. both de and we are true), the software updated value is used, as shown in the diagram.",
+     "page": 811,
+     "normative": false
+    },
+    {
+     "id": "T1.5.1:s12",
+     "text": "The hwaccess attribute value does not change the contents of the subreg, but the connections are potentially modified.",
+     "page": 819,
+     "normative": false
+    },
+    {
+     "id": "T1.5.1:s13",
+     "text": "The attribute hwaccess has four potential values, as shown earlier in the document: hrw, hro, hwo, none.",
+     "page": 819,
+     "normative": false
+    },
+    {
+     "id": "T1.5.1:s14",
+     "text": "A hwaccess value of hrw means that the hardware wants the ability to update the register content (i.e. needs connection to d and de), as well as see the updated output (q). hwo doesn't care about the output q, but wants to update the register value.",
+     "page": 819,
+     "normative": false
+    },
+    {
+     "id": "T1.5.1:s15",
+     "text": "This is the default for registers marked for software read-only access. hro conversely indicates the hardware doesn't need to update the content, but just wants to see the value written by software.",
+     "page": 819,
+     "normative": false
+    },
+    {
+     "id": "T1.5.1:s16",
+     "text": "This is the default for fields where the software access is read-write or write-only.",
+     "page": 819,
+     "normative": false
+    },
+    {
+     "id": "T1.5.1:s17",
+     "text": "Finally an attribute value of none asks for no interface to the hardware, and might be used for things like scratch registers or DV test registers where only software can modify the value, or informational registers like version numbers that are read-only by the software.",
+     "page": 819,
+     "normative": true
+    },
+    {
+     "id": "T1.5.1:s18",
+     "text": "Another attribute in the register description hwqe, when true indicates that the hardware wants to see the software write enable exported to the peripheral logic.",
+     "page": 828,
+     "normative": false
+    },
+    {
+     "id": "T1.5.1:s19",
+     "text": "This is just a registered version of the bus side write-enable we so that its rising edge aligns with the change in the q output.",
+     "page": 828,
+     "normative": false
+    },
+    {
+     "id": "T1.5.1:s20",
+     "text": "There only needs to be one instantiated qe flop per register, but it is provided in the reg2hw structure for each field.",
+     "page": 828,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.5.2",
+   "title": "Type RW HWExt",
+   "level": 3,
+   "parent": "T1.5",
+   "page_start": 832,
+   "page_end": 847,
+   "sentences": [
+    {
+     "id": "T1.5.2:s1",
+     "text": "There is an attribute called hwext which indicates, when true, that the register value will be maintained outside the auto-generated logic.",
+     "page": 834,
+     "normative": false
+    },
+    {
+     "id": "T1.5.2:s2",
+     "text": "It is up to the external logic to implement the correct functionality as indicated by the swaccess attribute.",
+     "page": 834,
+     "normative": false
+    },
+    {
+     "id": "T1.5.2:s3",
+     "text": "In other words, there is no guarantee that the custom logic will correctly implement rw, or whichever attribute is included in the register definition.",
+     "page": 834,
+     "normative": false
+    },
+    {
+     "id": "T1.5.2:s4",
+     "text": "It is expected that this functionality is only needed for custom features outside the scope of the list of supported swaccess features, such as masked writes or access to FIFOs.",
+     "page": 834,
+     "normative": false
+    },
+    {
+     "id": "T1.5.2:s5",
+     "text": "Note that these could be done non-hwext as well, with swaccess==rw and hwaccess=rw, but could lose atomicity due to the register included within the autogenerated region.",
+     "page": 834,
+     "normative": false
+    },
+    {
+     "id": "T1.5.2:s6",
+     "text": "The block diagram below shows the maximally functional hwext RW register, with some assumption of the implementation of the register on the outside.",
+     "page": 834,
+     "normative": false
+    },
+    {
+     "id": "T1.5.2:s7",
+     "text": "This is implemented by the prim_subreg_ext module which is implemented with assign statements just as the wiring shown suggests.",
+     "page": 834,
+     "normative": false
+    },
+    {
+     "id": "T1.5.2:s8",
+     "text": "In this diagram the q is the q output to the hardware, while the qs is the output to the read response mux on the software side.",
+     "page": 834,
+     "normative": false
+    },
+    {
+     "id": "T1.5.2:s9",
+     "text": "The storage register is shown in the custom portion of the logic.",
+     "page": 834,
+     "normative": false
+    },
+    {
+     "id": "T1.5.2:s10",
+     "text": "Finally, note that no de input is required from the rest of the peripheral hardware, only the d is added to the struct bundle.",
+     "page": 834,
+     "normative": true
+    },
+    {
+     "id": "T1.5.2:s11",
+     "text": "Note the timing of qe is one cycle earlier in this model than in the non-hwext model.",
+     "page": 847,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.5.3",
+   "title": "Type RO, with hwext and zero-gate options",
+   "level": 3,
+   "parent": "T1.5",
+   "page_start": 850,
+   "page_end": 856,
+   "sentences": [
+    {
+     "id": "T1.5.3:s1",
+     "text": "Read-only type registers can be thought of as identical as RW types with no wd and we input.",
+     "page": 852,
+     "normative": true
+    },
+    {
+     "id": "T1.5.3:s2",
+     "text": "They are implemented as prim_subreg with those inputs disabled.",
+     "page": 852,
+     "normative": false
+    },
+    {
+     "id": "T1.5.3:s3",
+     "text": "Similarly hwext RO registers simply pass the d input from the outside world to the data mux for software read response.",
+     "page": 852,
+     "normative": false
+    },
+    {
+     "id": "T1.5.3:s4",
+     "text": "There is one special case here [not yet implemented] where swaccess is ro and hwaccess is none or hro and hwext is true.",
+     "page": 856,
+     "normative": false
+    },
+    {
+     "id": "T1.5.3:s5",
+     "text": "In this case, a hardwired value is returned for a software read equal to the default value assigned to the register this can be useful for auto-generated register values with no storage register required.",
+     "page": 856,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T1.5.4",
+   "title": "Type RC",
+   "level": 3,
+   "parent": "T1.5",
+   "page_start": 859,
+   "page_end": 861,
+   "sentences": [
+    {
+     "id": "T1.5.4:s1",
+     "text": "Registers of software access type rc are special cases of RO, but require an additional signal from the address decode logic.",
+     "page": 861,
+     "normative": false
+    },
+    {
+     "id": "T1.5.4:s2",
+     "text": "This signal re indicates that this register is being read, in which case the contents should be set to zero.",
+     "page": 861,
+     "normative": true
+    },
+    {
+     "id": "T1.5.4:s3",
+     "text": "Note this register is not recommended but might be required for backwards compatibility to other IP functionality.",
+     "page": 861,
+     "normative": true
+    },
+    {
+     "id": "T1.5.4:s4",
+     "text": "At the moment hwext is not allowed to be true for RC since there is no exporting of the re signal.",
+     "page": 861,
+     "normative": true
+    },
+    {
+     "id": "T1.5.4:s5",
+     "text": "If this is required, please add a feature request.",
+     "page": 861,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T1.5.5",
+   "title": "Type WO",
+   "level": 3,
+   "parent": "T1.5",
+   "page_start": 867,
+   "page_end": 869,
+   "sentences": [
+    {
+     "id": "T1.5.5:s1",
+     "text": "Write only registers are variants of prim_subreg where there is no output back to the software read response mux, so the d and de pins are tied off.",
+     "page": 869,
+     "normative": false
+    },
+    {
+     "id": "T1.5.5:s2",
+     "text": "If there is no storage required, only an indication of the act of writing, then hwext should be set to true and the outside hardware can handle the write event.",
+     "page": 869,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T1.5.6",
+   "title": "Type R0W1C, RW1S, RW1C and RW0C",
+   "level": 3,
+   "parent": "T1.5",
+   "page_start": 872,
+   "page_end": 883,
+   "sentences": [
+    {
+     "id": "T1.5.6:s1",
+     "text": "Certain RW register types must be implemented with special configuration of prim_subreg since the act of writing causes the values to be set in unique ways.",
+     "page": 874,
+     "normative": true
+    },
+    {
+     "id": "T1.5.6:s2",
+     "text": "These types are shown in the block diagrams below.",
+     "page": 874,
+     "normative": false
+    },
+    {
+     "id": "T1.5.6:s3",
+     "text": "Type R0W1C not shown is just a special case of RW1C where the q output is not sent back to the software read response mux, but the value 0 is sent instead.",
+     "page": 874,
+     "normative": false
+    },
+    {
+     "id": "T1.5.6:s4",
+     "text": "Note the qe is removed for readability but is available with the hwqe attribute.",
+     "page": 874,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.5.6.1",
+   "title": "Simultaneous SW and HW access",
+   "level": 4,
+   "parent": "T1.5.6",
+   "page_start": 886,
+   "page_end": 906,
+   "sentences": [
+    {
+     "id": "T1.5.6.1:s1",
+     "text": "As shown in the module descriptions, the subreg needs to handle the case when both hardware and software attempt to write at the same time.",
+     "page": 888,
+     "normative": false
+    },
+    {
+     "id": "T1.5.6.1:s2",
+     "text": "As is true with the RW type, the software has precedence, but it is more tricky here.",
+     "page": 888,
+     "normative": false
+    },
+    {
+     "id": "T1.5.6.1:s3",
+     "text": "The goal for these types of registers is to have software clear or set certain bits at the same time hardware is clearing or setting other bits.",
+     "page": 888,
+     "normative": false
+    },
+    {
+     "id": "T1.5.6.1:s4",
+     "text": "So in theory what software is clearing, hardware is setting, or vice-versa.",
+     "page": 888,
+     "normative": false
+    },
+    {
+     "id": "T1.5.6.1:s5",
+     "text": "An example would be where hardware is setting interrupt status bits, and software is clearing them, using RW1C.",
+     "page": 888,
+     "normative": false
+    },
+    {
+     "id": "T1.5.6.1:s6",
+     "text": "The logic for RW1C shows how this is implemented in the module:",
+     "page": 888,
+     "normative": false
+    },
+    {
+     "id": "T1.5.6.1:s7",
+     "text": "In this description if the hardware is writing, its value is sent to the logic that potentially clears that value or the stored value.",
+     "page": 899,
+     "normative": false
+    },
+    {
+     "id": "T1.5.6.1:s8",
+     "text": "So if the hardware accidentally clears fields that the software hasn't cleared yet, there is a risk that events will not be seen by software.",
+     "page": 899,
+     "normative": false
+    },
+    {
+     "id": "T1.5.6.1:s9",
+     "text": "The recommendation is that the hardware feed the q value back into d, only setting bits with new events.",
+     "page": 899,
+     "normative": false
+    },
+    {
+     "id": "T1.5.6.1:s10",
+     "text": "Then there will be no \"collision\" between hardware setting events and software clearing events.",
+     "page": 899,
+     "normative": false
+    },
+    {
+     "id": "T1.5.6.1:s11",
+     "text": "The HW could have chosen to simply treat d and de as set-only, but the preference is to leave the subreg simple and allow the hardware to do either \"the right thing\" or whatever it feels is appropriate for its needs.",
+     "page": 899,
+     "normative": false
+    },
+    {
+     "id": "T1.5.6.1:s12",
+     "text": "(Perhaps it is a feature to clear all events in the hardware.)",
+     "page": 899,
+     "normative": false
+    },
+    {
+     "id": "T1.5.6.1:s13",
+     "text": "The one \"conflict\" that is common and worth mentioning is RW1C on an interrupt vector.",
+     "page": 906,
+     "normative": false
+    },
+    {
+     "id": "T1.5.6.1:s14",
+     "text": "This is the typical scenario where hardware sets bits (representing an interrupt event), and software clears bits (indicating the event has been handled).",
+     "page": 906,
+     "normative": false
+    },
+    {
+     "id": "T1.5.6.1:s15",
+     "text": "The assumption is that between the hardware setting and software clearing, software has cleaned up whatever caused the event in the first place.",
+     "page": 906,
+     "normative": false
+    },
+    {
+     "id": "T1.5.6.1:s16",
+     "text": "But if the event is still true (the HW d input is still 1) then the clear should still have effect for one cycle in order to create a new interrupt edge.",
+     "page": 906,
+     "normative": true
+    },
+    {
+     "id": "T1.5.6.1:s17",
+     "text": "Since d is still 1 the q will return to 1 after one cycle, since the clean up was not successful.",
+     "page": 906,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.5.6.2",
+   "title": "HWExt RW1C etc.",
+   "level": 4,
+   "parent": "T1.5.6",
+   "page_start": 912,
+   "page_end": 919,
+   "sentences": [
+    {
+     "id": "T1.5.6.2:s1",
+     "text": "It is legal to create RW1C, RW1S, etc. with hwext true.",
+     "page": 914,
+     "normative": true
+    },
+    {
+     "id": "T1.5.6.2:s2",
+     "text": "In these cases the auto-generated hardware is simply the same as the hwext RW register shown earlier.",
+     "page": 914,
+     "normative": false
+    },
+    {
+     "id": "T1.5.6.2:s3",
+     "text": "This causes all of the implementation to be done outside of the generated register block.",
+     "page": 914,
+     "normative": false
+    },
+    {
+     "id": "T1.5.6.2:s4",
+     "text": "There is no way to guarantee that hardware is doing the right thing, but at least the RW1C conveys the notion to software the intended effect.",
+     "page": 914,
+     "normative": false
+    },
+    {
+     "id": "T1.5.6.2:s5",
+     "text": "Similarly it is legal to set hwqe true for any of these register types if the clearing wants to be monitored by the hardware outside.",
+     "page": 919,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T1.6",
+   "title": "Shadow Registers",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 921,
+   "page_end": 923,
+   "sentences": [
+    {
+     "id": "T1.6:s1",
+     "text": "If in the .hjson file the optional key shadowed is set to true for a particular register group, the register tool will implement the corresponding registers including all fields as shadow registers using the prim_subreg_shadow module.",
+     "page": 923,
+     "normative": true
+    },
+    {
+     "id": "T1.6:s2",
+     "text": "The following section describes the concept in detail.",
+     "page": 923,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.6.1",
+   "title": "Overview",
+   "level": 3,
+   "parent": "T1.6",
+   "page_start": 926,
+   "page_end": 937,
+   "sentences": [
+    {
+     "id": "T1.6.1:s1",
+     "text": "For Comportable designs used in sensitive security environments, for example AES or Alert Handler peripherals, there may be a need to guard against fault injection attacks.",
+     "page": 928,
+     "normative": false
+    },
+    {
+     "id": "T1.6.1:s2",
+     "text": "One of the surfaces under threat are critical configuration settings that may be used to control keys, region access control and system security configuration.",
+     "page": 928,
+     "normative": false
+    },
+    {
+     "id": "T1.6.1:s3",
+     "text": "These registers do not typically contain secret values, but can be vulnerable to fault attacks if a fault can alter the state of a register to a specific state.",
+     "page": 928,
+     "normative": true
+    },
+    {
+     "id": "T1.6.1:s4",
+     "text": "The fault attacks targeting these registers can come in a few forms:",
+     "page": 932,
+     "normative": true
+    },
+    {
+     "id": "T1.6.1:s5",
+     "text": "A fault attack directly on the storage element.",
+     "page": 933,
+     "normative": false
+    },
+    {
+     "id": "T1.6.1:s6",
+     "text": "A fault attack on peripheral logic (for example resets) that cause the registers to revert to a default state.",
+     "page": 934,
+     "normative": false
+    },
+    {
+     "id": "T1.6.1:s7",
+     "text": "A fault attack during the process of the write to disrupt the actual written value.",
+     "page": 935,
+     "normative": false
+    },
+    {
+     "id": "T1.6.1:s8",
+     "text": "Shadow registers are a mechanism to guard sensitive registers against this specific type of attack.",
+     "page": 937,
+     "normative": false
+    },
+    {
+     "id": "T1.6.1:s9",
+     "text": "They come at a cost of increased area, and a modified SW interaction, see below.",
+     "page": 937,
+     "normative": false
+    },
+    {
+     "id": "T1.6.1:s10",
+     "text": "Usage of shadow registers should be evaluated with this impact in mind.",
+     "page": 937,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T1.6.2",
+   "title": "Description",
+   "level": 3,
+   "parent": "T1.6",
+   "page_start": 941,
+   "page_end": 978,
+   "sentences": [
+    {
+     "id": "T1.6.2:s1",
+     "text": "The diagram below visualizes the internals of the prim_subreg_shadow module used to implement shadow registers.",
+     "page": 943,
+     "normative": false
+    },
+    {
+     "id": "T1.6.2:s2",
+     "text": "When compared to a normal register, the prim_subreg_shadow module is comprised of an additional storage component, giving two storage flops in total.",
+     "page": 947,
+     "normative": false
+    },
+    {
+     "id": "T1.6.2:s3",
+     "text": "The shadow register holds a written value before being committed and the second copy after being committed.",
+     "page": 947,
+     "normative": false
+    },
+    {
+     "id": "T1.6.2:s4",
+     "text": "And the standard storage register holds the committed value.",
+     "page": 947,
+     "normative": false
+    },
+    {
+     "id": "T1.6.2:s5",
+     "text": "Under the hood, these registers are implemented using the prim_subreg module.",
+     "page": 951,
+     "normative": false
+    },
+    {
+     "id": "T1.6.2:s6",
+     "text": "This means a shadow register can implement any of the types described in this section.",
+     "page": 951,
+     "normative": true
+    },
+    {
+     "id": "T1.6.2:s7",
+     "text": "The general behavior of updating a shadow register is as follows:",
+     "page": 954,
+     "normative": false
+    },
+    {
+     "id": "T1.6.2:s8",
+     "text": "Software performs a first write to the register.",
+     "page": 955,
+     "normative": false
+    },
+    {
+     "id": "T1.6.2:s9",
+     "text": "The shadow register takes on the new value.",
+     "page": 957,
+     "normative": false
+    },
+    {
+     "id": "T1.6.2:s10",
+     "text": "The committed register is not updated, so the hardware still sees the old value.",
+     "page": 957,
+     "normative": false
+    },
+    {
+     "id": "T1.6.2:s11",
+     "text": "The comparison of the committed and the shadow register is switched off.",
+     "page": 957,
+     "normative": false
+    },
+    {
+     "id": "T1.6.2:s12",
+     "text": "Software performs a second write to the register (same address):",
+     "page": 961,
+     "normative": false
+    },
+    {
+     "id": "T1.6.2:s13",
+     "text": "If the data of the second write matches the value in the shadow register, the committed register is updated.",
+     "page": 963,
+     "normative": false
+    },
+    {
+     "id": "T1.6.2:s14",
+     "text": "If the data of the second write does not match the contents stored in the shadow register, an update error is signaled to the hardware with a pulse on err_update, and the shadow register takes again on the value of the committed register.",
+     "page": 964,
+     "normative": false
+    },
+    {
+     "id": "T1.6.2:s15",
+     "text": "In both cases, the comparison of the committed and the shadow register is again switched on.",
+     "page": 966,
+     "normative": false
+    },
+    {
+     "id": "T1.6.2:s16",
+     "text": "The phase is tracked internally to the module.",
+     "page": 968,
+     "normative": false
+    },
+    {
+     "id": "T1.6.2:s17",
+     "text": "If needed, software can put the shadow register back into the first phase by performing a read operation.",
+     "page": 968,
+     "normative": true
+    },
+    {
+     "id": "T1.6.2:s18",
+     "text": "The shadow register is then again overwritten with the value of the committed register.",
+     "page": 968,
+     "normative": false
+    },
+    {
+     "id": "T1.6.2:s19",
+     "text": "If the register is of type RO, software cannot interfere with the update process and read operations do not clear the phase tracker.",
+     "page": 968,
+     "normative": true
+    },
+    {
+     "id": "T1.6.2:s20",
+     "text": "If the register is of type RW1S or RW0C, the shadow register will latch the raw data value coming from the bus side in the first phase.",
+     "page": 968,
+     "normative": false
+    },
+    {
+     "id": "T1.6.2:s21",
+     "text": "The raw data value of the second write is compared with the raw data value in the shadow register before being filtered by the RW1S or RW0C set/clear logic.",
+     "page": 968,
+     "normative": false
+    },
+    {
+     "id": "T1.6.2:s22",
+     "text": "Both the shadow and the committed register are then updated with the filtered value.",
+     "page": 968,
+     "normative": false
+    },
+    {
+     "id": "T1.6.2:s23",
+     "text": "If the value of the shadow register and the committed register are ever mismatched in the first phase, a storage error is signaled to the hardware using the err_storage signal.",
+     "page": 976,
+     "normative": false
+    },
+    {
+     "id": "T1.6.2:s24",
+     "text": "For added security, the shadow register stores the ones' complement value of the write data (e.g. if the write data is 0x33, 0xCC is stored in the shadow register).",
+     "page": 978,
+     "normative": false
+    },
+    {
+     "id": "T1.6.2:s25",
+     "text": "This is done such that it is more difficult for a localized glitch to cause shadow and committed registers to become the same value.",
+     "page": 978,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.6.3",
+   "title": "Programmer's model",
+   "level": 3,
+   "parent": "T1.6",
+   "page_start": 981,
+   "page_end": 1005,
+   "sentences": [
+    {
+     "id": "T1.6.3:s1",
+     "text": "The programmer needs to be aware of the functional behavior when dealing with shadow registers.",
+     "page": 983,
+     "normative": false
+    },
+    {
+     "id": "T1.6.3:s2",
+     "text": "To this end, the naming of registers which contain a shadowed copy is suffixed by _SHADOWED in the generated collateral.",
+     "page": 983,
+     "normative": false
+    },
+    {
+     "id": "T1.6.3:s3",
+     "text": "This is ensured by the register tool.",
+     "page": 983,
+     "normative": false
+    },
+    {
+     "id": "T1.6.3:s4",
+     "text": "Software should ensure that shadow registers are always accessed exclusively.",
+     "page": 987,
+     "normative": true
+    },
+    {
+     "id": "T1.6.3:s5",
+     "text": "If the two write operations required for an update are for some reason interleaved by a third write operation, this can trigger an update error depending on the written data.",
+     "page": 987,
+     "normative": true
+    },
+    {
+     "id": "T1.6.3:s6",
+     "text": "Such situations can be avoided by using some form of mutex at the driver level for example.",
+     "page": 987,
+     "normative": true
+    },
+    {
+     "id": "T1.6.3:s7",
+     "text": "Alternatively, software can enforce exclusive shadow register access by temporarily disabling interrupts with a sequence as follows:",
+     "page": 987,
+     "normative": true
+    },
+    {
+     "id": "T1.6.3:s8",
+     "text": "Disable interrupt context.",
+     "page": 991,
+     "normative": false
+    },
+    {
+     "id": "T1.6.3:s9",
+     "text": "This may not always be possible, e.g., for software running in user mode.",
+     "page": 991,
+     "normative": true
+    },
+    {
+     "id": "T1.6.3:s10",
+     "text": "Perform 1st write to shadow register.",
+     "page": 994,
+     "normative": false
+    },
+    {
+     "id": "T1.6.3:s11",
+     "text": "Perform 2nd write to shadow register.",
+     "page": 995,
+     "normative": false
+    },
+    {
+     "id": "T1.6.3:s12",
+     "text": "Read back the shadow register to ensure data matches the expected value.",
+     "page": 996,
+     "normative": false
+    },
+    {
+     "id": "T1.6.3:s13",
+     "text": "This helps to identify update errors and can unveil potential fault attacks on the write data lines during the write operation.",
+     "page": 996,
+     "normative": true
+    },
+    {
+     "id": "T1.6.3:s14",
+     "text": "If interrupts can be disabled, this step is not strictly required.",
+     "page": 996,
+     "normative": true
+    },
+    {
+     "id": "T1.6.3:s15",
+     "text": "Restore interrupt context.",
+     "page": 1000,
+     "normative": false
+    },
+    {
+     "id": "T1.6.3:s16",
+     "text": "By performing a read operation, software can at any time put the shadow register back into the first phase, thereby preventing that a subsequent write triggers an update error, and recovering from situations where it is not clear in which phase the register is.",
+     "page": 1002,
+     "normative": true
+    },
+    {
+     "id": "T1.6.3:s17",
+     "text": "However, if the register is of type RO, meaning if only the hardware can update the register, read operations do not clear the phase tracker.",
+     "page": 1002,
+     "normative": true
+    },
+    {
+     "id": "T1.6.3:s18",
+     "text": "In addition, error status registers can be added to inform software about update errors.",
+     "page": 1005,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T1.6.4",
+   "title": "Design integration",
+   "level": 3,
+   "parent": "T1.6",
+   "page_start": 1007,
+   "page_end": 1054,
+   "sentences": [
+    {
+     "id": "T1.6.4:s1",
+     "text": "The following aspects need to be considered when integrating shadow registers into the system.",
+     "page": 1009,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s2",
+     "text": "Shadow register reset:",
+     "page": 1011,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s3",
+     "text": "Shadow registers use a separate shadow reset from the committed register.",
+     "page": 1013,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s4",
+     "text": "This implies that each module which contains shadow registers will receive two reset lines from the reset controller.",
+     "page": 1013,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s5",
+     "text": "The benefit is that a localized reset glitch attack will need to hit both reset lines, otherwise a storage error is triggered.",
+     "page": 1013,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s6",
+     "text": "Reset skew may need to be handled separately.",
+     "page": 1017,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s7",
+     "text": "Depending on the design, the reset propagation may be multi-cycle, and thus it is possible for the shadow register and committed register to not be reset at the same time when resets are asserted.",
+     "page": 1017,
+     "normative": true
+    },
+    {
+     "id": "T1.6.4:s8",
+     "text": "This may manifest as an issue if the reset skews are not balanced, and may cause register outputs to change on the opposite sides of a clock edge for the receiving domain.",
+     "page": 1017,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s9",
+     "text": "It is thus important to ensure the skews of the committed and shadow reset lines to be roughly balanced and/or downstream logic to correctly ignore errors when this happens.",
+     "page": 1017,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s10",
+     "text": "Note that a module may need to be reset during operation of the system, i.e., when the alert system is running.",
+     "page": 1017,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s11",
+     "text": "Software-controllable resets should be avoided.",
+     "page": 1023,
+     "normative": true
+    },
+    {
+     "id": "T1.6.4:s12",
+     "text": "If a single reset bit drives both normal and shadow resets, then the problem is simply moved to a different place.",
+     "page": 1023,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s13",
+     "text": "If multiple reset bits drive the resets, then it becomes a question of what resets those reset bits, which may itself have the same issue.",
+     "page": 1023,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s14",
+     "text": "Non-permissive reset values:",
+     "page": 1027,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s15",
+     "text": "Depending on the implementation of the system reset architecture, a fault attack on the main reset line may reset shadow and committed registers altogether and not generate an error.",
+     "page": 1029,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s16",
+     "text": "It may remain undetected by the system.",
+     "page": 1029,
+     "normative": true
+    },
+    {
+     "id": "T1.6.4:s17",
+     "text": "It is thus highly recommended to use non-permissive reset values and use software for configuring more permissive values.",
+     "page": 1029,
+     "normative": true
+    },
+    {
+     "id": "T1.6.4:s18",
+     "text": "Error hook-ups:",
+     "page": 1033,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s19",
+     "text": "Storage errors signaled to the hardware in err_storage are fatal, and should be hooked up directly into the alert system.",
+     "page": 1034,
+     "normative": true
+    },
+    {
+     "id": "T1.6.4:s20",
+     "text": "Update errors signaled to the hardware in err_update may be software errors and do not affect the current committed value; thus they can be considered informational bugs that are collected into error status or interrupts, and optionally alerts.",
+     "page": 1035,
+     "normative": true
+    },
+    {
+     "id": "T1.6.4:s21",
+     "text": "They do not generate error responses on the TL-UL system bus interface.",
+     "page": 1035,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s22",
+     "text": "Hardware and software cost:",
+     "page": 1038,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s23",
+     "text": "Shadow registers are costly as they imply considerable overheads in terms of circuit area as well as software complexity and performance.",
+     "page": 1040,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s24",
+     "text": "They should not be used lightly nor extensively, and their usage should be reviewed with the actual use case of the register or hardware IP block in mind.",
+     "page": 1040,
+     "normative": true
+    },
+    {
+     "id": "T1.6.4:s25",
+     "text": "For example, if a register is reconfigured frequently, using restrictive reset values, possibly combined with parity bits and/or with verification of the register value after writing, might be more suitable.",
+     "page": 1040,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s26",
+     "text": "In contrast, for registers that are more static the performance overhead of shadow registers is negligible.",
+     "page": 1040,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s27",
+     "text": "Also, for some registers it is not possible to define restrictive reset values, e.g., due to process variation.",
+     "page": 1040,
+     "normative": true
+    },
+    {
+     "id": "T1.6.4:s28",
+     "text": "The use of shadow registers is more justified in such cases.",
+     "page": 1040,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s29",
+     "text": "Example use cases for shadow registers are:",
+     "page": 1040,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s30",
+     "text": "Main control registers of cryptographic accelerators such as AES and KMAC where fault attacks could enforce potentially less secure operating modes.",
+     "page": 1047,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s31",
+     "text": "Critical and security-related infrastructure such as:",
+     "page": 1048,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s32",
+     "text": "Alert escalation and sensor configuration registers, and",
+     "page": 1049,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s33",
+     "text": "Countermeasure tuning and functional/bandgap calibration registers.",
+     "page": 1050,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s34",
+     "text": "To guard larger register files against fault attacks, the following alternative solutions may be more appropriate:",
+     "page": 1052,
+     "normative": false
+    },
+    {
+     "id": "T1.6.4:s35",
+     "text": "Hardware-based background checks: The hardware can concurrently or periodically compute a checksum over relevant configuration values and compare that against a software-provided checksum value (see e.g. OTP_CTRL integrity checks)",
+     "page": 1053,
+     "normative": true
+    },
+    {
+     "id": "T1.6.4:s36",
+     "text": "Software-based checks: Software can periodically read relevant configuration values, compute a checksum and compare that against a known value, e.g. stored in OTP (see e.g. ENTROPY_SRC health test configuration checks).",
+     "page": 1054,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T1.6.5",
+   "title": "DV shadow register alert test automation",
+   "level": 3,
+   "parent": "T1.6",
+   "page_start": 1056,
+   "page_end": 1061,
+   "sentences": [
+    {
+     "id": "T1.6.5:s1",
+     "text": "In DV, the shadow_reg_errors automated test will check if shadow registers' update and storage errors trigger the correct alerts.",
+     "page": 1058,
+     "normative": false
+    },
+    {
+     "id": "T1.6.5:s2",
+     "text": "This alert automation test requires the user to add the following items in .hjson file under each shadow register:",
+     "page": 1058,
+     "normative": true
+    },
+    {
+     "id": "T1.6.5:s3",
+     "text": "Update_err_alert: Alert triggered by a shadow register's update error",
+     "page": 1060,
+     "normative": false
+    },
+    {
+     "id": "T1.6.5:s4",
+     "text": "Storage_err_alert: Alert triggered by a shadow register's storage error",
+     "page": 1061,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.6.6",
+   "title": "Future enhancements",
+   "level": 3,
+   "parent": "T1.6",
+   "page_start": 1063,
+   "page_end": 1074,
+   "sentences": [
+    {
+     "id": "T1.6.6:s1",
+     "text": "The following features are currently not implemented but might be added in the future.",
+     "page": 1065,
+     "normative": false
+    },
+    {
+     "id": "T1.6.6:s2",
+     "text": "Lightweight implementations:",
+     "page": 1067,
+     "normative": false
+    },
+    {
+     "id": "T1.6.6:s3",
+     "text": "Depending on the use case and security requirements, lightweight shadow register implementations can be more suitable.",
+     "page": 1069,
+     "normative": true
+    },
+    {
+     "id": "T1.6.6:s4",
+     "text": "For example, storing only a hash value or ECC/parity bits in the shadow register instead of the full data word can help to reduce circuit area overheads but may weaken security.",
+     "page": 1069,
+     "normative": true
+    },
+    {
+     "id": "T1.6.6:s5",
+     "text": "Ones' complement inversion in software:",
+     "page": 1072,
+     "normative": false
+    },
+    {
+     "id": "T1.6.6:s6",
+     "text": "The ones' complement inversion could be done in software.",
+     "page": 1074,
+     "normative": false
+    },
+    {
+     "id": "T1.6.6:s7",
+     "text": "This means software would first write the ones' complement of the data and only the second write would be the real data.",
+     "page": 1074,
+     "normative": false
+    },
+    {
+     "id": "T1.6.6:s8",
+     "text": "This may make following bus dumps easier because the data values will be different.",
+     "page": 1074,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.7",
+   "title": "Register Reinitialization",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 1078,
+   "page_end": 1106,
+   "sentences": [
+    {
+     "id": "T1.7:s1",
+     "text": "A register may optionally be returned to its reset value under control of an associated input signal.",
+     "page": 1080,
+     "normative": false
+    },
+    {
+     "id": "T1.7:s2",
+     "text": "This reinitialization takes precedence over simultaneous updates from either the bus interface or the peripheral logic in the event of a collision.",
+     "page": 1080,
+     "normative": false
+    },
+    {
+     "id": "T1.7:s3",
+     "text": "This feature would typically be used by software to reinitialize one or more sets of registers.",
+     "page": 1080,
+     "normative": false
+    },
+    {
+     "id": "T1.7:s4",
+     "text": "The list of reinitialization ports shall be described as shown below:",
+     "page": 1084,
+     "normative": true
+    },
+    {
+     "id": "T1.7:s5",
+     "text": "Note that all reinitialization port names must end in '_i', to conform with the comportability style guide.",
+     "page": 1090,
+     "normative": true
+    },
+    {
+     "id": "T1.7:s6",
+     "text": "A register that must be reinitialized to its reset state by this port is then described in the follow manner:",
+     "page": 1090,
+     "normative": true
+    },
+    {
+     "id": "T1.7:s7",
+     "text": "The value associated with the reinit key of a register must appear in the reinit_list.",
+     "page": 1099,
+     "normative": true
+    },
+    {
+     "id": "T1.7:s8",
+     "text": "Reinitialization is not supported for shadowed registers, regwen registers, regwen-controlled registers or registers that have special clocking requirements (i.e., those registers that employ sync or async keys).",
+     "page": 1101,
+     "normative": false
+    },
+    {
+     "id": "T1.7:s9",
+     "text": "For registers outside of the auto-generated logic (hwext) a reinitialization signal may be specified, and will be presented to the peripheral IP, only if one or more fields is readable by the IP (i.e., there are output signal(s), q, present).",
+     "page": 1103,
+     "normative": true
+    },
+    {
+     "id": "T1.7:s10",
+     "text": "For other types of hwext register requiring reinitialization, the peripheral IP logic is responsible for managing that itself.",
+     "page": 1103,
+     "normative": false
+    },
+    {
+     "id": "T1.7:s11",
+     "text": "It is important that this reinitialization mechanism is used sparingly, e.g. where the behavior is mandated by a standard specification.",
+     "page": 1106,
+     "normative": false
+    },
+    {
+     "id": "T1.7:s12",
+     "text": "The asynchronous reset port rst_ni shall be used to put the entire IP block into a defined state.",
+     "page": 1106,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T1.8",
+   "title": "Generating C Header Files",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 1109,
+   "page_end": 1111,
+   "sentences": [
+    {
+     "id": "T1.8:s1",
+     "text": "The register tool can be used to generate C header files.",
+     "page": 1111,
+     "normative": true
+    },
+    {
+     "id": "T1.8:s2",
+     "text": "It is intended that there will be several generators to output different formats of header file.",
+     "page": 1111,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.8.1",
+   "title": "Simple hello_world test headers",
+   "level": 3,
+   "parent": "T1.8",
+   "page_start": 1114,
+   "page_end": 1124,
+   "sentences": [
+    {
+     "id": "T1.8.1:s1",
+     "text": "The register generation tool will generate simple headers if it is invoked with the -D flag.",
+     "page": 1116,
+     "normative": false
+    },
+    {
+     "id": "T1.8.1:s2",
+     "text": "The -o flag may be used to specify the output file.",
+     "page": 1116,
+     "normative": false
+    },
+    {
+     "id": "T1.8.1:s3",
+     "text": "As an example the tool can be invoked from the top project directory to generate the uart headers with:",
+     "page": 1116,
+     "normative": true
+    },
+    {
+     "id": "T1.8.1:s4",
+     "text": "This format assumes that there is a base address NAMEn_BASE_ADDR defined where n is an identifying number to allow for multiple instantiations of peripherals.",
+     "page": 1124,
+     "normative": false
+    },
+    {
+     "id": "T1.8.1:s5",
+     "text": "It provides a definition NAME_REG(n) that provides the address of the register in instantiation n.",
+     "page": 1124,
+     "normative": false
+    },
+    {
+     "id": "T1.8.1:s6",
+     "text": "Single-bit fields have a define with their bit offset.",
+     "page": 1124,
+     "normative": false
+    },
+    {
+     "id": "T1.8.1:s7",
+     "text": "Multi-bit fields have a define for the bit offset and an mask and may have defines giving the enumerated names and values.",
+     "page": 1124,
+     "normative": false
+    },
+    {
+     "id": "T1.8.1:s8",
+     "text": "For example:",
+     "page": 1124,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.9",
+   "title": "Split IPs",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 1148,
+   "page_end": 1193,
+   "sentences": [
+    {
+     "id": "T1.9:s1",
+     "text": "An IP can be marked as split by setting is_split_ip: true.",
+     "page": 1150,
+     "normative": true
+    },
+    {
+     "id": "T1.9:s2",
+     "text": "This assumes the IP is designed in two sv partitions _part_primary.sv and _part_secondary.sv where each partition can be instantiated in a different power domain.",
+     "page": 1150,
+     "normative": true
+    },
+    {
+     "id": "T1.9:s3",
+     "text": "See topgen how to specify which partition is assigned to which domain.",
+     "page": 1150,
+     "normative": false
+    },
+    {
+     "id": "T1.9:s4",
+     "text": "Each partition can be clocked separately.",
+     "page": 1154,
+     "normative": true
+    },
+    {
+     "id": "T1.9:s5",
+     "text": "A split IP specifies the clocking as a dict per partition instead of a single list:",
+     "page": 1154,
+     "normative": false
+    },
+    {
+     "id": "T1.9:s6",
+     "text": "Each partition can have its own alerts, interrupts, I/Os, wakeup or reset-request signals, inter-module connections and parameters.",
+     "page": 1168,
+     "normative": true
+    },
+    {
+     "id": "T1.9:s7",
+     "text": "These are defined the same way as regular IPs define these.",
+     "page": 1168,
+     "normative": false
+    },
+    {
+     "id": "T1.9:s8",
+     "text": "To assign, e.g., an alert to the secondary partition, the partition: \"secondary\" attribute must be set.",
+     "page": 1168,
+     "normative": true
+    },
+    {
+     "id": "T1.9:s9",
+     "text": "The partition defaults to primary otherwise.",
+     "page": 1168,
+     "normative": false
+    },
+    {
+     "id": "T1.9:s10",
+     "text": "All names of these elements must be unique per IP except for inter-module connections.",
+     "page": 1168,
+     "normative": true
+    },
+    {
+     "id": "T1.9:s11",
+     "text": "The names of these connections must only be unique per partition.",
+     "page": 1168,
+     "normative": true
+    },
+    {
+     "id": "T1.9:s12",
+     "text": "See intra-IP connections for how to connect the two partitions with each other.",
+     "page": 1168,
+     "normative": false
+    },
+    {
+     "id": "T1.9:s13",
+     "text": "All registers, scan/DFT signals and the RACL connections are always in the primary partition only.",
+     "page": 1184,
+     "normative": true
+    },
+    {
+     "id": "T1.9:s14",
+     "text": "Note that reggen internally uses the order of the specified alerts and interrupts to number the bits in their registers.",
+     "page": 1186,
+     "normative": false
+    },
+    {
+     "id": "T1.9:s15",
+     "text": "In theory, all consumers of this data should use the reggen generated constants.",
+     "page": 1186,
+     "normative": true
+    },
+    {
+     "id": "T1.9:s16",
+     "text": "For SW, there are header files generated.",
+     "page": 1186,
+     "normative": false
+    },
+    {
+     "id": "T1.9:s17",
+     "text": "For RTL, reggen currently only generates an enum giving this information for alerts.",
+     "page": 1186,
+     "normative": false
+    },
+    {
+     "id": "T1.9:s18",
+     "text": "In quite a few places, DV therefore uses hardcoded constants for interrupts.",
+     "page": 1186,
+     "normative": false
+    },
+    {
+     "id": "T1.9:s19",
+     "text": "To avoid breaking existing code, reggen enforces that any primary interrupt/alert comes before any secondary.",
+     "page": 1186,
+     "normative": false
+    },
+    {
+     "id": "T1.9:s20",
+     "text": "Parameters can be assigned additionally to both partitions by specifying both.",
+     "page": 1193,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T1.9.1",
+   "title": "Intra-IP connections",
+   "level": 3,
+   "parent": "T1.9",
+   "page_start": 1206,
+   "page_end": 1240,
+   "sentences": [
+    {
+     "id": "T1.9.1:s1",
+     "text": "A split IP can define connections between the two partitions like any other IP can define inter-module connections.",
+     "page": 1208,
+     "normative": true
+    },
+    {
+     "id": "T1.9.1:s2",
+     "text": "Connections between the two partitions are called intra-IP connections.",
+     "page": 1208,
+     "normative": false
+    },
+    {
+     "id": "T1.9.1:s3",
+     "text": "To connect two partitions, uni or req_rsp connections can be used.",
+     "page": 1208,
+     "normative": true
+    },
+    {
+     "id": "T1.9.1:s4",
+     "text": "Connections with the same name for both partitions are then automatically connected by the tooling.",
+     "page": 1208,
+     "normative": false
+    },
+    {
+     "id": "T1.9.1:s5",
+     "text": "An example for an unidirectional connection is given below.",
+     "page": 1213,
+     "normative": false
+    },
+    {
+     "id": "T1.9.1:s6",
+     "text": "Like regular inter-module signals, this requires that a struct _intra_p2s is defined in the IP's package.",
+     "page": 1213,
+     "normative": true
+    },
+    {
+     "id": "T1.9.1:s7",
+     "text": "For bidirectional communication this must be defined twice or use req_rsp, see below.",
+     "page": 1213,
+     "normative": true
+    },
+    {
+     "id": "T1.9.1:s8",
+     "text": "For a bidirectional connection, use a req_rsp connection.",
+     "page": 1240,
+     "normative": false
+    },
+    {
+     "id": "T1.9.1:s9",
+     "text": "This requires only two entries but is maybe a little bit less ambiguous in which direction the signals flow.",
+     "page": 1240,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T1.10",
+   "title": "Generating documentation",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 1265,
+   "page_end": 1267,
+   "sentences": [
+    {
+     "id": "T1.10:s1",
+     "text": "The register tool can be used standalone to generate HTML documentation of the registers.",
+     "page": 1267,
+     "normative": true
+    },
+    {
+     "id": "T1.10:s2",
+     "text": "However, this is normally done as part of the Markdown documentation using the special tags to include the register definition file and insert the configuration and register information.",
+     "page": 1267,
+     "normative": false
+    }
+   ]
+  }
+ ],
+ "tables": [],
+ "signals": {
+  "AES": 2,
+  "CSR": 3,
+  "FIFO": 2,
+  "HJSON": 2,
+  "HTML": 2,
+  "JSON": 5,
+  "REGWEN": 5,
+  "RTL": 5,
+  "RW0C": 2,
+  "RW1C": 6,
+  "RW1S": 3,
+  "TXILVL": 2
+ },
+ "warnings": [],
+ "stats": {
+  "sections": 31,
+  "sentences": 434,
+  "normative": 142,
+  "chars": 57034
+ }
+}

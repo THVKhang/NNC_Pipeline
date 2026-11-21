@@ -1,0 +1,45 @@
+{
+ "analyses": [
+  {
+   "check": "CHK-008 (a_CHK_008, verif/sva/nnc_chk_tbhost.sv:83-105) – test-bench host obligations, sub-clause (3) 'i_a_mask is not one of 0101, 1001, 1010, 1011, 1101'",
+   "what_happens": "Step 0: rst_ni=0, i_a_valid=0. Step 1: rst_ni rises; i_a_valid=0 (first cycle after release, ENV-09 holds). Step 2: rst_ni=1, rst_q=1, stall_q=0, so the antecedent is true only because i_a_valid=1 (nnc_chk_tbhost.sv:84). The request is a_opcode=0 (PutFullData), a_param=0, a_size=0, a_source=0, a_address=0x000, a_mask=4'b0101, a_data=0x40000000, instr=0, intg_flip=0; o_a_ready=1, so a_hs=1. All conjuncts of clause (3) are met except one. param=0, address<0x200, instr=0, outst_q=0 so src_busy=0, data!=0x1 and no cfg write. The one that fails is bad_mask=1 (trace column 2, u_nnc_chk_tbhost/bad_mask=1; nnc_chk_tbhost.sv:52-54 and :99). The assertion therefore fails at step 2. Steps 3-4 (reset again, d_known=1 from outst_q[0] while rst_ni=0) are irrelevant to the failure. The DUT plays no part apart from o_a_ready=1: every term in the failing conjunct is a stimulus input.",
+   "spec_says": "Two passages pull in opposite directions. (i) The host obligation: opentitan_tlul_bus_specification.md:331-337 says: \"even though non-contiguous `a_mask` values like `0b1001` are permitted by the TL-UL spec, the TL-UL hosts within this project **do not leverage non-contiguous masks**. I.e., the TL-UL hosts will only assert `a_mask` values from the following restricted set for 32bit transfers: {'b0000, 'b0001, 'b0010, 'b0100, 'b1000, 'b0011, 'b0110, 'b1100, 'b0111, 'b1110, 'b1111}\". That set leaves out exactly 0101, 1001, 1010, 1011 and 1101. rules.json:3184-3200 records this as TL-T3.1.3.4-02, strength SHOULD_NOT, actor master, with the statement 'TL-UL hosts in this project should not use non-contiguous a_mask values'. rv_timer_Design_Specification.md:592-593 (RT-4.1-04, MUST, actor master) says: \"The test bench acts as the TL-UL host. It shall follow the host rules of the TL-UL bus specification\". contract.json:361-376 lists TL-T3.1.3.4-02 among the CHK-008 rules and puts the five masks in the behavior text. The rules.json Q&A at :7553-7566 says: \"A non-contiguous mask is permitted by TL-UL, and hosts in this project do not use them ... For this verification, non-contiguous masks are not checked.\" (ii) The other side: rv_timer_Design_Specification.md:594-595 (RT-4.1-05, MAY, master) says: \"Requests that the TL-UL specification lists as error cases (unsupported opcode, bad size or mask, misaligned address) are legal stimulus\". opentitan_tlul_bus_specification.md:365 lists among the Explicit Error Cases: \"3. Non-contiguous mask may lead to an error, depending on the device support\". D-013 (rv_timer_Design_Specification.md:671) says: \"Non-contiguous masks and other sub-word cases are not checked.\"",
+   "rtl_does": "Not involved in the failing conjunct. The wrapper passes the mask through unchanged (rtl/ot_rv_timer_nnc.sv:67 `tl_h2d_raw.a_mask = i_a_mask;`) and o_a_ready = tl_d2h.a_ready (:117), which is 1 here. For this request (size 0, address 0, mask 0101), tlul_err.sv:63-66 computes mask_chk = ~|(a_mask & ~4'b0001) = 0, so a_config_allowed=0 and err_o=1 (:39, :92-94). The DUT would answer it with d_error=1, which is the behaviour the spec permits for an error case. Nothing the DUT does causes the assertion to fail.",
+   "checker_does": "nnc_chk_tbhost.sv:52-54 defines bad_mask as the five non-contiguous masks. :97-103 requires !bad_mask whenever i_a_valid=1, regardless of opcode, size or address. This matches the contract text for CHK-008 (3) at contract.json:376 and the restricted set at TL spec :336. The checker is an input-only self-check: it can only fail when the stimulus breaks the host obligation.",
+   "candidates": [
+    {
+     "cause": "E_environment_missing",
+     "evidence_for": "The failing term reads only the environment-driven i_a_mask. nnc_env.sv has no assumption on a_mask: ENV-01 to ENV-10 at :113-169 constrain reset, stability, param, address, instr writes, source, ALERT_TEST data, CFG and CTRL ordering, never the mask. TL-T3.1.3.4-02 (TL spec :331-337, rules.json:3184-3200, actor master) names exactly the five masks the checker rejects. RT-4.1-04 (rv_timer spec :592-593) obliges the test bench to follow the TL-UL host rules. The Q&A at rules.json:7559-7560 says hosts in this project do not use non-contiguous masks. The contract puts this obligation into CHK-008 (contract.json:365-376). The missing assumption is the counterpart of TL-T3.1.3.4-02.",
+     "evidence_against": "TL-T3.1.3.4-02 is only a SHOULD_NOT, and RT-4.1-05 (rv_timer spec :594-595) explicitly makes 'bad size or mask' requests legal stimulus. The TL spec lists a non-contiguous mask as an error case (:365). The env author deliberately keeps 'byte / misaligned / malformed / integrity-flipped writes' as 'legal error stimulus (RT-4.1-05)' (nnc_env.sv:149-153). That suggests malformed masks were left unconstrained on purpose. Adding the assumption also removes this stimulus from every other check in formal; CHK-011 only skips the non-contiguous case and does not need it."
+    },
+    {
+     "cause": "C_spec_unclear",
+     "evidence_for": "The specification contradicts itself on whether a non-contiguous mask is legal stimulus. TL-T3.1.3.4-02 (via RT-4.1-04) says hosts do not use them. RT-4.1-05 says error cases including 'bad ... mask' are legal stimulus, and the TL spec's Explicit Error Cases (:365) include 'Non-contiguous mask'. D-013 (:671) only says they are 'not checked', which fits either reading ('sent, but the response is not checked' or 'not sent'). The env (nnc_env.sv:149-153, citing RT-4.1-05) and the contract or checker (CHK-008, citing TL-T3.1.3.4-02) were written from opposite readings.",
+     "evidence_against": "The TL spec gives a closed, explicit set of allowed host masks (:336), and the Q&A (rules.json:7560) says plainly that 'hosts in this project do not use them'. RT-4.1-05 can be read as covering only masks that are wrong for the given size or address (the 'Wrong combination of a_addr[1:0], a_size, a_mask' case at :361-364), not non-contiguous masks. Read that way there is no contradiction."
+    },
+    {
+     "cause": "B_checker_wrong",
+     "evidence_for": "If RT-4.1-05 governs, so that a non-contiguous mask is legal error stimulus, the '!bad_mask' term (nnc_chk_tbhost.sv:99) forbids legal stimulus, and CHK-008 clause (3) over-constrains the host.",
+     "evidence_against": "The checker implements the contract's CHK-008 behavior literally (contract.json:376, five masks listed) and the TL spec's restricted set exactly (:336). The contract cites TL-T3.1.3.4-02 for this check. Nothing in the checker departs from its own contract; any mismatch is between documents, not between the checker and the spec it was built from."
+    },
+    {
+     "cause": "A_rtl_wrong",
+     "evidence_for": "None. The only DUT signal in the trace that affects the check is o_a_ready=1.",
+     "evidence_against": "The failing conjunct depends only on i_a_mask, an input. The RTL handles the request as the spec allows: tlul_err.sv:63-66 and :92-94 flag it as an error."
+    }
+   ],
+   "most_likely": "E_environment_missing",
+   "options": "1. E (most likely): add to nnc_env.sv an assumption that is the counterpart of TL-T3.1.3.4-02 / RT-4.1-04, for example `// ENV-11: hosts in this project do not use non-contiguous masks (TL-T3.1.3.4-02, RT-4.1-04)  always @(*) if (i_a_valid) assume (!(i_a_mask inside {4'b0101,4'b1001,4'b1010,4'b1011,4'b1101}));`. Contiguous but malformed masks (wrong lanes for size or address, partial-mask PutFullData) stay unconstrained as RT-4.1-05 error stimulus, which is consistent with nnc_env.sv:149-153. Re-run CHK-008 and the other checks. Because the new assumption narrows the input space, it goes back through gate G3 review (nnc_env.sv:2). 2. C: if the designer reads RT-4.1-05 / TL spec :365 as making non-contiguous masks legal stimulus for this test bench, raise a spec decision (extend D-013) that says which reading holds. If the decision is that they are legal, CHK-008 clause (3) and the contract text at contract.json:376 lose the mask restriction (remove bad_mask from nnc_chk_tbhost.sv:99), and TL-T3.1.3.4-02 is moved out of CHK-008's rule list. Do not do this without the spec decision. 3. No RTL change is indicated."
+  }
+ ],
+ "checks": 1,
+ "usage": {
+  "calls": 1,
+  "cached": 0,
+  "cost_usd": 0.6474,
+  "input_tokens": 16,
+  "output_tokens": 7378,
+  "cache_creation_input_tokens": 55861,
+  "cache_read_input_tokens": 263735
+ }
+}

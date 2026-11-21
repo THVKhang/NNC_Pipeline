@@ -19,7 +19,7 @@ from nnc.contract import is_async, module_header, multi_clock
 from nnc.gen_sva import _reset_off
 from nnc.simhost import SimHost, lint_sv
 
-PROMPT_VERSION = "cov-v1"
+PROMPT_VERSION = "cov-v2"   # v2: each rule shows its condition (WHEN ...)
 MODULE = "nnc_cov"
 SYSTEM_PROMPT = (
     "You are a verification engineer defining functional coverage from a specification. You use only the "
@@ -82,7 +82,8 @@ def build_prompt(contract: dict, rules_doc: dict) -> str:
     ports = "\n".join(f"  {p['name']} ({p['direction']} of the DUT, width {p['width']}): {p['meaning']}"
                       for p in iface["ports"])
     checks = "\n".join(f"  [{c['id']}] {c['title']}: {c['behavior'][:400]}" for c in contract["checks"])
-    rtext = "\n".join(f"  [{r['id']}] {r['statement']}" for r in rules)
+    rtext = "\n".join(f"  [{r['id']}] {r['statement']}" + (f" WHEN {r['condition']}" if r.get("condition") else "")
+                      for r in rules)
     rules_text = RULES_TEXT.replace("{clk}", iface["clock"] or "clk").replace("{rst_off}", _reset_off(iface))
     if multi_clock(iface):
         doms = []

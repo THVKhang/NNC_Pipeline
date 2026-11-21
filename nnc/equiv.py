@@ -51,10 +51,18 @@ nnc_eq_top.sv
 """
 
 
-def _side(tag: str, order: list[str], top: str, params: list[tuple[str, int]], defines: list[str]) -> str:
+def _side(tag: str, order: list[str], top: str, params: list[tuple[str, int]], defines: list[str],
+          frontend: str = "verilog") -> str:
+    """Yosys commands that read one copy and stash it. `frontend` "slang": the yosys-slang plugin, which
+    elaborates with the parameter values itself (-G) and reads SystemVerilog Yosys' parser rejects."""
     defs = " ".join(f"-D{d}" for d in defines)
-    chp = "".join(f"chparam -set {n} {v} {top}\n" for n, v in params)
-    return (f"read_verilog -sv {defs} {' '.join(f'{tag}/{f}' for f in order)}\n{chp}hierarchy -check -top {top}\n"
+    srcs = " ".join(f"{tag}/{f}" for f in order)
+    if frontend == "slang":
+        gparams = "".join(f" -G {n}={v}" for n, v in params)
+        read = f"read_slang {defs} --top {top}{gparams} {srcs}\n"
+    else:
+        read = f"read_verilog -sv {defs} {srcs}\n" + "".join(f"chparam -set {n} {v} {top}\n" for n, v in params)
+    return (f"{read}hierarchy -check -top {top}\n"
             f"proc\nflatten\nopt_clean\nrename {top} nnc_{tag}\ndesign -stash {tag}\n")
 
 
@@ -77,11 +85,15 @@ def wrapper(iface: dict, values: dict[str, int], resets: list[dict]) -> str:
 
 def build(contract: dict, values: dict[str, int], gold: dict[str, Path | str], gold_order: list[str],
           gate: dict[str, Path | str], gate_order: list[str], *, defines: list[str] | None = None,
-          depth: int = 20, timeout_s: int = 900, multiclock: bool = False) -> tuple[dict, str]:
+          depth: int = 20, timeout_s: int = 900, multiclock: bool = False,
+          frontend: str = "verilog") -> tuple[dict, str]:
+    if frontend not in ("verilog", "slang"):
+        raise ValueError(f"frontend must be 'verilog' or 'slang', not {frontend!r}")
     iface, top = contract["interface"], contract["top"]
     params = [(p["name"], values[p["name"]]) for p in iface["parameters"] if not p.get("derived") and p["name"] in values]
     resets = [r for r in (iface.get("resets") or [iface.get("reset")]) if isinstance(r, dict)]
-    ys = (_side("gold", gold_order, top, params, defines or []) + _side("gate", gate_order, top, params, defines or [])
+    ys = (_side("gold", gold_order, top, params, defines or [], frontend)
+          + _side("gate", gate_order, top, params, defines or [], frontend)
           + "design -copy-from gold -as nnc_gold nnc_gold\ndesign -copy-from gate -as nnc_gate nnc_gate\n"
           "miter -equiv -flatten -make_assert nnc_gold nnc_gate nnc_miter\nhierarchy -top nnc_miter\n"
           "write_rtlil miter.il\n")
@@ -90,11 +102,16 @@ def build(contract: dict, values: dict[str, int], gold: dict[str, Path | str], g
     files["nnc_miter.ys"] = ys
     files["nnc_eq_top.sv"] = wrapper(iface, values, resets)
     files["eq.sby"] = SBY.format(depth=depth, multiclock="on" if multiclock else "off", timeout=timeout_s)
+    # prove (abc pdr) first: it closes the proof or finds a counterexample of any length, often in seconds;
+    # bmc runs only when prove concluded nothing (a smtbmc bmc can take the whole timeout on a large miter)
     script = ("yosys -q -s nnc_miter.ys > miter.log 2>&1; echo NNC_MITER_RC=$?; grep -m5 ERROR miter.log; "
-              "if [ -f miter.il ]; then sby -f eq.sby bmc > bmc.log 2>&1; sby -f eq.sby prove > prove.log 2>&1; fi; "
+              "if [ -f miter.il ]; then sby -f eq.sby prove > prove.log 2>&1; "
+              "case \"$(head -1 eq_prove/status 2>/dev/null)\" in PASS*|FAIL*) ;; "
+              "*) sby -f eq.sby bmc > bmc.log 2>&1;; esac; fi; "
               "for t in bmc prove; do echo NNC_STATUS_$t=$(cat eq_$t/status 2>/dev/null | head -1); done; "
               "grep -h -m3 -E 'Assert failed|counterexample|summary' bmc.log prove.log 2>/dev/null; "
-              "mkdir -p trace; cp eq_bmc/engine_0/trace.vcd trace/eq_cex.vcd 2>/dev/null; true")
+              "mkdir -p trace; cp eq_prove/engine_0/trace.vcd trace/eq_cex.vcd 2>/dev/null || "
+              "cp eq_bmc/engine_0/trace.vcd trace/eq_cex.vcd 2>/dev/null; true")
     return files, script
 
 

@@ -1,0 +1,2857 @@
+{
+ "version": 1,
+ "doc": {
+  "file": "rv_timer_Design_Specification.md",
+  "sha256": "596f77b1d22de2eafb6a89dbae357606e37645ccddabecc5f956c818257fbc48",
+  "length": 678,
+  "location": "line"
+ },
+ "sections": [
+  {
+   "id": "front",
+   "title": "Front matter",
+   "level": 0,
+   "parent": null,
+   "page_start": 1,
+   "page_end": 1,
+   "sentences": []
+  },
+  {
+   "id": "T1",
+   "title": "Timer HWIP Technical Specification",
+   "level": 1,
+   "parent": null,
+   "page_start": 9,
+   "page_end": 9,
+   "sentences": []
+  },
+  {
+   "id": "T2",
+   "title": "Overview",
+   "level": 1,
+   "parent": null,
+   "page_start": 11,
+   "page_end": 13,
+   "sentences": [
+    {
+     "id": "T2:s1",
+     "text": "This document specifies RISC-V Timer hardware IP functionality.",
+     "page": 13,
+     "normative": false
+    },
+    {
+     "id": "T2:s2",
+     "text": "This module conforms to the Comportable guideline for peripheral functionality.",
+     "page": 13,
+     "normative": false
+    },
+    {
+     "id": "T2:s3",
+     "text": "See that document for integration overview within the broader top level system.",
+     "page": 13,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T2.1",
+   "title": "Features",
+   "level": 2,
+   "parent": "T2",
+   "page_start": 20,
+   "page_end": 26,
+   "sentences": [
+    {
+     "id": "T2.1:s1",
+     "text": "64-bit timer with 12-bit prescaler and 8-bit step register",
+     "page": 22,
+     "normative": false
+    },
+    {
+     "id": "T2.1:s2",
+     "text": "Compliant with RISC-V privileged specification v1.11",
+     "page": 23,
+     "normative": false
+    },
+    {
+     "id": "T2.1:s3",
+     "text": "Configurable number of timers per hart and number of harts",
+     "page": 24,
+     "normative": false
+    },
+    {
+     "id": "T2.1:s4",
+     "text": "Note: Although the number of timers is indeed configurable, the implementation currently only connects up one timer for one hart.",
+     "page": 26,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T2.2",
+   "title": "Description",
+   "level": 2,
+   "parent": "T2",
+   "page_start": 27,
+   "page_end": 35,
+   "sentences": [
+    {
+     "id": "T2.2:s1",
+     "text": "The timer module provides a configurable number of 64-bit counters where each counter increments by a step value whenever the prescaler times out.",
+     "page": 29,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s2",
+     "text": "Each timer generates an interrupt if the counter reaches (or is above) a programmed value.",
+     "page": 29,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s3",
+     "text": "The timer is intended to be used by the processors to check the current time relative to the reset or the system power-on.",
+     "page": 29,
+     "normative": false
+    },
+    {
+     "id": "T2.2:s4",
+     "text": "In this version, the timer doesn't consider low-power modes and assumes the clock is neither turned off nor changed during runtime.",
+     "page": 35,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T2.3",
+   "title": "Compatibility",
+   "level": 2,
+   "parent": "T2",
+   "page_start": 38,
+   "page_end": 40,
+   "sentences": [
+    {
+     "id": "T2.3:s1",
+     "text": "The timer IP provides memory-mapped registers equivalent to mtime and mtimecmp which can be used as the machine-mode timer registers defined in the RISC-V privileged spec.",
+     "page": 40,
+     "normative": true
+    },
+    {
+     "id": "T2.3:s2",
+     "text": "Additional features such as prescaler, step, and a configurable number of timers and harts have been added.",
+     "page": 40,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3",
+   "title": "Theory of Operation",
+   "level": 1,
+   "parent": null,
+   "page_start": 47,
+   "page_end": 47,
+   "sentences": []
+  },
+  {
+   "id": "T3.1",
+   "title": "Block Diagram",
+   "level": 2,
+   "parent": "T3",
+   "page_start": 49,
+   "page_end": 53,
+   "sentences": [
+    {
+     "id": "T3.1:s1",
+     "text": "The timer module is composed of tick generators, counters, and comparators.",
+     "page": 53,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s2",
+     "text": "A tick generator creates a tick every time its internal counter hits the CFG0.prescaler value.",
+     "page": 53,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s3",
+     "text": "The tick is used to increment mtime by the CFG0.step value.",
+     "page": 53,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s4",
+     "text": "The 64-bit mtime value is compared with the 64-bit mtimecmp.",
+     "page": 53,
+     "normative": false
+    },
+    {
+     "id": "T3.1:s5",
+     "text": "If mtime is greater than or equal to mtimecmp, the timer raises an interrupt.",
+     "page": 53,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T3.2",
+   "title": "Design Details",
+   "level": 2,
+   "parent": "T3",
+   "page_start": 59,
+   "page_end": 59,
+   "sentences": []
+  },
+  {
+   "id": "T3.2.1",
+   "title": "Tick Generator",
+   "level": 3,
+   "parent": "T3.2",
+   "page_start": 61,
+   "page_end": 70,
+   "sentences": [
+    {
+     "id": "T3.2.1:s1",
+     "text": "The tick module inside the timer IP is used to generate a fixed period of pulse signal.",
+     "page": 63,
+     "normative": false
+    },
+    {
+     "id": "T3.2.1:s2",
+     "text": "This allows creation of a call-clock timer tick such as 1us or 10us regardless of the system clock period.",
+     "page": 63,
+     "normative": false
+    },
+    {
+     "id": "T3.2.1:s3",
+     "text": "It is useful if the system has more than one clock as a clock source.",
+     "page": 63,
+     "normative": false
+    },
+    {
+     "id": "T3.2.1:s4",
+     "text": "The firmware just needs to adjust the CFG0.prescaler value and the actual timer interrupt handling routine does not need a variable clock period to update mtimecmp.",
+     "page": 63,
+     "normative": false
+    },
+    {
+     "id": "T3.2.1:s5",
+     "text": "For instance, if a system switches between 48MHz and 200MHz clocks, a prescaler value of 47 for 48MHz and 199 for 200MHz will generate a 1us tick.",
+     "page": 70,
+     "normative": false
+    },
+    {
+     "id": "T3.2.1:s6",
+     "text": "In this version, the timer only supports a single fixed clock, so the firmware should change CFG0.prescaler appropriately.",
+     "page": 70,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T3.2.2",
+   "title": "Configurable number of timers and harts",
+   "level": 3,
+   "parent": "T3.2",
+   "page_start": 75,
+   "page_end": 85,
+   "sentences": [
+    {
+     "id": "T3.2.2:s1",
+     "text": "The timer IP supports more than one HART and/or more than one timer per hart.",
+     "page": 77,
+     "normative": false
+    },
+    {
+     "id": "T3.2.2:s2",
+     "text": "Each hart has a set of tick generator and counter.",
+     "page": 77,
+     "normative": false
+    },
+    {
+     "id": "T3.2.2:s3",
+     "text": "It means the timer IP has the same number of prescalers, steps, and mtime registers as the number of harts.",
+     "page": 77,
+     "normative": false
+    },
+    {
+     "id": "T3.2.2:s4",
+     "text": "Each hart can have multiple sets of mtimecmp, comparator logic, and expire interrupt signals.",
+     "page": 81,
+     "normative": true
+    },
+    {
+     "id": "T3.2.2:s5",
+     "text": "This version of the IP is fixed to have one Hart and one Timer per Hart.",
+     "page": 81,
+     "normative": false
+    },
+    {
+     "id": "T3.2.2:s6",
+     "text": "Below is an example configuration file for N_TIMER 2 and N_HARTS 2.",
+     "page": 85,
+     "normative": false
+    },
+    {
+     "id": "T3.2.2:s7",
+     "text": "It has separate interrupts per timer and a set of interrupt enable and state registers per Hart.",
+     "page": 85,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T4",
+   "title": "Programmer's Guide",
+   "level": 1,
+   "parent": null,
+   "page_start": 170,
+   "page_end": 170,
+   "sentences": []
+  },
+  {
+   "id": "T4.1",
+   "title": "Initialization",
+   "level": 2,
+   "parent": "T4",
+   "page_start": 172,
+   "page_end": 174,
+   "sentences": [
+    {
+     "id": "T4.1:s1",
+     "text": "Software is expected to configure prescaler and step before activating the timer.",
+     "page": 174,
+     "normative": false
+    },
+    {
+     "id": "T4.1:s2",
+     "text": "These two fields need to be stable to correctly increment the timer value.",
+     "page": 174,
+     "normative": true
+    },
+    {
+     "id": "T4.1:s3",
+     "text": "If software wants to change these fields, it should de-activate the timer and then proceed.",
+     "page": 174,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T4.2",
+   "title": "Register Access",
+   "level": 2,
+   "parent": "T4",
+   "page_start": 179,
+   "page_end": 236,
+   "sentences": [
+    {
+     "id": "T4.2:s1",
+     "text": "The timer IP has 64-bit timer value registers and 64-bit compare registers.",
+     "page": 181,
+     "normative": false
+    },
+    {
+     "id": "T4.2:s2",
+     "text": "The register interface, however, is set to 32-bit data width.",
+     "page": 181,
+     "normative": false
+    },
+    {
+     "id": "T4.2:s3",
+     "text": "The CPU cannot access 64-bit data in a single request.",
+     "page": 181,
+     "normative": true
+    },
+    {
+     "id": "T4.2:s4",
+     "text": "However, when split into two reads, it is possible the timer value can increment between the two requests.",
+     "page": 181,
+     "normative": true
+    },
+    {
+     "id": "T4.2:s5",
+     "text": "The IP doesn't have a latching or blocking mechanism to avoid this issue.",
+     "page": 186,
+     "normative": false
+    },
+    {
+     "id": "T4.2:s6",
+     "text": "It is the programmer's responsibility to ensure the correct value is read.",
+     "page": 186,
+     "normative": false
+    },
+    {
+     "id": "T4.2:s7",
+     "text": "For instance, if the CPU reads 0xFFFF_FFFF from lower 32-bit timer value (mtime) and 0x0000_0001 from upper 32-bit timer value (mtimeh), there is a chance that rather than having the value 0x1_FFFF_FFFF the timer value has changed from 0x0_FFFF_FFFF to 0x1_0000_0000 between the two reads.",
+     "page": 186,
+     "normative": false
+    },
+    {
+     "id": "T4.2:s8",
+     "text": "If there is the possibility of an interrupt between the two reads then the counter could have advanced even more.",
+     "page": 186,
+     "normative": false
+    },
+    {
+     "id": "T4.2:s9",
+     "text": "This condition can be detected in a standard way using a third read.",
+     "page": 195,
+     "normative": true
+    },
+    {
+     "id": "T4.2:s10",
+     "text": "Figure 10.1 in the RISC-V unprivileged specification explains how to avoid this.",
+     "page": 195,
+     "normative": false
+    },
+    {
+     "id": "T4.2:s11",
+     "text": "Updating mtimecmp register also follows a similar approach to avoid a spurious interrupt during the register update.",
+     "page": 206,
+     "normative": false
+    },
+    {
+     "id": "T4.2:s12",
+     "text": "Please refer to the mtimecmp section in the RISC-V privileged specification.",
+     "page": 206,
+     "normative": false
+    },
+    {
+     "id": "T4.2:s13",
+     "text": "In typical usage the mtime register would not be written, but if there is a need to set it to an arbitrary, dynamically-determined value, the following sequence should be used to prevent the operation of the timer yielding an indeterminate result:",
+     "page": 219,
+     "normative": true
+    },
+    {
+     "id": "T4.2:s14",
+     "text": "In the event that the target value of the lower half is close to 0xFFFF_FFFF, this sequence prevents the timer from assuming an incorrect time between the two 32-bit writes required to set the 64-bit timer value.",
+     "page": 232,
+     "normative": true
+    },
+    {
+     "id": "T4.2:s15",
+     "text": "If the value of mtime is modified in this manner then mtimecmp shall be written after mtime in order to clear any pending interrupt condition.",
+     "page": 236,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T4.3",
+   "title": "Timer behaviour close to 2^64",
+   "level": 2,
+   "parent": "T4",
+   "page_start": 239,
+   "page_end": 255,
+   "sentences": [
+    {
+     "id": "T4.3:s1",
+     "text": "There are some peculiarities when mtime and mtimecmp get close to the end of the 64-bit integer range.",
+     "page": 241,
+     "normative": false
+    },
+    {
+     "id": "T4.3:s2",
+     "text": "In particular, because an unsigned comparison is done between mtime and mtimecmp care is needed.",
+     "page": 241,
+     "normative": false
+    },
+    {
+     "id": "T4.3:s3",
+     "text": "A couple of cases are:",
+     "page": 241,
+     "normative": false
+    },
+    {
+     "id": "T4.3:s4",
+     "text": "mtimecmp close to 0xFFFF_FFFF_FFFF_FFFF.",
+     "page": 245,
+     "normative": false
+    },
+    {
+     "id": "T4.3:s5",
+     "text": "In this case the time-out event will be signaled when mtime passes the comparison value, the interrupt will be raised and the source indicated in the corresponding bit of the interrupt status register.",
+     "page": 245,
+     "normative": false
+    },
+    {
+     "id": "T4.3:s6",
+     "text": "However, if there is a delay in servicing the interrupt the mtime value could wrap to zero (and continue to increment) so the value read by the interrupt service routine will be less than the comparison value.",
+     "page": 245,
+     "normative": false
+    },
+    {
+     "id": "T4.3:s7",
+     "text": "With a CFG0.step above 1, one tick can also carry mtime from below mtimecmp past the end of the range, so mtime skips the comparison value and the interrupt is not raised.",
+     "page": 245,
+     "normative": true
+    },
+    {
+     "id": "T4.3:s8",
+     "text": "When the timer is setup to trigger a timeout some number of timer ticks into the future, the computation of the comparison value mtime + timeout may overflow.",
+     "page": 255,
+     "normative": false
+    },
+    {
+     "id": "T4.3:s9",
+     "text": "If this value is set in mtimecmp it would make mtime greater than mtimecmp and immediately signal an interrupt.",
+     "page": 255,
+     "normative": false
+    },
+    {
+     "id": "T4.3:s10",
+     "text": "A possible solution is to have an intermediate interrupt by setting the mtimecmp to 64-bit all-ones, 0xFFFF_FFFF_FFFF_FFFF.",
+     "page": 255,
+     "normative": true
+    },
+    {
+     "id": "T4.3:s11",
+     "text": "Then the service routine for that interrupt will need to poll mtime until it wraps (which could take up to a timer clock tick) before scheduling the required interrupt using the originally computed mtimecmp value.",
+     "page": 255,
+     "normative": true
+    },
+    {
+     "id": "T4.3:s12",
+     "text": "With a step above 1, mtime can step over the all-ones value and this intermediate interrupt is never raised.",
+     "page": 255,
+     "normative": true
+    },
+    {
+     "id": "T4.3:s13",
+     "text": "Setting mtimecmp to 0xFFFF_FFFF_FFFF_FFFF - step + 1 works for any nonzero step, since the last value of mtime before it wraps is always at least that large.",
+     "page": 255,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T4.4",
+   "title": "Interrupt Handling",
+   "level": 2,
+   "parent": "T4",
+   "page_start": 269,
+   "page_end": 271,
+   "sentences": [
+    {
+     "id": "T4.4:s1",
+     "text": "If mtime is greater than or equal to the value of mtimecmp, the interrupt is generated from the RV_TIMER module.",
+     "page": 271,
+     "normative": false
+    },
+    {
+     "id": "T4.4:s2",
+     "text": "If the core enables the timer interrupt in MIE CSR, it jumps into the timer interrupt service routine.",
+     "page": 271,
+     "normative": false
+    },
+    {
+     "id": "T4.4:s3",
+     "text": "Clearing the interrupt can be done by writing 1 into the Interrupt Status register INTR_STATE0.",
+     "page": 271,
+     "normative": true
+    },
+    {
+     "id": "T4.4:s4",
+     "text": "The RV_TIMER module also follows RISC-V Privileged spec that requires the interrupt to be cleared by updating mtimecmp memory-mapped CSRs.",
+     "page": 271,
+     "normative": true
+    },
+    {
+     "id": "T4.4:s5",
+     "text": "In this case both COMPARE_LOWER0_0 and COMPARE_UPPER0_0 can clear the interrupt source.",
+     "page": 271,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "T4.5",
+   "title": "Device Interface Functions (DIFs)",
+   "level": 2,
+   "parent": "T4",
+   "page_start": 277,
+   "page_end": 279,
+   "sentences": [
+    {
+     "id": "T4.5:s1",
+     "text": "Device Interface Functions",
+     "page": 279,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5",
+   "title": "Registers",
+   "level": 1,
+   "parent": null,
+   "page_start": 283,
+   "page_end": 283,
+   "sentences": []
+  },
+  {
+   "id": "T5.1",
+   "title": "Summary",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 286,
+   "page_end": 299,
+   "sentences": [
+    {
+     "id": "T5.1:s1",
+     "text": "Name: rv_timer.ALERT_TEST; Offset: 0x0; Length: 4; Description: Alert Test Register",
+     "page": 290,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s2",
+     "text": "Name: rv_timer.CTRL; Offset: 0x4; Length: 4; Description: Control register",
+     "page": 291,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s3",
+     "text": "Name: rv_timer.INTR_ENABLE0; Offset: 0x100; Length: 4; Description: Interrupt Enable",
+     "page": 292,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s4",
+     "text": "Name: rv_timer.INTR_STATE0; Offset: 0x104; Length: 4; Description: Interrupt Status",
+     "page": 293,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s5",
+     "text": "Name: rv_timer.INTR_TEST0; Offset: 0x108; Length: 4; Description: Interrupt test register",
+     "page": 294,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s6",
+     "text": "Name: rv_timer.CFG0; Offset: 0x10c; Length: 4; Description: Configuration for Hart 0",
+     "page": 295,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s7",
+     "text": "Name: rv_timer.TIMER_V_LOWER0; Offset: 0x110; Length: 4; Description: Timer value Lower",
+     "page": 296,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s8",
+     "text": "Name: rv_timer.TIMER_V_UPPER0; Offset: 0x114; Length: 4; Description: Timer value Upper",
+     "page": 297,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s9",
+     "text": "Name: rv_timer.COMPARE_LOWER0_0; Offset: 0x118; Length: 4; Description: Timer value Lower",
+     "page": 298,
+     "normative": false
+    },
+    {
+     "id": "T5.1:s10",
+     "text": "Name: rv_timer.COMPARE_UPPER0_0; Offset: 0x11c; Length: 4; Description: Timer value Upper",
+     "page": 299,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.2",
+   "title": "ALERT_TEST",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 301,
+   "page_end": 305,
+   "sentences": [
+    {
+     "id": "T5.2:s1",
+     "text": "Alert Test Register",
+     "page": 302,
+     "normative": false
+    },
+    {
+     "id": "T5.2:s2",
+     "text": "Offset: 0x0",
+     "page": 303,
+     "normative": false
+    },
+    {
+     "id": "T5.2:s3",
+     "text": "Reset default: 0x80000000",
+     "page": 304,
+     "normative": false
+    },
+    {
+     "id": "T5.2:s4",
+     "text": "Reset mask: 0x80000001",
+     "page": 305,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.2.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.2",
+   "page_start": 307,
+   "page_end": 317,
+   "sentences": [
+    {
+     "id": "T5.2.1:s1",
+     "text": "Bits: 31; Type: rw0c; Reset: 0x1; Name: regwen; Description: Write 0 to disable alert testing until the next reset.",
+     "page": 315,
+     "normative": false
+    },
+    {
+     "id": "T5.2.1:s2",
+     "text": "Bits: 30:1; Description: Reserved",
+     "page": 316,
+     "normative": false
+    },
+    {
+     "id": "T5.2.1:s3",
+     "text": "Bits: 0; Type: wo; Reset: 0x0; Name: fatal_fault; Description: Write 1 to trigger one alert event of this kind.",
+     "page": 317,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.3",
+   "title": "CTRL",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 319,
+   "page_end": 323,
+   "sentences": [
+    {
+     "id": "T5.3:s1",
+     "text": "Control register",
+     "page": 320,
+     "normative": false
+    },
+    {
+     "id": "T5.3:s2",
+     "text": "Offset: 0x4",
+     "page": 321,
+     "normative": false
+    },
+    {
+     "id": "T5.3:s3",
+     "text": "Reset default: 0x0",
+     "page": 322,
+     "normative": false
+    },
+    {
+     "id": "T5.3:s4",
+     "text": "Reset mask: 0x1",
+     "page": 323,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.3.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.3",
+   "page_start": 325,
+   "page_end": 334,
+   "sentences": [
+    {
+     "id": "T5.3.1:s1",
+     "text": "Bits: 31:1; Description: Reserved",
+     "page": 333,
+     "normative": false
+    },
+    {
+     "id": "T5.3.1:s2",
+     "text": "Bits: 0; Type: rw; Reset: 0x0; Name: active_0; Description: If 1, timer operates",
+     "page": 334,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.4",
+   "title": "INTR_ENABLE0",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 336,
+   "page_end": 340,
+   "sentences": [
+    {
+     "id": "T5.4:s1",
+     "text": "Interrupt Enable",
+     "page": 337,
+     "normative": false
+    },
+    {
+     "id": "T5.4:s2",
+     "text": "Offset: 0x100",
+     "page": 338,
+     "normative": false
+    },
+    {
+     "id": "T5.4:s3",
+     "text": "Reset default: 0x0",
+     "page": 339,
+     "normative": false
+    },
+    {
+     "id": "T5.4:s4",
+     "text": "Reset mask: 0x1",
+     "page": 340,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.4.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.4",
+   "page_start": 342,
+   "page_end": 351,
+   "sentences": [
+    {
+     "id": "T5.4.1:s1",
+     "text": "Bits: 31:1; Description: Reserved",
+     "page": 350,
+     "normative": false
+    },
+    {
+     "id": "T5.4.1:s2",
+     "text": "Bits: 0; Type: rw; Reset: 0x0; Name: IE_0; Description: Interrupt Enable for timer",
+     "page": 351,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.5",
+   "title": "INTR_STATE0",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 353,
+   "page_end": 357,
+   "sentences": [
+    {
+     "id": "T5.5:s1",
+     "text": "Interrupt Status",
+     "page": 354,
+     "normative": false
+    },
+    {
+     "id": "T5.5:s2",
+     "text": "Offset: 0x104",
+     "page": 355,
+     "normative": false
+    },
+    {
+     "id": "T5.5:s3",
+     "text": "Reset default: 0x0",
+     "page": 356,
+     "normative": false
+    },
+    {
+     "id": "T5.5:s4",
+     "text": "Reset mask: 0x1",
+     "page": 357,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.5.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.5",
+   "page_start": 359,
+   "page_end": 368,
+   "sentences": [
+    {
+     "id": "T5.5.1:s1",
+     "text": "Bits: 31:1; Description: Reserved",
+     "page": 367,
+     "normative": false
+    },
+    {
+     "id": "T5.5.1:s2",
+     "text": "Bits: 0; Type: rw1c; Reset: 0x0; Name: IS_0; Description: Interrupt status for timer",
+     "page": 368,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.6",
+   "title": "INTR_TEST0",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 370,
+   "page_end": 374,
+   "sentences": [
+    {
+     "id": "T5.6:s1",
+     "text": "Interrupt test register",
+     "page": 371,
+     "normative": false
+    },
+    {
+     "id": "T5.6:s2",
+     "text": "Offset: 0x108",
+     "page": 372,
+     "normative": false
+    },
+    {
+     "id": "T5.6:s3",
+     "text": "Reset default: 0x0",
+     "page": 373,
+     "normative": false
+    },
+    {
+     "id": "T5.6:s4",
+     "text": "Reset mask: 0x1",
+     "page": 374,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.6.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.6",
+   "page_start": 376,
+   "page_end": 385,
+   "sentences": [
+    {
+     "id": "T5.6.1:s1",
+     "text": "Bits: 31:1; Description: Reserved",
+     "page": 384,
+     "normative": false
+    },
+    {
+     "id": "T5.6.1:s2",
+     "text": "Bits: 0; Type: wo; Reset: x; Name: T_0; Description: Interrupt test for timer",
+     "page": 385,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.7",
+   "title": "CFG0",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 387,
+   "page_end": 391,
+   "sentences": [
+    {
+     "id": "T5.7:s1",
+     "text": "Configuration for Hart 0",
+     "page": 388,
+     "normative": false
+    },
+    {
+     "id": "T5.7:s2",
+     "text": "Offset: 0x10c",
+     "page": 389,
+     "normative": false
+    },
+    {
+     "id": "T5.7:s3",
+     "text": "Reset default: 0x10000",
+     "page": 390,
+     "normative": false
+    },
+    {
+     "id": "T5.7:s4",
+     "text": "Reset mask: 0xff0fff",
+     "page": 391,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.7.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.7",
+   "page_start": 393,
+   "page_end": 404,
+   "sentences": [
+    {
+     "id": "T5.7.1:s1",
+     "text": "Bits: 31:24; Description: Reserved",
+     "page": 401,
+     "normative": false
+    },
+    {
+     "id": "T5.7.1:s2",
+     "text": "Bits: 23:16; Type: rw; Reset: 0x1; Name: step; Description: Incremental value for each tick",
+     "page": 402,
+     "normative": false
+    },
+    {
+     "id": "T5.7.1:s3",
+     "text": "Bits: 15:12; Description: Reserved",
+     "page": 403,
+     "normative": false
+    },
+    {
+     "id": "T5.7.1:s4",
+     "text": "Bits: 11:0; Type: rw; Reset: 0x0; Name: prescale; Description: Prescaler to generate tick",
+     "page": 404,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.8",
+   "title": "TIMER_V_LOWER0",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 406,
+   "page_end": 410,
+   "sentences": [
+    {
+     "id": "T5.8:s1",
+     "text": "Timer value Lower",
+     "page": 407,
+     "normative": false
+    },
+    {
+     "id": "T5.8:s2",
+     "text": "Offset: 0x110",
+     "page": 408,
+     "normative": false
+    },
+    {
+     "id": "T5.8:s3",
+     "text": "Reset default: 0x0",
+     "page": 409,
+     "normative": false
+    },
+    {
+     "id": "T5.8:s4",
+     "text": "Reset mask: 0xffffffff",
+     "page": 410,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.8.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.8",
+   "page_start": 412,
+   "page_end": 420,
+   "sentences": [
+    {
+     "id": "T5.8.1:s1",
+     "text": "Bits: 31:0; Type: rw; Reset: 0x0; Name: v; Description: Timer value [31:0]",
+     "page": 420,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.9",
+   "title": "TIMER_V_UPPER0",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 422,
+   "page_end": 426,
+   "sentences": [
+    {
+     "id": "T5.9:s1",
+     "text": "Timer value Upper",
+     "page": 423,
+     "normative": false
+    },
+    {
+     "id": "T5.9:s2",
+     "text": "Offset: 0x114",
+     "page": 424,
+     "normative": false
+    },
+    {
+     "id": "T5.9:s3",
+     "text": "Reset default: 0x0",
+     "page": 425,
+     "normative": false
+    },
+    {
+     "id": "T5.9:s4",
+     "text": "Reset mask: 0xffffffff",
+     "page": 426,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.9.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.9",
+   "page_start": 428,
+   "page_end": 436,
+   "sentences": [
+    {
+     "id": "T5.9.1:s1",
+     "text": "Bits: 31:0; Type: rw; Reset: 0x0; Name: v; Description: Timer value [63:32]",
+     "page": 436,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.10",
+   "title": "COMPARE_LOWER0_0",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 438,
+   "page_end": 442,
+   "sentences": [
+    {
+     "id": "T5.10:s1",
+     "text": "Timer value Lower",
+     "page": 439,
+     "normative": false
+    },
+    {
+     "id": "T5.10:s2",
+     "text": "Offset: 0x118",
+     "page": 440,
+     "normative": false
+    },
+    {
+     "id": "T5.10:s3",
+     "text": "Reset default: 0xffffffff",
+     "page": 441,
+     "normative": false
+    },
+    {
+     "id": "T5.10:s4",
+     "text": "Reset mask: 0xffffffff",
+     "page": 442,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.10.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.10",
+   "page_start": 444,
+   "page_end": 452,
+   "sentences": [
+    {
+     "id": "T5.10.1:s1",
+     "text": "Bits: 31:0; Type: rw; Reset: 0xffffffff; Name: v; Description: Timer compare value [31:0]",
+     "page": 452,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.11",
+   "title": "COMPARE_UPPER0_0",
+   "level": 2,
+   "parent": "T5",
+   "page_start": 454,
+   "page_end": 458,
+   "sentences": [
+    {
+     "id": "T5.11:s1",
+     "text": "Timer value Upper",
+     "page": 455,
+     "normative": false
+    },
+    {
+     "id": "T5.11:s2",
+     "text": "Offset: 0x11c",
+     "page": 456,
+     "normative": false
+    },
+    {
+     "id": "T5.11:s3",
+     "text": "Reset default: 0xffffffff",
+     "page": 457,
+     "normative": false
+    },
+    {
+     "id": "T5.11:s4",
+     "text": "Reset mask: 0xffffffff",
+     "page": 458,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T5.11.1",
+   "title": "Fields",
+   "level": 3,
+   "parent": "T5.11",
+   "page_start": 460,
+   "page_end": 468,
+   "sentences": [
+    {
+     "id": "T5.11.1:s1",
+     "text": "Bits: 31:0; Type: rw; Reset: 0xffffffff; Name: v; Description: Timer compare value [63:32]",
+     "page": 468,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T6",
+   "title": "Hardware Interfaces",
+   "level": 1,
+   "parent": null,
+   "page_start": 475,
+   "page_end": 483,
+   "sentences": [
+    {
+     "id": "T6:s1",
+     "text": "Referring to the Comportable guideline for peripheral device functionality, the module rv_timer has the following hardware interfaces defined",
+     "page": 478,
+     "normative": false
+    },
+    {
+     "id": "T6:s2",
+     "text": "Primary Clock: clk_i",
+     "page": 479,
+     "normative": false
+    },
+    {
+     "id": "T6:s3",
+     "text": "Other Clocks: *none*",
+     "page": 480,
+     "normative": false
+    },
+    {
+     "id": "T6:s4",
+     "text": "Bus Device Interfaces (TL-UL): tl",
+     "page": 481,
+     "normative": false
+    },
+    {
+     "id": "T6:s5",
+     "text": "Bus Host Interfaces (TL-UL): *none*",
+     "page": 482,
+     "normative": false
+    },
+    {
+     "id": "T6:s6",
+     "text": "Peripheral Pins for Chip IO: *none*",
+     "page": 483,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T6.1",
+   "title": "Inter-Module Signals",
+   "level": 2,
+   "parent": "T6",
+   "page_start": 485,
+   "page_end": 491,
+   "sentences": [
+    {
+     "id": "T6.1:s1",
+     "text": "Port Name: racl_policies; Package::Struct: top_racl_pkg::racl_policy_vec; Type: uni; Act: rcv; Width: 1; Description: Incoming RACL policy vector from a racl_ctrl instance. The policy selection vector (parameter) selects the policy for each register.",
+     "page": 489,
+     "normative": false
+    },
+    {
+     "id": "T6.1:s2",
+     "text": "Port Name: racl_error; Package::Struct: top_racl_pkg::racl_error_log; Type: uni; Act: req; Width: 1; Description: RACL error log information of this module.",
+     "page": 490,
+     "normative": false
+    },
+    {
+     "id": "T6.1:s3",
+     "text": "Port Name: tl; Package::Struct: tlul_pkg::tl; Type: req_rsp; Act: rsp; Width: 1",
+     "page": 491,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T6.2",
+   "title": "Interrupts",
+   "level": 2,
+   "parent": "T6",
+   "page_start": 493,
+   "page_end": 497,
+   "sentences": [
+    {
+     "id": "T6.2:s1",
+     "text": "Interrupt Name: timer_expired_hart0_timer0; Type: Event; Description: raised if hart0's timer0 expired (mtime >= mtimecmp)",
+     "page": 497,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T6.3",
+   "title": "Security Alerts",
+   "level": 2,
+   "parent": "T6",
+   "page_start": 499,
+   "page_end": 503,
+   "sentences": [
+    {
+     "id": "T6.3:s1",
+     "text": "Alert Name: fatal_fault; Description: This fatal alert is triggered when a fatal TL-UL bus integrity fault is detected inside the RV_TIMER unit.",
+     "page": 503,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T6.4",
+   "title": "Security Countermeasures",
+   "level": 2,
+   "parent": "T6",
+   "page_start": 505,
+   "page_end": 509,
+   "sentences": [
+    {
+     "id": "T6.4:s1",
+     "text": "Countermeasure ID: RV_TIMER.BUS.INTEGRITY; Description: End-to-end bus integrity scheme.",
+     "page": 509,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T7",
+   "title": "ot_rv_timer_nnc: integration of the OpenTitan rv_timer for verification",
+   "level": 1,
+   "parent": null,
+   "page_start": 516,
+   "page_end": 528,
+   "sentences": [
+    {
+     "id": "T7:s1",
+     "text": "Written for NNC Pipeline.",
+     "page": 518,
+     "normative": false
+    },
+    {
+     "id": "T7:s2",
+     "text": "This document describes the verification top ot_rv_timer_nnc: the OpenTitan rv_timer (specified by the OpenTitan parts of this document, above) plus a thin wrapper that flattens its struct ports and closes two protocols.",
+     "page": 518,
+     "normative": false
+    },
+    {
+     "id": "T7:s3",
+     "text": "The behaviour of rv_timer itself is specified only by the OpenTitan documents; this document adds the port mapping, the fixed configuration and what the wrapper does.",
+     "page": 518,
+     "normative": false
+    },
+    {
+     "id": "T7:s4",
+     "text": "Normative references:",
+     "page": 523,
+     "normative": false
+    },
+    {
+     "id": "T7:s5",
+     "text": "the OpenTitan parts of this document (above): the timer, its registers, interrupt and alert.",
+     "page": 524,
+     "normative": false
+    },
+    {
+     "id": "T7:s6",
+     "text": "standards/opentitan_tlul_bus_specification.md: the TL-UL bus, including the bus integrity scheme.",
+     "page": 525,
+     "normative": false
+    },
+    {
+     "id": "T7:s7",
+     "text": "standards/opentitan_comportability.md: interrupt and alert conventions of OpenTitan peripherals.",
+     "page": 526,
+     "normative": false
+    },
+    {
+     "id": "T7:s8",
+     "text": "standards/opentitan_register_tool.md: register access types and bus error responses of generated register blocks.",
+     "page": 527,
+     "normative": false
+    },
+    {
+     "id": "T7:s9",
+     "text": "standards/opentitan_alert_handler_theory_of_operation.md: the differential alert handshake and the alert receiver.",
+     "page": 528,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "1",
+   "title": "Configuration",
+   "level": 2,
+   "parent": "T7",
+   "page_start": 530,
+   "page_end": 541,
+   "sentences": [
+    {
+     "id": "1:s1",
+     "text": "[INT-CFG-001] The design under verification has one hart and one timer (N_HARTS = 1, N_TIMERS = 1), as stated in the rv_timer Features and Theory of Operation sections.",
+     "page": 532,
+     "normative": false
+    },
+    {
+     "id": "1:s2",
+     "text": "[INT-CFG-002] RACL (register access control) is disabled: every register access is permitted, and no access is rejected for an access-control reason.",
+     "page": 535,
+     "normative": true
+    },
+    {
+     "id": "1:s3",
+     "text": "[INT-CFG-003] The alert sender of rv_timer and the alert receiver of the wrapper both use the synchronous clocking scheme (no synchronizer flops on the differential pairs).",
+     "page": 538,
+     "normative": false
+    },
+    {
+     "id": "1:s4",
+     "text": "Ping requests are never issued.",
+     "page": 538,
+     "normative": true
+    },
+    {
+     "id": "1:s5",
+     "text": "[INT-CFG-004] There is no design parameter to vary: every run uses this one configuration.",
+     "page": 541,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "2",
+   "title": "Clock and reset",
+   "level": 2,
+   "parent": "T7",
+   "page_start": 543,
+   "page_end": 548,
+   "sentences": [
+    {
+     "id": "2:s1",
+     "text": "[INT-CLK-001] clk_i is the only clock.",
+     "page": 545,
+     "normative": false
+    },
+    {
+     "id": "2:s2",
+     "text": "All inputs are sampled and all outputs change at its rising edge, except for the effect of rst_ni.",
+     "page": 545,
+     "normative": false
+    },
+    {
+     "id": "2:s3",
+     "text": "[INT-RST-001] rst_ni is the active-low reset, asserted asynchronously and released synchronously to clk_i (the reset strategy of the comportability specification).",
+     "page": 548,
+     "normative": false
+    },
+    {
+     "id": "2:s4",
+     "text": "While rst_ni is 0, every register holds its reset value as given in the register tables of the rv_timer specification.",
+     "page": 548,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "3",
+   "title": "Ports",
+   "level": 2,
+   "parent": "T7",
+   "page_start": 552,
+   "page_end": 581,
+   "sentences": [
+    {
+     "id": "3:s1",
+     "text": "Port: clk_i; Direction: input; Width: 1; Meaning: Clock",
+     "page": 556,
+     "normative": false
+    },
+    {
+     "id": "3:s2",
+     "text": "Port: rst_ni; Direction: input; Width: 1; Meaning: Active-low reset",
+     "page": 557,
+     "normative": false
+    },
+    {
+     "id": "3:s3",
+     "text": "Port: i_a_valid; Direction: input; Width: 1; Meaning: TL-UL a_valid",
+     "page": 558,
+     "normative": false
+    },
+    {
+     "id": "3:s4",
+     "text": "Port: o_a_ready; Direction: output; Width: 1; Meaning: TL-UL a_ready",
+     "page": 559,
+     "normative": false
+    },
+    {
+     "id": "3:s5",
+     "text": "Port: i_a_opcode; Direction: input; Width: 3; Meaning: TL-UL a_opcode (Get = 4, PutFullData = 0, PutPartialData = 1)",
+     "page": 560,
+     "normative": false
+    },
+    {
+     "id": "3:s6",
+     "text": "Port: i_a_param; Direction: input; Width: 3; Meaning: TL-UL a_param",
+     "page": 561,
+     "normative": false
+    },
+    {
+     "id": "3:s7",
+     "text": "Port: i_a_size; Direction: input; Width: 2; Meaning: TL-UL a_size (log2 of the number of bytes)",
+     "page": 562,
+     "normative": false
+    },
+    {
+     "id": "3:s8",
+     "text": "Port: i_a_source; Direction: input; Width: 8; Meaning: TL-UL a_source",
+     "page": 563,
+     "normative": false
+    },
+    {
+     "id": "3:s9",
+     "text": "Port: i_a_address; Direction: input; Width: 32; Meaning: TL-UL a_address (byte address; the register offsets of the rv_timer specification are relative to 0)",
+     "page": 564,
+     "normative": false
+    },
+    {
+     "id": "3:s10",
+     "text": "Port: i_a_mask; Direction: input; Width: 4; Meaning: TL-UL a_mask",
+     "page": 565,
+     "normative": false
+    },
+    {
+     "id": "3:s11",
+     "text": "Port: i_a_data; Direction: input; Width: 32; Meaning: TL-UL a_data",
+     "page": 566,
+     "normative": false
+    },
+    {
+     "id": "3:s12",
+     "text": "Port: i_a_instr; Direction: input; Width: 1; Meaning: 1: the request is an instruction fetch (a_user.instr_type = MuBi4True); 0: a data access (MuBi4False)",
+     "page": 567,
+     "normative": false
+    },
+    {
+     "id": "3:s13",
+     "text": "Port: i_a_intg_flip; Direction: input; Width: 1; Meaning: 1: the A-channel integrity sent with the request is corrupted (see 4.2)",
+     "page": 568,
+     "normative": false
+    },
+    {
+     "id": "3:s14",
+     "text": "Port: o_d_valid; Direction: output; Width: 1; Meaning: TL-UL d_valid",
+     "page": 569,
+     "normative": false
+    },
+    {
+     "id": "3:s15",
+     "text": "Port: i_d_ready; Direction: input; Width: 1; Meaning: TL-UL d_ready",
+     "page": 570,
+     "normative": false
+    },
+    {
+     "id": "3:s16",
+     "text": "Port: o_d_opcode; Direction: output; Width: 3; Meaning: TL-UL d_opcode (AccessAck = 0, AccessAckData = 1)",
+     "page": 571,
+     "normative": false
+    },
+    {
+     "id": "3:s17",
+     "text": "Port: o_d_param; Direction: output; Width: 3; Meaning: TL-UL d_param",
+     "page": 572,
+     "normative": false
+    },
+    {
+     "id": "3:s18",
+     "text": "Port: o_d_size; Direction: output; Width: 2; Meaning: TL-UL d_size",
+     "page": 573,
+     "normative": false
+    },
+    {
+     "id": "3:s19",
+     "text": "Port: o_d_source; Direction: output; Width: 8; Meaning: TL-UL d_source",
+     "page": 574,
+     "normative": false
+    },
+    {
+     "id": "3:s20",
+     "text": "Port: o_d_sink; Direction: output; Width: 1; Meaning: TL-UL d_sink",
+     "page": 575,
+     "normative": false
+    },
+    {
+     "id": "3:s21",
+     "text": "Port: o_d_data; Direction: output; Width: 32; Meaning: TL-UL d_data",
+     "page": 576,
+     "normative": false
+    },
+    {
+     "id": "3:s22",
+     "text": "Port: o_d_error; Direction: output; Width: 1; Meaning: TL-UL d_error",
+     "page": 577,
+     "normative": false
+    },
+    {
+     "id": "3:s23",
+     "text": "Port: o_d_intg_err; Direction: output; Width: 1; Meaning: Response integrity of the D-channel beat is wrong (see 4.3)",
+     "page": 578,
+     "normative": false
+    },
+    {
+     "id": "3:s24",
+     "text": "Port: o_alert; Direction: output; Width: 1; Meaning: Alert fatal_fault received (see 5)",
+     "page": 579,
+     "normative": false
+    },
+    {
+     "id": "3:s25",
+     "text": "Port: o_alert_integ_fail; Direction: output; Width: 1; Meaning: Signal integrity failure on the alert differential pairs (see 5)",
+     "page": 580,
+     "normative": false
+    },
+    {
+     "id": "3:s26",
+     "text": "Port: o_intr_timer_expired; Direction: output; Width: 1; Meaning: Interrupt timer_expired_hart0_timer0",
+     "page": 581,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "4",
+   "title": "TL-UL device interface",
+   "level": 2,
+   "parent": "T7",
+   "page_start": 583,
+   "page_end": 583,
+   "sentences": []
+  },
+  {
+   "id": "4.1",
+   "title": "Mapping",
+   "level": 3,
+   "parent": "4",
+   "page_start": 585,
+   "page_end": 592,
+   "sentences": [
+    {
+     "id": "4.1:s1",
+     "text": "[INT-TL-001] The i_a_*, o_a_ready, o_d_* (except o_d_intg_err) and i_d_ready ports are the fields of the same name of the TL-UL device interface tl of rv_timer, with the meaning given by the TL-UL bus specification.",
+     "page": 587,
+     "normative": false
+    },
+    {
+     "id": "4.1:s2",
+     "text": "[INT-TL-002] a_user.rsvd is 0. a_user.instr_type is MuBi4True when i_a_instr is 1 and MuBi4False when it is 0.",
+     "page": 590,
+     "normative": false
+    },
+    {
+     "id": "4.1:s3",
+     "text": "[INT-TL-003] The test bench acts as the TL-UL host.",
+     "page": 592,
+     "normative": false
+    },
+    {
+     "id": "4.1:s4",
+     "text": "It shall follow the host rules of the TL-UL bus specification (for example, the A-channel signals stay stable while a_valid is 1 and a_ready is 0).",
+     "page": 592,
+     "normative": true
+    },
+    {
+     "id": "4.1:s5",
+     "text": "Requests that the TL-UL specification lists as error cases (unsupported opcode, bad size or mask, misaligned address) are legal stimulus: the device answers them with d_error = 1 as the specifications require.",
+     "page": 592,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "4.2",
+   "title": "Request integrity",
+   "level": 3,
+   "parent": "4",
+   "page_start": 597,
+   "page_end": 604,
+   "sentences": [
+    {
+     "id": "4.2:s1",
+     "text": "[INT-INTG-001] The wrapper computes a_user.cmd_intg and a_user.data_intg of every request with OpenTitan's integrity generator for TL-UL hosts (the section Bus Integrity Scheme of the TL-UL bus specification is not written yet; the code is not part of this specification).",
+     "page": 599,
+     "normative": false
+    },
+    {
+     "id": "4.2:s2",
+     "text": "A request with i_a_intg_flip = 0 therefore always carries correct integrity, and the test bench does not compute integrity itself.",
+     "page": 599,
+     "normative": true
+    },
+    {
+     "id": "4.2:s3",
+     "text": "[INT-INTG-002] When i_a_intg_flip is 1, bit 0 of a_user.cmd_intg is inverted.",
+     "page": 604,
+     "normative": false
+    },
+    {
+     "id": "4.2:s4",
+     "text": "The request then has a command integrity error: a fatal TL-UL bus integrity fault in the sense of the rv_timer Security Alerts table, which triggers the fatal_fault alert (section 5).",
+     "page": 604,
+     "normative": false
+    },
+    {
+     "id": "4.2:s5",
+     "text": "These documents do not specify the D-channel response to such a request.",
+     "page": 604,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "4.3",
+   "title": "Response integrity",
+   "level": 3,
+   "parent": "4",
+   "page_start": 609,
+   "page_end": 611,
+   "sentences": [
+    {
+     "id": "4.3:s1",
+     "text": "[INT-INTG-003] The wrapper checks d_user.rsp_intg of every D-channel beat against the response fields with OpenTitan's response integrity checker for TL-UL hosts. o_d_intg_err is 1 in a cycle where o_d_valid is 1 and this check fails, and 0 otherwise.",
+     "page": 611,
+     "normative": false
+    },
+    {
+     "id": "4.3:s2",
+     "text": "A correct device never makes it 1.",
+     "page": 611,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "5",
+   "title": "Alert",
+   "level": 2,
+   "parent": "T7",
+   "page_start": 615,
+   "page_end": 625,
+   "sentences": [
+    {
+     "id": "5:s1",
+     "text": "[INT-ALERT-001] rv_timer has one alert, fatal_fault, sent through an alert sender.",
+     "page": 617,
+     "normative": false
+    },
+    {
+     "id": "5:s2",
+     "text": "The wrapper connects it to an alert receiver as described in the alert handler theory of operation (Differential Alert Signaling). o_alert is the alert_o output of that receiver: it is 1 for one clock cycle for each alert handshake that the receiver detects.",
+     "page": 617,
+     "normative": false
+    },
+    {
+     "id": "5:s3",
+     "text": "[INT-ALERT-002] o_alert_integ_fail is the integ_fail_o output of the receiver.",
+     "page": 622,
+     "normative": false
+    },
+    {
+     "id": "5:s4",
+     "text": "A correct sender never makes it 1.",
+     "page": 622,
+     "normative": true
+    },
+    {
+     "id": "5:s5",
+     "text": "[INT-ALERT-003] A fatal alert is repeated until reset (comportability specification, Alerts per Module), so after a bus integrity fault o_alert pulses repeatedly until rst_ni is asserted.",
+     "page": 625,
+     "normative": false
+    },
+    {
+     "id": "5:s6",
+     "text": "A write of 1 to ALERT_TEST.fatal_fault triggers one alert event, as the register description says.",
+     "page": 625,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "6",
+   "title": "Interrupt",
+   "level": 2,
+   "parent": "T7",
+   "page_start": 629,
+   "page_end": 631,
+   "sentences": [
+    {
+     "id": "6:s1",
+     "text": "[INT-INTR-001] o_intr_timer_expired is the interrupt output intr_timer_expired_hart0_timer0_o of rv_timer, an event-type interrupt as defined in the comportability specification, with the registers INTR_ENABLE0, INTR_STATE0 and INTR_TEST0.",
+     "page": 631,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "7",
+   "title": "Verification scope",
+   "level": 2,
+   "parent": "T7",
+   "page_start": 635,
+   "page_end": 644,
+   "sentences": [
+    {
+     "id": "7:s1",
+     "text": "[INT-VER-001] The verification shall cover, through the ports above: reset values of every register; the access type of every register field as given in the register tables (rw, rw1c, wo, rw0c); the tick generator (prescaler) and the step; counting of the 64-bit timer value, including writes to it and the carry from the lower to the upper half; the compare and the interrupt (state, enable, test, clearing by writing the compare registers); ALERT_TEST with its regwen field; bus error responses (unmapped addresses, sub-word writes, instruction fetches, integrity errors) and the fatal_fault alert.",
+     "page": 637,
+     "normative": true
+    },
+    {
+     "id": "7:s2",
+     "text": "[INT-VER-002] The 64-bit timer value cannot be run through its whole range in simulation.",
+     "page": 644,
+     "normative": true
+    },
+    {
+     "id": "7:s3",
+     "text": "Behaviour close to 2^64 shall be reached by writing the timer value registers.",
+     "page": 644,
+     "normative": true
+    }
+   ]
+  },
+  {
+   "id": "8",
+   "title": "Decisions for verification",
+   "level": 2,
+   "parent": "T7",
+   "page_start": 647,
+   "page_end": 678,
+   "sentences": [
+    {
+     "id": "8:s1",
+     "text": "These decisions answer questions that the documents above leave open (gaps found by nnc spec-lint before gate G1, and the open questions of the rule review).",
+     "page": 649,
+     "normative": false
+    },
+    {
+     "id": "8:s2",
+     "text": "They were made by Claude on the delegation of the project owner (GabrielHCMUT), on 2026-11-20, from the documents only; they are not OpenTitan requirements and not a hardware designer's review.",
+     "page": 649,
+     "normative": false
+    },
+    {
+     "id": "8:s3",
+     "text": "Where the documents do not decide a behaviour, the decision is that the verification does not demand one reading: it checks only what every reading has in common, or a bound.",
+     "page": 649,
+     "normative": false
+    },
+    {
+     "id": "8:s4",
+     "text": "The numeric bounds in this section are verification bounds chosen to be generous, not timing requirements of rv_timer.",
+     "page": 649,
+     "normative": false
+    },
+    {
+     "id": "8:s5",
+     "text": "ID: D-001; Question: Tick period (gaps 004, 005; question 1); Decision: With CTRL.active_0 = 1 and CFG0 unchanged, the timer value increases by CFG0.step (modulo 2^64) once every CFG0.prescale + 1 cycles (the 48 MHz example: prescale 47 gives a tick every 48 cycles), so prescale 0 gives a tick every cycle. The cycle of the first tick after active_0 becomes 1 is not specified; it shall come no later than CFG0.prescale + 1 + 4 cycles after the write response.",
+     "page": 659,
+     "normative": true
+    },
+    {
+     "id": "8:s6",
+     "text": "ID: D-002; Question: Changing CFG0 or writing the timer value while active (gaps 005, 006; question 4); Decision: A software obligation (Programmer's Guide). Tests write CFG0 and TIMER_V_* only while CTRL.active_0 = 0. Behaviour after such a write while active is not checked.",
+     "page": 660,
+     "normative": false
+    },
+    {
+     "id": "8:s7",
+     "text": "ID: D-003; Question: Interrupt event (gap 001; question 2); Decision: The event is the condition mtime >= mtimecmp (the interrupt description, and Event type in the comportability specification: \"if the event itself is still active, the INTR_STATE register will return to true\"). While the condition holds and the timer is active, INTR_STATE0.IS_0 shall read 1 within 4 cycles after a write of 1 to it.",
+     "page": 661,
+     "normative": true
+    },
+    {
+     "id": "8:s8",
+     "text": "ID: D-004; Question: Expiry while inactive (gap 003); Decision: Not specified. INTR_STATE0 and the interrupt are not checked while CTRL.active_0 = 0 with mtime >= mtimecmp.",
+     "page": 662,
+     "normative": false
+    },
+    {
+     "id": "8:s9",
+     "text": "ID: D-005; Question: Latencies (gap 007; question 2); Decision: When the condition becomes true by a tick, IS_0 shall be 1 no later than 4 cycles after that tick; when it becomes true by a register write while active, no later than CFG0.prescale + 1 + 4 cycles after the write response. o_intr_timer_expired shall equal IS_0 AND IE_0 except in the 2 cycles after either changes.",
+     "page": 663,
+     "normative": true
+    },
+    {
+     "id": "8:s10",
+     "text": "ID: D-006; Question: Clearing by a compare write (gap 002; question 3); Decision: A write to COMPARE_LOWER0_0 or COMPARE_UPPER0_0 after which mtimecmp > mtime (and stays so) shall leave IS_0 = 0 and the interrupt 0 within 4 cycles. If mtime >= mtimecmp still holds after the write, IS_0 shall be 1 again within 4 cycles; a dip in between is not checked.",
+     "page": 664,
+     "normative": true
+    },
+    {
+     "id": "8:s11",
+     "text": "ID: D-007; Question: Software write to INTR_STATE0 at the same time as an expiry (question 17); Decision: Software has precedence for that cycle; if the condition still holds, IS_0 returns to 1 (register tool, simultaneous access). Only the result after 4 cycles is checked.",
+     "page": 665,
+     "normative": false
+    },
+    {
+     "id": "8:s12",
+     "text": "ID: D-008; Question: Reads of write-only fields and reserved bits (gap 019; questions 5, 6, 7); Decision: A wo field has no read path (register tool, Type WO): it reads 0. Reserved bits read 0 and writes to them have no effect. After reset INTR_TEST0 reads 0x0 and ALERT_TEST reads 0x8000_0000.",
+     "page": 666,
+     "normative": false
+    },
+    {
+     "id": "8:s13",
+     "text": "ID: D-009; Question: ALERT_TEST (gaps 008, 009; questions 10, 18); Decision: Tests that trigger an alert write 0x8000_0001 (regwen kept at 1); the combined write 0x0000_0001 is not used. A write with bit 31 = 0 sets regwen to 0 until reset; afterwards a write of 0x8000_0001 completes with d_error = 0, triggers no alert, and regwen still reads 0. One write of 1 to fatal_fault, with no other alert cause and no other such write within 32 cycles, gives exactly one o_alert pulse, no later than 16 cycles after the write response. For writes closer together, at least one pulse and no more pulses than writes.",
+     "page": 667,
+     "normative": false
+    },
+    {
+     "id": "8:s14",
+     "text": "ID: D-010; Question: Fatal alert after a command integrity error (gap 010; questions 9, 11); Decision: o_alert shall pulse no later than 16 cycles after the request with i_a_intg_flip = 1 is accepted, and then at least once in every 32 cycles until rst_ni is asserted. The D-channel response to that request and the behaviour of later requests are not checked; the test bench does not wait more than 32 cycles for that response. After such a test, the test resets the design.",
+     "page": 668,
+     "normative": true
+    },
+    {
+     "id": "8:s15",
+     "text": "ID: D-011; Question: Instruction fetches (gap 011); Decision: Not stated for registers in these documents. A request with i_a_instr = 1 is not checked for d_error; a write with i_a_instr = 1 is not used.",
+     "page": 669,
+     "normative": false
+    },
+    {
+     "id": "8:s16",
+     "text": "ID: D-012; Question: Address decoding (gap 012; question 16); Decision: Following the register tool example (registers up to 0x84 use 8 address bits), the registers 0x0..0x11c use the offsets 0x000..0x1FF. A request to an unmapped offset in 0x000..0x1FF returns d_error = 1 and changes no register. Requests at 0x200 and above are not used.",
+     "page": 670,
+     "normative": false
+    },
+    {
+     "id": "8:s17",
+     "text": "ID: D-013; Question: Sub-word and partial writes (gap 013; question 14); Decision: Per the register tool: a write is an error when it is smaller than the register, where the register width is set by its highest field bit, or when its size is below 32 bits and the address is not 4-byte aligned. Checked cases: full-word writes with mask 1111 succeed; a byte write (a_size 0, mask 0001, offset aligned) to CFG0, TIMER_V_*, COMPARE_* or ALERT_TEST returns d_error = 1 and changes nothing; a byte write to byte 0 of CTRL, INTR_ENABLE0, INTR_STATE0 or INTR_TEST0 completes with d_error = 0 and has the effect of the write. Non-contiguous masks and other sub-word cases are not checked. Reads of any size return the full register (register tool).",
+     "page": 671,
+     "normative": false
+    },
+    {
+     "id": "8:s18",
+     "text": "ID: D-014; Question: Outstanding requests and back-pressure (gap 015); Decision: TL-UL allows several outstanding requests and does not guarantee order. The test bench matches responses by d_source, uses a distinct a_source per outstanding request, and does not assume o_a_ready = 1. A read of TIMER_V_* while active is checked only to lie between the values before the request and after the response.",
+     "page": 672,
+     "normative": false
+    },
+    {
+     "id": "8:s19",
+     "text": "ID: D-015; Question: Fields of a response (gap 016); Decision: Checked: d_error, d_source (echo of a_source), d_size (echo of a_size), d_opcode (AccessAckData for Get, AccessAck for PutFullData and PutPartialData). d_data is checked only for a Get without error. For an undefined opcode only d_error = 1 is checked. d_param and d_sink are not checked.",
+     "page": 673,
+     "normative": false
+    },
+    {
+     "id": "8:s20",
+     "text": "ID: D-016; Question: Reset (gap 018; question 8); Decision: The test bench keeps i_a_valid = 0 while rst_ni = 0 and in the first cycle after release. While rst_ni = 0, o_d_valid, o_alert, o_alert_integ_fail and o_intr_timer_expired shall be 0; o_a_ready is not checked. A response pending at reset is discarded. The rule that outputs change only at rising clock edges is not applied in cycles where rst_ni is 0 or falls.",
+     "page": 674,
+     "normative": true
+    },
+    {
+     "id": "8:s21",
+     "text": "ID: D-017; Question: Integrity outputs; Decision: o_d_intg_err and o_alert_integ_fail shall be 0 in every cycle with rst_ni = 1 (a correct device and sender never set them), including during a test with i_a_intg_flip = 1.",
+     "page": 675,
+     "normative": true
+    },
+    {
+     "id": "8:s22",
+     "text": "ID: D-018; Question: Natural carry at 2^32 and behaviour near 2^64 (question 12); Decision: Reached only by writing the timer value registers (while inactive) to values close to the carry, then counting.",
+     "page": 676,
+     "normative": false
+    },
+    {
+     "id": "8:s23",
+     "text": "ID: D-019; Question: Out of scope (questions 13, 15; gaps 017, 020); Decision: User-bit default values, Status-type interrupts (rv_timer has none), requests with a non-zero a_param, and the bit layout of a_user/d_user (the wrapper produces them) are not checked; tests drive i_a_param = 0.",
+     "page": 677,
+     "normative": false
+    },
+    {
+     "id": "8:s24",
+     "text": "ID: D-020; Question: Access type of INTR_STATE0.IS_0 (gap 014); Decision: The register tables bind: IS_0 is rw1c. The hjson text in the Theory of Operation is an example for two harts and two timers, not this configuration.",
+     "page": 678,
+     "normative": false
+    }
+   ]
+  }
+ ],
+ "tables": [
+  {
+   "section": "T5.1",
+   "header": [
+    "Name",
+    "Offset",
+    "Length",
+    "Description"
+   ],
+   "rows": [
+    [
+     "rv_timer.ALERT_TEST",
+     "0x0",
+     "4",
+     "Alert Test Register"
+    ],
+    [
+     "rv_timer.CTRL",
+     "0x4",
+     "4",
+     "Control register"
+    ],
+    [
+     "rv_timer.INTR_ENABLE0",
+     "0x100",
+     "4",
+     "Interrupt Enable"
+    ],
+    [
+     "rv_timer.INTR_STATE0",
+     "0x104",
+     "4",
+     "Interrupt Status"
+    ],
+    [
+     "rv_timer.INTR_TEST0",
+     "0x108",
+     "4",
+     "Interrupt test register"
+    ],
+    [
+     "rv_timer.CFG0",
+     "0x10c",
+     "4",
+     "Configuration for Hart 0"
+    ],
+    [
+     "rv_timer.TIMER_V_LOWER0",
+     "0x110",
+     "4",
+     "Timer value Lower"
+    ],
+    [
+     "rv_timer.TIMER_V_UPPER0",
+     "0x114",
+     "4",
+     "Timer value Upper"
+    ],
+    [
+     "rv_timer.COMPARE_LOWER0_0",
+     "0x118",
+     "4",
+     "Timer value Lower"
+    ],
+    [
+     "rv_timer.COMPARE_UPPER0_0",
+     "0x11c",
+     "4",
+     "Timer value Upper"
+    ]
+   ],
+   "line": 288,
+   "units": [
+    "T5.1:s1",
+    "T5.1:s2",
+    "T5.1:s3",
+    "T5.1:s4",
+    "T5.1:s5",
+    "T5.1:s6",
+    "T5.1:s7",
+    "T5.1:s8",
+    "T5.1:s9",
+    "T5.1:s10"
+   ]
+  },
+  {
+   "section": "T5.2.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31",
+     "rw0c",
+     "0x1",
+     "regwen",
+     "Write 0 to disable alert testing until the next reset."
+    ],
+    [
+     "30:1",
+     "",
+     "",
+     "",
+     "Reserved"
+    ],
+    [
+     "0",
+     "wo",
+     "0x0",
+     "fatal_fault",
+     "Write 1 to trigger one alert event of this kind."
+    ]
+   ],
+   "line": 313,
+   "units": [
+    "T5.2.1:s1",
+    "T5.2.1:s2",
+    "T5.2.1:s3"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.3.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:1",
+     "",
+     "",
+     "",
+     "Reserved"
+    ],
+    [
+     "0",
+     "rw",
+     "0x0",
+     "active_0",
+     "If 1, timer operates"
+    ]
+   ],
+   "line": 331,
+   "units": [
+    "T5.3.1:s1",
+    "T5.3.1:s2"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.4.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:1",
+     "",
+     "",
+     "",
+     "Reserved"
+    ],
+    [
+     "0",
+     "rw",
+     "0x0",
+     "IE_0",
+     "Interrupt Enable for timer"
+    ]
+   ],
+   "line": 348,
+   "units": [
+    "T5.4.1:s1",
+    "T5.4.1:s2"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.5.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:1",
+     "",
+     "",
+     "",
+     "Reserved"
+    ],
+    [
+     "0",
+     "rw1c",
+     "0x0",
+     "IS_0",
+     "Interrupt status for timer"
+    ]
+   ],
+   "line": 365,
+   "units": [
+    "T5.5.1:s1",
+    "T5.5.1:s2"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.6.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:1",
+     "",
+     "",
+     "",
+     "Reserved"
+    ],
+    [
+     "0",
+     "wo",
+     "x",
+     "T_0",
+     "Interrupt test for timer"
+    ]
+   ],
+   "line": 382,
+   "units": [
+    "T5.6.1:s1",
+    "T5.6.1:s2"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.7.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:24",
+     "",
+     "",
+     "",
+     "Reserved"
+    ],
+    [
+     "23:16",
+     "rw",
+     "0x1",
+     "step",
+     "Incremental value for each tick"
+    ],
+    [
+     "15:12",
+     "",
+     "",
+     "",
+     "Reserved"
+    ],
+    [
+     "11:0",
+     "rw",
+     "0x0",
+     "prescale",
+     "Prescaler to generate tick"
+    ]
+   ],
+   "line": 399,
+   "units": [
+    "T5.7.1:s1",
+    "T5.7.1:s2",
+    "T5.7.1:s3",
+    "T5.7.1:s4"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.8.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:0",
+     "rw",
+     "0x0",
+     "v",
+     "Timer value [31:0]"
+    ]
+   ],
+   "line": 418,
+   "units": [
+    "T5.8.1:s1"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.9.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:0",
+     "rw",
+     "0x0",
+     "v",
+     "Timer value [63:32]"
+    ]
+   ],
+   "line": 434,
+   "units": [
+    "T5.9.1:s1"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.10.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:0",
+     "rw",
+     "0xffffffff",
+     "v",
+     "Timer compare value [31:0]"
+    ]
+   ],
+   "line": 450,
+   "units": [
+    "T5.10.1:s1"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T5.11.1",
+   "header": [
+    "Bits",
+    "Type",
+    "Reset",
+    "Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "31:0",
+     "rw",
+     "0xffffffff",
+     "v",
+     "Timer compare value [63:32]"
+    ]
+   ],
+   "line": 466,
+   "units": [
+    "T5.11.1:s1"
+   ],
+   "caption": ""
+  },
+  {
+   "section": "T6.1",
+   "header": [
+    "Port Name",
+    "Package::Struct",
+    "Type",
+    "Act",
+    "Width",
+    "Description"
+   ],
+   "rows": [
+    [
+     "racl_policies",
+     "top_racl_pkg::racl_policy_vec",
+     "uni",
+     "rcv",
+     "1",
+     "Incoming RACL policy vector from a racl_ctrl instance. The policy selection vector (parameter) selects the policy for each register."
+    ],
+    [
+     "racl_error",
+     "top_racl_pkg::racl_error_log",
+     "uni",
+     "req",
+     "1",
+     "RACL error log information of this module."
+    ],
+    [
+     "tl",
+     "tlul_pkg::tl",
+     "req_rsp",
+     "rsp",
+     "1",
+     ""
+    ]
+   ],
+   "line": 487,
+   "units": [
+    "T6.1:s1",
+    "T6.1:s2",
+    "T6.1:s3"
+   ]
+  },
+  {
+   "section": "T6.2",
+   "header": [
+    "Interrupt Name",
+    "Type",
+    "Description"
+   ],
+   "rows": [
+    [
+     "timer_expired_hart0_timer0",
+     "Event",
+     "raised if hart0's timer0 expired (mtime >= mtimecmp)"
+    ]
+   ],
+   "line": 495,
+   "units": [
+    "T6.2:s1"
+   ]
+  },
+  {
+   "section": "T6.3",
+   "header": [
+    "Alert Name",
+    "Description"
+   ],
+   "rows": [
+    [
+     "fatal_fault",
+     "This fatal alert is triggered when a fatal TL-UL bus integrity fault is detected inside the RV_TIMER unit."
+    ]
+   ],
+   "line": 501,
+   "units": [
+    "T6.3:s1"
+   ]
+  },
+  {
+   "section": "T6.4",
+   "header": [
+    "Countermeasure ID",
+    "Description"
+   ],
+   "rows": [
+    [
+     "RV_TIMER.BUS.INTEGRITY",
+     "End-to-end bus integrity scheme."
+    ]
+   ],
+   "line": 507,
+   "units": [
+    "T6.4:s1"
+   ]
+  },
+  {
+   "section": "3",
+   "header": [
+    "Port",
+    "Direction",
+    "Width",
+    "Meaning"
+   ],
+   "rows": [
+    [
+     "clk_i",
+     "input",
+     "1",
+     "Clock"
+    ],
+    [
+     "rst_ni",
+     "input",
+     "1",
+     "Active-low reset"
+    ],
+    [
+     "i_a_valid",
+     "input",
+     "1",
+     "TL-UL a_valid"
+    ],
+    [
+     "o_a_ready",
+     "output",
+     "1",
+     "TL-UL a_ready"
+    ],
+    [
+     "i_a_opcode",
+     "input",
+     "3",
+     "TL-UL a_opcode (Get = 4, PutFullData = 0, PutPartialData = 1)"
+    ],
+    [
+     "i_a_param",
+     "input",
+     "3",
+     "TL-UL a_param"
+    ],
+    [
+     "i_a_size",
+     "input",
+     "2",
+     "TL-UL a_size (log2 of the number of bytes)"
+    ],
+    [
+     "i_a_source",
+     "input",
+     "8",
+     "TL-UL a_source"
+    ],
+    [
+     "i_a_address",
+     "input",
+     "32",
+     "TL-UL a_address (byte address; the register offsets of the rv_timer specification are relative to 0)"
+    ],
+    [
+     "i_a_mask",
+     "input",
+     "4",
+     "TL-UL a_mask"
+    ],
+    [
+     "i_a_data",
+     "input",
+     "32",
+     "TL-UL a_data"
+    ],
+    [
+     "i_a_instr",
+     "input",
+     "1",
+     "1: the request is an instruction fetch (a_user.instr_type = MuBi4True); 0: a data access (MuBi4False)"
+    ],
+    [
+     "i_a_intg_flip",
+     "input",
+     "1",
+     "1: the A-channel integrity sent with the request is corrupted (see 4.2)"
+    ],
+    [
+     "o_d_valid",
+     "output",
+     "1",
+     "TL-UL d_valid"
+    ],
+    [
+     "i_d_ready",
+     "input",
+     "1",
+     "TL-UL d_ready"
+    ],
+    [
+     "o_d_opcode",
+     "output",
+     "3",
+     "TL-UL d_opcode (AccessAck = 0, AccessAckData = 1)"
+    ],
+    [
+     "o_d_param",
+     "output",
+     "3",
+     "TL-UL d_param"
+    ],
+    [
+     "o_d_size",
+     "output",
+     "2",
+     "TL-UL d_size"
+    ],
+    [
+     "o_d_source",
+     "output",
+     "8",
+     "TL-UL d_source"
+    ],
+    [
+     "o_d_sink",
+     "output",
+     "1",
+     "TL-UL d_sink"
+    ],
+    [
+     "o_d_data",
+     "output",
+     "32",
+     "TL-UL d_data"
+    ],
+    [
+     "o_d_error",
+     "output",
+     "1",
+     "TL-UL d_error"
+    ],
+    [
+     "o_d_intg_err",
+     "output",
+     "1",
+     "Response integrity of the D-channel beat is wrong (see 4.3)"
+    ],
+    [
+     "o_alert",
+     "output",
+     "1",
+     "Alert fatal_fault received (see 5)"
+    ],
+    [
+     "o_alert_integ_fail",
+     "output",
+     "1",
+     "Signal integrity failure on the alert differential pairs (see 5)"
+    ],
+    [
+     "o_intr_timer_expired",
+     "output",
+     "1",
+     "Interrupt timer_expired_hart0_timer0"
+    ]
+   ],
+   "line": 554,
+   "units": [
+    "3:s1",
+    "3:s2",
+    "3:s3",
+    "3:s4",
+    "3:s5",
+    "3:s6",
+    "3:s7",
+    "3:s8",
+    "3:s9",
+    "3:s10",
+    "3:s11",
+    "3:s12",
+    "3:s13",
+    "3:s14",
+    "3:s15",
+    "3:s16",
+    "3:s17",
+    "3:s18",
+    "3:s19",
+    "3:s20",
+    "3:s21",
+    "3:s22",
+    "3:s23",
+    "3:s24",
+    "3:s25",
+    "3:s26"
+   ]
+  },
+  {
+   "section": "8",
+   "header": [
+    "ID",
+    "Question",
+    "Decision"
+   ],
+   "rows": [
+    [
+     "D-001",
+     "Tick period (gaps 004, 005; question 1)",
+     "With CTRL.active_0 = 1 and CFG0 unchanged, the timer value increases by CFG0.step (modulo 2^64) once every CFG0.prescale + 1 cycles (the 48 MHz example: prescale 47 gives a tick every 48 cycles), so prescale 0 gives a tick every cycle. The cycle of the first tick after active_0 becomes 1 is not specified; it shall come no later than CFG0.prescale + 1 + 4 cycles after the write response."
+    ],
+    [
+     "D-002",
+     "Changing CFG0 or writing the timer value while active (gaps 005, 006; question 4)",
+     "A software obligation (Programmer's Guide). Tests write CFG0 and TIMER_V_* only while CTRL.active_0 = 0. Behaviour after such a write while active is not checked."
+    ],
+    [
+     "D-003",
+     "Interrupt event (gap 001; question 2)",
+     "The event is the condition mtime >= mtimecmp (the interrupt description, and Event type in the comportability specification: \"if the event itself is still active, the INTR_STATE register will return to true\"). While the condition holds and the timer is active, INTR_STATE0.IS_0 shall read 1 within 4 cycles after a write of 1 to it."
+    ],
+    [
+     "D-004",
+     "Expiry while inactive (gap 003)",
+     "Not specified. INTR_STATE0 and the interrupt are not checked while CTRL.active_0 = 0 with mtime >= mtimecmp."
+    ],
+    [
+     "D-005",
+     "Latencies (gap 007; question 2)",
+     "When the condition becomes true by a tick, IS_0 shall be 1 no later than 4 cycles after that tick; when it becomes true by a register write while active, no later than CFG0.prescale + 1 + 4 cycles after the write response. o_intr_timer_expired shall equal IS_0 AND IE_0 except in the 2 cycles after either changes."
+    ],
+    [
+     "D-006",
+     "Clearing by a compare write (gap 002; question 3)",
+     "A write to COMPARE_LOWER0_0 or COMPARE_UPPER0_0 after which mtimecmp > mtime (and stays so) shall leave IS_0 = 0 and the interrupt 0 within 4 cycles. If mtime >= mtimecmp still holds after the write, IS_0 shall be 1 again within 4 cycles; a dip in between is not checked."
+    ],
+    [
+     "D-007",
+     "Software write to INTR_STATE0 at the same time as an expiry (question 17)",
+     "Software has precedence for that cycle; if the condition still holds, IS_0 returns to 1 (register tool, simultaneous access). Only the result after 4 cycles is checked."
+    ],
+    [
+     "D-008",
+     "Reads of write-only fields and reserved bits (gap 019; questions 5, 6, 7)",
+     "A wo field has no read path (register tool, Type WO): it reads 0. Reserved bits read 0 and writes to them have no effect. After reset INTR_TEST0 reads 0x0 and ALERT_TEST reads 0x8000_0000."
+    ],
+    [
+     "D-009",
+     "ALERT_TEST (gaps 008, 009; questions 10, 18)",
+     "Tests that trigger an alert write 0x8000_0001 (regwen kept at 1); the combined write 0x0000_0001 is not used. A write with bit 31 = 0 sets regwen to 0 until reset; afterwards a write of 0x8000_0001 completes with d_error = 0, triggers no alert, and regwen still reads 0. One write of 1 to fatal_fault, with no other alert cause and no other such write within 32 cycles, gives exactly one o_alert pulse, no later than 16 cycles after the write response. For writes closer together, at least one pulse and no more pulses than writes."
+    ],
+    [
+     "D-010",
+     "Fatal alert after a command integrity error (gap 010; questions 9, 11)",
+     "o_alert shall pulse no later than 16 cycles after the request with i_a_intg_flip = 1 is accepted, and then at least once in every 32 cycles until rst_ni is asserted. The D-channel response to that request and the behaviour of later requests are not checked; the test bench does not wait more than 32 cycles for that response. After such a test, the test resets the design."
+    ],
+    [
+     "D-011",
+     "Instruction fetches (gap 011)",
+     "Not stated for registers in these documents. A request with i_a_instr = 1 is not checked for d_error; a write with i_a_instr = 1 is not used."
+    ],
+    [
+     "D-012",
+     "Address decoding (gap 012; question 16)",
+     "Following the register tool example (registers up to 0x84 use 8 address bits), the registers 0x0..0x11c use the offsets 0x000..0x1FF. A request to an unmapped offset in 0x000..0x1FF returns d_error = 1 and changes no register. Requests at 0x200 and above are not used."
+    ],
+    [
+     "D-013",
+     "Sub-word and partial writes (gap 013; question 14)",
+     "Per the register tool: a write is an error when it is smaller than the register, where the register width is set by its highest field bit, or when its size is below 32 bits and the address is not 4-byte aligned. Checked cases: full-word writes with mask 1111 succeed; a byte write (a_size 0, mask 0001, offset aligned) to CFG0, TIMER_V_*, COMPARE_* or ALERT_TEST returns d_error = 1 and changes nothing; a byte write to byte 0 of CTRL, INTR_ENABLE0, INTR_STATE0 or INTR_TEST0 completes with d_error = 0 and has the effect of the write. Non-contiguous masks and other sub-word cases are not checked. Reads of any size return the full register (register tool)."
+    ],
+    [
+     "D-014",
+     "Outstanding requests and back-pressure (gap 015)",
+     "TL-UL allows several outstanding requests and does not guarantee order. The test bench matches responses by d_source, uses a distinct a_source per outstanding request, and does not assume o_a_ready = 1. A read of TIMER_V_* while active is checked only to lie between the values before the request and after the response."
+    ],
+    [
+     "D-015",
+     "Fields of a response (gap 016)",
+     "Checked: d_error, d_source (echo of a_source), d_size (echo of a_size), d_opcode (AccessAckData for Get, AccessAck for PutFullData and PutPartialData). d_data is checked only for a Get without error. For an undefined opcode only d_error = 1 is checked. d_param and d_sink are not checked."
+    ],
+    [
+     "D-016",
+     "Reset (gap 018; question 8)",
+     "The test bench keeps i_a_valid = 0 while rst_ni = 0 and in the first cycle after release. While rst_ni = 0, o_d_valid, o_alert, o_alert_integ_fail and o_intr_timer_expired shall be 0; o_a_ready is not checked. A response pending at reset is discarded. The rule that outputs change only at rising clock edges is not applied in cycles where rst_ni is 0 or falls."
+    ],
+    [
+     "D-017",
+     "Integrity outputs",
+     "o_d_intg_err and o_alert_integ_fail shall be 0 in every cycle with rst_ni = 1 (a correct device and sender never set them), including during a test with i_a_intg_flip = 1."
+    ],
+    [
+     "D-018",
+     "Natural carry at 2^32 and behaviour near 2^64 (question 12)",
+     "Reached only by writing the timer value registers (while inactive) to values close to the carry, then counting."
+    ],
+    [
+     "D-019",
+     "Out of scope (questions 13, 15; gaps 017, 020)",
+     "User-bit default values, Status-type interrupts (rv_timer has none), requests with a non-zero a_param, and the bit layout of a_user/d_user (the wrapper produces them) are not checked; tests drive i_a_param = 0."
+    ],
+    [
+     "D-020",
+     "Access type of INTR_STATE0.IS_0 (gap 014)",
+     "The register tables bind: IS_0 is rw1c. The hjson text in the Theory of Operation is an example for two harts and two timers, not this configuration."
+    ]
+   ],
+   "line": 657,
+   "units": [
+    "8:s5",
+    "8:s6",
+    "8:s7",
+    "8:s8",
+    "8:s9",
+    "8:s10",
+    "8:s11",
+    "8:s12",
+    "8:s13",
+    "8:s14",
+    "8:s15",
+    "8:s16",
+    "8:s17",
+    "8:s18",
+    "8:s19",
+    "8:s20",
+    "8:s21",
+    "8:s22",
+    "8:s23",
+    "8:s24"
+   ],
+   "caption": "rv_timer."
+  }
+ ],
+ "signals": {
+  "ALERT_TEST": 6,
+  "CFG0": 10,
+  "COMPARE_LOWER0_0": 3,
+  "COMPARE_UPPER0_0": 3,
+  "CPU": 2,
+  "CTRL": 5,
+  "IE_0": 2,
+  "INTR_ENABLE0": 3,
+  "INTR_STATE0": 8,
+  "INTR_TEST0": 4,
+  "IS_0": 6,
+  "N_HARTS": 2,
+  "RACL": 3,
+  "RV_TIMER": 4,
+  "TIMER_V_": 3,
+  "i_a_instr": 3,
+  "i_a_intg_flip": 5,
+  "i_a_param": 2,
+  "i_a_valid": 2,
+  "i_d_ready": 2,
+  "o_a_ready": 4,
+  "o_alert": 6,
+  "o_alert_integ_fail": 4,
+  "o_d_intg_err": 4,
+  "o_d_valid": 3,
+  "o_intr_timer_expired": 4
+ },
+ "warnings": [],
+ "stats": {
+  "sections": 55,
+  "sentences": 239,
+  "normative": 36,
+  "chars": 26621
+ }
+}
