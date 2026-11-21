@@ -78,11 +78,13 @@ def hash_path(path: Path) -> str | None:
 
     An empty folder hashes like a missing one: it holds no artifact to approve. Line endings are
     normalised (CRLF -> LF) so that an approval made on Windows still holds on a git checkout elsewhere.
+    Python bytecode caches (`__pycache__/`, `*.pyc`) are left out: importing a generated test creates them
+    locally, git ignores them, and an approval must not depend on them.
     """
     if path.is_file():
         return hashlib.sha256(_content(path)).hexdigest()
     if path.is_dir():
-        files = sorted(p for p in path.rglob("*") if p.is_file())
+        files = sorted(p for p in path.rglob("*") if p.is_file() and not _cache(p.relative_to(path)))
         if not files:
             return None
         h = hashlib.sha256()
@@ -92,6 +94,10 @@ def hash_path(path: Path) -> str | None:
             h.update(hashlib.sha256(_content(f)).digest())
         return h.hexdigest()
     return None
+
+
+def _cache(rel: Path) -> bool:
+    return "__pycache__" in rel.parts or rel.suffix in (".pyc", ".pyo")
 
 
 def _content(path: Path) -> bytes:

@@ -462,6 +462,22 @@ class HashPortabilityTest(unittest.TestCase):
             b.write_bytes(b'{\n  "k": 2\n}\n')
             self.assertNotEqual(hash_path(a), hash_path(b))
 
+    def test_python_caches_do_not_change_an_approval(self):
+        """Importing a generated test leaves verif/tests/__pycache__/ locally; git ignores it, so a checkout
+        elsewhere (CI) must hash the folder the same (async_apb_bridge G3 was STALE in CI)."""
+        from nnc.project import hash_path
+        with tempfile.TemporaryDirectory() as t:
+            d = Path(t) / "verif"
+            (d / "tests").mkdir(parents=True)
+            (d / "tests" / "test_x.py").write_text("x = 1\n")
+            before = hash_path(d)
+            (d / "tests" / "__pycache__").mkdir()
+            (d / "tests" / "__pycache__" / "test_x.cpython-313.pyc").write_bytes(b"\x00\x01")
+            (d / "tests" / "stray.pyc").write_bytes(b"\x02")
+            self.assertEqual(hash_path(d), before)
+            (d / "tests" / "test_x.py").write_text("x = 2\n")
+            self.assertNotEqual(hash_path(d), before)
+
 
 class RenumberTest(unittest.TestCase):
     def test_references_follow_the_new_ids(self):
