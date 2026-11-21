@@ -15,6 +15,9 @@ approval is recorded as delegated. See [docs/G4_REVIEW_REQUEST.md](docs/G4_REVIE
   the public numbers of OpenTitan's own test benches.
 - Fix: with the slang frontend, formal now gives a configuration's parameters to `read_slang -G`; before, every
   check of a parameterised design was ERROR.
+- Fix: gate hashes leave out Python caches (`__pycache__/`, `*.pyc`). A cache file in `verif/tests/` made G3 of
+  async_apb_bridge and async_gray_fifo look changed on a clean checkout, so CI failed the README table check
+  after 0.2.0.
 - `nnc stability <run> <run> ...` compares repeated agent runs through the specification sentences their rules
   cite. Measured on uart_lite (EVALUATION §10, `designs/uart_lite/stability/`).
 - CI: ot_gpio in the kit and kit-configs jobs, and in formal with one job per configuration.
