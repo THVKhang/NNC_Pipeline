@@ -1,4 +1,6 @@
 # CI of NNC Pipeline: no LLM call, no secret.
+#   install      the wheel installed in a clean virtual environment; nnc doctor and kit-check run from outside
+#                the repository (phase 17)
 #   unit         the unit tests of every stage (deterministic parts, no simulator)
 #   kit          the reproduction kit designs/<ip>/sim of each design, run with make only (no NNC), and its
 #                outcome compared with the committed results (nnc kit-check): same tests, same failing tests,
@@ -84,6 +86,39 @@ jobs:
             designs/${{ matrix.design }}/sim/sim.log
             designs/${{ matrix.design }}/sim/results.xml
           if-no-files-found: ignore
+
+  install:
+    # The package as a user gets it: wheel built, installed in a clean virtual environment (not editable),
+    # run from outside the repository. Fails if a file the flow reads is missing from the wheel.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Verilator (OSS CAD Suite)
+        run: |
+          tag="${OSS_CAD_SUITE}"
+          curl -fsSL -o "$RUNNER_TEMP/ocs.tgz"             "https://github.com/YosysHQ/oss-cad-suite-build/releases/download/${tag}/oss-cad-suite-linux-x64-${tag//-/}.tgz"
+          tar -xzf "$RUNNER_TEMP/ocs.tgz" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/oss-cad-suite/bin" >> "$GITHUB_PATH"
+      - name: Build the wheel and install it in a clean virtual environment
+        run: |
+          python -m pip wheel . --no-deps -w "$RUNNER_TEMP/wheel"
+          python -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install "$RUNNER_TEMP"/wheel/*.whl "cocotb==${COCOTB}"
+          echo "$RUNNER_TEMP/venv/bin" >> "$GITHUB_PATH"
+      - name: Run the reproduction kit of sync_fifo (make only)
+        working-directory: designs/sync_fifo/sim
+        run: make regression SEED=1 > sim.log 2>&1 || echo "make returned $?"
+      - name: The installed nnc, from outside the repository
+        working-directory: ${{ runner.temp }}
+        run: |
+          nnc --version
+          nnc doctor
+          python -c "import nnc.gen_rtl as g, nnc.specdraft as s, nnc.sim as m; assert g.RULES_DOC.is_file() and s.TEMPLATE.is_file() and m.SIMLIB.is_file()"
+          nnc --root "$GITHUB_WORKSPACE/designs" kit-check sync_fifo
 
   kit-configs:
     if: github.event_name != 'push' || github.ref == 'refs/heads/main'

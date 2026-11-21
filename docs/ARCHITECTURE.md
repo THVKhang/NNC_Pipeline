@@ -720,3 +720,28 @@ Môi trường formal theo RT-4.1-05, còn CHK-008 theo luật host. DUT trả `
 **CI.** ot_rv_timer được thêm vào các job kit, kit-configs và formal. Kit đã chạy thử trong WSL theo đúng cách của CI: cả 2 seed cho kết quả giống bản đã ghi.
 
 **Bước tiếp theo:** [ROADMAP.md](ROADMAP.md) (GĐ17 đóng gói, GĐ18 IP OpenTitan thứ hai và đo độ ổn định).
+
+## 24. Đóng gói, bộ hồ sơ cho người duyệt G4 (GĐ17, 2026-11-21)
+
+**Vì sao.** Trước đây flow chỉ chạy được từ thư mục mã nguồn. Bản cài bằng `pip install` sẽ thiếu 3 file mà flow cần đọc:
+- `docs/RTL_RULES.md`, cho agent A15;
+- `docs/SPEC_TEMPLATE.md`, cho `spec-draft`;
+- `nnc/simlib/nnc_cocotb.py`. Thư mục này không có `__init__.py`, nên không vào wheel.
+
+Người duyệt G4 cũng phải tự tìm hồ sơ rải rác trong `work/`.
+
+**Đã làm.**
+- **File dữ liệu nằm trong package:** `nnc/data/`, khai báo `package-data` trong `pyproject.toml`. Bản trong `docs/` vẫn là bản gốc, và một unit test kiểm hai bản giống hệt nhau. Phiên bản lấy từ `nnc.__version__` (0.2.0).
+- **Job CI `install`:** build wheel, cài vào venv sạch (không dùng `-e`), chạy kit sync_fifo bằng `make`, rồi chạy `nnc --version`, `nnc doctor` và `nnc kit-check` từ một thư mục ngoài repo. Mình đã chạy thử y như vậy trong WSL và đều qua.
+- **`nnc review-kit <ip> [--zip]`:** gom vào một thư mục những gì người duyệt cần, không cần chạy công cụ:
+  - review packet, report, rules, contract;
+  - triage, formal, mutation kèm trace VCD;
+  - spec, RTL, verification, và kit `make` (không kèm sản phẩm build);
+  - NOTICE và LICENSE;
+  - `MANIFEST.txt` (SHA-256 của từng file);
+  - `CHECKLIST.md`: câu hỏi riêng của thiết kế (lấy từ `docs/G4_REVIEW_REQUEST.md`), bảng điều kiện ký (từ `report.json`) và ô quyết định để trống.
+
+  Một tài liệu chuẩn chỉ được chép khi NOTICE.md của thiết kế nêu tên file đó, tức giấy phép cho phép phân phối lại. Nếu không, CHECKLIST ghi "not included". Lệnh không ký và không duyệt gì.
+- **`nnc summary --readme README.md`:** bảng mọi thiết kế trong README do code sinh từ các file kết quả đã commit. Một unit test báo lỗi nếu bảng không khớp với các file đó.
+
+**Không đổi:** G4 vẫn để trống ở mọi thiết kế.

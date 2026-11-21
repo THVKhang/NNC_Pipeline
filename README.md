@@ -41,6 +41,12 @@ Status / Trạng thái: working prototype, run end-to-end on six delivered desig
 
 ## Quick start | Bắt đầu nhanh
 
+Install (Python 3.11+; Verilator, Yosys and SymbiYosys from the OSS CAD Suite; `nnc doctor` lists what is missing):
+
+```bash
+pip install ".[sim]"                     # from a clone; then `nnc ...` works like `python -m nnc ...`
+```
+
 ```bash
 python -m nnc doctor
 python -m nnc init my_ip --top m_my_ip
@@ -56,6 +62,31 @@ cd designs/my_ip/sim && make help        # reproduce the regression without the 
 ```
 
 In Claude Code: `/nnc-flow my_ip` runs the same steps and presents each gate. Full walk-through: [docs/GUIDE.md](docs/GUIDE.md). Design and measurements: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Evaluation of the latest phases: [docs/EVALUATION.md](docs/EVALUATION.md).
+
+## All designs | Mọi thiết kế
+
+Made by `nnc summary --readme README.md` from each design's committed results (`work/results.json`, `report.json`,
+`formal.json`, `mutation.json`); a unit test fails if this table and the files differ. Simulation-only checks use
+constructs formal cannot translate (`$time`, falling clock edge). No design is signed off: G4 needs a qualified
+person ([G4_REVIEW_REQUEST.md](docs/G4_REVIEW_REQUEST.md); `nnc review-kit <ip>` collects what they need).
+Measurements and history: [EVALUATION.md](docs/EVALUATION.md), [CHANGELOG.md](CHANGELOG.md).
+
+<!-- nnc-summary:start (nnc summary --readme README.md) -->
+| Design | Tests passing | Checks PASS | Formal | Mutation | G4 |
+|---|---|---|---|---|---|
+| [ahb2axi_bridge](designs/ahb2axi_bridge) | 1/21 | 14/40 | 8 proven / 2 bounded / 1 vacuous / 9 **counterexample** | not run | pending (not signed) |
+| [apb_tlul_bridge](designs/apb_tlul_bridge) | 17/17 | 31/31 | 17 proven | 100.0 % (33/33) | pending (not signed) |
+| [async_apb_bridge](designs/async_apb_bridge) | 28/28 | 35/35 | 15 proven / 3 simulation-only | 91.7 % (11/12) | pending (not signed) |
+| [async_gray_fifo](designs/async_gray_fifo) | 12/20 | 23/32 | 5 proven / 2 bounded / 6 simulation-only | 100.0 % (12/12) | pending (not signed) |
+| [axi2apb_bridge](designs/axi2apb_bridge) | 15/15 | 31/31 | 12 proven / 4 bounded / 1 timeout | 88.9 % (32/36); 94.1 % without 2 proven equivalent | pending (not signed) |
+| [axil_regfile](designs/axil_regfile) | 21/21 | 37/37 | 15 proven / 1 bounded / 1 simulation-only | 93.1 % (27/29); 100.0 % without 2 proven equivalent | pending (not signed) |
+| [gen_apb_tlul_bridge](designs/gen_apb_tlul_bridge) | 17/17 | 31/31 | 17 proven | 100.0 % (36/36) | pending (not signed) |
+| [gen_sync_fifo](designs/gen_sync_fifo) | 24/25 | 24/25 | 6 proven / 2 bounded / 1 timeout / 1 simulation-only / 1 **counterexample** | 100.0 % (36/36) | blocked (not signed) |
+| [ot_rv_timer](designs/ot_rv_timer) | 23/23 | 35/35 | 7 proven / 2 bounded / 1 timeout / 2 simulation-only / 1 **counterexample** | 58.3 % (21/36); 84.0 % without 11 proven equivalent | pending (not signed) |
+| [spi_master](designs/spi_master) | 15/15 | 41/41 | 6 proven / 7 bounded / 14 simulation-only | 91.7 % (33/36); 100.0 % without 3 proven equivalent | pending (not signed) |
+| [sync_fifo](designs/sync_fifo) | 25/25 | 25/25 | 7 proven / 2 bounded / 1 timeout / 1 simulation-only | 100.0 % (36/36) | pending (not signed) |
+| [uart_lite](designs/uart_lite) | 20/20 | 32/32 | 4 proven / 8 bounded / 1 simulation-only | 97.2 % (35/36) | pending (not signed) |
+<!-- nnc-summary:end -->
 
 ## Results on six designs | Kết quả trên sáu thiết kế
 
@@ -188,16 +219,20 @@ nnc/                 orchestrator: ingest, extract, review, contract, gen_sva, g
                      derive, equiv + restyle (A16, equivalence proof), specdraft (A0), export (DOCX/PDF)
                      mutequiv (formal equivalence of surviving mutants), simhost (WSL/local host, retry), tools (doctor)
                      fix_verif (A17: corrects verification judged B by triage, never sees the RTL, no weakening)
+                     reviewkit (G4 review kit), summary (the design table of this README)
+nnc/data/            package copies of docs/RTL_RULES.md and docs/SPEC_TEMPLATE.md (a unit test keeps them equal)
 nnc/agents/          Claude Code backend (inline worker / sandboxed deep agent), manual backend, cache, schema validator
 nnc/simlib/          helper library copied next to generated cocotb tests (clocks, resets, multi-clock helpers)
 .claude/commands/    /nnc-flow, /nnc-gate
 designs/<ip>/        spec/, rtl/, work/ (artifacts, review sheets), verif/ (generated checkers, cover points, tests),
                      sim/ (Makefile kit to reproduce the regression; sim/configs/ for the other run-set configurations),
                      run_set.json, bugs/ (benchmark faults)
-.github/workflows/   CI: unit tests, the reproduction kit of every design and configuration, formal reruns
+.github/workflows/   CI: unit tests, install of the wheel, the reproduction kit of every design and configuration,
+                     formal reruns
 .github/kit_runs.sh  runs the recorded runs of a kit with make only and compares each one
 tests/               unit tests (no tokens, no simulator) and sim_smoke/ (cocotb + Verilator smoke test)
-docs/                ARCHITECTURE.md, GUIDE.md
+docs/                ARCHITECTURE.md, GUIDE.md, EVALUATION.md, G4_REVIEW_REQUEST.md, ROADMAP.md
+CHANGELOG.md         changes per version and phase
 ```
 
 ## Limits | Giới hạn

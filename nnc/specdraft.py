@@ -22,7 +22,7 @@ from nnc.contract import extract_interface
 from nnc.ingest import build_index
 from nnc.params import parse_legal
 
-TEMPLATE = Path(__file__).resolve().parent.parent / "docs" / "SPEC_TEMPLATE.md"
+TEMPLATE = Path(__file__).resolve().parent / "data" / "SPEC_TEMPLATE.md"   # package copy of docs/SPEC_TEMPLATE.md
 REQUIRED = ("overview", "parameter", "interface", "clock", "functional", "error", "configuration", "verification")
 PROMPT_VERSION = "spec-v1"
 SYSTEM_PROMPT = (

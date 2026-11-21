@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nnc-pipeline"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Specification-driven RTL verification flow: rules from specs, SVA + cocotb tests, Verilator runs, gated review."
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -18,5 +18,13 @@ docs = ["pypandoc_binary>=1.13"]
 [project.scripts]
 nnc = "nnc.cli:main"
 
+[tool.setuptools.dynamic]
+version = { attr = "nnc.__version__" }
+
 [tool.setuptools.packages.find]
 include = ["nnc*"]
+
+[tool.setuptools.package-data]
+# docs/RTL_RULES.md and docs/SPEC_TEMPLATE.md are copied to nnc/data/ (a unit test keeps them equal);
+# simlib/nnc_cocotb.py is copied into every simulation and reproduction kit.
+nnc = ["data/*.md", "simlib/*.py"]

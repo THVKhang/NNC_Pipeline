@@ -11,6 +11,14 @@ Các ràng buộc sau vẫn giữ nguyên:
 
 ## Giai đoạn 17: đóng gói để người khác cài và chạy được
 
+**Trạng thái (2026-11-21):** 17.1–17.6 xong, xem [CHANGELOG.md](../CHANGELOG.md) mục 0.2.0. Cụ thể:
+- wheel có đủ `nnc/data/*.md` và `nnc/simlib/nnc_cocotb.py`;
+- cài trong venv sạch trên WSL: `nnc --version` in 0.2.0, `nnc doctor` PASS, và `nnc kit-check ot_rv_timer` chạy từ ngoài repo ra SAME OUTCOME;
+- CI có job `install`;
+- có lệnh `nnc review-kit` và `nnc summary`.
+
+17.7 (PR vào `main`) chờ người dùng đồng ý.
+
 **Mục tiêu.** Một máy mới chạy `pip install` từ repo là có lệnh `nnc` chạy được, không cần mở mã nguồn.
 
 | # | Bước | Điều kiện xong |

@@ -365,6 +365,31 @@ def cmd_mutate_equiv(args) -> int:
     return 0
 
 
+def cmd_summary(args) -> int:
+    from nnc import summary
+    if args.readme:
+        changed = summary.write_readme(Path(args.readme), Path(args.root))
+        print(f"{args.readme}: design table {'updated' if changed else 'already up to date'}")
+    else:
+        print(summary.table(Path(args.root)))
+    return 0
+
+
+def cmd_review_kit(args) -> int:
+    from nnc import reviewkit
+    d = _open(args)
+    req = Path(args.request) if args.request else Path(args.root).resolve().parent / "docs" / "G4_REVIEW_REQUEST.md"
+    out = Path(args.out) if args.out else d.root / "review_kit"
+    res = reviewkit.build(d.root, d.documents(), out,
+                          req.read_text(encoding="utf-8") if req.is_file() else None, make_zip=args.zip)
+    print(f"review kit of {d.name}: {res['files']} files in {res['dir']}"
+          + (f", {res['zip']}" if res["zip"] else "")
+          + f"; {res['questions']} design question(s) from {req if req.is_file() else 'no G4 request (not found)'}"
+          + (f"; not included (licence): {', '.join(res['spec_left_out'])}" if res["spec_left_out"] else "")
+          + ". Nothing is signed: CHECKLIST.md has an empty decision box.")
+    return 0
+
+
 def cmd_kit(args) -> int:
     d = _open(args)
     files = flow.write_kit(d)
@@ -731,6 +756,20 @@ def build_parser() -> argparse.ArgumentParser:
                                    "from the recorded results, without simulating")
     s.add_argument("design")
     s.set_defaults(func=cmd_kit)
+
+    s = sub.add_parser("review-kit", help="collect what a G4 reviewer needs for one design into one folder (and a "
+                                          ".zip): packet, report, evidence, spec, RTL, verification, kit, CHECKLIST.md")
+    s.add_argument("design")
+    s.add_argument("--out", help="output folder (default designs/<ip>/review_kit)")
+    s.add_argument("--zip", action="store_true", help="also write <out>.zip")
+    s.add_argument("--request", help="the G4 request with the design questions (default docs/G4_REVIEW_REQUEST.md "
+                                     "next to the designs folder)")
+    s.set_defaults(func=cmd_review_kit)
+
+    s = sub.add_parser("summary", help="the table of every design (tests, checks, formal, mutation, G4) from the "
+                                       "committed results; --readme rewrites the table block in README.md")
+    s.add_argument("--readme", help="README.md to update in place (between the nnc-summary markers)")
+    s.set_defaults(func=cmd_summary)
 
     s = sub.add_parser("inject", help="run the approved verification on a patched copy of the RTL (bug injection)")
     s.add_argument("design")

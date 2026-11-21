@@ -38,7 +38,7 @@ from nnc.agents.runtime import Usage
 from nnc.simhost import SimHost
 
 PROMPT_VERSION = "rtl-v1"
-RULES_DOC = Path(__file__).resolve().parent.parent / "docs" / "RTL_RULES.md"
+RULES_DOC = Path(__file__).resolve().parent / "data" / "RTL_RULES.md"   # package copy of docs/RTL_RULES.md
 SYSTEM_PROMPT = (
     "You are an RTL design engineer. You write synthesizable SystemVerilog that implements a specification "
     "exactly, following the design rules you are given. You work only from the files in the current folder. "
