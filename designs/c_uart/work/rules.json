@@ -1,0 +1,305 @@
+{
+ "sources": [
+  "rules_c_uart_Design_Specification.json"
+ ],
+ "review": {
+  "prompt_version": "review-v1",
+  "model": "sonnet",
+  "chunks": 1,
+  "date": "2026-11-23T09:56:27+00:00",
+  "usage": {
+   "calls": 2,
+   "cached": 0,
+   "cost_usd": 0.0565,
+   "input_tokens": 4,
+   "output_tokens": 2114,
+   "cache_creation_input_tokens": 3881,
+   "cache_read_input_tokens": 4760
+  },
+  "errors": [],
+  "unknown_ids": []
+ },
+ "counts": {
+  "input": 10,
+  "kept": 6,
+  "fixed": 2,
+  "merged": 0,
+  "rejected": 4,
+  "unreviewed": 0,
+  "questions_raised": 1,
+  "questions_answered": 0,
+  "questions_duplicate": 0
+ },
+ "rules": [
+  {
+   "id": "UA-T1.3-01",
+   "doc": "c_uart_Design_Specification.md",
+   "section": "T1.3",
+   "section_title": "Documentation",
+   "page": 26,
+   "quote": "The prescale input determines the data rate - it should be set to Fclk / (baud * 8).",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3:s6"
+   ],
+   "strength": "SHOULD",
+   "actor": "system",
+   "signals": [
+    "prescale"
+   ],
+   "condition": "",
+   "statement": "The prescale input must be set to Fclk / (baud * 8) to determine the data rate.",
+   "check": "scenario",
+   "review": {
+    "verdict": "fix",
+    "reason": "Quote says 'should be set', so strength is SHOULD, not MUST.",
+    "changes": {
+     "strength": [
+      "MUST",
+      "SHOULD"
+     ]
+    }
+   }
+  },
+  {
+   "id": "UA-T1.3-04",
+   "doc": "c_uart_Design_Specification.md",
+   "section": "T1.3",
+   "section_title": "Documentation",
+   "page": 26,
+   "quote": "The destination will accept data only when tready is high.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3:s9"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "destination",
+   "signals": [
+    "tready",
+    "tvalid"
+   ],
+   "condition": "when tready is low",
+   "statement": "The destination must not accept data unless tready is high.",
+   "check": "assertion",
+   "review": {
+    "verdict": "keep",
+    "reason": "'Accept only when tready is high' is a restriction (MUST_NOT) and is checkable every cycle from interface signals."
+   }
+  },
+  {
+   "id": "UA-T1.3-05",
+   "doc": "c_uart_Design_Specification.md",
+   "section": "T1.3",
+   "section_title": "Documentation",
+   "page": 26,
+   "quote": "Data is transferred from the source to the destination only when both tvalid and tready are high, otherwise the bus is stalled.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3:s10"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "any",
+   "signals": [
+    "tvalid",
+    "tready",
+    "tdata"
+   ],
+   "condition": "",
+   "statement": "Data is transferred from source to destination only when both tvalid and tready are high; otherwise the bus is stalled and no transfer occurs.",
+   "check": "assertion",
+   "review": {
+    "verdict": "fix",
+    "reason": "'Only when both high' restricts transfer: no transfer unless tvalid and tready are both high. It is a bus-level property, not specific to the source.",
+    "changes": {
+     "strength": [
+      "MUST",
+      "MUST_NOT"
+     ],
+     "actor": [
+      "source",
+      "any"
+     ]
+    }
+   }
+  },
+  {
+   "id": "UA-T1.3-06",
+   "doc": "c_uart_Design_Specification.md",
+   "section": "T1.3",
+   "section_title": "Documentation",
+   "page": 40,
+   "quote": "Both interfaces also present a 'busy' signal that is high when an operation is taking place.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3:s11"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "busy"
+   ],
+   "condition": "when an operation is taking place",
+   "statement": "Both the transmitter and receiver interfaces drive busy high while an operation is taking place.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Busy high during an operation is stated for both interfaces and is checkable."
+   }
+  },
+  {
+   "id": "UA-T1.3-07",
+   "doc": "c_uart_Design_Specification.md",
+   "section": "T1.3",
+   "section_title": "Documentation",
+   "page": 40,
+   "quote": "If the data word currently in the tdata output register is not read before another word is received, then a single cycle pulse will be emitted from overrun_error and the word is discarded.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3:s13"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "overrun_error",
+    "tdata"
+   ],
+   "condition": "when the word in the tdata output register is not read before another word is received",
+   "statement": "The receiver emits a single-cycle pulse on overrun_error and discards the newly received word.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Overrun behavior is stated explicitly: single-cycle pulse and discard."
+   }
+  },
+  {
+   "id": "UA-T1.3-08",
+   "doc": "c_uart_Design_Specification.md",
+   "section": "T1.3",
+   "section_title": "Documentation",
+   "page": 40,
+   "quote": "If the receiver does not get a stop bit of the right level, then a single pulse will be emitted from the frame_error output and the received word will be discarded.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3:s14"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "frame_error"
+   ],
+   "condition": "when the receiver does not get a stop bit of the right level",
+   "statement": "The receiver emits a single-cycle pulse on frame_error and discards the received word.",
+   "check": "both",
+   "review": {
+    "verdict": "keep",
+    "reason": "Frame error behavior is stated explicitly: single pulse and discard."
+   }
+  }
+ ],
+ "rejected": [
+  {
+   "id": "UA-T1.3-02",
+   "doc": "c_uart_Design_Specification.md",
+   "section": "T1.3",
+   "section_title": "Documentation",
+   "page": 26,
+   "quote": "This is an input instead of a parameter so it can be changed at run time, though it is not buffered internally so care should be used to avoid corrupt data.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3:s7"
+   ],
+   "strength": "SHOULD",
+   "actor": "system",
+   "signals": [
+    "prescale"
+   ],
+   "condition": "when prescale is changed at run time",
+   "statement": "Because prescale is not buffered internally, care should be used when changing it at run time to avoid corrupt data.",
+   "check": "scenario",
+   "review": {
+    "verdict": "reject",
+    "reason": "Advisory caution to the integrator about unbuffered prescale; nothing concrete to verify."
+   }
+  },
+  {
+   "id": "UA-T1.3-03",
+   "doc": "c_uart_Design_Specification.md",
+   "section": "T1.3",
+   "section_title": "Documentation",
+   "page": 26,
+   "quote": "The main interface to the user design is an AXI4-Stream interface that consists of the tdata, tvalid, and tready signals. tready flows in the opposite direction. tdata is considered valid when tvalid is high.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3:s8"
+   ],
+   "strength": "MUST",
+   "actor": "source",
+   "signals": [
+    "tdata",
+    "tvalid"
+   ],
+   "condition": "when tvalid is high",
+   "statement": "tdata is considered valid when tvalid is high.",
+   "check": "assertion",
+   "review": {
+    "verdict": "reject",
+    "reason": "Defines the meaning of tvalid (data is valid); a definition, not a checkable constraint."
+   }
+  },
+  {
+   "id": "UA-T1.4-01",
+   "doc": "c_uart_Design_Specification.md",
+   "section": "T1.4",
+   "section_title": "Testing",
+   "page": 70,
+   "quote": "Running the included testbenches requires cocotb, cocotbext-axi, and Icarus Verilog.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.4:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "when running the included testbenches",
+   "statement": "Running the included testbenches requires cocotb, cocotbext-axi, and Icarus Verilog.",
+   "check": "none",
+   "review": {
+    "verdict": "reject",
+    "reason": "Tool prerequisite, not a design behavior to verify."
+   }
+  },
+  {
+   "id": "UA-T1.4-02",
+   "doc": "c_uart_Design_Specification.md",
+   "section": "T1.4",
+   "section_title": "Testing",
+   "page": 70,
+   "quote": "The testbenches can be run with pytest directly (requires cocotb-test), pytest via tox, or via cocotb makefiles.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.4:s2"
+   ],
+   "strength": "MAY",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "The testbenches can be run with pytest directly (requires cocotb-test), pytest via tox, or via cocotb makefiles.",
+   "check": "none",
+   "review": {
+    "verdict": "reject",
+    "reason": "Describes ways to run testbenches, not a design behavior to verify."
+   }
+  }
+ ],
+ "questions": [
+  {
+   "rules": [
+    "UA-T1.3-07",
+    "UA-T1.3-06"
+   ],
+   "question": "On overrun, is the newly received word discarded while the older word in the tdata register is retained? What exactly defines the busy window on the receiver (start bit to stop bit)?",
+   "note": "The documents do not settle either part. (1) T1.3:s13 says an overrun_error pulse is emitted and 'the word is discarded' when the word in the tdata output register is not read before another word is received. It does not say whether 'the word' is the newly received word or the older word in tdata, so retention of the older word is not stated. (2) T1.3:s11 says only that 'busy' is high 'when an operation is taking place'. It does not say whether busy spans start bit to stop bit, or when it asserts and deasserts on the receiver. The designer must specify which word is dropped on overrun and the exact receiver busy assertion and deassertion points."
+  }
+ ],
+ "answered_questions": []
+}

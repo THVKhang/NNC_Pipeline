@@ -1,0 +1,75 @@
+// Excerpt, verbatim, of src/unpriv/rv-32-64g.adoc of https://github.com/riscv/riscv-isa-manual at commit 3142f66fd71c7ea0326b3687072318aedab587f8:
+// lines 1-58 (opcode map, instruction formats) and 152-165 (RV32M Standard Extension). CC-BY-4.0, see NOTICE.
+[appendix]
+[[rv32-64g]]
+== RV32/64G Instruction Set Listings
+
+One goal of the RISC-V project is that it be used as a stable software
+development target. For this purpose, we define a combination of a base
+ISA (RV32I or RV64I) plus selected standard extensions (IMAFD, Zicsr,
+Zifencei) as a "`general-purpose`" ISA, and we use the abbreviation G
+for the IMAFDZicsr_Zifencei combination of instruction-set extensions.
+This chapter presents opcode maps and instruction-set listings for RV32G
+and RV64G.
+
+[[norm:major_opcode_map_tbl]]
+.RISC-V base opcode map, inst[1:0]=11
+[%autowidth.stretch,float="center",align="center",cols=  ">.^4m,  ^.^4m,    ^.^4m,      ^.^4m,    ^.^4m,  ^.^4m,      ^.^4m,           ^.^6m, ^.^4h"]
+|===
+|inst[4:2] .2+|000 .2+|001   .2+|010     .2+|011   .2+|100 .2+|101     .2+|110          .2+|111 (>32b)
+|inst[6:5]
+|00           |LOAD   |LOAD-FP  |_custom-0_ |MISC-MEM |OP-IMM |AUIPC      |OP-IMM-32       |_reserved_
+|01           |STORE  |STORE-FP |_custom-1_ |AMO      |OP     |LUI        |OP-32           |_reserved_
+|10           |MADD   |MSUB     |NMSUB      |NMADD    |OP-FP  |OP-V       |_custom-2_      |_reserved_
+|11           |BRANCH |JALR     |_reserved_ |JAL      |SYSTEM |OP-VE      |_custom-3_      |_reserved_
+|===
+
+<<norm:major_opcode_map_tbl>> shows a map of the major opcodes for
+RVG. Opcodes marked as _reserved_
+should be avoided for custom instruction-set extensions as they might be
+used by future standard extensions. Major opcodes marked as _custom-0_
+through _custom-3_ will be avoided by future standard extensions and are
+recommended for use by custom instruction-set extensions within the base
+32-bit instruction format.
+
+We believe RV32G and RV64G provide simple but complete instruction sets
+for a broad range of general-purpose computing. The optional compressed
+instruction-set extension ext:c[] can
+be added (forming RV32GC and RV64GC) to improve performance, code size,
+and energy efficiency, though with some additional hardware complexity.
+
+As we move beyond IMAFDC into further instruction-set extensions, the
+added instructions tend to be more domain-specific and only provide
+benefits to a restricted class of applications, e.g., for multimedia or
+security. Unlike most commercial ISAs, the RISC-V ISA design clearly
+separates the base ISA and broadly applicable standard extensions from
+these more specialized additions.
+
+<<<
+
+[%autowidth.stretch,float="center",align="center",cols="^2m,^2m,^2m,^2m,<2m,>3m, <4m, >4m, <4m, >4m, <4m, >4m, <4m, >4m, <6m"]
+|===
+    |31 |27 |26  |25    |24 |  20|19  |  15| 14  |  12|11      |      7|6   |   0|
+ 4+^|funct7          2+^|rs2  2+^|rs1    2+^|funct3 2+^|rd           2+^|opcode  <|R-type
+ 6+^|imm[11:0]               2+^|rs1    2+^|funct3 2+^|rd           2+^|opcode  <|I-type
+ 4+^|imm[11:5]      2+^|rs2  2+^|rs1    2+^|funct3 2+^|imm[4:0]     2+^|opcode  <|S-type
+ 4+^|imm[12\|10:5]  2+^|rs2  2+^|rs1    2+^|funct3 2+^|imm[4:1\|11] 2+^|opcode  <|B-type
+10+^|imm[31:12]                                    2+^|rd           2+^|opcode  <|U-type
+10+^|imm[20\|10:1\|11\|19:12]                      2+^|rd           2+^|opcode  <|J-type
+|===
+
+
+
+[%autowidth.stretch,float="center",align="center",cols="^2m,^2m,^2m,^2m,<2m,>3m, <4m, >4m, <4m, >4m, <4m, >4m, <4m, >4m, <6m"]
+|===
+15+^|*RV32M Standard Extension*
+ 4+^|0000001        2+^|rs2   2+^|rs1   2+^|000    2+^|rd           2+^|0110011 <|[#norm:mul_enc]#MUL#
+ 4+^|0000001        2+^|rs2   2+^|rs1   2+^|001    2+^|rd           2+^|0110011 <|[#norm:mulh_enc]#MULH#
+ 4+^|0000001        2+^|rs2   2+^|rs1   2+^|010    2+^|rd           2+^|0110011 <|[#norm:mulhsu_enc]#MULHSU#
+ 4+^|0000001        2+^|rs2   2+^|rs1   2+^|011    2+^|rd           2+^|0110011 <|[#norm:mulhu_enc]#MULHU#
+ 4+^|0000001        2+^|rs2   2+^|rs1   2+^|100    2+^|rd           2+^|0110011 <|[#norm:div_enc]#DIV#
+ 4+^|0000001        2+^|rs2   2+^|rs1   2+^|101    2+^|rd           2+^|0110011 <|[#norm:divu_enc]#DIVU#
+ 4+^|0000001        2+^|rs2   2+^|rs1   2+^|110    2+^|rd           2+^|0110011 <|[#norm:rem_enc]#REM#
+ 4+^|0000001        2+^|rs2   2+^|rs1   2+^|111    2+^|rd           2+^|0110011 <|[#norm:remu_enc]#REMU#
+|===
+

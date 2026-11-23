@@ -211,7 +211,8 @@ def probe_files(files: list[str], include_dirs: list[str]) -> tuple[dict[str, Pa
 def probe_script(top: str, srcs: list[str], incs: list[str], defines: list[str] | None = None,
                  params: dict[str, int] | None = None) -> str:
     """Four runs, each recorded by its exit code: Verilator lint, Verilator elaborated tree, Yosys with its
-    Verilog frontend and with yosys-slang (proc; flatten: the netlist the formal and CDC steps read)."""
+    Verilog frontend and with yosys-slang (proc; flatten; opt_dff: opt_dff turns a flop whose next value is a
+    constant under a port into a flop with a synchronous reset, so that synchronous resets are found)."""
     d = " ".join(f"-D{x}" for x in defines or [])
     vi = " ".join(f"+incdir+{i}" for i in incs)
     yi = " ".join(f"-I{i}" for i in incs)
@@ -224,9 +225,9 @@ def probe_script(top: str, srcs: list[str], incs: list[str], defines: list[str] 
     return "\n".join([
         f"verilator --lint-only {vopt} > lint.log 2>&1; echo NNC_LINT=$?",
         f"verilator --json-only --Mdir j {vopt} > json.log 2>&1; echo NNC_JSON=$?",
-        f"yosys -q -p 'read_verilog -sv {d} {yi} {s}; hierarchy -top {top}{chp}; proc; flatten; opt_clean; "
+        f"yosys -q -p 'read_verilog -sv {d} {yi} {s}; hierarchy -top {top}{chp}; proc; flatten; opt_dff; opt_clean; "
         f"write_json y_verilog.json' > y_verilog.log 2>&1; echo NNC_YOSYS=$?",
-        f"yosys -q -p 'read_slang {d} {si} --top {top}{sg} {s}; hierarchy -top {top}; proc; flatten; opt_clean; "
+        f"yosys -q -p 'read_slang {d} {si} --top {top}{sg} {s}; hierarchy -top {top}; proc; flatten; opt_dff; opt_clean; "
         f"write_json y_slang.json' > y_slang.log 2>&1; echo NNC_SLANG=$?",
     ])
 

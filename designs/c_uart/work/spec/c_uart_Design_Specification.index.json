@@ -1,0 +1,251 @@
+{
+ "version": 1,
+ "doc": {
+  "file": "c_uart_Design_Specification.md",
+  "sha256": "c3a4efa3944d5b9d29377a62d83e66d18a1285706ad548b36e7c91f9750d9b2f",
+  "length": 70,
+  "location": "line"
+ },
+ "sections": [
+  {
+   "id": "front",
+   "title": "Front matter",
+   "level": 0,
+   "parent": null,
+   "page_start": 1,
+   "page_end": 1,
+   "sentences": []
+  },
+  {
+   "id": "T1",
+   "title": "Verilog UART Readme",
+   "level": 1,
+   "parent": null,
+   "page_start": 3,
+   "page_end": 9,
+   "sentences": [
+    {
+     "id": "T1:s1",
+     "text": "For more information and updates: http://alexforencich.com/wiki/en/verilog/uart/start",
+     "page": 7,
+     "normative": false
+    },
+    {
+     "id": "T1:s2",
+     "text": "GitHub repository: https://github.com/alexforencich/verilog-uart",
+     "page": 9,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.1",
+   "title": "Deprecation Notice",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 11,
+   "page_end": 13,
+   "sentences": [
+    {
+     "id": "T1.1:s1",
+     "text": "This repository is superseded by https://github.com/fpganinja/taxi.",
+     "page": 13,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s2",
+     "text": "All new features and bug fixes will be applied there, and commercial support is also available.",
+     "page": 13,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s3",
+     "text": "As a result, this repo is deprecated and will not receive any future maintenance or support.",
+     "page": 13,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.2",
+   "title": "Introduction",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 15,
+   "page_end": 17,
+   "sentences": [
+    {
+     "id": "T1.2:s1",
+     "text": "This is a basic UART to AXI Stream IP core, written in Verilog with cocotb testbenches.",
+     "page": 17,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.3",
+   "title": "Documentation",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 20,
+   "page_end": 40,
+   "sentences": [
+    {
+     "id": "T1.3:s1",
+     "text": "The main code for the core exists in the rtl subdirectory.",
+     "page": 22,
+     "normative": false
+    },
+    {
+     "id": "T1.3:s2",
+     "text": "The uart_rx.v and uart_tx.v files are the actual implementation, uart.v simply instantiates both modules and makes a couple of internal connections.",
+     "page": 22,
+     "normative": false
+    },
+    {
+     "id": "T1.3:s3",
+     "text": "The UART transmitter and receiver both use a single transmit or receive pin.",
+     "page": 26,
+     "normative": false
+    },
+    {
+     "id": "T1.3:s4",
+     "text": "The modules take one parameter, DATA_WIDTH, that specifies the width of both the data bus and the length of the actual data words communicated.",
+     "page": 26,
+     "normative": false
+    },
+    {
+     "id": "T1.3:s5",
+     "text": "The default value is 8 for an 8 bit interface.",
+     "page": 26,
+     "normative": false
+    },
+    {
+     "id": "T1.3:s6",
+     "text": "The prescale input determines the data rate - it should be set to Fclk / (baud * 8).",
+     "page": 26,
+     "normative": true
+    },
+    {
+     "id": "T1.3:s7",
+     "text": "This is an input instead of a parameter so it can be changed at run time, though it is not buffered internally so care should be used to avoid corrupt data.",
+     "page": 26,
+     "normative": true
+    },
+    {
+     "id": "T1.3:s8",
+     "text": "The main interface to the user design is an AXI4-Stream interface that consists of the tdata, tvalid, and tready signals. tready flows in the opposite direction. tdata is considered valid when tvalid is high.",
+     "page": 26,
+     "normative": false
+    },
+    {
+     "id": "T1.3:s9",
+     "text": "The destination will accept data only when tready is high.",
+     "page": 26,
+     "normative": true
+    },
+    {
+     "id": "T1.3:s10",
+     "text": "Data is transferred from the source to the destination only when both tvalid and tready are high, otherwise the bus is stalled.",
+     "page": 26,
+     "normative": true
+    },
+    {
+     "id": "T1.3:s11",
+     "text": "Both interfaces also present a 'busy' signal that is high when an operation is taking place.",
+     "page": 40,
+     "normative": false
+    },
+    {
+     "id": "T1.3:s12",
+     "text": "The receiver also presents overrun error and frame error strobe outputs.",
+     "page": 40,
+     "normative": false
+    },
+    {
+     "id": "T1.3:s13",
+     "text": "If the data word currently in the tdata output register is not read before another word is received, then a single cycle pulse will be emitted from overrun_error and the word is discarded.",
+     "page": 40,
+     "normative": false
+    },
+    {
+     "id": "T1.3:s14",
+     "text": "If the receiver does not get a stop bit of the right level, then a single pulse will be emitted from the frame_error output and the received word will be discarded.",
+     "page": 40,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.3.1",
+   "title": "Source Files",
+   "level": 3,
+   "parent": "T1.3",
+   "page_start": 48,
+   "page_end": 50,
+   "sentences": [
+    {
+     "id": "T1.3.1:s1",
+     "text": "rtl/uart.v : Wrapper for complete UART rtl/uart_rx.v : UART receiver implementation rtl/uart_tx.v : UART transmitter implementation",
+     "page": 50,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.3.2",
+   "title": "AXI Stream Interface Example",
+   "level": 3,
+   "parent": "T1.3",
+   "page_start": 54,
+   "page_end": 58,
+   "sentences": [
+    {
+     "id": "T1.3.2:s1",
+     "text": "two byte transfer with sink pause after each byte",
+     "page": 56,
+     "normative": false
+    },
+    {
+     "id": "T1.3.2:s2",
+     "text": "clk / \\/ \\/ \\/ \\/ \\/ \\/ \\/ \\/ \\ _ _ tdata XXXXXXXXX_D0X_D1XXXXXXXXXXXXXXXXXXXXXXXX _ tvalid / \\_ _ _ tready \\_/ \\_/",
+     "page": 58,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.4",
+   "title": "Testing",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 68,
+   "page_end": 70,
+   "sentences": [
+    {
+     "id": "T1.4:s1",
+     "text": "Running the included testbenches requires cocotb, cocotbext-axi, and Icarus Verilog.",
+     "page": 70,
+     "normative": true
+    },
+    {
+     "id": "T1.4:s2",
+     "text": "The testbenches can be run with pytest directly (requires cocotb-test), pytest via tox, or via cocotb makefiles.",
+     "page": 70,
+     "normative": true
+    }
+   ]
+  }
+ ],
+ "tables": [],
+ "signals": {
+  "UART": 3
+ },
+ "warnings": [],
+ "stats": {
+  "sections": 7,
+  "sentences": 25,
+  "normative": 6,
+  "chars": 2601
+ }
+}

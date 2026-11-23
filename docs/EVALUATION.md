@@ -835,3 +835,41 @@ synchronized (UNSYNC). CI job `cdc` reruns the check on all 13 designs and compa
 - Clocks that the contract calls synchronous are one domain.
 - No glitch analysis of combinational logic before a synchronizer: such logic is reported as UNSYNC, because the
   first stage must take the source directly.
+
+## 14. Blind runs on modules the flow was not written for (phase 21.6, 2026-11-23)
+
+The question: with only the documentation a user of the module has, and no hand edit, how far do the agents get?
+Three modules of the input corpus (`nnc corpus`), chosen for how much their documentation says. Every
+intervention is recorded in `designs/<ip>/work/blind_run.md`. Gates G1-G3 were approved as produced, on the
+owner's delegation; open questions were left open. Defaults were kept (formal off, no coverage target).
+
+| Design | Specification given | Rules kept | Checks | Tests | Mutation | Agent cost |
+|---|---|---|---|---|---|---|
+| c_pcpi_div (`picorv32_pcpi_div`) | PCPI part of the README + RISC-V M extension and RV32M encodings | 23 (7 verified, 16 not for this core) | 9/9 PASS | 7/7 | 100 % (12/12) | US$2.66 |
+| c_uart (`uart`, verilog-uart) | the README | 6 | 6/11 PASS | 5/8 | 83.3 % (10/12) | US$2.70 |
+| c_axil_ram (`axil_ram`, verilog-axi) | the README sections of the module | 0 | — | — | — | US$0.04 |
+
+What it shows:
+- **Where the documentation specifies, the flow verifies.** For the division core the rules of the RISC-V standard
+  were extracted, turned into directed and random tests against a reference model, and all passed, with 100 %
+  structural coverage and every mutant killed. One test fault (an instruction issued one cycle early) was judged B
+  by triage and fixed by A17 without the RTL.
+- **Where the documentation is ambiguous, the flow says so.** For the UART the README says that on an overrun "the
+  word is discarded" without saying which. The RTL replaces the waiting word on `m_axis` while it is not
+  accepted, which breaks the AXI4-Stream rule that the contract checks. Triage judged all four failures C; the
+  owner kept them open for the G4 reviewer. The contract also states openly that it assumes an 8N1 frame, which
+  the README does not give.
+- **Where the documentation says nothing, the flow stops.** The verilog-axi README lists the signals of
+  `axil_ram` but states no behaviour: 0 normative sentences, 0 rules. The flow invents nothing; the module needs
+  the AXI4-Lite specification as a standard document.
+
+Faults of the flow found while preparing and running them, fixed before the runs continued:
+- synchronous resets were never found by the intake (no `opt_dff`), so the contract would have had no reset;
+- AsciiDoc specifications (the RISC-V manual) could not be read;
+- setext headings (picorv32's README) were not sections;
+- `nnc intake` of an adapted design checked the original README for a port table instead of the interface
+  document the contract reads.
+
+The corpus was run again after the `opt_dff` change: the same verdicts and smoke results for all 238 modules.
+
+Total agent cost of the three runs: US$5.40.

@@ -131,9 +131,9 @@ Xem [INPUT_SUPPORT.md](INPUT_SUPPORT.md).
 | 21.3 | Corpus: 6 kho mã nguồn mở, commit cố định, mỗi module là một top. Chạy intake, adapt, contract, kiểm port và mô phỏng khói (`--smoke`). | `corpus/results.md`. Mỗi lần dừng đều có lý do. Job CI `corpus`. |
 | 21.4 | Sửa các lỗi flow mà corpus tìm ra: port trong `` `ifdef ``, port kiểu người dùng, thiết kế không có clock (clock ảo `nnc_clk`), reset bất đồng bộ trong netlist của slang, `import` trong header module, chỉ số bit âm (`[-1:0]`), tham số rộng hơn 32 bit hoặc kiểu enum, vector clock. | 13 thiết kế cũ cho kết quả y hệt (dut_ports, tb_top, interface). |
 | 21.5 | Spec: đọc Word `.docx` và HTML (cả bảng), báo lỗi PDF scan, nhận từ khoá bắt buộc tiếng Việt. | Unit test. |
-| 21.6 | (Tốn tiền agent, hỏi trước) Chạy mù end-to-end bằng agent trên vài thiết kế của corpus, không chỉnh tay. Ghi mọi lần phải can thiệp. | Chờ quyết định. |
+| 21.6 | (Tốn tiền agent, hỏi trước) Chạy mù end-to-end bằng agent trên vài thiết kế của corpus, không chỉnh tay. Ghi mọi lần phải can thiệp. | `work/blind_run.md` của từng thiết kế, EVALUATION §14. |
 
-**Trạng thái:** 21.1–21.5 xong (2026-11-23). Corpus: 238 module, 232 chạy tới testbench. Trong đó 219 đạt mô phỏng khói. 13 bị assertion của chính thiết kế dừng lại, vì input ngẫu nhiên vi phạm luật input của nó. Còn lại: 2 dùng cấu trúc Verilator không hỗ trợ, 3 cần thêm đầu vào, 1 không hỗ trợ (VHDL), 0 lỗi flow. 21.6 chờ quyết định vì tốn tiền agent.
+**Trạng thái:** 21.1–21.6 xong (2026-11-23). Corpus: 238 module, 232 chạy tới testbench. Trong đó 219 đạt mô phỏng khói. 13 bị assertion của chính thiết kế dừng lại, vì input ngẫu nhiên vi phạm luật input của nó. Còn lại: 2 dùng cấu trúc Verilator không hỗ trợ, 3 cần thêm đầu vào, 1 không hỗ trợ (VHDL), 0 lỗi flow. 21.6 (người dùng đồng ý): chạy mù 3 module, tổng 5,40 USD. c_pcpi_div: 9/9 check PASS, mutation 100 %. c_uart: 6/11 PASS; 4 lỗi loại C (README không nói rõ word nào bị bỏ khi overrun), người dùng chọn để mở cho người duyệt G4. c_axil_ram: tài liệu không mô tả hành vi, flow ra 0 luật và dừng. Lỗi flow tìm ra và đã sửa: reset đồng bộ (`opt_dff`), đọc AsciiDoc, tiêu đề setext, intake của thiết kế đã adapt.
 
 ## Giai đoạn 22: chạy thử trong một lệnh (Docker, demo không cần agent)
 
@@ -164,10 +164,10 @@ code lạ trong sandbox, và người dùng thật của công cụ quen dòng l
 - Nếu người dùng chưa trả lời, hai việc đó để mở. Phần còn lại vẫn xong và push được.
 
 **Sau giai đoạn 22**, các việc chưa làm, theo thứ tự đề xuất:
-1. Trang GitHub Pages trình bày kết quả (báo cáo 13 thiết kế, gate, coverage, corpus). Không tốn tiền agent.
+1. Trang GitHub Pages: xong (`nnc site`, job CI `pages`, https://thvkhang.github.io/NNC_Pipeline/).
 2. 19.4: giữ reset ngay từ thời điểm 0, tạo lại kit, kiểm lại kết quả của 13 thiết kế.
 3. 19.5: formal UNR.
-4. 21.6: chạy mù bằng agent trên corpus. Tốn khoảng 3–15 USD mỗi thiết kế, nên chờ người dùng đồng ý.
+4. 21.6: xong (xem giai đoạn 21).
 
 **Trạng thái (2026-11-23):** 22.1–22.7 xong. Những gì đã kiểm:
 - Image `Dockerfile` nặng khoảng 3 GB. Các công cụ FPGA flow không dùng đã bị bỏ.

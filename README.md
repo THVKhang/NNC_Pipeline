@@ -39,6 +39,8 @@ Status / Trạng thái: working prototype, run end-to-end on six delivered desig
 | Nothing is reported as passed without a tool run | results are written by code from simulator output only |
 | A failing run is never "fixed" by the flow | triage proposes; RTL, tests, assertions and expected values change only on the designer's decision |
 
+Project page | Trang giới thiệu: https://thvkhang.github.io/NNC_Pipeline/
+
 ## Run it in one command | Chạy thử trong một lệnh
 
 ```bash
@@ -99,6 +101,8 @@ Measurements and history: [EVALUATION.md](docs/EVALUATION.md), [CHANGELOG.md](CH
 | [async_gray_fifo](designs/async_gray_fifo) | 12/20 | 23/32 | 5 proven / 2 bounded / 6 simulation-only | 100.0 % (12/12) | pending (not signed) |
 | [axi2apb_bridge](designs/axi2apb_bridge) | 21/21 | 31/31 | 12 proven / 4 bounded / 1 timeout | 88.9 % (32/36); 94.1 % without 2 proven equivalent | pending (not signed) |
 | [axil_regfile](designs/axil_regfile) | 21/21 | 37/37 | 15 proven / 1 bounded / 1 simulation-only | 93.1 % (27/29); 100.0 % without 2 proven equivalent | pending (not signed) |
+| [c_pcpi_div](designs/c_pcpi_div) | 7/7 | 9/9 | not run | 100.0 % (12/12) | pending (not signed) |
+| [c_uart](designs/c_uart) | 5/8 | 6/11 | not run | 83.3 % (10/12) | pending (not signed) |
 | [gen_apb_tlul_bridge](designs/gen_apb_tlul_bridge) | 17/17 | 31/31 | 17 proven | 100.0 % (36/36) | pending (not signed) |
 | [gen_sync_fifo](designs/gen_sync_fifo) | 24/25 | 24/25 | 6 proven / 2 bounded / 1 timeout / 1 simulation-only / 1 **counterexample** | 100.0 % (36/36) | blocked (not signed) |
 | [ot_gpio](designs/ot_gpio) | 28/28 | 38/38 | 10 proven / 1 timeout / 2 simulation-only | 58.3 % (21/36); 77.8 % without 9 proven equivalent | pending (not signed) |
@@ -241,7 +245,7 @@ nnc/                 orchestrator: ingest, extract, review, contract, gen_sva, g
                      fix_verif (A17: corrects verification judged B by triage, never sees the RTL, no weakening)
                      reviewkit (G4 review kit), summary (the design table of this README),
                      stability (agreement of repeated agent runs), cdc (structural domain crossings)
-                     demo (agent-free rerun and replay of a finished design)
+                     demo (agent-free rerun and replay of a finished design), site (the project page)
                      intake (verdict on any spec and RTL before any agent), adapt (generated wrapper and
                      interface document), corpus (measurement on open-source RTL), specconv (.docx/.html)
 nnc/data/            package copies of docs/RTL_RULES.md and docs/SPEC_TEMPLATE.md (a unit test keeps them equal)

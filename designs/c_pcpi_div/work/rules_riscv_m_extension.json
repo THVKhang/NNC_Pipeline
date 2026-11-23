@@ -1,0 +1,453 @@
+{
+ "source": {
+  "file": "riscv_m_extension.adoc",
+  "sha256": "99d3708b844072f626e33b427e7b1825cebc0743efdf6f7a5ca58205dd4c7c42",
+  "index_version": 1
+ },
+ "extraction": {
+  "prompt_version": "extract-v2",
+  "model": "sonnet",
+  "budget_tokens": 3500,
+  "tag": "RVM",
+  "sections": "all",
+  "skip": [],
+  "batches": 1,
+  "date": "2026-11-23T09:56:26+00:00",
+  "usage": {
+   "calls": 1,
+   "cached": 0,
+   "cost_usd": 0.0418,
+   "input_tokens": 2,
+   "output_tokens": 2465,
+   "cache_creation_input_tokens": 4151,
+   "cache_read_input_tokens": 1031
+  },
+  "errors": []
+ },
+ "coverage": {
+  "sentences": 33,
+  "normative_sentences": 11,
+  "normative_cited": 11,
+  "normative_skipped": 0,
+  "uncovered_after_first_pass": 0,
+  "uncovered": [],
+  "invalid_ids": []
+ },
+ "rules": [
+  {
+   "id": "RVM-T1.1-01",
+   "doc": "riscv_m_extension.adoc",
+   "section": "T1.1",
+   "section_title": "Multiplication Operations",
+   "page": 21,
+   "quote": "mul performs an XLEN-bit×XLEN-bit multiplication of rs1 by rs2 and places the lower XLEN bits in the destination register. mulh, mulhu, and mulhsu perform the same multiplication but return the upper XLEN bits of the full 2×XLEN-bit product, for signed×signed, unsigned×unsigned, and rs1×unsigned rs2 multiplication.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.1:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "rs1",
+    "rs2"
+   ],
+   "condition": "executing mul",
+   "statement": "mul multiplies rs1 by rs2 as XLEN-bit values and writes the lower XLEN bits of the product to the destination register.",
+   "check": "scenario"
+  },
+  {
+   "id": "RVM-T1.1-02",
+   "doc": "riscv_m_extension.adoc",
+   "section": "T1.1",
+   "section_title": "Multiplication Operations",
+   "page": 21,
+   "quote": "mul performs an XLEN-bit×XLEN-bit multiplication of rs1 by rs2 and places the lower XLEN bits in the destination register. mulh, mulhu, and mulhsu perform the same multiplication but return the upper XLEN bits of the full 2×XLEN-bit product, for signed×signed, unsigned×unsigned, and rs1×unsigned rs2 multiplication.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.1:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "rs1",
+    "rs2"
+   ],
+   "condition": "executing mulh, mulhu or mulhsu",
+   "statement": "mulh, mulhu and mulhsu return the upper XLEN bits of the 2×XLEN-bit product for signed×signed, unsigned×unsigned and signed rs1×unsigned rs2 respectively.",
+   "check": "scenario"
+  },
+  {
+   "id": "RVM-T1.1-03",
+   "doc": "riscv_m_extension.adoc",
+   "section": "T1.1",
+   "section_title": "Multiplication Operations",
+   "page": 23,
+   "quote": "If both the high and low bits of the same product are required, the recommended code sequence is mulh rdh,rs1,rs2 followed by mul rdl,rs1,rs2. mulhu or mulhsu can be used instead of mulh if appropriate.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.1:s2"
+   ],
+   "strength": "SHOULD",
+   "actor": "any",
+   "signals": [
+    "rs1",
+    "rs2"
+   ],
+   "condition": "both high and low bits of the same product are required",
+   "statement": "Use mulh (or mulhu/mulhsu if appropriate) rdh,rs1,rs2 followed by mul rdl,rs1,rs2 to obtain both halves.",
+   "check": "none"
+  },
+  {
+   "id": "RVM-T1.1-04",
+   "doc": "riscv_m_extension.adoc",
+   "section": "T1.1",
+   "section_title": "Multiplication Operations",
+   "page": 23,
+   "quote": "Note that the source register specifiers, rs1 and rs2, must be in same order and rdh cannot be the same as rs1 or rs2.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.1:s3"
+   ],
+   "strength": "MUST",
+   "actor": "any",
+   "signals": [
+    "rs1",
+    "rs2"
+   ],
+   "condition": "using the recommended mulh/mul fusion sequence",
+   "statement": "Source specifiers rs1 and rs2 must be in the same order in both instructions, and rdh must not be the same as rs1 or rs2.",
+   "check": "none"
+  },
+  {
+   "id": "RVM-T1.1-05",
+   "doc": "riscv_m_extension.adoc",
+   "section": "T1.1",
+   "section_title": "Multiplication Operations",
+   "page": 23,
+   "quote": "Microarchitectures can then fuse these into a single multiply operation instead of performing two separate multiplies.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.1:s4"
+   ],
+   "strength": "MAY",
+   "actor": "system",
+   "signals": [],
+   "condition": "mulh followed by mul of the same operands",
+   "statement": "Microarchitectures may fuse the two instructions into a single multiply operation instead of two separate multiplies.",
+   "check": "none"
+  },
+  {
+   "id": "RVM-T1.1-06",
+   "doc": "riscv_m_extension.adoc",
+   "section": "T1.1",
+   "section_title": "Multiplication Operations",
+   "page": 28,
+   "quote": "mulw is an RV64 instruction that multiplies the lower 32 bits of the source registers, placing the sign extension of the lower 32 bits of the result into the destination register.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.1:s6"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "RV64 mulw",
+   "statement": "mulw multiplies the lower 32 bits of the source registers and writes the sign extension of the lower 32 bits of the result to the destination register.",
+   "check": "scenario"
+  },
+  {
+   "id": "RVM-T1.1-07",
+   "doc": "riscv_m_extension.adoc",
+   "section": "T1.1",
+   "section_title": "Multiplication Operations",
+   "page": 30,
+   "quote": "Note: In RV64, mul can be used to obtain the upper 32 bits of the 64-bit product, but signed arguments must be proper 32-bit signed values, whereas unsigned arguments must have their upper 32 bits clear.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.1:s7"
+   ],
+   "strength": "MUST",
+   "actor": "any",
+   "signals": [],
+   "condition": "RV64 mul used to obtain the upper 32 bits of the 64-bit product",
+   "statement": "Signed arguments must be proper 32-bit signed values and unsigned arguments must have their upper 32 bits clear.",
+   "check": "none"
+  },
+  {
+   "id": "RVM-T1.2-01",
+   "doc": "riscv_m_extension.adoc",
+   "section": "T1.2",
+   "section_title": "Division Operations",
+   "page": 46,
+   "quote": "div and divu perform an XLEN bits by XLEN bits signed and unsigned integer division of rs1 by rs2, rounding towards zero. rem and remu provide the remainder of the corresponding division operation.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.2:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "rs1",
+    "rs2"
+   ],
+   "condition": "executing div, divu, rem or remu",
+   "statement": "div and divu perform XLEN-bit signed and unsigned division of rs1 by rs2 rounding towards zero; rem and remu return the remainder of the corresponding division.",
+   "check": "scenario"
+  },
+  {
+   "id": "RVM-T1.2-02",
+   "doc": "riscv_m_extension.adoc",
+   "section": "T1.2",
+   "section_title": "Division Operations",
+   "page": 46,
+   "quote": "For rem, the sign of a nonzero result equals the sign of the dividend.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.2:s2"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "rem with a nonzero result",
+   "statement": "The sign of a nonzero rem result equals the sign of the dividend.",
+   "check": "scenario"
+  },
+  {
+   "id": "RVM-T1.2-03",
+   "doc": "riscv_m_extension.adoc",
+   "section": "T1.2",
+   "section_title": "Division Operations",
+   "page": 51,
+   "quote": "If both the quotient and remainder are required from the same division, the recommended code sequence is div rdq,rs1,rs2 followed by rem[rdr,rs1,rs2]. divu and remu can also be used if appropriate.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.2:s4"
+   ],
+   "strength": "SHOULD",
+   "actor": "any",
+   "signals": [
+    "rs1",
+    "rs2"
+   ],
+   "condition": "both quotient and remainder are required from the same division",
+   "statement": "Use div rdq,rs1,rs2 followed by rem rdr,rs1,rs2 (or divu and remu if appropriate).",
+   "check": "none"
+  },
+  {
+   "id": "RVM-T1.2-04",
+   "doc": "riscv_m_extension.adoc",
+   "section": "T1.2",
+   "section_title": "Division Operations",
+   "page": 51,
+   "quote": "Note that rdq can not be the same as rs1 or rs2.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.2:s5"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "any",
+   "signals": [
+    "rs1",
+    "rs2"
+   ],
+   "condition": "using the recommended div/rem sequence",
+   "statement": "rdq must not be the same register as rs1 or rs2.",
+   "check": "none"
+  },
+  {
+   "id": "RVM-T1.2-05",
+   "doc": "riscv_m_extension.adoc",
+   "section": "T1.2",
+   "section_title": "Division Operations",
+   "page": 51,
+   "quote": "Microarchitectures can then fuse these into a single divide operation instead of performing two separate divides.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.2:s6"
+   ],
+   "strength": "MAY",
+   "actor": "system",
+   "signals": [],
+   "condition": "div followed by rem of the same operands",
+   "statement": "Microarchitectures may fuse the two instructions into a single divide operation instead of two separate divides.",
+   "check": "none"
+  },
+  {
+   "id": "RVM-T1.2-06",
+   "doc": "riscv_m_extension.adoc",
+   "section": "T1.2",
+   "section_title": "Division Operations",
+   "page": 53,
+   "quote": "divw and divuw are RV64 instructions that divide the lower 32 bits of rs1 by the lower 32 bits of rs2, treating them as signed and unsigned integers, placing the 32-bit quotient in rd, sign-extended to 64 bits. remw and remuw are RV64 instructions that provide the corresponding signed and unsigned remainder operations.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.2:s7"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "rs1",
+    "rs2",
+    "rd"
+   ],
+   "condition": "RV64 divw, divuw, remw, remuw",
+   "statement": "divw and divuw divide the lower 32 bits of rs1 by those of rs2 as signed and unsigned and write the 32-bit quotient sign-extended to 64 bits in rd; remw and remuw give the corresponding remainders.",
+   "check": "scenario"
+  },
+  {
+   "id": "RVM-T1.2-07",
+   "doc": "riscv_m_extension.adoc",
+   "section": "T1.2",
+   "section_title": "Division Operations",
+   "page": 53,
+   "quote": "Both remw and remuw always sign-extend the 32-bit result to 64 bits, including on a divide by zero.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.2:s8"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "remw or remuw, including divide by zero",
+   "statement": "remw and remuw always sign-extend the 32-bit result to 64 bits, including on a divide by zero.",
+   "check": "scenario"
+  },
+  {
+   "id": "RVM-T1.2-08",
+   "doc": "riscv_m_extension.adoc",
+   "section": "T1.2",
+   "section_title": "Division Operations",
+   "page": 53,
+   "quote": "The quotient of division by zero has all bits set, and the remainder of division by zero equals the dividend. L is the width of the operation in bits: XLEN for div, divu, rem, and remu, or 32 for divw, divuw, remw, and remuw. Condition: Division by zero; Dividend: _x_; Divisor: 0; divu/divuw: 2^(L)-1; remu/remuw: _x_; div/divw: −1; rem/remw: _x_",
+   "spec_refs": [],
+   "sentences": [
+    "T1.2:s10",
+    "T1.2:s15",
+    "T1.2:s16"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "division by zero",
+   "statement": "Division by zero returns all bits set (-1 for div/divw, 2^L-1 for divu/divuw) as quotient, and the remainder equals the dividend for rem/remw/remu/remuw.",
+   "check": "scenario"
+  },
+  {
+   "id": "RVM-T1.2-09",
+   "doc": "riscv_m_extension.adoc",
+   "section": "T1.2",
+   "section_title": "Division Operations",
+   "page": 53,
+   "quote": "Signed division overflow occurs only when the most-negative integer is divided by −1. The quotient of a signed division with overflow is equal to the dividend, and the remainder is zero. Condition: Overflow (signed only); Dividend: -2^(L-1); Divisor: −1; divu/divuw: --; remu/remuw: --; div/divw: -2^(L-1); rem/remw: 0",
+   "spec_refs": [],
+   "sentences": [
+    "T1.2:s11",
+    "T1.2:s12",
+    "T1.2:s17"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "signed division overflow: most-negative integer divided by -1",
+   "statement": "On signed overflow the quotient equals the dividend (-2^(L-1)) and the remainder is zero.",
+   "check": "scenario"
+  },
+  {
+   "id": "RVM-T1.2-10",
+   "doc": "riscv_m_extension.adoc",
+   "section": "T1.2",
+   "section_title": "Division Operations",
+   "page": 53,
+   "quote": "Unsigned division overflow cannot occur.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.2:s13"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "system",
+   "signals": [],
+   "condition": "unsigned division",
+   "statement": "Unsigned division overflow does not occur.",
+   "check": "none"
+  },
+  {
+   "id": "RVM-T1.2-11",
+   "doc": "riscv_m_extension.adoc",
+   "section": "T1.2",
+   "section_title": "Division Operations",
+   "page": 63,
+   "quote": "Further, where language standards mandate that a divide-by-zero exception must cause an immediate control flow change, only a single branch instruction needs to be added to each divide operation, and this branch instruction can be inserted after the divide and should normally be very predictably not taken, adding little runtime overhead.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.2:s20"
+   ],
+   "strength": "MAY",
+   "actor": "any",
+   "signals": [],
+   "condition": "language standard mandates divide-by-zero exception causing immediate control flow change",
+   "statement": "A single branch instruction may be inserted after each divide to implement the required control flow change.",
+   "check": "none"
+  }
+ ],
+ "skipped": [
+  {
+   "sentence": "T1:s1",
+   "reason": "descriptive",
+   "text": "This chapter describes the standard integer multiplication and division instruction extension, which is named m and contains instructions that multiply or divide values held in two integer registers."
+  },
+  {
+   "sentence": "T1:s2",
+   "reason": "informative_note",
+   "text": "Note: We separate integer multiply and divide out from the base to simplify low-end implementations, or for applications where integer multiply and divide operations are either infrequent or better handled in attached accelerators."
+  },
+  {
+   "sentence": "T1.1:s5",
+   "reason": "informative_note",
+   "text": "Note: mulhsu is used in multi-word signed multiplication to multiply the most-significant word of the multiplicand (which contains the sign bit) with the less-significant words of the multiplier (which are unsigned)."
+  },
+  {
+   "sentence": "T1.1:s8",
+   "reason": "informative_note",
+   "text": "If the arguments are not known to be sign- or zero-extended, an alternative is to shift both arguments left by 32 bits, then use mulh, mulhu[] or mulhsu[]."
+  },
+  {
+   "sentence": "T1.2:s3",
+   "reason": "informative_note",
+   "text": "Note: For both signed and unsigned division, except in the case of overflow, it holds that dividend = divisor × quotient + remainder."
+  },
+  {
+   "sentence": "T1.2:s9",
+   "reason": "cross_reference",
+   "text": "The semantics for division by zero and division overflow are summarized in divby0."
+  },
+  {
+   "sentence": "T1.2:s14",
+   "reason": "descriptive",
+   "text": "Semantics for division by zero and division overflow."
+  },
+  {
+   "sentence": "T1.2:s18",
+   "reason": "informative_note",
+   "text": "Note: We considered raising exceptions on integer divide by zero, with these exceptions causing a trap in most execution environments."
+  },
+  {
+   "sentence": "T1.2:s19",
+   "reason": "informative_note",
+   "text": "However, this would be the only arithmetic trap in the standard ISA (floating-point exceptions set flags and write default values, but do not cause traps) and would require language implementers to interact with the execution environment's trap handlers for this case."
+  },
+  {
+   "sentence": "T1.2:s21",
+   "reason": "informative_note",
+   "text": "The value of all bits set is returned for both unsigned and signed divide by zero to simplify the divider circuitry."
+  },
+  {
+   "sentence": "T1.2:s22",
+   "reason": "informative_note",
+   "text": "The value of all 1s is both the natural value to return for unsigned divide, representing the largest unsigned number, and also the natural result for simple unsigned divider implementations."
+  },
+  {
+   "sentence": "T1.2:s23",
+   "reason": "informative_note",
+   "text": "Signed division is often implemented using an unsigned division circuit and specifying the same overflow result simplifies the hardware."
+  }
+ ]
+}

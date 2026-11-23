@@ -1,0 +1,366 @@
+{
+ "mutants": [
+  {
+   "id": "M01",
+   "file": "uart_rx.v",
+   "line": 120,
+   "operator": "eq_to_ne",
+   "original": "end else if (bit_cnt == 1) begin",
+   "mutated": "            end else if (bit_cnt != 1) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_005_rx_backpressure",
+    "test_chk_006_rx_busy",
+    "test_chk_010_prescale_rate"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M02",
+   "file": "uart_tx.v",
+   "line": 105,
+   "operator": "zero_to_one",
+   "original": "{data_reg, txd_reg} <= {1'b0, data_reg};",
+   "mutated": "                {data_reg, txd_reg} <= {1'b1, data_reg};",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M03",
+   "file": "uart_rx.v",
+   "line": 107,
+   "operator": "negate_if",
+   "original": "end else if (bit_cnt > 0) begin",
+   "mutated": "        end else if (!(bit_cnt > 0)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_005_rx_backpressure",
+    "test_chk_006_rx_busy",
+    "test_chk_010_prescale_rate"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M04",
+   "file": "uart_tx.v",
+   "line": 97,
+   "operator": "one_to_zero",
+   "original": "data_reg <= {1'b1, s_axis_tdata};",
+   "mutated": "                data_reg <= {1'b0, s_axis_tdata};",
+   "status": "survived",
+   "killed_by_tests": [],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M05",
+   "file": "uart_tx.v",
+   "line": 89,
+   "operator": "eq_to_ne",
+   "original": "end else if (bit_cnt == 0) begin",
+   "mutated": "        end else if (bit_cnt != 0) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_009_tx_handshake_order",
+    "test_chk_010_prescale_rate",
+    "test_chk_011_tx_busy"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M06",
+   "file": "uart_rx.v",
+   "line": 101,
+   "operator": "and_to_or",
+   "original": "if (m_axis_tvalid && m_axis_tready) begin",
+   "mutated": "        if (m_axis_tvalid || m_axis_tready) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_005_rx_backpressure"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M07",
+   "file": "uart_tx.v",
+   "line": 102,
+   "operator": "negate_if",
+   "original": "if (bit_cnt > 1) begin",
+   "mutated": "            if (!(bit_cnt > 1)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_009_tx_handshake_order",
+    "test_chk_010_prescale_rate",
+    "test_chk_011_tx_busy"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M08",
+   "file": "uart_rx.v",
+   "line": 101,
+   "operator": "negate_if",
+   "original": "if (m_axis_tvalid && m_axis_tready) begin",
+   "mutated": "        if (!(m_axis_tvalid && m_axis_tready)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_005_rx_backpressure",
+    "test_chk_006_rx_busy",
+    "test_chk_010_prescale_rate"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M09",
+   "file": "uart_tx.v",
+   "line": 106,
+   "operator": "eq_to_ne",
+   "original": "end else if (bit_cnt == 1) begin",
+   "mutated": "            end else if (bit_cnt != 1) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_009_tx_handshake_order",
+    "test_chk_010_prescale_rate",
+    "test_chk_011_tx_busy"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M10",
+   "file": "uart_tx.v",
+   "line": 89,
+   "operator": "negate_if",
+   "original": "end else if (bit_cnt == 0) begin",
+   "mutated": "        end else if (!(bit_cnt == 0)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_009_tx_handshake_order",
+    "test_chk_010_prescale_rate",
+    "test_chk_011_tx_busy"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M11",
+   "file": "uart_rx.v",
+   "line": 105,
+   "operator": "negate_if",
+   "original": "if (prescale_reg > 0) begin",
+   "mutated": "        if (!(prescale_reg > 0)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_005_rx_backpressure",
+    "test_chk_006_rx_busy",
+    "test_chk_010_prescale_rate"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M12",
+   "file": "uart_tx.v",
+   "line": 93,
+   "operator": "negate_if",
+   "original": "if (s_axis_tvalid) begin",
+   "mutated": "            if (!(s_axis_tvalid)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_009_tx_handshake_order",
+    "test_chk_010_prescale_rate",
+    "test_chk_011_tx_busy"
+   ],
+   "killed_by_checks": []
+  }
+ ],
+ "candidates": 22,
+ "count": 12,
+ "killed": 10,
+ "survived": 2,
+ "not_compiled": 0,
+ "score": 83.3,
+ "seed": 1,
+ "excluded_uncovered": {
+  "files": [],
+  "lines": 0
+ },
+ "baseline_failing": {
+  "tests": [
+   "test_chk_007_rx_overrun",
+   "test_chk_008_rx_frame_error",
+   "test_regression_random"
+  ],
+  "checks": [
+   "CHK-001"
+  ]
+ },
+ "threshold": 85.0,
+ "attribution": {
+  "mutants": {
+   "M01": {
+    "rules": [
+     "UA-T1.3-08",
+     "UA-T1.3-07",
+     "UA-T1.3-05",
+     "UA-T1.3-06",
+     "UA-T1.3-01"
+    ],
+    "equivalent": false,
+    "reason": "With bit_cnt!=1 the stop-bit branch (bit_cnt==1) is never taken, so the receiver hangs at bit_cnt=1: no word is presented, no frame/overrun error pulses, and rx_busy stays high."
+   },
+   "M02": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "data_reg is 9 bits and bit_cnt starts at 9, so there are only 8 shifts at line 105. The bit shifted into data_reg[8] would reach txd only on a 9th shift, which never happens. The stop bit comes from line 109. The shifted-in bit never reaches txd or any other port."
+   },
+   "M03": {
+    "rules": [
+     "UA-T1.3-06",
+     "UA-T1.3-05",
+     "UA-T1.3-01",
+     "UA-T1.3-08",
+     "UA-T1.3-07"
+    ],
+    "equivalent": false,
+    "reason": "Inverting bit_cnt>0 makes the receiver run the idle/start-detect branch while a frame is in progress and ignore bit_cnt>0 once it is idle. Data sampling, frame completion and rx_busy are therefore corrupted and frames are not received."
+   },
+   "M04": {
+    "rules": [],
+    "equivalent": true,
+    "reason": "The top bit of data_reg (the constant 1 loaded here) is never shifted out. Only 8 shifts occur, which output data bits 0..7, and the stop bit is driven separately by txd_reg<=1. Changing this bit has no effect at any port."
+   },
+   "M05": {
+    "rules": [
+     "UA-T1.3-04",
+     "UA-T1.3-05",
+     "UA-T1.3-06",
+     "UA-T1.3-01"
+    ],
+    "equivalent": false,
+    "reason": "With bit_cnt!=0 the idle branch (s_axis_tready=1, accept data) runs mid-frame and never when idle. The transmitter would not accept words when idle, and the frame shifting logic is not reached."
+   },
+   "M06": {
+    "rules": [
+     "UA-T1.3-05",
+     "UA-T1.3-04",
+     "UA-T1.3-07",
+     "UA-T1.3-01"
+    ],
+    "equivalent": false,
+    "reason": "With || the pending word's m_axis_tvalid is cleared when tready is high without tvalid, or when tvalid is high without tready. A pending word is dropped while tready=0, so the stall and overrun-keep behaviour break."
+   },
+   "M07": {
+    "rules": [
+     "UA-T1.3-01",
+     "UA-T1.3-06",
+     "UA-T1.3-05"
+    ],
+    "equivalent": false,
+    "reason": "Inverting bit_cnt>1 swaps the data-shift and stop-bit branches. The last bit uses the shift path and the stop bit is not emitted correctly, so the txd frame is corrupted and bit timing changes."
+   },
+   "M08": {
+    "rules": [
+     "UA-T1.3-05",
+     "UA-T1.3-04",
+     "UA-T1.3-07",
+     "UA-T1.3-01"
+    ],
+    "equivalent": false,
+    "reason": "Inverting the handshake term clears m_axis_tvalid whenever there is no handshake and keeps it when there is. A pending word is dropped under backpressure, and a transferred word stays valid and is delivered again."
+   },
+   "M09": {
+    "rules": [
+     "UA-T1.3-01",
+     "UA-T1.3-06",
+     "UA-T1.3-05"
+    ],
+    "equivalent": false,
+    "reason": "With bit_cnt!=1 the stop-bit branch never fires, since bit_cnt==1 fails the condition. txd is never driven back to 1 for the stop bit, and the transmitter stays busy at bit_cnt=1."
+   },
+   "M10": {
+    "rules": [
+     "UA-T1.3-04",
+     "UA-T1.3-05",
+     "UA-T1.3-06",
+     "UA-T1.3-01"
+    ],
+    "equivalent": false,
+    "reason": "Same effect as M05: the idle/accept branch is taken when bit_cnt!=0 and skipped when idle. The transmitter never accepts a word from idle and the frame logic is corrupted."
+   },
+   "M11": {
+    "rules": [
+     "UA-T1.3-01",
+     "UA-T1.3-06",
+     "UA-T1.3-05",
+     "UA-T1.3-08",
+     "UA-T1.3-07"
+    ],
+    "equivalent": false,
+    "reason": "Inverting prescale_reg>0 removes the bit-period wait. The receiver samples at the wrong times, the prescale baud timing breaks, and frames are mis-received or give frame errors."
+   },
+   "M12": {
+    "rules": [
+     "UA-T1.3-04",
+     "UA-T1.3-05",
+     "UA-T1.3-06",
+     "UA-T1.3-01"
+    ],
+    "equivalent": false,
+    "reason": "With !tvalid the transmitter starts a frame when no data is valid and ignores a valid word. A word is not accepted on a tvalid&&tready handshake, and spurious frames are sent."
+   }
+  },
+  "unknown_ids": [
+   "UA-T1.3-09"
+  ],
+  "model": "sonnet",
+  "cost_usd": 0.1042465
+ },
+ "rule_scores": {
+  "UA-T1.3-01": {
+   "relevant": 10,
+   "killed": 10,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UA-T1.3-04": {
+   "relevant": 5,
+   "killed": 5,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UA-T1.3-05": {
+   "relevant": 10,
+   "killed": 10,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UA-T1.3-06": {
+   "relevant": 8,
+   "killed": 8,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UA-T1.3-07": {
+   "relevant": 5,
+   "killed": 5,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "UA-T1.3-08": {
+   "relevant": 3,
+   "killed": 3,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ }
+}

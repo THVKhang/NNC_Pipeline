@@ -86,7 +86,7 @@ def _intake(d, host) -> tuple[str, list[str]]:
     rec = d.work / "intake.json"
     if not rec.is_file():
         return "SKIPPED", ["work/intake.json is not recorded"]
-    inp = _intake_inputs(d, None)
+    inp = _intake_inputs(d, None, as_flow_reads=True)
     rep = intake.run(host, inp["rtl"], top=inp["top"], listed=inp["listed"], defines=inp["defines"],
                      spec=inp["spec"])
     want = json.loads(rec.read_text(encoding="utf-8"))["verdict"]

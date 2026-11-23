@@ -1,0 +1,324 @@
+{
+ "design": "c_pcpi_div",
+ "date": "2026-11-23T10:20:00+00:00",
+ "gates": [
+  {
+   "gate": "G1_rules",
+   "state": "APPROVED",
+   "detail": "by Claude (delegated by GabrielHCMUT) at 2026-11-23T09:57:44+00:00"
+  },
+  {
+   "gate": "G2_contract",
+   "state": "APPROVED",
+   "detail": "by Claude (delegated by GabrielHCMUT) at 2026-11-23T09:59:43+00:00"
+  },
+  {
+   "gate": "G3_verif_sources",
+   "state": "APPROVED",
+   "detail": "by Claude (delegated by GabrielHCMUT) at 2026-11-23T10:18:38+00:00"
+  },
+  {
+   "gate": "G4_signoff",
+   "state": "PENDING",
+   "detail": "artifacts ready for review"
+  }
+ ],
+ "unreviewed_gates": [],
+ "rules": {
+  "total": 23,
+  "by_status": {
+   "NOT_VERIFIED_BY_SIM": 16,
+   "VERIFIED": 7
+  }
+ },
+ "checks": {
+  "total": 9,
+  "by_status": {
+   "PASS": 9
+  },
+  "detail": {
+   "CHK-001": {
+    "status": "PASS",
+    "hits": 275264,
+    "fails": 0
+   },
+   "CHK-002": {
+    "status": "PASS",
+    "hits": 8096,
+    "fails": 0
+   },
+   "CHK-003": {
+    "status": "PASS",
+    "hits": 8096,
+    "fails": 0
+   },
+   "CHK-004": {
+    "status": "PASS",
+    "tests": [
+     "test_chk_004_directed_divide"
+    ]
+   },
+   "CHK-005": {
+    "status": "PASS",
+    "tests": [
+     "test_chk_005_random_divide",
+     "test_regression_random"
+    ]
+   },
+   "CHK-006": {
+    "status": "PASS",
+    "tests": [
+     "test_chk_006_divide_by_zero"
+    ]
+   },
+   "CHK-007": {
+    "status": "PASS",
+    "tests": [
+     "test_chk_007_signed_overflow"
+    ]
+   },
+   "CHK-008": {
+    "status": "PASS",
+    "tests": [
+     "test_chk_008_pcpi_handshake",
+     "test_regression_random"
+    ]
+   },
+   "CHK-009": {
+    "status": "PASS",
+    "tests": [
+     "test_chk_009_idle_after_reset"
+    ]
+   }
+  }
+ },
+ "simulation": {
+  "status": "ran",
+  "seed": 1,
+  "params": {},
+  "tests": {
+   "pass": 7
+  },
+  "integration": {
+   "ok": true,
+   "issues": []
+  },
+  "coverage": {
+   "status": "measured",
+   "metric": "line",
+   "hit": 58,
+   "total": 58,
+   "percent": 100.0,
+   "files": {
+    "picorv32.v": {
+     "hit": 58,
+     "total": 58
+    }
+   },
+   "executed_lines": {
+    "picorv32.v": "2421,2423-2430,2432-2433,2435-2436,2438-2442,2444-2449,2453-2454,2457-2462,2464-2467,2469-2470,2472-2478,2480-2483,2492-2493,2495,2497-2500,2502,2506"
+   },
+   "metrics": {
+    "line": {
+     "hit": 58,
+     "total": 58,
+     "percent": 100.0,
+     "files": {
+      "picorv32.v": {
+       "hit": 58,
+       "total": 58
+      }
+     }
+    },
+    "block": {
+     "hit": 16,
+     "total": 16,
+     "percent": 100.0,
+     "files": {
+      "picorv32.v": {
+       "hit": 16,
+       "total": 16
+      }
+     }
+    },
+    "expression": {
+     "hit": 37,
+     "total": 37,
+     "percent": 100.0,
+     "files": {
+      "picorv32.v": {
+       "hit": 37,
+       "total": 37
+      }
+     }
+    },
+    "toggle": {
+     "hit": 604,
+     "total": 604,
+     "percent": 100.0,
+     "files": {
+      "picorv32.v": {
+       "hit": 604,
+       "total": 604
+      }
+     }
+    },
+    "functional": {
+     "hit": 30,
+     "total": 35,
+     "percent": 85.7,
+     "files": {
+      "nnc_cov.sv": {
+       "hit": 30,
+       "total": 35
+      }
+     }
+    }
+   },
+   "uncovered": [
+    {
+     "metric": "functional",
+     "file": "nnc_cov.sv",
+     "line": 0,
+     "what": "COVP-005",
+     "points": 1,
+     "detail": []
+    },
+    {
+     "metric": "functional",
+     "file": "nnc_cov.sv",
+     "line": 0,
+     "what": "COVP-009",
+     "points": 1,
+     "detail": []
+    },
+    {
+     "metric": "functional",
+     "file": "nnc_cov.sv",
+     "line": 0,
+     "what": "COVP-029",
+     "points": 1,
+     "detail": []
+    },
+    {
+     "metric": "functional",
+     "file": "nnc_cov.sv",
+     "line": 0,
+     "what": "COVP-030",
+     "points": 1,
+     "detail": []
+    },
+    {
+     "metric": "functional",
+     "file": "nnc_cov.sv",
+     "line": 0,
+     "what": "COVP-033",
+     "points": 1,
+     "detail": []
+    }
+   ],
+   "design_scope": {
+    "rule": "left out: never-executed points of package code that the elaborated design does not contain (Verilator instruments every function of an imported package, called or not), and toggles of signal bits that Yosys constant propagation proves constant with the run's parameters, except on signals where the simulator recorded a toggle of such a bit (then the signal counts whole)",
+    "left_out": {
+     "line": 0
+    },
+    "scope_conflicts": 0,
+    "signals_kept_whole": [],
+    "all_points": {
+     "block": {
+      "hit": 16,
+      "total": 16,
+      "percent": 100.0
+     },
+     "expression": {
+      "hit": 37,
+      "total": 37,
+      "percent": 100.0
+     },
+     "line": {
+      "hit": 58,
+      "total": 58,
+      "percent": 100.0
+     },
+     "toggle": {
+      "hit": 604,
+      "total": 604,
+      "percent": 100.0
+     }
+    }
+   }
+  },
+  "run_set": null
+ },
+ "mutation": {
+  "count": 12,
+  "killed": 12,
+  "survived": 0,
+  "not_compiled": 0,
+  "score": 100.0,
+  "threshold": 85.0,
+  "equivalence": null,
+  "rules_attributed": 7,
+  "rules_below_threshold": []
+ },
+ "coverage_closure": {
+  "metric": "line",
+  "target": null,
+  "status": "not_requested",
+  "baseline": {
+   "hit": 58,
+   "total": 58,
+   "percent": 100.0,
+   "files": {
+    "picorv32.v": {
+     "hit": 58,
+     "total": 58
+    }
+   }
+  },
+  "final": {
+   "hit": 58,
+   "total": 58,
+   "percent": 100.0,
+   "files": {
+    "picorv32.v": {
+     "hit": 58,
+     "total": 58
+    }
+   }
+  }
+ },
+ "triage": {
+  "clusters": 0,
+  "analysed": null
+ },
+ "formal": null,
+ "cdc": {
+  "verdict": "clean",
+  "configurations": 1,
+  "counts": {
+   "DERIVED_CLOCK": 0,
+   "OUTPUT_FROM_OTHER_DOMAIN": 0,
+   "RESET_FROM_OTHER_DOMAIN": 0
+  }
+ },
+ "agent_cost_usd": {
+  "total_usd": 2.8175,
+  "calls": 15,
+  "by_agent": {
+   "A1": 0.0892,
+   "A12": 0.1633,
+   "A17": 0.4111,
+   "A2": 0.0905,
+   "A3": 0.0393,
+   "A4": 0.2691,
+   "A5": 0.0249,
+   "A6": 0.2412,
+   "A7": 0.4939,
+   "A9": 0.995
+  },
+  "failed_usd": 0.0,
+  "failed_calls": 0
+ },
+ "coverage_closure_other": []
+}

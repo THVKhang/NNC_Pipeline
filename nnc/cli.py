@@ -375,18 +375,23 @@ def cmd_cdc(args) -> int:
     return 1 if bad else 0
 
 
-def _intake_inputs(d: Design, top: str | None) -> dict:
-    """RTL folder, top, file order, macros and specification of a design for nnc intake / nnc adapt."""
+def _intake_inputs(d: Design, top: str | None, as_flow_reads: bool = False) -> dict:
+    """RTL folder, top, file order, macros and specification of a design for nnc intake / nnc adapt.
+    `as_flow_reads`: the design as the flow reads it after `nnc adapt` (the verified top, and the interface
+    document as the port table, as the contract stage does); else the original top and the IP specification,
+    which `nnc adapt` reads to decide what to adapt."""
     from nnc import adapt as adapt_mod, sim
     cfg = d.config()
     rtl = d.root / "rtl"
     fl = rtl / "filelist.f"
     generated = fl.is_file() and adapt_mod.GENERATED in fl.read_text(encoding="utf-8", errors="replace")[:200]
     ip = next((x for x in d.documents() if x["role"] == "ip_spec"), None)
-    return {"rtl": rtl, "top": top or cfg.get("adapted_top") or cfg.get("top"),
+    iface = next((x for x in d.documents() if x["role"] == "interface"), None) if as_flow_reads else None
+    spec = iface or ip
+    return {"rtl": rtl, "top": top or (cfg.get("top") if iface else None) or cfg.get("adapted_top") or cfg.get("top"),
             "listed": sim.rtl_files(rtl) if fl.is_file() and not generated else None,
             "defines": [x.strip() for x in str(cfg.get("formal_defines", "")).split(",") if x.strip()],
-            "spec": d.root / ip["file"] if ip else None, "spec_name": Path(ip["file"]).name if ip else None}
+            "spec": d.root / spec["file"] if spec else None, "spec_name": Path(ip["file"]).name if ip else None}
 
 
 def _print_intake(rep: dict, name: str) -> None:
@@ -412,7 +417,7 @@ def cmd_intake(args) -> int:
         if not args.design:
             raise ProjectError("give a design, or --rtl <folder>")
         d = _open(args)
-        inp = _intake_inputs(d, args.top)
+        inp = _intake_inputs(d, args.top, as_flow_reads=True)
         out, name = d.work, d.name
     base = [d.root, Path.cwd()] if args.design else [Path.cwd()]
     rep = intake.run(host, inp["rtl"], top=inp["top"], libs=libs, listed=inp["listed"],
@@ -523,6 +528,13 @@ def cmd_stability(args) -> int:
     if args.out:
         Path(args.out).write_text(md + "\n", encoding="utf-8")
         Path(args.out).with_suffix(".json").write_text(json.dumps(res, indent=1) + "\n", encoding="utf-8")
+    return 0
+
+
+def cmd_site(args) -> int:
+    from nnc import site
+    page = site.write(Path(args.root).resolve().parent, Path(args.out))
+    print(f"-> {page}")
     return 0
 
 
@@ -982,6 +994,10 @@ def build_parser() -> argparse.ArgumentParser:
                                        "committed results; --readme rewrites the table block in README.md")
     s.add_argument("--readme", help="README.md to update in place (between the nnc-summary markers)")
     s.set_defaults(func=cmd_summary)
+
+    s = sub.add_parser("site", help="the project page (GitHub Pages) from the committed results: one HTML file")
+    s.add_argument("--out", default="site", help="output folder (default site/)")
+    s.set_defaults(func=cmd_site)
 
     s = sub.add_parser("stability", help="agreement of repeated runs on one specification: rules and checks "
                                          "compared through the specification sentences they cite (no agent)")

@@ -45,10 +45,11 @@ result**:
 
 | Input | Handling |
 |---|---|
-| Markdown, plain text | Read directly; tables are read. |
+| Markdown, plain text | Read directly; tables are read. Headings may be `#` lines or underlined with `===`/`---` (setext, as in picorv32's README). |
 | PDF with a text layer | Read with pdftotext, without tables. The port table then comes from the interface document of `nnc adapt`, or from a Markdown file. |
 | Scanned PDF | Error from `nnc spec-check` and the intake: OCR it first. |
 | Word `.docx`, HTML | Converted to Markdown by `nnc/specconv.py` (headings, paragraphs, lists, tables, code). The converted text is what the agents read; the index keeps the hash of the original. |
+| AsciiDoc (`.adoc`), as the RISC-V specifications | Converted the same way: section and block titles, role spans and instruction macros of the RISC-V manual, tables with column and row spans, admonitions, listing and diagram source blocks, included fragments found next to the document. A missing include is named in the text. |
 | No port table, or one in another form | Given RTL: `nnc adapt` writes the interface document from the port declarations and the netlist. Only names, widths, fields, clocks and resets come from it, never behaviour. No RTL: `nnc spec-draft` (agent A0) drafts the template form. |
 | No requirement IDs, not in the template's shape | Accepted (OpenTitan gpio has 0 IDs). Rules cite sentence IDs of the index. |
 | English | Normative sentences (must, shall, only, ...) are flagged for the extraction to decide. |
@@ -102,6 +103,9 @@ What it does not show:
 
 | Fault | Where | Fix |
 |---|---|---|
+| Synchronous resets were never found: the intake netlist kept them as a flop behind a multiplexer, so the interface document typed `rst` as data and the contract had no reset | verilog-uart, verilog-axi, picorv32 (found while preparing the blind run, 21.6) | `opt_dff` in the intake netlist |
+| AsciiDoc specifications could not be read | the RISC-V M extension (21.6) | `specconv.adoc_to_markdown` |
+| Setext headings (`Title` over `-----`) were read as paragraph text, so a section merged into the one before | picorv32 README (21.6) | the Markdown reader turns them into headings |
 | Ports under `` `ifdef `` counted as DUT ports | picorv32 (`rvfi_*` under `RISCV_FORMAL`) | `sim.preprocess`: the port reader evaluates conditional compilation |
 | Port of a user type read as a port named after the type | common_cells (`parameter type data_t`) | `sim.dut_ports`: the name is the last identifier |
 | A package import in the module header (`module m import p::*; #(...)`) hid every port | common_cells (`cc_lzc`, `cc_cdc_reset_ctrlr`) | `sim.dut_ports` skips header imports and the lifetime keyword |

@@ -1,0 +1,422 @@
+{
+ "mutants": [
+  {
+   "id": "M01",
+   "file": "picorv32.v",
+   "line": 2444,
+   "operator": "eq_to_ne",
+   "original": "if (resetn && pcpi_valid && !pcpi_ready && pcpi_insn[6:0] == 7'b0110011 && pcpi_insn[31:25] == 7'b0000001) begin",
+   "mutated": "\t\tif (resetn && pcpi_valid && !pcpi_ready && pcpi_insn[6:0] == 7'b0110011 && pcpi_insn[31:25] != 7'b0000001) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_004_directed_divide",
+    "test_chk_005_random_divide",
+    "test_chk_006_divide_by_zero",
+    "test_chk_007_signed_overflow",
+    "test_chk_008_pcpi_handshake",
+    "test_chk_009_idle_after_reset",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M02",
+   "file": "picorv32.v",
+   "line": 2444,
+   "operator": "negate_if",
+   "original": "if (resetn && pcpi_valid && !pcpi_ready && pcpi_insn[6:0] == 7'b0110011 && pcpi_insn[31:25] == 7'b0000001) begin",
+   "mutated": "\t\tif (!(resetn && pcpi_valid && !pcpi_ready && pcpi_insn[6:0] == 7'b0110011 && pcpi_insn[31:25] == 7'b0000001)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_004_directed_divide",
+    "test_chk_005_random_divide",
+    "test_chk_006_divide_by_zero",
+    "test_chk_007_signed_overflow",
+    "test_chk_008_pcpi_handshake",
+    "test_chk_009_idle_after_reset",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M03",
+   "file": "picorv32.v",
+   "line": 2476,
+   "operator": "ne_to_eq",
+   "original": "outsign <= (instr_div && (pcpi_rs1[31] != pcpi_rs2[31]) && |pcpi_rs2) || (instr_rem && pcpi_rs1[31]);",
+   "mutated": "\t\t\toutsign <= (instr_div && (pcpi_rs1[31] == pcpi_rs2[31]) && |pcpi_rs2) || (instr_rem && pcpi_rs1[31]);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_004_directed_divide",
+    "test_chk_005_random_divide",
+    "test_chk_008_pcpi_handshake",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M04",
+   "file": "picorv32.v",
+   "line": 2475,
+   "operator": "or_to_and",
+   "original": "divisor <= ((instr_div || instr_rem) && pcpi_rs2[31] ? -pcpi_rs2 : pcpi_rs2) << 31;",
+   "mutated": "\t\t\tdivisor <= ((instr_div && instr_rem) && pcpi_rs2[31] ? -pcpi_rs2 : pcpi_rs2) << 31;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_004_directed_divide",
+    "test_chk_005_random_divide",
+    "test_chk_007_signed_overflow",
+    "test_chk_008_pcpi_handshake",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M05",
+   "file": "picorv32.v",
+   "line": 2444,
+   "operator": "and_to_or",
+   "original": "if (resetn && pcpi_valid && !pcpi_ready && pcpi_insn[6:0] == 7'b0110011 && pcpi_insn[31:25] == 7'b0000001) begin",
+   "mutated": "\t\tif (resetn && pcpi_valid || !pcpi_ready && pcpi_insn[6:0] == 7'b0110011 && pcpi_insn[31:25] == 7'b0000001) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_004_directed_divide",
+    "test_chk_005_random_divide",
+    "test_chk_006_divide_by_zero",
+    "test_chk_007_signed_overflow",
+    "test_chk_008_pcpi_handshake",
+    "test_chk_009_idle_after_reset",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-001"
+   ]
+  },
+  {
+   "id": "M06",
+   "file": "picorv32.v",
+   "line": 2444,
+   "operator": "eq_to_ne",
+   "original": "if (resetn && pcpi_valid && !pcpi_ready && pcpi_insn[6:0] == 7'b0110011 && pcpi_insn[31:25] == 7'b0000001) begin",
+   "mutated": "\t\tif (resetn && pcpi_valid && !pcpi_ready && pcpi_insn[6:0] != 7'b0110011 && pcpi_insn[31:25] == 7'b0000001) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_004_directed_divide",
+    "test_chk_005_random_divide",
+    "test_chk_006_divide_by_zero",
+    "test_chk_007_signed_overflow",
+    "test_chk_008_pcpi_handshake",
+    "test_chk_009_idle_after_reset",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M07",
+   "file": "picorv32.v",
+   "line": 2498,
+   "operator": "negate_if",
+   "original": "if (divisor <= dividend) begin",
+   "mutated": "\t\t\tif (!(divisor <= dividend)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_004_directed_divide",
+    "test_chk_005_random_divide",
+    "test_chk_006_divide_by_zero",
+    "test_chk_007_signed_overflow",
+    "test_chk_008_pcpi_handshake",
+    "test_chk_009_idle_after_reset",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M08",
+   "file": "picorv32.v",
+   "line": 2476,
+   "operator": "or_to_and",
+   "original": "outsign <= (instr_div && (pcpi_rs1[31] != pcpi_rs2[31]) && |pcpi_rs2) || (instr_rem && pcpi_rs1[31]);",
+   "mutated": "\t\t\toutsign <= (instr_div && (pcpi_rs1[31] != pcpi_rs2[31]) && |pcpi_rs2) && (instr_rem && pcpi_rs1[31]);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_004_directed_divide",
+    "test_chk_005_random_divide",
+    "test_chk_006_divide_by_zero",
+    "test_chk_008_pcpi_handshake",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M09",
+   "file": "picorv32.v",
+   "line": 2476,
+   "operator": "and_to_or",
+   "original": "outsign <= (instr_div && (pcpi_rs1[31] != pcpi_rs2[31]) && |pcpi_rs2) || (instr_rem && pcpi_rs1[31]);",
+   "mutated": "\t\t\toutsign <= (instr_div && (pcpi_rs1[31] != pcpi_rs2[31]) || |pcpi_rs2) || (instr_rem && pcpi_rs1[31]);",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_004_directed_divide",
+    "test_chk_005_random_divide",
+    "test_chk_006_divide_by_zero",
+    "test_chk_008_pcpi_handshake",
+    "test_chk_009_idle_after_reset",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M10",
+   "file": "picorv32.v",
+   "line": 2480,
+   "operator": "negate_if",
+   "original": "if (!quotient_msk && running) begin",
+   "mutated": "\t\tif (!(!quotient_msk && running)) begin",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_004_directed_divide",
+    "test_chk_005_random_divide",
+    "test_chk_006_divide_by_zero",
+    "test_chk_007_signed_overflow",
+    "test_chk_008_pcpi_handshake",
+    "test_chk_009_idle_after_reset",
+    "test_regression_random"
+   ],
+   "killed_by_checks": [
+    "CHK-003"
+   ]
+  },
+  {
+   "id": "M11",
+   "file": "picorv32.v",
+   "line": 2474,
+   "operator": "or_to_and",
+   "original": "dividend <= (instr_div || instr_rem) && pcpi_rs1[31] ? -pcpi_rs1 : pcpi_rs1;",
+   "mutated": "\t\t\tdividend <= (instr_div && instr_rem) && pcpi_rs1[31] ? -pcpi_rs1 : pcpi_rs1;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_004_directed_divide",
+    "test_chk_005_random_divide",
+    "test_chk_006_divide_by_zero",
+    "test_chk_008_pcpi_handshake",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  },
+  {
+   "id": "M12",
+   "file": "picorv32.v",
+   "line": 2453,
+   "operator": "and_to_or",
+   "original": "pcpi_wait <= instr_any_div_rem && resetn;",
+   "mutated": "\t\tpcpi_wait <= instr_any_div_rem || resetn;",
+   "status": "killed",
+   "killed_by_tests": [
+    "test_chk_004_directed_divide",
+    "test_chk_005_random_divide",
+    "test_chk_006_divide_by_zero",
+    "test_chk_007_signed_overflow",
+    "test_chk_008_pcpi_handshake",
+    "test_chk_009_idle_after_reset",
+    "test_regression_random"
+   ],
+   "killed_by_checks": []
+  }
+ ],
+ "candidates": 26,
+ "count": 12,
+ "killed": 12,
+ "survived": 0,
+ "not_compiled": 0,
+ "score": 100.0,
+ "seed": 1,
+ "excluded_uncovered": {
+  "files": [],
+  "lines": 823
+ },
+ "baseline_failing": {
+  "tests": [],
+  "checks": []
+ },
+ "threshold": 85.0,
+ "attribution": {
+  "mutants": {
+   "M01": {
+    "rules": [
+     "PD-T1.1-06",
+     "PD-T1.1-02",
+     "PD-T1.1-03",
+     "RVM-T1.2-01"
+    ],
+    "equivalent": false,
+    "reason": "funct7 test inverted: a genuine DIV/DIVU/REM/REMU (funct7=0000001) is never decoded, so no pcpi_wait or pcpi_ready/pcpi_wr is produced and the instruction times out; other funct7 values would be wrongly accepted."
+   },
+   "M02": {
+    "rules": [
+     "PD-T1.1-06",
+     "PD-T1.1-02",
+     "PD-T1.1-03",
+     "RVM-T1.2-01"
+    ],
+    "equivalent": false,
+    "reason": "Whole decode condition negated: valid division instructions are not recognised, and in idle or reset cycles the decode case fires on arbitrary pcpi_insn funct3 bits, giving spurious pcpi_wait/ready."
+   },
+   "M03": {
+    "rules": [
+     "RVM-T1.2-01",
+     "RVM-T1.2-09"
+    ],
+    "equivalent": false,
+    "reason": "Quotient sign condition inverted (== instead of !=): DIV results with opposite-sign operands lose the negation and same-sign ones are wrongly negated, including the 0x80000000/-1 overflow case. Divide by zero is unchanged because |rs2 is 0."
+   },
+   "M04": {
+    "rules": [
+     "RVM-T1.2-01",
+     "RVM-T1.2-02",
+     "RVM-T1.2-09"
+    ],
+    "equivalent": false,
+    "reason": "instr_div && instr_rem is never true, so a negative divisor is never negated for signed DIV/REM. A negative rs2 then gives a wrong quotient and remainder (for example 7 / -2, and -2^31 / -1)."
+   },
+   "M05": {
+    "rules": [
+     "PD-T1.1-02",
+     "PD-T1.1-03",
+     "PD-T1.1-06"
+    ],
+    "equivalent": false,
+    "reason": "Operator precedence change: with resetn && pcpi_valid true, the instruction-type check is bypassed and the !pcpi_ready guard is ignored. The funct3 case then decodes non-DIV instructions, and decode retriggers on the cycle pcpi_ready is high, causing a spurious second wait/ready pulse."
+   },
+   "M06": {
+    "rules": [
+     "PD-T1.1-06",
+     "PD-T1.1-02",
+     "PD-T1.1-03",
+     "RVM-T1.2-01"
+    ],
+    "equivalent": false,
+    "reason": "Opcode test inverted: the OP opcode 0110011 is no longer decoded, so real division instructions are never accepted and no wait/ready occurs. Non-OP opcodes with funct7=1 would be wrongly accepted."
+   },
+   "M07": {
+    "rules": [
+     "RVM-T1.2-01",
+     "RVM-T1.2-08",
+     "RVM-T1.2-09",
+     "RVM-T1.2-02"
+    ],
+    "equivalent": false,
+    "reason": "The restoring-division compare is inverted: the divisor is subtracted when it is larger than the dividend, so quotient and remainder are wrong for essentially all divisions, including division by zero."
+   },
+   "M08": {
+    "rules": [
+     "RVM-T1.2-01",
+     "RVM-T1.2-02",
+     "RVM-T1.2-08"
+    ],
+    "equivalent": false,
+    "reason": "|| became &&: instr_div and instr_rem are never both set, so outsign is always 0. Negative quotients are not negated, and REM with a negative dividend returns the wrong sign (and wrong value on divide by zero)."
+   },
+   "M09": {
+    "rules": [
+     "RVM-T1.2-01",
+     "RVM-T1.2-02"
+    ],
+    "equivalent": false,
+    "reason": "Precedence change makes outsign=1 whenever rs2 is nonzero, for any instruction type. Same-sign DIV, DIVU and REMU results are wrongly negated, and REM with a positive dividend gets the wrong sign."
+   },
+   "M10": {
+    "rules": [
+     "RVM-T1.2-01",
+     "PD-T1.1-03",
+     "PD-T1.1-02",
+     "PD-T1.1-06",
+     "RVM-T1.2-08"
+    ],
+    "equivalent": false,
+    "reason": "Completion condition inverted: pcpi_ready/pcpi_wr are not issued when the quotient mask reaches zero and are issued at the wrong time. Results are wrong and completion is missing, early or spurious."
+   },
+   "M11": {
+    "rules": [
+     "RVM-T1.2-01",
+     "RVM-T1.2-02",
+     "RVM-T1.2-08",
+     "RVM-T1.2-09"
+    ],
+    "equivalent": false,
+    "reason": "instr_div && instr_rem is never true, so a negative dividend is never negated for signed DIV/REM. A negative rs1 gives a wrong quotient and remainder, including the divide-by-zero remainder and the overflow case."
+   },
+   "M12": {
+    "rules": [
+     "PD-T1.1-06",
+     "PD-T1.1-02",
+     "PD-T1.1-03"
+    ],
+    "equivalent": false,
+    "reason": "pcpi_wait <= any || resetn holds pcpi_wait high whenever resetn=1, even when idle. This also triggers a spurious start, so a pcpi_ready/pcpi_wr pulse appears with no instruction outstanding, and pcpi_wait is no longer 0 when idle."
+   }
+  },
+  "unknown_ids": [],
+  "model": "sonnet",
+  "cost_usd": 0.0
+ },
+ "rule_scores": {
+  "PD-T1.1-02": {
+   "relevant": 6,
+   "killed": 6,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "PD-T1.1-03": {
+   "relevant": 6,
+   "killed": 6,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "PD-T1.1-06": {
+   "relevant": 6,
+   "killed": 6,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RVM-T1.2-01": {
+   "relevant": 10,
+   "killed": 10,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RVM-T1.2-02": {
+   "relevant": 5,
+   "killed": 5,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RVM-T1.2-08": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  },
+  "RVM-T1.2-09": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ }
+}

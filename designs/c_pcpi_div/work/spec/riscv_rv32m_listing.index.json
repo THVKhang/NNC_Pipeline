@@ -1,0 +1,608 @@
+{
+ "version": 1,
+ "doc": {
+  "file": "riscv_rv32m_listing.adoc",
+  "sha256": "7f6064f199882ab11318c8f752fbdbf4ff6c3e830a371cb1d1f6daeb03ea0d2b",
+  "length": 39,
+  "location": "line of the converted text"
+ },
+ "sections": [
+  {
+   "id": "front",
+   "title": "Front matter",
+   "level": 0,
+   "parent": null,
+   "page_start": 1,
+   "page_end": 1,
+   "sentences": []
+  },
+  {
+   "id": "T1",
+   "title": "RV32/64G Instruction Set Listings",
+   "level": 1,
+   "parent": null,
+   "page_start": 1,
+   "page_end": 39,
+   "sentences": [
+    {
+     "id": "T1:s1",
+     "text": "One goal of the RISC-V project is that it be used as a stable software development target.",
+     "page": 3,
+     "normative": true
+    },
+    {
+     "id": "T1:s2",
+     "text": "For this purpose, we define a combination of a base ISA (RV32I or RV64I) plus selected standard extensions (IMAFD, Zicsr, Zifencei) as a \"general-purpose\" ISA, and we use the abbreviation G for the IMAFDZicsr_Zifencei combination of instruction-set extensions.",
+     "page": 3,
+     "normative": false
+    },
+    {
+     "id": "T1:s3",
+     "text": "This chapter presents opcode maps and instruction-set listings for RV32G and RV64G.",
+     "page": 3,
+     "normative": false
+    },
+    {
+     "id": "T1:s4",
+     "text": "RISC-V base opcode map, inst[1:0]=11",
+     "page": 5,
+     "normative": false
+    },
+    {
+     "id": "T1:s5",
+     "text": "inst[4:2]: inst[6:5]",
+     "page": 9,
+     "normative": false
+    },
+    {
+     "id": "T1:s6",
+     "text": "inst[4:2]: 00; 000: LOAD; 001: LOAD-FP; 010: _custom-0_; 011: MISC-MEM; 100: OP-IMM; 101: AUIPC; 110: OP-IMM-32; 111 (>32b): _reserved_",
+     "page": 10,
+     "normative": false
+    },
+    {
+     "id": "T1:s7",
+     "text": "inst[4:2]: 01; 000: STORE; 001: STORE-FP; 010: _custom-1_; 011: AMO; 100: OP; 101: LUI; 110: OP-32; 111 (>32b): _reserved_",
+     "page": 11,
+     "normative": false
+    },
+    {
+     "id": "T1:s8",
+     "text": "inst[4:2]: 10; 000: MADD; 001: MSUB; 010: NMSUB; 011: NMADD; 100: OP-FP; 101: OP-V; 110: _custom-2_; 111 (>32b): _reserved_",
+     "page": 12,
+     "normative": false
+    },
+    {
+     "id": "T1:s9",
+     "text": "inst[4:2]: 11; 000: BRANCH; 001: JALR; 010: _reserved_; 011: JAL; 100: SYSTEM; 101: OP-VE; 110: _custom-3_; 111 (>32b): _reserved_",
+     "page": 13,
+     "normative": false
+    },
+    {
+     "id": "T1:s10",
+     "text": "norm:major_opcode_map_tbl shows a map of the major opcodes for RVG.",
+     "page": 15,
+     "normative": false
+    },
+    {
+     "id": "T1:s11",
+     "text": "Opcodes marked as _reserved_ should be avoided for custom instruction-set extensions as they might be used by future standard extensions.",
+     "page": 15,
+     "normative": true
+    },
+    {
+     "id": "T1:s12",
+     "text": "Major opcodes marked as _custom-0_ through _custom-3_ will be avoided by future standard extensions and are recommended for use by custom instruction-set extensions within the base 32-bit instruction format.",
+     "page": 15,
+     "normative": true
+    },
+    {
+     "id": "T1:s13",
+     "text": "We believe RV32G and RV64G provide simple but complete instruction sets for a broad range of general-purpose computing.",
+     "page": 17,
+     "normative": false
+    },
+    {
+     "id": "T1:s14",
+     "text": "The optional compressed instruction-set extension c can be added (forming RV32GC and RV64GC) to improve performance, code size, and energy efficiency, though with some additional hardware complexity.",
+     "page": 17,
+     "normative": true
+    },
+    {
+     "id": "T1:s15",
+     "text": "As we move beyond IMAFDC into further instruction-set extensions, the added instructions tend to be more domain-specific and only provide benefits to a restricted class of applications, e.g., for multimedia or security.",
+     "page": 19,
+     "normative": false
+    },
+    {
+     "id": "T1:s16",
+     "text": "Unlike most commercial ISAs, the RISC-V ISA design clearly separates the base ISA and broadly applicable standard extensions from these more specialized additions.",
+     "page": 19,
+     "normative": false
+    },
+    {
+     "id": "T1:s17",
+     "text": "31: funct7; 24: rs2; 19: rs1; 14: funct3; 11: rd; 6: opcode",
+     "page": 23,
+     "normative": false
+    },
+    {
+     "id": "T1:s18",
+     "text": "31: imm[11:0]; 19: rs1; 14: funct3; 11: rd; 6: opcode",
+     "page": 24,
+     "normative": false
+    },
+    {
+     "id": "T1:s19",
+     "text": "31: imm[11:5]; 24: rs2; 19: rs1; 14: funct3; 11: imm[4:0]; 6: opcode",
+     "page": 25,
+     "normative": false
+    },
+    {
+     "id": "T1:s20",
+     "text": "31: imm[12\\|10:5]; 24: rs2; 19: rs1; 14: funct3; 11: imm[4:1\\|11]; 6: opcode",
+     "page": 26,
+     "normative": false
+    },
+    {
+     "id": "T1:s21",
+     "text": "31: imm[31:12]; 11: rd; 6: opcode",
+     "page": 27,
+     "normative": false
+    },
+    {
+     "id": "T1:s22",
+     "text": "31: imm[20\\|10:1\\|11\\|19:12]; 11: rd; 6: opcode",
+     "page": 28,
+     "normative": false
+    },
+    {
+     "id": "T1:s23",
+     "text": "RV32M Standard Extension: 0000001",
+     "page": 32,
+     "normative": false
+    },
+    {
+     "id": "T1:s24",
+     "text": "RV32M Standard Extension: 0000001",
+     "page": 33,
+     "normative": false
+    },
+    {
+     "id": "T1:s25",
+     "text": "RV32M Standard Extension: 0000001",
+     "page": 34,
+     "normative": false
+    },
+    {
+     "id": "T1:s26",
+     "text": "RV32M Standard Extension: 0000001",
+     "page": 35,
+     "normative": false
+    },
+    {
+     "id": "T1:s27",
+     "text": "RV32M Standard Extension: 0000001",
+     "page": 36,
+     "normative": false
+    },
+    {
+     "id": "T1:s28",
+     "text": "RV32M Standard Extension: 0000001",
+     "page": 37,
+     "normative": false
+    },
+    {
+     "id": "T1:s29",
+     "text": "RV32M Standard Extension: 0000001",
+     "page": 38,
+     "normative": false
+    },
+    {
+     "id": "T1:s30",
+     "text": "RV32M Standard Extension: 0000001",
+     "page": 39,
+     "normative": false
+    }
+   ]
+  }
+ ],
+ "tables": [
+  {
+   "section": "T1",
+   "header": [
+    "inst[4:2]",
+    "000",
+    "001",
+    "010",
+    "011",
+    "100",
+    "101",
+    "110",
+    "111 (>32b)"
+   ],
+   "rows": [
+    [
+     "inst[6:5]",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "00",
+     "LOAD",
+     "LOAD-FP",
+     "_custom-0_",
+     "MISC-MEM",
+     "OP-IMM",
+     "AUIPC",
+     "OP-IMM-32",
+     "_reserved_"
+    ],
+    [
+     "01",
+     "STORE",
+     "STORE-FP",
+     "_custom-1_",
+     "AMO",
+     "OP",
+     "LUI",
+     "OP-32",
+     "_reserved_"
+    ],
+    [
+     "10",
+     "MADD",
+     "MSUB",
+     "NMSUB",
+     "NMADD",
+     "OP-FP",
+     "OP-V",
+     "_custom-2_",
+     "_reserved_"
+    ],
+    [
+     "11",
+     "BRANCH",
+     "JALR",
+     "_reserved_",
+     "JAL",
+     "SYSTEM",
+     "OP-VE",
+     "_custom-3_",
+     "_reserved_"
+    ]
+   ],
+   "line": 7,
+   "units": [
+    "T1:s5",
+    "T1:s6",
+    "T1:s7",
+    "T1:s8",
+    "T1:s9"
+   ],
+   "caption": "RISC-V base opcode map, inst[1:0]=11"
+  },
+  {
+   "section": "T1",
+   "header": [
+    "31",
+    "27",
+    "26",
+    "25",
+    "24",
+    "20",
+    "19",
+    "15",
+    "14",
+    "12",
+    "11",
+    "7",
+    "6",
+    "0",
+    ""
+   ],
+   "rows": [
+    [
+     "funct7",
+     "",
+     "",
+     "",
+     "rs2",
+     "",
+     "rs1",
+     "",
+     "funct3",
+     "",
+     "rd",
+     "",
+     "opcode",
+     "",
+     "R-type"
+    ],
+    [
+     "imm[11:0]",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "rs1",
+     "",
+     "funct3",
+     "",
+     "rd",
+     "",
+     "opcode",
+     "",
+     "I-type"
+    ],
+    [
+     "imm[11:5]",
+     "",
+     "",
+     "",
+     "rs2",
+     "",
+     "rs1",
+     "",
+     "funct3",
+     "",
+     "imm[4:0]",
+     "",
+     "opcode",
+     "",
+     "S-type"
+    ],
+    [
+     "imm[12\\|10:5]",
+     "",
+     "",
+     "",
+     "rs2",
+     "",
+     "rs1",
+     "",
+     "funct3",
+     "",
+     "imm[4:1\\|11]",
+     "",
+     "opcode",
+     "",
+     "B-type"
+    ],
+    [
+     "imm[31:12]",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "rd",
+     "",
+     "opcode",
+     "",
+     "U-type"
+    ],
+    [
+     "imm[20\\|10:1\\|11\\|19:12]",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "rd",
+     "",
+     "opcode",
+     "",
+     "J-type"
+    ]
+   ],
+   "line": 21,
+   "units": [
+    "T1:s17",
+    "T1:s18",
+    "T1:s19",
+    "T1:s20",
+    "T1:s21",
+    "T1:s22"
+   ],
+   "caption": "As we move beyond IMAFDC into further instruction-set extensions, the added instructions tend to be more domain-specific and only provide benefits to a restricted class of applications, e.g., for multimedia or security. Unlike most commercial ISAs, the RISC-V ISA design clearly separates the base ISA and broadly applicable standard extensions from these more specialized additions."
+  },
+  {
+   "section": "T1",
+   "header": [
+    "RV32M Standard Extension",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "rows": [
+    [
+     "0000001",
+     "",
+     "",
+     "",
+     "rs2",
+     "",
+     "rs1",
+     "",
+     "000",
+     "",
+     "rd",
+     "",
+     "0110011",
+     "",
+     "MUL"
+    ],
+    [
+     "0000001",
+     "",
+     "",
+     "",
+     "rs2",
+     "",
+     "rs1",
+     "",
+     "001",
+     "",
+     "rd",
+     "",
+     "0110011",
+     "",
+     "MULH"
+    ],
+    [
+     "0000001",
+     "",
+     "",
+     "",
+     "rs2",
+     "",
+     "rs1",
+     "",
+     "010",
+     "",
+     "rd",
+     "",
+     "0110011",
+     "",
+     "MULHSU"
+    ],
+    [
+     "0000001",
+     "",
+     "",
+     "",
+     "rs2",
+     "",
+     "rs1",
+     "",
+     "011",
+     "",
+     "rd",
+     "",
+     "0110011",
+     "",
+     "MULHU"
+    ],
+    [
+     "0000001",
+     "",
+     "",
+     "",
+     "rs2",
+     "",
+     "rs1",
+     "",
+     "100",
+     "",
+     "rd",
+     "",
+     "0110011",
+     "",
+     "DIV"
+    ],
+    [
+     "0000001",
+     "",
+     "",
+     "",
+     "rs2",
+     "",
+     "rs1",
+     "",
+     "101",
+     "",
+     "rd",
+     "",
+     "0110011",
+     "",
+     "DIVU"
+    ],
+    [
+     "0000001",
+     "",
+     "",
+     "",
+     "rs2",
+     "",
+     "rs1",
+     "",
+     "110",
+     "",
+     "rd",
+     "",
+     "0110011",
+     "",
+     "REM"
+    ],
+    [
+     "0000001",
+     "",
+     "",
+     "",
+     "rs2",
+     "",
+     "rs1",
+     "",
+     "111",
+     "",
+     "rd",
+     "",
+     "0110011",
+     "",
+     "REMU"
+    ]
+   ],
+   "line": 30,
+   "units": [
+    "T1:s23",
+    "T1:s24",
+    "T1:s25",
+    "T1:s26",
+    "T1:s27",
+    "T1:s28",
+    "T1:s29",
+    "T1:s30"
+   ]
+  }
+ ],
+ "signals": {
+  "ISA": 2,
+  "RV32G": 2,
+  "RV32M": 8,
+  "RV64G": 2
+ },
+ "warnings": [],
+ "stats": {
+  "sections": 1,
+  "sentences": 30,
+  "normative": 4,
+  "chars": 2710
+ }
+}

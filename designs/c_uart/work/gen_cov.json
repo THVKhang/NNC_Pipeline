@@ -1,0 +1,471 @@
+{
+ "module": "nnc_cov",
+ "file": "nnc_cov.sv",
+ "points": [
+  {
+   "id": "COVP-001",
+   "title": "s_axis handshake",
+   "rules": [
+    "UA-T1.3-05"
+   ],
+   "checks": [
+    "CHK-009"
+   ],
+   "condition": "s_axis_tvalid and s_axis_tready both high"
+  },
+  {
+   "id": "COVP-002",
+   "title": "s_axis stall: tvalid high, tready low",
+   "rules": [
+    "UA-T1.3-04",
+    "UA-T1.3-05"
+   ],
+   "checks": [
+    "CHK-009"
+   ],
+   "condition": "s_axis_tvalid=1 and s_axis_tready=0"
+  },
+  {
+   "id": "COVP-003",
+   "title": "s_axis stall lasting 4+ cycles",
+   "rules": [
+    "UA-T1.3-04"
+   ],
+   "checks": [
+    "CHK-009"
+   ],
+   "condition": "s_axis stall for at least 4 consecutive cycles"
+  },
+  {
+   "id": "COVP-004",
+   "title": "s_axis tvalid offered while transmitter busy",
+   "rules": [
+    "UA-T1.3-04",
+    "UA-T1.3-06"
+   ],
+   "checks": [
+    "CHK-009",
+    "CHK-011"
+   ],
+   "condition": "s_axis_tvalid=1 and tx_busy=1"
+  },
+  {
+   "id": "COVP-005",
+   "title": "s_axis handshake data all zeros",
+   "rules": [
+    "UA-T1.3-05"
+   ],
+   "checks": [
+    "CHK-009"
+   ],
+   "condition": "s_axis handshake with tdata=0"
+  },
+  {
+   "id": "COVP-006",
+   "title": "s_axis handshake data all ones",
+   "rules": [
+    "UA-T1.3-05"
+   ],
+   "checks": [
+    "CHK-009"
+   ],
+   "condition": "s_axis handshake with tdata all ones"
+  },
+  {
+   "id": "COVP-007",
+   "title": "m_axis handshake",
+   "rules": [
+    "UA-T1.3-05"
+   ],
+   "checks": [
+    "CHK-005"
+   ],
+   "condition": "m_axis_tvalid and m_axis_tready both high"
+  },
+  {
+   "id": "COVP-008",
+   "title": "m_axis back-pressure: valid high, ready low",
+   "rules": [
+    "UA-T1.3-05"
+   ],
+   "checks": [
+    "CHK-001",
+    "CHK-005"
+   ],
+   "condition": "m_axis_tvalid=1 and m_axis_tready=0"
+  },
+  {
+   "id": "COVP-009",
+   "title": "m_axis stall lasting 4+ cycles",
+   "rules": [
+    "UA-T1.3-05"
+   ],
+   "checks": [
+    "CHK-001"
+   ],
+   "condition": "m_axis stall for at least 4 consecutive cycles"
+  },
+  {
+   "id": "COVP-010",
+   "title": "m_axis held stable across a stall cycle",
+   "rules": [
+    "UA-T1.3-05"
+   ],
+   "checks": [
+    "CHK-001"
+   ],
+   "condition": "previous cycle valid and not ready, now valid with same data"
+  },
+  {
+   "id": "COVP-011",
+   "title": "m_axis transfer after stall released",
+   "rules": [
+    "UA-T1.3-05"
+   ],
+   "checks": [
+    "CHK-001",
+    "CHK-005"
+   ],
+   "condition": "previous cycle stalled, now handshake"
+  },
+  {
+   "id": "COVP-012",
+   "title": "m_axis ready high while no valid",
+   "rules": [
+    "UA-T1.3-05"
+   ],
+   "checks": [
+    "CHK-005"
+   ],
+   "condition": "m_axis_tready=1 and m_axis_tvalid=0"
+  },
+  {
+   "id": "COVP-013",
+   "title": "m_axis handshake data all zeros",
+   "rules": [
+    "UA-T1.3-05"
+   ],
+   "checks": [
+    "CHK-005"
+   ],
+   "condition": "m_axis handshake with tdata=0"
+  },
+  {
+   "id": "COVP-014",
+   "title": "m_axis handshake data all ones",
+   "rules": [
+    "UA-T1.3-05"
+   ],
+   "checks": [
+    "CHK-005"
+   ],
+   "condition": "m_axis handshake with tdata all ones"
+  },
+  {
+   "id": "COVP-015",
+   "title": "rx overrun pulse",
+   "rules": [
+    "UA-T1.3-07"
+   ],
+   "checks": [
+    "CHK-007",
+    "CHK-002"
+   ],
+   "condition": "rx_overrun_error=1"
+  },
+  {
+   "id": "COVP-016",
+   "title": "overrun pulse while pending word held",
+   "rules": [
+    "UA-T1.3-07"
+   ],
+   "checks": [
+    "CHK-007",
+    "CHK-001"
+   ],
+   "condition": "rx_overrun_error=1 with m_axis_tvalid=1 and m_axis_tready=0"
+  },
+  {
+   "id": "COVP-017",
+   "title": "overrun pulse ends after one cycle",
+   "rules": [
+    "UA-T1.3-07"
+   ],
+   "checks": [
+    "CHK-002"
+   ],
+   "condition": "rx_overrun_error was 1 and is now 0"
+  },
+  {
+   "id": "COVP-018",
+   "title": "rx frame error pulse",
+   "rules": [
+    "UA-T1.3-08"
+   ],
+   "checks": [
+    "CHK-008",
+    "CHK-003"
+   ],
+   "condition": "rx_frame_error=1"
+  },
+  {
+   "id": "COVP-019",
+   "title": "frame error pulse ends after one cycle",
+   "rules": [
+    "UA-T1.3-08"
+   ],
+   "checks": [
+    "CHK-003"
+   ],
+   "condition": "rx_frame_error was 1 and is now 0"
+  },
+  {
+   "id": "COVP-020",
+   "title": "frame error while m_axis idle",
+   "rules": [
+    "UA-T1.3-08"
+   ],
+   "checks": [
+    "CHK-008"
+   ],
+   "condition": "rx_frame_error=1 and m_axis_tvalid=0"
+  },
+  {
+   "id": "COVP-021",
+   "title": "good reception after an overrun (recovery)",
+   "rules": [
+    "UA-T1.3-07"
+   ],
+   "checks": [
+    "CHK-007",
+    "CHK-005"
+   ],
+   "condition": "m_axis handshake after an overrun was seen"
+  },
+  {
+   "id": "COVP-022",
+   "title": "good reception after a frame error (recovery)",
+   "rules": [
+    "UA-T1.3-08"
+   ],
+   "checks": [
+    "CHK-008",
+    "CHK-005"
+   ],
+   "condition": "new m_axis word appears after a frame error was seen"
+  },
+  {
+   "id": "COVP-023",
+   "title": "tx_busy rises",
+   "rules": [
+    "UA-T1.3-06"
+   ],
+   "checks": [
+    "CHK-011"
+   ],
+   "condition": "tx_busy 0 to 1"
+  },
+  {
+   "id": "COVP-024",
+   "title": "tx_busy falls",
+   "rules": [
+    "UA-T1.3-06"
+   ],
+   "checks": [
+    "CHK-011"
+   ],
+   "condition": "tx_busy 1 to 0"
+  },
+  {
+   "id": "COVP-025",
+   "title": "txd low while tx_busy",
+   "rules": [
+    "UA-T1.3-06"
+   ],
+   "checks": [
+    "CHK-004"
+   ],
+   "condition": "txd=0 and tx_busy=1"
+  },
+  {
+   "id": "COVP-026",
+   "title": "txd high while tx_busy",
+   "rules": [
+    "UA-T1.3-06"
+   ],
+   "checks": [
+    "CHK-011"
+   ],
+   "condition": "txd=1 and tx_busy=1"
+  },
+  {
+   "id": "COVP-027",
+   "title": "idle: tx_busy low with txd high",
+   "rules": [
+    "UA-T1.3-06"
+   ],
+   "checks": [
+    "CHK-011"
+   ],
+   "condition": "tx_busy=0 and txd=1"
+  },
+  {
+   "id": "COVP-028",
+   "title": "rx_busy rises",
+   "rules": [
+    "UA-T1.3-06"
+   ],
+   "checks": [
+    "CHK-006"
+   ],
+   "condition": "rx_busy 0 to 1"
+  },
+  {
+   "id": "COVP-029",
+   "title": "rx_busy falls",
+   "rules": [
+    "UA-T1.3-06"
+   ],
+   "checks": [
+    "CHK-006"
+   ],
+   "condition": "rx_busy 1 to 0"
+  },
+  {
+   "id": "COVP-030",
+   "title": "start bit seen on rxd while idle",
+   "rules": [
+    "UA-T1.3-06"
+   ],
+   "checks": [
+    "CHK-006"
+   ],
+   "condition": "rxd falls 1 to 0 while rx_busy=0"
+  },
+  {
+   "id": "COVP-031",
+   "title": "full duplex: tx_busy and rx_busy together",
+   "rules": [
+    "UA-T1.3-06"
+   ],
+   "checks": [
+    "CHK-006",
+    "CHK-011"
+   ],
+   "condition": "tx_busy=1 and rx_busy=1"
+  },
+  {
+   "id": "COVP-032",
+   "title": "tx start with minimum prescale (1)",
+   "rules": [
+    "UA-T1.3-01"
+   ],
+   "checks": [
+    "CHK-010"
+   ],
+   "condition": "txd falls with prescale=1"
+  },
+  {
+   "id": "COVP-033",
+   "title": "tx start with small prescale (2..7)",
+   "rules": [
+    "UA-T1.3-01"
+   ],
+   "checks": [
+    "CHK-010"
+   ],
+   "condition": "txd falls with prescale 2..7"
+  },
+  {
+   "id": "COVP-034",
+   "title": "tx start with typical prescale (8..255)",
+   "rules": [
+    "UA-T1.3-01"
+   ],
+   "checks": [
+    "CHK-010"
+   ],
+   "condition": "txd falls with prescale 8..255"
+  },
+  {
+   "id": "COVP-035",
+   "title": "tx start with large prescale (256+)",
+   "rules": [
+    "UA-T1.3-01"
+   ],
+   "checks": [
+    "CHK-010"
+   ],
+   "condition": "txd falls with prescale >=256"
+  },
+  {
+   "id": "COVP-036",
+   "title": "rx start with small prescale (<8)",
+   "rules": [
+    "UA-T1.3-01"
+   ],
+   "checks": [
+    "CHK-010"
+   ],
+   "condition": "rx start bit while idle with prescale 1..7"
+  },
+  {
+   "id": "COVP-037",
+   "title": "rx start with larger prescale (>=8)",
+   "rules": [
+    "UA-T1.3-01"
+   ],
+   "checks": [
+    "CHK-010"
+   ],
+   "condition": "rx start bit while idle with prescale >=8"
+  },
+  {
+   "id": "COVP-038",
+   "title": "reset released after tx activity",
+   "rules": [
+    "UA-T1.3-06"
+   ],
+   "checks": [
+    "CHK-011"
+   ],
+   "condition": "first cycle out of reset, tx_busy was high before reset"
+  },
+  {
+   "id": "COVP-039",
+   "title": "reset released after rx activity",
+   "rules": [
+    "UA-T1.3-06"
+   ],
+   "checks": [
+    "CHK-006"
+   ],
+   "condition": "first cycle out of reset, rx_busy was high before reset"
+  },
+  {
+   "id": "COVP-040",
+   "title": "reset released after pending m_axis word",
+   "rules": [
+    "UA-T1.3-05"
+   ],
+   "checks": [
+    "CHK-001"
+   ],
+   "condition": "first cycle out of reset, m_axis_tvalid was high before reset"
+  }
+ ],
+ "status": "lint_clean",
+ "attempts": 2,
+ "problems": [],
+ "lint_errors": "",
+ "usage": {
+  "calls": 2,
+  "cached": 0,
+  "cost_usd": 0.2331,
+  "input_tokens": 4,
+  "output_tokens": 18234,
+  "cache_creation_input_tokens": 12335,
+  "cache_read_input_tokens": 1436
+ },
+ "prompt_version": "cov-v2"
+}

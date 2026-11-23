@@ -1,0 +1,83 @@
+{
+ "status": "candidate",
+ "source": "sim",
+ "faults": [
+  {
+   "id": 1,
+   "failure": "CHK-001 (assertion) 'pcpi_wait stays asserted until pcpi_ready' — 2809 fails / 278073 hits, first fail at 480000 ps (sim.log:39). Fails also occur in groups exactly 370000 ps apart (sim.log:49-51: 19035000, 19405000, 19775000).",
+   "spec_says": "spec/c_pcpi_div_Design_Specification.md:62-66 (rule PD-T1.1-06, SHOULD, rules.json:164-186): \"A PCPI core that needs more than a couple of cycles to execute an instruction, should assert `pcpi_wait` as soon as the instruction has been decoded successfully and keep it asserted until it asserts `pcpi_ready`.\" Master side (PD-T1.1-01, spec :48-52) only says pcpi_valid is asserted with the instruction. The spec never says whether the master must drop pcpi_valid between two instructions. contract.json:327 (assumption) says: \"Legal master stimulus holds pcpi_valid ... stable from issue until pcpi_ready=1 is sampled, and deasserts pcpi_valid on the following cycle.\" contract.json:223 (CHK-008 stimulus) says: \"then drive pcpi_valid=0 on the next cycle\". So the real core always gives at least one edge with pcpi_valid=0 between PCPI instructions. rules.json:720-721 records the open question on PD-T1.1-06 timing ('more than a couple of cycles', 'as soon as').",
+   "verification_does": "verif/tests/test_c_pcpi_div.py:214-217: after the ready edge, execute() does `await next_cycle; self.drive(0); self.sample(chk)` and returns without waiting for another cycle. idle(gap) (160-167) does `next_cycle` then drive for each of gap iterations, so with gap=0 it does nothing. The next execute() then calls `self.drive(1, insn, rs1, rs2)` at line 181 in the same mid-cycle, which overwrites the pcpi_valid=0 just written. gap=0 is common: CHK-004 randint(0,2) (273), CHK-005 randint(0,3) (295), CHK-008 gap in (0,1,5) (329), regression 50% gap=0 (395-396). The Python model still records self.valid=0 for that cycle (131), so its own CHK-003 check (154-157) and its wait check (186-206) do not see a problem. The wait sampled at the issue edge (182) is never checked, and first_wait is only tracked from j=1. Evidence that the deassert edge is missing: latency is 36 edges (sim.log:35). With a real valid=0 edge, back-to-back instructions repeat every 38 edges (380 ns at the 10 ns clock implied by 26 cases × ~38 edges ≈ 9975 ns). The log shows failures exactly 370000 ps (37 edges) apart (sim.log:49-51, 70-74, 104-107). In results.json:201,225, COVP-029 'Back-to-back division requests' (nnc_cov.sv:143-144: valid && is_div && !prev_out && prev_ready_q, so valid high right after a ready edge) = 2809. COVP-005 'Wait high in first cycle of a division request' = 2809. Both equal the CHK-001 fail count exactly. The first fail at 480 ns falls inside test_chk_004 (0–9975 ns); its sim.log line comes after the test-start banner only because of output ordering.",
+   "what_to_change": "Fix test: make sure at least one rising edge samples pcpi_valid=0 between instructions, as contract.json:223/327 require. Alternatively, have idle() always run at least one cycle. Expected result: CHK-001 fails drop to 0, and back-to-back spacing becomes 38 edges. This changes upstream code. Clarify spec: add a stated master rule (e.g. Then align contract.json:327 and the test with it. The check itself should stay as it is."
+  }
+ ],
+ "blocking": [],
+ "warnings": [],
+ "not_fixed": [],
+ "changes": [
+  {
+   "file": "tests/test_c_pcpi_div.py",
+   "faults": [
+    1
+   ],
+   "why": "execute() drove pcpi_valid=1 in the same mid-cycle where the previous deassert (or the last idle cycle) had just driven pcpi_valid=0. That overwrote the 0, so with gap=0 no rising edge ever saw pcpi_valid=0 between two instructions. The test's own model still recorded valid=0, so it missed this. The contract says the master deasserts pcpi_valid on the cycle after pcpi_ready, so this stimulus was illegal and set off the CHK-001 failures. The fix waits one clock cycle (await next_cycle) at the start of execute() before driving the issue. Now the pcpi_valid=0 that was already driven and checked is really sampled at a rising edge, so every instruction is preceded by at least one pcpi_valid=0 edge. CHK-001 in the SVA, the cover points and all expected values are unchanged.",
+   "spec_refs": [
+    "contract.json:223 (CHK-008 stimulus: 'then drive pcpi_valid=0 on the next cycle')",
+    "contract.json:327 ('Legal master stimulus ... deasserts pcpi_valid on the following cycle')",
+    "spec/c_pcpi_div_Design_Specification.md:62-66 (PD-T1.1-06: keep pcpi_wait asserted until pcpi_ready)",
+    "spec/c_pcpi_div_Design_Specification.md:48-52 (PD-T1.1-01)"
+   ]
+  }
+ ],
+ "attempts": [
+  {
+   "attempt": 0,
+   "files": [
+    "tests/test_c_pcpi_div.py"
+   ],
+   "refused": [],
+   "not_fixed": [],
+   "after": {
+    "failing_tests": [],
+    "failing_assertions": [],
+    "n_tests": 7,
+    "n_assertions": 3
+   }
+  }
+ ],
+ "diff": "--- a/verif/tests/test_c_pcpi_div.py\n+++ b/verif/tests/test_c_pcpi_div.py\n@@ -168,5 +168,5 @@\n \n     async def execute(self, op, rs1, rs2, chk=\"CHK-008\", fields=None):\n-        \"\"\"Issue one instruction at the current mid-cycle; return (pcpi_rd, latency in edges).\n+        \"\"\"Issue one instruction at the next mid-cycle; return (pcpi_rd, latency in edges).\n \n         Ends mid-cycle right after the pcpi_valid=0 deassert cycle has been driven/checked.\n@@ -177,4 +177,14 @@\n         insn = encode(op, *fields)\n         tag = f\"{op} rs1=0x{rs1 & MASK:08X} rs2=0x{rs2 & MASK:08X}\"\n+\n+        # NNC verification fix (fix-verif, triage B): every caller (previous execute() deassert,\n+        # idle(), setup, CHK-009 idle loop) ends mid-cycle right after driving pcpi_valid=0 for the\n+        # coming rising edge. Driving pcpi_valid=1 in that same mid-cycle overwrote it, so with\n+        # gap=0 no rising edge ever sampled pcpi_valid=0 between two instructions (back-to-back\n+        # spacing 37 edges instead of 38), which contradicts the contract master rule\n+        # (contract.json:223 \"then drive pcpi_valid=0 on the next cycle\"; contract.json:327\n+        # \"deasserts pcpi_valid on the following cycle\"). Advance one cycle first so the\n+        # pcpi_valid=0 already driven and checked is really sampled at a rising edge.\n+        await next_cycle(self.dut)\n \n         # Issue: these inputs are sampled at the issue edge R_1.",
+ "usage": {
+  "calls": 1,
+  "cached": 0,
+  "cost_usd": 0.4111,
+  "input_tokens": 8,
+  "output_tokens": 11490,
+  "cache_creation_input_tokens": 22005,
+  "cache_read_input_tokens": 25381
+ },
+ "prompt_version": "fixverif-v1",
+ "date": "2026-11-23T10:18:12+00:00",
+ "candidate_run": {
+  "before": {
+   "failing_tests": [],
+   "failing_assertions": [
+    "CHK-001"
+   ],
+   "n_tests": 7,
+   "n_assertions": 3
+  },
+  "after": {
+   "failing_tests": [],
+   "failing_assertions": [],
+   "n_tests": 7,
+   "n_assertions": 3
+  }
+ },
+ "still_failing": [],
+ "applied": {
+  "by": "Claude (delegated by GabrielHCMUT)",
+  "at": "2026-11-23T10:18:37+00:00",
+  "files": [
+   "tests/test_c_pcpi_div.py"
+  ]
+ }
+}

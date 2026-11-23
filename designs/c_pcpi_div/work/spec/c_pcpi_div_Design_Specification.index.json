@@ -1,0 +1,257 @@
+{
+ "version": 1,
+ "doc": {
+  "file": "c_pcpi_div_Design_Specification.md",
+  "sha256": "cc21a8ec5ce6f9ba7037a740af4e6e12d047e275e67654e4cdad4f7d48fdd53f",
+  "length": 66,
+  "location": "line"
+ },
+ "sections": [
+  {
+   "id": "front",
+   "title": "Front matter",
+   "level": 0,
+   "parent": null,
+   "page_start": 1,
+   "page_end": 1,
+   "sentences": []
+  },
+  {
+   "id": "T1",
+   "title": "PicoRV32 PCPI division core",
+   "level": 1,
+   "parent": null,
+   "page_start": 3,
+   "page_end": 5,
+   "sentences": [
+    {
+     "id": "T1:s1",
+     "text": "The optional Pico Co-Processor Interface (PCPI) can be used to implement non-branching instructions in an external coprocessor.",
+     "page": 5,
+     "normative": true
+    },
+    {
+     "id": "T1:s2",
+     "text": "Implementations of PCPI cores that implement the M Standard Extension instructions MUL[H[SU|U]] and DIV[U]/REM[U] are included in this package.",
+     "page": 5,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.1.1.1",
+   "title": "picorv32.v",
+   "level": 4,
+   "parent": "T1",
+   "page_start": 10,
+   "page_end": 24,
+   "sentences": [
+    {
+     "id": "T1.1.1.1:s1",
+     "text": "This Verilog file contains the following Verilog modules:",
+     "page": 12,
+     "normative": false
+    },
+    {
+     "id": "T1.1.1.1:s2",
+     "text": "Module: picorv32; Description: The PicoRV32 CPU",
+     "page": 16,
+     "normative": false
+    },
+    {
+     "id": "T1.1.1.1:s3",
+     "text": "Module: picorv32_axi; Description: The version of the CPU with AXI4-Lite interface",
+     "page": 17,
+     "normative": false
+    },
+    {
+     "id": "T1.1.1.1:s4",
+     "text": "Module: picorv32_axi_adapter; Description: Adapter from PicoRV32 Memory Interface to AXI4-Lite",
+     "page": 18,
+     "normative": false
+    },
+    {
+     "id": "T1.1.1.1:s5",
+     "text": "Module: picorv32_wb; Description: The version of the CPU with Wishbone Master interface",
+     "page": 19,
+     "normative": false
+    },
+    {
+     "id": "T1.1.1.1:s6",
+     "text": "Module: picorv32_pcpi_mul; Description: A PCPI core that implements the MUL[H[SU\\|U]] instructions",
+     "page": 20,
+     "normative": false
+    },
+    {
+     "id": "T1.1.1.1:s7",
+     "text": "Module: picorv32_pcpi_fast_mul; Description: A version of picorv32_pcpi_fast_mul using a single cycle multiplier",
+     "page": 21,
+     "normative": false
+    },
+    {
+     "id": "T1.1.1.1:s8",
+     "text": "Module: picorv32_pcpi_div; Description: A PCPI core that implements the DIV[U]/REM[U] instructions",
+     "page": 22,
+     "normative": false
+    },
+    {
+     "id": "T1.1.1.1:s9",
+     "text": "Simply copy this file into your project.",
+     "page": 24,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.1.1.2",
+   "title": "ENABLE_DIV (default = 0)",
+   "level": 4,
+   "parent": "T1",
+   "page_start": 27,
+   "page_end": 29,
+   "sentences": [
+    {
+     "id": "T1.1.1.2:s1",
+     "text": "This parameter internally enables PCPI and instantiates the picorv32_pcpi_div core that implements the DIV[U]/REM[U] instructions.",
+     "page": 29,
+     "normative": false
+    },
+    {
+     "id": "T1.1.1.2:s2",
+     "text": "The external PCPI interface only becomes functional when ENABLE_PCPI is set as well.",
+     "page": 29,
+     "normative": false
+    }
+   ]
+  },
+  {
+   "id": "T1.1",
+   "title": "Pico Co-Processor Interface (PCPI)",
+   "level": 2,
+   "parent": "T1",
+   "page_start": 33,
+   "page_end": 60,
+   "sentences": [
+    {
+     "id": "T1.1:s1",
+     "text": "The Pico Co-Processor Interface (PCPI) can be used to implement non-branching instructions in external cores:",
+     "page": 36,
+     "normative": true
+    },
+    {
+     "id": "T1.1:s2",
+     "text": "output pcpi_valid output [31:0] pcpi_insn output [31:0] pcpi_rs1 output [31:0] pcpi_rs2 input pcpi_wr input [31:0] pcpi_rd input pcpi_wait input pcpi_ready",
+     "page": 39,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s3",
+     "text": "When an unsupported instruction is encountered and the PCPI feature is activated (see ENABLE_PCPI above), then pcpi_valid is asserted, the instruction word itself is output on pcpi_insn, the rs1 and rs2 fields are decoded and the values in those registers are output on pcpi_rs1 and pcpi_rs2.",
+     "page": 48,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s4",
+     "text": "An external PCPI core can then decode the instruction, execute it, and assert pcpi_ready when execution of the instruction is finished.",
+     "page": 54,
+     "normative": true
+    },
+    {
+     "id": "T1.1:s5",
+     "text": "Optionally a result value can be written to pcpi_rd and pcpi_wr asserted.",
+     "page": 54,
+     "normative": true
+    },
+    {
+     "id": "T1.1:s6",
+     "text": "The PicoRV32 core will then decode the rd field of the instruction and write the value from pcpi_rd to the respective register.",
+     "page": 54,
+     "normative": false
+    },
+    {
+     "id": "T1.1:s7",
+     "text": "When no external PCPI core acknowledges the instruction within 16 clock cycles, then an illegal instruction exception is raised and the respective interrupt handler is called.",
+     "page": 60,
+     "normative": true
+    },
+    {
+     "id": "T1.1:s8",
+     "text": "A PCPI core that needs more than a couple of cycles to execute an instruction, should assert pcpi_wait as soon as the instruction has been decoded successfully and keep it asserted until it asserts pcpi_ready.",
+     "page": 60,
+     "normative": true
+    },
+    {
+     "id": "T1.1:s9",
+     "text": "This will prevent the PicoRV32 core from raising an illegal instruction exception.",
+     "page": 60,
+     "normative": true
+    }
+   ]
+  }
+ ],
+ "tables": [
+  {
+   "section": "T1.1.1.1",
+   "header": [
+    "Module",
+    "Description"
+   ],
+   "rows": [
+    [
+     "picorv32",
+     "The PicoRV32 CPU"
+    ],
+    [
+     "picorv32_axi",
+     "The version of the CPU with AXI4-Lite interface"
+    ],
+    [
+     "picorv32_axi_adapter",
+     "Adapter from PicoRV32 Memory Interface to AXI4-Lite"
+    ],
+    [
+     "picorv32_wb",
+     "The version of the CPU with Wishbone Master interface"
+    ],
+    [
+     "picorv32_pcpi_mul",
+     "A PCPI core that implements the MUL[H[SU\\|U]] instructions"
+    ],
+    [
+     "picorv32_pcpi_fast_mul",
+     "A version of picorv32_pcpi_fast_mul using a single cycle multiplier"
+    ],
+    [
+     "picorv32_pcpi_div",
+     "A PCPI core that implements the DIV[U]/REM[U] instructions"
+    ]
+   ],
+   "line": 14,
+   "units": [
+    "T1.1.1.1:s2",
+    "T1.1.1.1:s3",
+    "T1.1.1.1:s4",
+    "T1.1.1.1:s5",
+    "T1.1.1.1:s6",
+    "T1.1.1.1:s7",
+    "T1.1.1.1:s8"
+   ],
+   "caption": "This Verilog file contains the following Verilog modules:"
+  }
+ ],
+ "signals": {
+  "CPU": 3,
+  "DIV": 3,
+  "ENABLE_PCPI": 2,
+  "MUL": 2,
+  "PCPI": 11,
+  "REM": 3
+ },
+ "warnings": [],
+ "stats": {
+  "sections": 4,
+  "sentences": 22,
+  "normative": 7,
+  "chars": 2556
+ }
+}

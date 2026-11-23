@@ -1,0 +1,70 @@
+{
+  "config": {
+    "documents": [
+      {
+        "file": "spec/c_pcpi_div_Design_Specification.md",
+        "role": "ip_spec",
+        "sections": [],
+        "skip": [],
+        "tag": "PD"
+      },
+      {
+        "file": "spec/standards/riscv_m_extension.adoc",
+        "role": "standard",
+        "sections": [],
+        "skip": [],
+        "tag": "RVM"
+      },
+      {
+        "file": "spec/standards/riscv_rv32m_listing.adoc",
+        "role": "standard",
+        "sections": [],
+        "skip": [],
+        "tag": "RVL"
+      },
+      {
+        "file": "spec/picorv32_pcpi_div_interface.md",
+        "role": "interface",
+        "sections": [],
+        "skip": [],
+        "tag": "IF"
+      }
+    ],
+    "top": "picorv32_pcpi_div"
+  },
+  "created": "2026-11-23T09:47:34+00:00",
+  "design": "c_pcpi_div",
+  "gates": {
+    "G1_rules": {
+      "at": "2026-11-23T09:57:44+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "work/rules.json": "929d2c6ece44a175d3c295176665bd874948bc69c2ddbfea2f0c48e870a04e98"
+      },
+      "note": "Not a hardware designer's review. Blind run (ROADMAP 21.6): approved as produced, no rule edited. 23 rules kept, 5 rejected; rules of the M extension and of the CPU side of PCPI that do not apply to a division core are left to the contract. The 4 open questions (16-cycle timeout, pcpi_wait timing, pcpi_wr timing, software register constraints) are left open, not answered.",
+      "sources": {
+        "spec/c_pcpi_div_Design_Specification.md": "cc21a8ec5ce6f9ba7037a740af4e6e12d047e275e67654e4cdad4f7d48fdd53f",
+        "spec/picorv32_pcpi_div_interface.md": "3b4016d3c3b32d4de0ba87123473464b674278ee4696c4ff9cfe48c7b40ac3c0",
+        "spec/standards/riscv_m_extension.adoc": "99d3708b844072f626e33b427e7b1825cebc0743efdf6f7a5ca58205dd4c7c42",
+        "spec/standards/riscv_rv32m_listing.adoc": "7f6064f199882ab11318c8f752fbdbf4ff6c3e830a371cb1d1f6daeb03ea0d2b"
+      }
+    },
+    "G2_contract": {
+      "at": "2026-11-23T09:59:43+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "work/contract.json": "6f90e9fd0ad65416593c37cf3246fce2790a8c983f23faca9ae5002144f4d341"
+      },
+      "note": "Not a hardware designer's review. Blind run (ROADMAP 21.6): approved as produced. 9 checks (3 assertions, 6 tests); 16 rules not verified (CPU side of PCPI, multiplication, RV64, software guidelines). Assumptions for the G4 reviewer: RV32M encodings from the listing table, result valid with pcpi_ready, 200-cycle completion bound."
+    },
+    "G3_verif_sources": {
+      "at": "2026-11-23T10:18:38+00:00",
+      "by": "Claude (delegated by GabrielHCMUT)",
+      "hashes": {
+        "verif": "6e8820d7fd91115c2cb1e858524a71fe620f39f62b1836bfea54ebbeddae9426"
+      },
+      "note": "Not a hardware designer's review. Blind run (ROADMAP 21.6): re-approved after the A17 fix of the one fault triage judged B (test_c_pcpi_div.py execute() issued the next instruction without the one-cycle pcpi_valid=0 the contract requires). The fix adds that cycle; the weakening check found nothing; CHK-001 then passes. Nothing else changed."
+    }
+  },
+  "version": 1
+}

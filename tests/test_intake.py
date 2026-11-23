@@ -265,6 +265,13 @@ class PortableTest(unittest.TestCase):
         self.assertEqual(got, {"a": ["rtl/f.sv", ".", "plain", "lib/y.sv"]})
 
 
+class ProbeScriptTest(unittest.TestCase):
+    def test_synchronous_resets_are_recognised(self):
+        # without opt_dff a synchronous reset stays a $dff behind a $mux and no reset is found (verilog-uart rst)
+        script = intake.probe_script("top", ["a.v"], [])
+        self.assertEqual(script.count("proc; flatten; opt_dff;"), 2)
+
+
 class ContractParamTest(unittest.TestCase):
     def test_only_32_bit_integers_pass(self):
         ok = intake.contract_param

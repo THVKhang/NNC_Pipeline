@@ -1,0 +1,240 @@
+{
+ "source": {
+  "file": "c_uart_Design_Specification.md",
+  "sha256": "c3a4efa3944d5b9d29377a62d83e66d18a1285706ad548b36e7c91f9750d9b2f",
+  "index_version": 1
+ },
+ "extraction": {
+  "prompt_version": "extract-v2",
+  "model": "sonnet",
+  "budget_tokens": 3500,
+  "tag": "UA",
+  "sections": "all",
+  "skip": [],
+  "batches": 1,
+  "date": "2026-11-23T09:56:12+00:00",
+  "usage": {
+   "calls": 1,
+   "cached": 0,
+   "cost_usd": 0.0284,
+   "input_tokens": 2,
+   "output_tokens": 1052,
+   "cache_creation_input_tokens": 4380,
+   "cache_read_input_tokens": 0
+  },
+  "errors": []
+ },
+ "coverage": {
+  "sentences": 25,
+  "normative_sentences": 6,
+  "normative_cited": 6,
+  "normative_skipped": 0,
+  "uncovered_after_first_pass": 0,
+  "uncovered": [],
+  "invalid_ids": []
+ },
+ "rules": [
+  {
+   "id": "UA-T1.3-01",
+   "doc": "c_uart_Design_Specification.md",
+   "section": "T1.3",
+   "section_title": "Documentation",
+   "page": 26,
+   "quote": "The prescale input determines the data rate - it should be set to Fclk / (baud * 8).",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3:s6"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "prescale"
+   ],
+   "condition": "",
+   "statement": "The prescale input must be set to Fclk / (baud * 8) to determine the data rate.",
+   "check": "scenario"
+  },
+  {
+   "id": "UA-T1.3-02",
+   "doc": "c_uart_Design_Specification.md",
+   "section": "T1.3",
+   "section_title": "Documentation",
+   "page": 26,
+   "quote": "This is an input instead of a parameter so it can be changed at run time, though it is not buffered internally so care should be used to avoid corrupt data.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3:s7"
+   ],
+   "strength": "SHOULD",
+   "actor": "system",
+   "signals": [
+    "prescale"
+   ],
+   "condition": "when prescale is changed at run time",
+   "statement": "Because prescale is not buffered internally, care should be used when changing it at run time to avoid corrupt data.",
+   "check": "scenario"
+  },
+  {
+   "id": "UA-T1.3-03",
+   "doc": "c_uart_Design_Specification.md",
+   "section": "T1.3",
+   "section_title": "Documentation",
+   "page": 26,
+   "quote": "The main interface to the user design is an AXI4-Stream interface that consists of the tdata, tvalid, and tready signals. tready flows in the opposite direction. tdata is considered valid when tvalid is high.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3:s8"
+   ],
+   "strength": "MUST",
+   "actor": "source",
+   "signals": [
+    "tdata",
+    "tvalid"
+   ],
+   "condition": "when tvalid is high",
+   "statement": "tdata is considered valid when tvalid is high.",
+   "check": "assertion"
+  },
+  {
+   "id": "UA-T1.3-04",
+   "doc": "c_uart_Design_Specification.md",
+   "section": "T1.3",
+   "section_title": "Documentation",
+   "page": 26,
+   "quote": "The destination will accept data only when tready is high.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3:s9"
+   ],
+   "strength": "MUST_NOT",
+   "actor": "destination",
+   "signals": [
+    "tready",
+    "tvalid"
+   ],
+   "condition": "when tready is low",
+   "statement": "The destination must not accept data unless tready is high.",
+   "check": "assertion"
+  },
+  {
+   "id": "UA-T1.3-05",
+   "doc": "c_uart_Design_Specification.md",
+   "section": "T1.3",
+   "section_title": "Documentation",
+   "page": 26,
+   "quote": "Data is transferred from the source to the destination only when both tvalid and tready are high, otherwise the bus is stalled.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3:s10"
+   ],
+   "strength": "MUST",
+   "actor": "source",
+   "signals": [
+    "tvalid",
+    "tready",
+    "tdata"
+   ],
+   "condition": "",
+   "statement": "Data is transferred from source to destination only when both tvalid and tready are high; otherwise the bus is stalled and no transfer occurs.",
+   "check": "assertion"
+  },
+  {
+   "id": "UA-T1.3-06",
+   "doc": "c_uart_Design_Specification.md",
+   "section": "T1.3",
+   "section_title": "Documentation",
+   "page": 40,
+   "quote": "Both interfaces also present a 'busy' signal that is high when an operation is taking place.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3:s11"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "busy"
+   ],
+   "condition": "when an operation is taking place",
+   "statement": "Both the transmitter and receiver interfaces drive busy high while an operation is taking place.",
+   "check": "both"
+  },
+  {
+   "id": "UA-T1.3-07",
+   "doc": "c_uart_Design_Specification.md",
+   "section": "T1.3",
+   "section_title": "Documentation",
+   "page": 40,
+   "quote": "If the data word currently in the tdata output register is not read before another word is received, then a single cycle pulse will be emitted from overrun_error and the word is discarded.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3:s13"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "overrun_error",
+    "tdata"
+   ],
+   "condition": "when the word in the tdata output register is not read before another word is received",
+   "statement": "The receiver emits a single-cycle pulse on overrun_error and discards the newly received word.",
+   "check": "both"
+  },
+  {
+   "id": "UA-T1.3-08",
+   "doc": "c_uart_Design_Specification.md",
+   "section": "T1.3",
+   "section_title": "Documentation",
+   "page": 40,
+   "quote": "If the receiver does not get a stop bit of the right level, then a single pulse will be emitted from the frame_error output and the received word will be discarded.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.3:s14"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [
+    "frame_error"
+   ],
+   "condition": "when the receiver does not get a stop bit of the right level",
+   "statement": "The receiver emits a single-cycle pulse on frame_error and discards the received word.",
+   "check": "both"
+  },
+  {
+   "id": "UA-T1.4-01",
+   "doc": "c_uart_Design_Specification.md",
+   "section": "T1.4",
+   "section_title": "Testing",
+   "page": 70,
+   "quote": "Running the included testbenches requires cocotb, cocotbext-axi, and Icarus Verilog.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.4:s1"
+   ],
+   "strength": "MUST",
+   "actor": "system",
+   "signals": [],
+   "condition": "when running the included testbenches",
+   "statement": "Running the included testbenches requires cocotb, cocotbext-axi, and Icarus Verilog.",
+   "check": "none"
+  },
+  {
+   "id": "UA-T1.4-02",
+   "doc": "c_uart_Design_Specification.md",
+   "section": "T1.4",
+   "section_title": "Testing",
+   "page": 70,
+   "quote": "The testbenches can be run with pytest directly (requires cocotb-test), pytest via tox, or via cocotb makefiles.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.4:s2"
+   ],
+   "strength": "MAY",
+   "actor": "system",
+   "signals": [],
+   "condition": "",
+   "statement": "The testbenches can be run with pytest directly (requires cocotb-test), pytest via tox, or via cocotb makefiles.",
+   "check": "none"
+  }
+ ],
+ "skipped": []
+}

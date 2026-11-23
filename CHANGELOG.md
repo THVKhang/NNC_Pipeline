@@ -6,6 +6,20 @@ Measurements for every phase are in [docs/EVALUATION.md](docs/EVALUATION.md). Th
 No release contains a G4 sign-off. G1–G3 were approved by an AI assistant on the owner's delegation, and each
 approval is recorded as delegated. See [docs/G4_REVIEW_REQUEST.md](docs/G4_REVIEW_REQUEST.md).
 
+## 0.7.0 (2026-11-23)
+
+### Phase 21.6: blind runs on the corpus (EVALUATION §14), and the project page
+- Three modules of the corpus run end to end by the agents, with only their documentation and no hand edit:
+  `c_pcpi_div` (9/9 checks, mutation 100 %), `c_uart` (6/11: the README leaves the overrun behaviour open, kept
+  open for G4), `c_axil_ram` (no behaviour documented: 0 rules, the flow stops). Every intervention is in
+  `work/blind_run.md`. Agent cost US$5.40.
+- AsciiDoc specifications (`.adoc`, the RISC-V manual): `specconv.adoc_to_markdown`.
+- Setext headings in Markdown specifications.
+- Fix: the intake now finds synchronous resets (`opt_dff` in its netlist). Before, an interface document typed a
+  synchronous reset as data. The corpus gives the same results after the change.
+- Fix: `nnc intake` and `nnc demo` read an adapted design as the flow does (verified top, interface document).
+- `nnc site`: the project page from the committed results; CI job `pages` publishes it on GitHub Pages.
+
 ## 0.6.0 (2026-11-23)
 
 ### Phase 22: run it in one command (docs/GUIDE.md, Docker and Codespaces)

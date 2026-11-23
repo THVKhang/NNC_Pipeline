@@ -58,8 +58,8 @@ Parameters: PARA_APBCDC_ADDR_W=32, PARA_APBCDC_DATA_W=32, PARA_APBCDC_APB5=0, PA
 
 ## Structure (flattened netlist)
 
-- flop bits: 224, latch bits: 0, memories: 0, tri-state: no
-- clocks: `i_clk_mst` (111 bits, rise), `i_clk_slv` (113 bits, rise)
+- flop bits: 223, latch bits: 0, memories: 0, tri-state: no
+- clocks: `i_clk_mst` (111 bits, rise), `i_clk_slv` (112 bits, rise)
 - asynchronous resets: `i_rst_n_mst` (active low), `i_rst_n_slv` (active low)
 - synchronous resets: none
 

@@ -19,6 +19,7 @@
 #                the replay of the specification stages from the committed answer cache, no model call); on
 #                main it is pushed to the GitHub Container Registry (phase 22).
 #   devcontainer the development container of .devcontainer/ (Codespaces): built, `nnc demo` inside it.
+#   pages        the project page (nnc site) from the committed results, published on GitHub Pages (main).
 # kit-configs and formal take long: they run on main, on pull requests, weekly and by hand, not on every
 # push to a feature branch. Tool versions are pinned to the ones the committed results were produced with.
 # Designs: the 6 upstream designs, the 3 regenerated or drafted in phases 5-10, spi_master and
@@ -62,7 +63,7 @@ jobs:
       matrix:
         design: [sync_fifo, apb_tlul_bridge, axi2apb_bridge, async_gray_fifo, async_apb_bridge,
                  ahb2axi_bridge, gen_apb_tlul_bridge, gen_sync_fifo, uart_lite, spi_master, axil_regfile,
-                 ot_rv_timer, ot_gpio]
+                 ot_rv_timer, ot_gpio, c_uart, c_pcpi_div]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -212,7 +213,8 @@ jobs:
       fail-fast: false
       matrix:
         design: [sync_fifo, apb_tlul_bridge, axi2apb_bridge, async_gray_fifo, async_apb_bridge, ahb2axi_bridge,
-                 gen_apb_tlul_bridge, gen_sync_fifo, axil_regfile, uart_lite, spi_master, ot_rv_timer, ot_gpio]
+                 gen_apb_tlul_bridge, gen_sync_fifo, axil_regfile, uart_lite, spi_master, ot_rv_timer, ot_gpio,
+                 c_uart, c_pcpi_div]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -296,3 +298,27 @@ jobs:
         with:
           push: never
           runCmd: nnc demo sync_fifo
+
+  pages:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: The page, from the committed results (no agent)
+        run: python -m nnc site --out site
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deploy
+        uses: actions/deploy-pages@v4

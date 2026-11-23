@@ -1,0 +1,1 @@
+{"body": "  // CHK-004: tx_busy is high whenever txd is driving a low (frame) level (UA-T1.3-06)\n  a_CHK_004: assert property (@(posedge clk) disable iff (rst) (txd == 1'b0) |-> (tx_busy == 1'b1))\n    else begin fails_CHK_004++; $display(\"NNC_FAIL CHK-004 @%0t\", $time); end\n  always_ff @(posedge clk) if (!(rst) && (txd == 1'b0)) hits_CHK_004 <= hits_CHK_004 + 1;"}

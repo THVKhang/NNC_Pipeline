@@ -1,5 +1,5 @@
-"""Word (.docx) and HTML specifications as Markdown text, for the Markdown reader of nnc/ingest.py (no tools,
-Python standard library only).
+"""Word (.docx), HTML and AsciiDoc specifications as Markdown text, for the Markdown reader of nnc/ingest.py (no
+tools, Python standard library only).
 
 Kept: headings (Word styles Heading 1-9 and Title, HTML h1-h6), paragraphs, list items, tables (as Markdown
 tables, so the contract reads a port table from them) and preformatted code. Dropped: images, fields, headers,
@@ -15,7 +15,7 @@ import zipfile
 from html.parser import HTMLParser
 from pathlib import Path
 
-SUFFIXES = (".docx", ".html", ".htm")
+SUFFIXES = (".docx", ".html", ".htm", ".adoc", ".asciidoc")
 _W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
 
 
@@ -199,6 +199,235 @@ def html_to_markdown(path: Path) -> str:
     return _tidy(p.out)
 
 
+# --------------------------------------------------------------------------------------------- AsciiDoc
+# The RISC-V specifications and many hardware documents are written in AsciiDoc. Kept: section titles, block
+# titles (table captions), paragraphs, lists, tables (column and row spans laid out on the grid), admonitions,
+# listing, literal and diagram source blocks (as code), and included files found next to the document.
+# Dropped: comments, anchors, attribute lines, index terms, images and conditional directives (their content
+# is kept).
+
+_ADOC_ATTRS = {"times": "×", "plus": "+", "minus": "−", "nbsp": " ", "cpp": "C++", "ge": "≥", "le": "≤",
+               "rarr": "→", "larr": "←", "lt": "<", "gt": ">", "amp": "&", "deg": "°", "pm": "±",
+               "empty": "", "sp": " ", "zwsp": "", "quot": '"', "apos": "'", "brvbar": "¦", "vbar": "|"}
+_ADOC_ADMONITION = ("NOTE", "TIP", "IMPORTANT", "WARNING", "CAUTION")
+_ADOC_SPEC = re.compile(r"(?:(\d+)\*)?(?:(\d+)?(?:\.(\d+))?\+)?(?:[<^>])?(?:\.[<^>])?[aehlmsdv]?$")
+
+
+def _adoc_inline(text: str, attrs: dict[str, str]) -> str:
+    t = re.sub(r"\(\(\(.*?\)\)\)", "", text, flags=re.S)                       # index terms
+    t = re.sub(r"\(\((.+?)\)\)", r"\1", t, flags=re.S)
+    t = re.sub(r"\[[#.][\w:.\-]*\]#((?:(?!\n\n).)*?)#", r"\1", t, flags=re.S)  # [#id]#text# role spans
+    t = re.sub(r"\binsn:([\w.]+)\[([^\]]*)\]",
+               lambda m: f"`{m.group(1)}" + (f" {m.group(2)}" if m.group(2) else "") + "`", t)
+    t = re.sub(r"\b(https?://[^\s\[]+)\[([^\]]*)\]", lambda m: f"{m.group(2) or m.group(1)} ({m.group(1)})", t)
+    t = re.sub(r"\b(?:ext|csr|reg|term|kbd|btn|menu|footnote|link|xref|anchor):([^\s\[]*)\[([^\]]*)\]",
+               lambda m: m.group(2) or m.group(1), t)
+    t = re.sub(r"<<([^,>]+),\s*([^>]+)>>", r"\2", t)
+    t = re.sub(r"<<([^>]+)>>", r"\1", t)
+    t = re.sub(r"\^([^\^\s]+)\^", r"^(\1)", t)                                  # 2^L-1^ -> 2^(L-1)
+    t = re.sub(r"~([^~\s]+)~", r"_(\1)", t)
+    t = re.sub(r"\{([\w\-]+)\}", lambda m: attrs.get(m.group(1), _ADOC_ATTRS.get(m.group(1), m.group(0))), t)
+    t = re.sub(r"(?<![\w*])\*([^*\n]+?)\*(?![\w*])", r"**\1**", t)             # constrained bold
+    t = re.sub(r"(?<![\w+])\+([^+\n]+?)\+(?![\w+])", r"\1", t)                  # passthrough
+    return t
+
+
+def _adoc_cols(attr: str) -> int | None:
+    m = re.search(r'cols\s*=\s*"([^"]*)"', attr) or re.search(r"cols\s*=\s*'([^']*)'", attr)
+    if not m:
+        m2 = re.search(r"cols\s*=\s*(\d+)", attr)
+        return int(m2.group(1)) if m2 else None
+    n = 0
+    for part in m.group(1).split(","):
+        k = re.match(r"\s*(\d+)\*", part)
+        n += int(k.group(1)) if k else 1
+    return n
+
+
+def _adoc_table(body: list[str], attr: str, attrs: dict[str, str]) -> list[str]:
+    """Cells of a `|===` table laid out on the grid: a cell spanning n columns is followed by n-1 empty
+    cells, a cell spanning rows reserves its column in the rows below."""
+    text = "\n".join(body)
+    cells: list[tuple[int, int, str]] = []          # (colspan, rowspan, text)
+    first_line_cells = 0
+    # every unescaped `|` starts a cell; the word right before it (after a space or a line start) is that
+    # cell's specifier when it has the form of one (`2+^`, `.2+`, `3*`), else it belongs to the cell before
+    seps = []                                       # (start of the specifier, position of `|`, specifier)
+    for m in re.finditer(r"(?<!\\)\|", text):
+        k = m.start()
+        while k > 0 and not text[k - 1].isspace() and text[k - 1] != "|":
+            k -= 1
+        word = text[k:m.start()]
+        is_spec = bool(word) and (k == 0 or text[k - 1].isspace()) and bool(_ADOC_SPEC.match(word))
+        seps.append((k if is_spec else m.start(), m.start(), word if is_spec else ""))
+    first_line = text.count("\n", 0, seps[0][1]) if seps else 0
+    for i, (_, bar, spec) in enumerate(seps):
+        end = seps[i + 1][0] if i + 1 < len(seps) else len(text)
+        sm = _ADOC_SPEC.match(spec)
+        dup = int(sm.group(1) or 1)
+        colspan = int(sm.group(2) or 1) if "+" in spec else 1
+        rowspan = int(sm.group(3) or 1) if "+" in spec else 1
+        cell = _adoc_inline(text[bar + 1:end].strip().replace("\\|", "|"), attrs)
+        cells += [(colspan, rowspan, cell)] * dup
+        if text.count("\n", 0, bar) == first_line:
+            first_line_cells += colspan * dup
+    ncols = _adoc_cols(attr) or first_line_cells or 1
+    rows: list[list[str]] = []
+    row: list[str] = []
+    reserved: dict[int, int] = {}                  # column -> rows still taken by a row span from above
+
+    def free(col: int) -> bool:
+        return reserved.get(col, 0) == 0
+
+    for colspan, rowspan, cell in cells:
+        while True:
+            while len(row) < ncols and not free(len(row)):
+                row.append("")
+            if len(row) < ncols:
+                break
+            rows.append(row)
+            row = []
+            reserved = {c: n - 1 for c, n in reserved.items() if n - 1 > 0}
+        start = len(row)
+        row.append(cell)
+        row += [""] * max(0, min(colspan, ncols - start) - 1)
+        if rowspan > 1:
+            for c in range(start, start + colspan):
+                reserved[c] = max(reserved.get(c, 0), rowspan)
+        if len(row) >= ncols:
+            rows.append(row[:ncols])
+            row = []
+            reserved = {c: n - 1 for c, n in reserved.items() if n - 1 > 0}
+    if any(c for c in row):
+        rows.append(row)
+    return _table_md(rows)
+
+
+def adoc_to_markdown(path: Path, _depth: int = 0) -> str:
+    path = Path(path)
+    raw = path.read_text(encoding="utf-8", errors="replace").replace("\r\n", "\n")
+    attrs: dict[str, str] = {}
+    lines = raw.split("\n")
+    out: list[str] = []
+    pending_attr = ""                               # the last [attribute] line, for the next block
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        s = line.strip()
+        if s.startswith("////"):                    # comment block
+            j = i + 1
+            while j < len(lines) and not lines[j].strip().startswith("////"):
+                j += 1
+            i = j + 1
+            continue
+        if s.startswith("//"):
+            i += 1
+            continue
+        m = re.match(r"^:([\w\-]+)!?:\s*(.*)$", s)
+        if m:                                       # document attribute
+            attrs[m.group(1)] = m.group(2)
+            i += 1
+            continue
+        if re.match(r"^(ifdef|ifndef|ifeval|endif)::", s):
+            i += 1
+            continue
+        m = re.match(r"^include::(.+?)\[[^\]]*\]$", s)
+        if m:
+            inc = (path.parent / _adoc_inline(m.group(1), attrs)).resolve()
+            if inc.is_file() and _depth < 5:            # an include inserts AsciiDoc text, whatever its name
+                out += ["", adoc_to_markdown(inc, _depth + 1).strip(), ""]
+            else:
+                out += ["", f"(included file not available: {m.group(1)})", ""]
+            i += 1
+            continue
+        if re.match(r"^\[\[[^\]]*\]\]$", s) or re.match(r"^image::", s) or s == "<<<":
+            i += 1
+            continue
+        if re.match(r"^\[.*\]$", s):
+            pending_attr = s
+            i += 1
+            continue
+        m = re.match(r"^(={1,6})\s+(\S.*)$", s)
+        if m:
+            out += ["", "#" * len(m.group(1)) + " " + _adoc_inline(m.group(2), attrs), ""]
+            pending_attr = ""
+            i += 1
+            continue
+        if re.match(r"^\.[^.\s]", s):                # block title (a table caption, for example)
+            out += ["", "**" + _adoc_inline(s[1:], attrs) + "**", ""]
+            i += 1
+            continue
+        if s in ("----", "....", "++++", "```") or re.match(r"^(-{4,}|\.{4,}|\+{4,})$", s):
+            j = i + 1
+            while j < len(lines) and lines[j].strip() != s:
+                j += 1
+            lang = ""
+            mm = re.match(r"^\[(source|wavedrom|listing|literal)\s*,?\s*([\w+\-]*)", pending_attr)
+            if mm:
+                lang = mm.group(2) if mm.group(1) == "source" else (mm.group(1) if mm.group(1) == "wavedrom" else "")
+            out += ["", "```" + lang] + lines[i + 1:j] + ["```", ""]
+            pending_attr = ""
+            i = j + 1
+            continue
+        if s in ("====", "****", "____", "--") or re.match(r"^(={4,}|\*{4,}|_{4,})$", s):
+            kind = re.match(r"^\[(\w+)", pending_attr)
+            if kind and kind.group(1).upper() in _ADOC_ADMONITION:
+                out += ["", f"**{kind.group(1).capitalize()}:**"]
+            pending_attr = ""
+            i += 1                                  # the delimiters go; the content is read as usual
+            continue
+        if s.startswith("|===") or s.startswith(",===") or s.startswith("!==="):
+            j = i + 1
+            while j < len(lines) and not lines[j].strip().startswith(s[:4]):
+                j += 1
+            out += [""] + _adoc_table(lines[i + 1:j], pending_attr, attrs) + [""]
+            pending_attr = ""
+            i = j + 1
+            continue
+        m = re.match(r"^(NOTE|TIP|IMPORTANT|WARNING|CAUTION):\s+(.*)$", s)
+        if m:
+            out.append(f"**{m.group(1).capitalize()}:** " + _adoc_inline(m.group(2), attrs))
+            i += 1
+            continue
+        m = re.match(r"^(\*{1,5}|-)\s+(.*)$", s)
+        if m:
+            depth = len(m.group(1)) - 1 if m.group(1) != "-" else 0
+            out.append("  " * depth + "- " + _adoc_inline(m.group(2), attrs))
+            i += 1
+            continue
+        m = re.match(r"^(\.{1,5})\s+(.*)$", s)
+        if m:
+            out.append("  " * (len(m.group(1)) - 1) + "1. " + _adoc_inline(m.group(2), attrs))
+            i += 1
+            continue
+        m = re.match(r"^(.+?)::\s*(.*)$", s)
+        if m and not s.startswith(("http", "include", "image")):
+            out.append(f"- **{_adoc_inline(m.group(1), attrs)}**: {_adoc_inline(m.group(2), attrs)}")
+            i += 1
+            continue
+        if s == "+":
+            i += 1
+            continue
+        if s == "":
+            out.append("")
+            i += 1
+            continue
+        # a paragraph: its lines up to a blank line or a block start, joined (role spans may cross lines)
+        j = i
+        para: list[str] = []
+        while j < len(lines):
+            t = lines[j].strip()
+            if t == "" or (j > i and (re.match(r"^(\[.*\]|={1,6}\s|\|===|----|\.\.\.\.|====|\*{1,5}\s|//|include::)", t)
+                                      or re.match(r"^\.[^.\s]", t))):
+                break
+            para.append(t)
+            j += 1
+        out.append(re.sub(r"[ \t]{2,}", " ", _adoc_inline(" ".join(para), attrs)).strip())
+        pending_attr = ""
+        i = j
+    return _tidy(out)
+
+
 def _tidy(lines: list[str]) -> str:
     out: list[str] = []
     for line in lines:
@@ -214,4 +443,6 @@ def to_markdown(path: Path) -> str:
         return docx_to_markdown(Path(path))
     if s in (".html", ".htm"):
         return html_to_markdown(Path(path))
+    if s in (".adoc", ".asciidoc"):
+        return adoc_to_markdown(Path(path))
     raise ValueError(f"no converter for {s}")

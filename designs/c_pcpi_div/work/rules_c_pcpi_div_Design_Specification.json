@@ -1,0 +1,212 @@
+{
+ "source": {
+  "file": "c_pcpi_div_Design_Specification.md",
+  "sha256": "cc21a8ec5ce6f9ba7037a740af4e6e12d047e275e67654e4cdad4f7d48fdd53f",
+  "index_version": 1
+ },
+ "extraction": {
+  "prompt_version": "extract-v2",
+  "model": "sonnet",
+  "budget_tokens": 3500,
+  "tag": "PD",
+  "sections": "all",
+  "skip": [],
+  "batches": 1,
+  "date": "2026-11-23T09:56:12+00:00",
+  "usage": {
+   "calls": 1,
+   "cached": 0,
+   "cost_usd": 0.0294,
+   "input_tokens": 2,
+   "output_tokens": 1144,
+   "cache_creation_input_tokens": 4399,
+   "cache_read_input_tokens": 0
+  },
+  "errors": []
+ },
+ "coverage": {
+  "sentences": 22,
+  "normative_sentences": 7,
+  "normative_cited": 7,
+  "normative_skipped": 0,
+  "uncovered_after_first_pass": 0,
+  "uncovered": [],
+  "invalid_ids": []
+ },
+ "rules": [
+  {
+   "id": "PD-T1-01",
+   "doc": "c_pcpi_div_Design_Specification.md",
+   "section": "T1",
+   "section_title": "PicoRV32 PCPI division core",
+   "page": 5,
+   "quote": "The optional Pico Co-Processor Interface (PCPI) can be used to implement non-branching instructions in an external coprocessor. The Pico Co-Processor Interface (PCPI) can be used to implement non-branching instructions in external cores:",
+   "spec_refs": [],
+   "sentences": [
+    "T1:s1",
+    "T1.1:s1"
+   ],
+   "strength": "MAY",
+   "actor": "system",
+   "signals": [],
+   "condition": "implementing non-branching instructions in an external coprocessor",
+   "statement": "The PCPI can be used to implement non-branching instructions in an external coprocessor core.",
+   "check": "none"
+  },
+  {
+   "id": "PD-T1.1-01",
+   "doc": "c_pcpi_div_Design_Specification.md",
+   "section": "T1.1",
+   "section_title": "Pico Co-Processor Interface (PCPI)",
+   "page": 48,
+   "quote": "When an unsupported instruction is encountered and the PCPI feature is activated (see ENABLE_PCPI above), then pcpi_valid is asserted, the instruction word itself is output on pcpi_insn, the rs1 and rs2 fields are decoded and the values in those registers are output on pcpi_rs1 and pcpi_rs2.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.1:s3"
+   ],
+   "strength": "MUST",
+   "actor": "master",
+   "signals": [
+    "pcpi_valid",
+    "pcpi_insn",
+    "pcpi_rs1",
+    "pcpi_rs2"
+   ],
+   "condition": "an unsupported instruction is encountered and PCPI is activated (ENABLE_PCPI)",
+   "statement": "The core asserts pcpi_valid, outputs the instruction word on pcpi_insn, and outputs the rs1 and rs2 register values on pcpi_rs1 and pcpi_rs2.",
+   "check": "both"
+  },
+  {
+   "id": "PD-T1.1-02",
+   "doc": "c_pcpi_div_Design_Specification.md",
+   "section": "T1.1",
+   "section_title": "Pico Co-Processor Interface (PCPI)",
+   "page": 54,
+   "quote": "An external PCPI core can then decode the instruction, execute it, and assert pcpi_ready when execution of the instruction is finished.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.1:s4"
+   ],
+   "strength": "MAY",
+   "actor": "slave",
+   "signals": [
+    "pcpi_ready"
+   ],
+   "condition": "pcpi_valid asserted with an instruction",
+   "statement": "An external PCPI core can decode and execute the instruction and assert pcpi_ready when execution is finished.",
+   "check": "scenario"
+  },
+  {
+   "id": "PD-T1.1-03",
+   "doc": "c_pcpi_div_Design_Specification.md",
+   "section": "T1.1",
+   "section_title": "Pico Co-Processor Interface (PCPI)",
+   "page": 54,
+   "quote": "Optionally a result value can be written to pcpi_rd and pcpi_wr asserted.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.1:s5"
+   ],
+   "strength": "MAY",
+   "actor": "slave",
+   "signals": [
+    "pcpi_rd",
+    "pcpi_wr"
+   ],
+   "condition": "instruction execution finished",
+   "statement": "The PCPI core can optionally write a result value to pcpi_rd and assert pcpi_wr.",
+   "check": "scenario"
+  },
+  {
+   "id": "PD-T1.1-04",
+   "doc": "c_pcpi_div_Design_Specification.md",
+   "section": "T1.1",
+   "section_title": "Pico Co-Processor Interface (PCPI)",
+   "page": 54,
+   "quote": "The PicoRV32 core will then decode the rd field of the instruction and write the value from pcpi_rd to the respective register.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.1:s6"
+   ],
+   "strength": "MUST",
+   "actor": "master",
+   "signals": [
+    "pcpi_rd",
+    "pcpi_wr"
+   ],
+   "condition": "PCPI core returns a result with pcpi_wr asserted",
+   "statement": "The PicoRV32 core decodes the rd field of the instruction and writes the pcpi_rd value to the respective register.",
+   "check": "scenario"
+  },
+  {
+   "id": "PD-T1.1-05",
+   "doc": "c_pcpi_div_Design_Specification.md",
+   "section": "T1.1",
+   "section_title": "Pico Co-Processor Interface (PCPI)",
+   "page": 60,
+   "quote": "When no external PCPI core acknowledges the instruction within 16 clock cycles, then an illegal instruction exception is raised and the respective interrupt handler is called.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.1:s7"
+   ],
+   "strength": "MUST",
+   "actor": "master",
+   "signals": [
+    "pcpi_valid",
+    "pcpi_ready",
+    "pcpi_wait"
+   ],
+   "condition": "no external PCPI core acknowledges the instruction within 16 clock cycles",
+   "statement": "An illegal instruction exception is raised and the respective interrupt handler is called.",
+   "check": "scenario"
+  },
+  {
+   "id": "PD-T1.1-06",
+   "doc": "c_pcpi_div_Design_Specification.md",
+   "section": "T1.1",
+   "section_title": "Pico Co-Processor Interface (PCPI)",
+   "page": 60,
+   "quote": "A PCPI core that needs more than a couple of cycles to execute an instruction, should assert pcpi_wait as soon as the instruction has been decoded successfully and keep it asserted until it asserts pcpi_ready.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.1:s8"
+   ],
+   "strength": "SHOULD",
+   "actor": "slave",
+   "signals": [
+    "pcpi_wait",
+    "pcpi_ready"
+   ],
+   "condition": "the PCPI core needs more than a couple of cycles to execute an instruction",
+   "statement": "The PCPI core should assert pcpi_wait as soon as the instruction is decoded successfully and keep it asserted until it asserts pcpi_ready.",
+   "check": "both"
+  },
+  {
+   "id": "PD-T1.1-07",
+   "doc": "c_pcpi_div_Design_Specification.md",
+   "section": "T1.1",
+   "section_title": "Pico Co-Processor Interface (PCPI)",
+   "page": 60,
+   "quote": "This will prevent the PicoRV32 core from raising an illegal instruction exception.",
+   "spec_refs": [],
+   "sentences": [
+    "T1.1:s9"
+   ],
+   "strength": "MUST",
+   "actor": "master",
+   "signals": [
+    "pcpi_wait"
+   ],
+   "condition": "pcpi_wait is asserted by the PCPI core",
+   "statement": "Asserting pcpi_wait prevents the PicoRV32 core from raising an illegal instruction exception.",
+   "check": "scenario"
+  }
+ ],
+ "skipped": [
+  {
+   "sentence": "T1.1.1.1:s9",
+   "reason": "descriptive",
+   "text": "Simply copy this file into your project."
+  }
+ ]
+}

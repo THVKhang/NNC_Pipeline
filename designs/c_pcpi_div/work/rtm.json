@@ -1,0 +1,539 @@
+[
+ {
+  "rule": "PD-T1.1-01",
+  "spec_refs": [],
+  "doc": "c_pcpi_div_Design_Specification.md",
+  "section": "T1.1",
+  "sentences": [
+   "T1.1:s3"
+  ],
+  "strength": "MUST",
+  "statement": "The core asserts pcpi_valid, outputs the instruction word on pcpi_insn, and outputs the rs1 and rs2 register values on pcpi_rs1 and pcpi_rs2.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "PD-T1.1-01",
+   "reason": "not_applicable_to_dut",
+   "note": "This binds the master (PicoRV32 core). The DUT is the PCPI slave. It is used as a stimulus constraint in CHK-004..CHK-009: pcpi_valid is asserted with pcpi_insn/pcpi_rs1/pcpi_rs2 and held stable until pcpi_ready."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "PD-T1.1-02",
+  "spec_refs": [],
+  "doc": "c_pcpi_div_Design_Specification.md",
+  "section": "T1.1",
+  "sentences": [
+   "T1.1:s4"
+  ],
+  "strength": "MAY",
+  "statement": "An external PCPI core can decode and execute the instruction and assert pcpi_ready when execution is finished.",
+  "checks": [
+   "CHK-003",
+   "CHK-005",
+   "CHK-008",
+   "CHK-009"
+  ],
+  "check_status": {
+   "CHK-003": "PASS",
+   "CHK-005": "PASS",
+   "CHK-008": "PASS",
+   "CHK-009": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 6,
+   "killed": 6,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "PD-T1.1-03",
+  "spec_refs": [],
+  "doc": "c_pcpi_div_Design_Specification.md",
+  "section": "T1.1",
+  "sentences": [
+   "T1.1:s5"
+  ],
+  "strength": "MAY",
+  "statement": "The PCPI core can optionally write a result value to pcpi_rd and assert pcpi_wr.",
+  "checks": [
+   "CHK-002",
+   "CHK-004",
+   "CHK-005",
+   "CHK-008",
+   "CHK-009"
+  ],
+  "check_status": {
+   "CHK-002": "PASS",
+   "CHK-004": "PASS",
+   "CHK-005": "PASS",
+   "CHK-008": "PASS",
+   "CHK-009": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 6,
+   "killed": 6,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "PD-T1.1-04",
+  "spec_refs": [],
+  "doc": "c_pcpi_div_Design_Specification.md",
+  "section": "T1.1",
+  "sentences": [
+   "T1.1:s6"
+  ],
+  "strength": "MUST",
+  "statement": "The PicoRV32 core decodes the rd field of the instruction and writes the pcpi_rd value to the respective register.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "PD-T1.1-04",
+   "reason": "not_applicable_to_dut",
+   "note": "The register-file write-back is done by the core, not the DUT. The DUT side (pcpi_rd value when pcpi_wr=1) is checked in CHK-004..CHK-007."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "PD-T1.1-05",
+  "spec_refs": [],
+  "doc": "c_pcpi_div_Design_Specification.md",
+  "section": "T1.1",
+  "sentences": [
+   "T1.1:s7"
+  ],
+  "strength": "MUST",
+  "statement": "An illegal instruction exception is raised and the respective interrupt handler is called.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "PD-T1.1-05",
+   "reason": "not_applicable_to_dut",
+   "note": "Raising the illegal-instruction exception is core behaviour. Its 16-cycle bound is used as the acknowledge deadline the DUT must meet in CHK-008(a)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "PD-T1.1-06",
+  "spec_refs": [],
+  "doc": "c_pcpi_div_Design_Specification.md",
+  "section": "T1.1",
+  "sentences": [
+   "T1.1:s8"
+  ],
+  "strength": "SHOULD",
+  "statement": "The PCPI core should assert pcpi_wait as soon as the instruction is decoded successfully and keep it asserted until it asserts pcpi_ready.",
+  "checks": [
+   "CHK-001",
+   "CHK-008"
+  ],
+  "check_status": {
+   "CHK-001": "PASS",
+   "CHK-008": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 6,
+   "killed": 6,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "PD-T1.1-07",
+  "spec_refs": [],
+  "doc": "c_pcpi_div_Design_Specification.md",
+  "section": "T1.1",
+  "sentences": [
+   "T1.1:s9"
+  ],
+  "strength": "MUST",
+  "statement": "Asserting pcpi_wait prevents the PicoRV32 core from raising an illegal instruction exception.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "PD-T1.1-07",
+   "reason": "not_applicable_to_dut",
+   "note": "How the core reacts to pcpi_wait is master behaviour. The DUT's pcpi_wait timing is covered by CHK-001 and CHK-008."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RVM-T1.1-01",
+  "spec_refs": [],
+  "doc": "riscv_m_extension.adoc",
+  "section": "T1.1",
+  "sentences": [
+   "T1.1:s1"
+  ],
+  "strength": "MUST",
+  "statement": "mul multiplies rs1 by rs2 as XLEN-bit values and writes the lower XLEN bits of the product to the destination register.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RVM-T1.1-01",
+   "reason": "not_applicable_to_dut",
+   "note": "MUL is not implemented by picorv32_pcpi_div (a division/remainder coprocessor)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RVM-T1.1-02",
+  "spec_refs": [],
+  "doc": "riscv_m_extension.adoc",
+  "section": "T1.1",
+  "sentences": [
+   "T1.1:s1"
+  ],
+  "strength": "MUST",
+  "statement": "mulh, mulhu and mulhsu return the upper XLEN bits of the 2×XLEN-bit product for signed×signed, unsigned×unsigned and signed rs1×unsigned rs2 respectively.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RVM-T1.1-02",
+   "reason": "not_applicable_to_dut",
+   "note": "MULH/MULHU/MULHSU are not implemented by picorv32_pcpi_div."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RVM-T1.1-03",
+  "spec_refs": [],
+  "doc": "riscv_m_extension.adoc",
+  "section": "T1.1",
+  "sentences": [
+   "T1.1:s2"
+  ],
+  "strength": "SHOULD",
+  "statement": "Use mulh (or mulhu/mulhsu if appropriate) rdh,rs1,rs2 followed by mul rdl,rs1,rs2 to obtain both halves.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RVM-T1.1-03",
+   "reason": "design_guideline",
+   "note": "This is a recommended software code sequence. There is nothing to observe at the DUT."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RVM-T1.1-04",
+  "spec_refs": [],
+  "doc": "riscv_m_extension.adoc",
+  "section": "T1.1",
+  "sentences": [
+   "T1.1:s3"
+  ],
+  "strength": "MUST",
+  "statement": "Source specifiers rs1 and rs2 must be in the same order in both instructions, and rdh must not be the same as rs1 or rs2.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RVM-T1.1-04",
+   "reason": "design_guideline",
+   "note": "This is a register-allocation constraint on software. Multiply is also not implemented by this DUT."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RVM-T1.1-05",
+  "spec_refs": [],
+  "doc": "riscv_m_extension.adoc",
+  "section": "T1.1",
+  "sentences": [
+   "T1.1:s4"
+  ],
+  "strength": "MAY",
+  "statement": "Microarchitectures may fuse the two instructions into a single multiply operation instead of two separate multiplies.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RVM-T1.1-05",
+   "reason": "not_applicable_to_dut",
+   "note": "This is an optional microarchitectural fusion of multiply, which this divider DUT does not implement."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RVM-T1.1-06",
+  "spec_refs": [],
+  "doc": "riscv_m_extension.adoc",
+  "section": "T1.1",
+  "sentences": [
+   "T1.1:s6"
+  ],
+  "strength": "MUST",
+  "statement": "mulw multiplies the lower 32 bits of the source registers and writes the sign extension of the lower 32 bits of the result to the destination register.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RVM-T1.1-06",
+   "reason": "not_applicable_to_dut",
+   "note": "MULW is RV64-only. The DUT is XLEN=32 (pcpi_rd is 32 bits)."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RVM-T1.1-07",
+  "spec_refs": [],
+  "doc": "riscv_m_extension.adoc",
+  "section": "T1.1",
+  "sentences": [
+   "T1.1:s7"
+  ],
+  "strength": "MUST",
+  "statement": "Signed arguments must be proper 32-bit signed values and unsigned arguments must have their upper 32 bits clear.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RVM-T1.1-07",
+   "reason": "not_applicable_to_dut",
+   "note": "This is an RV64 software usage note for MUL. It does not apply to a 32-bit divider."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RVM-T1.2-01",
+  "spec_refs": [],
+  "doc": "riscv_m_extension.adoc",
+  "section": "T1.2",
+  "sentences": [
+   "T1.2:s1"
+  ],
+  "strength": "MUST",
+  "statement": "div and divu perform XLEN-bit signed and unsigned division of rs1 by rs2 rounding towards zero; rem and remu return the remainder of the corresponding division.",
+  "checks": [
+   "CHK-004",
+   "CHK-005",
+   "CHK-006",
+   "CHK-007"
+  ],
+  "check_status": {
+   "CHK-004": "PASS",
+   "CHK-005": "PASS",
+   "CHK-006": "PASS",
+   "CHK-007": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 10,
+   "killed": 10,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RVM-T1.2-02",
+  "spec_refs": [],
+  "doc": "riscv_m_extension.adoc",
+  "section": "T1.2",
+  "sentences": [
+   "T1.2:s2"
+  ],
+  "strength": "MUST",
+  "statement": "The sign of a nonzero rem result equals the sign of the dividend.",
+  "checks": [
+   "CHK-004",
+   "CHK-005"
+  ],
+  "check_status": {
+   "CHK-004": "PASS",
+   "CHK-005": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 5,
+   "killed": 5,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RVM-T1.2-03",
+  "spec_refs": [],
+  "doc": "riscv_m_extension.adoc",
+  "section": "T1.2",
+  "sentences": [
+   "T1.2:s4"
+  ],
+  "strength": "SHOULD",
+  "statement": "Use div rdq,rs1,rs2 followed by rem rdr,rs1,rs2 (or divu and remu if appropriate).",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RVM-T1.2-03",
+   "reason": "design_guideline",
+   "note": "This is a recommended software code sequence. Each DIV/REM is still checked on its own in CHK-004/CHK-005."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RVM-T1.2-04",
+  "spec_refs": [],
+  "doc": "riscv_m_extension.adoc",
+  "section": "T1.2",
+  "sentences": [
+   "T1.2:s5"
+  ],
+  "strength": "MUST_NOT",
+  "statement": "rdq must not be the same register as rs1 or rs2.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RVM-T1.2-04",
+   "reason": "design_guideline",
+   "note": "This is a software register-allocation constraint. The DUT does not write registers, and the rd field is ignored at the PCPI interface."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RVM-T1.2-05",
+  "spec_refs": [],
+  "doc": "riscv_m_extension.adoc",
+  "section": "T1.2",
+  "sentences": [
+   "T1.2:s6"
+  ],
+  "strength": "MAY",
+  "statement": "Microarchitectures may fuse the two instructions into a single divide operation instead of two separate divides.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RVM-T1.2-05",
+   "reason": "not_observable_at_interface",
+   "note": "Optional fusion (MAY) of div+rem is an internal microarchitectural choice. Results are still checked per instruction in CHK-005."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RVM-T1.2-06",
+  "spec_refs": [],
+  "doc": "riscv_m_extension.adoc",
+  "section": "T1.2",
+  "sentences": [
+   "T1.2:s7"
+  ],
+  "strength": "MUST",
+  "statement": "divw and divuw divide the lower 32 bits of rs1 by those of rs2 as signed and unsigned and write the 32-bit quotient sign-extended to 64 bits in rd; remw and remuw give the corresponding remainders.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RVM-T1.2-06",
+   "reason": "not_applicable_to_dut",
+   "note": "DIVW/DIVUW/REMW/REMUW are RV64-only. The DUT is XLEN=32."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RVM-T1.2-07",
+  "spec_refs": [],
+  "doc": "riscv_m_extension.adoc",
+  "section": "T1.2",
+  "sentences": [
+   "T1.2:s8"
+  ],
+  "strength": "MUST",
+  "statement": "remw and remuw always sign-extend the 32-bit result to 64 bits, including on a divide by zero.",
+  "checks": [],
+  "check_status": {},
+  "status": "NOT_VERIFIED_BY_SIM",
+  "not_verified": {
+   "rule": "RVM-T1.2-07",
+   "reason": "not_applicable_to_dut",
+   "note": "REMW/REMUW sign extension is RV64-only. The DUT is XLEN=32."
+  },
+  "mutation": null
+ },
+ {
+  "rule": "RVM-T1.2-08",
+  "spec_refs": [],
+  "doc": "riscv_m_extension.adoc",
+  "section": "T1.2",
+  "sentences": [
+   "T1.2:s10",
+   "T1.2:s15",
+   "T1.2:s16"
+  ],
+  "strength": "MUST",
+  "statement": "Division by zero returns all bits set (-1 for div/divw, 2^L-1 for divu/divuw) as quotient, and the remainder equals the dividend for rem/remw/remu/remuw.",
+  "checks": [
+   "CHK-006"
+  ],
+  "check_status": {
+   "CHK-006": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ },
+ {
+  "rule": "RVM-T1.2-09",
+  "spec_refs": [],
+  "doc": "riscv_m_extension.adoc",
+  "section": "T1.2",
+  "sentences": [
+   "T1.2:s11",
+   "T1.2:s12",
+   "T1.2:s17"
+  ],
+  "strength": "MUST",
+  "statement": "On signed overflow the quotient equals the dividend (-2^(L-1)) and the remainder is zero.",
+  "checks": [
+   "CHK-007"
+  ],
+  "check_status": {
+   "CHK-007": "PASS"
+  },
+  "status": "VERIFIED",
+  "not_verified": null,
+  "mutation": {
+   "relevant": 4,
+   "killed": 4,
+   "survived": [],
+   "claimed_equivalent": [],
+   "score": 100.0,
+   "meets_threshold": true
+  }
+ }
+]

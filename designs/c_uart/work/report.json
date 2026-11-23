@@ -1,0 +1,518 @@
+{
+ "design": "c_uart",
+ "date": "2026-11-23T10:15:23+00:00",
+ "gates": [
+  {
+   "gate": "G1_rules",
+   "state": "APPROVED",
+   "detail": "by Claude (delegated by GabrielHCMUT) at 2026-11-23T09:57:44+00:00"
+  },
+  {
+   "gate": "G2_contract",
+   "state": "APPROVED",
+   "detail": "by Claude (delegated by GabrielHCMUT) at 2026-11-23T09:59:43+00:00"
+  },
+  {
+   "gate": "G3_verif_sources",
+   "state": "APPROVED",
+   "detail": "by Claude (delegated by GabrielHCMUT) at 2026-11-23T10:10:46+00:00"
+  },
+  {
+   "gate": "G4_signoff",
+   "state": "PENDING",
+   "detail": "artifacts ready for review"
+  }
+ ],
+ "unreviewed_gates": [],
+ "rules": {
+  "total": 6,
+  "by_status": {
+   "FAILED": 6
+  }
+ },
+ "checks": {
+  "total": 11,
+  "by_status": {
+   "FAIL": 5,
+   "PASS": 6
+  },
+  "detail": {
+   "CHK-001": {
+    "status": "FAIL",
+    "hits": 405,
+    "fails": 1,
+    "first_fail_time": 254585000
+   },
+   "CHK-002": {
+    "status": "PASS",
+    "hits": 1,
+    "fails": 0
+   },
+   "CHK-003": {
+    "status": "PASS",
+    "hits": 1,
+    "fails": 0
+   },
+   "CHK-004": {
+    "status": "PASS",
+    "hits": 12992,
+    "fails": 0
+   },
+   "CHK-005": {
+    "status": "FAIL",
+    "tests": [
+     "test_chk_005_rx_backpressure",
+     "test_regression_random"
+    ]
+   },
+   "CHK-006": {
+    "status": "PASS",
+    "tests": [
+     "test_chk_006_rx_busy"
+    ]
+   },
+   "CHK-007": {
+    "status": "FAIL",
+    "tests": [
+     "test_chk_007_rx_overrun"
+    ]
+   },
+   "CHK-008": {
+    "status": "FAIL",
+    "tests": [
+     "test_chk_008_rx_frame_error"
+    ]
+   },
+   "CHK-009": {
+    "status": "PASS",
+    "tests": [
+     "test_chk_009_tx_handshake_order"
+    ]
+   },
+   "CHK-010": {
+    "status": "PASS",
+    "tests": [
+     "test_chk_010_prescale_rate"
+    ]
+   },
+   "CHK-011": {
+    "status": "FAIL",
+    "tests": [
+     "test_chk_011_tx_busy",
+     "test_regression_random"
+    ]
+   }
+  }
+ },
+ "simulation": {
+  "status": "ran",
+  "seed": 1,
+  "params": {
+   "DATA_WIDTH": 8
+  },
+  "tests": {
+   "fail": 3,
+   "pass": 5
+  },
+  "integration": {
+   "ok": true,
+   "issues": []
+  },
+  "coverage": {
+   "status": "measured",
+   "metric": "line",
+   "hit": 120,
+   "total": 123,
+   "percent": 97.6,
+   "files": {
+    "uart.v": {
+     "hit": 15,
+     "total": 15
+    },
+    "uart_rx.v": {
+     "hit": 61,
+     "total": 64
+    },
+    "uart_tx.v": {
+     "hit": 44,
+     "total": 44
+    }
+   },
+   "executed_lines": {
+    "uart.v": "37-38,43-45,50-52,57-58,63-66,71",
+    "uart_rx.v": "37-38,43-45,50,55-57,62,66-67,69,71-73,75-77,86-99,101-102,105-111,116-127,130-136",
+    "uart_tx.v": "37-38,43-45,50,55,60,63,65,67,69-71,78-91,93-99,101-109"
+   },
+   "metrics": {
+    "line": {
+     "hit": 120,
+     "total": 123,
+     "percent": 97.6,
+     "files": {
+      "uart.v": {
+       "hit": 15,
+       "total": 15
+      },
+      "uart_rx.v": {
+       "hit": 61,
+       "total": 64
+      },
+      "uart_tx.v": {
+       "hit": 44,
+       "total": 44
+      }
+     }
+    },
+    "block": {
+     "hit": 41,
+     "total": 44,
+     "percent": 93.2,
+     "files": {
+      "uart_rx.v": {
+       "hit": 25,
+       "total": 27
+      },
+      "uart_tx.v": {
+       "hit": 16,
+       "total": 17
+      }
+     }
+    },
+    "expression": {
+     "hit": 8,
+     "total": 9,
+     "percent": 88.9,
+     "files": {
+      "uart_rx.v": {
+       "hit": 6,
+       "total": 7
+      },
+      "uart_tx.v": {
+       "hit": 2,
+       "total": 2
+      }
+     }
+    },
+    "toggle": {
+     "hit": 274,
+     "total": 370,
+     "percent": 74.1,
+     "files": {
+      "uart.v": {
+       "hit": 64,
+       "total": 88
+      },
+      "uart_rx.v": {
+       "hit": 128,
+       "total": 152
+      },
+      "uart_tx.v": {
+       "hit": 82,
+       "total": 130
+      }
+     }
+    },
+    "functional": {
+     "hit": 36,
+     "total": 40,
+     "percent": 90.0,
+     "files": {
+      "nnc_cov.sv": {
+       "hit": 36,
+       "total": 40
+      }
+     }
+    }
+   },
+   "uncovered": [
+    {
+     "metric": "block",
+     "file": "uart_rx.v",
+     "line": 109,
+     "what": "else",
+     "points": 1,
+     "detail": [
+      "else"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "uart_rx.v",
+     "line": 120,
+     "what": "else",
+     "points": 1,
+     "detail": [
+      "else"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "uart_tx.v",
+     "line": 106,
+     "what": "else",
+     "points": 1,
+     "detail": [
+      "else"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "uart_rx.v",
+     "line": 109,
+     "what": "(rxd_reg==1) => 0",
+     "points": 1,
+     "detail": [
+      "(rxd_reg==1) => 0"
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "uart_rx.v",
+     "line": 112,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "uart_rx.v",
+     "line": 113,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "uart_rx.v",
+     "line": 114,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "uart.v",
+     "line": 71,
+     "what": "prescale",
+     "points": 24,
+     "detail": [
+      "prescale[10]:0->1",
+      "prescale[10]:1->0",
+      "prescale[11]:0->1",
+      "prescale[11]:1->0",
+      "prescale[12]:0->1",
+      "prescale[12]:1->0",
+      "prescale[13]:0->1",
+      "prescale[13]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "uart_rx.v",
+     "line": 62,
+     "what": "prescale",
+     "points": 24,
+     "detail": [
+      "prescale[10]:0->1",
+      "prescale[10]:1->0",
+      "prescale[11]:0->1",
+      "prescale[11]:1->0",
+      "prescale[12]:0->1",
+      "prescale[12]:1->0",
+      "prescale[13]:0->1",
+      "prescale[13]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "uart_tx.v",
+     "line": 60,
+     "what": "prescale",
+     "points": 24,
+     "detail": [
+      "prescale[10]:0->1",
+      "prescale[10]:1->0",
+      "prescale[11]:0->1",
+      "prescale[11]:1->0",
+      "prescale[12]:0->1",
+      "prescale[12]:1->0",
+      "prescale[13]:0->1",
+      "prescale[13]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "uart_tx.v",
+     "line": 70,
+     "what": "prescale_reg",
+     "points": 24,
+     "detail": [
+      "prescale_reg[10]:0->1",
+      "prescale_reg[10]:1->0",
+      "prescale_reg[11]:0->1",
+      "prescale_reg[11]:1->0",
+      "prescale_reg[12]:0->1",
+      "prescale_reg[12]:1->0",
+      "prescale_reg[13]:0->1",
+      "prescale_reg[13]:1->0"
+     ]
+    },
+    {
+     "metric": "functional",
+     "file": "nnc_cov.sv",
+     "line": 0,
+     "what": "COVP-021",
+     "points": 1,
+     "detail": []
+    },
+    {
+     "metric": "functional",
+     "file": "nnc_cov.sv",
+     "line": 0,
+     "what": "COVP-035",
+     "points": 1,
+     "detail": []
+    },
+    {
+     "metric": "functional",
+     "file": "nnc_cov.sv",
+     "line": 0,
+     "what": "COVP-038",
+     "points": 1,
+     "detail": []
+    },
+    {
+     "metric": "functional",
+     "file": "nnc_cov.sv",
+     "line": 0,
+     "what": "COVP-039",
+     "points": 1,
+     "detail": []
+    }
+   ],
+   "design_scope": {
+    "rule": "left out: never-executed points of package code that the elaborated design does not contain (Verilator instruments every function of an imported package, called or not), and toggles of signal bits that Yosys constant propagation proves constant with the run's parameters, except on signals where the simulator recorded a toggle of such a bit (then the signal counts whole)",
+    "left_out": {
+     "line": 0
+    },
+    "scope_conflicts": 0,
+    "signals_kept_whole": [],
+    "all_points": {
+     "block": {
+      "hit": 41,
+      "total": 44,
+      "percent": 93.2
+     },
+     "expression": {
+      "hit": 8,
+      "total": 9,
+      "percent": 88.9
+     },
+     "line": {
+      "hit": 120,
+      "total": 123,
+      "percent": 97.6
+     },
+     "toggle": {
+      "hit": 274,
+      "total": 370,
+      "percent": 74.1
+     }
+    }
+   }
+  },
+  "run_set": null
+ },
+ "mutation": {
+  "count": 12,
+  "killed": 10,
+  "survived": 2,
+  "not_compiled": 0,
+  "score": 83.3,
+  "threshold": 85.0,
+  "equivalence": null,
+  "rules_attributed": 6,
+  "rules_below_threshold": []
+ },
+ "coverage_closure": {
+  "metric": "line",
+  "target": null,
+  "status": "not_requested",
+  "baseline": {
+   "hit": 120,
+   "total": 123,
+   "percent": 97.6,
+   "files": {
+    "uart.v": {
+     "hit": 15,
+     "total": 15
+    },
+    "uart_rx.v": {
+     "hit": 61,
+     "total": 64
+    },
+    "uart_tx.v": {
+     "hit": 44,
+     "total": 44
+    }
+   }
+  },
+  "final": {
+   "hit": 120,
+   "total": 123,
+   "percent": 97.6,
+   "files": {
+    "uart.v": {
+     "hit": 15,
+     "total": 15
+    },
+    "uart_rx.v": {
+     "hit": 61,
+     "total": 64
+    },
+    "uart_tx.v": {
+     "hit": 44,
+     "total": 44
+    }
+   }
+  }
+ },
+ "triage": {
+  "clusters": 4,
+  "analysed": 4
+ },
+ "formal": null,
+ "cdc": {
+  "verdict": "clean",
+  "configurations": 1,
+  "counts": {
+   "DERIVED_CLOCK": 0,
+   "OUTPUT_FROM_OTHER_DOMAIN": 0,
+   "RESET_FROM_OTHER_DOMAIN": 0
+  }
+ },
+ "agent_cost_usd": {
+  "total_usd": 2.8069,
+  "calls": 12,
+  "by_agent": {
+   "A1": 0.0284,
+   "A12": 0.1042,
+   "A2": 0.0374,
+   "A3": 0.0191,
+   "A4": 0.2472,
+   "A5": 0.0514,
+   "A6": 0.2332,
+   "A7": 1.2352,
+   "A9": 0.8509
+  },
+  "failed_usd": 0.0,
+  "failed_calls": 0
+ },
+ "coverage_closure_other": []
+}

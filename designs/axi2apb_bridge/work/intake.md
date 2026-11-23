@@ -68,7 +68,7 @@ Parameters: PARA_AXI_ID_W=4
 - flop bits: 313, latch bits: 0, memories: 0, tri-state: no
 - clocks: `i_clk_axi` (313 bits, rise)
 - asynchronous resets: none
-- synchronous resets: none
+- synchronous resets: `(internal)` (active high/low), `i_rst_n_axi` (active low)
 
 ## Stages
 

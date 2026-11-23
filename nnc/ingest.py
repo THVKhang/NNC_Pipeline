@@ -333,11 +333,32 @@ def _table_cells(line: str) -> list[str]:
     return [md_inline(c) for c in re.split(r"(?<!\\)\|", line)]
 
 
+def _setext_to_atx(lines: list[str]) -> list[str]:
+    """Setext headings (a line of text underlined with === or ---, as in picorv32's README) as ATX headings
+    (# / ##). The underline becomes an empty line, so line numbers stay those of the file."""
+    out = list(lines)
+    fence = False
+    start = 0
+    if out and out[0].strip() == "---":           # YAML front matter: not headings
+        start = next((k for k in range(1, len(out)) if out[k].strip() == "---"), 0) + 1
+    for k in range(start, len(out) - 1):
+        s = out[k].strip()
+        if s.startswith(("```", "~~~")):
+            fence = not fence
+        if fence or not s or s.startswith(("|", "#", ">", "-", "*", "+", "<!--")) or out[k][:4] == "    ":
+            continue
+        u = out[k + 1].strip()
+        if re.fullmatch(r"=+", u) or re.fullmatch(r"-{2,}", u):
+            out[k] = ("# " if u[0] == "=" else "## ") + s
+            out[k + 1] = ""
+    return out
+
+
 def _build_markdown(path: Path, text: str | None = None) -> tuple[list[Section], list[str], int, list[dict]]:
     """Sections from Markdown headings; paragraphs and list items become sentences; every table row
     becomes one sentence 'Header: value; Header: value' so that it stands alone. Locations are line
     numbers. Numbered headings ('### 10.3 Title') keep their number as ID; others get 'T' + path."""
-    lines = (path.read_text(encoding="utf-8") if text is None else text).splitlines()
+    lines = _setext_to_atx((path.read_text(encoding="utf-8") if text is None else text).splitlines())
     sections: list[Section] = [Section("front", "Front matter", 0, None, 1, 1)]
     warnings: list[str] = []
     tables: list[dict] = []
