@@ -1,6 +1,6 @@
 # Kế hoạch các giai đoạn tiếp theo (từ 2026-11-21)
 
-Trang này liệt kê các bước của giai đoạn 17 đến 20. Mỗi bước có **điều kiện xong** kiểm được bằng lệnh. Một bước chỉ được đánh dấu xong khi điều kiện đó đúng.
+Trang này liệt kê các bước của giai đoạn 17 đến 22. Mỗi bước có **điều kiện xong** kiểm được bằng lệnh. Một bước chỉ được đánh dấu xong khi điều kiện đó đúng.
 
 Các ràng buộc sau vẫn giữ nguyên:
 - **Không ai ký G4 thay người có chuyên môn.** Claude không ký G4.
@@ -134,6 +134,42 @@ Xem [INPUT_SUPPORT.md](INPUT_SUPPORT.md).
 | 21.6 | (Tốn tiền agent, hỏi trước) Chạy mù end-to-end bằng agent trên vài thiết kế của corpus, không chỉnh tay. Ghi mọi lần phải can thiệp. | Chờ quyết định. |
 
 **Trạng thái:** 21.1–21.5 xong (2026-11-23). Corpus: 238 module, 232 chạy tới testbench. Trong đó 219 đạt mô phỏng khói. 13 bị assertion của chính thiết kế dừng lại, vì input ngẫu nhiên vi phạm luật input của nó. Còn lại: 2 dùng cấu trúc Verilator không hỗ trợ, 3 cần thêm đầu vào, 1 không hỗ trợ (VHDL), 0 lỗi flow. 21.6 chờ quyết định vì tốn tiền agent.
+
+## Giai đoạn 22: chạy thử trong một lệnh (Docker, demo không cần agent)
+
+**Câu hỏi.** Người khác (nhà tuyển dụng, người review, một lab) muốn chạy thử dự án. Hiện họ phải tự cài Python,
+cocotb, OSS CAD Suite đúng phiên bản, và WSL nếu dùng Windows. Việc này mất từ 30 phút đến vài giờ và dễ lệch
+phiên bản.
+
+**Mục tiêu.** Có một image Docker chứa đủ công cụ, đúng phiên bản CI đang dùng (`OSS_CAD_SUITE` 2026-11-07,
+cocotb 2.1.0). Lệnh `nnc demo <ip>` chạy lại các bước không cần agent từ những gì đã commit, rồi so với kết quả đã
+ghi. Giai đoạn này không tốn tiền agent.
+
+**Không làm.** Không làm platform web cho người lạ tải RTL lên chạy. Lý do: phải trả tiền agent cho họ, phải chạy
+code lạ trong sandbox, và người dùng thật của công cụ quen dòng lệnh và CI hơn.
+
+| # | Bước | Điều kiện xong |
+|---|---|---|
+| 22.1 | `Dockerfile` ở gốc repo. Base `ubuntu:24.04`. OSS CAD Suite tải theo đúng tag của CI và kiểm SHA-256. Python 3.12 và `cocotb==2.1.0`. Cài `nnc` từ wheel của repo, không dùng `-e`. Chạy bằng user thường, không root. File `.dockerignore` loại `.git`, `corpus/.cache`, `designs/*/work/cache`, `specs/` và `designs/axi_std/`. | `docker build` thành công. `docker run <image> nnc doctor` in PASS. `verilator --version` trong image giống job `kit` của CI. |
+| 22.2 | Trong container, `simhost` chạy công cụ tại chỗ, không qua WSL. Kiểm lại cách `default_host()` chọn host khi không có WSL. | Trong container, `nnc kit-check sync_fifo` ra SAME OUTCOME. |
+| 22.3 | Lệnh `nnc demo <ip>` (không agent), chạy lần lượt: `intake --check`, `make regression` của kit, `kit-check`, `cdc --check`, và `formal-check` nếu có cờ `--formal` (vì formal chạy lâu). In bảng tóm tắt từng bước (SAME / DIFFERENT / thời gian) và đường dẫn tới `work/report.md`. Trả mã 0 chỉ khi mọi bước SAME. Không bao giờ gọi agent: nếu một bước cần agent thì báo và dừng. | Unit test cho danh sách bước và cho mã trả về. Trong container: `nnc demo sync_fifo` và `nnc demo ot_gpio` đều ra SAME, mỗi lệnh dưới 15 phút khi không có `--formal`. |
+| 22.4 | **Điểm quyết định (hỏi người dùng).** Có commit cache câu trả lời agent (`designs/*/work/cache/`, khoảng 640 KB mỗi thiết kế, khoảng 8 MB cho 13 thiết kế) để phát lại cả các bước agent từ một bản clone sạch hay không? Trước khi commit phải quét cache: không chứa nội dung chuẩn có bản quyền (axi_std đã bị loại), không chứa token hay email. | Quyết định được ghi ở đây. Nếu đồng ý: `nnc flow sync_fifo` trên bản clone sạch chạy với 0 lần gọi agent và ra đúng các file đã commit. |
+| 22.5 | Job CI `docker`: build image, chạy `nnc demo` trên 2 thiết kế bên trong image. Việc đẩy image lên GitHub Container Registry để ai cũng `docker pull` được là công khai ra ngoài, nên **hỏi người dùng trước**. | Job CI xanh. Nếu được phép đẩy: `docker pull ghcr.io/...` rồi `nnc demo sync_fifo` chạy được trên một máy khác. |
+| 22.6 | `.devcontainer/devcontainer.json` dùng image này, để mở repo trong GitHub Codespaces hoặc VS Code Dev Containers là có sẵn công cụ. Người dùng tự dùng API key của họ nếu muốn chạy agent. | Container dựng được (kiểm trên CI bằng `devcontainers/ci`). Trong đó, `nnc demo sync_fifo` ra SAME. |
+| 22.7 | README có mục "Chạy thử trong một lệnh / Run it in one command" (EN/VI). GUIDE có cách dùng Docker và Codespaces. CHANGELOG có mục 0.6.0. | README có các lệnh đúng như đã chạy ở 22.1–22.6. CI xanh. Push lên `main`. |
+
+**Thứ tự và điểm dừng.**
+- Làm 22.1, 22.2, 22.3, 22.5 (phần build và chạy trên CI), 22.6, rồi 22.7, sau đó push lên `main`.
+- Hai việc phải dừng để hỏi người dùng: 22.4 (commit cache agent) và phần đẩy image công khai của 22.5.
+- Nếu người dùng chưa trả lời, hai việc đó để mở. Phần còn lại vẫn xong và push được.
+
+**Sau giai đoạn 22**, các việc chưa làm, theo thứ tự đề xuất:
+1. Trang GitHub Pages trình bày kết quả (báo cáo 13 thiết kế, gate, coverage, corpus). Không tốn tiền agent.
+2. 19.4: giữ reset ngay từ thời điểm 0, tạo lại kit, kiểm lại kết quả của 13 thiết kế.
+3. 19.5: formal UNR.
+4. 21.6: chạy mù bằng agent trên corpus. Tốn khoảng 3–15 USD mỗi thiết kế, nên chờ người dùng đồng ý.
+
+**Trạng thái (2026-11-23):** chưa bắt đầu.
 
 ## Việc còn mở, chờ người có chuyên môn (G4)
 
