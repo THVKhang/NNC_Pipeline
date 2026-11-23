@@ -19,7 +19,8 @@ from pathlib import Path
 from nnc.agents.backend import AgentTask
 from nnc.agents.runtime import Usage
 from nnc.contract import extract_interface
-from nnc.ingest import build_index
+from nnc import specconv
+from nnc.ingest import build_index, read_pages
 from nnc.params import parse_legal
 
 TEMPLATE = Path(__file__).resolve().parent / "data" / "SPEC_TEMPLATE.md"   # package copy of docs/SPEC_TEMPLATE.md
@@ -60,11 +61,13 @@ def check_spec(path: Path, top: str | None) -> dict:
     ports, params = [], []
     try:
         iface = extract_interface(idx, top=top)
-        ports, params = iface["ports"], iface["parameters"]
+        virtual = [p for p in iface["ports"] if p.get("virtual")]
+        ports, params = [p for p in iface["ports"] if not p.get("virtual")], iface["parameters"]
         if top and not any(re.match(rf"\s*{re.escape(top)}\b", t.get("caption") or "") for t in idx.get("tables", [])):
             out.append(_f("warning", f"no port-table caption starting with the top module name `{top}`"))
-        if not iface.get("clock") and not iface.get("clocks"):
-            out.append(_f("error", "no clock input found in the port table (Signal type 'Clock')"))
+        if virtual:
+            out.append(_f("warning", "no clock input in the port table (Signal type 'Clock'): a combinational "
+                                     "design; the test bench adds the virtual clock nnc_clk"))
         if not iface.get("reset"):
             out.append(_f("warning", "no reset input found in the port table (Signal type 'Reset')"))
         pnames = {p["name"] for p in params}
@@ -82,7 +85,17 @@ def check_spec(path: Path, top: str | None) -> dict:
                                          f"flow can check (docs/SPEC_TEMPLATE.md section 4)"))
     except ValueError as e:
         out.append(_f("error", f"interface: {e}"))
-    text = path.read_text(encoding="utf-8", errors="replace")
+    if path.suffix.lower() in specconv.SUFFIXES:
+        text = specconv.to_markdown(path)
+    elif path.suffix.lower() == ".pdf":
+        pages = read_pages(path)
+        text = "\n".join(pages)
+        # a scanned PDF (images of pages) gives almost no text: nothing to extract rules from
+        if len(text.strip()) < 50 * max(1, len(pages)):
+            out.append(_f("error", f"the PDF has almost no text ({len(text.strip())} characters on {len(pages)} "
+                                   f"pages): a scanned file must be OCR'd first"))
+    else:
+        text = path.read_text(encoding="utf-8", errors="replace")
     defined = re.findall(r"\[(REQ-[A-Z0-9][A-Z0-9_.-]*)\]", text)        # [REQ-x] defines a requirement
     dup = sorted({i for i in defined if defined.count(i) > 1})
     if dup:

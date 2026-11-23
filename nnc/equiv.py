@@ -68,7 +68,7 @@ def _side(tag: str, order: list[str], top: str, params: list[tuple[str, int]], d
 
 def wrapper(iface: dict, values: dict[str, int], resets: list[dict]) -> str:
     """nnc_eq_top: the miter with every input a free input, resets asserted in the first step."""
-    ins = [p for p in iface["ports"] if p["direction"].lower() == "input"]
+    ins = [p for p in iface["ports"] if p["direction"].lower() == "input" and not p.get("virtual")]
 
     def decl(p: dict) -> str:
         w = str(p["width"]).strip()

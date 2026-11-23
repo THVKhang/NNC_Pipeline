@@ -265,7 +265,7 @@ def interface_findings(ports: dict | None, iface: dict, values: dict[str, int], 
     out = []
     if ports is None:
         return [_f("RR-02", "error", "the top module could not be elaborated, so its ports were not checked")]
-    want = {p["name"]: p for p in iface["ports"]}
+    want = {p["name"]: p for p in iface["ports"] if not p.get("virtual")}
     for n in sorted(set(want) - set(ports)):
         out.append(_f("RR-02", "error", f"port {n} of the contract is missing"))
     for n in sorted(set(ports) - set(want)):

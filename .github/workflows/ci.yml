@@ -11,7 +11,10 @@
 #                appears or disappears, a vacuous proof, an untranslated check or a tool error fails;
 #                PROVEN / BOUNDED / TIMEOUT changes are reported (they depend on the solver time limit).
 #   cdc          the structural clock/reset domain crossing check again (nnc cdc --check): a changed verdict or
-#                changed counts of synchronized, qualified or unsynchronized crossings fail (phase 20).
+#                changed counts of synchronized, qualified or unsynchronized crossings fail (phase 20). The same
+#                job runs the intake (nnc intake --check): every design must still be ready (phase 21).
+#   corpus       intake, adaptation and a smoke simulation on open-source RTL the flow was not written for
+#                (corpus/corpus.json, fetched at fixed commits), compared with corpus/results.json (phase 21).
 # kit-configs and formal take long: they run on main, on pull requests, weekly and by hand, not on every
 # push to a feature branch. Tool versions are pinned to the ones the committed results were produced with.
 # Designs: the 6 upstream designs, the 3 regenerated or drafted in phases 5-10, spi_master and
@@ -220,3 +223,38 @@ jobs:
           echo "$RUNNER_TEMP/oss-cad-suite/bin" >> "$GITHUB_PATH"
       - name: Domain crossings again, compared with the committed results (no agent, writes nothing)
         run: python -m nnc cdc ${{ matrix.design }} --check
+      - name: Intake again (the design must still be ready; no agent, writes nothing)
+        run: python -m nnc intake ${{ matrix.design }} --check
+
+  corpus:
+    # the three small sources on every push; the large ones on main, pull requests, weekly and by hand
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [verilog-uart, picorv32, neorv32, verilog-axi, wb2axip, common_cells]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Skip the large sources on a push to a feature branch
+        id: gate
+        run: |
+          small="verilog-uart picorv32 neorv32"
+          if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" != "refs/heads/main" ] \
+             && ! echo "$small" | grep -qw "${{ matrix.source }}"; then echo "run=no" >> "$GITHUB_OUTPUT"; \
+          else echo "run=yes" >> "$GITHUB_OUTPUT"; fi
+      - name: Install Verilator, Yosys (OSS CAD Suite) and cocotb
+        if: steps.gate.outputs.run == 'yes'
+        run: |
+          tag="${OSS_CAD_SUITE}"
+          curl -fsSL -o "$RUNNER_TEMP/ocs.tgz" \
+            "https://github.com/YosysHQ/oss-cad-suite-build/releases/download/${tag}/oss-cad-suite-linux-x64-${tag//-/}.tgz"
+          tar -xzf "$RUNNER_TEMP/ocs.tgz" -C "$RUNNER_TEMP"
+          echo "$RUNNER_TEMP/oss-cad-suite/bin" >> "$GITHUB_PATH"
+          python -m pip install "cocotb==${COCOTB}"
+      - name: Corpus again, compared with the committed verdicts (no agent, writes nothing)
+        if: steps.gate.outputs.run == 'yes'
+        run: python -m nnc corpus --only ${{ matrix.source }} --smoke --check --workers 4

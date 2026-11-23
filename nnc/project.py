@@ -185,9 +185,10 @@ class Design:
 
     def add_document(self, file: str, role: str, tag: str, sections: list[str] | None = None,
                      skip: list[str] | None = None) -> dict:
-        """Register a document: role 'ip_spec' (the DUT's own specification) or 'standard'."""
-        if role not in ("ip_spec", "standard"):
-            raise ProjectError("role must be 'ip_spec' or 'standard'")
+        """Register a document: role 'ip_spec' (the DUT's own specification), 'standard', or 'interface' (the
+        port table of the verified top written by nnc adapt: read by the contract, not by the extraction)."""
+        if role not in ("ip_spec", "standard", "interface"):
+            raise ProjectError("role must be 'ip_spec', 'standard' or 'interface'")
         if not re.match(r"^[A-Z][A-Z0-9]{0,7}$", tag):
             raise ProjectError("tag must be 1-8 capital letters/digits, starting with a letter (e.g. BR, TL)")
         state = self._read_state()
@@ -195,8 +196,8 @@ class Design:
         docs[:] = [d for d in docs if d["file"] != file]
         if any(d["tag"] == tag for d in docs):
             raise ProjectError(f"tag {tag} is already used by another document")
-        if role == "ip_spec" and any(d["role"] == "ip_spec" for d in docs):
-            raise ProjectError("the design already has an ip_spec document")
+        if role in ("ip_spec", "interface") and any(d["role"] == role for d in docs):
+            raise ProjectError(f"the design already has an {role} document")
         entry = {"file": file, "role": role, "tag": tag, "sections": sections or [], "skip": skip or []}
         docs.append(entry)
         self._write_state(state)
@@ -204,6 +205,10 @@ class Design:
 
     def documents(self) -> list[dict]:
         return self.config().get("documents", [])
+
+    def rule_documents(self) -> list[dict]:
+        """The documents rules are extracted from (an interface document holds no behaviour)."""
+        return [d for d in self.documents() if d["role"] != "interface"]
 
     def rtl_generated(self) -> bool:
         """The flow generates the RTL of this design (design gates D1/D2 are active)."""

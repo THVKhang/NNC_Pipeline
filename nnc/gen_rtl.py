@@ -102,6 +102,8 @@ def interface_md(contract: dict, final: dict) -> str:
             "checks run with the chosen values).", "",
             "## Ports", "", "| Name | Direction | Width | Reset value | Clock domain | Meaning |", "|---|---|---|---|---|---|"]
     for p in iface["ports"]:
+        if p.get("virtual"):        # the test bench's clock of a design without one: not an RTL port
+            continue
         out.append(f"| {p['name']} | {p['direction']} | {p['width']} | {p.get('reset_value', '')} | "
                    f"{p.get('domain', '')} | {p.get('meaning', '')} |")
     clocks = rtlcheck.clock_names(iface)

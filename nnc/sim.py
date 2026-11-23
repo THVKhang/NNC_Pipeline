@@ -25,7 +25,6 @@ from nnc.simhost import SimHost
 COVERAGE_ARGS = "--coverage-line --coverage-toggle --coverage-expr"
 
 SIMLIB = Path(__file__).parent / "simlib" / "nnc_cocotb.py"
-_PORT_DECL = re.compile(r"\b(input|output|inout)\b\s*(?:wire|logic|reg|var)?\s*(?:signed\s*)?(\[[^\]]*\]\s*)*\s*([A-Za-z_]\w*)")
 
 
 # ------------------------------------------------------------------------------------- RTL ports
@@ -57,14 +56,80 @@ def _strip_comments(text: str) -> str:
     return re.sub(r"//[^\n]*", "", text)
 
 
-def dut_ports(files: list[Path], top: str) -> list[dict]:
-    """ANSI port list of module `top` (names and directions only)."""
+_DIRECTIVE = re.compile(r"`(ifdef|ifndef|elsif|else|endif|define|undef)\b[ \t]*([A-Za-z_]\w*)?")
+
+
+def preprocess(text: str, defines: list[str] | None = None) -> str:
+    """The text of the branches of `ifdef/`ifndef/`elsif/`else/`endif that are compiled, with the macros
+    given and those the text itself `defines (names only; macro bodies are not expanded)."""
+    defs = {d.split("=")[0] for d in defines or []}
+    out, pos = [], 0
+    stack: list[list[bool]] = []          # per level: [this branch active, a branch was taken]
+
+    def active() -> bool:
+        return all(s[0] for s in stack)
+
+    for m in _DIRECTIVE.finditer(text):
+        if active():
+            out.append(text[pos:m.start()])
+        kind, name = m.group(1), m.group(2) or ""
+        pos = m.end()
+        if kind in ("ifdef", "ifndef"):
+            on = (name in defs) == (kind == "ifdef")
+            stack.append([on, on])
+        elif kind == "elsif" and stack:
+            on = not stack[-1][1] and name in defs
+            stack[-1] = [on, stack[-1][1] or on]
+        elif kind == "else" and stack:
+            stack[-1] = [not stack[-1][1], True]
+        elif kind == "endif" and stack:
+            stack.pop()
+        elif kind == "define" and active():
+            defs.add(name)
+            eol = text.find("\n", pos)
+            pos = len(text) if eol < 0 else eol      # the macro body is not RTL text
+        elif kind == "undef" and active():
+            defs.discard(name)
+    if active():
+        out.append(text[pos:])
+    return "".join(out)
+
+
+_BODY_DECL = re.compile(r"\b(input|output|inout)\b([^;]*);")
+
+
+def _split_top_level(text: str) -> list[str]:
+    """Split at commas outside (), [] and {} (a port width such as [f(a, b)-1:0] keeps its comma)."""
+    out, depth, cur = [], 0, []
+    for ch in text:
+        if ch in "([{":
+            depth += 1
+        elif ch in ")]}":
+            depth -= 1
+        if ch == "," and depth == 0:
+            out.append("".join(cur))
+            cur = []
+        else:
+            cur.append(ch)
+    out.append("".join(cur))
+    return out
+
+
+def dut_ports(files: list[Path], top: str, defines: list[str] | None = None) -> list[dict]:
+    """Port list of module `top` (names and directions only), ANSI or Verilog-1995 style, in the
+    `ifdef branches compiled with `defines`."""
     for f in files:
-        text = _strip_comments(f.read_text(encoding="utf-8", errors="replace"))
-        m = re.search(rf"\bmodule\s+{re.escape(top)}\b", text)
+        text = preprocess(_strip_comments(f.read_text(encoding="utf-8", errors="replace")), defines)
+        m = re.search(rf"\bmodule\s+(?:(?:static|automatic)\s+)?{re.escape(top)}\b", text)
         if not m:
             continue
         rest = text[m.end():]
+        # header package imports: `module m import p::*, q::x; #(...) (...)`
+        while True:
+            imp = re.match(r"\s*import\b[^;]*;", rest)
+            if not imp:
+                break
+            rest = rest[imp.end():]
         if rest.lstrip().startswith("#"):
             depth, i = 0, rest.index("#")
             j = rest.index("(", i)
@@ -82,22 +147,41 @@ def dut_ports(files: list[Path], top: str) -> list[dict]:
             if depth == 0:
                 end = k
                 break
-        ports, direction = [], None
-        for chunk in rest[start + 1:end].split(","):
-            m2 = _PORT_DECL.search(chunk)
-            if m2:
-                direction = m2.group(1)
-                ports.append({"name": m2.group(3), "direction": direction})
-            else:
-                name = chunk.strip().split()[-1] if chunk.strip() else ""
-                if direction and re.match(r"^[A-Za-z_]\w*$", name):
-                    ports.append({"name": name, "direction": direction})
+        ports, direction, bare = [], None, []
+        for chunk in _split_top_level(rest[start + 1:end]):
+            # `input data_t [3:0] x [2] = 0`: the name is the last identifier once the dimensions and the
+            # default are removed, whatever the type (logic, a typedef, pkg::type_t, a type parameter)
+            c = re.sub(r"\[[^\]]*\]", " ", chunk.split("=")[0])
+            words = re.findall(r"[A-Za-z_$][\w$]*(?:::[A-Za-z_$][\w$]*)*", c)
+            if not words:
+                continue
+            if words[0] in ("input", "output", "inout"):
+                direction = words[0]
+                if len(words) > 1:
+                    ports.append({"name": words[-1], "direction": direction})
+            elif direction:
+                ports.append({"name": words[-1], "direction": direction})
+            elif len(words) == 1:
+                bare.append(words[0])
+        if bare and not ports:
+            # Verilog-1995: `module m(a, b); input a; output [3:0] b;` - directions from the body
+            body = rest[end + 1:]
+            stop = re.search(r"\bendmodule\b", body)
+            body = body[:stop.start()] if stop else body
+            dirs = {}
+            for d in _BODY_DECL.finditer(body):
+                decl = re.sub(r"\[[^\]]*\]", " ", d.group(2))
+                for n in decl.split(","):
+                    words = [w for w in n.split() if w not in ("wire", "reg", "logic", "signed", "var")]
+                    if words and re.match(r"^[A-Za-z_]\w*$", words[-1].split("=")[0].strip()):
+                        dirs.setdefault(words[-1].split("=")[0].strip(), d.group(1))
+            ports = [{"name": n, "direction": dirs[n]} for n in bare if n in dirs]
         return ports
     raise ValueError(f"module {top} not found in the RTL files")
 
 
 def conformance(contract: dict, ports: list[dict]) -> list[str]:
-    want = {p["name"]: p["direction"] for p in contract["interface"]["ports"]}
+    want = {p["name"]: p["direction"] for p in contract["interface"]["ports"] if not p.get("virtual")}
     have = {p["name"]: p["direction"] for p in ports}
     issues = [f"port {n} of the contract is missing in the DUT" for n in want if n not in have]
     issues += [f"port {n} of the DUT is not in the contract" for n in have if n not in want]
@@ -114,10 +198,11 @@ def tb_top(contract: dict, checker_modules: list[str]) -> str:
     ports = ",\n".join(f"  {p['direction']:<6} logic {width_decl(p['width']):<22} {p['name']}" for p in iface["ports"])
     pmap = ", ".join(f".{p['name']}({p['name']})" for p in params if not p.get("derived"))
     conns = ",\n    ".join(f".{p['name']}({p['name']})" for p in iface["ports"])
+    dut_conns = ",\n    ".join(f".{p['name']}({p['name']})" for p in iface["ports"] if not p.get("virtual"))
     lines = ["// Generated by NNC: contract ports at the top, DUT and checkers on the same nets.",
              "`timescale 1ns/1ps",
              f"module nnc_tb_top" + (f" #(\n{plist}\n)" if params else "") + f" (\n{ports}\n);",
-             f"  {contract['top']}" + (f" #({pmap})" if params else "") + f" u_dut (\n    {conns}\n  );"]
+             f"  {contract['top']}" + (f" #({pmap})" if params else "") + f" u_dut (\n    {dut_conns}\n  );"]
     for m in checker_modules:
         lines.append(f"  {m}" + (f" #({pmap})" if params else "") + f" u_{m} (\n    {conns}\n  );")
     lines.append("endmodule")
@@ -646,7 +731,7 @@ def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: 
     if not rtl:
         return {"status": "error", "error": f"no RTL files in {rtl_dir}"}
     try:
-        issues = conformance(contract, dut_ports(rtl, contract["top"]))
+        issues = conformance(contract, dut_ports(rtl, contract["top"], (opts or {}).get("defines")))
     except ValueError as e:
         issues = [str(e)]
     base = {"date": datetime.now(timezone.utc).isoformat(timespec="seconds"), "seed": seed,

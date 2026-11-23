@@ -30,6 +30,19 @@ python -m nnc doc add my_ip path/to/axi_spec.pdf  --role standard --tag AX --ski
 
 **VI:** Spec của IP phải có bảng port (cột *Port*, *Direction*, *Width*) và bảng tham số nếu có (*Parameter*, *Default*): interface của contract được code đọc từ đó. Tag là tiền tố của ID luật. `--sections`/`--skip` nhận số mục hoặc một phần tiêu đề.
 
+### Intake of a new input | Kiểm đầu vào mới (no agent)
+
+```bash
+python -m nnc intake my_ip                         # -> work/intake.md: ready / adapt / needs_input / unsupported
+python -m nnc intake my_ip --lib path/to/other_lib  # units the top needs from other folders
+python -m nnc adapt my_ip --lib path/to/other_lib   # copies them, writes the wrapper and the interface document
+python -m nnc intake --rtl path/to/any/rtl --top m  # any folder, without a workspace
+```
+
+**EN:** Run the intake before any agent. It finds the files the top needs (packages first, include folders), reads the top with Verilator and with both Yosys frontends, lists the ports by kind, and the clocks and resets by the netlist (which inputs clock or reset flops). Specifications may be Markdown, text, PDF (with a text layer), Word `.docx` or HTML; the port table is read from Markdown, Word and HTML. If the verdict is *adapt*, `nnc adapt` writes, without an agent: the library files into `rtl/` (unchanged, with their SHA-256 in `work/adapt.json`); a wiring-only wrapper `<top>_nnc` when the top has struct or array ports (one port per field; at time 0 the simulation stops if a parameter set changes a struct layout); and `spec/<top>_interface.md`, the port table of the verified top, registered as document role `interface` (the contract reads it; the extraction agents do not, because it adds no behaviour). A design without a clock gets the test-bench clock `nnc_clk`, connected to nothing in the DUT. Verdict *needs_input* names what to give (a library folder, a parameter value, the top among several candidates); *unsupported* says why (VHDL, encrypted source, an interface port). What this covers on open-source RTL is measured in [INPUT_SUPPORT.md](INPUT_SUPPORT.md).
+
+**VI:** Chạy intake trước khi dùng agent. Lệnh này tìm các file mà top cần (package trước, thư mục include), đọc top bằng Verilator và bằng cả hai frontend của Yosys, liệt kê port theo loại, và tìm clock, reset từ netlist (input nào làm clock hay reset cho flop). Spec có thể là Markdown, text, PDF (có lớp chữ), Word `.docx` hoặc HTML; bảng port được đọc từ Markdown, Word và HTML. Nếu kết quả là *adapt*, `nnc adapt` tự làm, không cần agent: chép file thư viện vào `rtl/` (giữ nguyên, ghi SHA-256 vào `work/adapt.json`); viết wrapper chỉ nối dây `<top>_nnc` khi top có port struct hoặc mảng (mỗi trường một port; ở thời điểm 0 mô phỏng dừng nếu một bộ tham số làm đổi layout của struct); và `spec/<top>_interface.md`, bảng port của top được verify, đăng ký với vai trò `interface` (contract đọc nó; agent trích luật không đọc, vì nó không thêm hành vi nào). Thiết kế không có clock được thêm clock của testbench `nnc_clk`, không nối vào DUT. Kết quả *needs_input* nói rõ cần đưa thêm gì (thư mục thư viện, giá trị tham số, chọn top giữa nhiều ứng viên); *unsupported* nói lý do (VHDL, mã nguồn mã hoá, port kiểu interface). Mức bao phủ trên RTL mã nguồn mở được đo trong [INPUT_SUPPORT.md](INPUT_SUPPORT.md).
+
 ## 2. Rules — Gate 1 | Luật — Gate 1
 
 ```bash

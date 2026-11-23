@@ -838,3 +838,49 @@ Phân tích từng mảng, có so với quy trình ký duyệt của OpenTitan, 
 - Chứng minh unreachable bằng formal cho các điểm mà lan truyền hằng số không chứng minh được, ví dụ bit cao của phép trừ, nhánh `if (EnableRacl)`.
 - Các trường struct là hằng số.
 - Reset tại thời điểm 0 của testbench.
+
+## 27. Đầu vào bất kỳ: intake, adapt, corpus (GĐ21, 2026-11-23)
+
+Người dùng hỏi: hệ thống có chạy tốt với mọi spec và mọi code đầu vào không. Câu trả lời trung thực là không công cụ nào hứa được "mọi". Vì vậy mục tiêu thiết kế là: **không input nào cho ra kết quả sai mà không ai biết**. Chi tiết và số đo nằm trong [INPUT_SUPPORT.md](INPUT_SUPPORT.md).
+
+**Ba lớp.**
+1. **`nnc intake`** (không agent). Bước này:
+   - tìm file mà top cần, đi qua các thư mục thư viện: package xếp trước, có thư mục include;
+   - chạy 4 công cụ: Verilator lint, cây elaborate của Verilator, Yosys, yosys-slang;
+   - phân loại port theo kiểu, lấy từ cây elaborate;
+   - tìm clock và reset từ netlist: input nào nối vào chân clock hay reset của flop;
+   - kiểm spec.
+
+   Kết luận là một trong bốn loại: ready, adapt, needs_input hoặc unsupported, luôn kèm lý do.
+2. **`nnc adapt`** (không agent). Bước này:
+   - chép file thư viện vào rtl/, giữ nguyên nội dung và ghi lại SHA-256;
+   - sinh wrapper chỉ nối dây cho port struct và port mảng;
+   - sinh tài liệu interface với vai trò `interface`.
+
+   Contract đọc bảng port từ tài liệu interface. Agent trích luật không đọc nó, vì tài liệu này không chứa hành vi. Wrapper dừng mô phỏng ở thời điểm 0 nếu độ rộng port đổi theo tham số, vì mô phỏng chạy với `-Wno-WIDTH` nên độ lệch sẽ không bị báo.
+3. **`nnc corpus`** (không agent). Lấy 6 kho mã nguồn mở ở commit cố định, mỗi module là một top. Với từng top, chạy lần lượt: intake, adapt, contract đọc lại, kiểm port, rồi mô phỏng khói có đo coverage.
+
+**Cách ly.** Wrapper và tài liệu interface chỉ lấy từ khai báo port và cấu trúc netlist: tên, độ rộng, trường, clock, reset. Agent sinh test vẫn không thấy thân RTL. Thông tin port vốn đã có trong contract.
+
+**Clock ảo.** Thiết kế tổ hợp không có clock. Contract tự thêm `nnc_clk` và đánh dấu `virtual`. Testbench top nối nó vào checker, không nối vào DUT. Conformance, miter equivalence, sinh RTL và rtl-check đều bỏ qua port này.
+
+**Lỗi flow do corpus tìm ra, đã sửa.**
+- Bộ đọc port của mô phỏng không hiểu `` `ifdef ``.
+- Port kiểu người dùng bị đọc nhầm tên.
+- Thiết kế không có clock không chạy được.
+- Reset bất đồng bộ dạng `$aldff` của yosys-slang không được nhận ra.
+- Include nằm trong nhánh `` `ifdef `` không được biên dịch bị tính là thiếu.
+- `import` trong header module (`module m import p::*; #(...)`) làm bộ đọc port không thấy port nào.
+- Tham số rộng hơn 32 bit bị cắt còn 32 bit, và tham số enum bị truyền như số nguyên. Contract chỉ mang được `parameter int`, nên các tham số này giờ giữ giá trị mặc định của RTL. Tài liệu interface liệt kê chúng và nói lý do.
+- Vector clock (`input [1:0] clks_i`) bị coi là một clock. Giờ wrapper tách mỗi bit thành một port clock.
+- Chỉ số bit âm (`[-1:0]` khi độ rộng bằng 0) làm hỏng phạm vi coverage.
+
+**Kết quả smoke.** Khi assertion của chính thiết kế dừng mô phỏng, kết quả được ghi là `dut_assertion`, không phải lỗi. Lý do: input ngẫu nhiên vi phạm luật input của thiết kế, ví dụ đẩy vào FIFO đã đầy. Testbench vẫn chạy đúng. Lỗi "Unsupported" của Verilator được ghi là `simulator_unsupported`. Flow không sửa RTL để vượt qua lỗi này.
+
+**Spec.** Đọc thêm Word `.docx` và HTML, chuyển sang Markdown và giữ bảng. Báo lỗi với PDF scan. Nhận từ khoá bắt buộc tiếng Việt.
+
+**Còn mở.**
+- Port kiểu interface trên top.
+- Port kiểu struct không packed.
+- VHDL.
+- Chạy mù end-to-end bằng agent trên corpus: tốn tiền, phải hỏi trước.

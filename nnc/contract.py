@@ -101,6 +101,24 @@ def _col(header: list[str], *names: str) -> int | None:
     return None
 
 
+# A design without a clock (combinational) gets a clock of the test bench only: tests and checkers sample on
+# it, and it is connected to nothing in the DUT (dut_ports leaves it out).
+VIRTUAL_CLOCK = "nnc_clk"
+
+
+def virtual_clock_port() -> dict:
+    return {"name": VIRTUAL_CLOCK, "direction": "input", "width": "1", "type": "Clock (virtual)",
+            "reset_value": "Not applicable", "domain": "",
+            "meaning": "virtual clock of the test bench: the design has no clock input; tests drive inputs and "
+                       "checkers sample outputs on its rising edge. It is not a port of the design.",
+            "virtual": True}
+
+
+def dut_ports(ports: list[dict]) -> list[dict]:
+    """The ports of the design itself (without the virtual clock of the test bench)."""
+    return [p for p in ports if not p.get("virtual")]
+
+
 def _is_port_table(t: dict) -> bool:
     head = [h.lower().strip() for h in t["header"]]
     return (any("port" in h for h in head) and any("width" in h for h in head)
@@ -205,6 +223,9 @@ def extract_interface(index: dict, top: str | None = None) -> dict:
     def active_low(p: dict) -> bool:
         return bool(re.search(r"(_n\b|_n_|active[- ]low)", p["name"] + " " + p["meaning"] + " " + p["type"], re.I))
     clk = pick("clock", ("clk", "clock"))
+    if clk is None and ports:
+        clk = virtual_clock_port()
+        ports.insert(0, clk)
     rst = pick("reset", ("rst", "reset"))
     reset = None
     if rst is not None:

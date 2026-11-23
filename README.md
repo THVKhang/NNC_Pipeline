@@ -53,6 +53,8 @@ python -m nnc init my_ip --top m_my_ip
 python -m nnc doc add my_ip spec/my_ip_spec.md --role ip_spec --tag IP
 python -m nnc doc add my_ip standards/protocol.md --role standard --tag PR
 cp rtl/*.sv designs/my_ip/rtl/
+python -m nnc intake my_ip               # can the flow run on these inputs? ready / adapt / needs_input / unsupported
+python -m nnc adapt my_ip                # only if the verdict is adapt (wrapper, library files, interface document)
 python -m nnc flow my_ip                 # stops at G1: read designs/my_ip/work/rules.md
 python -m nnc gate approve my_ip G1_rules --by "Your Name"
 python -m nnc flow my_ip --from contract # and so on for G2, G3, G4
@@ -222,6 +224,8 @@ nnc/                 orchestrator: ingest, extract, review, contract, gen_sva, g
                      fix_verif (A17: corrects verification judged B by triage, never sees the RTL, no weakening)
                      reviewkit (G4 review kit), summary (the design table of this README),
                      stability (agreement of repeated agent runs), cdc (structural domain crossings)
+                     intake (verdict on any spec and RTL before any agent), adapt (generated wrapper and
+                     interface document), corpus (measurement on open-source RTL), specconv (.docx/.html)
 nnc/data/            package copies of docs/RTL_RULES.md and docs/SPEC_TEMPLATE.md (a unit test keeps them equal)
 nnc/agents/          Claude Code backend (inline worker / sandboxed deep agent), manual backend, cache, schema validator
 nnc/simlib/          helper library copied next to generated cocotb tests (clocks, resets, multi-clock helpers)
@@ -232,13 +236,16 @@ designs/<ip>/        spec/, rtl/, work/ (artifacts, review sheets), verif/ (gene
 .github/workflows/   CI: unit tests, install of the wheel, the reproduction kit of every design and configuration,
                      formal reruns
 .github/kit_runs.sh  runs the recorded runs of a kit with make only and compares each one
+corpus/              corpus.json (open-source repositories at fixed commits) and results of `nnc corpus`
 tests/               unit tests (no tokens, no simulator) and sim_smoke/ (cocotb + Verilator smoke test)
-docs/                ARCHITECTURE.md, GUIDE.md, EVALUATION.md, G4_REVIEW_REQUEST.md, ROADMAP.md
+docs/                ARCHITECTURE.md, GUIDE.md, EVALUATION.md, INPUT_SUPPORT.md, G4_REVIEW_REQUEST.md, ROADMAP.md
 CHANGELOG.md         changes per version and phase
 ```
 
 ## Limits | Giới hạn
 
+- **EN, inputs:** which specifications and RTL the flow accepts is in [docs/INPUT_SUPPORT.md](docs/INPUT_SUPPORT.md). `nnc intake` gives every input a verdict before any agent runs, so no input gives a silently wrong result. VHDL, encrypted RTL and interface ports on the top are unsupported. The reach is measured on 238 modules of six open-source repositories (`nnc corpus`): 232 reach a running test bench, the others stop with a named reason.
+- **VI, đầu vào:** spec và RTL nào flow nhận được ghi ở [docs/INPUT_SUPPORT.md](docs/INPUT_SUPPORT.md). `nnc intake` cho mỗi đầu vào một kết luận trước khi agent nào chạy, nên không đầu vào nào cho kết quả sai mà không báo. VHDL, RTL mã hoá và cổng interface ở top thì chưa hỗ trợ. Độ phủ được đo trên 238 module của sáu repo mã nguồn mở (`nnc corpus`): 232 chạy tới testbench, số còn lại dừng với lý do được nêu rõ.
 - **EN:** Simulation, plus an optional formal check of the generated assertions (bounded or k-induction, per run-set configuration, assertions in the translated SVA subset); a structural CDC/RDC check (synchronizer structure, not gray-code or handshake proofs); no STA or DFT (`rtl-check` synthesis gives area and an ABC delay estimate, not timing sign-off); rules of that kind are listed as not verifiable by simulation. Several clocks may be synchronous (started together) or asynchronous (seeded random phase per clock); metastability itself is modelled only if the RTL has a model. One run is one configuration and one seed; a run set (`run_set.json`) runs several and merges them, and a check that no run can verify is reported NOT_VERIFIABLE. Generated tests and checkers can be wrong (sync_fifo shows one): that is what the gates, the hit counters, triage and the mutation score are for. Model outputs vary between runs; the cache makes a re-run reproducible.
 - **VI:** Mô phỏng, cộng thêm kiểm chứng formal tuỳ chọn cho các assertion đã sinh (giới hạn độ sâu hoặc k-induction, theo từng cấu hình của run set, chỉ tập SVA dịch được); có kiểm CDC/RDC theo cấu trúc (bộ đồng bộ, không chứng minh gray code hay handshake); không có STA hay DFT (synthesis của `rtl-check` chỉ cho diện tích và ước lượng trễ, không phải ký duyệt timing); các luật loại đó được liệt kê là không kiểm được bằng mô phỏng. Nhiều clock có thể đồng bộ (khởi động cùng lúc) hoặc bất đồng bộ (pha ngẫu nhiên theo seed cho từng clock); metastability chỉ được mô hình nếu RTL có mô hình. Mỗi lần chạy là một cấu hình và một seed; run set (`run_set.json`) chạy nhiều cấu hình rồi gộp kết quả, check nào không lần chạy nào kiểm được thì báo NOT_VERIFIABLE. Test và checker do agent sinh có thể sai (sync_fifo là một ví dụ): đó là lý do có gate, bộ đếm hit, triage và mutation score. Kết quả của model có thể khác giữa các lần; cache giúp chạy lại cho cùng kết quả.
 

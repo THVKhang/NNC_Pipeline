@@ -1,0 +1,97 @@
+{
+ "about": "Open-source RTL the flow was not written for, at fixed commits. nnc corpus fetches each into corpus/.cache (never committed) and runs the intake (and the adaptation) on every module of the folder, or on the listed tops. Only the verdicts are committed (corpus/results.json, docs/INPUT_SUPPORT.md).",
+ "sources": [
+  {
+   "name": "common_cells",
+   "url": "https://github.com/pulp-platform/common_cells",
+   "commit": "e73baaec2ca665cd80c3c384e9258e35242b829c",
+   "license": "SHL-0.51",
+   "language": "SystemVerilog (packages, type parameters, interfaces, assertion macros)",
+   "rtl": "src",
+   "libs": [
+    "src",
+    "include"
+   ],
+   "tops": "each",
+   "deps": [
+    {
+     "name": "tech_cells_generic",
+     "url": "https://github.com/pulp-platform/tech_cells_generic",
+     "commit": "3a3de73632a06826b1bd9c65a0a2e92b32016845",
+     "license": "SHL-0.51",
+     "libs": [
+      "src/rtl"
+     ],
+     "note": "declared dependency of common_cells (Bender.lock)"
+    }
+   ]
+  },
+  {
+   "name": "verilog-axi",
+   "url": "https://github.com/alexforencich/verilog-axi",
+   "commit": "516bd5dadc3365b7f9e225d2af8fe0b8d804fe53",
+   "license": "MIT",
+   "language": "Verilog-2001 (AXI4 and AXI4-Lite, many parameters)",
+   "rtl": "rtl",
+   "libs": [
+    "rtl"
+   ],
+   "tops": "each"
+  },
+  {
+   "name": "verilog-uart",
+   "url": "https://github.com/alexforencich/verilog-uart",
+   "commit": "1b867e53af738e4a8bc7c839ca2f1c07f40382dc",
+   "license": "MIT",
+   "language": "Verilog-2001",
+   "rtl": "rtl",
+   "libs": [
+    "rtl"
+   ],
+   "tops": "each"
+  },
+  {
+   "name": "wb2axip",
+   "url": "https://github.com/ZipCPU/wb2axip",
+   "commit": "2e8d3bc2d26ddc33d1881022a2a2b9d3f0c16b9b",
+   "license": "Apache-2.0",
+   "language": "Verilog with formal properties (Wishbone, AXI, APB bridges)",
+   "rtl": "rtl",
+   "libs": [
+    "rtl"
+   ],
+   "tops": "each"
+  },
+  {
+   "name": "picorv32",
+   "url": "https://github.com/YosysHQ/picorv32",
+   "commit": "ef203c2b0a3fb793280f5114941416c425c5b461",
+   "license": "ISC",
+   "language": "Verilog (a RISC-V CPU in one file)",
+   "rtl": ".",
+   "libs": [],
+   "tops": [
+    "picorv32",
+    "picorv32_regs",
+    "picorv32_pcpi_mul",
+    "picorv32_pcpi_fast_mul",
+    "picorv32_pcpi_div",
+    "picorv32_axi",
+    "picorv32_axi_adapter",
+    "picorv32_wb"
+   ]
+  },
+  {
+   "name": "neorv32",
+   "url": "https://github.com/stnolting/neorv32",
+   "commit": "61c1428dae4069b48e1133cb5adcfc313ae144ea",
+   "license": "BSD-3-Clause",
+   "language": "VHDL (the flow must refuse it)",
+   "rtl": "rtl/core",
+   "libs": [],
+   "tops": [
+    "neorv32_top"
+   ]
+  }
+ ]
+}

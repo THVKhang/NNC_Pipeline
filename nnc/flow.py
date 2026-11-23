@@ -104,7 +104,7 @@ def stage_ingest(d: Design, o: Options) -> None:
 
 def stage_extract(d: Design, o: Options) -> None:
     backend = _backend(d, o)
-    for doc in d.documents():
+    for doc in d.rule_documents():
         idx = _read(index_path(d, doc))
         res = extract_mod.extract(idx, backend, _logs(d), prefixes=doc["sections"] or None, skip=doc["skip"] or None,
                                   model=o.extract_model, workers=o.workers, tag=doc["tag"])
@@ -115,11 +115,11 @@ def stage_extract(d: Design, o: Options) -> None:
 
 
 def stage_review(d: Design, o: Options) -> None:
-    files = [d.work / f"rules_{extract_mod.stem_of(doc['file'])}.json" for doc in d.documents()]
+    files = [d.work / f"rules_{extract_mod.stem_of(doc['file'])}.json" for doc in d.rule_documents()]
     rules, sources = review.load_raw_rules(d.work, files)
     backend = _backend(d, o)
     res = review.review(rules, backend, _logs(d), model=o.review_model, workers=o.workers, sources=sources)
-    res = review.resolve_questions(res, [_read(index_path(d, doc)) for doc in d.documents()], backend, _logs(d),
+    res = review.resolve_questions(res, [_read(index_path(d, doc)) for doc in d.rule_documents()], backend, _logs(d),
                                    model=o.review_model)
     review.write_outputs(res, d.work)
     o.say("[review] " + review.summarize(res).replace("\n", " | "))
@@ -129,7 +129,10 @@ def stage_review(d: Design, o: Options) -> None:
 
 def stage_contract(d: Design, o: Options) -> None:
     bypass = _gate(d, "contract", o)
-    ip = next((x for x in d.documents() if x["role"] == "ip_spec"), None)
+    # the port table comes from the interface document of nnc adapt when there is one (it names the ports of
+    # the verified top, a wrapper), else from the IP specification
+    ip = (next((x for x in d.documents() if x["role"] == "interface"), None)
+          or next((x for x in d.documents() if x["role"] == "ip_spec"), None))
     if ip is None:
         raise ProjectError("no ip_spec document registered")
     top = d.config().get("top")

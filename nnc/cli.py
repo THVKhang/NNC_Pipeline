@@ -363,6 +363,113 @@ def cmd_cdc(args) -> int:
     return 1 if bad else 0
 
 
+def _intake_inputs(d: Design, top: str | None) -> dict:
+    """RTL folder, top, file order, macros and specification of a design for nnc intake / nnc adapt."""
+    from nnc import adapt as adapt_mod, sim
+    cfg = d.config()
+    rtl = d.root / "rtl"
+    fl = rtl / "filelist.f"
+    generated = fl.is_file() and adapt_mod.GENERATED in fl.read_text(encoding="utf-8", errors="replace")[:200]
+    ip = next((x for x in d.documents() if x["role"] == "ip_spec"), None)
+    return {"rtl": rtl, "top": top or cfg.get("adapted_top") or cfg.get("top"),
+            "listed": sim.rtl_files(rtl) if fl.is_file() and not generated else None,
+            "defines": [x.strip() for x in str(cfg.get("formal_defines", "")).split(",") if x.strip()],
+            "spec": d.root / ip["file"] if ip else None, "spec_name": Path(ip["file"]).name if ip else None}
+
+
+def _print_intake(rep: dict, name: str) -> None:
+    col = rep["collect"]
+    print(f"{name}: {rep['verdict'].upper()}  top {col.get('top')}, {len(col.get('files') or [])} files, "
+          f"{len(rep['ports'])} ports, formal/CDC frontend {rep.get('frontend') or 'none'}")
+    for r in rep["reasons"]:
+        print(f"  {r['level']:<12} {r['message']}")
+    print("  stages: " + ", ".join(f"{k} {v}" for k, v in rep["stages"].items()))
+
+
+def cmd_intake(args) -> int:
+    from nnc import intake, sim, simhost
+    libs = [Path(x) for x in args.lib or []]
+    host = None if args.no_tools else simhost.default_host()
+    if args.rtl:
+        rtl = Path(args.rtl)
+        inp = {"rtl": rtl, "top": args.top, "defines": [],
+               "listed": sim.rtl_files(rtl) if (rtl / "filelist.f").is_file() else None,
+               "spec": Path(args.spec) if args.spec else None}
+        out, name = (Path(args.out) if args.out else None), rtl.name
+    else:
+        if not args.design:
+            raise ProjectError("give a design, or --rtl <folder>")
+        d = _open(args)
+        inp = _intake_inputs(d, args.top)
+        out, name = d.work, d.name
+    base = [d.root, Path.cwd()] if args.design else [Path.cwd()]
+    rep = intake.run(host, inp["rtl"], top=inp["top"], libs=libs, listed=inp["listed"],
+                     defines=inp["defines"] + list(args.define or []), spec=inp["spec"])
+    _print_intake(rep, name)
+    if out is not None and not args.check:
+        out.mkdir(parents=True, exist_ok=True)
+        rep = intake.portable(json.loads(json.dumps(rep, default=str)), *base)
+        (out / "intake.json").write_text(json.dumps(rep, indent=1) + "\n", encoding="utf-8")
+        (out / "intake.md").write_text(intake.to_markdown(rep, name), encoding="utf-8")
+        print(f"-> {out / 'intake.md'}")
+    return 0 if rep["verdict"] in ("ready", "adapt") else 1
+
+
+def cmd_adapt(args) -> int:
+    from nnc import adapt as adapt_mod, intake, sim, simhost
+    d = _open(args)
+    if d.rtl_generated():
+        raise ProjectError("the flow generates this design's RTL: nothing to adapt")
+    inp = _intake_inputs(d, args.top)
+    host = simhost.default_host()
+    rep = intake.run(host, inp["rtl"], top=inp["top"], libs=[Path(x) for x in args.lib or []],
+                     listed=inp["listed"], defines=inp["defines"], spec=inp["spec"])
+    _print_intake(rep, d.name)
+    a = adapt_mod.adapt(d.root, rep, spec_name=inp["spec_name"])
+    cfg = d.config()
+    values = {"top": a["verified_top"]}
+    if a["wrapper"]:
+        values["adapted_top"] = a["top"]
+    if rep.get("frontend") == "slang" and cfg.get("formal_frontend", "verilog") != "slang":
+        values["formal_frontend"] = "slang"
+    d.set_config(**values)
+    if a["interface"] and not any(x["file"] == a["interface"] for x in d.documents()):
+        used = {x["tag"] for x in d.documents()}
+        d.add_document(a["interface"], "interface", next(t for t in ("IF", "IFC", "IFD", "IFE") if t not in used))
+    print(adapt_mod.to_markdown(a))
+    # the verified top again, as the flow will read it
+    rep2 = intake.run(host, inp["rtl"], top=a["verified_top"], listed=sim.rtl_files(inp["rtl"]),
+                      defines=inp["defines"], spec=d.root / a["interface"] if a["interface"] else inp["spec"])
+    _print_intake(rep2, f"{d.name} (verified top)")
+    rep2 = intake.portable(json.loads(json.dumps(rep2, default=str)), d.root, Path.cwd())
+    (d.work / "intake.json").write_text(json.dumps(rep2, indent=1) + "\n", encoding="utf-8")
+    (d.work / "intake.md").write_text(intake.to_markdown(rep2, d.name), encoding="utf-8")
+    return 0 if rep2["verdict"] == "ready" else 1
+
+
+def cmd_corpus(args) -> int:
+    from nnc import corpus, simhost
+    res = corpus.run(Path(args.manifest) if args.manifest else corpus.MANIFEST,
+                     Path(args.cache) if args.cache else None, host=simhost.default_host(),
+                     only=args.only, do_adapt=not args.no_adapt, smoke=args.smoke, workers=args.workers)
+    out = Path(args.out) if args.out else corpus.MANIFEST.parent / "results.json"
+    if args.check:
+        diffs = corpus.compare(json.loads(out.read_text(encoding="utf-8")), res)
+        print("corpus rerun vs recorded: " + ("SAME" if not diffs else "DIFFERENT"))
+        for x in diffs:
+            print(f"  DIFFERENT {x}")
+        return 1 if diffs else 0
+    if args.only and out.is_file():       # a partial run replaces only its sources
+        old = json.loads(out.read_text(encoding="utf-8"))
+        rows = [r for r in old.get("rows", []) if r["source"] not in args.only] + res["rows"]
+        res = {**res, "rows": rows, "summary": corpus.summarize(rows)}
+    out.write_text(json.dumps(res, indent=1) + "\n", encoding="utf-8")
+    out.with_suffix(".md").write_text(corpus.to_markdown(res), encoding="utf-8")
+    print(json.dumps(res["summary"], indent=1))
+    print(f"-> {out}")
+    return 0
+
+
 def cdc_compare(recorded: dict, got: dict) -> list[str]:
     """Differences of verdict and of the per-kind counts of each configuration."""
     out = []
@@ -775,6 +882,39 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--single-run", action="store_true", help="ignore run_set.json: the default parameters only")
     s.add_argument("--check", action="store_true", help="print only, write nothing")
     s.set_defaults(func=cmd_cdc)
+
+    s = sub.add_parser("intake", help="what the flow can do with a specification and an RTL, before any agent "
+                                      "(no tokens): ready, adapt, needs_input or unsupported -> work/intake.md")
+    s.add_argument("design", nargs="?", help="a design workspace (or give --rtl)")
+    s.add_argument("--rtl", help="any RTL folder, without a workspace")
+    s.add_argument("--top", help="top module (default: config top, or the one module nothing instantiates)")
+    s.add_argument("--lib", action="append", help="library folder searched for the units the top needs (repeat)")
+    s.add_argument("--spec", help="with --rtl: the specification file")
+    s.add_argument("--define", action="append", help="macro for the tools (repeat)")
+    s.add_argument("--out", help="with --rtl: folder for intake.json and intake.md")
+    s.add_argument("--no-tools", action="store_true", help="source scan only (no Verilator or Yosys)")
+    s.add_argument("--check", action="store_true", help="print only, write nothing")
+    s.set_defaults(func=cmd_intake)
+
+    s = sub.add_parser("adapt", help="generated adaptation of a given RTL: library files into rtl/, a wiring-only "
+                                     "wrapper for struct/array ports, an interface document (role interface)")
+    s.add_argument("design")
+    s.add_argument("--top", help="the RTL top (default: config adapted_top or top)")
+    s.add_argument("--lib", action="append", help="library folder searched for the units the top needs (repeat)")
+    s.set_defaults(func=cmd_adapt)
+
+    s = sub.add_parser("corpus", help="intake and adaptation on open-source RTL the flow was not written for "
+                                      "(corpus/corpus.json, no agent) -> corpus/results.json")
+    s.add_argument("--only", action="append", help="one source of the manifest (repeat)")
+    s.add_argument("--manifest", help="default corpus/corpus.json")
+    s.add_argument("--cache", help="folder for the fetched sources (default corpus/.cache)")
+    s.add_argument("--out", help="default corpus/results.json")
+    s.add_argument("--no-adapt", action="store_true", help="intake only")
+    s.add_argument("--smoke", action="store_true", help="also build and run the test bench of the flow with a "
+                                                         "generic test (clock, reset, random inputs) on each top")
+    s.add_argument("--workers", type=int, default=4)
+    s.add_argument("--check", action="store_true", help="compare the verdicts with corpus/results.json, write nothing")
+    s.set_defaults(func=cmd_corpus)
 
     s = sub.add_parser("fix-verif", help="agent A17 (no RTL) corrects the checkers/tests where triage judged the "
                                          "verification wrong (B) -> candidate in work/verif_fix/; --apply copies it "

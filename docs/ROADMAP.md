@@ -113,6 +113,28 @@ Chi phí giai đoạn 18: khoảng US$23 (độ ổn định US$5.2, ot_gpio US$
 
 **Trạng thái (2026-11-21):** 20.1–20.3 xong.
 
+## Giai đoạn 21: đầu vào bất kỳ (spec và RTL không do flow viết)
+
+**Câu hỏi.** "Hệ thống có chạy tốt với mọi spec và mọi code đầu vào không?"
+
+**Mục tiêu.** Không công cụ nào hứa được "mọi". Flow được thiết kế để **không input nào cho ra kết quả sai mà không ai biết**:
+- mỗi input nhận một trong bốn kết luận trước khi agent chạy;
+- input nào cần chỉnh thì được chỉnh bằng code sinh tự động và có ghi lại;
+- mức bao phủ được đo trên RTL mã nguồn mở mà flow chưa từng thấy.
+
+Xem [INPUT_SUPPORT.md](INPUT_SUPPORT.md).
+
+| # | Bước | Điều kiện xong |
+|---|---|---|
+| 21.1 | `nnc intake` (không agent): tìm file mà top cần qua các thư mục thư viện, chạy 4 công cụ (Verilator lint, cây elaborate, Yosys, yosys-slang), phân loại port, tìm clock và reset từ netlist, kiểm spec. Kết luận: ready / adapt / needs_input / unsupported. | Unit test. Cả 13 thiết kế đều ready. |
+| 21.2 | `nnc adapt`: chép file thư viện vào rtl/, sinh wrapper chỉ nối dây cho port struct và mảng (dừng ở thời điểm 0 nếu layout đổi), sinh tài liệu interface (vai trò `interface`: contract đọc, agent trích luật không đọc). | gpio gốc của OpenTitan (7 port struct): wrapper lint sạch, mô phỏng chạy, contract đọc lại đúng bảng port. |
+| 21.3 | Corpus: 6 kho mã nguồn mở, commit cố định, mỗi module là một top. Chạy intake, adapt, contract, kiểm port và mô phỏng khói (`--smoke`). | `corpus/results.md`. Mỗi lần dừng đều có lý do. Job CI `corpus`. |
+| 21.4 | Sửa các lỗi flow mà corpus tìm ra: port trong `` `ifdef ``, port kiểu người dùng, thiết kế không có clock (clock ảo `nnc_clk`), reset bất đồng bộ trong netlist của slang, `import` trong header module, chỉ số bit âm (`[-1:0]`), tham số rộng hơn 32 bit hoặc kiểu enum, vector clock. | 13 thiết kế cũ cho kết quả y hệt (dut_ports, tb_top, interface). |
+| 21.5 | Spec: đọc Word `.docx` và HTML (cả bảng), báo lỗi PDF scan, nhận từ khoá bắt buộc tiếng Việt. | Unit test. |
+| 21.6 | (Tốn tiền agent, hỏi trước) Chạy mù end-to-end bằng agent trên vài thiết kế của corpus, không chỉnh tay. Ghi mọi lần phải can thiệp. | Chờ quyết định. |
+
+**Trạng thái:** 21.1–21.5 xong (2026-11-23). Corpus: 238 module, 232 chạy tới testbench. Trong đó 219 đạt mô phỏng khói. 13 bị assertion của chính thiết kế dừng lại, vì input ngẫu nhiên vi phạm luật input của nó. Còn lại: 2 dùng cấu trúc Verilator không hỗ trợ, 3 cần thêm đầu vào, 1 không hỗ trợ (VHDL), 0 lỗi flow. 21.6 chờ quyết định vì tốn tiền agent.
+
 ## Việc còn mở, chờ người có chuyên môn (G4)
 
 Xem [G4_REVIEW_REQUEST.md](G4_REVIEW_REQUEST.md). Riêng ot_rv_timer còn hai việc:

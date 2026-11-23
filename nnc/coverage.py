@@ -175,11 +175,19 @@ def _disagreeing(path: Path, rtl: set[str], const: dict, ones: dict) -> set[str]
     return bad
 
 
+_RANGE = re.compile(r"\s*(-?\d+)(?:-(-?\d+))?\s*")
+
+
 def _expand(text: str) -> set[int]:
+    """Inverse of line_ranges. Bit indices may be negative (`[W-1:0]` with W = 0 is `[-1:0]`): "-1-0",
+    "-3--1"."""
     out: set[int] = set()
     for part in filter(None, str(text).split(",")):
-        a, _, b = part.partition("-")
-        out.update(range(int(a), int(b or a) + 1))
+        m = _RANGE.fullmatch(part)
+        if not m:
+            raise ValueError(f"not a range list: {text!r}")
+        a = int(m.group(1))
+        out.update(range(a, int(m.group(2) or a) + 1))
     return out
 
 

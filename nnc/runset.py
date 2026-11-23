@@ -147,10 +147,15 @@ def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: 
     rtl = sim.rtl_files(rtl_dir)
     if not rtl:
         return {"status": "error", "error": f"no RTL files in {rtl_dir}"}
-    try:
-        issues = sim.conformance(contract, sim.dut_ports(rtl, contract["top"]))
-    except ValueError as e:
-        issues = [str(e)]
+    issues: list[str] = []
+    # the port list can depend on the macros (`ifdef): once per distinct macro set of the run set
+    for defs in dict.fromkeys(tuple(r["opts"].get("defines") or []) for r in runs):
+        try:
+            new = sim.conformance(contract, sim.dut_ports(rtl, contract["top"], list(defs)))
+        except ValueError as e:
+            new = [str(e)]
+        issues += [x + (f" (macros {','.join(defs)})" if defs and len(runs) > 1 else "") for x in new
+                   if x not in issues]
     base = {"date": datetime.now(timezone.utc).isoformat(timespec="seconds"), "seed": runs[0]["seed"],
             "rtl_files": [f.name for f in rtl], "integration": {"ok": not issues, "issues": issues}}
     if issues:

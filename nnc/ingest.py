@@ -28,6 +28,8 @@ from collections import Counter
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
+from nnc import specconv
+
 INDEX_VERSION = 1
 
 NORMATIVE_RE = re.compile(
@@ -36,7 +38,11 @@ NORMATIVE_RE = re.compile(
     r"never|always|illegal|legal|not allowed|is allowed|are allowed|mandatory|optional|"
     # permissions and present-tense behaviour ("can appear before", "remains stable until"): they
     # define legal stimulus and stability checks, so they must get a decision too
-    r"can|possible|remain|remains|stable)\b",
+    r"can|possible|remain|remains|stable|"
+    # Vietnamese specifications: phai (must), khong duoc (must not), bat buoc (mandatory), chi khi / chi duoc
+    # (only when / only), duoc phep (permitted), cam (forbidden), luon (always), khong bao gio (never), nen (should)
+    r"ph\u1ea3i|kh\u00f4ng \u0111\u01b0\u1ee3c|b\u1eaft bu\u1ed9c|ch\u1ec9 khi|ch\u1ec9 \u0111\u01b0\u1ee3c|"
+    r"\u0111\u01b0\u1ee3c ph\u00e9p|c\u1ea5m|lu\u00f4n|kh\u00f4ng bao gi\u1edd|n\u00ean)\b",
     re.IGNORECASE,
 )
 # Upper-case signal names (AWVALID, ARESETn); not parts of hyphenated IDs such as REQ-FUNC-001.
@@ -327,11 +333,11 @@ def _table_cells(line: str) -> list[str]:
     return [md_inline(c) for c in re.split(r"(?<!\\)\|", line)]
 
 
-def _build_markdown(path: Path) -> tuple[list[Section], list[str], int, list[dict]]:
+def _build_markdown(path: Path, text: str | None = None) -> tuple[list[Section], list[str], int, list[dict]]:
     """Sections from Markdown headings; paragraphs and list items become sentences; every table row
     becomes one sentence 'Header: value; Header: value' so that it stands alone. Locations are line
     numbers. Numbered headings ('### 10.3 Title') keep their number as ID; others get 'T' + path."""
-    lines = path.read_text(encoding="utf-8").splitlines()
+    lines = (path.read_text(encoding="utf-8") if text is None else text).splitlines()
     sections: list[Section] = [Section("front", "Front matter", 0, None, 1, 1)]
     warnings: list[str] = []
     tables: list[dict] = []
@@ -467,6 +473,10 @@ def build_index(path: Path) -> dict:
     if path.suffix.lower() in (".md", ".markdown"):
         sections, warnings, length, tables = _build_markdown(path)
         loc = "line"
+    elif path.suffix.lower() in specconv.SUFFIXES:
+        # Word or HTML: converted to Markdown (headings, paragraphs, lists, tables); lines of the converted text
+        sections, warnings, length, tables = _build_markdown(path, specconv.to_markdown(path))
+        loc = "line of the converted text"
     else:
         sections, warnings, length = _build_paged(path)
         tables, loc = [], "page"

@@ -6,6 +6,32 @@ Measurements for every phase are in [docs/EVALUATION.md](docs/EVALUATION.md). Th
 No release contains a G4 sign-off. G1–G3 were approved by an AI assistant on the owner's delegation, and each
 approval is recorded as delegated. See [docs/G4_REVIEW_REQUEST.md](docs/G4_REVIEW_REQUEST.md).
 
+## 0.5.0 (2026-11-23)
+
+### Phase 21: any specification, any RTL (docs/INPUT_SUPPORT.md)
+- `nnc intake`: a verdict on the inputs before any agent runs: ready, adapt, needs_input or unsupported, each
+  with its reason. It finds the top, the closure of the top over library folders (`--lib`), packages in
+  dependency order, include folders. It runs Verilator, Yosys and yosys-slang, reads the port types from the
+  elaborated tree and the structure (clocks, resets, latches, tri-state, memories) from the netlist. CI checks
+  that the 13 designs stay ready.
+- `nnc adapt`: copies the library files (SHA-256 recorded), writes a wiring-only wrapper `<top>_nnc` for
+  packed struct, packed array and unpacked array ports (the simulation stops at time 0 if a port width changed)
+  and the interface document `spec/<top>_interface.md` from the port declarations. That document is the port
+  table of the contract only; the extraction agents never read it.
+- Combinational designs: the test bench clock `nnc_clk`, connected to nothing in the DUT.
+- Specifications in `.docx` and HTML are converted to Markdown (`nnc/specconv.py`). Vietnamese normative words
+  are flagged like the English ones. A scanned PDF is an error.
+- `nnc corpus`: every module of six open-source repositories at fixed commits (common_cells, verilog-axi,
+  verilog-uart, wb2axip, picorv32, neorv32) through intake, adaptation, contract, port check and a smoke
+  simulation. 238 modules, 232 reach a running test bench. CI job `corpus`.
+- Faults of the flow found by the corpus and fixed: ports under `` `ifdef `` were counted as DUT ports; a port
+  of a user type was read as a port named after the type; a package import in the module header hid every
+  port; a parameter wider than 32 bits was cut to 32 bits and an enum parameter was passed as an integer
+  (such parameters now keep the RTL default); a clock vector was taken as one clock (the wrapper now splits
+  it); an asynchronous reset in yosys-slang netlists (`$aldff`) was not found; negative bit indices
+  (`[-1:0]`) crashed the coverage scope; a missing include in an inactive `` `ifdef `` branch blocked the
+  intake.
+
 ## 0.4.0 (2026-11-21)
 
 ### Phase 19: coverage of the elaborated design (EVALUATION §12, docs/SIGNOFF_SCOPE.md)
