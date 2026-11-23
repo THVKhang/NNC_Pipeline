@@ -29,6 +29,9 @@ SCOPE_RULE = ("left out: never-executed points of package code that the elaborat
               "(Verilator instruments every function of an imported package, called or not), and toggles of "
               "signal bits that Yosys constant propagation proves constant with the run's parameters, except on "
               "signals where the simulator recorded a toggle of such a bit (then the signal counts whole)")
+PROVEN_RULE = ("left out: toggle points of signal bits that SymbiYosys proves constant after the first reset for "
+               "every input sequence (nnc/unr.py, work/unr.json: PROVEN in every configuration of the run set), "
+               "except on signals where the simulator recorded a 1->0 toggle of such a bit")
 DUT_HIER = "nnc_tb_top.u_dut"
 _TOGGLE = re.compile(r"^(?P<sig>[A-Za-z_][\w$.]*?)(?:\[(?P<idx>\d+)\])?:[01]->[01]$")
 
@@ -143,8 +146,9 @@ def merge_scopes(scopes: list[dict | None]) -> dict | None:
     return out
 
 
-def _const_bit(kv: dict, const: dict[str, set[int]]) -> tuple[str, int] | None:
-    """(signal, index) when this toggle point is a bit that the scope proves constant, else None."""
+def toggle_bit(kv: dict) -> tuple[str, int] | None:
+    """(signal relative to the DUT top as in the flattened netlist, bit index) of a toggle point, or None
+    (outside the DUT, or an unpacked array element)."""
     h = kv.get("h", "")
     if not (h == DUT_HIER or h.startswith(DUT_HIER + ".")):
         return None
@@ -152,9 +156,26 @@ def _const_bit(kv: dict, const: dict[str, set[int]]) -> tuple[str, int] | None:
     if not m:
         return None
     rel = h[len(DUT_HIER):].lstrip(".")
-    name = f"{rel}.{m['sig']}" if rel else m["sig"]
-    idx = int(m["idx"] or 0)
-    return (name, idx) if idx in const.get(name, ()) else None
+    return (f"{rel}.{m['sig']}" if rel else m["sig"]), int(m["idx"] or 0)
+
+
+def _const_bit(kv: dict, const: dict[str, set[int]]) -> tuple[str, int] | None:
+    """(signal, index) when this toggle point is a bit that the scope proves constant, else None."""
+    bit = toggle_bit(kv)
+    return bit if bit and bit[1] in const.get(bit[0], ()) else None
+
+
+def _proven_disagreeing(path: Path, rtl: set[str], proven: dict[str, set[int]]) -> set[str]:
+    """Signals with a recorded 1->0 toggle on a bit that formal proves constant after the first reset. A
+    0->1 is the start of a constant 1 (the simulator's variables start at 0); a 1->0 contradicts the proof
+    (or comes from random initial values), so none of the signal's proven bits is left out."""
+    bad: set[str] = set()
+    for kv, _name, metric, _line, _span, count in _records(path, rtl):
+        if metric == "toggle" and count > 0 and kv.get("o", "").endswith(":1->0"):
+            bit = _const_bit(kv, proven)
+            if bit:
+                bad.add(bit[0])
+    return bad
 
 
 def _init_rise(kv: dict, bit: tuple[str, int], ones: dict[str, set[int]]) -> bool:
@@ -211,6 +232,12 @@ def parse_dat(path: Path, rtl_names: list[str], scope: dict | None = None,
     disagree = _disagreeing(path, rtl, const, ones) if const else set()
     for n in disagree:
         const.pop(n, None)
+    # Bits that formal proves constant after the first reset (nnc/unr.py, work/unr.json)
+    proven = {n: _expand(t) for n, t in ((scope or {}).get("proven") or {}).items()}
+    proven_disagree = _proven_disagreeing(path, rtl, proven) if proven else set()
+    for n in proven_disagree:
+        proven.pop(n, None)
+    proven_left = 0
     left_out: dict[str, int] = defaultdict(int)
     dropped: dict[str, int] = defaultdict(int)
     conflicts = 0
@@ -227,6 +254,12 @@ def parse_dat(path: Path, rtl_names: list[str], scope: dict | None = None,
                     drop_lines.update((name, n) for n in span)
                 continue
         bit = _const_bit(kv, const) if scope and metric == "toggle" and const else None
+        if not bit and proven and metric == "toggle" and _const_bit(kv, proven):
+            # never toggled, or the 0->1 start of a constant 1 (a 1->0 put the signal back above)
+            if count == 0 or kv.get("o", "").endswith(":0->1"):
+                left_out[metric] += 1
+                proven_left += 1
+                continue
         outside = scope and ((kv.get("h") in pkgs and line not in kept.get(name, ())) or bit)
         if outside:
             if count == 0 or (bit and _init_rise(kv, bit, ones)):
@@ -255,6 +288,9 @@ def parse_dat(path: Path, rtl_names: list[str], scope: dict | None = None,
     if scope:
         out["scope"] = {"rule": SCOPE_RULE, "left_out": dict(sorted(left_out.items())),
                         "scope_conflicts": conflicts, "signals_kept_whole": sorted(disagree)}
+        if (scope or {}).get("proven") is not None:
+            out["scope"]["proven_unreachable"] = {"rule": PROVEN_RULE, "left_out": proven_left,
+                                                  "signals_kept_whole": sorted(proven_disagree)}
         out["out_of_scope_lines"] = out_lines - in_lines
     if drop_roots is not None:
         out["dropped"] = dict(sorted(dropped.items()))

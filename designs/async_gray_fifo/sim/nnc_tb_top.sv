@@ -127,4 +127,13 @@ module nnc_tb_top #(
     .o_empty_thr(o_empty_thr),
     .o_underflow(o_underflow)
   );
+`ifdef NNC_X_INIT
+  initial begin
+    $assertoff;
+    #1ps;
+    fork begin fork @(posedge i_clk_wr); @(posedge i_clk_rd); join end begin #1000ns; end join_any
+    disable fork;
+    #1ps $asserton;
+  end
+`endif
 endmodule

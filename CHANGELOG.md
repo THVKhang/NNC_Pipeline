@@ -6,6 +6,26 @@ Measurements for every phase are in [docs/EVALUATION.md](docs/EVALUATION.md). Th
 No release contains a G4 sign-off. G1–G3 were approved by an AI assistant on the owner's delegation, and each
 approval is recorded as delegated. See [docs/G4_REVIEW_REQUEST.md](docs/G4_REVIEW_REQUEST.md).
 
+## Unreleased
+
+### Phase 19.4: random initial values in run sets (EVALUATION §12)
+- Harness fixes for `"x_init": "random"`. At time 0 every input is 0. The concurrent checkers are off until the
+  first rising edge of every clock (`NNC_X_INIT` block of `nnc_tb_top`, left out of formal). Resets are inactive
+  at time 0 and asserted at 1 ps, so that every copy of a reset net sees one real edge (plusarg `+NNC_X_INIT`,
+  `nnc_cocotb.X_INIT`). Runs without x_init are unchanged: all 67 recorded runs of the 15 designs give the same
+  results.
+- Trial on 15 designs: 14 fail exactly as their record. ahb2axi_bridge fails CHK-012 in addition, most likely a
+  new symptom of its recorded A_rtl_wrong fault (a burst table without reset read during the desync).
+- uart_lite: run-set configuration `xrand` (9 runs, 20/20 tests, 0 assertion failures).
+- `nnc demo --all-runs`: the kit step runs every recorded run of the run set.
+
+### Phase 19.5: formal unreachability of toggle points (in progress)
+- `nnc sim --unr` (nnc/unr.py): the uncovered toggle bits (no recorded 1->0) are proved constant after the first
+  reset with SymbiYosys (`abc --keep-going pdr`; inputs free, the first reset held for two rising edges of every
+  clock). PROVEN bits leave the toggle coverage; counterexamples and time limits stay counted. Results in
+  `work/unr.json` (keyed by the RTL hash, the parameters and the macros) and `work/unr.md`; every later `nnc sim`
+  applies them. A recorded 1->0 on a proven bit puts its signal back whole.
+
 ## 0.7.0 (2026-11-23)
 
 ### Phase 21.6: blind runs on the corpus (EVALUATION §14), and the project page

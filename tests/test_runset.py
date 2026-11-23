@@ -60,6 +60,22 @@ class LoadTest(unittest.TestCase):
         self.assertIn("EXTRA_ARGS += --x-assign unique --x-initial unique", lines)
         self.assertIn("+verilator+rand+reset+2 +verilator+seed+$(shell expr $(SEED) + 1)", lines)
         self.assertNotIn("x-initial", sim._opts_lines(runs[0]["opts"]))
+        # Checkers are off until the first rising edge of every clock after time 0, only in x_init builds
+        # (the macro); formal has no guard.
+        self.assertIn("+define+NNC_X_INIT", lines)
+        self.assertIn(" +NNC_X_INIT", lines)            # plusarg for the cocotb helpers (nnc_cocotb.X_INIT)
+        self.assertNotIn("NNC_X_INIT", sim._opts_lines(runs[0]["opts"]))
+        from nnc import formal
+        c = {"top": "m_demo", "interface": {"clock": "i_clk_a", "reset": None, "parameters": [],
+                                            "clocks": [{"name": "i_clk_a"}, {"name": "i_clk_b"}],
+                                            "ports": [{"name": "i_clk_a", "direction": "input", "width": "1"},
+                                                      {"name": "i_clk_b", "direction": "input", "width": "1"}]}}
+        top = sim.tb_top(c, ["m_demo_sva"])
+        self.assertIn("`ifdef NNC_X_INIT\n  initial begin\n    $assertoff;\n    #1ps;\n"
+                      "    fork begin fork @(posedge i_clk_a); @(posedge i_clk_b); join end begin #1000ns; end join_any\n"
+                      "    disable fork;\n    #1ps $asserton;\n  end\n`endif\nendmodule", top)
+        self.assertNotIn("NNC_X_INIT", formal.top_module(c, ["m_demo_sva"]))
+        self.assertNotIn("assertoff", formal.top_module(c, ["m_demo_sva"]))
         with self.assertRaises(runset.RunSetError):
             _load({"configs": [{"name": "a", "x_init": "ones"}]})
 

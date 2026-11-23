@@ -94,15 +94,23 @@ def _intake(d, host) -> tuple[str, list[str]]:
     return ("SAME" if rep["verdict"] == want else "DIFFERENT"), [line]
 
 
-def _kit(d, host) -> tuple[str, list[str]]:
+def _kit(d, host, all_runs: bool = False) -> tuple[str, list[str]]:
+    """The primary run of the kit, or (all_runs) every recorded run of the run set: every configuration and
+    seed, as the CI jobs kit and kit-configs do."""
     from nnc import kitcheck
-    label, folder, seed = primary_run(d.root)
+    runs = kitcheck.runs(d.root) if all_runs else [primary_run(d.root)]
     name = d.root.name
-    kit_rel = f"{name}/sim" + ("" if folder in ("", ".") else f"/{folder}")
-    res = host.run(kit_files(d.root), kit_script(name, folder, seed),
-                   [f"{kit_rel}/sim.log", f"{kit_rel}/results.xml"], timeout_s=3600, tag="demo_kit")
-    ok, lines = kitcheck.check(d.root, res.out_dir / kit_rel, label or None)
-    return ("SAME" if ok else "DIFFERENT"), [f"run {label or 'primary'} (seed {seed})"] + lines
+    files = kit_files(d.root)
+    status, out = "SAME", []
+    for label, folder, seed in runs:
+        kit_rel = f"{name}/sim" + ("" if folder in ("", ".") else f"/{folder}")
+        res = host.run(files, kit_script(name, folder, seed),
+                       [f"{kit_rel}/sim.log", f"{kit_rel}/results.xml"], timeout_s=3600, tag="demo_kit")
+        ok, lines = kitcheck.check(d.root, res.out_dir / kit_rel, label or None)
+        status = status if ok else "DIFFERENT"
+        out += [f"run {label or 'primary'} (seed {seed}): " + (lines[0].split(": ", 1)[-1] if lines else "")]
+        out += lines[1:]
+    return status, out
 
 
 def _cdc(d) -> tuple[str, list[str]]:
@@ -122,14 +130,15 @@ def _formal(d, workers: int) -> tuple[str, list[str]]:
     return ("SAME" if ok else "DIFFERENT"), lines
 
 
-def run(d, host, *, formal: bool = False, workers: int = 4, replay_agents: bool = False, say=print) -> list[Step]:
+def run(d, host, *, formal: bool = False, workers: int = 4, replay_agents: bool = False, all_runs: bool = False,
+        say=print) -> list[Step]:
     out = []
     for name in STEPS:
         say(f"[demo] {d.name}: {name} ...")
         if name == "intake":
             s = _timed(name, lambda: _intake(d, host))
         elif name == "kit":
-            s = _timed(name, lambda: _kit(d, host))
+            s = _timed(name, lambda: _kit(d, host, all_runs))
         elif name == "cdc":
             s = _timed(name, lambda: _cdc(d))
         elif formal:
@@ -240,7 +249,7 @@ def to_text(name: str, steps: list[Step]) -> str:
     lines = [f"Demo of {name} (no agent): each step rerun and compared with the recorded outcome", ""]
     for s in steps:
         lines.append(f"  {s.name:<{w}}  {s.status:<10}  {s.seconds:>7.1f} s   {s.lines[0] if s.lines else ''}")
-        lines += [f"  {'':<{w}}  {'':<10}  {'':>7}     {x}" for x in s.lines[1:6]]
+        lines += [f"  {'':<{w}}  {'':<10}  {'':>7}     {x}" for x in s.lines[1:12]]
     lines += ["", f"Result: {'every step gives the recorded outcome' if ok(steps) else 'DIFFERENT (see above)'}",
               f"Report of the design: designs/{name}/work/report.md"]
     return "\n".join(lines)

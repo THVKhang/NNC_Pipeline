@@ -48,4 +48,13 @@ module nnc_tb_top (
     .pcpi_wait(pcpi_wait),
     .pcpi_ready(pcpi_ready)
   );
+`ifdef NNC_X_INIT
+  initial begin
+    $assertoff;
+    #1ps;
+    fork begin fork @(posedge clk); join end begin #1000ns; end join_any
+    disable fork;
+    #1ps $asserton;
+  end
+`endif
 endmodule

@@ -411,4 +411,13 @@ module nnc_tb_top #(
     .o_straps_valid(o_straps_valid),
     .o_straps_data(o_straps_data)
   );
+`ifdef NNC_X_INIT
+  initial begin
+    $assertoff;
+    #1ps;
+    fork begin fork @(posedge clk_i); join end begin #1000ns; end join_any
+    disable fork;
+    #1ps $asserton;
+  end
+`endif
 endmodule

@@ -204,4 +204,13 @@ module nnc_tb_top #(
     .o_regs(o_regs),
     .i_status(i_status)
   );
+`ifdef NNC_X_INIT
+  initial begin
+    $assertoff;
+    #1ps;
+    fork begin fork @(posedge i_clk); join end begin #1000ns; end join_any
+    disable fork;
+    #1ps $asserton;
+  end
+`endif
 endmodule

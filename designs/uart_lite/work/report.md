@@ -1,6 +1,6 @@
 # Verification report — uart_lite
 
-Generated 2026-11-21T16:21:14+00:00 by NNC Pipeline.
+Generated 2026-11-23T21:49:29+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -9,12 +9,12 @@ Generated 2026-11-21T16:21:14+00:00 by NNC Pipeline.
 | Rules | 154 — {'NOT_VERIFIED_BY_SIM': 22, 'VERIFIED': 132} |
 | Checks | 32 — {'PASS': 32} |
 | Tests | {'pass': 20} |
-| Run set | 7 runs in 4 configurations (base, min, odd, wide); primary base.s1 |
+| Run set | 9 runs in 5 configurations (base, min, odd, wide, xrand); primary base.s1 |
 | Integration | OK |
-| Code coverage (RTL), line | 98.7 % (588/596 lines) |
-| Code coverage (RTL), block | 97.3 % (144/148 statement blocks and branch arms) |
-| Code coverage (RTL), expression | 100.0 % (152/152 condition terms) |
-| Code coverage (RTL), toggle | 100.0 % (938/938 bit toggles 0->1 and 1->0) |
+| Code coverage (RTL), line | 98.7 % (735/745 lines) |
+| Code coverage (RTL), block | 97.3 % (180/185 statement blocks and branch arms) |
+| Code coverage (RTL), expression | 100.0 % (190/190 condition terms) |
+| Code coverage (RTL), toggle | 100.0 % (1168/1168 bit toggles 0->1 and 1->0) |
 | Code coverage (RTL), functional | 97.5 % (39/40 cover points of the specification) |
 | Mutation score | 97.2 % (35 killed / 1 survived / 0 not compiled) |
 | Surviving mutants, formal equivalence (`nnc mutate-equiv`) | {'BOUNDED': 1}; score without the proven-equivalent mutants 97.2 % |
@@ -33,7 +33,7 @@ Generated 2026-11-21T16:21:14+00:00 by NNC Pipeline.
 | Every selected check PASS (no FAIL, NOT_HIT, NOT_RUN) | met |
 | Every planned check selected | met |
 | Every rule in a check or declared not verifiable | met |
-| Every run of the run set built and ran | met — 7 runs |
+| Every run of the run set built and ran | met — 9 runs |
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | **not met** — 2 rule(s) below: UL-6.2-05, UL-6.2-12 |
 | Clock/reset domain crossings: no structural violation (RR-33) | met — clean: SYNC 4 (work/cdc.md) |
@@ -52,6 +52,8 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 | odd.s1 — CFG-ODD | PARA_UART_CLKS_PER_BIT=5 | — | — | ran | {'pass': 20} | none | 2 |
 | odd.s2 — CFG-ODD | PARA_UART_CLKS_PER_BIT=5 | — | — | ran | {'pass': 20} | none | 2 |
 | wide.s1 — CFG-WIDE | PARA_UART_CLKS_PER_BIT=1024 | — | — | ran | {'pass': 20} | none | 2 |
+| xrand.s1 — CFG-BASE with random initial values of every variable without a reset (ROADMAP 19.4): a check that passes only because flops start at 0 fails here | defaults | — | — | ran | {'pass': 20} | none | 3 |
+| xrand.s2 — CFG-BASE with random initial values of every variable without a reset (ROADMAP 19.4): a check that passes only because flops start at 0 fails here | defaults | — | — | ran | {'pass': 20} | none | 3 |
 
 ## Gates
 
@@ -68,38 +70,38 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 
 | Check | Kind | Title | Status | Evidence |
 |---|---|---|---|---|
-| CHK-001 | assertion | Outputs change only at i_clk rising edges or reset assertion | **PASS** | hits 5335012, fails 0; hit in 7/7 runs; formal UNSUPPORTED |
-| CHK-002 | assertion | Output values while reset is asserted, including immediately after asynchronous assertion | **PASS** | hits 1789, fails 0; hit in 7/7 runs; formal PROVEN |
-| CHK-003 | assertion | Delivery into an empty holding register at V=M+2 | **PASS** | hits 4535, fails 0; hit in 7/7 runs; formal BOUNDED |
-| CHK-004 | assertion | Held byte taken at the delivery edge itself loads the new byte, no overrun | **PASS** | hits 14, fails 0; hit in 7/7 runs; formal BOUNDED |
-| CHK-005 | assertion | Overrun drop at V keeps the held byte; one-cycle pulse | **PASS** | hits 63, fails 0; hit in 7/7 runs; formal BOUNDED |
-| CHK-006 | assertion | o_rx_overrun only after a drop edge, independent of o_rx_valid | **PASS** | hits 5334619, fails 0; hit in 7/7 runs; formal BOUNDED |
-| CHK-007 | assertion | Consumer take empties the holding register | **PASS** | hits 4479, fails 0; hit in 7/7 runs; formal PROVEN |
-| CHK-008 | assertion | Held byte is stable until taken | **PASS** | hits 1901815, fails 0; hit in 7/7 runs; formal PROVEN |
-| CHK-009 | assertion | Empty register: i_rx_ready has no effect; data and flag keep the last loaded values | **PASS** | hits 3424106, fails 0; hit in 7/7 runs; formal BOUNDED |
-| CHK-010 | assertion | Transmit handshake, acceptance condition and idle values | **PASS** | hits 4815904, fails 0; hit in 7/7 runs; formal BOUNDED |
-| CHK-011 | assertion | Cycle-exact transmit frame content (8N1, LSB first, N cycles per bit) | **PASS** | hits 521261, fails 0; hit in 7/7 runs; formal BOUNDED |
-| CHK-012 | assertion | o_tx_ready timing during a frame | **PASS** | hits 521261, fails 0; hit in 7/7 runs; formal BOUNDED |
-| CHK-013 | assertion | No idle cycle between back-to-back frames; idle high after a frame | **PASS** | hits 2153, fails 0; hit in 7/7 runs; formal PROVEN |
+| CHK-001 | assertion | Outputs change only at i_clk rising edges or reset assertion | **PASS** | hits 5643210, fails 0; hit in 9/9 runs; formal UNSUPPORTED |
+| CHK-002 | assertion | Output values while reset is asserted, including immediately after asynchronous assertion | **PASS** | hits 2271, fails 0; hit in 9/9 runs; formal PROVEN |
+| CHK-003 | assertion | Delivery into an empty holding register at V=M+2 | **PASS** | hits 5960, fails 0; hit in 9/9 runs; formal BOUNDED |
+| CHK-004 | assertion | Held byte taken at the delivery edge itself loads the new byte, no overrun | **PASS** | hits 17, fails 0; hit in 9/9 runs; formal BOUNDED |
+| CHK-005 | assertion | Overrun drop at V keeps the held byte; one-cycle pulse | **PASS** | hits 77, fails 0; hit in 9/9 runs; formal BOUNDED |
+| CHK-006 | assertion | o_rx_overrun only after a drop edge, independent of o_rx_valid | **PASS** | hits 5642713, fails 0; hit in 9/9 runs; formal BOUNDED |
+| CHK-007 | assertion | Consumer take empties the holding register | **PASS** | hits 5890, fails 0; hit in 9/9 runs; formal PROVEN |
+| CHK-008 | assertion | Held byte is stable until taken | **PASS** | hits 1915363, fails 0; hit in 9/9 runs; formal PROVEN |
+| CHK-009 | assertion | Empty register: i_rx_ready has no effect; data and flag keep the last loaded values | **PASS** | hits 3715903, fails 0; hit in 9/9 runs; formal BOUNDED |
+| CHK-010 | assertion | Transmit handshake, acceptance condition and idle values | **PASS** | hits 5017501, fails 0; hit in 9/9 runs; formal BOUNDED |
+| CHK-011 | assertion | Cycle-exact transmit frame content (8N1, LSB first, N cycles per bit) | **PASS** | hits 628536, fails 0; hit in 9/9 runs; formal BOUNDED |
+| CHK-012 | assertion | o_tx_ready timing during a frame | **PASS** | hits 628536, fails 0; hit in 9/9 runs; formal BOUNDED |
+| CHK-013 | assertion | No idle cycle between back-to-back frames; idle high after a frame | **PASS** | hits 2827, fails 0; hit in 9/9 runs; formal PROVEN |
 | CHK-014 | test | CFG-MIN: PARA_UART_CLKS_PER_BIT=4 | **PASS** | test_chk_014_cfg_min; verified in min.s1, min.s2 |
 | CHK-015 | test | CFG-ODD: PARA_UART_CLKS_PER_BIT=5 (H=floor(N/2)=2) | **PASS** | test_chk_015_cfg_odd; verified in odd.s1, odd.s2 |
 | CHK-016 | test | CFG-WIDE: PARA_UART_CLKS_PER_BIT=1024 | **PASS** | test_chk_016_cfg_wide; verified in wide.s1 |
-| CHK-017 | test | Full duplex: simultaneous and independent transmit and receive | **PASS** | test_chk_017_full_duplex; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1 |
-| CHK-018 | test | Loopback o_txd to i_rxd through a half-cycle delay | **PASS** | test_chk_018_loopback; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1 |
-| CHK-019 | test | Asynchronous reset mid transmit frame, mid receive frame and while a byte is held | **PASS** | test_chk_019_async_reset; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1 |
-| CHK-020 | test | No activity during reset; idle transmitter and receiver after release | **PASS** | test_chk_020_reset_idle; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1 |
-| CHK-021 | test | Line low at reset release is detected as a start bit | **PASS** | test_chk_021_low_at_release; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1 |
-| CHK-022 | test | Basic receive of directed and random bytes with exact latency | **PASS** | test_chk_022_rx_basic; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1 |
-| CHK-023 | test | Sampling-point test at the exact sampling edges | **PASS** | test_chk_014_cfg_min, test_chk_015_cfg_odd, test_chk_023_sampling_points; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1 |
-| CHK-024 | test | Start-bit glitch rejection and restart after a glitch | **PASS** | test_chk_014_cfg_min, test_chk_015_cfg_odd, test_chk_024_glitch; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1 |
-| CHK-025 | test | Back-to-back receive frames and a new start at M+1 | **PASS** | test_chk_014_cfg_min, test_chk_015_cfg_odd, test_chk_025_rx_back_to_back; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1 |
-| CHK-026 | test | i_rx_ready held at 0, held at 1, random, and take at V | **PASS** | test_chk_014_cfg_min, test_chk_026_rx_ready; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1 |
-| CHK-027 | test | Frame error with an empty register and with the byte dropped by overrun | **PASS** | test_chk_027_frame_error; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1 |
-| CHK-028 | test | Idle line and break condition | **PASS** | test_chk_028_idle_break; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1 |
-| CHK-029 | test | Random receive regression against the reference model | **PASS** | test_chk_029_rx_random; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1 |
-| CHK-030 | test | Back-to-back transmit with i_tx_valid held at 1 | **PASS** | test_chk_014_cfg_min, test_chk_015_cfg_odd, test_chk_030_tx_back_to_back; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1 |
-| CHK-031 | test | Transmit with idle gaps and i_tx_data changing outside the handshake | **PASS** | test_chk_031_tx_gaps; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1 |
-| CHK-032 | test | i_tx_valid dropping before a handshake, back-pressure, no extra buffer | **PASS** | test_chk_032_tx_valid_drop; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1 |
+| CHK-017 | test | Full duplex: simultaneous and independent transmit and receive | **PASS** | test_chk_017_full_duplex; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1, xrand.s1, xrand.s2 |
+| CHK-018 | test | Loopback o_txd to i_rxd through a half-cycle delay | **PASS** | test_chk_018_loopback; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1, xrand.s1, xrand.s2 |
+| CHK-019 | test | Asynchronous reset mid transmit frame, mid receive frame and while a byte is held | **PASS** | test_chk_019_async_reset; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1, xrand.s1, xrand.s2 |
+| CHK-020 | test | No activity during reset; idle transmitter and receiver after release | **PASS** | test_chk_020_reset_idle; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1, xrand.s1, xrand.s2 |
+| CHK-021 | test | Line low at reset release is detected as a start bit | **PASS** | test_chk_021_low_at_release; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1, xrand.s1, xrand.s2 |
+| CHK-022 | test | Basic receive of directed and random bytes with exact latency | **PASS** | test_chk_022_rx_basic; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1, xrand.s1, xrand.s2 |
+| CHK-023 | test | Sampling-point test at the exact sampling edges | **PASS** | test_chk_014_cfg_min, test_chk_015_cfg_odd, test_chk_023_sampling_points; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1, xrand.s1, xrand.s2 |
+| CHK-024 | test | Start-bit glitch rejection and restart after a glitch | **PASS** | test_chk_014_cfg_min, test_chk_015_cfg_odd, test_chk_024_glitch; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1, xrand.s1, xrand.s2 |
+| CHK-025 | test | Back-to-back receive frames and a new start at M+1 | **PASS** | test_chk_014_cfg_min, test_chk_015_cfg_odd, test_chk_025_rx_back_to_back; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1, xrand.s1, xrand.s2 |
+| CHK-026 | test | i_rx_ready held at 0, held at 1, random, and take at V | **PASS** | test_chk_014_cfg_min, test_chk_026_rx_ready; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1, xrand.s1, xrand.s2 |
+| CHK-027 | test | Frame error with an empty register and with the byte dropped by overrun | **PASS** | test_chk_027_frame_error; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1, xrand.s1, xrand.s2 |
+| CHK-028 | test | Idle line and break condition | **PASS** | test_chk_028_idle_break; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1, xrand.s1, xrand.s2 |
+| CHK-029 | test | Random receive regression against the reference model | **PASS** | test_chk_029_rx_random; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1, xrand.s1, xrand.s2 |
+| CHK-030 | test | Back-to-back transmit with i_tx_valid held at 1 | **PASS** | test_chk_014_cfg_min, test_chk_015_cfg_odd, test_chk_030_tx_back_to_back; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1, xrand.s1, xrand.s2 |
+| CHK-031 | test | Transmit with idle gaps and i_tx_data changing outside the handshake | **PASS** | test_chk_031_tx_gaps; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1, xrand.s1, xrand.s2 |
+| CHK-032 | test | i_tx_valid dropping before a handshake, back-pressure, no extra buffer | **PASS** | test_chk_032_tx_valid_drop; verified in base.s1, base.s2, min.s1, min.s2, odd.s1, odd.s2, wide.s1, xrand.s1, xrand.s2 |
 
 ## Requirement traceability (RTM)
 

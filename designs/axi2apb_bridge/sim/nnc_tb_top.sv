@@ -425,4 +425,13 @@ module nnc_tb_top #(
     .i_apb_prdata(i_apb_prdata),
     .i_apb_pslverr(i_apb_pslverr)
   );
+`ifdef NNC_X_INIT
+  initial begin
+    $assertoff;
+    #1ps;
+    fork begin fork @(posedge i_clk_axi); join end begin #1000ns; end join_any
+    disable fork;
+    #1ps $asserton;
+  end
+`endif
 endmodule

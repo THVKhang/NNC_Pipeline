@@ -52,6 +52,44 @@ def plusarg(name: str, default=None):
     return default
 
 
+# Random initial values (run-set option x_init): the flow adds the plusarg +NNC_X_INIT to such runs.
+X_INIT = plusarg("NNC_X_INIT") is not None
+X_INIT_RESET_PS = 1      # under x_init, every reset is asserted at this time (see _initial_values)
+
+
+def _reset_level(r: dict, active: bool) -> int:
+    return int(active) ^ int(bool(r["active_low"]))
+
+
+def _initial_values():
+    """Time 0, when the tests are imported and before any test runs: every input is 0 and every hardware
+    reset is asserted until reset_dut releases it. With random initial values (x_init) the inputs would
+    otherwise start at random levels until a test drives them, and the DUT and the checkers would see
+    stimulus no test gave; without x_init they already start at 0. Under x_init the resets are inactive at
+    time 0 and the first start_clock asserts them at X_INIT_RESET_PS: a reset that starts at a random level
+    gives a falling edge at time 0 to one copy of the net and not to another (Verilator gives the port of a
+    module it did not inline its own initial value), so a checker could see a reset that the flops did not.
+    A test that drives an input before its first start_clock overrides these values (the last write of a
+    time step wins)."""
+    top = getattr(cocotb, "top", None)
+    if top is None:                     # imported outside a simulation
+        return
+    level = {r["name"]: _reset_level(r, not X_INIT) for r in RESETS}
+    for p in PORTS:
+        if p["direction"] == "input" and hasattr(top, p["name"]):
+            getattr(top, p["name"]).value = level.get(p["name"], 0)
+
+
+_initial_values()
+
+
+async def _x_init_resets(dut):
+    """x_init: assert every reset X_INIT_RESET_PS after time 0, once every net has settled."""
+    await Timer(X_INIT_RESET_PS, unit="ps")
+    for r in RESETS:
+        getattr(dut, r["name"]).value = _reset_level(r, True)
+
+
 def seed() -> int:
     return int(os.environ.get("NNC_SEED", "1"))
 
@@ -114,6 +152,12 @@ def start_clock(dut, period_ns: float | None = None, periods: dict | None = None
     (e.g. `if inspect.isawaitable(res): await res`) would wait forever while the clock runs."""
     global _ACTIVE, _STARTS
     _STARTS += 1
+    if X_INIT and _STARTS == 1:
+        cocotb.start_soon(_x_init_resets(dut))
+    # Clocks start high, so synchronous clocks have a common rising edge at their start (tests of
+    # synchronous multi-clock designs rely on it). Under x_init the concurrent checkers are off until the
+    # first rising edge of every clock after time 0 (NNC_X_INIT in nnc_tb_top), where they would sample
+    # outputs from before any reset.
     if len(CLOCKS) == 1 and not periods:
         _ACTIVE = {CLOCK: period_ns or CLOCKS[CLOCK]}
         _CLOCK_OBJS[CLOCK] = Clock(clk(dut), _period_ps(_ACTIVE[CLOCK]), unit="ps")

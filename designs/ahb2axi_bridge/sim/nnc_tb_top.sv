@@ -381,4 +381,13 @@ module nnc_tb_top #(
     .i_axi_rvalid(i_axi_rvalid),
     .o_axi_rready(o_axi_rready)
   );
+`ifdef NNC_X_INIT
+  initial begin
+    $assertoff;
+    #1ps;
+    fork begin fork @(posedge i_clk_core); join end begin #1000ns; end join_any
+    disable fork;
+    #1ps $asserton;
+  end
+`endif
 endmodule

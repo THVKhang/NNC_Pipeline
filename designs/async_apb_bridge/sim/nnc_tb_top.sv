@@ -334,4 +334,13 @@ module nnc_tb_top #(
     .i_apb_pruser(i_apb_pruser),
     .i_apb_pbuser(i_apb_pbuser)
   );
+`ifdef NNC_X_INIT
+  initial begin
+    $assertoff;
+    #1ps;
+    fork begin fork @(posedge i_clk_mst); @(posedge i_clk_slv); join end begin #1000ns; end join_any
+    disable fork;
+    #1ps $asserton;
+  end
+`endif
 endmodule

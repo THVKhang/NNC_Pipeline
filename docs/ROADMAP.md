@@ -98,7 +98,7 @@ Chi phí giai đoạn 18: khoảng US$23 (độ ổn định US$5.2, ot_gpio US$
   - gpio: functional 90 → 95 % (2 test). Toggle không thêm được test: 18 lời khẳng định unreachable, người duyệt cần xem.
   - axi2apb: toggle 75,1 → 86,4 % (6 test).
   - rv_timer: chưa chạy closure, vì phần còn thiếu là nhánh có điều kiện hằng, chờ 19.5.
-- 19.4: đã có tuỳ chọn `x_init` và đã chạy thử. Phải sửa reset ở thời điểm 0 của testbench, và triage gen_sync_fifo, trước khi đưa vào run set.
+- 19.4: xong (2026-11-24). Sửa ba lỗi của bộ chạy ở thời điểm 0 (input, checker ở cạnh clock đầu, cạnh reset). Thử trên 15 thiết kế: 14 giống bản ghi, ahb2axi_bridge fail thêm CHK-012, nhiều khả năng là triệu chứng mới của lỗi RTL đã có trong bản ghi. uart_lite có cấu hình `xrand` trong run set. gen_sync_fifo không có lỗi riêng của x_init (test đó đã fail trong bản ghi).
 - 19.5 chưa làm.
 
 ## Giai đoạn 20: kiểm tra cắt miền clock/reset (CDC/RDC)
@@ -165,7 +165,7 @@ code lạ trong sandbox, và người dùng thật của công cụ quen dòng l
 
 **Sau giai đoạn 22**, các việc chưa làm, theo thứ tự đề xuất:
 1. Trang GitHub Pages: xong (`nnc site`, job CI `pages`, https://thvkhang.github.io/NNC_Pipeline/).
-2. 19.4: giữ reset ngay từ thời điểm 0, tạo lại kit, kiểm lại kết quả của 13 thiết kế.
+2. 19.4: xong.
 3. 19.5: formal UNR.
 4. 21.6: xong (xem giai đoạn 21).
 

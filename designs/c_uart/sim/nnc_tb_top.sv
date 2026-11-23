@@ -104,4 +104,13 @@ module nnc_tb_top #(
     .rx_frame_error(rx_frame_error),
     .prescale(prescale)
   );
+`ifdef NNC_X_INIT
+  initial begin
+    $assertoff;
+    #1ps;
+    fork begin fork @(posedge clk); join end begin #1000ns; end join_any
+    disable fork;
+    #1ps $asserton;
+  end
+`endif
 endmodule

@@ -803,7 +803,7 @@ Phân tích từng mảng, có so với quy trình ký duyệt của OpenTitan, 
 | CDC/RDC | cần (OpenTitan yêu cầu ở D2/D3) | đã làm `nnc cdc` |
 | Timing, diện tích | chỉ cần ước lượng từ synthesis | đã có sẵn trong `rtl-check` |
 | Place and route, DFT | không (không phải mục ký duyệt cấp IP) | không làm |
-| X-propagation | có ích | đã thêm tuỳ chọn `x_init`, đang chạy thử |
+| X-propagation | có ích | tuỳ chọn `x_init` (giá trị khởi tạo ngẫu nhiên), đã chạy trên 15 thiết kế |
 
 **Coverage (GĐ19).**
 - **Nguyên nhân coverage thấp:** Verilator đếm cả hàm của package mà thiết kế không gọi. Riêng `prim_secded_pkg` đã chiếm 8 136/21 352 dòng của gpio. Nó cũng đếm toggle của các bit luôn bằng hằng số.
@@ -830,14 +830,19 @@ Phân tích từng mảng, có so với quy trình ký duyệt của OpenTitan, 
 - **CI** có job `cdc`.
 - **Giới hạn:** bước kiểm không chứng minh gray code hay handshake; việc đó vẫn do formal và mô phỏng làm.
 
-**Khởi tạo ngẫu nhiên (thử).**
-- **Lỗi ở thời điểm 0:** 4 thiết kế fail assertion tại thời điểm 0, do testbench chưa giữ reset ngay từ đầu. Đây là lỗi của bộ chạy, phải sửa trước khi đưa `x_init` vào run set.
-- **gen_sync_fifo:** có một test fail ở giữa mô phỏng, chạm câu hỏi spec CHK-008 còn mở. Cần triage.
+**Khởi tạo ngẫu nhiên (GĐ19.4).**
+- **Mục đích:** biến không có reset bắt đầu bằng giá trị ngẫu nhiên thay vì 0, để lộ flop thiếu reset mà giá trị đi ra output.
+- **Ba lỗi của bộ chạy ở thời điểm 0, đã sửa:**
+  - input bắt đầu ngẫu nhiên: helper cocotb đặt mọi input về 0 ngay khi nạp test;
+  - checker lấy mẫu cạnh clock đầu tiên với giá trị trước reset: dưới x_init, checker tắt (`$assertoff`) tới cạnh lên đầu tiên của mọi clock;
+  - reset bắt đầu ngẫu nhiên tạo cạnh xuống ở thời điểm 0 cho bản sao này của net mà không cho bản sao kia (Verilator cho port của module không inline giá trị đầu riêng): dưới x_init, reset tắt ở thời điểm 0 và bật ở 1 ps, nên mọi flop thấy cùng một cạnh thật.
+- **Kết quả trên 15 thiết kế:** 14 giống bản ghi. ahb2axi_bridge fail thêm CHK-012: bảng burst không có reset, và lỗi RTL đã ghi (desync) đọc phải ô chưa ghi. Nhiều khả năng đây là triệu chứng mới của lỗi cũ.
+- **Ghi vào run set:** uart_lite có cấu hình `xrand`.
 
 **Còn mở.**
 - Chứng minh unreachable bằng formal cho các điểm mà lan truyền hằng số không chứng minh được, ví dụ bit cao của phép trừ, nhánh `if (EnableRacl)`.
 - Các trường struct là hằng số.
-- Reset tại thời điểm 0 của testbench.
+- Đưa `x_init` vào run set của các thiết kế còn lại.
 
 ## 27. Đầu vào bất kỳ: intake, adapt, corpus (GĐ21, 2026-11-23)
 

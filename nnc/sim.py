@@ -191,6 +191,36 @@ def conformance(contract: dict, ports: list[dict]) -> list[str]:
 
 
 # -------------------------------------------------------------------------------------- testbench
+# Random initial values (run-set option x_init, macro NNC_X_INIT): every flop starts at a random value. The
+# cocotb helpers leave every reset inactive at time 0 and assert it 1 ps later (nnc_cocotb.X_INIT): every copy
+# of a reset net (a port of a module Verilator did not inline gets its own random initial value) has settled
+# by then and sees a real edge, so asynchronous resets act at once, as at power-up. A synchronous reset acts
+# only at the first rising edge of its clock, and a checker samples that edge with the values from before it;
+# Verilator may also report a rising edge at time 0 when a clock starts at a random level. The concurrent
+# checkers are off until every clock has had its first rising edge after time 0 (at most X_INIT_HOLD_NS, for a
+# clock a test never starts); every later edge is checked. Builds without x_init do not define the macro, and
+# formal leaves the block out.
+X_INIT_HOLD_NS = 1000
+
+
+def x_init_guard(clocks: list[str]) -> list[str]:
+    edges = " ".join(f"@(posedge {c});" for c in clocks)
+    return ["`ifdef NNC_X_INIT",
+            "  initial begin",
+            "    $assertoff;",
+            "    #1ps;",
+            f"    fork begin fork {edges} join end begin #{X_INIT_HOLD_NS}ns; end join_any",
+            "    disable fork;",
+            "    #1ps $asserton;",
+            "  end",
+            "`endif"]
+
+
+def _strip_x_init_guard(text: str) -> str:
+    """The test bench top without the x_init block (formal)."""
+    return re.sub(r"`ifdef NNC_X_INIT\n.*?`endif\n", "", text, flags=re.S)
+
+
 def tb_top(contract: dict, checker_modules: list[str]) -> str:
     iface = contract["interface"]
     params = iface["parameters"]
@@ -205,6 +235,8 @@ def tb_top(contract: dict, checker_modules: list[str]) -> str:
              f"  {contract['top']}" + (f" #({pmap})" if params else "") + f" u_dut (\n    {dut_conns}\n  );"]
     for m in checker_modules:
         lines.append(f"  {m}" + (f" #({pmap})" if params else "") + f" u_{m} (\n    {conns}\n  );")
+    clocks = [c["name"] for c in iface.get("clocks") or []] or ([iface["clock"]] if iface.get("clock") else [])
+    lines += x_init_guard(clocks)
     lines.append("endmodule")
     return "\n".join(lines) + "\n"
 
@@ -225,9 +257,10 @@ def _plusargs(opts: dict | None) -> str:
     return (opts or {}).get("plusargs", "").replace("{seed}", "$(SEED)")
 
 
-X_RANDOM_ARGS = "--x-assign unique --x-initial unique"
-# Seed 0 would let Verilator pick a time-based seed: SEED + 1 keeps every run reproducible.
-X_RANDOM_PLUSARGS = "+verilator+rand+reset+2 +verilator+seed+$(shell expr $(SEED) + 1)"
+X_RANDOM_ARGS = "--x-assign unique --x-initial unique +define+NNC_X_INIT"
+# Seed 0 would let Verilator pick a time-based seed: SEED + 1 keeps every run reproducible. +NNC_X_INIT
+# tells the cocotb helpers (nnc_cocotb.X_INIT) to give the resets a real edge after time 0.
+X_RANDOM_PLUSARGS = "+verilator+rand+reset+2 +verilator+seed+$(shell expr $(SEED) + 1) +NNC_X_INIT"
 
 
 def _opts_lines(opts: dict | None) -> str:
@@ -726,7 +759,8 @@ def _line_coverage(info: Path, rtl_names: list[str], out_of_scope: set | None = 
 
 def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: Path | list[Path], *, seed: int = 1,
         params: dict | None = None, clock_periods: dict | None = None, opts: dict | None = None,
-        timeout_s: int = 3600, frontend: str = "verilog", preverified: list[str] | None = None) -> dict:
+        timeout_s: int = 3600, frontend: str = "verilog", preverified: list[str] | None = None, unr=None) -> dict:
+    """One simulation run. `unr`: as for runset.run (bits proven unreachable added to the scope)."""
     rtl = rtl_files(rtl_dir)
     if not rtl:
         return {"status": "error", "error": f"no RTL files in {rtl_dir}"}
@@ -744,6 +778,13 @@ def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: 
     res = host.run(files, SIM_SCRIPT.format(seed=seed, jobs=8),
                    ["sim.log", "results.xml", "coverage.info", "coverage.dat", *SCOPE_OUTPUTS],
                    timeout_s=timeout_s, tag="sim")
-    parsed = parse_results(res.out_dir, [f.name for f in rtl], preverified=preverified)
+    names = [f.name for f in rtl]
+    scope, unr_info = read_scope(res.out_dir), None
+    if unr is not None:
+        scope, unr_info = unr(res.out_dir / "coverage.dat", names, scope,
+                              [{"name": "default", "params": pv, "defines": list((opts or {}).get("defines") or [])}])
+    parsed = parse_results(res.out_dir, names, scope, preverified=preverified)
+    if unr_info and isinstance(parsed.get("coverage"), dict):
+        parsed["coverage"]["unr"] = unr_info
     status = "build_failed" if not parsed["built"] else "ran"
     return {**base, "status": status, "params": pv, "host": host.name, "out_dir": str(res.out_dir), **parsed}

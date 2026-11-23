@@ -766,26 +766,55 @@ Verilator names a struct member (`tl_i.a_user.rsvd`) where Yosys has one packed 
 
 *axi2apb_bridge, toggle.* 75.1 % (after the scope) → 86.4 % for a target of 85 %, met in one round. Six tests were added (`verif/tests/test_axi2apb_bridge_cov1.py`). They had never been run before: reads and writes in the upper half of the address space, unsupported AxSIZE with long bursts, and 4-KiB-crossing bursts at the top of the space. Address bits 16 and up had never toggled, so a fault on them would have gone unnoticed. 21/21 tests pass, and G3 was approved again on delegation. Most of what is left is the upper bits of size and wrap arithmetic, which are unreachable.
 
-**Random initial values (step 19.4, a trial, not recorded).** A run-set configuration can set
-`"x_init": "random"`: Verilator `--x-assign unique --x-initial unique` with `+verilator+rand+reset+2`, seeded by
-the run seed. One run per seed, on six designs:
-- sync_fifo is clean;
-- uart_lite, axil_regfile, spi_master and apb_tlul_bridge fail assertions only at time 0. That is before the test
-  bench asserts reset: the reset input itself starts at a random value, so a checker sees state from before any
-  reset. This is a fault of the harness, not of the designs. The test bench must hold reset from time 0 before
-  such a configuration can go into a run set;
-- gen_sync_fifo fails `test_chk_024_sw_reset_full_and_rerequest` in the middle of the run (`o_sw_rst_busy` still 1
-  when the test expects 0). The register involved has an asynchronous reset. The test touches CHK-008, the
-  specification question left open in phase 6. Triage is needed to place it.
+**Random initial values (step 19.4, 2026-11-24).** A run-set configuration can set `"x_init": "random"`:
+Verilator `--x-assign unique --x-initial unique` with `+verilator+rand+reset+2`, seeded by the run seed, so every
+variable without a reset starts at a random value instead of 0. A fault that zero initialisation hides (a flop
+without a reset whose value reaches an output) then shows.
 
-No run set uses `x_init` yet.
+The first trial failed assertions at time 0 on most designs. These were faults of the harness, not of the
+designs. Three fixes:
+- *Inputs at time 0.* Under x_init the inputs also start at random levels, so the DUT saw stimulus that no test
+  gave. The cocotb helpers now drive every input to 0 when the tests are imported (time 0).
+- *Checkers at the first clock edge.* A synchronous reset (or an asynchronous one that saw no edge) takes effect
+  only at the first rising edge, and a checker samples that edge with the values from before it. Under x_init the
+  test bench top turns the concurrent checkers off (`$assertoff`) until every clock has had its first rising edge
+  after time 0 (at most 1 µs). Builds without x_init and formal do not contain this block.
+- *The reset edge.* A reset that starts at a random level gave a falling edge at time 0 to one copy of the net and
+  not to another: Verilator gives the port of a module it does not inline its own initial value. On
+  async_apb_bridge the procedural CHK-010 check (`always @(negedge i_rst_n_slv) #1 ...`) saw the reset while the
+  flops did not, and found psel, penable and paddr still random 1 ns later. Under x_init the resets are now
+  inactive at time 0 and asserted at 1 ps, when every net has settled, so every flop sees one real edge, as at
+  power-up.
+
+An earlier version of this section said that gen_sync_fifo fails `test_chk_024_sw_reset_full_and_rerequest`
+under x_init. That was wrong: the zero-initialised record fails it at the same time (189217 ns, triage B/C on
+the CHK-008 question).
+
+Trial with the final harness: the first configuration of every design, seeds 1 and 2, on scratch copies.
+
+| Result | Designs |
+|---|---|
+| Same failing tests and checks as the record | sync_fifo, uart_lite, axil_regfile, spi_master, apb_tlul_bridge, gen_apb_tlul_bridge, gen_sync_fifo, axi2apb_bridge, async_gray_fifo, async_apb_bridge, ot_gpio, ot_rv_timer, c_uart, c_pcpi_div |
+| One more failing check | ahb2axi_bridge: CHK-012 (AXI size and alignment), first at 950 ns |
+
+ahb2axi_bridge, CHK-012. The record already fails 20 of 21 tests. One of its triaged faults (A_rtl_wrong, §9 of
+`work/triage.md`): during the AHB/FSM desync, `reg_burst_fallback` flips and AWADDR/AWSIZE come from the burst
+table `reg_burst_addr`/`reg_burst_size`. The table has no reset, only its indices do. With zero initial values an
+entry never written reads as address 0, size 0, which is aligned; with random values it is random, and CHK-012
+fails. So this is most likely a new symptom of a fault already recorded, not a new fault. No waveform confirms it,
+and no triage was run for it.
+
+Recorded: uart_lite has a fifth run-set configuration `xrand` (CFG-BASE with x_init, seeds 1 and 2): 9 runs,
+20/20 tests, 13 assertions, 0 failures. Every run set counts a configuration as its own copy of the design, so the
+coverage denominators grow (line 596 → 745 points) and the percentages stay the same. All 67 recorded runs of the
+15 designs give the same results with the new harness (`nnc demo --all-runs`).
 
 **Still open.**
 - Unreachable points that constant propagation cannot prove: upper bits of subtractions, branches under a
   constant parameter in procedural code (`if (EnableRacl)`), `reinit_i`. A formal unreachability pass (step 19.5)
   would prove them.
 - Constant struct fields.
-- The time-zero reset of the harness.
+- x_init in the run sets of the other designs.
 
 ## 13. Clock and reset domain crossings (phase 20, 2026-11-21)
 

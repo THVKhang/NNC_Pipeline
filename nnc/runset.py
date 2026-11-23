@@ -141,9 +141,10 @@ def script(parallel: int) -> str:
 
 def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: Path | list[Path],
         runs: list[dict], *, parallel: int = 4, timeout_s: int | None = None, frontend: str = "verilog",
-        preverified: list[str] | None = None) -> dict:
+        preverified: list[str] | None = None, unr=None) -> dict:
     """Simulate every run of the run set; return the merged result (results.json shape) with the
-    per-run results under 'runs_detail' and the folder of the logs under 'out_dir'."""
+    per-run results under 'runs_detail' and the folder of the logs under 'out_dir'. `unr(dat, rtl names,
+    scope, configurations) -> (scope, summary)`: adds the bits proven unreachable to the merged scope."""
     rtl = sim.rtl_files(rtl_dir)
     if not rtl:
         return {"status": "error", "error": f"no RTL files in {rtl_dir}"}
@@ -196,8 +197,15 @@ def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: 
         for k, v in d.get("functional", {}).items():
             functional[k] = functional.get(k, 0) + v
     scope = coverage.merge_scopes(list(scopes.values()))
+    unr_info = None
+    if unr is not None:      # bits proven unreachable (nnc/unr.py): recorded, or proven now with --unr
+        confs = [{"name": name, "params": sim.param_values(contract, c["run"]["params"]),
+                  "defines": list(c["run"]["opts"].get("defines") or [])} for name, c in configs.items()]
+        scope, unr_info = unr(res.out_dir / "merged.dat", names, scope, confs)
     cov = sim.coverage_of(res.out_dir / "merged.info", res.out_dir / "merged.dat", names, functional, scope,
                           preverified)
+    if unr_info:
+        cov["unr"] = unr_info
     return {**base, **merge(detail, cov, functional), "host": host.name, "out_dir": str(res.out_dir),
             "runs_detail": detail}
 

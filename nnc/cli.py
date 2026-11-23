@@ -33,7 +33,7 @@ def _options(args) -> flow.Options:
     o = flow.Options(backend=getattr(args, "backend", "claude"), unreviewed=getattr(args, "unreviewed", False),
                      workers=getattr(args, "workers", 4), seed=getattr(args, "seed", 1),
                      mutants=getattr(args, "mutants", 12), timeout_s=getattr(args, "agent_timeout", 1800),
-                     single=getattr(args, "single_run", False))
+                     single=getattr(args, "single_run", False), unr=getattr(args, "unr", False))
     o.rtl_rounds = getattr(args, "rtl_rounds", 3)
     for stage in ("extract", "review", "contract", "sva", "tests", "triage", "rtl"):
         v = getattr(args, f"{stage}_model", None)
@@ -352,7 +352,8 @@ def cmd_demo(args) -> int:
     bad = 0
     for name in args.designs or ["sync_fifo"]:
         d = Design.open(_design_path(name, args.root))
-        steps = demo.run(d, host, formal=args.formal, workers=args.workers, replay_agents=args.replay)
+        steps = demo.run(d, host, formal=args.formal, workers=args.workers, replay_agents=args.replay,
+                         all_runs=args.all_runs)
         print("\n" + demo.to_text(d.name, steps) + "\n")
         bad += not demo.ok(steps)
     return 1 if bad else 0
@@ -844,6 +845,10 @@ def build_parser() -> argparse.ArgumentParser:
         s.add_argument("--seed", type=int, default=1)
         s.add_argument("--single-run", action="store_true", help="ignore run_set.json: one run of the design configuration")
         s.add_argument("--mutants", type=int, default=12)
+        if name == "sim":
+            s.add_argument("--unr", action="store_true",
+                           help="prove with SymbiYosys that uncovered toggle bits cannot change after reset; proven "
+                                "bits leave the toggle coverage (work/unr.json, work/unr.md; ROADMAP 19.5)")
         _agent_args(s)
         s.set_defaults(func=_stage(name))
 
@@ -905,6 +910,8 @@ def build_parser() -> argparse.ArgumentParser:
                                     "kit, CDC, formal with --formal) and compare each with the recorded outcome")
     s.add_argument("designs", nargs="*", help="design names (default: sync_fifo)")
     s.add_argument("--formal", action="store_true", help="also rerun every recorded formal configuration (long)")
+    s.add_argument("--all-runs", action="store_true",
+                   help="rerun every recorded run of the run set (every configuration and seed), not only the first")
     s.add_argument("--workers", type=int, default=4, help="parallel formal jobs")
     s.add_argument("--replay", action="store_true",
                    help="also replay the agent stages that read the specification (extract, review, contract) "

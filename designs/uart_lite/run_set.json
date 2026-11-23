@@ -1,10 +1,42 @@
 {
- "note": "Configurations of the specification, section 11: CFG-BASE (default N=16), CFG-MIN (N=4), CFG-ODD (N=5), CFG-WIDE (N=1024). CFG-MAX (65535) is not simulated (decision D-012).",
- "seeds": [1, 2],
+ "note": "Configurations of the specification, section 11: CFG-BASE (default N=16), CFG-MIN (N=4), CFG-ODD (N=5), CFG-WIDE (N=1024). CFG-MAX (65535) is not simulated (decision D-012). xrand: CFG-BASE with random initial values (19.4).",
+ "seeds": [
+  1,
+  2
+ ],
  "configs": [
-  {"name": "base", "note": "CFG-BASE"},
-  {"name": "min", "note": "CFG-MIN", "params": {"PARA_UART_CLKS_PER_BIT": 4}},
-  {"name": "odd", "note": "CFG-ODD", "params": {"PARA_UART_CLKS_PER_BIT": 5}},
-  {"name": "wide", "note": "CFG-WIDE", "params": {"PARA_UART_CLKS_PER_BIT": 1024}, "seeds": [1]}
+  {
+   "name": "base",
+   "note": "CFG-BASE"
+  },
+  {
+   "name": "min",
+   "note": "CFG-MIN",
+   "params": {
+    "PARA_UART_CLKS_PER_BIT": 4
+   }
+  },
+  {
+   "name": "odd",
+   "note": "CFG-ODD",
+   "params": {
+    "PARA_UART_CLKS_PER_BIT": 5
+   }
+  },
+  {
+   "name": "wide",
+   "note": "CFG-WIDE",
+   "params": {
+    "PARA_UART_CLKS_PER_BIT": 1024
+   },
+   "seeds": [
+    1
+   ]
+  },
+  {
+   "name": "xrand",
+   "note": "CFG-BASE with random initial values of every variable without a reset (ROADMAP 19.4): a check that passes only because flops start at 0 fails here",
+   "x_init": "random"
+  }
  ]
 }

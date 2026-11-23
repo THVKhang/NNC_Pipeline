@@ -19,7 +19,7 @@ from pathlib import Path
 
 from nnc import contract as contract_mod
 from nnc import extract as extract_mod
-from nnc import closure, formal, gen_cov, gen_env, gen_rtl, gen_sva, gen_tests, mutate, packet, report, review, runset, sim, triage
+from nnc import closure, formal, gen_cov, gen_env, gen_rtl, gen_sva, gen_tests, mutate, packet, report, review, runset, sim, triage, unr
 from nnc.agents.runtime import make_backend
 from nnc.ingest import build_index, save_index
 from nnc.project import Design, ProjectError
@@ -52,6 +52,7 @@ class Options:
     mutants: int = 12
     repair_rounds: int = 2
     single: bool = False          # ignore run_set.json: one run of the design configuration
+    unr: bool = False             # nnc sim --unr: prove uncovered toggle bits unreachable (nnc/unr.py)
     timeout_s: int = 1800
     log: list[str] = field(default_factory=list)
 
@@ -404,13 +405,31 @@ def _regression(d: Design, o: Options, contract: dict, rtl_dir: Path, verif: Pat
     verification folder (default designs/<ip>/verif)."""
     runs = _runs(d, o, contract)
     sva = (verif or d.root / "verif") / "sva"
+    hook = _unr_hook(d, o, contract, rtl_dir)
     if runs is None:
         return sim.run(default_host(), contract, rtl_dir, sva, test_files(d, verif), seed=o.seed,
-                       frontend=_scope_frontend(d), preverified=_preverified(d), **_simkw(d))
+                       frontend=_scope_frontend(d), preverified=_preverified(d), unr=hook, **_simkw(d))
     o.say(f"[sim] run set: {len(runs)} run(s) in {len({r['config'] for r in runs})} configuration(s): "
           + ", ".join(r["label"] for r in runs))
     return runset.run(default_host(), contract, rtl_dir, sva, test_files(d, verif), runs, parallel=o.workers,
-                      frontend=_scope_frontend(d), preverified=_preverified(d))
+                      frontend=_scope_frontend(d), preverified=_preverified(d), unr=hook)
+
+
+def _unr_hook(d: Design, o: Options, contract: dict, rtl_dir: Path):
+    """Bits proven unreachable (work/unr.json) for the design's own RTL; with o.unr, prove the new candidates.
+    Never for another RTL (mutants, repairs): the record is keyed by the RTL hash anyway. A failure of the
+    proof step is reported and leaves the coverage as without it."""
+    if rtl_dir.resolve() != (d.root / "rtl").resolve():
+        return None
+
+    def hook(dat: Path, names: list[str], scope: dict | None, confs: list[dict]):
+        try:
+            return unr.apply(d.work, default_host() if o.unr else None, contract, rtl_dir, dat, names, scope, confs,
+                             _scope_frontend(d), prove=o.unr, parallel=o.workers, say=o.say)
+        except Exception as e:          # noqa: BLE001 - the proofs never change a test result
+            o.say(f"[unr] not applied: {type(e).__name__}: {e}")
+            return scope, {"status": f"error: {type(e).__name__}: {e}"[:300]}
+    return hook
 
 
 def _primary(res: dict | None) -> dict | None:

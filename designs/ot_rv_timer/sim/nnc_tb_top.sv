@@ -224,4 +224,13 @@ module nnc_tb_top (
     .o_alert_integ_fail(o_alert_integ_fail),
     .o_intr_timer_expired(o_intr_timer_expired)
   );
+`ifdef NNC_X_INIT
+  initial begin
+    $assertoff;
+    #1ps;
+    fork begin fork @(posedge clk_i); join end begin #1000ns; end join_any
+    disable fork;
+    #1ps $asserton;
+  end
+`endif
 endmodule

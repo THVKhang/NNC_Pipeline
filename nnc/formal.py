@@ -36,7 +36,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from nnc.contract import is_async
-from nnc.sim import checker_files, rtl_files, tb_top
+from nnc.sim import _strip_x_init_guard, checker_files, rtl_files, tb_top
 from nnc.simhost import SimHost
 
 DEFAULT_DEPTH = 20
@@ -316,7 +316,8 @@ def top_module(contract: dict, checker_modules: list[str], user_env: bool = Fals
     is instantiated without parameter overrides: read_slang has already elaborated it with its parameters
     (`-G`), and the elaborated module has none left to set."""
     iface = contract["interface"]
-    text = tb_top(contract, checker_modules).replace("`timescale 1ns/1ps\n", "")
+    # The time-0 guard of simulation with random initial values has no meaning in formal: left out.
+    text = _strip_x_init_guard(tb_top(contract, checker_modules).replace("`timescale 1ns/1ps\n", ""))
     if not dut_params:
         text = re.sub(rf"^(  {re.escape(contract['top'])}) #\(.*?\)( u_dut \()", r"\1\2", text, count=1, flags=re.M)
     rs = _resets(iface)
