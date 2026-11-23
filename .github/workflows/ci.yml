@@ -15,6 +15,10 @@
 #                job runs the intake (nnc intake --check): every design must still be ready (phase 21).
 #   corpus       intake, adaptation and a smoke simulation on open-source RTL the flow was not written for
 #                (corpus/corpus.json, fetched at fixed commits), compared with corpus/results.json (phase 21).
+#   docker       the image of the Dockerfile: built, then `nnc demo` inside it (intake, reproduction kit, CDC and
+#                the replay of the specification stages from the committed answer cache, no model call); on
+#                main it is pushed to the GitHub Container Registry (phase 22).
+#   devcontainer the development container of .devcontainer/ (Codespaces): built, `nnc demo` inside it.
 # kit-configs and formal take long: they run on main, on pull requests, weekly and by hand, not on every
 # push to a feature branch. Tool versions are pinned to the ones the committed results were produced with.
 # Designs: the 6 upstream designs, the 3 regenerated or drafted in phases 5-10, spi_master and
@@ -258,3 +262,37 @@ jobs:
       - name: Corpus again, compared with the committed verdicts (no agent, writes nothing)
         if: steps.gate.outputs.run == 'yes'
         run: python -m nnc corpus --only ${{ matrix.source }} --smoke --check --workers 4
+
+  docker:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the image (the OSS CAD Suite release of this workflow)
+        run: docker build --build-arg OSS_CAD_SUITE="${OSS_CAD_SUITE}" --build-arg COCOTB="${COCOTB}" -t nnc-pipeline:ci .
+      - name: Demo inside the image (no agent, no API key) with the replay of the specification stages
+        run: docker run --rm nnc-pipeline:ci nnc demo sync_fifo ot_gpio --replay
+      - name: Push to the GitHub Container Registry (main only)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          img="ghcr.io/${GITHUB_REPOSITORY,,}"
+          docker tag nnc-pipeline:ci "$img:latest"
+          docker tag nnc-pipeline:ci "$img:${GITHUB_SHA::7}"
+          docker push "$img:latest"
+          docker push "$img:${GITHUB_SHA::7}"
+
+  devcontainer:
+    if: github.event_name != 'push' || github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the development container and run the demo in it
+        uses: devcontainers/ci@v0.3
+        with:
+          push: never
+          runCmd: nnc demo sync_fifo

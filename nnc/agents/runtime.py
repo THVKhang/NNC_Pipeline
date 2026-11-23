@@ -30,10 +30,28 @@ class CachedBackend:
         return res
 
 
+class ReplayMiss(RuntimeError):
+    """`--backend replay` met a task that has no answer in the cache: running it would call a model."""
+
+
+class ReplayBackend:
+    """Behind the cache with `--backend replay`: every task must be answered from the cache. A task that is
+    not there stops the flow instead of calling a model, so a replay never costs tokens."""
+
+    name = "replay"
+
+    def run(self, task: AgentTask, log_dir: Path) -> AgentResult:
+        raise ReplayMiss(f"{task.name}: no cached answer for this task (fingerprint {task.fingerprint()[:12]}); "
+                         "a replay never calls a model. Its inputs or prompt differ from the recorded run.")
+
+
 def make_backend(work: Path, kind: str = "claude", timeout_s: int = 900):
-    """The backend of a design: Claude Code CLI or manual, always behind the answer cache."""
+    """The backend of a design: Claude Code CLI, manual, or replay (cache only), always behind the answer
+    cache."""
     if kind == "manual":
         inner = ManualBackend(work / "manual")
+    elif kind == "replay":
+        inner = ReplayBackend()
     else:
         claude = find_claude()
         if not claude:

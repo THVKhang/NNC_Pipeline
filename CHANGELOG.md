@@ -6,6 +6,21 @@ Measurements for every phase are in [docs/EVALUATION.md](docs/EVALUATION.md). Th
 No release contains a G4 sign-off. G1–G3 were approved by an AI assistant on the owner's delegation, and each
 approval is recorded as delegated. See [docs/G4_REVIEW_REQUEST.md](docs/G4_REVIEW_REQUEST.md).
 
+## 0.6.0 (2026-11-23)
+
+### Phase 22: run it in one command (docs/GUIDE.md, Docker and Codespaces)
+- `Dockerfile`: Ubuntu 24.04, the OSS CAD Suite release of CI (SHA-256 checked, FPGA place-and-route tools
+  removed), cocotb 2.1.0, `nnc` from a wheel, a non-root user. `docker run --rm ghcr.io/thvkhang/nnc_pipeline`
+  runs the demo. CI job `docker` builds it, runs the demo inside it and pushes it to GHCR on main.
+- `nnc demo <ip>`: the steps of a finished design that need no agent (intake, the reproduction kit of the
+  primary run, CDC, formal with `--formal`), each compared with the recorded outcome.
+- `nnc demo --replay` and backend `replay`: the stages that read the specification (extract, review, contract)
+  replayed from the committed answer cache; a task with no cached answer stops instead of calling a model.
+  The answer cache of the 13 designs is now committed (788 answers, scanned for keys and personal data;
+  axi_std stays out). Result: extract and review SAME on the 11 designs that ran them, contract SAME on 9; the
+  other 4 contracts are NOT_CACHED because the contract prompt changed after their run.
+- `.devcontainer/` for GitHub Codespaces and VS Code Dev Containers (CI job `devcontainer`).
+
 ## 0.5.0 (2026-11-23)
 
 ### Phase 21: any specification, any RTL (docs/INPUT_SUPPORT.md)

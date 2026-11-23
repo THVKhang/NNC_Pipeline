@@ -346,6 +346,18 @@ def cmd_formal_check(args) -> int:
     return 0 if ok else 1
 
 
+def cmd_demo(args) -> int:
+    from nnc import demo, simhost
+    host = simhost.default_host()
+    bad = 0
+    for name in args.designs or ["sync_fifo"]:
+        d = Design.open(_design_path(name, args.root))
+        steps = demo.run(d, host, formal=args.formal, workers=args.workers, replay_agents=args.replay)
+        print("\n" + demo.to_text(d.name, steps) + "\n")
+        bad += not demo.ok(steps)
+    return 1 if bad else 0
+
+
 def cmd_cdc(args) -> int:
     d = _open(args)
     rep = flow.cdc(d, flow.Options(single=args.single_run), write=not args.check)
@@ -722,7 +734,8 @@ def cmd_flow(args) -> int:
 
 # ---------------------------------------------------------------------------------------- parser
 def _agent_args(p) -> None:
-    p.add_argument("--backend", choices=("claude", "manual"), default="claude")
+    p.add_argument("--backend", choices=("claude", "manual", "replay"), default="claude",
+                   help="replay: answers from the committed cache only, never a model call")
     p.add_argument("--workers", type=int, default=4, help="parallel agent calls (default 4)")
     p.add_argument("--agent-timeout", type=int, default=1800,
                    help="seconds one agent call may take (default 1800; a large test plan may need more)")
@@ -875,6 +888,16 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--config", help="run one formal configuration of the run set and compare it alone (to split "
                                     "a long rerun over several CI jobs)")
     s.set_defaults(func=cmd_formal_check)
+
+    s = sub.add_parser("demo", help="rerun the steps of finished designs that need no agent (intake, reproduction "
+                                    "kit, CDC, formal with --formal) and compare each with the recorded outcome")
+    s.add_argument("designs", nargs="*", help="design names (default: sync_fifo)")
+    s.add_argument("--formal", action="store_true", help="also rerun every recorded formal configuration (long)")
+    s.add_argument("--workers", type=int, default=4, help="parallel formal jobs")
+    s.add_argument("--replay", action="store_true",
+                   help="also replay the agent stages that read the specification (extract, review, contract) "
+                        "from the committed answer cache, never calling a model")
+    s.set_defaults(func=cmd_demo)
 
     s = sub.add_parser("cdc", help="structural clock/reset domain crossing check of the RTL (RR-33, no agent) per "
                                    "parameter set of the run set -> work/cdc.md")

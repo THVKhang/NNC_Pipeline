@@ -169,7 +169,18 @@ code lạ trong sandbox, và người dùng thật của công cụ quen dòng l
 3. 19.5: formal UNR.
 4. 21.6: chạy mù bằng agent trên corpus. Tốn khoảng 3–15 USD mỗi thiết kế, nên chờ người dùng đồng ý.
 
-**Trạng thái (2026-11-23):** chưa bắt đầu.
+**Trạng thái (2026-11-23):** 22.1–22.7 xong. Những gì đã kiểm:
+- Image `Dockerfile` nặng khoảng 3 GB. Các công cụ FPGA flow không dùng đã bị bỏ.
+- Trong container: `nnc doctor` PASS. `nnc demo sync_fifo ot_gpio --replay` cho kết quả SAME ở mọi bước, mất khoảng 2 phút.
+- `nnc demo sync_fifo --formal` trong container: SAME (7 PROVEN, 2 BOUNDED, 1 TIMEOUT, 1 UNSUPPORTED, giống bản đã ghi), khoảng 11 phút.
+- 22.4: người dùng đồng ý ("làm hết tất cả các bước"). Cache câu trả lời agent của 13 thiết kế đã được commit: 788 file, đã quét không có key, email hay đường dẫn máy. axi_std vẫn bị loại.
+- Kết quả replay:
+  - trích luật và review SAME trên 11 thiết kế có chạy hai bước này;
+  - contract SAME trên 9 thiết kế;
+  - async_apb_bridge, axi2apb_bridge, gen_apb_tlul_bridge, gen_sync_fifo bị NOT_CACHED ở contract, vì prompt đã đổi sau lần chạy gốc;
+  - hai thiết kế `gen_*` không tự trích luật (luật dẫn xuất bằng `nnc derive`), nên bỏ qua.
+- Các bước viết code không replay, vì file đã commit có thêm các sửa chữa của A17.
+- 22.5: người dùng cho phép đẩy image lên GHCR. Job CI `docker` đẩy image mỗi lần push lên main.
 
 ## Việc còn mở, chờ người có chuyên môn (G4)
 

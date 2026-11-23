@@ -1,0 +1,26 @@
+{
+  // NNC Pipeline in GitHub Codespaces or VS Code Dev Containers: the image of ../Dockerfile (Verilator, Yosys,
+  // SymbiYosys, cocotb at the versions of CI). `nnc demo sync_fifo` runs at once, with no API key. To run the
+  // agent stages, install Claude Code in the container and use your own account (docs/GUIDE.md).
+  "name": "NNC Pipeline",
+  "build": {
+    "dockerfile": "../Dockerfile",
+    "context": ".."
+  },
+  "remoteUser": "nnc",
+  "updateRemoteUserUID": true,
+  // nnc from the checked-out sources, so that edits take effect without a rebuild
+  "postCreateCommand": "pip install --no-deps -e .",
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python", "mshr-h.veriloghdl"]
+    },
+    "codespaces": {
+      "openFiles": ["README.md", "docs/GUIDE.md"]
+    }
+  },
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "8gb"
+  }
+}

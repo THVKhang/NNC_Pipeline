@@ -17,6 +17,61 @@
 
 **VI:** `python -m nnc doctor` liệt kê công cụ có/thiếu. Trên Windows, mô phỏng chạy trong WSL (`NNC_WSL_DISTRO`, mặc định `Ubuntu-24.04`); NNC tự chép file vào đó và lấy kết quả về.
 
+### Docker and Codespaces | Docker và Codespaces (no install, no agent)
+
+**EN:** The image of the `Dockerfile` holds every tool at the versions CI uses (OSS CAD Suite 2026-11-07, cocotb
+2.1.0) and the committed designs. Without an API key it runs `nnc demo`. That command reruns, for a finished
+design, the steps that need no agent and compares each one with the recorded outcome:
+- the intake;
+- the reproduction kit of the primary run;
+- the CDC check;
+- the formal check, with `--formal`.
+
+With `--replay` it also replays the stages that read the specification (extract, review, contract). They run
+from the committed answer cache (`work/cache/agents/`), and the `replay` backend stops instead of calling a model.
+
+```bash
+docker pull ghcr.io/thvkhang/nnc_pipeline:latest          # or: docker build -t nnc-pipeline .
+docker run --rm ghcr.io/thvkhang/nnc_pipeline              # = nnc demo sync_fifo
+docker run --rm ghcr.io/thvkhang/nnc_pipeline nnc demo ot_gpio --replay
+docker run --rm ghcr.io/thvkhang/nnc_pipeline nnc demo sync_fifo --formal
+docker run --rm -it ghcr.io/thvkhang/nnc_pipeline bash     # every nnc command, the tools on PATH
+```
+
+In GitHub Codespaces (*Code → Codespaces → Create*) or VS Code *Reopen in Container*, `.devcontainer/` builds the
+same image and installs `nnc` from the checked-out sources. To run the agent stages there, install Claude Code
+in the container and log in with your own account; the flow never ships a key.
+
+What a replay shows and what it does not:
+- The replay of a stage proves that the committed records come from the recorded answers, with nothing edited
+  by hand. It compares every record, leaving out only the date, the usage and the designer's decisions on
+  open questions.
+- A stage whose prompt changed after the recorded run has no cached answer and is reported NOT_CACHED.
+- The stages that write code (checkers, tests, formal environment) are not replayed. Their committed files
+  include later corrections by A17, so the first answer is not the committed file.
+
+**VI:** Image từ `Dockerfile` chứa đủ công cụ, đúng phiên bản CI đang dùng (OSS CAD Suite 2026-11-07, cocotb
+2.1.0), cùng các thiết kế đã commit. Không cần API key, image chạy được `nnc demo`. Lệnh này chạy lại, cho một
+thiết kế đã xong, các bước không cần agent, rồi so từng bước với kết quả đã ghi:
+- intake;
+- kit tái lập của lần chạy chính;
+- kiểm tra CDC;
+- formal, nếu thêm `--formal`.
+
+Thêm `--replay` thì phát lại cả các bước đọc spec (trích luật, review, contract). Câu trả lời lấy từ cache đã
+commit (`work/cache/agents/`). Backend `replay` dừng lại chứ không bao giờ gọi model.
+
+Trong GitHub Codespaces (*Code → Codespaces → Create*) hoặc VS Code *Reopen in Container*, `.devcontainer/` dựng
+cùng image đó và cài `nnc` từ mã nguồn đang mở. Muốn chạy agent trong đó thì cài Claude Code trong container và
+đăng nhập bằng tài khoản của bạn; flow không kèm key nào.
+
+Replay chứng minh được gì, và không chứng minh được gì:
+- Replay một bước chứng minh bản ghi đã commit đúng là từ câu trả lời đã ghi, không ai sửa tay. Mọi bản ghi
+  đều được so, chỉ bỏ qua ngày chạy, chi phí và quyết định của người thiết kế cho các câu hỏi mở.
+- Bước nào có prompt đã đổi sau lần chạy gốc thì không có câu trả lời trong cache, và được báo NOT_CACHED.
+- Các bước viết code (checker, test, môi trường formal) không được replay. File đã commit của chúng có thêm các
+  sửa chữa sau đó của A17, nên câu trả lời đầu tiên không phải là file đã commit.
+
 ## 1. Create the design workspace | Tạo workspace thiết kế
 
 ```bash

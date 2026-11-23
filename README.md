@@ -39,6 +39,23 @@ Status / Trạng thái: working prototype, run end-to-end on six delivered desig
 | Nothing is reported as passed without a tool run | results are written by code from simulator output only |
 | A failing run is never "fixed" by the flow | triage proposes; RTL, tests, assertions and expected values change only on the designer's decision |
 
+## Run it in one command | Chạy thử trong một lệnh
+
+```bash
+docker run --rm ghcr.io/thvkhang/nnc_pipeline
+```
+
+**EN:** This reruns the finished `sync_fifo` design with no agent and no API key: the intake, the reproduction kit
+(25 cocotb tests and 11 SystemVerilog assertions on Verilator), the CDC check, each compared with the recorded
+outcome. `nnc demo ot_gpio --replay` also replays the stages that read the specification from the committed
+answer cache, with no model call. Or open the repository in GitHub Codespaces: `.devcontainer/` gives the same
+tools. Details: [docs/GUIDE.md](docs/GUIDE.md#docker-and-codespaces--docker-và-codespaces-no-install-no-agent).
+
+**VI:** Lệnh trên chạy lại thiết kế `sync_fifo` đã xong, không cần agent và không cần API key. Nó chạy intake, kit
+tái lập (25 test cocotb và 11 assertion SystemVerilog trên Verilator) và kiểm tra CDC, rồi so từng bước với kết quả
+đã ghi. `nnc demo ot_gpio --replay` còn phát lại các bước đọc spec từ cache đã commit, không gọi model. Hoặc mở
+repo trong GitHub Codespaces: `.devcontainer/` có sẵn cùng bộ công cụ.
+
 ## Quick start | Bắt đầu nhanh
 
 Install (Python 3.11+; Verilator, Yosys and SymbiYosys from the OSS CAD Suite; `nnc doctor` lists what is missing):
@@ -224,6 +241,7 @@ nnc/                 orchestrator: ingest, extract, review, contract, gen_sva, g
                      fix_verif (A17: corrects verification judged B by triage, never sees the RTL, no weakening)
                      reviewkit (G4 review kit), summary (the design table of this README),
                      stability (agreement of repeated agent runs), cdc (structural domain crossings)
+                     demo (agent-free rerun and replay of a finished design)
                      intake (verdict on any spec and RTL before any agent), adapt (generated wrapper and
                      interface document), corpus (measurement on open-source RTL), specconv (.docx/.html)
 nnc/data/            package copies of docs/RTL_RULES.md and docs/SPEC_TEMPLATE.md (a unit test keeps them equal)
@@ -240,6 +258,7 @@ corpus/              corpus.json (open-source repositories at fixed commits) and
 tests/               unit tests (no tokens, no simulator) and sim_smoke/ (cocotb + Verilator smoke test)
 docs/                ARCHITECTURE.md, GUIDE.md, EVALUATION.md, INPUT_SUPPORT.md, G4_REVIEW_REQUEST.md, ROADMAP.md
 CHANGELOG.md         changes per version and phase
+Dockerfile           the image with every tool (`nnc demo`); .devcontainer/ for Codespaces
 ```
 
 ## Limits | Giới hạn
