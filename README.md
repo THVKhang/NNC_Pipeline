@@ -106,7 +106,7 @@ Measurements and history: [EVALUATION.md](docs/EVALUATION.md), [CHANGELOG.md](CH
 | [gen_apb_tlul_bridge](designs/gen_apb_tlul_bridge) | 17/17 | 31/31 | 17 proven | 100.0 % (36/36) | pending (not signed) |
 | [gen_sync_fifo](designs/gen_sync_fifo) | 24/25 | 24/25 | 6 proven / 2 bounded / 1 timeout / 1 simulation-only / 1 **counterexample** | 100.0 % (36/36) | blocked (not signed) |
 | [ot_gpio](designs/ot_gpio) | 28/28 | 38/38 | 10 proven / 1 timeout / 2 simulation-only | 58.3 % (21/36); 77.8 % without 9 proven equivalent | pending (not signed) |
-| [ot_rv_timer](designs/ot_rv_timer) | 23/23 | 35/35 | 7 proven / 2 bounded / 1 timeout / 2 simulation-only / 1 **counterexample** | 58.3 % (21/36); 84.0 % without 11 proven equivalent | pending (not signed) |
+| [ot_rv_timer](designs/ot_rv_timer) | 27/27 | 35/35 | 7 proven / 2 bounded / 1 timeout / 2 simulation-only / 1 **counterexample** | 58.3 % (21/36); 84.0 % without 11 proven equivalent | pending (not signed) |
 | [spi_master](designs/spi_master) | 15/15 | 41/41 | 6 proven / 7 bounded / 14 simulation-only | 91.7 % (33/36); 100.0 % without 3 proven equivalent | pending (not signed) |
 | [sync_fifo](designs/sync_fifo) | 25/25 | 25/25 | 7 proven / 2 bounded / 1 timeout / 1 simulation-only | 100.0 % (36/36) | pending (not signed) |
 | [uart_lite](designs/uart_lite) | 20/20 | 32/32 | 4 proven / 8 bounded / 1 simulation-only | 97.2 % (35/36) | pending (not signed) |

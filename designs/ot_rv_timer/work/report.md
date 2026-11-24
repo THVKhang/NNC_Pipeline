@@ -1,6 +1,6 @@
 # Verification report — ot_rv_timer
 
-Generated 2026-11-24T08:38:55+00:00 by NNC Pipeline.
+Generated 2026-11-24T11:30:48+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -8,26 +8,26 @@ Generated 2026-11-24T08:38:55+00:00 by NNC Pipeline.
 |---|---|
 | Rules | 228 — {'NOT_VERIFIED_BY_SIM': 77, 'VERIFIED': 151} |
 | Checks | 35 — {'PASS': 35} |
-| Tests | {'pass': 23} |
+| Tests | {'pass': 27} |
 | Run set | 3 runs in 2 configurations (base, xrand); primary base.s1 |
 | Integration | OK |
-| Code coverage (RTL), line | 94.9 % (800/843 lines); 2458 points left out (package code the design does not contain), all points 24.2 % (800/3301) |
+| Code coverage (RTL), line | 95.1 % (802/843 lines); 2458 points left out (package code the design does not contain), all points 24.3 % (802/3301) |
 | Code coverage (RTL), block | 99.3 % (144/145 statement blocks and branch arms); 341 points left out (package code the design does not contain), all points 29.6 % (144/486) |
-| Code coverage (RTL), expression | 61.0 % (485/795 condition terms); 5433 points left out (package code the design does not contain), all points 7.8 % (485/6228) |
-| Code coverage (RTL), toggle | 90.0 % (9416/10458 bit toggles 0->1 and 1->0); 1318 points left out (constant bits; 232 of them proven constant after reset by formal, work/unr.md), all points 80.3 % (9455/11776) |
+| Code coverage (RTL), expression | 65.4 % (520/795 condition terms); 5433 points left out (package code the design does not contain), all points 8.3 % (520/6228) |
+| Code coverage (RTL), toggle | 98.4 % (10294/10458 bit toggles 0->1 and 1->0); 1318 points left out (constant bits; 232 of them proven constant after reset by formal, work/unr.md), all points 87.7 % (10333/11776) |
 | Code coverage (RTL), functional | 97.4 % (38/39 cover points of the specification) |
 | Code coverage without the modules the designer declares pre-verified | prim_alert_receiver, prim_alert_sender, prim_count, prim_esc_receiver, prim_esc_sender, prim_lfsr, prim_onehot_check, prim_prince, prim_secded_inv_39_32_dec, prim_secded_inv_39_32_enc, prim_secded_inv_64_57_dec, prim_secded_inv_64_57_enc (7 instances; config `coverage_preverified`) |
 | ... without pre-verified modules, block | 99.0 % (100/101) |
-| ... without pre-verified modules, expression | 83.7 % (273/326) |
-| ... without pre-verified modules, line | 93.1 % (581/624) |
-| ... without pre-verified modules, toggle | 91.6 % (8696/9498) |
+| ... without pre-verified modules, expression | 87.4 % (285/326) |
+| ... without pre-verified modules, line | 93.4 % (583/624) |
+| ... without pre-verified modules, toggle | 98.9 % (9390/9498) |
 | Mutation score | 58.3 % (21 killed / 15 survived / 0 not compiled) |
 | Surviving mutants, formal equivalence (`nnc mutate-equiv`) | {'CEX': 3, 'ERROR': 1, 'PROVEN': 11}; score without the proven-equivalent mutants 84.0 % |
-| Coverage target | not requested (`nnc cover <design> --target <n> --metric <m>`) |
+| Coverage target | expression 90.0 %: **target_unmet** (baseline 83.7 % -> 87.4 %, work/coverage.md) |
 | Clock/reset domain crossings (structural, `nnc cdc`) | clean: no crossing over 1 configuration(s), work/cdc.md |
 | Formal (SymbiYosys, depth 32) | {'BOUNDED': 2, 'CEX': 1, 'PROVEN': 7, 'TIMEOUT': 1, 'UNSUPPORTED': 2} — reset assumptions + verif/formal/nnc_env.sv, work/formal.md |
 | Triage | 4 failure(s), 4 analysed: work/triage.md |
-| Agent cost | US$22.0933 in 70 calls (A1 0.7677, A12 0.9085, A13 1.3201, A14 3.0479, A17 4.2877, A18 1.0327, A2 0.641, A3 0.9391, A4 1.7633, A5 0.3345, A6 0.4296, A7 4.1614, A9 2.46) |
+| Agent cost | US$25.5382 in 73 calls (A1 0.7677, A10 2.5976, A11 0.8472, A12 0.9085, A13 1.3201, A14 3.0479, A17 4.2877, A18 1.0327, A2 0.641, A3 0.9391, A4 1.7633, A5 0.3345, A6 0.4296, A7 4.1614, A9 2.46) |
 
 ## Sign-off conditions
 
@@ -41,6 +41,7 @@ Generated 2026-11-24T08:38:55+00:00 by NNC Pipeline.
 | Every run of the run set built and ran | met — 3 runs |
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | **not met** — 9 rule(s) below: AH-T1.3.2-01, AH-T1.3.2-02, AH-T1.3.2-03, CP-T1.9.1-04, RT-4.2-03, RT-5-02, RT-5-05, RT-8-16, RT-T6.3-01 |
+| Coverage target expression 90.0 % | **not met** — target_unmet |
 | Clock/reset domain crossings: no structural violation (RR-33) | met — clean: no crossing (work/cdc.md) |
 | Formal: no counterexample, no vacuous or failed proof | **not met** — CEX 1 |
 
@@ -50,9 +51,9 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 
 | Run | Parameters changed | Defines | Plusargs | Status | Tests | Failing assertions | Not verifiable here |
 |---|---|---|---|---|---|---|---|
-| base.s1 — the only configuration | defaults | — | — | ran | {'pass': 23} | none | 0 |
-| base.s2 — the only configuration | defaults | — | — | ran | {'pass': 23} | none | 0 |
-| xrand.s1 — the default configuration with random initial values of every variable without a reset (ROADMAP 23.4): a check that passes only because flops start at 0 fails here; its coverage is not merged | defaults | — | — | ran | {'pass': 23} | none | 0 |
+| base.s1 — the only configuration | defaults | — | — | ran | {'pass': 27} | none | 0 |
+| base.s2 — the only configuration | defaults | — | — | ran | {'pass': 27} | none | 0 |
+| xrand.s1 — the default configuration with random initial values of every variable without a reset (ROADMAP 23.4): a check that passes only because flops start at 0 fails here; its coverage is not merged | defaults | — | — | ran | {'pass': 27} | none | 0 |
 
 ## Gates
 
@@ -60,29 +61,29 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 |---|---|---|
 | G1_rules | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-20T11:04:43+00:00 |
 | G2_contract | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-20T11:15:13+00:00 |
-| G3_verif_sources | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-20T18:07:27+00:00 |
+| G3_verif_sources | APPROVED | by Claude (delegated by GabrielHCMUT) at 2026-11-24T11:30:47+00:00 |
 | G4_signoff | PENDING | artifacts ready for review |
 
 ## Checks
 
 | Check | Kind | Title | Status | Evidence |
 |---|---|---|---|---|
-| CHK-001 | assertion | No alert signal-integrity failure | **PASS** | hits 876390, fails 0; hit in 3/3 runs; formal PROVEN |
-| CHK-002 | assertion | o_alert is a single-cycle pulse per handshake | **PASS** | hits 971, fails 0; hit in 3/3 runs; formal PROVEN |
+| CHK-001 | assertion | No alert signal-integrity failure | **PASS** | hits 883515, fails 0; hit in 3/3 runs; formal PROVEN |
+| CHK-002 | assertion | o_alert is a single-cycle pulse per handshake | **PASS** | hits 1451, fails 0; hit in 3/3 runs; formal PROVEN |
 | CHK-003 | assertion | No spurious alerts, no more pulses than test writes | **PASS** | hits 47, fails 0; hit in 3/3 runs; formal BOUNDED |
-| CHK-004 | assertion | Interrupt output masked by INTR_ENABLE0.IE_0 | **PASS** | hits 843667, fails 0; hit in 3/3 runs; formal PROVEN |
+| CHK-004 | assertion | Interrupt output masked by INTR_ENABLE0.IE_0 | **PASS** | hits 847405, fails 0; hit in 3/3 runs; formal PROVEN |
 | CHK-005 | assertion | Latched interrupt falls only after a clearing write or reset | **PASS** | hits 189, fails 0; hit in 3/3 runs; formal BOUNDED |
-| CHK-006 | assertion | Outputs inactive during reset | **PASS** | hits 468, fails 0; hit in 3/3 runs; formal UNSUPPORTED |
-| CHK-007 | assertion | Outputs change only at rising clock edges | **PASS** | hits 876297, fails 0; hit in 3/3 runs; formal UNSUPPORTED |
-| CHK-008 | assertion | Test-bench host obligations (stimulus self-check) | **PASS** | hits 22473, fails 0; hit in 3/3 runs; formal CEX |
-| CHK-009 | assertion | Every D-channel beat matches exactly one outstanding request | **PASS** | hits 11455, fails 0; hit in 3/3 runs; formal PROVEN |
-| CHK-010 | assertion | Response opcode and size echo | **PASS** | hits 11455, fails 0; hit in 3/3 runs; formal PROVEN |
-| CHK-011 | assertion | d_error value for classified requests | **PASS** | hits 11335, fails 0; hit in 3/3 runs; formal TIMEOUT |
+| CHK-006 | assertion | Outputs inactive during reset | **PASS** | hits 603, fails 0; hit in 3/3 runs; formal UNSUPPORTED |
+| CHK-007 | assertion | Outputs change only at rising clock edges | **PASS** | hits 883395, fails 0; hit in 3/3 runs; formal UNSUPPORTED |
+| CHK-008 | assertion | Test-bench host obligations (stimulus self-check) | **PASS** | hits 22566, fails 0; hit in 3/3 runs; formal CEX |
+| CHK-009 | assertion | Every D-channel beat matches exactly one outstanding request | **PASS** | hits 11503, fails 0; hit in 3/3 runs; formal PROVEN |
+| CHK-010 | assertion | Response opcode and size echo | **PASS** | hits 11503, fails 0; hit in 3/3 runs; formal PROVEN |
+| CHK-011 | assertion | d_error value for classified requests | **PASS** | hits 11383, fails 0; hit in 3/3 runs; formal TIMEOUT |
 | CHK-012 | assertion | D channel holds under back-pressure | **PASS** | hits 9238, fails 0; hit in 3/3 runs; formal PROVEN |
-| CHK-013 | assertion | Response integrity never fails | **PASS** | hits 876390, fails 0; hit in 3/3 runs; formal PROVEN |
+| CHK-013 | assertion | Response integrity never fails | **PASS** | hits 883515, fails 0; hit in 3/3 runs; formal PROVEN |
 | CHK-014 | test | ALERT_TEST.fatal_fault triggers one alert per write | **PASS** | test_chk_014_alert_test_fatal_fault; verified in base.s1, base.s2, xrand.s1 |
 | CHK-015 | test | ALERT_TEST.regwen rw0c locks alert testing until reset | **PASS** | test_chk_015_alert_regwen_rw0c; verified in base.s1, base.s2, xrand.s1 |
-| CHK-016 | test | Command integrity error raises a repeating fatal alert until reset | **PASS** | test_chk_016_intg_error_fatal_alert; verified in base.s1, base.s2, xrand.s1 |
+| CHK-016 | test | Command integrity error raises a repeating fatal alert until reset | **PASS** | test_chk_016_intg_error_fatal_alert, test_cov_104_intg_flip_commands; verified in base.s1, base.s2, xrand.s1 |
 | CHK-017 | test | Unmapped offsets return error and change nothing | **PASS** | test_chk_017_unmapped_offsets; verified in base.s1, base.s2, xrand.s1 |
 | CHK-018 | test | Byte writes per register width | **PASS** | test_chk_018_byte_writes; verified in base.s1, base.s2, xrand.s1 |
 | CHK-019 | test | TL-UL protocol error cases | **PASS** | test_chk_019_protocol_errors; verified in base.s1, base.s2, xrand.s1 |

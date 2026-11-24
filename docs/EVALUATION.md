@@ -802,7 +802,7 @@ ahb2axi_bridge, CHK-012. The record already fails 20 of 21 tests. One of its tri
 table `reg_burst_addr`/`reg_burst_size`. The table has no reset, only its indices do. With zero initial values an
 entry never written reads as address 0, size 0, which is aligned; with random values it is random, and CHK-012
 fails. So this is most likely a new symptom of a fault already recorded, not a new fault. No waveform confirms it,
-and no triage was run for it.
+and no triage was run for it then. The triage of step 23.6 (§15) confirms the recorded fault.
 
 Recorded: uart_lite has a fifth run-set configuration `xrand` (CFG-BASE with x_init, seeds 1 and 2): 9 runs,
 20/20 tests, 13 assertions, 0 failures. Every run set counts a configuration as its own copy of the design, so the
@@ -1052,6 +1052,43 @@ block metric (77.1 → 97.1 %) is the coverage of the RTL as delivered. The revi
 specification: the review packet's checklist has "The unreached code and cover points are unreachable by design or
 accepted", and `work/unr.md` lists every PROVEN branch with its file and line. The 20 failing tests of ahb2axi
 already show the fault. No PROVEN branch of the other designs is in code that the specification requires.
+
+**23.5, expression closure of ot_rv_timer.** `nnc cover --metric expression --target 90` was run without the
+`prim_*` modules declared pre-verified. Agents A10 (analyst, reads the RTL) and A11 (test writer, never sees it)
+were used. Cost: US$3.44.
+
+| Round | Expression (without pre-verified) | Scenarios | Tests added |
+|---|---|---|---|
+| baseline | 83.7 % (273/326) | | |
+| 1 | **87.4 %** (285/326) | 4 | `test_cov_101_subword_unaligned_writes`, `test_cov_102_idle_bad_masks`, `test_cov_103_idle_instr_write`, `test_cov_104_intg_flip_commands` |
+| 2 | — | 0 | none: no scenario with legal, specification-level stimulus |
+
+- The 4 tests pass: 27/27 tests, 13 assertions, 0 failures. The tests and assertions that were there before are
+  unchanged.
+- The target of 90 % is not met. The analyst claims 10 groups of points unreachable through the ports. They are
+  listed in `work/coverage.md` and still counted. Examples:
+  - inputs tied off in the one configuration (`busy_i`, `en_ifetch_i`, the hardware `de` of software-only
+    registers);
+  - integrity errors that the single-bit `i_a_intg_flip` cannot make (a double error, data integrity);
+  - the `reg_we_err` countermeasure, which needs a fault inside the register block.
+- These claims are plausible, but no tool has proved them. A formal proof of expression points, as 23.3 does for
+  branches, would settle them; it is not done.
+- G3 was approved again on the owner's delegation, because closure changed `verif/`.
+
+**23.6, CHK-012 of ahb2axi_bridge under x_init.** The A9 triage agent was run on this one failure only. It used the
+same prompt and files as `nnc triage`, plus `run_set.json` and the earlier `triage.md`. The result is in
+`work/triage_xrand_chk012.md` (US$1.19). Verdict: **A_rtl_wrong, the recorded fault 2, not a new fault.**
+- `w_cap_stop` is not gated by the state, so every NONSEQ write starts with `reg_burst_fallback = 1`, also a SINGLE
+  or INCR write that is not eligible for a burst.
+- In WR_SINGLE with fallback, AWADDR and AWSIZE come from `reg_burst_addr[widx]` and `reg_burst_size[widx]`
+  (`m_ahb2axi_ctrl.sv:688-690`). These arrays have no reset and were never loaded for that transfer.
+- With zero initial values the AW carries address 0 and size 0. That address is wrong (spec :411), but it is
+  aligned, so CHK-012 holds; the other failing tests already show the wrong address.
+- With random initial values the size or the alignment is wrong, and CHK-012 fails: 10 times, all in
+  `test_chk_021_accept_qualifiers`, until later bursts have written legal values into the slots.
+
+The agent's options for the designer: gate `w_cap_stop` to WR_CAPTURE, the root fix. As hardening only, reset the
+arrays. Nothing was changed. This is the same root cause that makes the AXI burst path dead (above).
 
 Limits:
 - a branch inside a module with no clocked block at module level (`cell_sync`) is not tried;

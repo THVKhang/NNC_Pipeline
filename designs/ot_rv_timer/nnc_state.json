@@ -1,6 +1,8 @@
 {
   "config": {
+    "coverage_metric": "expression",
     "coverage_preverified": "prim_alert_sender,prim_alert_receiver,prim_count,prim_esc_sender,prim_esc_receiver,prim_lfsr,prim_onehot_check,prim_prince,prim_secded_inv_64_57_dec,prim_secded_inv_39_32_dec,prim_secded_inv_64_57_enc,prim_secded_inv_39_32_enc",
+    "coverage_target": "90.0",
     "documents": [
       {
         "file": "spec/rv_timer_Design_Specification.md",
@@ -90,12 +92,12 @@
       "note": "Not a hardware designer's review. 35 checks (13 assertions, 22 tests) over 151 rules; 77 rules not verified by simulation (mostly standard text outside this IP or obligations of the host). Checks follow spec decisions D-001..D-020: bounds instead of exact cycles where the documents are silent; d_error of instruction fetches and the response to an integrity-fault request are not checked."
     },
     "G3_verif_sources": {
-      "at": "2026-11-20T18:07:27+00:00",
+      "at": "2026-11-24T11:30:47+00:00",
       "by": "Claude (delegated by GabrielHCMUT)",
       "hashes": {
-        "verif": "7d7f178fc68674cc146b00762d7a5b181cabe8b351ef6a798013149c69876598"
+        "verif": "571c7e1bbfe6d15fd1f9c978938dea8e7bb81ae313ca6fc5b80e6f9b179eeb1c"
       },
-      "note": "Not a hardware designer's review. Round 2 after formal: A17 (triage B) - CHK-003 treats a presented (not only accepted) intg-flip request as an alert cause (INT-INTG-002, D-010); CHK-004 stops checking IE_0 after an error-free write to 0x100 of a kind D-013 leaves unchecked (ie_unk) until the next modelled write. Assertions otherwise unchanged; weakening check clean; simulation 23/23. A13 (triage E feedback): ENV-08/ENV-10 track any write to CFG0/TIMER_V_* (RT-8-03); ENV-07 covers every write reaching lanes 0 and 3 of ALERT_TEST (RT-8-15). A13 declined to assume away non-contiguous masks (RT-4.1-05); that question is open."
+      "note": "Not a hardware designer's review. Phase 23.5 coverage closure (expression, without the coverage_preverified prim_* modules): one closure module test_ot_rv_timer_cov1.py with 4 tests written by A11 from A10 scenarios (no RTL identifiers), 27/27 tests pass, 13 assertions with 0 failures, existing tests and assertions unchanged. Expression 83.7 -> 87.4 %; target 90 % not met; 10 points claimed unreachable are listed in work/coverage.md and still counted."
     }
   },
   "version": 1

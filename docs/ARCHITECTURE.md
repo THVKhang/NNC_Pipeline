@@ -860,6 +860,14 @@ Phân tích từng mảng, có so với quy trình ký duyệt của OpenTitan, 
 - **Nhiều control.** Mỗi task có tối đa 4 assert control trên flop của các tín hiệu khác nhau; task chỉ có kết luận khi guard FAIL và ít nhất một control FAIL. Lý do: ở cấu hình `min` của spi_master, flop control duy nhất bị hằng nên mọi task rỗng.
 - **Closure bỏ module đã kiểm sẵn.** Nếu thiết kế khai báo `coverage_preverified` (rv_timer: các `prim_*`, giống `cover.cfg` của OpenTitan), `nnc cover` lấy mục tiêu và danh sách điểm chưa phủ từ phần còn lại của thiết kế.
 - **Lưu ý quan trọng: PROVEN nghĩa là chết trong RTL đang có, không có nghĩa là chết theo thiết kế.** Ở ahb2axi_bridge, đường burst AXI (WR_BURST, WR_BBURST, `o_axi_awlen`) được chứng minh là không bao giờ chạy. Nguyên nhân là lỗi RTL số 2 đã ghi: `w_cap_stop` luôn bật `reg_burst_fallback`, nên mọi burst AHB thành các lệnh đơn. Spec yêu cầu gom burst, nên đoạn code này chết vì lỗi. Người duyệt G4 phải xét từng điểm bị loại so với spec: checklist của review packet có mục này, và `work/unr.md` liệt kê mọi nhánh PROVEN.
+- **23.5, closure expression của rv_timer.**
+  - Kết quả: 83,7 → 87,4 % (không tính `prim_*`), 4 test mới đều pass, tốn US$3,44.
+  - Mục tiêu 90 % chưa đạt. 10 nhóm điểm bị agent cho là không tới được; chúng vẫn được tính, vì chưa có chứng minh formal cho điểm expression.
+- **23.6, CHK-012 của ahb2axi dưới x_init.**
+  - Agent triage (chỉ chạy cho lỗi này) kết luận A_rtl_wrong, cùng gốc với lỗi số 2: lệnh ghi đơn cũng có fallback = 1, nên AWADDR/AWSIZE lấy từ bảng `reg_burst_addr/size`, bảng này không có reset.
+  - Giá trị đầu bằng 0: địa chỉ 0, sai nhưng vẫn thẳng hàng, nên CHK-012 không bắt được.
+  - Giá trị đầu ngẫu nhiên: CHK-012 fail.
+  - Không phải lỗi mới (`work/triage_xrand_chk012.md`).
 
 ## 27. Đầu vào bất kỳ: intake, adapt, corpus (GĐ21, 2026-11-23)
 

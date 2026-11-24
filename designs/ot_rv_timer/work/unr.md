@@ -6,7 +6,7 @@ RTL SHA-256 `4704629a580137f8...`
 
 ## Configuration base (`6226750a4c487076`)
 
-Parameters {}; macros none; clocks free (multiclock on); 7 SymbiYosys task(s); control `u_rv_timer.gen_harts[0].u_core.tick_count[0]`, `u_rv_timer.u_reg.u_reg_if.outstanding_q[0]`, `u_rv_timer.u_reg.u_reg_if.reqid_q[0]`, `u_rv_timer.u_reg.u_reg_if.rspop_q[0]` (one must change).
+Parameters {}; macros none; clocks free (multiclock on); 8 SymbiYosys task(s); control `u_rv_timer.gen_harts[0].u_core.tick_count[0]`, `u_rv_timer.u_reg.u_reg_if.outstanding_q[0]`, `u_rv_timer.u_reg.u_reg_if.reqid_q[0]`, `u_rv_timer.u_reg.u_reg_if.rspop_q[0]` (one must change).
 
 | Result | Bits | Signals |
 |---|---|---|

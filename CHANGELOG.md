@@ -62,6 +62,18 @@ approval is recorded as delegated. See [docs/G4_REVIEW_REQUEST.md](docs/G4_REVIE
   before the first reset are not activity of the design, and they would cover points and undo the constant-bit
   and UNR exclusions.
 
+### Phase 23.5: expression closure of ot_rv_timer
+- `nnc cover --metric expression --target 90`, without the pre-verified `prim_*` modules (US$3.44). One closure
+  module with 4 tests; 27/27 tests pass. Expression 83.7 → 87.4 %; the target is not met. The analyst claims
+  10 point groups are unreachable through the ports (tie-offs, integrity faults the ports cannot inject). They
+  are listed in `work/coverage.md` and still counted. G3 approved again (delegated).
+
+### Phase 23.6: CHK-012 of ahb2axi_bridge under x_init
+- Triage of this one failure (`work/triage_xrand_chk012.md`, US$1.19) concluded A_rtl_wrong. It is the recorded
+  fault 2, not a new fault. A single write also gets `reg_burst_fallback = 1`, so its AWADDR and AWSIZE come from
+  the burst table, which has no reset. The table reads as 0 (a wrong but aligned address) when flops start at 0,
+  and as a random value under x_init. The RTL was not changed.
+
 ### Closure without pre-verified modules
 - When a design declares `coverage_preverified`, `nnc cover` (code metrics) takes its target and the uncovered
   points given to the analyst from the coverage without those modules. This matches OpenTitan's `cover.cfg`.

@@ -206,6 +206,14 @@ code lạ trong sandbox, và người dùng thật của công cụ quen dòng l
   - Block coverage: ahb2axi 77,1 → 97,1 %, rv_timer 87,8 → 99,3 %, gpio 93,6 → 99,5 %.
   - Không nhánh PROVEN nào từng chạy trong mô phỏng. Test và check không đổi.
 - 23.5 và 23.6: người dùng đã đồng ý chi phí ("ok, xong thì làm tiếp 23.5 và 23.6").
+- 23.5: xong, nhưng chưa đạt mục tiêu (US$3,44).
+  - Expression của rv_timer (không tính `prim_*`) tăng 83,7 → 87,4 % nhờ 4 test mới; 27/27 test pass.
+  - Mục tiêu 90 % chưa đạt: agent cho rằng 10 nhóm điểm không tới được từ port (input bị buộc hằng, lỗi integrity mà port không tạo được). Các điểm này vẫn được tính.
+  - Việc có thể làm tiếp: chứng minh formal cho điểm expression, giống cách 23.3 làm cho nhánh.
+  - G3 đã duyệt lại (ủy quyền).
+- 23.6: xong (US$1,19).
+  - Agent triage kết luận A_rtl_wrong, cùng gốc với lỗi RTL số 2 đã ghi: `w_cap_stop` không theo trạng thái, nên lệnh ghi đơn đọc AWADDR/AWSIZE từ bảng burst không có reset.
+  - Không phải lỗi mới. Kết quả ở `work/triage_xrand_chk012.md`.
 - Lưu ý: đường burst AXI của ahb2axi bị loại vì chết do lỗi RTL đã ghi, không phải do thiết kế. Người duyệt G4 cần xét.
 
 ## Việc còn mở, chờ người có chuyên môn (G4)

@@ -1,0 +1,463 @@
+{
+ "metric": "expression",
+ "target": 90.0,
+ "baseline": {
+  "hit": 273,
+  "total": 326,
+  "percent": 83.7
+ },
+ "rounds": [
+  {
+   "round": 1,
+   "scenarios": [
+    {
+     "id": "COV-101",
+     "points": [
+      36,
+      38,
+      39
+     ],
+     "checks": [
+      "CHK-009",
+      "CHK-010",
+      "CHK-008",
+      "CHK-013",
+      "CHK-011"
+     ],
+     "rules": [
+      "TL-T3.1.3.4-03",
+      "RT-8-21",
+      "RT-8-22",
+      "RT-8-27",
+      "RT-4.1-01",
+      "RT-4.1-06",
+      "RT-7-07"
+     ],
+     "stimulus": "Size-aligned sub-word writes whose address is not 4-byte aligned. After reset, leave CTRL.active_0=0 and hold i_d_ready=1. Drive i_a_instr=0, i_a_intg_flip=0 and i_a_param=0. Send one request at a time, give each its own a_source, and wait for its D beat before sending the next. (1) PutPartialData, a_size=0, mask 0010, to 0x101 (byte 1 of INTR_ENABLE0), data 0x0000FF00. (2) PutPartialData, a_size=0, mask 0100, to 0x102, data 0x00FF0000. (3) PutPartialData, a_size=0, mask 1000, to 0x103, data 0xFF000000. (4) PutFullData, a_size=1, mask 1100, to 0x102, data 0xFFFF0000. (5) PutPartialData, a_size=1, mask 1100, to 0x11A (upper half of COMPARE_LOWER0_0), data 0x12340000. (6) PutPartialData, a_size=0, mask 0010, to 0x119, data 0x0000AB00. Then send full-word Gets (a_size=2, mask 1111) to INTR_ENABLE0 and COMPARE_LOWER0_0. Each write must get exactly one response that echoes its source, opcode and size. The two reads must complete without error. Do not write CTRL, INTR_STATE0 or the timer value registers in this scenario."
+    },
+    {
+     "id": "COV-102",
+     "points": [
+      14,
+      15,
+      16,
+      17,
+      18
+     ],
+     "checks": [
+      "CHK-008",
+      "CHK-009",
+      "CHK-003",
+      "CHK-013",
+      "CHK-011"
+     ],
+     "rules": [
+      "TL-T3.1.3.4-02",
+      "RT-4.1-04",
+      "TL-T3.1.3.4-03"
+     ],
+     "stimulus": "Byte-mask values on an idle A channel. After reset (rst_ni=1, no request outstanding, i_d_ready=1), hold i_a_valid=0, i_a_intg_flip=0, i_a_instr=0 and i_a_param=0. Present i_a_mask = 0101, 1001, 1010, 1011 and 1101 in turn, one or two cycles each. The other A-channel fields can be any legal values, for example a PutFullData with a_size=2 to 0x10C. No request is presented, because i_a_valid stays 0 the whole time. Then set i_a_mask=1111 while i_a_valid is still 0, and in a later cycle send a normal full-word Get to CFG0 (0x10C). Check that no D beat appears during the idle cycles, that no o_alert pulse occurs, and that the CFG0 read completes without error."
+    },
+    {
+     "id": "COV-103",
+     "points": [
+      44,
+      45,
+      47
+     ],
+     "checks": [
+      "CHK-008",
+      "CHK-009",
+      "CHK-003",
+      "CHK-001",
+      "CHK-011"
+     ],
+     "rules": [
+      "RT-8-18",
+      "RT-4.1-03",
+      "RT-4.1-04",
+      "RT-3-02"
+     ],
+     "stimulus": "Instruction-type indication together with a write opcode on an idle A channel. After reset (rst_ni=1, no request outstanding, i_d_ready=1), hold i_a_valid=0 and i_a_intg_flip=0, and set i_a_instr=1. Drive i_a_opcode=0 (PutFullData) for a few cycles, then i_a_opcode=1 (PutPartialData) for a few cycles. During both, use a_size=2, mask 1111 and an aligned mapped address such as 0x100. No request is presented, because i_a_valid stays 0. Before raising i_a_valid again, set i_a_instr=0. Then send a full-word PutFullData of 0x1 to INTR_ENABLE0 (0x100), followed by a full-word Get of INTR_ENABLE0. Check that no D beat appears while i_a_valid=0, that no o_alert pulse occurs, and that the write and the read complete without error."
+    },
+    {
+     "id": "COV-104",
+     "points": [
+      1
+     ],
+     "checks": [
+      "CHK-016",
+      "CHK-001",
+      "CHK-013",
+      "CHK-003",
+      "CHK-006"
+     ],
+     "rules": [
+      "RT-4.2-02",
+      "RT-4.2-03",
+      "RT-3-03",
+      "RT-8-16",
+      "RT-8-17",
+      "RT-T6.3-01",
+      "RT-8-32"
+     ],
+     "stimulus": "Command-integrity inversion across many command values. (a) After reset, with no request outstanding, hold i_a_valid=0 and drive i_a_intg_flip=1. Over about 100 cycles, change the command fields while i_a_valid stays 0: walk a single 1 across every bit of i_a_address; step i_a_opcode through 0, 1 and 4; step i_a_mask through 0001, 0011, 1100 and 1111; step i_a_size through 0, 1 and 2; and toggle i_a_instr. Since no request is accepted, check that no o_alert pulse occurs. Then set i_a_intg_flip=0 and confirm that a normal full-word Get of CFG0 completes without error. (b) Follow the CHK-016 procedure once each for several different corrupted requests: a Get (a_size=2, mask 1111) with i_a_intg_flip=1 to 0x000, to 0x004, to 0x10C and to 0x11C, and a PutFullData of 0x0 to 0x118 with i_a_intg_flip=1. Wait no more than 32 cycles for each response. Watch o_alert for at least 200 cycles. Then hold rst_ni=0 for 5 cycles, release it synchronously, idle, and read CFG0 before the next corrupted request."
+    }
+   ],
+   "tests": [
+    "test_cov_101_subword_unaligned_writes",
+    "test_cov_102_idle_bad_masks",
+    "test_cov_103_idle_instr_write",
+    "test_cov_104_intg_flip_commands"
+   ],
+   "percent": 87.4,
+   "hit": 285,
+   "total": 326
+  },
+  {
+   "round": 2,
+   "scenarios": [],
+   "tests": [],
+   "note": "no scenario with legal, specification-level stimulus"
+  }
+ ],
+ "unreachable": [
+  {
+   "round": 1,
+   "rules": [
+    "RT-T5.3.1-01",
+    "RT-T5.4.1-01",
+    "RT-T5.7.1-01"
+   ],
+   "reason": "CTRL, INTR_ENABLE0, CFG0.prescale/step and the COMPARE registers are software-only rw fields. They have no hardware update path, and their hardware data-enable input is tied to constant 0. Only TIMER_V_* is hardware-updated, and that case is already covered.",
+   "where": [
+    "prim_subreg_arb.sv:33 (de==1) => 1"
+   ]
+  },
+  {
+   "round": 1,
+   "rules": [
+    "RT-T5.2.1-01",
+    "RT-8-12"
+   ],
+   "reason": "ALERT_TEST.regwen (rw0c) changes only through software writes. Its hardware data-enable is tied to constant 0.",
+   "where": [
+    "prim_subreg_arb.sv:113 (de==1) => 1"
+   ]
+  },
+  {
+   "round": 1,
+   "rules": [
+    "RT-4.1-03"
+   ],
+   "reason": "The wrapper always encodes a_user.instr_type as MuBi4True or MuBi4False from i_a_instr. No input can produce an invalid multi-bit encoding.",
+   "where": [
+    "prim_mubi_pkg.sv:32 ((val ==? prim_mubi_pkg::MuBi4True)==0 && (val ==? prim_mubi_pkg::MuBi4False)==0) => 1",
+    "tlul_err.sv:39 (instr_type_err==1) => 1"
+   ]
+  },
+  {
+   "round": 1,
+   "rules": [
+    "RT-5-04",
+    "RT-8-32",
+    "RT-1-04",
+    "AH-T1.3.4-01"
+   ],
+   "reason": "Both wires of an internal alert differential pair would have to be high at the same time (a signal-integrity fault). A correct sender and receiver never produce this, the pairs cannot be reached from the ports, and o_alert_integ_fail must always be 0.",
+   "where": [
+    "prim_xnor2.sv:13 (in0_i==1 && in1_i==1) => 1"
+   ]
+  },
+  {
+   "round": 1,
+   "rules": [
+    "RT-1-06",
+    "RT-T6.3-01"
+   ],
+   "reason": "The spurious write-enable detector fires only when two or more register write enables are active together. The address decode allows only one per access, so this needs internal fault injection, which the ports do not offer.",
+   "where": [
+    "rv_timer_reg_top.sv:80 (reg_we_err==1) => 1"
+   ]
+  },
+  {
+   "round": 1,
+   "rules": [
+    "RT-1-02",
+    "RT-T6.1-01"
+   ],
+   "reason": "RACL is disabled (EnableRacl=0) and the RACL policy input is tied to constant 0 inside the wrapper. The RACL permission logic and the policy-vector terms can never vary.",
+   "where": [
+    "rv_timer_reg_top.sv:571 ($unsigned(1'((racl_policies_i[$unsigned(2'((32'h4 * (RaclPolicySelVec[slice_idx[3:0]]))))+:4][1:0] & racl_role_vec)))==0 && $unsigned(1'(((racl_policies_i[$unsigned(2'((32'h4 * (RaclPolicySelVec[slice_idx[3:0]]))))+:4][1:0] & racl_role_vec)) >> (32'h1)))==0) => 0",
+    "rv_timer_reg_top.sv:571 (addr_hit[slice_idx[3:0]+:1]==0) => 0",
+    "rv_timer_reg_top.sv:571 (addr_hit[slice_idx[3:0]+:1]==1 && $unsigned(1'(((racl_policies_i[$unsigned(2'((32'h4 * (RaclPolicySelVec[slice_idx[3:0]]))))+:4][1:0] & racl_role_vec)) >> (32'h1)))==1) => 1",
+    "rv_timer_reg_top.sv:571 (addr_hit[slice_idx[3:0]+:1]==1 && $unsigned(1'((racl_policies_i[$unsigned(2'((32'h4 * (RaclPolicySelVec[slice_idx[3:0]]))))+:4][1:0] & racl_role_vec)))==1) => 1",
+    "rv_timer_reg_top.sv:574 ($unsigned(1'((racl_policies_i[$unsigned(2'((32'h4 * (RaclPolicySelVec[slice_idx[3:0]]))))+:4][3:2] & racl_role_vec)))==0 && $unsigned(1'(((racl_policies_i[$unsigned(2'((32'h4 * (RaclPolicySelVec[slice_idx[3:0]]))))+:4][3:2] & racl_role_vec)) >> (32'h1)))==0) => 0",
+    "rv_timer_reg_top.sv:574 (addr_hit[slice_idx[3:0]+:1]==0) => 0",
+    "rv_timer_reg_top.sv:574 (addr_hit[slice_idx[3:0]+:1]==1 && $unsigned(1'(((racl_policies_i[$unsigned(2'((32'h4 * (RaclPolicySelVec[slice_idx[3:0]]))))+:4][3:2] & racl_role_vec)) >> (32'h1)))==1) => 1",
+    "rv_timer_reg_top.sv:574 (addr_hit[slice_idx[3:0]+:1]==1 && $unsigned(1'((racl_policies_i[$unsigned(2'((32'h4 * (RaclPolicySelVec[slice_idx[3:0]]))))+:4][3:2] & racl_role_vec)))==1) => 1",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==0 && racl_policies_i[1]==0 && racl_policies_i[2]==0 && racl_policies_i[3]==1) => 1",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==0 && racl_policies_i[1]==0 && racl_policies_i[2]==1 && racl_policies_i[3]==0) => 1",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==0 && racl_policies_i[1]==0 && racl_policies_i[2]==1 && racl_policies_i[3]==1) => 0",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==0 && racl_policies_i[1]==1 && racl_policies_i[2]==0 && racl_policies_i[3]==0) => 1",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==0 && racl_policies_i[1]==1 && racl_policies_i[2]==0 && racl_policies_i[3]==1) => 0",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==0 && racl_policies_i[1]==1 && racl_policies_i[2]==1 && racl_policies_i[3]==0) => 0",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==0 && racl_policies_i[1]==1 && racl_policies_i[2]==1 && racl_policies_i[3]==1) => 1",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==1 && racl_policies_i[1]==0 && racl_policies_i[2]==0 && racl_policies_i[3]==0) => 1",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==1 && racl_policies_i[1]==0 && racl_policies_i[2]==0 && racl_policies_i[3]==1) => 0",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==1 && racl_policies_i[1]==0 && racl_policies_i[2]==1 && racl_policies_i[3]==0) => 0",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==1 && racl_policies_i[1]==0 && racl_policies_i[2]==1 && racl_policies_i[3]==1) => 1",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==1 && racl_policies_i[1]==1 && racl_policies_i[2]==0 && racl_policies_i[3]==0) => 0",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==1 && racl_policies_i[1]==1 && racl_policies_i[2]==0 && racl_policies_i[3]==1) => 1",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==1 && racl_policies_i[1]==1 && racl_policies_i[2]==1 && racl_policies_i[3]==0) => 1",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==1 && racl_policies_i[1]==1 && racl_policies_i[2]==1 && racl_policies_i[3]==1) => 0"
+   ]
+  },
+  {
+   "round": 1,
+   "rules": [
+    "RT-1-06"
+   ],
+   "reason": "rv_timer has no shadowed or busy-signalling registers, so the register busy input is constant 0 in the one fixed configuration.",
+   "where": [
+    "tlul_adapter_reg.sv:231 (busy_i==1) => 0"
+   ]
+  },
+  {
+   "round": 1,
+   "rules": [
+    "RT-1-06",
+    "RT-8-18"
+   ],
+   "reason": "The instruction-fetch enable of the register adapter is a constant MuBi4False in the fixed configuration, not a port, so it never tests as not-false-loose.",
+   "where": [
+    "tlul_adapter_reg.sv:278 (mubi4_test_false_loose(en_ifetch_i)==0) => 0"
+   ]
+  },
+  {
+   "round": 1,
+   "rules": [
+    "RT-1-06",
+    "RT-4.2-03"
+   ],
+   "reason": "The register adapter is built without its own command-integrity check, so its integrity-error term is constant 0. Integrity errors are detected and handled by the separate checker in the register block.",
+   "where": [
+    "tlul_adapter_reg.sv:281 (intg_error==1) => 1"
+   ]
+  },
+  {
+   "round": 1,
+   "rules": [
+    "RT-4.2-01",
+    "RT-4.2-02"
+   ],
+   "reason": "The wrapper always generates correct data integrity (a_user.data_intg). i_a_intg_flip inverts only bit 0 of cmd_intg, so the A-channel data-integrity check can never report an error.",
+   "where": [
+    "tlul_cmd_intg_chk.sv:44 (tl_i[108]==1 && data_err[0]==1) => 1",
+    "tlul_data_integ_dec.sv:25 (data_err[0]==1) => 1",
+    "tlul_data_integ_dec.sv:25 (data_err[1]==1) => 1"
+   ]
+  },
+  {
+   "round": 1,
+   "rules": [
+    "RT-4.2-02"
+   ],
+   "reason": "The only way to corrupt the command integrity is to invert one bit (bit 0 of cmd_intg). A single-bit change always decodes as a single error and never as a double (uncorrectable) error.",
+   "where": [
+    "tlul_cmd_intg_chk.sv:44 (tl_i[108]==1 && err[1]==1) => 1"
+   ]
+  },
+  {
+   "round": 1,
+   "rules": [
+    "RT-4.3-01",
+    "RT-4.3-02",
+    "RT-8-32"
+   ],
+   "reason": "The response integrity is always generated correctly by the device, and o_d_intg_err must always be 0. In addition, the wrapper's response-data integrity check is disabled, so that error term is constant 0.",
+   "where": [
+    "tlul_rsp_intg_chk.sv:47 (tl_i[65]==1 && rsp_data_err==1) => 1",
+    "tlul_rsp_intg_chk.sv:47 (tl_i[65]==1 && rsp_err[0]==1) => 1",
+    "tlul_rsp_intg_chk.sv:47 (tl_i[65]==1 && rsp_err[1]==1) => 1"
+   ]
+  },
+  {
+   "round": 2,
+   "rules": [
+    "RT-T5.3.1-01",
+    "RT-T5.4.1-01",
+    "RT-T5.7.1-01",
+    "RT-T5.2.1-01",
+    "RT-1-06"
+   ],
+   "reason": "These are the hardware-update conditions of registers that only software can write: CTRL.active_0, INTR_ENABLE0.IE_0, CFG0.prescale and CFG0.step (rw), and ALERT_TEST.regwen (rw0c). In the single fixed configuration, nothing in the hardware ever writes these fields; their hardware-write input is a constant 0. The only registers the hardware updates (TIMER_V_* and INTR_STATE0) belong to other instances or other access types, so no port stimulus can make this condition true.",
+   "where": [
+    "prim_subreg_arb.sv:33 (de==1) => 1",
+    "prim_subreg_arb.sv:113 (de==1) => 1"
+   ]
+  },
+  {
+   "round": 2,
+   "rules": [
+    "RT-4.1-03"
+   ],
+   "reason": "This is the 'invalid instr_type encoding' error. Per INT-TL-002, the wrapper sets a_user.instr_type to MuBi4True when i_a_instr=1 and to MuBi4False when i_a_instr=0. No input value produces any other encoding, so the invalid-encoding term is always false.",
+   "where": [
+    "prim_mubi_pkg.sv:32 ((val ==? prim_mubi_pkg::MuBi4True)==0 && (val ==? prim_mubi_pkg::MuBi4False)==0) => 1",
+    "tlul_err.sv:39 (instr_type_err==1) => 1"
+   ]
+  },
+  {
+   "round": 2,
+   "rules": [
+    "RT-5-04",
+    "RT-8-32",
+    "RT-1-04",
+    "AH-T1.3.4-01"
+   ],
+   "reason": "This term is the alert receiver's signal-integrity detector firing because both wires of a differential pair have the same value. A correct sender and receiver never produce that state, and D-017 requires o_alert_integ_fail=0 at all times. The differential pairs are inside the wrapper, so no port can inject an encoding fault (contract not_verified: AH-T1.3.4-01).",
+   "where": [
+    "prim_xnor2.sv:13 (in0_i==1 && in1_i==1) => 1"
+   ]
+  },
+  {
+   "round": 2,
+   "rules": [
+    "RT-T6.3-01",
+    "RT-4.2-01",
+    "RT-8-32"
+   ],
+   "reason": "This is the spurious write-enable countermeasure: it fires only if more than one register write strobe is active at once, or if a strobe is active without a decoded address. That needs a hardware fault inside the register block. Any legal TL-UL request through the ports decodes to at most one register. The only fault injection available at the ports is i_a_intg_flip, and it acts on command integrity, not on write strobes.",
+   "where": [
+    "rv_timer_reg_top.sv:80 (reg_we_err==1) => 1"
+   ]
+  },
+  {
+   "round": 2,
+   "rules": [
+    "RT-1-02",
+    "RT-T6.1-01"
+   ],
+   "reason": "RACL is disabled (INT-CFG-002). The RACL policy input of rv_timer is not a top-level port: the wrapper ties it to all zeros, and the RACL role/permission logic is compiled out. The per-register read/write permission terms and every nonzero policy-bit combination therefore cannot be reached. The contract lists RT-T6.1-01 as not applicable for exactly this reason.",
+   "where": [
+    "rv_timer_reg_top.sv:571 ($unsigned(1'((racl_policies_i[$unsigned(2'((32'h4 * (RaclPolicySelVec[slice_idx[3:0]]))))+:4][1:0] & racl_role_vec)))==0 && $unsigned(1'(((racl_policies_i[$unsigned(2'((32'h4 * (RaclPolicySelVec[slice_idx[3:0]]))))+:4][1:0] & racl_role_vec)) >> (32'h1)))==0) => 0",
+    "rv_timer_reg_top.sv:571 (addr_hit[slice_idx[3:0]+:1]==0) => 0",
+    "rv_timer_reg_top.sv:571 (addr_hit[slice_idx[3:0]+:1]==1 && $unsigned(1'(((racl_policies_i[$unsigned(2'((32'h4 * (RaclPolicySelVec[slice_idx[3:0]]))))+:4][1:0] & racl_role_vec)) >> (32'h1)))==1) => 1",
+    "rv_timer_reg_top.sv:571 (addr_hit[slice_idx[3:0]+:1]==1 && $unsigned(1'((racl_policies_i[$unsigned(2'((32'h4 * (RaclPolicySelVec[slice_idx[3:0]]))))+:4][1:0] & racl_role_vec)))==1) => 1",
+    "rv_timer_reg_top.sv:574 ($unsigned(1'((racl_policies_i[$unsigned(2'((32'h4 * (RaclPolicySelVec[slice_idx[3:0]]))))+:4][3:2] & racl_role_vec)))==0 && $unsigned(1'(((racl_policies_i[$unsigned(2'((32'h4 * (RaclPolicySelVec[slice_idx[3:0]]))))+:4][3:2] & racl_role_vec)) >> (32'h1)))==0) => 0",
+    "rv_timer_reg_top.sv:574 (addr_hit[slice_idx[3:0]+:1]==0) => 0",
+    "rv_timer_reg_top.sv:574 (addr_hit[slice_idx[3:0]+:1]==1 && $unsigned(1'(((racl_policies_i[$unsigned(2'((32'h4 * (RaclPolicySelVec[slice_idx[3:0]]))))+:4][3:2] & racl_role_vec)) >> (32'h1)))==1) => 1",
+    "rv_timer_reg_top.sv:574 (addr_hit[slice_idx[3:0]+:1]==1 && $unsigned(1'((racl_policies_i[$unsigned(2'((32'h4 * (RaclPolicySelVec[slice_idx[3:0]]))))+:4][3:2] & racl_role_vec)))==1) => 1",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==0 && racl_policies_i[1]==0 && racl_policies_i[2]==0 && racl_policies_i[3]==1) => 1",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==0 && racl_policies_i[1]==0 && racl_policies_i[2]==1 && racl_policies_i[3]==0) => 1",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==0 && racl_policies_i[1]==0 && racl_policies_i[2]==1 && racl_policies_i[3]==1) => 0",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==0 && racl_policies_i[1]==1 && racl_policies_i[2]==0 && racl_policies_i[3]==0) => 1",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==0 && racl_policies_i[1]==1 && racl_policies_i[2]==0 && racl_policies_i[3]==1) => 0",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==0 && racl_policies_i[1]==1 && racl_policies_i[2]==1 && racl_policies_i[3]==0) => 0",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==0 && racl_policies_i[1]==1 && racl_policies_i[2]==1 && racl_policies_i[3]==1) => 1",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==1 && racl_policies_i[1]==0 && racl_policies_i[2]==0 && racl_policies_i[3]==0) => 1",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==1 && racl_policies_i[1]==0 && racl_policies_i[2]==0 && racl_policies_i[3]==1) => 0",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==1 && racl_policies_i[1]==0 && racl_policies_i[2]==1 && racl_policies_i[3]==0) => 0",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==1 && racl_policies_i[1]==0 && racl_policies_i[2]==1 && racl_policies_i[3]==1) => 1",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==1 && racl_policies_i[1]==1 && racl_policies_i[2]==0 && racl_policies_i[3]==0) => 0",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==1 && racl_policies_i[1]==1 && racl_policies_i[2]==0 && racl_policies_i[3]==1) => 1",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==1 && racl_policies_i[1]==1 && racl_policies_i[2]==1 && racl_policies_i[3]==0) => 1",
+    "rv_timer_reg_top.sv:732 (racl_policies_i[0]==1 && racl_policies_i[1]==1 && racl_policies_i[2]==1 && racl_policies_i[3]==1) => 0"
+   ]
+  },
+  {
+   "round": 2,
+   "rules": [
+    "RT-1-06",
+    "RT-4.1-01"
+   ],
+   "reason": "rv_timer has no shadowed registers, so in its only configuration the register-interface busy indication is a constant 0. A request is never held off because the register block is busy, and no stimulus can change this.",
+   "where": [
+    "tlul_adapter_reg.sv:231 (busy_i==1) => 0"
+   ]
+  },
+  {
+   "round": 2,
+   "rules": [
+    "RT-1-06",
+    "RT-3-02"
+   ],
+   "reason": "In the fixed configuration, the instruction-fetch enable of the register adapter is tied to 'disabled', so the 'fetch enabled' outcome of this test never happens. Instruction-fetch Gets (i_a_instr=1) can only exercise the already-covered 'disabled' side (CHK-021).",
+   "where": [
+    "tlul_adapter_reg.sv:278 (mubi4_test_false_loose(en_ifetch_i)==0) => 0"
+   ]
+  },
+  {
+   "round": 2,
+   "rules": [
+    "RT-1-06",
+    "RT-4.2-03"
+   ],
+   "reason": "In this configuration, the register adapter's own command-integrity check is turned off, so its integrity-error term is a constant 0. Command-integrity faults from i_a_intg_flip=1 are detected by the register block's separate integrity checker, which drives the fatal alert (CHK-016) and does not use this term.",
+   "where": [
+    "tlul_adapter_reg.sv:281 (intg_error==1) => 1"
+   ]
+  },
+  {
+   "round": 2,
+   "rules": [
+    "RT-4.2-01",
+    "RT-4.2-02"
+   ],
+   "reason": "Per INT-INTG-001, the wrapper generates correct cmd_intg and data_intg for every request. Per INT-INTG-002, i_a_intg_flip=1 can only invert a single bit, bit 0 of cmd_intg. So the data-integrity decoder never sees an error, and the command check can only see a single-bit (correctable-class) error, never a double-bit one. No port can corrupt a_data integrity or two command-integrity bits.",
+   "where": [
+    "tlul_cmd_intg_chk.sv:44 (tl_i[108]==1 && data_err[0]==1) => 1",
+    "tlul_cmd_intg_chk.sv:44 (tl_i[108]==1 && err[1]==1) => 1",
+    "tlul_data_integ_dec.sv:25 (data_err[0]==1) => 1",
+    "tlul_data_integ_dec.sv:25 (data_err[1]==1) => 1"
+   ]
+  },
+  {
+   "round": 2,
+   "rules": [
+    "RT-4.3-01",
+    "RT-4.3-02",
+    "RT-8-32",
+    "RT-3-05"
+   ],
+   "reason": "These are the wrapper's response-integrity checker reporting a single-bit or double-bit error in the response integrity, or a response-data integrity error. A correct device always produces valid response integrity, and D-017/CHK-013 require o_d_intg_err=0 in every cycle. The response-data integrity check is also disabled in the wrapper's checker, so that term is a constant 0. No port can corrupt the D channel.",
+   "where": [
+    "tlul_rsp_intg_chk.sv:47 (tl_i[65]==1 && rsp_data_err==1) => 1",
+    "tlul_rsp_intg_chk.sv:47 (tl_i[65]==1 && rsp_err[0]==1) => 1",
+    "tlul_rsp_intg_chk.sv:47 (tl_i[65]==1 && rsp_err[1]==1) => 1"
+   ]
+  }
+ ],
+ "dropped": [],
+ "prompt_version": "closure-v1",
+ "preverified": [
+  "prim_alert_sender",
+  "prim_alert_receiver",
+  "prim_count",
+  "prim_esc_sender",
+  "prim_esc_receiver",
+  "prim_lfsr",
+  "prim_onehot_check",
+  "prim_prince",
+  "prim_secded_inv_64_57_dec",
+  "prim_secded_inv_39_32_dec",
+  "prim_secded_inv_64_57_enc",
+  "prim_secded_inv_39_32_enc"
+ ],
+ "usage": {
+  "calls": 3,
+  "cached": 0,
+  "cost_usd": 3.4449,
+  "input_tokens": 74,
+  "output_tokens": 51417,
+  "cache_creation_input_tokens": 242881,
+  "cache_read_input_tokens": 2339603
+ },
+ "status": "target_unmet",
+ "final": {
+  "hit": 285,
+  "total": 326,
+  "percent": 87.4
+ }
+}

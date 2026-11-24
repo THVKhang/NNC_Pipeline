@@ -6,9 +6,9 @@ This packet is for the person who decides gate **G4 (sign-off)**: *is this desig
 
 - **Requirements (rules):** 228 — NOT_VERIFIED_BY_SIM 77, VERIFIED 151
 - **Checks:** 35 — PASS 35
-- **Tests:** {'pass': 23}
+- **Tests:** {'pass': 27}
 - **Simulated configurations:** 3 runs in 2 configurations (base, xrand); see `run_set.json` and the *Run set* table of the report
-- **Code coverage:** line 94.9 %, block 99.3 %, expression 61.0 %, toggle 90.0 %, functional 97.4 %
+- **Code coverage:** line 95.1 %, block 99.3 %, expression 65.4 %, toggle 98.4 %, functional 97.4 %
 - **Mutation score:** 58.3 % (21 of 36 injected faults detected); 11 survivor(s) proven equivalent by formal, 84.0 % without them; formal on the survivors: {'CEX': 3, 'ERROR': 1, 'PROVEN': 11}
 
 ## 2. Decisions taken for you
@@ -17,7 +17,7 @@ These gates were approved by an AI agent on delegation, not by a qualified perso
 
 - **G1_rules** (2026-11-20T11:04:43+00:00): Not a hardware designer's review. 228 rules kept (54 rejected, 3 merged). 20 spec-lint gaps and the review's open questions answered as spec section 8 decisions D-001..D-020 (made from the documents only; where the documents are silent the verification checks only bounds or the common part of every reading). The last 3 open questions answered: Status interrupts and fatal cause registers out of scope; alert handshake gap checked only through the D-009/D-010 bounds.
 - **G2_contract** (2026-11-20T11:15:13+00:00): Not a hardware designer's review. 35 checks (13 assertions, 22 tests) over 151 rules; 77 rules not verified by simulation (mostly standard text outside this IP or obligations of the host). Checks follow spec decisions D-001..D-020: bounds instead of exact cycles where the documents are silent; d_error of instruction fetches and the response to an integrity-fault request are not checked.
-- **G3_verif_sources** (2026-11-20T18:07:27+00:00): Not a hardware designer's review. Round 2 after formal: A17 (triage B) - CHK-003 treats a presented (not only accepted) intg-flip request as an alert cause (INT-INTG-002, D-010); CHK-004 stops checking IE_0 after an error-free write to 0x100 of a kind D-013 leaves unchecked (ie_unk) until the next modelled write. Assertions otherwise unchanged; weakening check clean; simulation 23/23. A13 (triage E feedback): ENV-08/ENV-10 track any write to CFG0/TIMER_V_* (RT-8-03); ENV-07 covers every write reaching lanes 0 and 3 of ALERT_TEST (RT-8-15). A13 declined to assume away non-contiguous masks (RT-4.1-05); that question is open.
+- **G3_verif_sources** (2026-11-24T11:30:47+00:00): Not a hardware designer's review. Phase 23.5 coverage closure (expression, without the coverage_preverified prim_* modules): one closure module test_ot_rv_timer_cov1.py with 4 tests written by A11 from A10 scenarios (no RTL identifiers), 27/27 tests pass, 13 assertions with 0 failures, existing tests and assertions unchanged. Expression 83.7 -> 87.4 %; target 90 % not met; 10 points claimed unreachable are listed in work/coverage.md and still counted.
 
 ## 3. Failures and what they mean
 
