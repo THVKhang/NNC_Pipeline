@@ -1,6 +1,6 @@
 # Verification report — gen_sync_fifo
 
-Generated 2026-11-21T16:21:13+00:00 by NNC Pipeline.
+Generated 2026-11-24T01:59:48+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -13,7 +13,7 @@ Generated 2026-11-21T16:21:13+00:00 by NNC Pipeline.
 | Code coverage (RTL), line | 97.3 % (218/224 lines) |
 | Code coverage (RTL), block | 94.4 % (51/54 statement blocks and branch arms) |
 | Code coverage (RTL), expression | 97.4 % (75/77 condition terms) |
-| Code coverage (RTL), toggle | 99.7 % (1566/1570 bit toggles 0->1 and 1->0); 4 points left out (constant bits), all points 99.5 % (1566/1574) |
+| Code coverage (RTL), toggle | 100.0 % (1566/1566 bit toggles 0->1 and 1->0); 8 points left out (constant bits; 4 of them proven constant after reset by formal, work/unr.md), all points 99.5 % (1566/1574) |
 | Code coverage (RTL), functional | 100.0 % (40/40 cover points of the specification) |
 | Mutation score | 100.0 % (36 killed / 0 survived / 0 not compiled) |
 | Coverage target | not requested (`nnc cover <design> --target <n> --metric <m>`) |

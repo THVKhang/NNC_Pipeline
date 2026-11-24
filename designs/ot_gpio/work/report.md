@@ -1,6 +1,6 @@
 # Verification report — ot_gpio
 
-Generated 2026-11-21T16:21:13+00:00 by NNC Pipeline.
+Generated 2026-11-24T02:09:16+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -14,13 +14,13 @@ Generated 2026-11-21T16:21:13+00:00 by NNC Pipeline.
 | Code coverage (RTL), line | 96.5 % (11212/11616 lines); 9736 points left out (package code the design does not contain), all points 52.5 % (11212/21352) |
 | Code coverage (RTL), block | 93.6 % (1090/1164 statement blocks and branch arms); 1288 points left out (package code the design does not contain), all points 44.5 % (1090/2452) |
 | Code coverage (RTL), expression | 64.9 % (6600/10174 condition terms); 21732 points left out (package code the design does not contain), all points 20.7 % (6600/31906) |
-| Code coverage (RTL), toggle | 87.5 % (69874/79856 bit toggles 0->1 and 1->0); 3328 points left out (constant bits), all points 84.0 % (69898/83184) |
+| Code coverage (RTL), toggle | 89.6 % (69842/77960 bit toggles 0->1 and 1->0); 5224 points left out (constant bits; 1896 of them proven constant after reset by formal, work/unr.md), all points 84.0 % (69898/83184) |
 | Code coverage (RTL), functional | 95.0 % (38/40 cover points of the specification) |
 | Code coverage without the modules the designer declares pre-verified | prim_alert_receiver, prim_alert_sender, prim_count, prim_esc_receiver, prim_esc_sender, prim_lfsr, prim_onehot_check, prim_prince, prim_secded_inv_39_32_dec, prim_secded_inv_39_32_enc, prim_secded_inv_64_57_dec, prim_secded_inv_64_57_enc (7 instances; config `coverage_preverified`) |
 | ... without pre-verified modules, block | 96.8 % (914/944) |
 | ... without pre-verified modules, expression | 69.4 % (5724/8250) |
 | ... without pre-verified modules, line | 97.0 % (10336/10652) |
-| ... without pre-verified modules, toggle | 89.2 % (62438/70032) |
+| ... without pre-verified modules, toggle | 90.1 % (62418/69288) |
 | Mutation score | 58.3 % (21 killed / 15 survived / 0 not compiled) |
 | Surviving mutants, formal equivalence (`nnc mutate-equiv`) | {'CEX': 4, 'ERROR': 2, 'PROVEN': 9}; score without the proven-equivalent mutants 77.8 % |
 | Coverage target | toggle 90.0 %: **target_unmet** (baseline 87.5 % -> 87.5 %, work/coverage.md) |

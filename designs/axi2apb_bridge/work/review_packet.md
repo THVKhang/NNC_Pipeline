@@ -8,7 +8,7 @@ This packet is for the person who decides gate **G4 (sign-off)**: *is this desig
 - **Checks:** 31 — PASS 31
 - **Tests:** {'pass': 21}
 - **Simulated configuration:** one (parameters {'PARA_AXI_ID_W': 4}, seed 1)
-- **Code coverage:** line 98.9 %, block 95.9 %, expression 96.2 %, toggle 86.4 %, functional 97.5 %
+- **Code coverage:** line 98.9 %, block 95.9 %, expression 96.2 %, toggle 100.0 %, functional 97.5 %
 - **Mutation score:** 88.9 % (32 of 36 injected faults detected); 2 survivor(s) proven equivalent by formal, 94.1 % without them; formal on the survivors: {'CEX': 2, 'PROVEN': 2}
 
 ## 2. Decisions taken for you

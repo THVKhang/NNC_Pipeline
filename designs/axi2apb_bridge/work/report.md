@@ -1,6 +1,6 @@
 # Verification report — axi2apb_bridge
 
-Generated 2026-11-21T16:26:49+00:00 by NNC Pipeline.
+Generated 2026-11-24T02:04:39+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -13,7 +13,7 @@ Generated 2026-11-21T16:26:49+00:00 by NNC Pipeline.
 | Code coverage (RTL), line | 98.9 % (738/746 lines) |
 | Code coverage (RTL), block | 95.9 % (209/218 statement blocks and branch arms) |
 | Code coverage (RTL), expression | 96.2 % (102/106 condition terms) |
-| Code coverage (RTL), toggle | 86.4 % (4032/4666 bit toggles 0->1 and 1->0); 24 points left out (constant bits), all points 86.0 % (4032/4690) |
+| Code coverage (RTL), toggle | 100.0 % (3948/3948 bit toggles 0->1 and 1->0); 742 points left out (constant bits; 718 of them proven constant after reset by formal, work/unr.md), all points 86.0 % (4032/4690) |
 | Code coverage (RTL), functional | 97.5 % (39/40 cover points of the specification) |
 | Mutation score | 88.9 % (32 killed / 4 survived / 0 not compiled) |
 | Surviving mutants, formal equivalence (`nnc mutate-equiv`) | {'CEX': 2, 'PROVEN': 2}; score without the proven-equivalent mutants 94.1 % |

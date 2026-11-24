@@ -1,6 +1,6 @@
 # Verification report — c_uart
 
-Generated 2026-11-23T10:15:23+00:00 by NNC Pipeline.
+Generated 2026-11-24T03:38:20+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -13,7 +13,7 @@ Generated 2026-11-23T10:15:23+00:00 by NNC Pipeline.
 | Code coverage (RTL), line | 97.6 % (120/123 lines) |
 | Code coverage (RTL), block | 93.2 % (41/44 statement blocks and branch arms) |
 | Code coverage (RTL), expression | 88.9 % (8/9 condition terms) |
-| Code coverage (RTL), toggle | 74.1 % (274/370 bit toggles 0->1 and 1->0) |
+| Code coverage (RTL), toggle | 67.6 % (250/370 bit toggles 0->1 and 1->0) |
 | Code coverage (RTL), functional | 90.0 % (36/40 cover points of the specification) |
 | Mutation score | 83.3 % (10 killed / 2 survived / 0 not compiled) |
 | Coverage target | not requested (`nnc cover <design> --target <n> --metric <m>`) |

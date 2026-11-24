@@ -8,7 +8,7 @@ This packet is for the person who decides gate **G4 (sign-off)**: *is this desig
 - **Checks:** 40 — FAIL 25, NOT_HIT 1, PASS 14
 - **Tests:** {'fail': 20, 'pass': 1}
 - **Simulated configurations:** 4 runs in 3 configurations (base, ids8, ids35); see `run_set.json` and the *Run set* table of the report
-- **Code coverage:** line 86.0 %, block 77.1 %, expression 71.9 %, toggle 75.9 %, functional 90.0 %
+- **Code coverage:** line 86.0 %, block 77.1 %, expression 71.9 %, toggle 84.1 %, functional 90.0 %
 
 ## 2. Decisions taken for you
 

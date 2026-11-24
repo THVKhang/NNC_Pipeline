@@ -1,6 +1,6 @@
 # Verification report — ot_rv_timer
 
-Generated 2026-11-21T16:21:14+00:00 by NNC Pipeline.
+Generated 2026-11-24T02:06:42+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -14,13 +14,13 @@ Generated 2026-11-21T16:21:14+00:00 by NNC Pipeline.
 | Code coverage (RTL), line | 92.3 % (800/867 lines); 2434 points left out (package code the design does not contain), all points 24.2 % (800/3301) |
 | Code coverage (RTL), block | 87.8 % (144/164 statement blocks and branch arms); 322 points left out (package code the design does not contain), all points 29.6 % (144/486) |
 | Code coverage (RTL), expression | 61.0 % (485/795 condition terms); 5433 points left out (package code the design does not contain), all points 7.8 % (485/6228) |
-| Code coverage (RTL), toggle | 83.1 % (9451/11368 bit toggles 0->1 and 1->0); 408 points left out (constant bits), all points 80.3 % (9455/11776) |
+| Code coverage (RTL), toggle | 83.9 % (9446/11256 bit toggles 0->1 and 1->0); 520 points left out (constant bits; 112 of them proven constant after reset by formal, work/unr.md), all points 80.3 % (9455/11776) |
 | Code coverage (RTL), functional | 97.4 % (38/39 cover points of the specification) |
 | Code coverage without the modules the designer declares pre-verified | prim_alert_receiver, prim_alert_sender, prim_count, prim_esc_receiver, prim_esc_sender, prim_lfsr, prim_onehot_check, prim_prince, prim_secded_inv_39_32_dec, prim_secded_inv_39_32_enc, prim_secded_inv_64_57_dec, prim_secded_inv_64_57_enc (7 instances; config `coverage_preverified`) |
 | ... without pre-verified modules, block | 91.7 % (100/109) |
 | ... without pre-verified modules, expression | 83.7 % (273/326) |
 | ... without pre-verified modules, line | 92.8 % (581/626) |
-| ... without pre-verified modules, toggle | 85.1 % (8726/10258) |
+| ... without pre-verified modules, toggle | 85.4 % (8724/10218) |
 | Mutation score | 58.3 % (21 killed / 15 survived / 0 not compiled) |
 | Surviving mutants, formal equivalence (`nnc mutate-equiv`) | {'CEX': 3, 'ERROR': 1, 'PROVEN': 11}; score without the proven-equivalent mutants 84.0 % |
 | Coverage target | not requested (`nnc cover <design> --target <n> --metric <m>`) |

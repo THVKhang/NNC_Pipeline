@@ -1,6 +1,6 @@
 {
  "design": "c_uart",
- "date": "2026-11-23T10:15:23+00:00",
+ "date": "2026-11-24T03:38:20+00:00",
  "gates": [
   {
    "gate": "G1_rules",
@@ -194,16 +194,16 @@
      }
     },
     "toggle": {
-     "hit": 274,
+     "hit": 250,
      "total": 370,
-     "percent": 74.1,
+     "percent": 67.6,
      "files": {
       "uart.v": {
        "hit": 64,
        "total": 88
       },
       "uart_rx.v": {
-       "hit": 128,
+       "hit": 104,
        "total": 152
       },
       "uart_tx.v": {
@@ -331,6 +331,23 @@
     },
     {
      "metric": "toggle",
+     "file": "uart_rx.v",
+     "line": 76,
+     "what": "prescale_reg",
+     "points": 24,
+     "detail": [
+      "prescale_reg[10]:0->1",
+      "prescale_reg[10]:1->0",
+      "prescale_reg[11]:0->1",
+      "prescale_reg[11]:1->0",
+      "prescale_reg[12]:0->1",
+      "prescale_reg[12]:1->0",
+      "prescale_reg[13]:0->1",
+      "prescale_reg[13]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
      "file": "uart_tx.v",
      "line": 60,
      "what": "prescale",
@@ -403,6 +420,11 @@
     },
     "scope_conflicts": 0,
     "signals_kept_whole": [],
+    "proven_unreachable": {
+     "rule": "left out: toggle points of signal bits that SymbiYosys proves constant after the first reset for every input sequence (nnc/unr.py, work/unr.json: PROVEN in every configuration of the run set), except on signals where the simulator recorded a 1->0 toggle of such a bit",
+     "left_out": 0,
+     "signals_kept_whole": []
+    },
     "all_points": {
      "block": {
       "hit": 41,
@@ -420,11 +442,17 @@
       "percent": 97.6
      },
      "toggle": {
-      "hit": 274,
+      "hit": 250,
       "total": 370,
-      "percent": 74.1
+      "percent": 67.6
      }
     }
+   },
+   "unr": {
+    "status": "applied",
+    "record": "work/unr.json",
+    "proven_bits": 0,
+    "signals": 0
    }
   },
   "run_set": null

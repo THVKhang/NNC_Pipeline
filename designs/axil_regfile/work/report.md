@@ -1,6 +1,6 @@
 # Verification report — axil_regfile
 
-Generated 2026-11-21T16:21:13+00:00 by NNC Pipeline.
+Generated 2026-11-24T02:01:13+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -14,7 +14,7 @@ Generated 2026-11-21T16:21:13+00:00 by NNC Pipeline.
 | Code coverage (RTL), line | 100.0 % (565/565 lines) |
 | Code coverage (RTL), block | 100.0 % (120/120 statement blocks and branch arms) |
 | Code coverage (RTL), expression | 95.7 % (358/374 condition terms) |
-| Code coverage (RTL), toggle | 96.7 % (6844/7080 bit toggles 0->1 and 1->0); 64 points left out (constant bits), all points 95.8 % (6844/7144) |
+| Code coverage (RTL), toggle | 97.2 % (6844/7040 bit toggles 0->1 and 1->0); 104 points left out (constant bits; 40 of them proven constant after reset by formal, work/unr.md), all points 95.8 % (6844/7144) |
 | Code coverage (RTL), functional | 100.0 % (40/40 cover points of the specification) |
 | Mutation score | 93.1 % (27 killed / 2 survived / 0 not compiled) |
 | Surviving mutants, formal equivalence (`nnc mutate-equiv`) | {'PROVEN': 2}; score without the proven-equivalent mutants 100.0 % |

@@ -1,6 +1,6 @@
 # Verification report — ahb2axi_bridge
 
-Generated 2026-11-21T16:21:11+00:00 by NNC Pipeline.
+Generated 2026-11-24T03:35:52+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -14,7 +14,7 @@ Generated 2026-11-21T16:21:11+00:00 by NNC Pipeline.
 | Code coverage (RTL), line | 86.0 % (2733/3177 lines) |
 | Code coverage (RTL), block | 77.1 % (1142/1482 statement blocks and branch arms) |
 | Code coverage (RTL), expression | 71.9 % (1316/1830 condition terms) |
-| Code coverage (RTL), toggle | 75.9 % (23612/31122 bit toggles 0->1 and 1->0); 4872 points left out (constant bits), all points 65.7 % (23645/35994) |
+| Code coverage (RTL), toggle | 84.1 % (23597/28044 bit toggles 0->1 and 1->0); 7950 points left out (constant bits; 3078 of them proven constant after reset by formal, work/unr.md), all points 65.7 % (23645/35994) |
 | Code coverage (RTL), functional | 90.0 % (36/40 cover points of the specification) |
 | Mutation score | not run |
 | Coverage target | not requested (`nnc cover <design> --target <n> --metric <m>`) |

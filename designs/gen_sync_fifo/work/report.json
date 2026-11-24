@@ -1,6 +1,6 @@
 {
  "design": "gen_sync_fifo",
- "date": "2026-11-21T16:21:13+00:00",
+ "date": "2026-11-24T01:59:48+00:00",
  "gates": [
   {
    "gate": "G1_rules",
@@ -318,8 +318,8 @@
     },
     "toggle": {
      "hit": 1566,
-     "total": 1570,
-     "percent": 99.7,
+     "total": 1566,
+     "percent": 100.0,
      "files": {
       "m_vlsit_sfifo_mem.sv": {
        "hit": 722,
@@ -327,7 +327,7 @@
       },
       "m_vlsit_sfifo_rd.sv": {
        "hit": 244,
-       "total": 246
+       "total": 244
       },
       "m_vlsit_sfifo_top.sv": {
        "hit": 334,
@@ -335,7 +335,7 @@
       },
       "m_vlsit_sfifo_wr.sv": {
        "hit": 266,
-       "total": 268
+       "total": 266
       }
      }
     },
@@ -461,38 +461,21 @@
      "detail": [
       ""
      ]
-    },
-    {
-     "metric": "toggle",
-     "file": "m_vlsit_sfifo_rd.sv",
-     "line": 79,
-     "what": "w_occ_nxt",
-     "points": 2,
-     "detail": [
-      "w_occ_nxt[4]:0->1",
-      "w_occ_nxt[4]:1->0"
-     ]
-    },
-    {
-     "metric": "toggle",
-     "file": "m_vlsit_sfifo_wr.sv",
-     "line": 84,
-     "what": "w_occ_nxt",
-     "points": 2,
-     "detail": [
-      "w_occ_nxt[4]:0->1",
-      "w_occ_nxt[4]:1->0"
-     ]
     }
    ],
    "design_scope": {
     "rule": "left out: never-executed points of package code that the elaborated design does not contain (Verilator instruments every function of an imported package, called or not), and toggles of signal bits that Yosys constant propagation proves constant with the run's parameters, except on signals where the simulator recorded a toggle of such a bit (then the signal counts whole)",
     "left_out": {
      "line": 0,
-     "toggle": 4
+     "toggle": 8
     },
     "scope_conflicts": 0,
     "signals_kept_whole": [],
+    "proven_unreachable": {
+     "rule": "left out: toggle points of signal bits that SymbiYosys proves constant after the first reset for every input sequence (nnc/unr.py, work/unr.json: PROVEN in every configuration of the run set), except on signals where the simulator recorded a 1->0 toggle of such a bit",
+     "left_out": 4,
+     "signals_kept_whole": []
+    },
     "all_points": {
      "block": {
       "hit": 51,
@@ -515,6 +498,12 @@
       "percent": 99.5
      }
     }
+   },
+   "unr": {
+    "status": "applied",
+    "record": "work/unr.json",
+    "proven_bits": 2,
+    "signals": 2
    }
   },
   "run_set": null

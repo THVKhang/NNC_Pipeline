@@ -809,11 +809,73 @@ Recorded: uart_lite has a fifth run-set configuration `xrand` (CFG-BASE with x_i
 coverage denominators grow (line 596 → 745 points) and the percentages stay the same. All 67 recorded runs of the
 15 designs give the same results with the new harness (`nnc demo --all-runs`).
 
-**Still open.**
-- Unreachable points that constant propagation cannot prove: upper bits of subtractions, branches under a
-  constant parameter in procedural code (`if (EnableRacl)`), `reinit_i`. A formal unreachability pass (step 19.5)
-  would prove them.
-- Constant struct fields.
+**Formal unreachability of toggle points (step 19.5, 2026-11-24).** `nnc sim --unr` (nnc/unr.py) takes every toggle bit that the simulation never brought back from 1 to 0 and asks
+SymbiYosys (`abc --keep-going pdr`, one result per assertion) whether the bit can change after the first reset:
+- the DUT is the flattened Yosys netlist of each run-set configuration (its parameters and macros);
+- every input is free, the reset included, so later resets and any stimulus are covered;
+- the first reset is held for two rising edges of every clock; then the value of each bit is captured and the
+  assertion is "the bit keeps that value".
+
+A PROVEN bit leaves the toggle denominator, both of its points; it must be PROVEN in every configuration of the
+run set. A counterexample or a time limit leaves it counted. If a later simulation records a 1->0 on a proven bit,
+its signal counts whole again. Results are in `work/unr.json` (keyed by RTL hash, parameters and macros) and
+`work/unr.md`, and every later `nnc sim` applies them without running the prover.
+
+**Soundness checks, and the bug they found.** The first version gave vacuous proofs. With one clock the model
+uses a single global clock (`multiclock off`), in which the clock input cannot be read as data, so the counter of
+reset edges never counted and the capture never happened: every assertion held trivially. It "proved" that
+c_uart's free input `prescale` was constant. Two assertions now go into every task, and a task concludes nothing
+unless both FAIL:
+- the guard `assert(!armed)`: the checked phase must be reachable;
+- the control: the same property on a flop output that the simulation toggled at least 4 times each way
+  (for example `uart_rx_inst.bit_cnt[0]`, `u_gpio.u_reg.u_reg_if.outstanding_q[0]`). A model in which such a bit
+  cannot change does not match the simulation. An input or a clock is not accepted as the control: it changes
+  freely and shows nothing about the state.
+
+With these, c_uart's 48 bits are counterexamples, not proofs. Records of the earlier versions are discarded
+(record version 3). All tasks of all designs are conclusive (no task with a passing guard or control).
+
+| Design | Candidates (bits) | PROVEN | Counterexample | No result | Not in netlist (signals) | Toggle before → after |
+|---|---|---|---|---|---|---|
+| ahb2axi_bridge | 996 | 513 | 32 | 26 | 46 | 75.9 → **84.1** |
+| apb_tlul_bridge | 2 | 2 | 0 | 0 | 0 | 99.8 → **100.0** |
+| async_apb_bridge | - | - | - | - | - | 98.6 (no netlist) |
+| async_gray_fifo | - | - | - | - | - | 99.5 (no netlist) |
+| axi2apb_bridge | 359 | 359 | 0 | 0 | 0 | 86.4 → **100.0** |
+| axil_regfile | 23 | 5 | 0 | 0 | 1 | 96.7 → **97.2** |
+| c_uart | 60 | 0 | 48 | 0 | 0 | 67.6 (unchanged; 74.1 in the 0.7.0 record, see below) |
+| gen_apb_tlul_bridge | 2 | 2 | 0 | 0 | 0 | 99.8 → **100.0** |
+| gen_sync_fifo | 2 | 2 | 0 | 0 | 0 | 99.7 → **100.0** |
+| ot_gpio | 1185 | 237 | 23 | 0 | 128 | 87.5 → **89.6** |
+| ot_rv_timer | 962 | 56 | 25 | 0 | 129 | 83.1 → **83.9** |
+| spi_master | 0 | - | - | - | - | 95.2 |
+| sync_fifo | 114 | 114 | 0 | 0 | 0 | 87.7 → **100.0** |
+
+Counts per configuration (ahb2axi: the smallest over its 3 configurations; the others are equal in every
+configuration). The 12 input bits of c_uart are free in the model and are not checked. Source: `work/unr.json`.
+
+What was proven is what one expects of these designs: the upper bits of sizes and masks computed in 32 bits
+(`w_ar_size_bytes[8:31]`, sync_fifo's `w_occ_nxt[4:31]`), word-aligned APB addresses (`o_apb_paddr[1:0]`),
+response bit 0 that the bridge never sets, gpio's `d_opcode` bits 1-2. Some hit counts go down too: the 0->1
+point of a proven bit at reset is left out with the bit, as for constant bits.
+
+The tests, the failing tests and assertions, and the checks of all 13 designs are the same as the record. c_uart
+was recorded (0.7.0) before the 19.4 harness changes; rerun without the UNR record it gives 67.6 % (250/370), so the
+drop from 74.1 % comes from the harness at time 0, not from this step. Its 3 failing tests and their messages
+are unchanged.
+
+Limits:
+- signals that Verilator names per struct field (`tl_h2d.a_address`) have no net of that name in Yosys, so they
+  are "not in netlist" (gpio 128, rv_timer 129 signals);
+- async_gray_fifo and async_apb_bridge: Yosys cannot read their simulation-only synchronizer model
+  (`cell_sync.sv:124`), so they have no result;
+- the method trusts that Yosys and Verilator give the same meaning to the RTL; the control is the check of that,
+  on one bit per task;
+- only toggle points. Branches (line/block) under a constant condition are not done yet.
+
+**Still open.** These are phase 23 of the ROADMAP.
+- Struct fields: both constant bits and UNR.
+- UNR for the two asynchronous designs, and for line/block points.
 - x_init in the run sets of the other designs.
 
 ## 13. Clock and reset domain crossings (phase 20, 2026-11-21)

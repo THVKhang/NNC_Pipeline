@@ -99,7 +99,10 @@ Chi phí giai đoạn 18: khoảng US$23 (độ ổn định US$5.2, ot_gpio US$
   - axi2apb: toggle 75,1 → 86,4 % (6 test).
   - rv_timer: chưa chạy closure, vì phần còn thiếu là nhánh có điều kiện hằng, chờ 19.5.
 - 19.4: xong (2026-11-24). Sửa ba lỗi của bộ chạy ở thời điểm 0 (input, checker ở cạnh clock đầu, cạnh reset). Thử trên 15 thiết kế: 14 giống bản ghi, ahb2axi_bridge fail thêm CHK-012, nhiều khả năng là triệu chứng mới của lỗi RTL đã có trong bản ghi. uart_lite có cấu hình `xrand` trong run set. gen_sync_fifo không có lỗi riêng của x_init (test đó đã fail trong bản ghi).
-- 19.5 chưa làm.
+- 19.5: xong (2026-11-24). `nnc sim --unr` chứng minh bằng SymbiYosys rằng một bit toggle chưa phủ không thể đổi sau reset đầu tiên (input tự do). Chỉ bit PROVEN trong mọi cấu hình mới bị loại.
+  - Mỗi task có guard (pha kiểm phải tới được) và control (một flop mà mô phỏng đã toggle phải đổi được trong model). Nếu một trong hai không FAIL thì task không kết luận gì. Hai cơ chế này bắt được lỗi proof rỗng của bản đầu (một clock: bộ đếm cạnh không bao giờ đếm).
+  - Toggle: sync_fifo 87,7 → 100 %, axi2apb 86,4 → 100 %, ahb2axi 75,9 → 84,1 %, gpio 87,5 → 89,6 %, rv_timer 83,1 → 83,9 %. c_uart: 48 counterexample, không loại bit nào. Test và check của 13 thiết kế không đổi.
+  - Chưa làm (giai đoạn 23): trường struct, hai thiết kế bất đồng bộ (Yosys không đọc được model đồng bộ chỉ dùng trong mô phỏng), điểm line/block.
 
 ## Giai đoạn 20: kiểm tra cắt miền clock/reset (CDC/RDC)
 
@@ -166,8 +169,9 @@ code lạ trong sandbox, và người dùng thật của công cụ quen dòng l
 **Sau giai đoạn 22**, các việc chưa làm, theo thứ tự đề xuất:
 1. Trang GitHub Pages: xong (`nnc site`, job CI `pages`, https://thvkhang.github.io/NNC_Pipeline/).
 2. 19.4: xong.
-3. 19.5: formal UNR.
+3. 19.5: xong (xem giai đoạn 19).
 4. 21.6: xong (xem giai đoạn 21).
+5. Tiếp theo: giai đoạn 23.
 
 **Trạng thái (2026-11-23):** 22.1–22.7 xong. Những gì đã kiểm:
 - Image `Dockerfile` nặng khoảng 3 GB. Các công cụ FPGA flow không dùng đã bị bỏ.
@@ -181,6 +185,21 @@ code lạ trong sandbox, và người dùng thật của công cụ quen dòng l
   - hai thiết kế `gen_*` không tự trích luật (luật dẫn xuất bằng `nnc derive`), nên bỏ qua.
 - Các bước viết code không replay, vì file đã commit có thêm các sửa chữa của A17.
 - 22.5: người dùng cho phép đẩy image lên GHCR. Job CI `docker` đẩy image mỗi lần push lên main.
+
+## Giai đoạn 23: phần coverage còn lại sau 19.5, và x_init cho mọi thiết kế
+
+**Mục tiêu.** Làm nốt những chỗ 19.4 và 19.5 chưa làm được. Mỗi bước có điều kiện xong đo được, và không bước nào loại điểm coverage bằng tay.
+
+| # | Bước | Điều kiện xong |
+|---|---|---|
+| 23.1 | Tên trường struct. Verilator đặt tên riêng cho từng trường của struct (`tl_h2d.a_address`), còn Yosys chỉ có một net packed. Ghép hai cách đặt tên nhờ bố cục struct trong `verilator --json-only`. Dùng cho cả bit hằng (19.1) và UNR (19.5). | Unit test. Trên ot_gpio và ot_rv_timer, số tín hiệu "không có trong netlist" của `work/unr.md` giảm. Outcome không đổi. |
+| 23.2 | UNR cho thiết kế có model chỉ dùng trong mô phỏng mà Yosys không đọc được (bộ đồng bộ ngẫu nhiên của async_gray_fifo và async_apb_bridge). Hướng làm: đọc bằng yosys-slang. Nếu dùng macro tổng hợp thì phải chứng minh phần bị thay không ảnh hưởng tới bit cần chứng minh. | Có kết quả UNR, hoặc ghi rõ vì sao không làm được. |
+| 23.3 | UNR cho điểm line/block (nhánh chưa chạy). Chèn `assert` vào nhánh đó trong một bản sao của RTL (vị trí lấy từ cây JSON của Verilator), rồi chứng minh bằng SymbiYosys, vẫn có guard và control. Ví dụ: nhánh `if (EnableRacl)` của gpio, `reinit_i`. | Unit test. Điểm chỉ bị loại khi PROVEN. |
+| 23.4 | x_init trong run set của mọi thiết kế: thêm cấu hình `xrand` và ghi vào bản ghi. | Mỗi thiết kế thêm 1–2 lần chạy. Kết quả của các cấu hình cũ không đổi. |
+| 23.5 | Closure rv_timer (phần còn lại của 19.3) bằng agent A10/A11, làm sau 23.1. | Tốn tiền agent: hỏi người dùng trước. |
+| 23.6 | Triage CHK-012 của ahb2axi_bridge dưới x_init, để xác nhận đây là triệu chứng của lỗi RTL đã ghi. | Tốn tiền agent: hỏi người dùng trước. |
+
+**Thứ tự đề xuất.** 23.1 → 23.2 → 23.4 → 23.3. 23.5 và 23.6 chờ người dùng đồng ý chi phí. G4 vẫn chờ người có chuyên môn.
 
 ## Việc còn mở, chờ người có chuyên môn (G4)
 

@@ -839,9 +839,22 @@ Phân tích từng mảng, có so với quy trình ký duyệt của OpenTitan, 
 - **Kết quả trên 15 thiết kế:** 14 giống bản ghi. ahb2axi_bridge fail thêm CHK-012: bảng burst không có reset, và lỗi RTL đã ghi (desync) đọc phải ô chưa ghi. Nhiều khả năng đây là triệu chứng mới của lỗi cũ.
 - **Ghi vào run set:** uart_lite có cấu hình `xrand`.
 
-**Còn mở.**
-- Chứng minh unreachable bằng formal cho các điểm mà lan truyền hằng số không chứng minh được, ví dụ bit cao của phép trừ, nhánh `if (EnableRacl)`.
-- Các trường struct là hằng số.
+**Chứng minh unreachable bằng formal (GĐ19.5).**
+- **Ý tưởng:** bit toggle mà mô phỏng chưa phủ có thể là bit không bao giờ đổi được, ví dụ bit cao của phép trừ. Khi đó không test nào phủ được nó, và nó không nên nằm trong mẫu số. Nhưng chỉ được loại khi có bằng chứng.
+- **Cách làm (`nnc sim --unr`, nnc/unr.py):**
+  - lấy netlist Yosys đã flatten của từng cấu hình run set;
+  - bọc DUT trong một wrapper: mọi input tự do (kể cả reset), reset đầu tiên giữ qua 2 cạnh lên của mọi clock, sau đó chốt giá trị của bit;
+  - assert "bit giữ giá trị đó", chạy SymbiYosys `abc --keep-going pdr` (mỗi assert một kết quả).
+- **Chỉ PROVEN mới loại**, và phải PROVEN trong mọi cấu hình. Counterexample hoặc hết giờ thì bit vẫn tính. Nếu mô phỏng sau này thấy bit đó đi 1->0 thì cả tín hiệu được tính lại nguyên.
+- **Chống proof rỗng:** mỗi task có thêm hai assert phải FAIL.
+  - Guard `assert(!armed)`: pha kiểm phải tới được.
+  - Control: cùng tính chất đó trên một flop mà mô phỏng đã toggle nhiều lần. Nếu model không cho flop đó đổi thì model không khớp mô phỏng. Input và clock không được làm control, vì chúng đổi tự do.
+  - Bản đầu có lỗi: khi chỉ có một clock, SymbiYosys dùng một global clock, và clock input không đọc được như dữ liệu. Vì vậy bộ đếm cạnh không bao giờ đếm, mọi assert đúng một cách rỗng, và input tự do `prescale` của c_uart bị "chứng minh" là hằng. Guard và control sinh ra để bắt đúng loại lỗi này. Bản ghi của các phiên bản cũ bị bỏ (`VERSION = 3`).
+- **Kết quả** (EVALUATION §12): sync_fifo và axi2apb toggle 100 %, ahb2axi 75,9 → 84,1 %, gpio 87,5 → 89,6 %. Test và check của 13 thiết kế không đổi.
+
+**Còn mở (giai đoạn 23).**
+- Tên trường struct: Verilator đặt tên theo trường, Yosys chỉ có một net, nên chưa dùng được cho bit hằng lẫn UNR.
+- UNR cho async_gray_fifo và async_apb_bridge (Yosys không đọc được model đồng bộ chỉ dùng trong mô phỏng), và cho điểm line/block.
 - Đưa `x_init` vào run set của các thiết kế còn lại.
 
 ## 27. Đầu vào bất kỳ: intake, adapt, corpus (GĐ21, 2026-11-23)

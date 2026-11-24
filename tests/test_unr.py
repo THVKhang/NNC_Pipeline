@@ -71,6 +71,11 @@ class Unr(unittest.TestCase):
         self.assertIn("nnc_u2_b5: assert (nnc_s2[1] == nnc_f2[1]);", w)
         self.assertIn("nnc_u1_b1: assert (nnc_s1[0] == nnc_f1[0]);", w)     # o_q is [0:1]
         self.assertIn("nnc_u0_b0: assert (nnc_s0 == nnc_f0);", w)
+        self.assertIn("nnc_armed_reach: assert (!nnc_armed);", w)
+        self.assertIn("if (clk && !nnc_c0 && nnc_e0 != 2'd2)", w)            # free clocks: count clock edges
+        one = unr.wrapper(info, IFACE, groups[0], free_clocks=False)        # one global clock: count steps
+        self.assertNotIn("nnc_c0", one)
+        self.assertIn("wire nnc_init = (nnc_e != 2'd3);", one)
         with tempfile.TemporaryDirectory() as d:
             src = Path(d) / "m.sv"
             src.write_text("module m_top; endmodule\n", encoding="utf-8")
@@ -90,8 +95,51 @@ class Unr(unittest.TestCase):
         self.assertEqual(g2, [[(0, "u_rd.cnt", [4, 5, 6])], [(0, "u_rd.cnt", [7])]])
 
     def test_statuses_and_record(self):
-        st = unr.parse_statuses("nnc_unr_top.nnc_u2_b5 PASS\nnnc_unr_top.nnc_u2_bm1 FAIL\nnoise\n")
+        text = "nnc_unr_top.nnc_u2_b5 PASS\nnnc_unr_top.nnc_u2_bm1 FAIL\nnoise\n"
+        st = unr.parse_statuses(text + "nnc_unr_top.nnc_armed_reach FAIL\n")
         self.assertEqual(st, {(2, 5): "PASS", (2, -1): "FAIL"})
+        # the guard did not fail: the checked phase may never be reached, so nothing is concluded
+        self.assertEqual(unr.parse_statuses(text + "nnc_unr_top.nnc_armed_reach PASS\n"), {})
+        self.assertEqual(unr.parse_statuses(text), {})
+        self.assertTrue(unr.vacuous(text + "nnc_unr_top.nnc_armed_reach PASS\n"))
+        self.assertFalse(unr.vacuous(text + "nnc_unr_top.nnc_armed_reach FAIL\n"))
+        self.assertFalse(unr.vacuous(""))
+        # a control bit that the model cannot change: the model does not match the simulation
+        g = "nnc_unr_top.nnc_armed_reach FAIL\n"
+        self.assertEqual(unr.parse_statuses(text + g + "nnc_unr_top.nnc_control PASS\n"), {})
+        self.assertTrue(unr.vacuous(text + g + "nnc_unr_top.nnc_control PASS\n"))
+        self.assertEqual(len(unr.parse_statuses(text + g + "nnc_unr_top.nnc_control FAIL\n")), 2)
+
+    def test_control_bit(self):
+        with tempfile.TemporaryDirectory() as d:
+            dat = Path(d) / "coverage.dat"
+            dat.write_text(rec("nnc_tb_top.u_dut.u_rd", "cnt[4]:0->1", 9) + rec("nnc_tb_top.u_dut.u_rd", "cnt[4]:1->0", 8)
+                           + rec("nnc_tb_top.u_dut", "o_q[0]:0->1", 30) + rec("nnc_tb_top.u_dut", "o_q[0]:1->0", 2)
+                           + rec("nnc_tb_top.u_dut", "d[0]:0->1", 50) + rec("nnc_tb_top.u_dut", "d[0]:1->0", 50),
+                           encoding="utf-8")
+            self.assertEqual(unr.controls(dat, ["m.sv"]), [("d", 0), ("u_rd.cnt", 4)])
+        info = unr.netlist_info(NETLIST)
+        self.assertEqual(unr.pick_control([("d", 0), ("u_rd.cnt", 4)], info, set()), ("u_rd.cnt", 4))   # not an input
+        self.assertIsNone(unr.pick_control([("u_rd.cnt", 4)], info, {"u_rd.cnt"}))      # a candidate signal
+        self.assertIsNone(unr.pick_control([("u_rd.cnt", 5), ("o_q", 0)], info, set()))  # not a flop output
+        self.assertEqual(info["state"], {"u_rd.cnt": [0], "gen_c[0].u_c.q": [0]})
+        self.assertEqual(info["clock_wires"], ["clk"])
+        alias = json.loads(json.dumps(NETLIST))
+        alias["modules"]["m_top"]["netnames"]["u_rd.clk"] = {"bits": [2]}              # a clock, under another name
+        info2 = unr.netlist_info(alias)
+        self.assertEqual(info2["clock_wires"], ["clk", "u_rd.clk"])
+        self.assertEqual(unr.pick_control([("u_rd.clk", 0), ("u_rd.cnt", 4)], info2, set()), ("u_rd.cnt", 4))
+        groups, _ = unr.plan({"o_q": {1}}, info)
+        w = unr.wrapper(info, IFACE, groups[0], True, ("u_rd.cnt", 4))
+        self.assertIn(".nnc_pc(nnc_sc)", w)
+        self.assertIn("nnc_control: assert (nnc_sc[0] == nnc_fc[0]);", w)
+        with tempfile.TemporaryDirectory() as d:
+            src = Path(d) / "m.sv"
+            src.write_text("module m_top; endmodule\n", encoding="utf-8")
+            sby = unr.build("m_top", IFACE, [src], {}, [], "verilog", info, groups, control=("u_rd.cnt", 4))["UNR_000.sby"]
+        self.assertIn("rename \\u_rd.cnt nnc_pc\ncd ..\nexpose w:nnc_pc\n", sby)
+
+    def test_record(self):
         a = {"proven": {"x": "0-3", "y": "1"}, "cex": {}, "open": {"z": "0"}, "absent": [], "inputs": []}
         b = {"proven": {"x": "2-5"}, "cex": {"y": "1"}, "open": {}, "absent": ["w"], "inputs": []}
         rec = {"configs": {"A": a, "B": b}}

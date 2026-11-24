@@ -8,7 +8,7 @@ This packet is for the person who decides gate **G4 (sign-off)**: *is this desig
 - **Checks:** 11 — FAIL 5, PASS 6
 - **Tests:** {'fail': 3, 'pass': 5}
 - **Simulated configuration:** one (parameters {'DATA_WIDTH': 8}, seed 1)
-- **Code coverage:** line 97.6 %, block 93.2 %, expression 88.9 %, toggle 74.1 %, functional 90.0 %
+- **Code coverage:** line 97.6 %, block 93.2 %, expression 88.9 %, toggle 67.6 %, functional 90.0 %
 - **Mutation score:** 83.3 % (10 of 12 injected faults detected)
 
 ## 2. Decisions taken for you

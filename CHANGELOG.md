@@ -6,7 +6,7 @@ Measurements for every phase are in [docs/EVALUATION.md](docs/EVALUATION.md). Th
 No release contains a G4 sign-off. G1–G3 were approved by an AI assistant on the owner's delegation, and each
 approval is recorded as delegated. See [docs/G4_REVIEW_REQUEST.md](docs/G4_REVIEW_REQUEST.md).
 
-## Unreleased
+## 0.8.0 (2026-11-24)
 
 ### Phase 19.4: random initial values in run sets (EVALUATION §12)
 - Harness fixes for `"x_init": "random"`. At time 0 every input is 0. The concurrent checkers are off until the
@@ -19,12 +19,18 @@ approval is recorded as delegated. See [docs/G4_REVIEW_REQUEST.md](docs/G4_REVIE
 - uart_lite: run-set configuration `xrand` (9 runs, 20/20 tests, 0 assertion failures).
 - `nnc demo --all-runs`: the kit step runs every recorded run of the run set.
 
-### Phase 19.5: formal unreachability of toggle points (in progress)
+### Phase 19.5: formal unreachability of toggle points (EVALUATION §12)
 - `nnc sim --unr` (nnc/unr.py): the uncovered toggle bits (no recorded 1->0) are proved constant after the first
   reset with SymbiYosys (`abc --keep-going pdr`; inputs free, the first reset held for two rising edges of every
-  clock). PROVEN bits leave the toggle coverage; counterexamples and time limits stay counted. Results in
-  `work/unr.json` (keyed by the RTL hash, the parameters and the macros) and `work/unr.md`; every later `nnc sim`
-  applies them. A recorded 1->0 on a proven bit puts its signal back whole.
+  clock). Bits PROVEN in every configuration of the run set leave the toggle coverage; counterexamples and time
+  limits stay counted. Results in `work/unr.json` (keyed by the RTL hash, the parameters and the macros) and
+  `work/unr.md`; every later `nnc sim` applies them. A recorded 1->0 on a proven bit puts its signal back whole.
+- Every task carries two assertions that must FAIL, else it concludes nothing: a guard (the checked phase is
+  reachable) and a control (a flop output the simulation toggled can change in the model). They caught a bug of
+  the first version: with one clock the edge counter never counted, and every proof was vacuous.
+- Toggle coverage: sync_fifo 87.7 → 100 %, axi2apb_bridge 86.4 → 100 %, ahb2axi_bridge 75.9 → 84.1 %, ot_gpio
+  87.5 → 89.6 %, ot_rv_timer 83.1 → 83.9 %. Tests and checks of the 13 designs are unchanged.
+- Not done (ROADMAP phase 23): struct fields, the two asynchronous designs, line and block points.
 
 ## 0.7.0 (2026-11-23)
 

@@ -1,6 +1,6 @@
 # Verification report — gen_apb_tlul_bridge
 
-Generated 2026-11-21T16:21:13+00:00 by NNC Pipeline.
+Generated 2026-11-24T02:00:25+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -13,7 +13,7 @@ Generated 2026-11-21T16:21:13+00:00 by NNC Pipeline.
 | Code coverage (RTL), line | 95.1 % (195/205 lines) |
 | Code coverage (RTL), block | 95.7 % (44/46 statement blocks and branch arms) |
 | Code coverage (RTL), expression | 100.0 % (51/51 condition terms) |
-| Code coverage (RTL), toggle | 99.8 % (1782/1786 bit toggles 0->1 and 1->0); 88 points left out (constant bits), all points 95.6 % (1792/1874) |
+| Code coverage (RTL), toggle | 100.0 % (1782/1782 bit toggles 0->1 and 1->0); 92 points left out (constant bits; 4 of them proven constant after reset by formal, work/unr.md), all points 95.6 % (1792/1874) |
 | Code coverage (RTL), functional | 100.0 % (40/40 cover points of the specification) |
 | Mutation score | 100.0 % (36 killed / 0 survived / 0 not compiled) |
 | Coverage target | not requested (`nnc cover <design> --target <n> --metric <m>`) |
