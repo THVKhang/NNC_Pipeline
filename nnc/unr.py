@@ -34,6 +34,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from nnc import coverage as cov
+from nnc import unrbranch
 from nnc.formal import _resets, clock_names
 from nnc.sim import rtl_files
 from nnc.simhost import SimHost
@@ -52,11 +53,15 @@ def candidates(dat_path: Path, rtl_names: list[str], scope: dict | None = None) 
     """{signal: bit indices} of the DUT whose 1->0 toggle was never recorded, without the bits the
     constant-bit scope already leaves out."""
     const = {n: cov._expand(t) for n, t in (((scope or {}).get("const") or {}).get("bits") or {}).items()}
+    fields = (scope or {}).get("fields") or {}
+    if const:
+        const = cov.with_stars(const, ((scope or {}).get("const") or {}).get("nets") or [],
+                               cov.star_signals(dat_path, set(rtl_names), fields))
     fall: dict[tuple[str, int], int] = {}
     for kv, _name, metric, _line, _span, count in cov._records(dat_path, set(rtl_names)):
         if metric != "toggle":
             continue
-        bit = cov.toggle_bit(kv)
+        bit = cov.toggle_bit(kv, fields)
         if bit is None or bit[1] in const.get(bit[0], ()):
             continue
         if kv.get("o", "").endswith(":1->0"):
@@ -70,14 +75,15 @@ def candidates(dat_path: Path, rtl_names: list[str], scope: dict | None = None) 
     return dict(out)
 
 
-def controls(dat_path: Path, rtl_names: list[str], limit: int = 500, least: int = 4) -> list[tuple[str, int]]:
+def controls(dat_path: Path, rtl_names: list[str], limit: int = 500, least: int = 4,
+             fields: dict | None = None) -> list[tuple[str, int]]:
     """Bits the simulation toggled at least `least` times in each direction, most toggled first: the control
     assertion of every task (it must FAIL: a model in which such a bit cannot change does not match the
     simulation, and the task concludes nothing)."""
     seen: dict[tuple[str, int], list[int]] = defaultdict(lambda: [0, 0])
     for kv, _name, metric, _line, _span, count in cov._records(dat_path, set(rtl_names)):
         if metric == "toggle":
-            bit = cov.toggle_bit(kv)
+            bit = cov.toggle_bit(kv, fields)
             if bit is not None:
                 seen[bit][kv.get("o", "").endswith(":1->0")] += count
     ok = [(min(r, f), b) for b, (r, f) in seen.items() if min(r, f) >= least]
@@ -98,14 +104,46 @@ def config_key(params: dict, defines: list[str], frontend: str) -> str:
 
 
 # --------------------------------------------------------------------------------------- netlist
-def read_commands(top: str, srcs: list[str], params: dict, defines: list[str], frontend: str) -> str:
-    """Yosys commands reading the DUT with the run's parameters and macros (run in the folder of the sources)."""
+def read_commands(top: str, srcs: list[str], params: dict, defines: list[str], frontend: str,
+                  cut: list[str] | tuple = ()) -> str:
+    """Yosys commands reading the DUT with the run's parameters and macros (run in the folder of the sources).
+    `cut`: modules whose instances become formal cut points (every output free in every step)."""
     defs = " ".join(f"-D{d}" for d in defines)
     if frontend == "slang":
+        if cut:
+            raise ValueError("unr_cut needs the verilog frontend")
         return (f"read_slang {defs} -I . --top {top} " + "".join(f"-G {k}={v} " for k, v in params.items())
                 + " ".join(srcs) + f"\nhierarchy -top {top}")
-    return (f"read_verilog -sv {defs} -I. " + " ".join(srcs) + f"\nhierarchy -top {top}"
-            + "".join(f" -chparam {k} {v}" for k, v in params.items()))
+    return (f"read_verilog -sv {defs} -I. " + " ".join(srcs)
+            + "".join(f"\nblackbox {m}" for m in cut) + f"\nhierarchy -top {top}"
+            + "".join(f" -chparam {k} {v}" for k, v in params.items())
+            + ("\ncutpoint -blackbox" if cut else ""))
+
+
+_COND = re.compile(r"`(?:ifdef|ifndef|elsif)\s+(\w+)")
+_MODULE = re.compile(r"^\s*module\s+(?:automatic\s+|static\s+)?(\w+)", re.M)
+
+
+def cut_check(rtl_dir: Path, cut: dict) -> str | None:
+    """Why the cut of config `unr_cut` would be unsound, or None. The proof reads the RTL with the cut's
+    macros added (they select the synthesizable code that Yosys can read), then frees every output of the
+    cut modules. That over-approximates any behaviour of those modules, the simulation model included, so a
+    PROVEN bit holds in the simulated design as long as the macros change nothing outside the cut modules:
+    every file that tests one of them must define cut modules only."""
+    mods, macros = set(cut.get("modules") or []), set(cut.get("defines") or [])
+    if not mods:
+        return "unr_cut names no module"
+    found: set[str] = set()
+    for f in rtl_files(rtl_dir):
+        text = f.read_text(encoding="utf-8", errors="replace")
+        defined = set(_MODULE.findall(text))
+        found |= defined & mods
+        if set(_COND.findall(text)) & macros and not defined <= mods:
+            return (f"{f.name} tests {', '.join(sorted(set(_COND.findall(text)) & macros))} and defines "
+                    f"{', '.join(sorted(defined - mods))}, which is not cut")
+    if found != mods:
+        return "unr_cut names modules the RTL does not define: " + ", ".join(sorted(mods - found))
+    return None
 
 
 def _top(netlist: dict) -> tuple[str, dict] | None:
@@ -172,19 +210,34 @@ def _label(k: int, idx: int) -> str:
 
 GUARD = "nnc_armed_reach"
 CONTROL = "nnc_control"
+CONTROLS = 4         # control bits per task, of different signals: one of them must FAIL
+
+
+def _controls(control) -> list[tuple[str, int]]:
+    """A control bit, a list of them, or None -> a list."""
+    if control is None:
+        return []
+    return [control] if isinstance(control[0], str) else list(control)
+
+
+def _csuffix(i: int) -> str:
+    return "" if i == 0 else str(i)
 
 
 def wrapper(info: dict, iface: dict, group: list[tuple[int, str, list[int]]], free_clocks: bool = True,
-            control: tuple[str, int] | None = None) -> str:
+            control=None, zero: set[str] | frozenset = frozenset()) -> str:
     """The formal top of one task: the DUT with its candidate signals exposed, the reset assumption of the
     first reset, and one assertion per candidate bit. `group`: (k, signal, bit indices).
 
     With free clocks (`multiclock on`) the first reset lasts until every clock has had RESET_EDGES rising
     edges; with one global clock every step is a clock edge (the clock input cannot be read as data there), so
     it lasts RESET_EDGES + 1 steps. The guard assertion GUARD (`!nnc_armed`) must FAIL: it shows that the
-    checked phase is reached, else every PASS of the task would be vacuous. The control assertion CONTROL is
-    the same property on a bit the simulation toggled many times (`control`); it must FAIL too, else the model
-    does not match the simulation and the task concludes nothing."""
+    checked phase is reached, else every PASS of the task would be vacuous. A control assertion (CONTROL,
+    CONTROL1, ...) is the same property on a bit the simulation toggled many times (`control`: one bit or a
+    list, of different signals); one of them must FAIL too, else the model shows no state that changes after
+    the first reset and the task concludes nothing (a bit toggled by the runs of another configuration may be
+    constant in this one, hence several). A signal whose last name is in `zero` (the
+    combinational markers of nnc/unrbranch.py) is asserted to be 0 instead of keeping its value."""
     ports, wires = info["ports"], info["wires"]
     ins = [(n, p["width"]) for n, p in ports.items() if p["direction"] == "input"]
     decl = lambda w: f"[{w - 1}:0] " if w > 1 else ""
@@ -195,10 +248,11 @@ def wrapper(info: dict, iface: dict, group: list[tuple[int, str, list[int]]], fr
         w = wires[sig][0]
         lines.append(f"  wire {decl(w)}nnc_s{k};")
         conns.append(f".{sig}(nnc_s{k})" if sig in ports else f".nnc_p{k}(nnc_s{k})")
-    if control:
-        cw = wires[control[0]][0]
-        lines.append(f"  wire {decl(cw)}nnc_sc;")
-        conns.append(f".{control[0]}(nnc_sc)" if control[0] in ports else ".nnc_pc(nnc_sc)")
+    ctls = _controls(control)
+    for i, (csig, _cidx) in enumerate(ctls):
+        c = _csuffix(i)
+        lines.append(f"  wire {decl(wires[csig][0])}nnc_sc{c};")
+        conns.append(f".{csig}(nnc_sc{c})" if csig in ports else f".nnc_pc{c}(nnc_sc{c})")
     lines.append("  nnc_unr_dut u_dut (" + ", ".join(conns) + ");")
     clocks = sorted(c for c in clock_names(iface) if c in ports) if free_clocks else []
     init = []
@@ -219,22 +273,27 @@ def wrapper(info: dict, iface: dict, group: list[tuple[int, str, list[int]]], fr
     for k, sig, _bits in group:
         lines.append(f"  reg {decl(wires[sig][0])}nnc_f{k};")
     caps = [f"nnc_f{k} <= nnc_s{k};" for k, _s, _b in group]
-    if control:
-        lines.append(f"  reg {decl(cw)}nnc_fc;")
-        caps.append("nnc_fc <= nnc_sc;")
+    for i, (csig, _cidx) in enumerate(ctls):
+        c = _csuffix(i)
+        lines.append(f"  reg {decl(wires[csig][0])}nnc_fc{c};")
+        caps.append(f"nnc_fc{c} <= nnc_sc{c};")
     lines.append("  always @($global_clock) if (!nnc_init && !nnc_armed) begin nnc_armed <= 1'b1; "
                  + " ".join(caps) + " end")
     lines.append(f"  always @* {GUARD}: assert (!nnc_armed);     // must FAIL: the checked phase is reached")
     lines.append("  always @* if (nnc_armed) begin")
-    if control:
-        p = position(wires[control[0]], control[1])
-        sel = f"[{p}]" if cw > 1 else ""
-        lines.append(f"    {CONTROL}: assert (nnc_sc{sel} == nnc_fc{sel});   // must FAIL: toggled in simulation")
+    for i, (csig, cidx) in enumerate(ctls):
+        c = _csuffix(i)
+        p = position(wires[csig], cidx)
+        sel = f"[{p}]" if wires[csig][0] > 1 else ""
+        lines.append(f"    {CONTROL}{c}: assert (nnc_sc{c}{sel} == nnc_fc{c}{sel});   // one must FAIL: toggled in simulation")
     for k, sig, bits in group:
         for idx in bits:
             p = position(wires[sig], idx)
             sel = f"[{p}]" if wires[sig][0] > 1 else ""
-            lines.append(f"    {_label(k, idx)}: assert (nnc_s{k}{sel} == nnc_f{k}{sel});")
+            if sig.rsplit(".", 1)[-1] in zero:
+                lines.append(f"    {_label(k, idx)}: assert (nnc_s{k}{sel} == 1'b0);")
+            else:
+                lines.append(f"    {_label(k, idx)}: assert (nnc_s{k}{sel} == nnc_f{k}{sel});")
     lines += ["  end", "endmodule"]
     return "\n".join(lines) + "\n"
 
@@ -262,6 +321,44 @@ prep -top nnc_unr_top
 [files]
 {files}
 """
+
+
+def expand_instances(cands: dict[str, set[int]], info: dict) -> tuple[dict[str, set[int]], dict[str, list[str]]]:
+    """Candidates whose name Verilator merged over several instances ("gen_f[*].u.q", "u_*ata_in.qe")
+    become one candidate per wire of the netlist that the name matches (cov.star_regex); {merged name: those
+    wires} to collapse the results."""
+    out: dict[str, set[int]] = {}
+    stars = cov.star_members(cands, sorted(info["wires"]))
+    for sig, bits in cands.items():
+        for w in stars.get(sig, [sig]):
+            out.setdefault(w, set()).update(bits)
+    return out, stars
+
+
+def collapse_instances(rec: dict, stars: dict[str, list[str]], cands: dict[str, set[int]]) -> None:
+    """A merged point is PROVEN only if it is PROVEN in every instance; a counterexample in one instance is
+    a counterexample of the merged point; otherwise it has no result. An instance that is an input port makes
+    the merged signal an input (not tried). The results of a wire stay only if it is a candidate itself."""
+    inputs = set(rec.get("inputs") or [])
+    merged: dict[str, dict[str, set[int]]] = {"proven": defaultdict(set), "cex": defaultdict(set), "open": defaultdict(set)}
+    member_inputs: set[str] = set()
+    for sig, insts in stars.items():
+        if any(w in inputs for w in insts):
+            member_inputs |= {w for w in insts if w in inputs}
+            inputs.add(sig)
+            continue
+        for idx in cands[sig]:
+            st = ["proven" if idx in rec["proven"].get(w, ()) else "cex" if idx in rec["cex"].get(w, ())
+                  else "open" for w in insts]
+            key = "proven" if all(s == "proven" for s in st) else "cex" if "cex" in st else "open"
+            merged[key][sig].add(idx)
+    members = {w for insts in stars.values() for w in insts} - set(cands)
+    for key in ("proven", "cex", "open"):
+        for w in members:
+            rec[key].pop(w, None)
+        for sig, bits in merged[key].items():
+            rec[key][sig] |= bits
+    rec["inputs"] = sorted(inputs - (member_inputs - set(cands)))
 
 
 def plan(cands: dict[str, set[int]], info: dict) -> tuple[list[list[tuple[int, str, list[int]]]], dict]:
@@ -296,18 +393,20 @@ def plan(cands: dict[str, set[int]], info: dict) -> tuple[list[list[tuple[int, s
 
 def build(top: str, iface: dict, rtl: list[Path], params: dict, defines: list[str], frontend: str,
           info: dict, groups: list, timeout_s: int = TASK_TIMEOUT_S,
-          control: tuple[str, int] | None = None) -> dict[str, object]:
+          control=None, cut: list[str] | tuple = (),
+          zero: set[str] | frozenset = frozenset()) -> dict[str, object]:
     srcs = [f.name for f in rtl]
     files: dict[str, object] = {f"src/{f.name}": f for f in _all_rtl(rtl)}
     free = multiclock(info, len(clock_names(iface)))
     mc = "on" if free else "off"
-    read = read_commands(top, srcs, params, defines, frontend)
+    read = read_commands(top, srcs, params, defines, frontend, cut)
     for n, group in enumerate(groups):
         wname = f"nnc_unr_top_{n:03d}.sv"
-        files[f"src/{wname}"] = wrapper(info, iface, group, free, control)
+        files[f"src/{wname}"] = wrapper(info, iface, group, free, control, zero)
         inner = [(f"nnc_p{k}", s) for k, s, _b in group if s not in info["ports"]]
-        if control and control[0] not in info["ports"]:
-            inner.append(("nnc_pc", control[0]))
+        for i, (csig, _cidx) in enumerate(_controls(control)):
+            if csig not in info["ports"]:
+                inner.append((f"nnc_pc{_csuffix(i)}", csig))
         inner = list(dict.fromkeys(inner))
         renames = "\n".join(f"rename \\{s} {new}" for new, s in inner)
         expose = ("expose " + " ".join(f"w:{new}" for new, _s in inner)) if inner else ""
@@ -333,12 +432,12 @@ NETLIST_RUN = ("cd src && yosys -q -p '{cmds}; proc; flatten; write_json ../nnc_
 PROVE_RUN = ("ls UNR_*.sby | xargs -P {parallel} -I{{}} sh -c 'sby -f {{}} > \"$(basename {{}} .sby).log\" 2>&1; "
              "sby {{}} --status > \"$(basename {{}} .sby).status\" 2>&1'\n")
 _STATUS = re.compile(r"^nnc_unr_top\.nnc_u(\d+)_b(m?)(\d+)\s+(\w+)\s*$")
-_GUARD = re.compile(rf"^nnc_unr_top\.({GUARD}|{CONTROL})\s+(\w+)\s*$")
+_GUARD = re.compile(rf"^nnc_unr_top\.({GUARD}|{CONTROL}\d*)\s+(\w+)\s*$")
 
 
 def parse_statuses(text: str) -> dict[tuple[int, int], str]:
-    """{(k, bit): status} of one task; empty when its guard, or its control when it has one, did not FAIL
-    (nothing is concluded)."""
+    """{(k, bit): status} of one task; empty when its guard did not FAIL, or none of its controls when it has
+    some (nothing is concluded)."""
     out, sentinel = {}, {}
     for line in text.splitlines():
         g = _GUARD.match(line.strip())
@@ -353,11 +452,12 @@ def parse_statuses(text: str) -> dict[tuple[int, int], str]:
 
 
 def _conclusive(sentinel: dict) -> bool:
-    return sentinel.get(GUARD) == "FAIL" and sentinel.get(CONTROL, "FAIL") == "FAIL"
+    ctl = [v for k, v in sentinel.items() if k.startswith(CONTROL)]
+    return sentinel.get(GUARD) == "FAIL" and (not ctl or "FAIL" in ctl)
 
 
 def vacuous(text: str) -> bool:
-    """The task ran (some status line) but its guard or its control did not FAIL."""
+    """The task ran (some status line) but its guard, or every one of its controls, did not FAIL."""
     lines = [ln.strip() for ln in text.splitlines()]
     sentinel = {g.group(1): g.group(2) for ln in lines if (g := _GUARD.match(ln))}
     return any(_STATUS.match(ln) for ln in lines) and not _conclusive(sentinel)
@@ -365,13 +465,14 @@ def vacuous(text: str) -> bool:
 
 def prove_config(host: SimHost, contract: dict, rtl_dir: Path, params: dict, defines: list[str], frontend: str,
                  cands: dict[str, set[int]], *, parallel: int = 4, timeout_s: int = TASK_TIMEOUT_S,
-                 control_bits: list[tuple[str, int]] | None = None) -> dict:
+                 control_bits: list[tuple[str, int]] | None = None, cut: list[str] | tuple = (),
+                 zero: set[str] | frozenset = frozenset()) -> dict:
     """Prove the candidates in one configuration: {"proven", "cex", "open": {signal: ranges}, "absent",
-    "inputs": [signals], "multiclock", "tasks", "error"}."""
+    "inputs": [signals], "multiclock", "tasks", "error"}. `zero`: see wrapper."""
     top, iface = contract["top"], contract["interface"]
     rtl = rtl_files(rtl_dir)
     files = {f"src/{f.name}": f for f in _all_rtl(rtl)}
-    cmds = read_commands(top, [f.name for f in rtl], params, defines, frontend).replace("\n", "; ")
+    cmds = read_commands(top, [f.name for f in rtl], params, defines, frontend, cut).replace("\n", "; ")
     r1 = host.run(files, NETLIST_RUN.format(cmds=cmds), ["nnc_unr_netlist.json", "nnc_unr_netlist.log"],
                   timeout_s=1800, tag="unr_netlist")
     nf = Path(r1.out_dir) / "nnc_unr_netlist.json"
@@ -381,13 +482,15 @@ def prove_config(host: SimHost, contract: dict, rtl_dir: Path, params: dict, def
         tail = log.read_text(encoding="utf-8", errors="replace").splitlines()[-6:] if log.is_file() else []
         return {"error": "no netlist: " + " | ".join(tail), "proven": {}, "cex": {}, "open": {}, "absent": [],
                 "inputs": []}
+    wanted = cands
+    cands, stars = expand_instances(cands, info)
     groups, skipped = plan(cands, info)
-    control = pick_control(control_bits or [], info, set(cands))
+    control = pick_controls(control_bits or [], info, set(cands))
     rec = {"proven": defaultdict(set), "cex": defaultdict(set), "open": defaultdict(set), **skipped,
            "multiclock": multiclock(info, len(clock_names(iface))), "tasks": len(groups),
-           "control": f"{control[0]}[{control[1]}]" if control else None}
+           "control": ", ".join(f"{s}[{i}]" for s, i in control) or None}
     if groups:
-        f2 = build(top, iface, rtl, params, defines, frontend, info, groups, timeout_s, control)
+        f2 = build(top, iface, rtl, params, defines, frontend, info, groups, timeout_s, control, cut, zero)
         waves = -(-len(groups) // max(1, parallel))
         r2 = host.run(f2, PROVE_RUN.format(parallel=parallel), ["UNR_*.status", "UNR_*.log"],
                       timeout_s=600 + 2 * timeout_s * waves, tag="unr")
@@ -401,6 +504,9 @@ def prove_config(host: SimHost, contract: dict, rtl_dir: Path, params: dict, def
                 for idx in bits:
                     s = st.get((k, idx))
                     rec["proven" if s == "PASS" else "cex" if s == "FAIL" else "open"][sig].add(idx)
+    if stars:
+        collapse_instances(rec, stars, wanted)
+        rec["instances"] = {s: len(w) for s, w in sorted(stars.items())}
     for key in ("proven", "cex", "open"):
         rec[key] = {s: cov.line_ranges(v) for s, v in sorted(rec[key].items()) if v}
     return rec
@@ -418,6 +524,18 @@ def pick_control(bits: list[tuple[str, int]], info: dict, avoid: set[str]) -> tu
                 and position(info["wires"][sig], idx) in state.get(sig, ())):
             return sig, idx
     return None
+
+
+def pick_controls(bits: list[tuple[str, int]], info: dict, avoid: set[str], n: int = CONTROLS) -> list[tuple[str, int]]:
+    """Up to `n` control bits as pick_control chooses them, each of another signal."""
+    out: list[tuple[str, int]] = []
+    for b in bits:
+        if len(out) >= n:
+            break
+        c = pick_control([b], info, avoid | {s for s, _i in out})
+        if c:
+            out.append(c)
+    return out
 
 
 # ------------------------------------------------------------------------------------- record
@@ -450,14 +568,15 @@ def proven_bits(rec: dict, keys: list[str]) -> dict[str, set[int]] | None:
 
 
 def undecided(rec_conf: dict | None, cands: dict[str, set[int]]) -> dict[str, set[int]]:
-    """The candidates without a PROVEN or counterexample result in this configuration (time limits are retried)."""
+    """The candidates without a PROVEN or counterexample result in this configuration. Time limits are retried,
+    and so are signals that were not in the netlist (a later version may match their names)."""
     if not rec_conf:
         return {s: set(b) for s, b in cands.items()}
     done: dict[str, set[int]] = defaultdict(set)
     for key in ("proven", "cex"):
         for s, t in (rec_conf.get(key) or {}).items():
             done[s] |= cov._expand(t)
-    skip = set(rec_conf.get("absent") or []) | set(rec_conf.get("inputs") or [])
+    skip = set(rec_conf.get("inputs") or [])
     out = {s: b - done.get(s, set()) for s, b in cands.items() if s not in skip}
     return {s: b for s, b in out.items() if b}
 
@@ -480,8 +599,9 @@ def merge_record(conf: dict | None, new: dict) -> dict:
         out["open"][s] = out["open"].get(s, set()) - cov._expand(t)
     for key in ("proven", "cex", "open"):
         out[key] = {s: cov.line_ranges(v) for s, v in sorted(out[key].items()) if v}
-    for key in ("absent", "inputs"):
-        out[key] = sorted(set(conf.get(key) or []) | set(new.get(key) or []))
+    found = {s for key in ("proven", "cex", "open") for s in (new.get(key) or {})} | set(new.get("inputs") or [])
+    out["absent"] = sorted((set(conf.get("absent") or []) | set(new.get("absent") or [])) - found)
+    out["inputs"] = sorted(set(conf.get("inputs") or []) | set(new.get("inputs") or []))
     for key in ("multiclock", "error", "control"):
         if key in new:
             out[key] = new[key]
@@ -495,7 +615,13 @@ def _count(m: dict) -> int:
     return sum(len(cov._expand(t)) for t in (m or {}).values())
 
 
-def to_markdown(name: str, rec: dict) -> str:
+def _ctl_md(text: str) -> str:
+    return ", ".join(f"`{c}`" for c in text.split(", ")) + (" (one must change)" if ", " in text else "")
+
+
+def to_markdown(name: str, rec: dict, keys: list[str] | None = None) -> str:
+    """The record as Markdown; with `keys`, only the configurations of the current run (the others stay in the
+    record as a cache and are counted in one line)."""
     L = [f"# Formal unreachability of toggle points: {name}", "",
          "Generated by `nnc sim --unr` (nnc/unr.py, no LLM). Each bit below had no recorded 1->0 toggle. "
          "SymbiYosys (`" + ENGINE + "`) checked whether it can change after the first reset, for every input "
@@ -507,13 +633,18 @@ def to_markdown(name: str, rec: dict) -> str:
          "output that the simulation toggled many times; it must fail too, else the model does not match the "
          "simulation and the task concludes nothing.", "",
          f"RTL SHA-256 `{rec.get('rtl_sha256', '')[:16]}...`", ""]
-    for key, conf in sorted((rec.get("configs") or {}).items()):
+    shown = {k: c for k, c in (rec.get("configs") or {}).items() if keys is None or k in keys}
+    other = len(rec.get("configs") or {}) - len(shown)
+    if other:
+        L += [f"{other} record(s) of configurations that are not part of this run are kept in unr.json "
+              "(not shown, not applied).", ""]
+    for key, conf in sorted(shown.items()):
         L += [f"## Configuration {conf.get('name', key)} (`{key}`)", "",
               f"Parameters {json.dumps(conf.get('params') or {})}; macros {', '.join(conf.get('defines') or []) or 'none'}; "
               + (f"clocks {'free (multiclock on)' if conf.get('multiclock') else 'one global clock'}; "
                if "multiclock" in conf else "")
               + f"{conf.get('tasks') or 0} SymbiYosys task(s)"
-              + (f"; control `{conf['control']}`" if conf.get("control") else "") + ".", ""]
+              + (f"; control {_ctl_md(conf['control'])}" if conf.get("control") else "") + ".", ""]
         if conf.get("error"):
             L += [f"Error: {conf['error']}", ""]
         L += ["| Result | Bits | Signals |", "|---|---|---|"]
@@ -529,40 +660,117 @@ def to_markdown(name: str, rec: dict) -> str:
             L += ["PROVEN constant after the first reset:", ""]
             L += [f"- `{s}` [{t}]" for s, t in sorted(conf["proven"].items())]
             L.append("")
+    branches = {k: c for k, c in (rec.get("branches") or {}).items() if keys is None or k in keys}
+    if branches:
+        L += ["# Branches never executed after the first reset (nnc/unrbranch.py)", "",
+              "Each IF branch or case item below had no hit. A marker in an instrumented copy of the RTL (a flop "
+              "that toggles when the branch runs, or in a combinational block a signal set to 1 there) was "
+              "checked the same way; a copy is used only when Verilator shows every marker as the first "
+              "statement of its branch. A branch PROVEN in every configuration leaves the block coverage with "
+              "the lines that no other point covers. Key: instance, file, line, column, kind.", ""]
+        for key, conf in sorted(branches.items()):
+            L += [f"## Configuration {conf.get('name', key)} (`{key}`)", "",
+                  f"{conf.get('tasks') or 0} SymbiYosys task(s)"
+                  + (f"; control {_ctl_md(conf['control'])}" if conf.get("control") else "") + ".", ""]
+            if conf.get("error"):
+                L += [f"Error: {conf['error']}", ""]
+            L += ["| Result | Branches |", "|---|---|"]
+            for k2, label in (("proven", "PROVEN never executed"), ("cex", "counterexample"),
+                              ("open", "no result (time limit)")):
+                L.append(f"| {label} | {len(conf.get(k2) or [])} |")
+            for reason, ks in sorted((conf.get("skipped") or {}).items()):
+                L.append(f"| not tried: {reason} | {len(ks)} |")
+            if conf.get("vacuous_tasks"):
+                L.append(f"| tasks whose guard or control did not fail (nothing concluded) | {conf['vacuous_tasks']} tasks |")
+            L.append("")
+            if conf.get("proven"):
+                L += ["PROVEN never executed after the first reset:", ""]
+                L += [f"- `{k[1]}:{k[2]}` {k[4]} (column {k[3]}) in `{k[0] or 'top'}`" for k in conf["proven"]]
+                L.append("")
     return "\n".join(L) + "\n"
 
 
 def apply(work: Path, host: SimHost | None, contract: dict, rtl_dir: Path, dat_path: Path, rtl_names: list[str],
           scope: dict | None, configs: list[dict], frontend: str, *, prove: bool = False, parallel: int = 4,
-          say=print) -> tuple[dict | None, dict | None]:
+          say=print, cut: dict | None = None) -> tuple[dict | None, dict | None]:
     """The scope with the recorded (and, with `prove`, newly proven) unreachable bits, and a summary for
-    the coverage result. `configs`: [{"name", "params" (values), "defines"}]."""
+    the coverage result. `configs`: [{"name", "params" (values), "defines"}]. `cut` (config unr_cut):
+    {"modules": [...], "defines": [...]}, see cut_check."""
     path = work / "unr.json"
     if not prove and not path.is_file():
         return scope, None
     rhash = rtl_sha256(rtl_dir)
     rec = load(path, rhash)
-    keys = [config_key(c["params"], c["defines"], frontend) for c in configs]
+    mods: list[str] = []
+    if cut:
+        why = cut_check(rtl_dir, cut)
+        if why:
+            say(f"[unr] unr_cut refused: {why}")
+            return scope, {"status": f"unr_cut refused: {why}"[:300]}
+        mods = sorted(cut["modules"])
+        configs = [{**c, "defines": sorted(set(c["defines"]) | set(cut.get("defines") or []))} for c in configs]
+    tag = frontend + ("+cut:" + ",".join(mods) if mods else "")
+    keys = [config_key(c["params"], c["defines"], tag) for c in configs]
     if prove and host is not None and dat_path.is_file():
         cands = candidates(dat_path, rtl_names, scope)
-        ctl = controls(dat_path, rtl_names)
+        ctl = controls(dat_path, rtl_names, fields=(scope or {}).get("fields"))
         say(f"[unr] {sum(len(b) for b in cands.values())} candidate bit(s) in {len(cands)} signal(s)")
         for c, key in zip(configs, keys):
+            if key in rec["configs"]:       # names of an earlier version that are no candidate any more
+                old = rec["configs"][key]
+                old["absent"] = sorted(set(old.get("absent") or []) & set(cands))
             todo = undecided(rec["configs"].get(key), cands)
             if not todo and key in rec["configs"]:
                 continue
             new = prove_config(host, contract, rtl_dir, c["params"], c["defines"], frontend, todo, parallel=parallel,
-                               control_bits=ctl)
+                               control_bits=ctl, cut=mods)
             new.update(name=c["name"], params={k: str(v) for k, v in c["params"].items()}, defines=c["defines"])
+            if mods:
+                new["cut"] = mods
             rec["configs"][key] = merge_record(rec["configs"].get(key), new)
             say(f"[unr] {c['name']}: proven {_count(new['proven'])}, counterexample {_count(new['cex'])}, "
                 f"no result {_count(new['open'])}" + (f"; {new['error']}" if new.get("error") else ""))
+        _prove_branches(rec, keys, configs, host, contract, rtl_dir, dat_path, rtl_names, frontend, parallel,
+                        ctl, mods, say)
+        # a record of another configuration that only holds an error has nothing to reuse
+        rec["configs"] = {k: v for k, v in rec["configs"].items()
+                          if k in keys or not v.get("error") or _count(v.get("proven")) + _count(v.get("cex"))}
+        rec["branches"] = {k: v for k, v in (rec.get("branches") or {}).items()
+                           if k in keys or not v.get("error") or v.get("proven") or v.get("cex")}
         path.write_text(json.dumps(rec, indent=1) + "\n", encoding="utf-8")
-        (work / "unr.md").write_text(to_markdown(work.parent.name, rec), encoding="utf-8")
+        (work / "unr.md").write_text(to_markdown(work.parent.name, rec, keys), encoding="utf-8")
     bits = proven_bits(rec, keys)
-    if bits is None:
+    blocks = unrbranch.proven_blocks(rec.get("branches") or {}, keys)
+    if bits is None and not blocks:
         return scope, ({"status": "no record for every configuration", "record": "work/unr.json"} if rec["configs"] else None)
-    new_scope = {**(scope or {"packages": [], "kept": {}}),
-                 "proven": {s: cov.line_ranges(b) for s, b in sorted(bits.items())}}
-    return new_scope, {"status": "applied", "record": "work/unr.json", "proven_bits": sum(len(b) for b in bits.values()),
-                       "signals": len(bits)}
+    new_scope = dict(scope or {"packages": [], "kept": {}})
+    info: dict = {"status": "applied", "record": "work/unr.json"}
+    if bits is not None:
+        new_scope["proven"] = {s: cov.line_ranges(b) for s, b in sorted(bits.items())}
+        info.update(proven_bits=sum(len(b) for b in bits.values()), signals=len(bits))
+    if blocks:
+        new_scope["proven_blocks"] = blocks
+        info["proven_branches"] = len(blocks)
+    return new_scope, info
+
+
+def _prove_branches(rec: dict, keys: list[str], configs: list[dict], host: SimHost, contract: dict, rtl_dir: Path,
+                    dat_path: Path, rtl_names: list[str], frontend: str, parallel: int, ctl: list, mods: list[str],
+                    say) -> None:
+    """Prove, per configuration, the branches that no run executed (nnc/unrbranch.py) into rec["branches"]."""
+    import tempfile
+    todo_all = unrbranch.targets(dat_path, rtl_names)
+    say(f"[unr] {len(todo_all)} branch(es) never executed")
+    br = rec.setdefault("branches", {})
+    for c, key in zip(configs, keys):
+        todo = unrbranch.undecided(br.get(key), todo_all)
+        if not todo and key in br:
+            continue
+        with tempfile.TemporaryDirectory(prefix="nnc_unrb_") as tmp:
+            new = unrbranch.prove_config(host, contract, rtl_dir, c["params"], c["defines"], frontend, todo,
+                                         Path(tmp) / "rtl", parallel=parallel, control_bits=ctl, cut=mods)
+        new.update(name=c["name"], params={k: str(v) for k, v in c["params"].items()}, defines=c["defines"])
+        br[key] = unrbranch.merge(br.get(key), new)
+        skipped = sum(len(v) for v in (new.get("skipped") or {}).values())
+        say(f"[unr] {c['name']} branches: proven {len(new['proven'])}, counterexample {len(new['cex'])}, "
+            f"no result {len(new['open'])}, not tried {skipped}" + (f"; {new['error']}" if new.get("error") else ""))

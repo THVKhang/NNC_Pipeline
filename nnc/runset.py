@@ -129,13 +129,15 @@ RUN_ONE = ("cd {} && if [ -f nnc_scope.sh ]; then bash nnc_scope.sh; fi; for s i
            "if [ -f coverage.dat ]; then verilator_coverage --write-info coverage.info coverage.dat >> sim.log 2>&1; "
            "mv coverage.dat coverage.info s$s/; fi; "
            "if [ -f results.xml ]; then mv results.xml s$s/; fi; mv sim.log s$s/; done")
-MERGE = ("DATS=$(ls C*/s*/coverage.dat 2>/dev/null)\n"
+# A configuration folder holding NOCOV (x_init runs) is left out of the merged coverage.
+NOCOV = "nnc_nocov"
+MERGE = (f"DATS=$(for c in C*; do [ -f \"$c/{NOCOV}\" ] || ls $c/s*/coverage.dat 2>/dev/null; done)\n"
          "if [ -n \"$DATS\" ]; then verilator_coverage --write merged.dat $DATS > merge.log 2>&1; "
          "verilator_coverage --write-info merged.info merged.dat >> merge.log 2>&1; fi\n")
 
 
 def script(parallel: int) -> str:
-    one = RUN_ONE.replace("@JOBS@", str(max(1, 12 // max(1, parallel))))
+    one = RUN_ONE.replace("@JOBS@", str(max(1, sim.default_jobs() // max(1, parallel))))
     return f"ls -d C* | xargs -P {parallel} -I{{}} bash -c '{one}'\n" + MERGE
 
 
@@ -174,6 +176,13 @@ def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: 
                                          opts=r["opts"], frontend=frontend).items():
             files[f"{folder[name]}/{rel}"] = src
         files[f"{folder[name]}/seeds.txt"] = " ".join(str(s) for s in c["seeds"]) + "\n"
+    # x_init runs test behaviour from random initial values; their toggles before the first reset are not
+    # activity of the design, so their coverage is not merged (when every configuration is one, it is)
+    nocov = {n for n, c in configs.items() if c["run"]["opts"].get("x_init") == "random"}
+    if nocov == set(configs):
+        nocov = set()
+    for name in nocov:
+        files[f"{folder[name]}/{NOCOV}"] = "x_init runs: coverage not merged\n"
     if timeout_s is None:
         waves = math.ceil(len(configs) / max(1, parallel))
         timeout_s = 3600 * waves * max(len(c["seeds"]) for c in configs.values())
@@ -194,26 +203,35 @@ def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: 
                        **parsed})
     functional: dict[str, int] = {}
     for d in detail:
+        if d["config"] in nocov:
+            continue
         for k, v in d.get("functional", {}).items():
             functional[k] = functional.get(k, 0) + v
-    scope = coverage.merge_scopes(list(scopes.values()))
+    scope = coverage.merge_scopes([s for n, s in scopes.items() if n not in nocov])
     unr_info = None
     if unr is not None:      # bits proven unreachable (nnc/unr.py): recorded, or proven now with --unr
         confs = [{"name": name, "params": sim.param_values(contract, c["run"]["params"]),
-                  "defines": list(c["run"]["opts"].get("defines") or [])} for name, c in configs.items()]
+                  "defines": list(c["run"]["opts"].get("defines") or [])} for name, c in configs.items()
+                 if name not in nocov]
         scope, unr_info = unr(res.out_dir / "merged.dat", names, scope, confs)
     cov = sim.coverage_of(res.out_dir / "merged.info", res.out_dir / "merged.dat", names, functional, scope,
                           preverified)
     if unr_info:
         cov["unr"] = unr_info
-    return {**base, **merge(detail, cov, functional), "host": host.name, "out_dir": str(res.out_dir),
-            "runs_detail": detail}
+    out = {**base, **merge(detail, cov, functional, nocov), "host": host.name, "out_dir": str(res.out_dir),
+           "runs_detail": detail}
+    return out
 
 
 # ------------------------------------------------------------------------------------------- merging
-def merge(detail: list[dict], coverage: dict, functional: dict[str, int]) -> dict:
-    """Merge per-run results (see the module docstring). Pure function."""
+def merge(detail: list[dict], coverage: dict, functional: dict[str, int], nocov: set[str] | None = None) -> dict:
+    """Merge per-run results (see the module docstring). Pure function. `nocov`: configurations whose
+    coverage is not merged (x_init); their tests and assertions are."""
     ran = [d for d in detail if d["status"] == "ran"]
+    left = [d["label"] for d in ran if d.get("config") in (nocov or set())]
+    cov_note = f"merged over {len(ran) - len(left)} run(s) of the run set" + (
+        f"; not merged: {', '.join(left)} (x_init: toggles before the first reset are not design activity)"
+        if left else "")
     tests: dict[str, dict] = {}
     for d in ran:
         for t in d["tests"]:
@@ -251,7 +269,7 @@ def merge(detail: list[dict], coverage: dict, functional: dict[str, int]) -> dic
         "assertions": dict(sorted(asserts.items())),
         "not_verifiable": nv,
         "not_verifiable_by_run": {d["label"]: d.get("not_verifiable", {}) for d in ran},
-        "coverage": {**coverage, "scope": f"merged over {len(ran)} run(s) of the run set"},
+        "coverage": {**coverage, "scope": cov_note},
         "functional": functional,
         "built": bool(ran),
         "build_errors": [f"{d['label']}: {e}" for d in detail if d["status"] != "ran" for e in d["build_errors"][:5]],

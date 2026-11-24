@@ -40,3 +40,52 @@ Parameters {"PARA_SPI_CLK_DIV": "1"}; macros none; clocks one global clock; 0 Sy
 | not in this netlist | | 0 |
 | input ports (free in the model) | | 0 |
 
+# Branches never executed after the first reset (nnc/unrbranch.py)
+
+Each IF branch or case item below had no hit. A marker in an instrumented copy of the RTL (a flop that toggles when the branch runs, or in a combinational block a signal set to 1 there) was checked the same way; a copy is used only when Verilator shows every marker as the first statement of its branch. A branch PROVEN in every configuration leaves the block coverage with the lines that no other point covers. Key: instance, file, line, column, kind.
+
+## Configuration base (`6a3c69e19c842448`)
+
+1 SymbiYosys task(s); control `r_div_cnt[0]`.
+
+| Result | Branches |
+|---|---|
+| PROVEN never executed | 2 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+
+PROVEN never executed after the first reset:
+
+- `m_spi_master.sv:167` case (column 7) in `top`
+- `m_spi_master.sv:262` case (column 9) in `top`
+
+## Configuration max (`ae76ee08ce7c2d84`)
+
+1 SymbiYosys task(s); control `r_div_cnt[0]`.
+
+| Result | Branches |
+|---|---|
+| PROVEN never executed | 2 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+
+PROVEN never executed after the first reset:
+
+- `m_spi_master.sv:167` case (column 7) in `top`
+- `m_spi_master.sv:262` case (column 9) in `top`
+
+## Configuration min (`d7317bb2ec6f997a`)
+
+2 SymbiYosys task(s); control `r_div_cnt[0]`, `r_sclk[0]`, `r_edge_cnt[0]`, `r_tx_shift[7]` (one must change).
+
+| Result | Branches |
+|---|---|
+| PROVEN never executed | 2 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+
+PROVEN never executed after the first reset:
+
+- `m_spi_master.sv:167` case (column 7) in `top`
+- `m_spi_master.sv:262` case (column 9) in `top`
+

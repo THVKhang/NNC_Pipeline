@@ -4,11 +4,11 @@ This packet is for the person who decides gate **G4 (sign-off)**: *is this desig
 
 ## 1. Summary
 
-- **Requirements (rules):** 234 — FAILED 142, NOT_PROVEN 1, NOT_VERIFIED_BY_SIM 57, VERIFIED 34
-- **Checks:** 40 — FAIL 25, NOT_HIT 1, PASS 14
+- **Requirements (rules):** 234 — FAILED 143, NOT_PROVEN 1, NOT_VERIFIED_BY_SIM 57, VERIFIED 33
+- **Checks:** 40 — FAIL 26, NOT_HIT 1, PASS 13
 - **Tests:** {'fail': 20, 'pass': 1}
-- **Simulated configurations:** 4 runs in 3 configurations (base, ids8, ids35); see `run_set.json` and the *Run set* table of the report
-- **Code coverage:** line 86.0 %, block 77.1 %, expression 71.9 %, toggle 84.1 %, functional 90.0 %
+- **Simulated configurations:** 5 runs in 4 configurations (base, ids8, ids35, xrand); see `run_set.json` and the *Run set* table of the report
+- **Code coverage:** line 91.3 %, block 97.1 %, expression 71.9 %, toggle 91.5 %, functional 90.0 %
 
 ## 2. Decisions taken for you
 
@@ -20,7 +20,7 @@ These gates were approved by an AI agent on delegation, not by a qualified perso
 
 ## 3. Failures and what they mean
 
-Checks not passing: CHK-002, CHK-005, CHK-014, CHK-015, CHK-016, CHK-017, CHK-020, CHK-021, CHK-022, CHK-023, CHK-024, CHK-025, CHK-026, CHK-027, CHK-028, CHK-029, CHK-031, CHK-032, CHK-033, CHK-034, CHK-035, CHK-036, CHK-037, CHK-038, CHK-039, CHK-040. The triage agent read the specification, the RTL, the tests and the logs, and gives the most likely cause. It changes nothing; you decide.
+Checks not passing: CHK-002, CHK-005, CHK-012, CHK-014, CHK-015, CHK-016, CHK-017, CHK-020, CHK-021, CHK-022, CHK-023, CHK-024, CHK-025, CHK-026, CHK-027, CHK-028, CHK-029, CHK-031, CHK-032, CHK-033, CHK-034, CHK-035, CHK-036, CHK-037, CHK-038, CHK-039, CHK-040. The triage agent read the specification, the RTL, the tests and the logs, and gives the most likely cause. It changes nothing; you decide.
 
 ### test_chk_021_accept_qualifiers — CHK-021: AR handshakes expected 42 got 26 (all 4 runs)
 

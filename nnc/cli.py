@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 from nnc import __version__
-from nnc import flow
+from nnc import flow, sim
 from nnc.agents.runtime import make_backend
 from nnc.extract import extract, make_batches, stem_of, summarize, write_outputs
 from nnc.ingest import IngestError, build_index, save_index
@@ -33,7 +33,8 @@ def _options(args) -> flow.Options:
     o = flow.Options(backend=getattr(args, "backend", "claude"), unreviewed=getattr(args, "unreviewed", False),
                      workers=getattr(args, "workers", 4), seed=getattr(args, "seed", 1),
                      mutants=getattr(args, "mutants", 12), timeout_s=getattr(args, "agent_timeout", 1800),
-                     single=getattr(args, "single_run", False), unr=getattr(args, "unr", False))
+                     single=getattr(args, "single_run", False), unr=getattr(args, "unr", False),
+                     jobs=getattr(args, "jobs", None) or sim.default_jobs())
     o.rtl_rounds = getattr(args, "rtl_rounds", 3)
     for stage in ("extract", "review", "contract", "sva", "tests", "triage", "rtl"):
         v = getattr(args, f"{stage}_model", None)
@@ -340,7 +341,7 @@ def cmd_kit_check(args) -> int:
 
 def cmd_formal_check(args) -> int:
     d = _open(args)
-    o = flow.Options(workers=args.workers, single=args.single_run)
+    o = flow.Options(jobs=args.jobs or sim.default_jobs(), single=args.single_run)
     ok, lines = flow.formal_check(d, o, only_config=args.config)
     print("\n".join(lines))
     return 0 if ok else 1
@@ -352,7 +353,7 @@ def cmd_demo(args) -> int:
     bad = 0
     for name in args.designs or ["sync_fifo"]:
         d = Design.open(_design_path(name, args.root))
-        steps = demo.run(d, host, formal=args.formal, workers=args.workers, replay_agents=args.replay,
+        steps = demo.run(d, host, formal=args.formal, workers=args.jobs or sim.default_jobs(), replay_agents=args.replay,
                          all_runs=args.all_runs)
         print("\n" + demo.to_text(d.name, steps) + "\n")
         bad += not demo.ok(steps)
@@ -845,6 +846,8 @@ def build_parser() -> argparse.ArgumentParser:
         s.add_argument("--seed", type=int, default=1)
         s.add_argument("--single-run", action="store_true", help="ignore run_set.json: one run of the design configuration")
         s.add_argument("--mutants", type=int, default=12)
+        s.add_argument("--jobs", type=int, default=None,
+                       help="parallel tool jobs: simulations, SymbiYosys tasks (default: NNC_JOBS, else the CPU count)")
         if name == "sim":
             s.add_argument("--unr", action="store_true",
                            help="prove with SymbiYosys that uncovered toggle bits cannot change after reset; proven "
@@ -900,7 +903,8 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser("formal-check", help="run formal again with the recorded configuration (no agent, writes "
                                             "nothing) and compare every check with work/formal.json (used by CI)")
     s.add_argument("design")
-    s.add_argument("--workers", type=int, default=4, help="parallel SymbiYosys checks (default 4)")
+    s.add_argument("--jobs", "--workers", dest="jobs", type=int, default=None,
+                   help="parallel SymbiYosys checks (default: NNC_JOBS, else the CPU count)")
     s.add_argument("--single-run", action="store_true", help="ignore run_set.json (only if the recorded run did)")
     s.add_argument("--config", help="run one formal configuration of the run set and compare it alone (to split "
                                     "a long rerun over several CI jobs)")
@@ -912,7 +916,8 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--formal", action="store_true", help="also rerun every recorded formal configuration (long)")
     s.add_argument("--all-runs", action="store_true",
                    help="rerun every recorded run of the run set (every configuration and seed), not only the first")
-    s.add_argument("--workers", type=int, default=4, help="parallel formal jobs")
+    s.add_argument("--jobs", "--workers", dest="jobs", type=int, default=None,
+                   help="parallel formal jobs (default: NNC_JOBS, else the CPU count)")
     s.add_argument("--replay", action="store_true",
                    help="also replay the agent stages that read the specification (extract, review, contract) "
                         "from the committed answer cache, never calling a model")

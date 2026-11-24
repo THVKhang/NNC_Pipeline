@@ -1,6 +1,6 @@
 # Verification report — sync_fifo
 
-Generated 2026-11-24T01:59:31+00:00 by NNC Pipeline.
+Generated 2026-11-24T08:29:17+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -9,9 +9,10 @@ Generated 2026-11-24T01:59:31+00:00 by NNC Pipeline.
 | Rules | 272 — {'NOT_VERIFIED_BY_SIM': 98, 'VERIFIED': 174} |
 | Checks | 25 — {'PASS': 25} |
 | Tests | {'pass': 25} |
+| Run set | 2 runs in 2 configurations (base, xrand); primary base.s1 |
 | Integration | OK |
-| Code coverage (RTL), line | 99.2 % (236/238 lines) |
-| Code coverage (RTL), block | 97.3 % (72/74 statement blocks and branch arms) |
+| Code coverage (RTL), line | 100.0 % (236/236 lines); 2 points left out (package code the design does not contain), all points 99.2 % (236/238) |
+| Code coverage (RTL), block | 100.0 % (72/72 statement blocks and branch arms); 2 points left out (package code the design does not contain), all points 97.3 % (72/74) |
 | Code coverage (RTL), expression | 92.8 % (64/69 condition terms) |
 | Code coverage (RTL), toggle | 100.0 % (1620/1620 bit toggles 0->1 and 1->0); 676 points left out (constant bits; 228 of them proven constant after reset by formal, work/unr.md), all points 70.6 % (1620/2296) |
 | Code coverage (RTL), functional | 100.0 % (40/40 cover points of the specification) |
@@ -31,10 +32,20 @@ Generated 2026-11-24T01:59:31+00:00 by NNC Pipeline.
 | Every selected check PASS (no FAIL, NOT_HIT, NOT_RUN) | met |
 | Every planned check selected | met |
 | Every rule in a check or declared not verifiable | met |
+| Every run of the run set built and ran | met — 2 runs |
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | met — 60 rules with attributed mutants |
 | Clock/reset domain crossings: no structural violation (RR-33) | met — clean: no crossing (work/cdc.md) |
 | Formal: no counterexample, no vacuous or failed proof | met — {'BOUNDED': 2, 'PROVEN': 7, 'TIMEOUT': 1, 'UNSUPPORTED': 1} (work/formal.md) |
+
+## Run set
+
+Every check is merged over these runs: PASS when one run verified it and no run failed it; NOT_VERIFIABLE only when every run declared it so.
+
+| Run | Parameters changed | Defines | Plusargs | Status | Tests | Failing assertions | Not verifiable here |
+|---|---|---|---|---|---|---|---|
+| base.s1 — the design configuration | defaults | — | — | ran | {'pass': 25} | none | 0 |
+| xrand.s1 — the design configuration with random initial values of every variable without a reset: a check that passes only because flops start at 0 fails here | defaults | — | — | ran | {'pass': 25} | none | 0 |
 
 ## Gates
 
@@ -49,31 +60,31 @@ Generated 2026-11-24T01:59:31+00:00 by NNC Pipeline.
 
 | Check | Kind | Title | Status | Evidence |
 |---|---|---|---|---|
-| CHK-001 | assertion | Outputs change only at their own clock edge | **PASS** | hits 18976, fails 0; formal UNSUPPORTED |
-| CHK-002 | assertion | No unknown input when a request is sampled | **PASS** | hits 28418, fails 0; formal PROVEN |
-| CHK-003 | assertion | Reads blocked while software reset busy | **PASS** | hits 2554, fails 0; formal PROVEN |
-| CHK-004 | assertion | Read-view occupancy model for o_empty and o_empty_thr | **PASS** | hits 18787, fails 0; formal PROVEN |
-| CHK-005 | assertion | o_underflow one-cycle pulse | **PASS** | hits 5871, fails 0; formal PROVEN |
-| CHK-006 | assertion | Scoreboard: order, no loss, no duplication, show-ahead data | **PASS** | hits 11709, fails 0; formal TIMEOUT |
-| CHK-007 | assertion | Occupancy bounds and safe-direction flag lag | **PASS** | hits 18962, fails 0; formal BOUNDED |
-| CHK-008 | assertion | o_sw_rst_busy start and idle behavior | **PASS** | hits 16887, fails 0; formal PROVEN |
-| CHK-009 | assertion | Write block term forces o_full and o_full_thr | **PASS** | hits 2333, fails 0; formal PROVEN |
-| CHK-010 | assertion | Write-view occupancy model for o_full and o_full_thr | **PASS** | hits 16629, fails 0; formal BOUNDED |
-| CHK-011 | assertion | o_overflow exact one-cycle pulse | **PASS** | hits 18976, fails 0; formal PROVEN |
-| CHK-012 | test | Strictly-later edge latency of o_empty and o_full fall at 3:2 ratio | **PASS** | test_chk_012_strict_later_latency_3_2 |
-| CHK-013 | test | Constrained-random scoreboard traffic over clock ratios and reset release phases | **PASS** | test_chk_013_random_ratios/ratio=0, test_chk_013_random_ratios/ratio=1, test_chk_013_random_ratios/ratio=2, test_chk_013_random_ratios/ratio=3, test_chk_013_random_ratios/ratio=4, test_chk_013_random_ratios/ratio=5, test_chk_013_random_ratios/ratio=6, test_chk_013_random_ratios/ratio=7 |
-| CHK-014 | test | First word latency, show-ahead and back-to-back reads with equal clocks | **PASS** | test_chk_014_first_word_show_ahead |
-| CHK-015 | test | Fill to full, overflow pulses, drain to empty, underflow pulses | **PASS** | test_chk_015_full_empty_overflow_underflow |
-| CHK-016 | test | No full-FIFO bypass; simultaneous accepted write and read | **PASS** | test_chk_016_no_bypass_simultaneous |
-| CHK-017 | test | Pointer wrap: order and flags over many wraps | **PASS** | test_chk_017_pointer_wrap/ratio=0, test_chk_017_pointer_wrap/ratio=1 |
-| CHK-018 | test | Gap-free streaming with equal clocks | **PASS** | test_chk_018_gap_free_equal |
-| CHK-019 | test | Continuous traffic, write clock faster (WF-010) | **PASS** | test_chk_019_write_faster |
-| CHK-020 | test | Continuous traffic, read clock faster (WF-011) | **PASS** | test_chk_020_read_faster |
-| CHK-021 | test | Hardware reset values, asynchronous assertion, release and clearing of pulses | **PASS** | test_chk_021_hw_reset |
-| CHK-022 | test | Software reset sequence with low levels of 1, 3 and 10 cycles and traffic | **PASS** | test_chk_022_sw_reset_sequence/ratio=0, test_chk_022_sw_reset_sequence/ratio=1, test_chk_022_sw_reset_sequence/ratio=2 |
-| CHK-023 | test | Hardware reset has priority at every step of the software reset sequence | **PASS** | test_chk_023_hw_reset_priority |
-| CHK-024 | test | Software reset while full, and a new request during the sequence | **PASS** | test_chk_024_sw_reset_full_and_rerequest |
-| CHK-025 | test | Threshold flags (WF-005) and threshold sweep including values above DEPTH | **PASS** | test_chk_025_thresholds |
+| CHK-001 | assertion | Outputs change only at their own clock edge | **PASS** | hits 37952, fails 0; hit in 2/2 runs; formal UNSUPPORTED |
+| CHK-002 | assertion | No unknown input when a request is sampled | **PASS** | hits 56836, fails 0; hit in 2/2 runs; formal PROVEN |
+| CHK-003 | assertion | Reads blocked while software reset busy | **PASS** | hits 5108, fails 0; hit in 2/2 runs; formal PROVEN |
+| CHK-004 | assertion | Read-view occupancy model for o_empty and o_empty_thr | **PASS** | hits 37574, fails 0; hit in 2/2 runs; formal PROVEN |
+| CHK-005 | assertion | o_underflow one-cycle pulse | **PASS** | hits 11742, fails 0; hit in 2/2 runs; formal PROVEN |
+| CHK-006 | assertion | Scoreboard: order, no loss, no duplication, show-ahead data | **PASS** | hits 23418, fails 0; hit in 2/2 runs; formal TIMEOUT |
+| CHK-007 | assertion | Occupancy bounds and safe-direction flag lag | **PASS** | hits 37924, fails 0; hit in 2/2 runs; formal BOUNDED |
+| CHK-008 | assertion | o_sw_rst_busy start and idle behavior | **PASS** | hits 33774, fails 0; hit in 2/2 runs; formal PROVEN |
+| CHK-009 | assertion | Write block term forces o_full and o_full_thr | **PASS** | hits 4666, fails 0; hit in 2/2 runs; formal PROVEN |
+| CHK-010 | assertion | Write-view occupancy model for o_full and o_full_thr | **PASS** | hits 33258, fails 0; hit in 2/2 runs; formal BOUNDED |
+| CHK-011 | assertion | o_overflow exact one-cycle pulse | **PASS** | hits 37952, fails 0; hit in 2/2 runs; formal PROVEN |
+| CHK-012 | test | Strictly-later edge latency of o_empty and o_full fall at 3:2 ratio | **PASS** | test_chk_012_strict_later_latency_3_2; verified in base.s1, xrand.s1 |
+| CHK-013 | test | Constrained-random scoreboard traffic over clock ratios and reset release phases | **PASS** | test_chk_013_random_ratios/ratio=0, test_chk_013_random_ratios/ratio=1, test_chk_013_random_ratios/ratio=2, test_chk_013_random_ratios/ratio=3, test_chk_013_random_ratios/ratio=4, test_chk_013_random_ratios/ratio=5, test_chk_013_random_ratios/ratio=6, test_chk_013_random_ratios/ratio=7; verified in base.s1, xrand.s1 |
+| CHK-014 | test | First word latency, show-ahead and back-to-back reads with equal clocks | **PASS** | test_chk_014_first_word_show_ahead; verified in base.s1, xrand.s1 |
+| CHK-015 | test | Fill to full, overflow pulses, drain to empty, underflow pulses | **PASS** | test_chk_015_full_empty_overflow_underflow; verified in base.s1, xrand.s1 |
+| CHK-016 | test | No full-FIFO bypass; simultaneous accepted write and read | **PASS** | test_chk_016_no_bypass_simultaneous; verified in base.s1, xrand.s1 |
+| CHK-017 | test | Pointer wrap: order and flags over many wraps | **PASS** | test_chk_017_pointer_wrap/ratio=0, test_chk_017_pointer_wrap/ratio=1; verified in base.s1, xrand.s1 |
+| CHK-018 | test | Gap-free streaming with equal clocks | **PASS** | test_chk_018_gap_free_equal; verified in base.s1, xrand.s1 |
+| CHK-019 | test | Continuous traffic, write clock faster (WF-010) | **PASS** | test_chk_019_write_faster; verified in base.s1, xrand.s1 |
+| CHK-020 | test | Continuous traffic, read clock faster (WF-011) | **PASS** | test_chk_020_read_faster; verified in base.s1, xrand.s1 |
+| CHK-021 | test | Hardware reset values, asynchronous assertion, release and clearing of pulses | **PASS** | test_chk_021_hw_reset; verified in base.s1, xrand.s1 |
+| CHK-022 | test | Software reset sequence with low levels of 1, 3 and 10 cycles and traffic | **PASS** | test_chk_022_sw_reset_sequence/ratio=0, test_chk_022_sw_reset_sequence/ratio=1, test_chk_022_sw_reset_sequence/ratio=2; verified in base.s1, xrand.s1 |
+| CHK-023 | test | Hardware reset has priority at every step of the software reset sequence | **PASS** | test_chk_023_hw_reset_priority; verified in base.s1, xrand.s1 |
+| CHK-024 | test | Software reset while full, and a new request during the sequence | **PASS** | test_chk_024_sw_reset_full_and_rerequest; verified in base.s1, xrand.s1 |
+| CHK-025 | test | Threshold flags (WF-005) and threshold sweep including values above DEPTH | **PASS** | test_chk_025_thresholds; verified in base.s1, xrand.s1 |
 
 ## Requirement traceability (RTM)
 
@@ -399,4 +410,4 @@ Generated 2026-11-24T01:59:31+00:00 by NNC Pipeline.
 - Domain crossings were checked structurally (synchronizer structure, `nnc cdc`); gray coding and handshake protocols are not proven by that check.
 - Sign-off STA, place and route and DFT are outside this flow (docs/SIGNOFF_SCOPE.md); `nnc rtl-check` gives a synthesis estimate of area and the longest combinational path.
 - Rules marked NOT_VERIFIED_BY_SIM carry the contract's reason (static, structural, not observable...).
-- Only the default parameter configuration was simulated (no run_set.json).
+- Only the configurations of the run set above were simulated; code coverage is merged over its runs, mutation testing used the primary run base.s1.

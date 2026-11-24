@@ -1,6 +1,6 @@
 # Verification report — async_apb_bridge
 
-Generated 2026-11-24T02:11:46+00:00 by NNC Pipeline.
+Generated 2026-11-24T08:36:06+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -9,7 +9,7 @@ Generated 2026-11-24T02:11:46+00:00 by NNC Pipeline.
 | Rules | 260 — {'NOT_VERIFIED_BY_SIM': 75, 'VERIFIED': 185} |
 | Checks | 35 — {'PASS': 35} |
 | Tests | {'pass': 28} |
-| Run set | 14 runs in 12 configurations (apb4, model_off, syn, 4ph, 4ph_off, apb5, user, sync3, sync4, min, slv_fast, slv_slow); primary apb4.s1 |
+| Run set | 15 runs in 13 configurations (apb4, model_off, syn, 4ph, 4ph_off, apb5, user, sync3, sync4, min, slv_fast, slv_slow, xrand); primary apb4.s1 |
 | Integration | OK |
 | Code coverage (RTL), line | 91.9 % (2948/3208 lines) |
 | Code coverage (RTL), block | 88.8 % (807/909 statement blocks and branch arms) |
@@ -33,7 +33,7 @@ Generated 2026-11-24T02:11:46+00:00 by NNC Pipeline.
 | Every selected check PASS (no FAIL, NOT_HIT, NOT_RUN) | met |
 | Every planned check selected | met |
 | Every rule in a check or declared not verifiable | met |
-| Every run of the run set built and ran | met — 14 runs |
+| Every run of the run set built and ran | met — 15 runs |
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | **not met** — 3 rule(s) below: AB2-1.3-01, AB2-1.3-03, AB2-1.3-05 |
 | Clock/reset domain crossings: no structural violation (RR-33) | met — review: QUALIFIED 677, SYNC 16 (work/cdc.md) |
@@ -59,6 +59,7 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 | min.s1 — CFG-MIN | PARA_APBCDC_ADDR_W=1, PARA_APBCDC_DATA_W=8 | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 7 |
 | slv_fast.s1 — completer clock 3x faster | defaults | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 8 |
 | slv_slow.s1 — completer clock 9x slower | defaults | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 8 |
+| xrand.s1 — the default configuration with random initial values of every variable without a reset (ROADMAP 23.4): a check that passes only because flops start at 0 fails here; its coverage is not merged | defaults | — | +APBCDC_MSYNC_SEED={seed} +APBCDC_MSYNC_EN=1 | ran | {'pass': 28} | none | 8 |
 
 ## Gates
 
@@ -73,41 +74,41 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 
 | Check | Kind | Title | Status | Evidence |
 |---|---|---|---|---|
-| CHK-001 | assertion | Absent APB5 signals drive zero | **PASS** | hits 2341690, fails 0; hit in 14/14 runs; formal PROVEN |
-| CHK-002 | assertion | Outputs change only at their own clock edge or on reset assertion | **PASS** | hits 2341690, fails 0; hit in 14/14 runs; formal UNSUPPORTED |
-| CHK-003 | assertion | Requester-side PREADY only in an Access cycle | **PASS** | hits 73949, fails 0; hit in 14/14 runs; formal PROVEN |
-| CHK-004 | assertion | Requester-side PREADY is a one-cycle pulse | **PASS** | hits 73949, fails 0; hit in 14/14 runs; formal PROVEN |
-| CHK-005 | assertion | PSLVERR only in the PREADY cycle (no sticky error) | **PASS** | hits 35908, fails 0; hit in 14/14 runs; formal PROVEN |
-| CHK-006 | assertion | At most one PREADY per accepted Setup phase | **PASS** | hits 73949, fails 0; hit in 14/14 runs; formal PROVEN |
-| CHK-007 | assertion | Response outputs stable outside the PREADY cycle | **PASS** | hits 2264200, fails 0; hit in 14/14 runs; formal PROVEN |
-| CHK-008 | assertion | No unknown requester-side outputs after reset | **PASS** | hits 2341676, fails 0; hit in 14/14 runs; formal PROVEN |
-| CHK-009 | assertion | Requester-side outputs at reset value while i_rst_n_mst is low | **PASS** | hits 16516, fails 0; hit in 14/14 runs; formal UNSUPPORTED |
-| CHK-010 | assertion | Completer-side outputs at reset value while i_rst_n_slv is low | **PASS** | hits 8632, fails 0; hit in 14/14 runs; formal UNSUPPORTED |
-| CHK-011 | assertion | No unknown completer-side outputs after reset | **PASS** | hits 1697468, fails 0; hit in 14/14 runs; formal PROVEN |
-| CHK-012 | assertion | Completer-side PENABLE implies PSEL; PSEL rises in a Setup cycle | **PASS** | hits 578274, fails 0; hit in 14/14 runs; formal PROVEN |
-| CHK-013 | assertion | Completer-side Setup phase lasts exactly one cycle | **PASS** | hits 74154, fails 0; hit in 14/14 runs; formal PROVEN |
-| CHK-014 | assertion | Access phase held while the completer is not ready (no timeout) | **PASS** | hits 430033, fails 0; hit in 14/14 runs; formal PROVEN |
-| CHK-015 | assertion | Completer-side transfer ends at the PREADY edge | **PASS** | hits 74087, fails 0; hit in 14/14 runs; formal PROVEN |
-| CHK-016 | assertion | Completer-side request fields stable during a transfer | **PASS** | hits 504187, fails 0; hit in 14/14 runs; formal PROVEN |
-| CHK-017 | assertion | Completer-side request fields loaded only at Setup entry | **PASS** | hits 74148, fails 0; hit in 14/14 runs; formal PROVEN |
-| CHK-018 | assertion | APB5 o_apb_pwakeup high no later than o_apb_psel and until completion | **PASS** | hits 83596, fails 0; hit in 2/14 runs; formal PROVEN |
+| CHK-001 | assertion | Absent APB5 signals drive zero | **PASS** | hits 2489118, fails 0; hit in 15/15 runs; formal PROVEN |
+| CHK-002 | assertion | Outputs change only at their own clock edge or on reset assertion | **PASS** | hits 2489119, fails 0; hit in 15/15 runs; formal UNSUPPORTED |
+| CHK-003 | assertion | Requester-side PREADY only in an Access cycle | **PASS** | hits 79125, fails 0; hit in 15/15 runs; formal PROVEN |
+| CHK-004 | assertion | Requester-side PREADY is a one-cycle pulse | **PASS** | hits 79125, fails 0; hit in 15/15 runs; formal PROVEN |
+| CHK-005 | assertion | PSLVERR only in the PREADY cycle (no sticky error) | **PASS** | hits 38430, fails 0; hit in 15/15 runs; formal PROVEN |
+| CHK-006 | assertion | At most one PREADY per accepted Setup phase | **PASS** | hits 79125, fails 0; hit in 15/15 runs; formal PROVEN |
+| CHK-007 | assertion | Response outputs stable outside the PREADY cycle | **PASS** | hits 2406274, fails 0; hit in 15/15 runs; formal PROVEN |
+| CHK-008 | assertion | No unknown requester-side outputs after reset | **PASS** | hits 2489103, fails 0; hit in 15/15 runs; formal PROVEN |
+| CHK-009 | assertion | Requester-side outputs at reset value while i_rst_n_mst is low | **PASS** | hits 17579, fails 0; hit in 15/15 runs; formal UNSUPPORTED |
+| CHK-010 | assertion | Completer-side outputs at reset value while i_rst_n_slv is low | **PASS** | hits 9187, fails 0; hit in 15/15 runs; formal UNSUPPORTED |
+| CHK-011 | assertion | No unknown completer-side outputs after reset | **PASS** | hits 1810589, fails 0; hit in 15/15 runs; formal PROVEN |
+| CHK-012 | assertion | Completer-side PENABLE implies PSEL; PSEL rises in a Setup cycle | **PASS** | hits 619132, fails 0; hit in 15/15 runs; formal PROVEN |
+| CHK-013 | assertion | Completer-side Setup phase lasts exactly one cycle | **PASS** | hits 79345, fails 0; hit in 15/15 runs; formal PROVEN |
+| CHK-014 | assertion | Access phase held while the completer is not ready (no timeout) | **PASS** | hits 460514, fails 0; hit in 15/15 runs; formal PROVEN |
+| CHK-015 | assertion | Completer-side transfer ends at the PREADY edge | **PASS** | hits 79273, fails 0; hit in 15/15 runs; formal PROVEN |
+| CHK-016 | assertion | Completer-side request fields stable during a transfer | **PASS** | hits 539859, fails 0; hit in 15/15 runs; formal PROVEN |
+| CHK-017 | assertion | Completer-side request fields loaded only at Setup entry | **PASS** | hits 79339, fails 0; hit in 15/15 runs; formal PROVEN |
+| CHK-018 | assertion | APB5 o_apb_pwakeup high no later than o_apb_psel and until completion | **PASS** | hits 83596, fails 0; hit in 2/15 runs; formal PROVEN |
 | CHK-019 | test | APB5 user signals transported unchanged | **PASS** | test_chk_019_apb5_user; verified in user.s1 |
 | CHK-020 | test | APB5 wake-up propagation and in-progress term | **PASS** | test_chk_020_apb5_wakeup; verified in apb5.s1, user.s1 |
-| CHK-021 | test | APB4 configuration ignores APB5 inputs | **PASS** | test_chk_021_apb4_ignores_apb5; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1 |
+| CHK-021 | test | APB4 configuration ignores APB5 inputs | **PASS** | test_chk_021_apb4_ignores_apb5; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1, xrand.s1 |
 | CHK-022 | test | Smallest legal configuration CFG-MIN end to end | **PASS** | test_chk_022_cfg_min; verified in min.s1 |
 | CHK-023 | test | Four-phase handshake: same function, PREADY only after the handshake closes | **PASS** | test_chk_023_four_phase/clocks=0, test_chk_023_four_phase/clocks=1; verified in 4ph.s1, 4ph_off.s1 |
 | CHK-024 | test | Requester protocol violations: PENABLE without Setup, field changes during Access, extended Setup | **PASS** | test_chk_024_requester_violations; verified in user.s1 |
 | CHK-025 | test | Two-phase transfer duration bound | **PASS** | test_chk_025_two_phase_duration/clocks=0, test_chk_025_two_phase_duration/clocks=1, test_chk_025_two_phase_duration/clocks=2, test_chk_025_two_phase_duration/clocks=3, test_chk_025_two_phase_duration/clocks=4; verified in model_off.s1 |
 | CHK-026 | test | Four-phase transfer duration bound | **PASS** | test_chk_026_four_phase_duration/clocks=0, test_chk_026_four_phase_duration/clocks=1, test_chk_026_four_phase_duration/clocks=2, test_chk_026_four_phase_duration/clocks=3, test_chk_026_four_phase_duration/clocks=4; verified in 4ph_off.s1 |
-| CHK-027 | test | Reset values, quiet idle after release, asynchronous reset assertion | **PASS** | test_chk_027_reset_values; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1 |
-| CHK-028 | test | Reset during random traffic: transfer lost, clean restart, staggered release | **PASS** | test_chk_028_reset_during_traffic; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1 |
-| CHK-029 | test | Random traffic scoreboard across clock ratios with a noisy completer | **PASS** | test_chk_029_scoreboard_ratios, test_regression_random; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1 |
+| CHK-027 | test | Reset values, quiet idle after release, asynchronous reset assertion | **PASS** | test_chk_027_reset_values; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1, xrand.s1 |
+| CHK-028 | test | Reset during random traffic: transfer lost, clean restart, staggered release | **PASS** | test_chk_028_reset_during_traffic; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1, xrand.s1 |
+| CHK-029 | test | Random traffic scoreboard across clock ratios with a noisy completer | **PASS** | test_chk_029_scoreboard_ratios, test_regression_random; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1, xrand.s1 |
 | CHK-030 | test | Synchronizer depth seen in crossing latency (CELL_TYPE 4) | **PASS** | test_chk_030_sync_depth; verified in sync4.s1 |
-| CHK-031 | test | Single write and read without wait states, two-phase, field and response transport with crossing windows | **PASS** | test_chk_031_single_write_read; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1 |
-| CHK-032 | test | Completer wait states extend the transfer without limit | **PASS** | test_chk_032_wait_states; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1 |
-| CHK-033 | test | Error response forwarded with data, next transfer independent | **PASS** | test_chk_033_error_response; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1 |
-| CHK-034 | test | Back-to-back transfers, one at a time | **PASS** | test_chk_034_back_to_back/clocks=run, test_chk_034_back_to_back/clocks=swap; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1 |
-| CHK-035 | test | PPROT and PSTRB forwarded unchanged, including PSTRB of a read | **PASS** | test_chk_035_pprot_pstrb; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1 |
+| CHK-031 | test | Single write and read without wait states, two-phase, field and response transport with crossing windows | **PASS** | test_chk_031_single_write_read; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1, xrand.s1 |
+| CHK-032 | test | Completer wait states extend the transfer without limit | **PASS** | test_chk_032_wait_states; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1, xrand.s1 |
+| CHK-033 | test | Error response forwarded with data, next transfer independent | **PASS** | test_chk_033_error_response; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1, xrand.s1 |
+| CHK-034 | test | Back-to-back transfers, one at a time | **PASS** | test_chk_034_back_to_back/clocks=run, test_chk_034_back_to_back/clocks=swap; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1, xrand.s1 |
+| CHK-035 | test | PPROT and PSTRB forwarded unchanged, including PSTRB of a read | **PASS** | test_chk_035_pprot_pstrb; verified in apb4.s1, apb4.s2, apb4.s3, model_off.s1, syn.s1, 4ph.s1, 4ph_off.s1, apb5.s1, user.s1, sync3.s1, sync4.s1, min.s1, slv_fast.s1, slv_slow.s1, xrand.s1 |
 
 ## Requirement traceability (RTM)
 

@@ -852,10 +852,14 @@ Phân tích từng mảng, có so với quy trình ký duyệt của OpenTitan, 
   - Bản đầu có lỗi: khi chỉ có một clock, SymbiYosys dùng một global clock, và clock input không đọc được như dữ liệu. Vì vậy bộ đếm cạnh không bao giờ đếm, mọi assert đúng một cách rỗng, và input tự do `prescale` của c_uart bị "chứng minh" là hằng. Guard và control sinh ra để bắt đúng loại lỗi này. Bản ghi của các phiên bản cũ bị bỏ (`VERSION = 3`).
 - **Kết quả** (EVALUATION §12): sync_fifo và axi2apb toggle 100 %, ahb2axi 75,9 → 84,1 %, gpio 87,5 → 89,6 %. Test và check của 13 thiết kế không đổi.
 
-**Còn mở (giai đoạn 23).**
-- Tên trường struct: Verilator đặt tên theo trường, Yosys chỉ có một net, nên chưa dùng được cho bit hằng lẫn UNR.
-- UNR cho async_gray_fifo và async_apb_bridge (Yosys không đọc được model đồng bộ chỉ dùng trong mô phỏng), và cho điểm line/block.
-- Đưa `x_init` vào run set của các thiết kế còn lại.
+**Giai đoạn 23 (2026-11-24, EVALUATION §15): làm nốt các chỗ còn mở.**
+- **23.1, tên trường struct.** `coverage.struct_fields` đọc bố cục struct từ `verilator --json-only`, nên mỗi điểm theo trường (`tl_i.a_address[3]`) được ghép với bit của net packed bên Yosys. Instance mà Verilator gộp qua vòng generate (`gen_filter[*]`) chỉ được tính là hằng hoặc PROVEN khi mọi instance trong netlist đều vậy.
+- **23.2, model chỉ dùng trong mô phỏng.** Config `unr_cut` liệt kê các module bị cắt: output của chúng thành tự do (`cutpoint -blackbox`). Output tự do cho phép mọi hành vi, kể cả hành vi của model mô phỏng, nên bit PROVEN vẫn đúng trong mô phỏng. `unr.cut_check` từ chối cắt nếu file có macro đó định nghĩa module khác không bị cắt.
+- **23.4, x_init trong mọi run set.** 14 thiết kế còn lại có thêm cấu hình `xrand` (seed 1), nên cả 15 run set đều có. Test và assertion của nó được tính, coverage thì không gộp (toggle trước reset đầu tiên không phải hoạt động của thiết kế).
+- **23.3, nhánh chưa chạy (nnc/unrbranch.py).** Mỗi nhánh IF/case chưa chạy có một marker trong bản sao RTL đã chèn: flop đảo khi nhánh chạy (khối clock), hoặc tín hiệu gán 1 (khối tổ hợp). Bản sao chỉ được dùng khi Verilator thấy mọi marker là lệnh đầu tiên của nhánh. Marker được chứng minh là hằng như bit toggle. Nhánh PROVEN trong mọi cấu hình bị bỏ khỏi block, và dòng của nó bị bỏ khỏi line nếu không còn điểm nào khác phủ dòng đó. Nếu mô phỏng chạy vào nhánh đã PROVEN thì `branches_executed` báo ra; trên mọi thiết kế con số này bằng 0.
+- **Nhiều control.** Mỗi task có tối đa 4 assert control trên flop của các tín hiệu khác nhau; task chỉ có kết luận khi guard FAIL và ít nhất một control FAIL. Lý do: ở cấu hình `min` của spi_master, flop control duy nhất bị hằng nên mọi task rỗng.
+- **Closure bỏ module đã kiểm sẵn.** Nếu thiết kế khai báo `coverage_preverified` (rv_timer: các `prim_*`, giống `cover.cfg` của OpenTitan), `nnc cover` lấy mục tiêu và danh sách điểm chưa phủ từ phần còn lại của thiết kế.
+- **Lưu ý quan trọng: PROVEN nghĩa là chết trong RTL đang có, không có nghĩa là chết theo thiết kế.** Ở ahb2axi_bridge, đường burst AXI (WR_BURST, WR_BBURST, `o_axi_awlen`) được chứng minh là không bao giờ chạy. Nguyên nhân là lỗi RTL số 2 đã ghi: `w_cap_stop` luôn bật `reg_burst_fallback`, nên mọi burst AHB thành các lệnh đơn. Spec yêu cầu gom burst, nên đoạn code này chết vì lỗi. Người duyệt G4 phải xét từng điểm bị loại so với spec: checklist của review packet có mục này, và `work/unr.md` liệt kê mọi nhánh PROVEN.
 
 ## 27. Đầu vào bất kỳ: intake, adapt, corpus (GĐ21, 2026-11-23)
 

@@ -12,6 +12,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
@@ -20,6 +21,15 @@ from pathlib import Path
 from nnc import coverage as coverage_mod
 from nnc.contract import _param_default, derived_values, multi_clock, param_decl, width_decl
 from nnc.simhost import SimHost
+
+
+def default_jobs() -> int:
+    """Parallel tool jobs on this machine (simulations, SymbiYosys tasks, compiler jobs): NNC_JOBS, else the
+    CPU count. Agent calls have their own setting (--workers)."""
+    try:
+        return max(1, int(os.environ.get("NNC_JOBS") or 0) or os.cpu_count() or 4)
+    except ValueError:
+        return max(1, os.cpu_count() or 4)
 
 # Code coverage of the DUT: lines/blocks, every bit's toggles, condition terms (see nnc/coverage.py).
 COVERAGE_ARGS = "--coverage-line --coverage-toggle --coverage-expr"
@@ -700,7 +710,9 @@ def coverage_of(info: Path, dat_path: Path, rtl_names: list[str], functional: di
             w["dropped"]["line"] = wl.get("dropped_lines", 0)
             cov["without_preverified"] = {"modules": sorted(preverified), "instances": w["instances"],
                                           "metrics": dict(sorted(w["metrics"].items())),
-                                          "dropped": dict(sorted(w["dropped"].items()))}
+                                          "dropped": dict(sorted(w["dropped"].items())),
+                                          "uncovered": coverage_mod.summarize_uncovered(
+                                              wl.get("uncovered_lines", []) + w["uncovered"])}
     else:
         cov.pop("uncovered_lines", None)
         cov.pop("executed_lines", None)
@@ -775,7 +787,7 @@ def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: 
     sva = checker_files(sva_dir)
     pv = param_values(contract, params)
     files = build_inputs(contract, rtl, sva, test_file, pv, clock_periods=clock_periods, opts=opts, frontend=frontend)
-    res = host.run(files, SIM_SCRIPT.format(seed=seed, jobs=8),
+    res = host.run(files, SIM_SCRIPT.format(seed=seed, jobs=default_jobs()),
                    ["sim.log", "results.xml", "coverage.info", "coverage.dat", *SCOPE_OUTPUTS],
                    timeout_s=timeout_s, tag="sim")
     names = [f.name for f in rtl]

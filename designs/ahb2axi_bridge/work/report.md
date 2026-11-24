@@ -1,20 +1,20 @@
 # Verification report — ahb2axi_bridge
 
-Generated 2026-11-24T03:35:52+00:00 by NNC Pipeline.
+Generated 2026-11-24T11:11:11+00:00 by NNC Pipeline.
 
 ## Summary
 
 | Item | Result |
 |---|---|
-| Rules | 234 — {'FAILED': 142, 'NOT_PROVEN': 1, 'NOT_VERIFIED_BY_SIM': 57, 'VERIFIED': 34} |
-| Checks | 40 — {'FAIL': 25, 'NOT_HIT': 1, 'PASS': 14} |
+| Rules | 234 — {'FAILED': 143, 'NOT_PROVEN': 1, 'NOT_VERIFIED_BY_SIM': 57, 'VERIFIED': 33} |
+| Checks | 40 — {'FAIL': 26, 'NOT_HIT': 1, 'PASS': 13} |
 | Tests | {'fail': 20, 'pass': 1} |
-| Run set | 4 runs in 3 configurations (base, ids8, ids35); primary base.s1 |
+| Run set | 5 runs in 4 configurations (base, ids8, ids35, xrand); primary base.s1 |
 | Integration | OK |
-| Code coverage (RTL), line | 86.0 % (2733/3177 lines) |
-| Code coverage (RTL), block | 77.1 % (1142/1482 statement blocks and branch arms) |
+| Code coverage (RTL), line | 91.3 % (2733/2994 lines); 183 points left out (package code the design does not contain), all points 86.0 % (2733/3177) |
+| Code coverage (RTL), block | 97.1 % (1142/1176 statement blocks and branch arms); 306 points left out (package code the design does not contain), all points 77.1 % (1142/1482) |
 | Code coverage (RTL), expression | 71.9 % (1316/1830 condition terms) |
-| Code coverage (RTL), toggle | 84.1 % (23597/28044 bit toggles 0->1 and 1->0); 7950 points left out (constant bits; 3078 of them proven constant after reset by formal, work/unr.md), all points 65.7 % (23645/35994) |
+| Code coverage (RTL), toggle | 91.5 % (23591/25770 bit toggles 0->1 and 1->0); 10224 points left out (constant bits; 3936 of them proven constant after reset by formal, work/unr.md), all points 65.7 % (23645/35994) |
 | Code coverage (RTL), functional | 90.0 % (36/40 cover points of the specification) |
 | Mutation score | not run |
 | Coverage target | not requested (`nnc cover <design> --target <n> --metric <m>`) |
@@ -29,10 +29,10 @@ Generated 2026-11-24T03:35:52+00:00 by NNC Pipeline.
 |---|---|
 | Gates G1-G3 approved | met — approved on delegation by an agent: a person should confirm |
 | Interface conformance of the DUT | met |
-| Every selected check PASS (no FAIL, NOT_HIT, NOT_RUN) | **not met** — FAIL 25, NOT_HIT 1 |
+| Every selected check PASS (no FAIL, NOT_HIT, NOT_RUN) | **not met** — FAIL 26, NOT_HIT 1 |
 | Every planned check selected | met |
 | Every rule in a check or declared not verifiable | met |
-| Every run of the run set built and ran | met — 4 runs |
+| Every run of the run set built and ran | met — 5 runs |
 | Mutation run | **not met** — nnc mutate <design> |
 | Clock/reset domain crossings: no structural violation (RR-33) | met — clean: no crossing (work/cdc.md) |
 | Formal: no counterexample, no vacuous or failed proof | **not met** — CEX 9, VACUOUS 1 |
@@ -47,6 +47,7 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 | base.s2 — defaults (one ID per direction) | defaults | — | — | ran | {'fail': 20, 'pass': 1} | CHK-002, CHK-005, CHK-015, CHK-016, CHK-017, CHK-020 | 1 |
 | ids8.s1 — eight IDs per direction | PARA_RD_ID_COUNT=8, PARA_WR_ID_COUNT=8 | — | — | ran | {'fail': 20, 'pass': 1} | CHK-002, CHK-015, CHK-016, CHK-017, CHK-020 | 1 |
 | ids35.s1 — three read IDs, five write IDs | PARA_RD_ID_COUNT=3, PARA_WR_ID_COUNT=5 | — | — | ran | {'fail': 20, 'pass': 1} | CHK-002, CHK-015, CHK-016, CHK-017, CHK-020 | 1 |
+| xrand.s1 — the default configuration with random initial values of every variable without a reset (ROADMAP 23.4): a check that passes only because flops start at 0 fails here; its coverage is not merged | defaults | — | — | ran | {'fail': 20, 'pass': 1} | CHK-002, CHK-012, CHK-015, CHK-016, CHK-017, CHK-020 | 1 |
 
 ## Gates
 
@@ -61,46 +62,46 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 
 | Check | Kind | Title | Status | Evidence |
 |---|---|---|---|---|
-| CHK-001 | assertion | AHB ERROR is a two-cycle response | **PASS** | hits 272, fails 0; hit in 4/4 runs; formal CEX |
-| CHK-002 | assertion | IDLE and BUSY transfers get zero-wait OKAY | **FAIL** | hits 20390, fails 17; fails in base.s1, base.s2, ids8.s1, ids35.s1; formal CEX |
-| CHK-003 | assertion | AXI lock outputs tied low | **PASS** | hits 13878783, fails 0; hit in 4/4 runs; formal PROVEN |
-| CHK-004 | assertion | Reads are always single-beat INCR | **PASS** | hits 13878783, fails 0; hit in 4/4 runs; formal PROVEN |
-| CHK-005 | assertion | AW VALID and payload stable until AWREADY | **FAIL** | hits 14676, fails 2; fails in base.s2; formal CEX |
-| CHK-006 | assertion | W VALID and payload stable until WREADY | **PASS** | hits 13747, fails 0; hit in 4/4 runs; formal PROVEN |
-| CHK-007 | assertion | AR VALID and payload stable until ARREADY | **PASS** | hits 14215, fails 0; hit in 4/4 runs; formal PROVEN |
-| CHK-008 | assertion | At most one outstanding read and one outstanding write | **PASS** | hits 93203, fails 0; hit in 4/4 runs; formal PROVEN |
-| CHK-009 | assertion | AXI IDs stay below the configured ID count | **PASS** | hits 39219, fails 0; hit in 4/4 runs; formal PROVEN |
-| CHK-010 | assertion | W beat count and WLAST match AWLEN | **PASS** | hits 5417, fails 0; hit in 4/4 runs; formal BOUNDED |
-| CHK-011 | assertion | AW burst shape is legal and never crosses 4 KiB | **PASS** | hits 20093, fails 0; hit in 4/4 runs; formal CEX |
-| CHK-012 | assertion | Issued AXI requests use supported sizes and are aligned | **PASS** | hits 39219, fails 0; hit in 4/4 runs; formal CEX |
-| CHK-013 | assertion | No AR before the matching AHB read is accepted | **PASS** | hits 19126, fails 0; hit in 4/4 runs; formal BOUNDED |
-| CHK-014 | assertion | No AXI write burst before the full AHB fixed burst is accepted | **NOT_HIT** | hits 0, fails 0; hit in 0/4 runs; formal VACUOUS |
-| CHK-015 | assertion | AHB read completes only with its R beat and carries RDATA unchanged | **FAIL** | hits 8723, fails 3834; fails in base.s1, base.s2, ids8.s1, ids35.s1; formal CEX |
-| CHK-016 | assertion | Waiting-class writes complete only after their BRESP | **FAIL** | hits 9814, fails 9771; fails in base.s1, base.s2, ids8.s1, ids35.s1; formal CEX |
-| CHK-017 | assertion | Locally rejected transfers end in ERROR and produce no W data | **FAIL** | hits 5549, fails 4; fails in base.s1, base.s2, ids8.s1, ids35.s1; formal CEX |
-| CHK-018 | assertion | AHB outputs hold reset values during reset | **PASS** | hits 452, fails 0; hit in 4/4 runs; formal PROVEN |
-| CHK-019 | assertion | AXI VALID/READY outputs suppressed during reset | **PASS** | hits 452, fails 0; hit in 4/4 runs; formal PROVEN |
-| CHK-020 | assertion | AXI payload outputs hold reset values during reset | **FAIL** | hits 452, fails 452; fails in base.s1, base.s2, ids8.s1, ids35.s1; formal CEX |
-| CHK-021 | test | Only HSEL&HREADY&HTRANS[1] address phases create AXI traffic | **FAIL** | test_chk_021_accept_qualifiers; failed in base.s1, base.s2, ids8.s1, ids35.s1 |
-| CHK-022 | test | AXI outputs have no combinational dependency on READY | **FAIL** | test_chk_022_no_comb_ready_path; failed in base.s1, base.s2, ids8.s1, ids35.s1 |
-| CHK-023 | test | Device and non-bufferable fixed write bursts are serialized as singles | **FAIL** | test_chk_023_device_bursts_singles; failed in base.s1, base.s2, ids8.s1, ids35.s1 |
-| CHK-024 | test | Eligible Normal Write-back fixed write bursts: optional aggregation, early OKAY, terminal waits for B | **FAIL** | test_chk_024_wb_burst_aggregation; failed in base.s1, base.s2, ids8.s1, ids35.s1 |
-| CHK-025 | test | Varying burst-scoped attributes force ordered singles | **FAIL** | test_chk_025_varying_attrs_singles; failed in base.s1, base.s2, ids8.s1, ids35.s1 |
-| CHK-026 | test | Early-terminated fixed write burst drains captured prefix as singles | **FAIL** | test_chk_026_early_termination; failed in base.s1, base.s2, ids8.s1, ids35.s1 |
-| CHK-027 | test | Defensive 4 KiB split preserves order and aggregates responses | **FAIL** | test_chk_027_4k_split; failed in base.s1, base.s2, ids8.s1, ids35.s1 |
-| CHK-028 | test | Write BRESP error mapping and aggregation | **FAIL** | test_chk_028_bresp_errors; failed in base.s1, base.s2, ids8.s1, ids35.s1 |
-| CHK-029 | test | Read RRESP error mapping | **FAIL** | test_chk_029_rresp_errors; failed in base.s1, base.s2, ids8.s1, ids35.s1 |
-| CHK-030 | test | Unsupported AHB controls rejected with ERROR and no AXI request | **PASS** | test_chk_030_rejected_controls; verified in base.s1, base.s2, ids8.s1, ids35.s1 |
-| CHK-031 | test | Rejected transfer after a captured write prefix drains the prefix first | **FAIL** | test_chk_031_reject_after_prefix; failed in base.s1, base.s2, ids8.s1, ids35.s1 |
-| CHK-032 | test | Independent AXI ID rotation per direction with ID count > 1 | **FAIL** | test_chk_032_id_rotation; failed in base.s1, base.s2, ids8.s1, ids35.s1 |
-| CHK-033 | test | Mixed random traffic: ordering, no loss, no duplication | **FAIL** | test_chk_033_mixed_ordering, test_regression_random; failed in base.s1, base.s2, ids8.s1, ids35.s1 |
-| CHK-034 | test | AR/AW issue latency at most 6 cycles under free conditions | **FAIL** | test_chk_034_issue_latency; failed in base.s1, base.s2, ids8.s1, ids35.s1 |
-| CHK-035 | test | READY stalls and missing responses: stable signals, no timeout, no retry | **FAIL** | test_chk_035_stalls_no_timeout; failed in base.s1, base.s2, ids8.s1, ids35.s1 |
-| CHK-036 | test | Independent AHB5/AXI4 protocol compliance with injected endpoint violations | **FAIL** | test_chk_036_protocol_checkers; failed in base.s1, base.s2, ids8.s1, ids35.s1 |
-| CHK-037 | test | Read conversion and attribute mapping scoreboard | **FAIL** | test_chk_037_read_scoreboard; failed in base.s1, base.s2, ids8.s1, ids35.s1 |
-| CHK-038 | test | Asynchronous reset assertion, inputs ignored during reset, no acceptance before release | **FAIL** | test_chk_038_async_reset; failed in base.s1, base.s2, ids8.s1, ids35.s1 |
-| CHK-039 | test | Reset during in-flight transactions discards state | **FAIL** | test_chk_039_reset_inflight; failed in base.s1, base.s2, ids8.s1, ids35.s1 |
-| CHK-040 | test | SINGLE and undefined-INCR write conversion and byte-lane scoreboard | **FAIL** | test_chk_040_write_scoreboard; failed in base.s1, base.s2, ids8.s1, ids35.s1 |
+| CHK-001 | assertion | AHB ERROR is a two-cycle response | **PASS** | hits 339, fails 0; hit in 5/5 runs; formal CEX |
+| CHK-002 | assertion | IDLE and BUSY transfers get zero-wait OKAY | **FAIL** | hits 25488, fails 19; fails in base.s1, base.s2, ids8.s1, ids35.s1, xrand.s1; formal CEX |
+| CHK-003 | assertion | AXI lock outputs tied low | **PASS** | hits 17333575, fails 0; hit in 5/5 runs; formal PROVEN |
+| CHK-004 | assertion | Reads are always single-beat INCR | **PASS** | hits 17333575, fails 0; hit in 5/5 runs; formal PROVEN |
+| CHK-005 | assertion | AW VALID and payload stable until AWREADY | **FAIL** | hits 18351, fails 2; fails in base.s2; formal CEX |
+| CHK-006 | assertion | W VALID and payload stable until WREADY | **PASS** | hits 17131, fails 0; hit in 5/5 runs; formal PROVEN |
+| CHK-007 | assertion | AR VALID and payload stable until ARREADY | **PASS** | hits 17736, fails 0; hit in 5/5 runs; formal PROVEN |
+| CHK-008 | assertion | At most one outstanding read and one outstanding write | **PASS** | hits 116044, fails 0; hit in 5/5 runs; formal PROVEN |
+| CHK-009 | assertion | AXI IDs stay below the configured ID count | **PASS** | hits 48986, fails 0; hit in 5/5 runs; formal PROVEN |
+| CHK-010 | assertion | W beat count and WLAST match AWLEN | **PASS** | hits 6763, fails 0; hit in 5/5 runs; formal BOUNDED |
+| CHK-011 | assertion | AW burst shape is legal and never crosses 4 KiB | **PASS** | hits 25114, fails 0; hit in 5/5 runs; formal CEX |
+| CHK-012 | assertion | Issued AXI requests use supported sizes and are aligned | **FAIL** | hits 48986, fails 10; fails in xrand.s1; formal CEX |
+| CHK-013 | assertion | No AR before the matching AHB read is accepted | **PASS** | hits 23872, fails 0; hit in 5/5 runs; formal BOUNDED |
+| CHK-014 | assertion | No AXI write burst before the full AHB fixed burst is accepted | **NOT_HIT** | hits 0, fails 0; hit in 0/5 runs; formal VACUOUS |
+| CHK-015 | assertion | AHB read completes only with its R beat and carries RDATA unchanged | **FAIL** | hits 10889, fails 4779; fails in base.s1, base.s2, ids8.s1, ids35.s1, xrand.s1; formal CEX |
+| CHK-016 | assertion | Waiting-class writes complete only after their BRESP | **FAIL** | hits 12260, fails 12207; fails in base.s1, base.s2, ids8.s1, ids35.s1, xrand.s1; formal CEX |
+| CHK-017 | assertion | Locally rejected transfers end in ERROR and produce no W data | **FAIL** | hits 6929, fails 5; fails in base.s1, base.s2, ids8.s1, ids35.s1, xrand.s1; formal CEX |
+| CHK-018 | assertion | AHB outputs hold reset values during reset | **PASS** | hits 564, fails 0; hit in 5/5 runs; formal PROVEN |
+| CHK-019 | assertion | AXI VALID/READY outputs suppressed during reset | **PASS** | hits 564, fails 0; hit in 5/5 runs; formal PROVEN |
+| CHK-020 | assertion | AXI payload outputs hold reset values during reset | **FAIL** | hits 564, fails 563; fails in base.s1, base.s2, ids8.s1, ids35.s1, xrand.s1; formal CEX |
+| CHK-021 | test | Only HSEL&HREADY&HTRANS[1] address phases create AXI traffic | **FAIL** | test_chk_021_accept_qualifiers; failed in base.s1, base.s2, ids8.s1, ids35.s1, xrand.s1 |
+| CHK-022 | test | AXI outputs have no combinational dependency on READY | **FAIL** | test_chk_022_no_comb_ready_path; failed in base.s1, base.s2, ids8.s1, ids35.s1, xrand.s1 |
+| CHK-023 | test | Device and non-bufferable fixed write bursts are serialized as singles | **FAIL** | test_chk_023_device_bursts_singles; failed in base.s1, base.s2, ids8.s1, ids35.s1, xrand.s1 |
+| CHK-024 | test | Eligible Normal Write-back fixed write bursts: optional aggregation, early OKAY, terminal waits for B | **FAIL** | test_chk_024_wb_burst_aggregation; failed in base.s1, base.s2, ids8.s1, ids35.s1, xrand.s1 |
+| CHK-025 | test | Varying burst-scoped attributes force ordered singles | **FAIL** | test_chk_025_varying_attrs_singles; failed in base.s1, base.s2, ids8.s1, ids35.s1, xrand.s1 |
+| CHK-026 | test | Early-terminated fixed write burst drains captured prefix as singles | **FAIL** | test_chk_026_early_termination; failed in base.s1, base.s2, ids8.s1, ids35.s1, xrand.s1 |
+| CHK-027 | test | Defensive 4 KiB split preserves order and aggregates responses | **FAIL** | test_chk_027_4k_split; failed in base.s1, base.s2, ids8.s1, ids35.s1, xrand.s1 |
+| CHK-028 | test | Write BRESP error mapping and aggregation | **FAIL** | test_chk_028_bresp_errors; failed in base.s1, base.s2, ids8.s1, ids35.s1, xrand.s1 |
+| CHK-029 | test | Read RRESP error mapping | **FAIL** | test_chk_029_rresp_errors; failed in base.s1, base.s2, ids8.s1, ids35.s1, xrand.s1 |
+| CHK-030 | test | Unsupported AHB controls rejected with ERROR and no AXI request | **PASS** | test_chk_030_rejected_controls; verified in base.s1, base.s2, ids8.s1, ids35.s1, xrand.s1 |
+| CHK-031 | test | Rejected transfer after a captured write prefix drains the prefix first | **FAIL** | test_chk_031_reject_after_prefix; failed in base.s1, base.s2, ids8.s1, ids35.s1, xrand.s1 |
+| CHK-032 | test | Independent AXI ID rotation per direction with ID count > 1 | **FAIL** | test_chk_032_id_rotation; failed in base.s1, base.s2, ids8.s1, ids35.s1, xrand.s1 |
+| CHK-033 | test | Mixed random traffic: ordering, no loss, no duplication | **FAIL** | test_chk_033_mixed_ordering, test_regression_random; failed in base.s1, base.s2, ids8.s1, ids35.s1, xrand.s1 |
+| CHK-034 | test | AR/AW issue latency at most 6 cycles under free conditions | **FAIL** | test_chk_034_issue_latency; failed in base.s1, base.s2, ids8.s1, ids35.s1, xrand.s1 |
+| CHK-035 | test | READY stalls and missing responses: stable signals, no timeout, no retry | **FAIL** | test_chk_035_stalls_no_timeout; failed in base.s1, base.s2, ids8.s1, ids35.s1, xrand.s1 |
+| CHK-036 | test | Independent AHB5/AXI4 protocol compliance with injected endpoint violations | **FAIL** | test_chk_036_protocol_checkers; failed in base.s1, base.s2, ids8.s1, ids35.s1, xrand.s1 |
+| CHK-037 | test | Read conversion and attribute mapping scoreboard | **FAIL** | test_chk_037_read_scoreboard; failed in base.s1, base.s2, ids8.s1, ids35.s1, xrand.s1 |
+| CHK-038 | test | Asynchronous reset assertion, inputs ignored during reset, no acceptance before release | **FAIL** | test_chk_038_async_reset; failed in base.s1, base.s2, ids8.s1, ids35.s1, xrand.s1 |
+| CHK-039 | test | Reset during in-flight transactions discards state | **FAIL** | test_chk_039_reset_inflight; failed in base.s1, base.s2, ids8.s1, ids35.s1, xrand.s1 |
+| CHK-040 | test | SINGLE and undefined-INCR write conversion and byte-lane scoreboard | **FAIL** | test_chk_040_write_scoreboard; failed in base.s1, base.s2, ids8.s1, ids35.s1, xrand.s1 |
 
 ## Requirement traceability (RTM)
 
@@ -207,7 +208,7 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 | AA-T1.7.3.1-01 |  | The bridge accepts a transfer at a rising i_clk_core edge when HSEL, HREADY and HTRANS[1] are all 1. | CHK-021:FAIL, CHK-037:FAIL | — | **FAILED** |
 | AA-T1.7.3.1-02 |  | Address/control are taken from the address phase; HWDATA/HWSTRB belong to the corresponding data phase. | CHK-040:FAIL | — | **FAILED** |
 | AA-T1.7.3.1-03 |  | BUSY and IDLE transfers must not create AXI traffic. | CHK-002:FAIL, CHK-021:FAIL | — | **FAILED** |
-| AA-T1.7.3.1-04 |  | Supported HSIZE encodings are byte, halfword and word (0,1,2), and transfer addresses shall be naturally aligned to HSIZE. | CHK-012:PASS | — | **VERIFIED** |
+| AA-T1.7.3.1-04 |  | Supported HSIZE encodings are byte, halfword and word (0,1,2), and transfer addresses shall be naturally aligned to HSIZE. | CHK-012:FAIL | — | **FAILED** |
 | AA-T1.7.3.1-05 | REQ-FUNC-009 | The bridge returns AHB ERROR with no AXI request for the rejected transfer; any earlier accepted write prefix is drained. | CHK-030:PASS, CHK-031:FAIL | — | **FAILED** |
 | AA-T1.7.3.1-06 |  | AHB SINGLE and undefined INCR are converted to AXI single-beat INCR transactions. | CHK-037:FAIL, CHK-040:FAIL | — | **FAILED** |
 | AA-T1.7.3.1-07 |  | Each read beat of fixed INCR/WRAP bursts issues its own single-beat AR request. | CHK-037:FAIL | — | **FAILED** |
@@ -252,7 +253,7 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 | AA-8-07 |  | Immediately above each RTL parameter, comments // Parameter Description, // Parameter values and // Parameter unit must appear in that order. | not verified: static_or_structural | — | **NOT_VERIFIED_BY_SIM** |
 | AA-9-01 |  | The AXI address must equal the corresponding accepted AHB address (32-bit byte address). | CHK-037:FAIL, CHK-040:FAIL | — | **FAILED** |
 | AA-9-03 |  | The bridge must not byte-swap data between AHB and AXI. | CHK-015:FAIL, CHK-040:FAIL | — | **FAILED** |
-| AA-9-04 |  | HSIZE/AxSIZE must encode 0 as 1 byte, 1 as 2 bytes and 2 as 4 bytes. | CHK-012:PASS, CHK-037:FAIL | — | **FAILED** |
+| AA-9-04 |  | HSIZE/AxSIZE must encode 0 as 1 byte, 1 as 2 bytes and 2 as 4 bytes. | CHK-012:FAIL, CHK-037:FAIL | — | **FAILED** |
 | AA-9-05 |  | The bridge must reject transfers with sizes larger than 4 bytes. | CHK-030:PASS | — | **VERIFIED** |
 | AA-9-06 |  | HWSTRB[n] and WSTRB[n] must qualify byte [8n+7:8n] of HWDATA/WDATA respectively. | CHK-040:FAIL | — | **FAILED** |
 | AA-9-07 |  | The strobe must be passed from HWSTRB to WSTRB per beat. | CHK-040:FAIL | — | **FAILED** |

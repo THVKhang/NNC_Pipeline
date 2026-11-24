@@ -1,5 +1,5 @@
 {
- "date": "2026-11-23T10:18:38+00:00",
+ "date": "2026-11-24T06:47:56+00:00",
  "seed": 1,
  "rtl_files": [
   "picorv32.v"
@@ -10,59 +10,113 @@
  },
  "status": "ran",
  "params": {},
- "host": "wsl",
  "tests": [
   {
    "name": "test_chk_004_directed_divide",
-   "status": "pass",
-   "sim_time_ns": "10235.0"
+   "runs": {
+    "base.s1": "pass",
+    "xrand.s1": "pass"
+   },
+   "status": "pass"
   },
   {
    "name": "test_chk_005_random_divide",
-   "status": "pass",
-   "sim_time_ns": "1975675.0"
+   "runs": {
+    "base.s1": "pass",
+    "xrand.s1": "pass"
+   },
+   "status": "pass"
   },
   {
    "name": "test_chk_006_divide_by_zero",
-   "status": "pass",
-   "sim_time_ns": "9475.0"
+   "runs": {
+    "base.s1": "pass",
+    "xrand.s1": "pass"
+   },
+   "status": "pass"
   },
   {
    "name": "test_chk_007_signed_overflow",
-   "status": "pass",
-   "sim_time_ns": "3205.0"
+   "runs": {
+    "base.s1": "pass",
+    "xrand.s1": "pass"
+   },
+   "status": "pass"
   },
   {
    "name": "test_chk_008_pcpi_handshake",
-   "status": "pass",
-   "sim_time_ns": "14495.0"
+   "runs": {
+    "base.s1": "pass",
+    "xrand.s1": "pass"
+   },
+   "status": "pass"
   },
   {
    "name": "test_chk_009_idle_after_reset",
-   "status": "pass",
-   "sim_time_ns": "2425.0"
+   "runs": {
+    "base.s1": "pass",
+    "xrand.s1": "pass"
+   },
+   "status": "pass"
   },
   {
    "name": "test_regression_random",
-   "status": "pass",
-   "sim_time_ns": "1206645.0"
+   "runs": {
+    "base.s1": "pass",
+    "xrand.s1": "pass"
+   },
+   "status": "pass"
   }
  ],
  "assertions": {
   "CHK-001": {
-   "hits": 275264,
-   "fails": 0
+   "hits": 550528,
+   "fails": 0,
+   "runs": {
+    "base.s1": {
+     "hits": 275264,
+     "fails": 0
+    },
+    "xrand.s1": {
+     "hits": 275264,
+     "fails": 0
+    }
+   }
   },
   "CHK-002": {
-   "hits": 8096,
-   "fails": 0
+   "hits": 16192,
+   "fails": 0,
+   "runs": {
+    "base.s1": {
+     "hits": 8096,
+     "fails": 0
+    },
+    "xrand.s1": {
+     "hits": 8096,
+     "fails": 0
+    }
+   }
   },
   "CHK-003": {
-   "hits": 8096,
-   "fails": 0
+   "hits": 16192,
+   "fails": 0,
+   "runs": {
+    "base.s1": {
+     "hits": 8096,
+     "fails": 0
+    },
+    "xrand.s1": {
+     "hits": 8096,
+     "fails": 0
+    }
+   }
   }
  },
  "not_verifiable": {},
+ "not_verifiable_by_run": {
+  "base.s1": {},
+  "xrand.s1": {}
+ },
  "coverage": {
   "status": "measured",
   "metric": "line",
@@ -206,7 +260,8 @@
      "percent": 100.0
     }
    }
-  }
+  },
+  "scope": "merged over 1 run(s) of the run set; not merged: xrand.s1 (x_init: toggles before the first reset are not design activity)"
  },
  "functional": {
   "COVP-001": 2040,
@@ -245,8 +300,67 @@
   "COVP-034": 214,
   "COVP-035": 108
  },
- "make_rc": 0,
  "built": true,
  "build_errors": [],
+ "run_set": {
+  "primary": "base.s1",
+  "failed_runs": [],
+  "runs": [
+   {
+    "label": "base.s1",
+    "config": "base",
+    "seed": 1,
+    "note": "the design configuration",
+    "overrides": {},
+    "params": {},
+    "opts": {
+     "defines": [],
+     "plusargs": ""
+    },
+    "clock_periods": {},
+    "status": "ran",
+    "tests": {
+     "pass": 7
+    },
+    "assertions_failing": [],
+    "not_verifiable": [],
+    "coverage_percent": {
+     "line": 100.0,
+     "block": 100.0,
+     "expression": 100.0,
+     "toggle": 100.0,
+     "functional": 85.7
+    }
+   },
+   {
+    "label": "xrand.s1",
+    "config": "xrand",
+    "seed": 1,
+    "note": "the design configuration with random initial values of every variable without a reset: a check that passes only because flops start at 0 fails here",
+    "overrides": {},
+    "params": {},
+    "opts": {
+     "defines": [],
+     "plusargs": "",
+     "x_init": "random"
+    },
+    "clock_periods": {},
+    "status": "ran",
+    "tests": {
+     "pass": 7
+    },
+    "assertions_failing": [],
+    "not_verifiable": [],
+    "coverage_percent": {
+     "line": 100.0,
+     "block": 100.0,
+     "expression": 100.0,
+     "toggle": 100.0,
+     "functional": 85.7
+    }
+   }
+  ]
+ },
+ "host": "wsl",
  "unreviewed_gates": []
 }

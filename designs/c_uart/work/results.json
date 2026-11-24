@@ -1,5 +1,5 @@
 {
- "date": "2026-11-24T03:38:12+00:00",
+ "date": "2026-11-24T08:30:53+00:00",
  "seed": 1,
  "rtl_files": [
   "uart.v",
@@ -14,88 +14,171 @@
  "params": {
   "DATA_WIDTH": 8
  },
- "host": "wsl",
  "tests": [
   {
    "name": "test_chk_005_rx_backpressure",
-   "status": "pass",
-   "sim_time_ns": "240085.0"
+   "runs": {
+    "base.s1": "pass",
+    "xrand.s1": "pass"
+   },
+   "status": "pass"
   },
   {
    "name": "test_chk_006_rx_busy",
-   "status": "pass",
-   "sim_time_ns": "11285.0"
+   "runs": {
+    "base.s1": "pass",
+    "xrand.s1": "pass"
+   },
+   "status": "pass"
   },
   {
    "name": "test_chk_007_rx_overrun",
-   "status": "fail",
+   "runs": {
+    "base.s1": "fail",
+    "xrand.s1": "fail"
+   },
    "sim_time_ns": "3215.0",
-   "message": "CHK-001: m_axis stalled with tvalid=1 tdata=0x3c after tready=0 got tvalid=1 tdata=0xc3 at edge 322",
+   "message": "[failed in base.s1, xrand.s1] CHK-001: m_axis stalled with tvalid=1 tdata=0x3c after tready=0 got tvalid=1 tdata=0xc3 at edge 322",
    "exception": "AssertionError",
-   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/sim_51113cc8/test_c_uart.py\", line 174, in _run\n                                                            assert v == 1 and d == prev_d, (\n                                                        AssertionError: CHK-001: m_axis stalled with tvalid=1 tdata=0x3c after tready=0 got tvalid=1 tdata=0xc3 at edge 322\n                                                        assert (1 == 1 and 195 == 60)\n254585.00ns WARNING  cocotb.regression                  test_c_uart.test_chk_007_rx_overrun failed",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_dec4e7d9/C01/test_c_uart.py\", line 174, in _run\n                                                            assert v == 1 and d == prev_d, (\n                                                        AssertionError: CHK-001: m_axis stalled with tvalid=1 tdata=0x3c after tready=0 got tvalid=1 tdata=0xc3 at edge 322\n                                                        assert (1 == 1 and 195 == 60)\n254585.00ns WARNING  cocotb.regression                  test_c_uart.test_chk_007_rx_overrun failed",
    "checks": [
     "CHK-001",
     "CHK-007"
-   ]
+   ],
+   "failed_in": [
+    "base.s1",
+    "xrand.s1"
+   ],
+   "status": "fail"
   },
   {
    "name": "test_chk_008_rx_frame_error",
-   "status": "fail",
+   "runs": {
+    "base.s1": "fail",
+    "xrand.s1": "fail"
+   },
    "sim_time_ns": "5925.0",
-   "message": "CHK-008: m_axis_tvalid=0 from bad frame until valid frame at every edge 9..513 got m_axis_tvalid=1 at edge 314 (1 violating edges)",
+   "message": "[failed in base.s1, xrand.s1] CHK-008: m_axis_tvalid=0 from bad frame until valid frame at every edge 9..513 got m_axis_tvalid=1 at edge 314 (1 violating edges)",
    "exception": "AssertionError",
-   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/sim_51113cc8/test_c_uart.py\", line 507, in test_chk_008_rx_frame_error\n                                                            env.trace.expect(\"CHK-008\", \"m_axis_tvalid\", tb, tg + (DW + 1) * bp, lambda v: v == 0,\n                                                          File \"/root/nnc_runs/sim_51113cc8/test_c_uart.py\", line 141, in expect\n                                                            assert not bad, (f\"{chk}: {desc} at every edge {a}..{b} got {sig}={bad[0][1]} at edge \"\n                                                        AssertionError: CHK-008: m_axis_tvalid=0 from bad frame until valid frame at every edge 9..513 got m_axis_tvalid=1 at edge 314 (1 violating edges)\n                                                        assert not [(314, 1)]\n260510.00ns WARNING  cocotb.regression                  test_c_uart.test_chk_008_rx_frame_error failed",
+   "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_dec4e7d9/C01/test_c_uart.py\", line 507, in test_chk_008_rx_frame_error\n                                                            env.trace.expect(\"CHK-008\", \"m_axis_tvalid\", tb, tg + (DW + 1) * bp, lambda v: v == 0,\n                                                          File \"/root/nnc_runs/runset_dec4e7d9/C01/test_c_uart.py\", line 141, in expect\n                                                            assert not bad, (f\"{chk}: {desc} at every edge {a}..{b} got {sig}={bad[0][1]} at edge \"\n                                                        AssertionError: CHK-008: m_axis_tvalid=0 from bad frame until valid frame at every edge 9..513 got m_axis_tvalid=1 at edge 314 (1 violating edges)\n                                                        assert not [(314, 1)]\n260510.00ns WARNING  cocotb.regression                  test_c_uart.test_chk_008_rx_frame_error failed",
    "checks": [
     "CHK-008"
-   ]
+   ],
+   "failed_in": [
+    "base.s1",
+    "xrand.s1"
+   ],
+   "status": "fail"
   },
   {
    "name": "test_chk_009_tx_handshake_order",
-   "status": "pass",
-   "sim_time_ns": "235585.00000000003"
+   "runs": {
+    "base.s1": "pass",
+    "xrand.s1": "pass"
+   },
+   "status": "pass"
   },
   {
    "name": "test_chk_010_prescale_rate",
-   "status": "pass",
-   "sim_time_ns": "94295.0"
+   "runs": {
+    "base.s1": "pass",
+    "xrand.s1": "pass"
+   },
+   "status": "pass"
   },
   {
    "name": "test_chk_011_tx_busy",
-   "status": "pass",
-   "sim_time_ns": "11845.0"
+   "runs": {
+    "base.s1": "pass",
+    "xrand.s1": "pass"
+   },
+   "status": "pass"
   },
   {
    "name": "test_regression_random",
-   "status": "fail",
+   "runs": {
+    "base.s1": "fail",
+    "xrand.s1": "fail"
+   },
    "sim_time_ns": "5215.0",
-   "message": "CHK-001: m_axis stalled with tvalid=1 tdata=0x75 after tready=0 got tvalid=1 tdata=0x5b at edge 522",
+   "message": "[failed in base.s1, xrand.s1] CHK-001: m_axis stalled with tvalid=1 tdata=0x75 after tready=0 got tvalid=1 tdata=0x5b at edge 522",
    "exception": "AssertionError",
-   "traceback": "00           0.02     206168.97  **\n                                                        ** test_c_uart.test_chk_008_rx_frame_error       FAIL        5925.00           0.03     219309.29  **\n                                                        ** test_c_uart.test_chk_009_tx_handshake_order   PASS      235585.00           1.13     209227.09  **\n                                                        ** test_c_uart.test_chk_010_prescale_rate        PASS       94295.00           0.43     217091.40  **\n                                                        ** test_c_uart.test_chk_011_tx_busy              PASS       11845.00           0.05     218881.62  **\n                                                        ** test_c_uart.test_regression_random            FAIL        5215.00           0.03     199900.34  **\n                                                        *****************************************************************************************************\n                                                        ** TESTS=8 PASS=5 FAIL=3 SKIP=0                            607450.01           2.85     213482.00  **\n                                                        *****************************************************************************************************\nNNC_FAIL CHK-001 @254585000\n- (null):0: Verilog $finish\nNNC_COVER COVP-001 hits=83\nNNC_COVER COVP-002 hits=15103\nNNC_COVER COVP-003 hits=14875\nNNC_COVER COVP-004 hits=15178\nNNC_COVER COVP-005 hits=4\nNNC_COVER COVP-006 hits=3\nNNC_COVER COVP-007 hits=81\nNNC_COVER COVP-008 hits=405\nNNC_COVER COVP-009 hits=337\nNNC_COVER COVP-010 hits=402\nNNC_COVER COVP-011 hits=34\nNNC_COVER COVP-012 hits=47973\nNNC_COVER COVP-013 hits=4\nNNC_COVER COVP-014 hits=5\nNNC_COVER COVP-015 hits=1\nNNC_COVER COVP-016 hits=1\nNNC_COVER COVP-017 hits=1\nNNC_COVER COVP-018 hits=1\nNNC_COVER COVP-019 hits=1\nNNC_COVER COVP-020 hits=1\nNNC_COVER COVP-021 hits=0\nNNC_COVER COVP-022 hits=1\nNNC_COVER COVP-023 hits=8\nNNC_COVER COVP-024 hits=7\nNNC_COVER COVP-025 hits=12992\nNNC_COVER COVP-026 hits=13037\nNNC_COVER COVP-027 hits=34681\nNNC_COVER COVP-028 hits=85\nNNC_COVER COVP-029 hits=84\nNNC_COVER COVP-030 hits=85\nNNC_COVER COVP-031 hits=455\nNNC_COVER COVP-032 hits=10\nNNC_COVER COVP-033 hits=199\nNNC_COVER COVP-034 hits=10\nNNC_COVER COVP-035 hits=0\nNNC_COVER COVP-036 hits=81\nNNC_COVER COVP-037 hits=4\nNNC_COVER COVP-038 hits=0\nNNC_COVER COVP-039 hits=0\nNNC_COVER COVP-040 hits=1\nNNC_CHECK CHK-004 hits=12992 fails=0\nNNC_CHECK CHK-002 hits=1 fails=0\nNNC_CHECK CHK-003 hits=1 fails=0\nNNC_CHECK CHK-001 hits=405 fails=1\nmake[1]: *** [/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb_tools/makefiles/simulators/Makefile.verilator:70: results.xml] Error 3\nmake[1]: Leaving directory '/root/nnc_runs/sim_51113cc8'\nmake: *** [/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb_tools/makefiles/Makefile.inc:17: sim] Error 2\nNNC_MAKE_RC=2\n",
+   "traceback": "      0.01     225549.25  **\n                                                        ** test_c_uart.test_chk_008_rx_frame_error       FAIL        5925.00           0.03     173699.95  **\n                                                        ** test_c_uart.test_chk_009_tx_handshake_order   PASS      235585.00           1.19     197939.84  **\n                                                        ** test_c_uart.test_chk_010_prescale_rate        PASS       94295.00           0.45     207755.30  **\n                                                        ** test_c_uart.test_chk_011_tx_busy              PASS       11845.00           0.05     231900.95  **\n                                                        ** test_c_uart.test_regression_random            FAIL        5215.00           0.03     188580.77  **\n                                                        *****************************************************************************************************\n                                                        ** TESTS=8 PASS=5 FAIL=3 SKIP=0                            607450.01           3.01     201837.43  **\n                                                        *****************************************************************************************************\nNNC_FAIL CHK-001 @254585000\n- (null):0: Verilog $finish\nNNC_COVER COVP-001 hits=83\nNNC_COVER COVP-002 hits=15103\nNNC_COVER COVP-003 hits=14875\nNNC_COVER COVP-004 hits=15178\nNNC_COVER COVP-005 hits=4\nNNC_COVER COVP-006 hits=3\nNNC_COVER COVP-007 hits=81\nNNC_COVER COVP-008 hits=405\nNNC_COVER COVP-009 hits=337\nNNC_COVER COVP-010 hits=402\nNNC_COVER COVP-011 hits=34\nNNC_COVER COVP-012 hits=47973\nNNC_COVER COVP-013 hits=4\nNNC_COVER COVP-014 hits=5\nNNC_COVER COVP-015 hits=1\nNNC_COVER COVP-016 hits=1\nNNC_COVER COVP-017 hits=1\nNNC_COVER COVP-018 hits=1\nNNC_COVER COVP-019 hits=1\nNNC_COVER COVP-020 hits=1\nNNC_COVER COVP-021 hits=0\nNNC_COVER COVP-022 hits=1\nNNC_COVER COVP-023 hits=8\nNNC_COVER COVP-024 hits=7\nNNC_COVER COVP-025 hits=12992\nNNC_COVER COVP-026 hits=13037\nNNC_COVER COVP-027 hits=34681\nNNC_COVER COVP-028 hits=85\nNNC_COVER COVP-029 hits=84\nNNC_COVER COVP-030 hits=85\nNNC_COVER COVP-031 hits=455\nNNC_COVER COVP-032 hits=10\nNNC_COVER COVP-033 hits=199\nNNC_COVER COVP-034 hits=10\nNNC_COVER COVP-035 hits=0\nNNC_COVER COVP-036 hits=81\nNNC_COVER COVP-037 hits=4\nNNC_COVER COVP-038 hits=0\nNNC_COVER COVP-039 hits=0\nNNC_COVER COVP-040 hits=1\nNNC_CHECK CHK-004 hits=12992 fails=0\nNNC_CHECK CHK-002 hits=1 fails=0\nNNC_CHECK CHK-003 hits=1 fails=0\nNNC_CHECK CHK-001 hits=405 fails=1\nmake[1]: *** [/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb_tools/makefiles/simulators/Makefile.verilator:70: results.xml] Error 3\nmake[1]: Leaving directory '/root/nnc_runs/runset_dec4e7d9/C01'\nmake: *** [/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb_tools/makefiles/Makefile.inc:17: sim] Error 2\nNNC_MAKE_RC=2\n",
    "checks": [
     "CHK-001"
-   ]
+   ],
+   "failed_in": [
+    "base.s1",
+    "xrand.s1"
+   ],
+   "status": "fail"
   }
  ],
  "assertions": {
-  "CHK-004": {
-   "hits": 12992,
-   "fails": 0
+  "CHK-001": {
+   "hits": 810,
+   "fails": 2,
+   "runs": {
+    "base.s1": {
+     "hits": 405,
+     "fails": 1
+    },
+    "xrand.s1": {
+     "hits": 405,
+     "fails": 1
+    }
+   },
+   "first_fail_time": 254585000,
+   "first_fail_run": "base.s1"
   },
   "CHK-002": {
-   "hits": 1,
-   "fails": 0
+   "hits": 2,
+   "fails": 0,
+   "runs": {
+    "base.s1": {
+     "hits": 1,
+     "fails": 0
+    },
+    "xrand.s1": {
+     "hits": 1,
+     "fails": 0
+    }
+   }
   },
   "CHK-003": {
-   "hits": 1,
-   "fails": 0
+   "hits": 2,
+   "fails": 0,
+   "runs": {
+    "base.s1": {
+     "hits": 1,
+     "fails": 0
+    },
+    "xrand.s1": {
+     "hits": 1,
+     "fails": 0
+    }
+   }
   },
-  "CHK-001": {
-   "hits": 405,
-   "fails": 1,
-   "first_fail_time": 254585000
+  "CHK-004": {
+   "hits": 25984,
+   "fails": 0,
+   "runs": {
+    "base.s1": {
+     "hits": 12992,
+     "fails": 0
+    },
+    "xrand.s1": {
+     "hits": 12992,
+     "fails": 0
+    }
+   }
   }
  },
  "not_verifiable": {},
+ "not_verifiable_by_run": {
+  "base.s1": {},
+  "xrand.s1": {}
+ },
  "coverage": {
   "status": "measured",
   "metric": "line",
@@ -143,16 +226,16 @@
    },
    "block": {
     "hit": 41,
-    "total": 44,
-    "percent": 93.2,
+    "total": 42,
+    "percent": 97.6,
     "files": {
      "uart_rx.v": {
       "hit": 25,
-      "total": 27
+      "total": 26
      },
      "uart_tx.v": {
       "hit": 16,
-      "total": 17
+      "total": 16
      }
     }
    },
@@ -207,26 +290,6 @@
     "metric": "block",
     "file": "uart_rx.v",
     "line": 109,
-    "what": "else",
-    "points": 1,
-    "detail": [
-     "else"
-    ]
-   },
-   {
-    "metric": "block",
-    "file": "uart_rx.v",
-    "line": 120,
-    "what": "else",
-    "points": 1,
-    "detail": [
-     "else"
-    ]
-   },
-   {
-    "metric": "block",
-    "file": "uart_tx.v",
-    "line": 106,
     "what": "else",
     "points": 1,
     "detail": [
@@ -394,6 +457,7 @@
   "design_scope": {
    "rule": "left out: never-executed points of package code that the elaborated design does not contain (Verilator instruments every function of an imported package, called or not), and toggles of signal bits that Yosys constant propagation proves constant with the run's parameters, except on signals where the simulator recorded a toggle of such a bit (then the signal counts whole)",
    "left_out": {
+    "block": 2,
     "line": 0
    },
    "scope_conflicts": 0,
@@ -401,7 +465,9 @@
    "proven_unreachable": {
     "rule": "left out: toggle points of signal bits that SymbiYosys proves constant after the first reset for every input sequence (nnc/unr.py, work/unr.json: PROVEN in every configuration of the run set), except on signals where the simulator recorded a 1->0 toggle of such a bit",
     "left_out": 0,
-    "signals_kept_whole": []
+    "signals_kept_whole": [],
+    "branches_left_out": 2,
+    "branches_executed": 0
    },
    "all_points": {
     "block": {
@@ -430,8 +496,10 @@
    "status": "applied",
    "record": "work/unr.json",
    "proven_bits": 0,
-   "signals": 0
-  }
+   "signals": 0,
+   "proven_branches": 2
+  },
+  "scope": "merged over 1 run(s) of the run set; not merged: xrand.s1 (x_init: toggles before the first reset are not design activity)"
  },
  "functional": {
   "COVP-001": 83,
@@ -475,8 +543,77 @@
   "COVP-039": 0,
   "COVP-040": 1
  },
- "make_rc": 2,
  "built": true,
  "build_errors": [],
+ "run_set": {
+  "primary": "base.s1",
+  "failed_runs": [],
+  "runs": [
+   {
+    "label": "base.s1",
+    "config": "base",
+    "seed": 1,
+    "note": "the design configuration",
+    "overrides": {},
+    "params": {
+     "DATA_WIDTH": 8
+    },
+    "opts": {
+     "defines": [],
+     "plusargs": ""
+    },
+    "clock_periods": {},
+    "status": "ran",
+    "tests": {
+     "fail": 3,
+     "pass": 5
+    },
+    "assertions_failing": [
+     "CHK-001"
+    ],
+    "not_verifiable": [],
+    "coverage_percent": {
+     "line": 97.6,
+     "block": 93.2,
+     "expression": 88.9,
+     "toggle": 67.6,
+     "functional": 90.0
+    }
+   },
+   {
+    "label": "xrand.s1",
+    "config": "xrand",
+    "seed": 1,
+    "note": "the design configuration with random initial values of every variable without a reset: a check that passes only because flops start at 0 fails here",
+    "overrides": {},
+    "params": {
+     "DATA_WIDTH": 8
+    },
+    "opts": {
+     "defines": [],
+     "plusargs": "",
+     "x_init": "random"
+    },
+    "clock_periods": {},
+    "status": "ran",
+    "tests": {
+     "fail": 3,
+     "pass": 5
+    },
+    "assertions_failing": [
+     "CHK-001"
+    ],
+    "not_verifiable": [],
+    "coverage_percent": {
+     "line": 97.6,
+     "block": 93.2,
+     "expression": 88.9,
+     "toggle": 77.3,
+     "functional": 90.0
+    }
+   }
+  ]
+ },
+ "host": "wsl",
  "unreviewed_gates": []
 }

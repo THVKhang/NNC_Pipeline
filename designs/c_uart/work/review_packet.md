@@ -7,8 +7,8 @@ This packet is for the person who decides gate **G4 (sign-off)**: *is this desig
 - **Requirements (rules):** 6 — FAILED 6
 - **Checks:** 11 — FAIL 5, PASS 6
 - **Tests:** {'fail': 3, 'pass': 5}
-- **Simulated configuration:** one (parameters {'DATA_WIDTH': 8}, seed 1)
-- **Code coverage:** line 97.6 %, block 93.2 %, expression 88.9 %, toggle 67.6 %, functional 90.0 %
+- **Simulated configurations:** 2 runs in 2 configurations (base, xrand); see `run_set.json` and the *Run set* table of the report
+- **Code coverage:** line 97.6 %, block 97.6 %, expression 88.9 %, toggle 67.6 %, functional 90.0 %
 - **Mutation score:** 83.3 % (10 of 12 injected faults detected)
 
 ## 2. Decisions taken for you
@@ -81,6 +81,8 @@ cd designs/c_uart/sim
 make regression SEED=1 2>&1 | tee sim.log
 cd ../../.. && python -m nnc kit-check c_uart    # same outcome as the recorded results?
 ```
+
+The kit reproduces the primary run base.s1; the other runs differ only by the settings in `run_set.json`.
 
 ## 8. Checklist before signing
 

@@ -47,3 +47,26 @@ PROVEN constant after the first reset:
 - `u_axi2apb_wr_seq.w_wr_wrap_log2` [3]
 - `u_axi2apb_wr_seq.w_wr_wrap_mask` [11-31]
 
+# Branches never executed after the first reset (nnc/unrbranch.py)
+
+Each IF branch or case item below had no hit. A marker in an instrumented copy of the RTL (a flop that toggles when the branch runs, or in a combinational block a signal set to 1 there) was checked the same way; a copy is used only when Verilator shows every marker as the first statement of its branch. A branch PROVEN in every configuration leaves the block coverage with the lines that no other point covers. Key: instance, file, line, column, kind.
+
+## Configuration base (`4aea0b36d6c7bc4c`)
+
+1 SymbiYosys task(s); control `u_axi2apb_apb_ctrl.reg_fsm_apb_current_state[0]`, `u_axi2apb_rd_seq.reg_fsm_rd_current_state[0]`, `u_axi2apb_wr_seq.reg_fsm_wr_current_state[0]`, `u_axi2apb_apb_ctrl.o_rd_rsp_valid[0]` (one must change).
+
+| Result | Branches |
+|---|---|
+| PROVEN never executed | 6 |
+| counterexample | 3 |
+| no result (time limit) | 0 |
+
+PROVEN never executed after the first reset:
+
+- `m_axi2apb_apb_ctrl.sv:126` case (column 7) in `u_axi2apb_apb_ctrl`
+- `m_axi2apb_apb_ctrl.sv:147` case (column 7) in `u_axi2apb_apb_ctrl`
+- `m_axi2apb_rd_seq.sv:274` else (column 10) in `u_axi2apb_rd_seq`
+- `m_axi2apb_rd_seq.sv:297` case (column 7) in `u_axi2apb_rd_seq`
+- `m_axi2apb_wr_seq.sv:261` else (column 10) in `u_axi2apb_wr_seq`
+- `m_axi2apb_wr_seq.sv:280` case (column 7) in `u_axi2apb_wr_seq`
+

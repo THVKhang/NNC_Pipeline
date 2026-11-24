@@ -1,6 +1,6 @@
 # Verification report — ot_rv_timer
 
-Generated 2026-11-24T02:06:42+00:00 by NNC Pipeline.
+Generated 2026-11-24T08:38:55+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -9,18 +9,18 @@ Generated 2026-11-24T02:06:42+00:00 by NNC Pipeline.
 | Rules | 228 — {'NOT_VERIFIED_BY_SIM': 77, 'VERIFIED': 151} |
 | Checks | 35 — {'PASS': 35} |
 | Tests | {'pass': 23} |
-| Run set | 2 runs in 1 configurations (base); primary base.s1 |
+| Run set | 3 runs in 2 configurations (base, xrand); primary base.s1 |
 | Integration | OK |
-| Code coverage (RTL), line | 92.3 % (800/867 lines); 2434 points left out (package code the design does not contain), all points 24.2 % (800/3301) |
-| Code coverage (RTL), block | 87.8 % (144/164 statement blocks and branch arms); 322 points left out (package code the design does not contain), all points 29.6 % (144/486) |
+| Code coverage (RTL), line | 94.9 % (800/843 lines); 2458 points left out (package code the design does not contain), all points 24.2 % (800/3301) |
+| Code coverage (RTL), block | 99.3 % (144/145 statement blocks and branch arms); 341 points left out (package code the design does not contain), all points 29.6 % (144/486) |
 | Code coverage (RTL), expression | 61.0 % (485/795 condition terms); 5433 points left out (package code the design does not contain), all points 7.8 % (485/6228) |
-| Code coverage (RTL), toggle | 83.9 % (9446/11256 bit toggles 0->1 and 1->0); 520 points left out (constant bits; 112 of them proven constant after reset by formal, work/unr.md), all points 80.3 % (9455/11776) |
+| Code coverage (RTL), toggle | 90.0 % (9416/10458 bit toggles 0->1 and 1->0); 1318 points left out (constant bits; 232 of them proven constant after reset by formal, work/unr.md), all points 80.3 % (9455/11776) |
 | Code coverage (RTL), functional | 97.4 % (38/39 cover points of the specification) |
 | Code coverage without the modules the designer declares pre-verified | prim_alert_receiver, prim_alert_sender, prim_count, prim_esc_receiver, prim_esc_sender, prim_lfsr, prim_onehot_check, prim_prince, prim_secded_inv_39_32_dec, prim_secded_inv_39_32_enc, prim_secded_inv_64_57_dec, prim_secded_inv_64_57_enc (7 instances; config `coverage_preverified`) |
-| ... without pre-verified modules, block | 91.7 % (100/109) |
+| ... without pre-verified modules, block | 99.0 % (100/101) |
 | ... without pre-verified modules, expression | 83.7 % (273/326) |
-| ... without pre-verified modules, line | 92.8 % (581/626) |
-| ... without pre-verified modules, toggle | 85.4 % (8724/10218) |
+| ... without pre-verified modules, line | 93.1 % (581/624) |
+| ... without pre-verified modules, toggle | 91.6 % (8696/9498) |
 | Mutation score | 58.3 % (21 killed / 15 survived / 0 not compiled) |
 | Surviving mutants, formal equivalence (`nnc mutate-equiv`) | {'CEX': 3, 'ERROR': 1, 'PROVEN': 11}; score without the proven-equivalent mutants 84.0 % |
 | Coverage target | not requested (`nnc cover <design> --target <n> --metric <m>`) |
@@ -38,7 +38,7 @@ Generated 2026-11-24T02:06:42+00:00 by NNC Pipeline.
 | Every selected check PASS (no FAIL, NOT_HIT, NOT_RUN) | met |
 | Every planned check selected | met |
 | Every rule in a check or declared not verifiable | met |
-| Every run of the run set built and ran | met — 2 runs |
+| Every run of the run set built and ran | met — 3 runs |
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | **not met** — 9 rule(s) below: AH-T1.3.2-01, AH-T1.3.2-02, AH-T1.3.2-03, CP-T1.9.1-04, RT-4.2-03, RT-5-02, RT-5-05, RT-8-16, RT-T6.3-01 |
 | Clock/reset domain crossings: no structural violation (RR-33) | met — clean: no crossing (work/cdc.md) |
@@ -52,6 +52,7 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 |---|---|---|---|---|---|---|---|
 | base.s1 — the only configuration | defaults | — | — | ran | {'pass': 23} | none | 0 |
 | base.s2 — the only configuration | defaults | — | — | ran | {'pass': 23} | none | 0 |
+| xrand.s1 — the default configuration with random initial values of every variable without a reset (ROADMAP 23.4): a check that passes only because flops start at 0 fails here; its coverage is not merged | defaults | — | — | ran | {'pass': 23} | none | 0 |
 
 ## Gates
 
@@ -66,41 +67,41 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 
 | Check | Kind | Title | Status | Evidence |
 |---|---|---|---|---|
-| CHK-001 | assertion | No alert signal-integrity failure | **PASS** | hits 584234, fails 0; hit in 2/2 runs; formal PROVEN |
-| CHK-002 | assertion | o_alert is a single-cycle pulse per handshake | **PASS** | hits 644, fails 0; hit in 2/2 runs; formal PROVEN |
-| CHK-003 | assertion | No spurious alerts, no more pulses than test writes | **PASS** | hits 28, fails 0; hit in 2/2 runs; formal BOUNDED |
-| CHK-004 | assertion | Interrupt output masked by INTR_ENABLE0.IE_0 | **PASS** | hits 561870, fails 0; hit in 2/2 runs; formal PROVEN |
-| CHK-005 | assertion | Latched interrupt falls only after a clearing write or reset | **PASS** | hits 121, fails 0; hit in 2/2 runs; formal BOUNDED |
-| CHK-006 | assertion | Outputs inactive during reset | **PASS** | hits 313, fails 0; hit in 2/2 runs; formal UNSUPPORTED |
-| CHK-007 | assertion | Outputs change only at rising clock edges | **PASS** | hits 584172, fails 0; hit in 2/2 runs; formal UNSUPPORTED |
-| CHK-008 | assertion | Test-bench host obligations (stimulus self-check) | **PASS** | hits 15003, fails 0; hit in 2/2 runs; formal CEX |
-| CHK-009 | assertion | Every D-channel beat matches exactly one outstanding request | **PASS** | hits 7636, fails 0; hit in 2/2 runs; formal PROVEN |
-| CHK-010 | assertion | Response opcode and size echo | **PASS** | hits 7636, fails 0; hit in 2/2 runs; formal PROVEN |
-| CHK-011 | assertion | d_error value for classified requests | **PASS** | hits 7556, fails 0; hit in 2/2 runs; formal TIMEOUT |
-| CHK-012 | assertion | D channel holds under back-pressure | **PASS** | hits 6250, fails 0; hit in 2/2 runs; formal PROVEN |
-| CHK-013 | assertion | Response integrity never fails | **PASS** | hits 584234, fails 0; hit in 2/2 runs; formal PROVEN |
-| CHK-014 | test | ALERT_TEST.fatal_fault triggers one alert per write | **PASS** | test_chk_014_alert_test_fatal_fault; verified in base.s1, base.s2 |
-| CHK-015 | test | ALERT_TEST.regwen rw0c locks alert testing until reset | **PASS** | test_chk_015_alert_regwen_rw0c; verified in base.s1, base.s2 |
-| CHK-016 | test | Command integrity error raises a repeating fatal alert until reset | **PASS** | test_chk_016_intg_error_fatal_alert; verified in base.s1, base.s2 |
-| CHK-017 | test | Unmapped offsets return error and change nothing | **PASS** | test_chk_017_unmapped_offsets; verified in base.s1, base.s2 |
-| CHK-018 | test | Byte writes per register width | **PASS** | test_chk_018_byte_writes; verified in base.s1, base.s2 |
-| CHK-019 | test | TL-UL protocol error cases | **PASS** | test_chk_019_protocol_errors; verified in base.s1, base.s2 |
-| CHK-020 | test | Sub-word reads return the full word | **PASS** | test_chk_020_subword_reads; verified in base.s1, base.s2 |
-| CHK-021 | test | Instruction-fetch reads | **PASS** | test_chk_021_instruction_fetch; verified in base.s1, base.s2 |
-| CHK-022 | test | Interrupt raised by tick when mtime >= mtimecmp | **PASS** | test_chk_022_intr_by_tick; verified in base.s1, base.s2 |
-| CHK-023 | test | Interrupt raised by a compare write while active | **PASS** | test_chk_023_intr_by_compare_write; verified in base.s1, base.s2 |
-| CHK-024 | test | Clearing by compare writes; mtime write does not clear | **PASS** | test_chk_024_clear_by_compare_write; verified in base.s1, base.s2 |
-| CHK-025 | test | INTR_STATE0 rw1c and event re-assertion | **PASS** | test_chk_025_intr_state_rw1c; verified in base.s1, base.s2 |
-| CHK-026 | test | Interrupt enable masking and raw INTR_STATE0 | **PASS** | test_chk_026_intr_enable_masking; verified in base.s1, base.s2 |
-| CHK-027 | test | INTR_TEST0 sets the latched state (wo field) | **PASS** | test_chk_027_intr_test; verified in base.s1, base.s2 |
-| CHK-028 | test | Reset values and register map | **PASS** | test_chk_028_reset_values; verified in base.s1, base.s2 |
-| CHK-029 | test | rw field access types and reserved bits | **PASS** | test_chk_029_rw_fields; verified in base.s1, base.s2 |
-| CHK-030 | test | Asynchronous reset, short reset window, pending response discarded | **PASS** | test_chk_030_async_reset; verified in base.s1, base.s2 |
-| CHK-031 | test | Tick period, step and counting while active | **PASS** | test_chk_031_tick_and_step; verified in base.s1, base.s2 |
-| CHK-032 | test | Inactive after reset and first-tick latency | **PASS** | test_chk_032_inactive_and_first_tick; verified in base.s1, base.s2 |
-| CHK-033 | test | Carry from lower to upper half and 64-bit compare | **PASS** | test_chk_033_carry_and_64bit_compare; verified in base.s1, base.s2 |
-| CHK-034 | test | Behaviour near 2^64: wrap and intermediate interrupt | **PASS** | test_chk_034_wrap_2_64; verified in base.s1, base.s2 |
-| CHK-035 | test | Outstanding requests and back-pressure | **PASS** | test_chk_035_outstanding_backpressure, test_regression_random; verified in base.s1, base.s2 |
+| CHK-001 | assertion | No alert signal-integrity failure | **PASS** | hits 876390, fails 0; hit in 3/3 runs; formal PROVEN |
+| CHK-002 | assertion | o_alert is a single-cycle pulse per handshake | **PASS** | hits 971, fails 0; hit in 3/3 runs; formal PROVEN |
+| CHK-003 | assertion | No spurious alerts, no more pulses than test writes | **PASS** | hits 47, fails 0; hit in 3/3 runs; formal BOUNDED |
+| CHK-004 | assertion | Interrupt output masked by INTR_ENABLE0.IE_0 | **PASS** | hits 843667, fails 0; hit in 3/3 runs; formal PROVEN |
+| CHK-005 | assertion | Latched interrupt falls only after a clearing write or reset | **PASS** | hits 189, fails 0; hit in 3/3 runs; formal BOUNDED |
+| CHK-006 | assertion | Outputs inactive during reset | **PASS** | hits 468, fails 0; hit in 3/3 runs; formal UNSUPPORTED |
+| CHK-007 | assertion | Outputs change only at rising clock edges | **PASS** | hits 876297, fails 0; hit in 3/3 runs; formal UNSUPPORTED |
+| CHK-008 | assertion | Test-bench host obligations (stimulus self-check) | **PASS** | hits 22473, fails 0; hit in 3/3 runs; formal CEX |
+| CHK-009 | assertion | Every D-channel beat matches exactly one outstanding request | **PASS** | hits 11455, fails 0; hit in 3/3 runs; formal PROVEN |
+| CHK-010 | assertion | Response opcode and size echo | **PASS** | hits 11455, fails 0; hit in 3/3 runs; formal PROVEN |
+| CHK-011 | assertion | d_error value for classified requests | **PASS** | hits 11335, fails 0; hit in 3/3 runs; formal TIMEOUT |
+| CHK-012 | assertion | D channel holds under back-pressure | **PASS** | hits 9238, fails 0; hit in 3/3 runs; formal PROVEN |
+| CHK-013 | assertion | Response integrity never fails | **PASS** | hits 876390, fails 0; hit in 3/3 runs; formal PROVEN |
+| CHK-014 | test | ALERT_TEST.fatal_fault triggers one alert per write | **PASS** | test_chk_014_alert_test_fatal_fault; verified in base.s1, base.s2, xrand.s1 |
+| CHK-015 | test | ALERT_TEST.regwen rw0c locks alert testing until reset | **PASS** | test_chk_015_alert_regwen_rw0c; verified in base.s1, base.s2, xrand.s1 |
+| CHK-016 | test | Command integrity error raises a repeating fatal alert until reset | **PASS** | test_chk_016_intg_error_fatal_alert; verified in base.s1, base.s2, xrand.s1 |
+| CHK-017 | test | Unmapped offsets return error and change nothing | **PASS** | test_chk_017_unmapped_offsets; verified in base.s1, base.s2, xrand.s1 |
+| CHK-018 | test | Byte writes per register width | **PASS** | test_chk_018_byte_writes; verified in base.s1, base.s2, xrand.s1 |
+| CHK-019 | test | TL-UL protocol error cases | **PASS** | test_chk_019_protocol_errors; verified in base.s1, base.s2, xrand.s1 |
+| CHK-020 | test | Sub-word reads return the full word | **PASS** | test_chk_020_subword_reads; verified in base.s1, base.s2, xrand.s1 |
+| CHK-021 | test | Instruction-fetch reads | **PASS** | test_chk_021_instruction_fetch; verified in base.s1, base.s2, xrand.s1 |
+| CHK-022 | test | Interrupt raised by tick when mtime >= mtimecmp | **PASS** | test_chk_022_intr_by_tick; verified in base.s1, base.s2, xrand.s1 |
+| CHK-023 | test | Interrupt raised by a compare write while active | **PASS** | test_chk_023_intr_by_compare_write; verified in base.s1, base.s2, xrand.s1 |
+| CHK-024 | test | Clearing by compare writes; mtime write does not clear | **PASS** | test_chk_024_clear_by_compare_write; verified in base.s1, base.s2, xrand.s1 |
+| CHK-025 | test | INTR_STATE0 rw1c and event re-assertion | **PASS** | test_chk_025_intr_state_rw1c; verified in base.s1, base.s2, xrand.s1 |
+| CHK-026 | test | Interrupt enable masking and raw INTR_STATE0 | **PASS** | test_chk_026_intr_enable_masking; verified in base.s1, base.s2, xrand.s1 |
+| CHK-027 | test | INTR_TEST0 sets the latched state (wo field) | **PASS** | test_chk_027_intr_test; verified in base.s1, base.s2, xrand.s1 |
+| CHK-028 | test | Reset values and register map | **PASS** | test_chk_028_reset_values; verified in base.s1, base.s2, xrand.s1 |
+| CHK-029 | test | rw field access types and reserved bits | **PASS** | test_chk_029_rw_fields; verified in base.s1, base.s2, xrand.s1 |
+| CHK-030 | test | Asynchronous reset, short reset window, pending response discarded | **PASS** | test_chk_030_async_reset; verified in base.s1, base.s2, xrand.s1 |
+| CHK-031 | test | Tick period, step and counting while active | **PASS** | test_chk_031_tick_and_step; verified in base.s1, base.s2, xrand.s1 |
+| CHK-032 | test | Inactive after reset and first-tick latency | **PASS** | test_chk_032_inactive_and_first_tick; verified in base.s1, base.s2, xrand.s1 |
+| CHK-033 | test | Carry from lower to upper half and 64-bit compare | **PASS** | test_chk_033_carry_and_64bit_compare; verified in base.s1, base.s2, xrand.s1 |
+| CHK-034 | test | Behaviour near 2^64: wrap and intermediate interrupt | **PASS** | test_chk_034_wrap_2_64; verified in base.s1, base.s2, xrand.s1 |
+| CHK-035 | test | Outstanding requests and back-pressure | **PASS** | test_chk_035_outstanding_backpressure, test_regression_random; verified in base.s1, base.s2, xrand.s1 |
 
 ## Requirement traceability (RTM)
 

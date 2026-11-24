@@ -13,7 +13,7 @@ Parameters {"PARA_NUM_REGS": "1", "PARA_ADDR_W": "7"}; macros none; clocks one g
 | PROVEN constant | 5 | 5 |
 | counterexample | 0 | 0 |
 | no result (time limit) | 0 | 0 |
-| not in this netlist | | 1 |
+| not in this netlist | | 0 |
 | input ports (free in the model) | | 0 |
 
 PROVEN constant after the first reset:
@@ -33,7 +33,7 @@ Parameters {"PARA_NUM_REGS": "16", "PARA_ADDR_W": "7"}; macros none; clocks one 
 | PROVEN constant | 5 | 5 |
 | counterexample | 0 | 0 |
 | no result (time limit) | 0 | 0 |
-| not in this netlist | | 1 |
+| not in this netlist | | 0 |
 | input ports (free in the model) | | 0 |
 
 PROVEN constant after the first reset:
@@ -53,7 +53,7 @@ Parameters {"PARA_NUM_REGS": "8", "PARA_ADDR_W": "8"}; macros none; clocks one g
 | PROVEN constant | 5 | 5 |
 | counterexample | 0 | 0 |
 | no result (time limit) | 0 | 0 |
-| not in this netlist | | 1 |
+| not in this netlist | | 0 |
 | input ports (free in the model) | | 0 |
 
 PROVEN constant after the first reset:
@@ -73,7 +73,7 @@ Parameters {"PARA_NUM_REGS": "16", "PARA_ADDR_W": "16"}; macros none; clocks one
 | PROVEN constant | 5 | 5 |
 | counterexample | 0 | 0 |
 | no result (time limit) | 0 | 0 |
-| not in this netlist | | 1 |
+| not in this netlist | | 0 |
 | input ports (free in the model) | | 0 |
 
 PROVEN constant after the first reset:
@@ -83,4 +83,48 @@ PROVEN constant after the first reset:
 - `r_bresp` [0]
 - `r_rresp` [0]
 - `rd_resp_d` [0]
+
+# Branches never executed after the first reset (nnc/unrbranch.py)
+
+Each IF branch or case item below had no hit. A marker in an instrumented copy of the RTL (a flop that toggles when the branch runs, or in a combinational block a signal set to 1 there) was checked the same way; a copy is used only when Verilator shows every marker as the first statement of its branch. A branch PROVEN in every configuration leaves the block coverage with the lines that no other point covers. Key: instance, file, line, column, kind.
+
+## Configuration min (`2c718e3379d9f30e`)
+
+0 SymbiYosys task(s).
+
+| Result | Branches |
+|---|---|
+| PROVEN never executed | 0 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+
+## Configuration full_a7 (`3d2eb24b5cb0b05c`)
+
+0 SymbiYosys task(s).
+
+| Result | Branches |
+|---|---|
+| PROVEN never executed | 0 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+
+## Configuration base (`437ef579663039d9`)
+
+0 SymbiYosys task(s).
+
+| Result | Branches |
+|---|---|
+| PROVEN never executed | 0 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+
+## Configuration max (`6beb3b64bdbb2907`)
+
+0 SymbiYosys task(s).
+
+| Result | Branches |
+|---|---|
+| PROVEN never executed | 0 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
 

@@ -156,7 +156,7 @@ With `async` each clock starts after its own seeded random delay below one perio
 
 ### Run set: several configurations and seeds | Nhiều cấu hình và nhiều seed
 
-`designs/<ip>/run_set.json` lists the configurations of the specification. `nnc sim`, `cover` and `inject` then run all of them (each configuration built once, its seeds one after the other, configurations in parallel with `--workers`) and merge the results per check:
+`designs/<ip>/run_set.json` lists the configurations of the specification. `nnc sim`, `cover` and `inject` then run all of them (each configuration built once, its seeds one after the other, configurations in parallel: `--jobs`, default `NNC_JOBS` or the CPU count; the same setting runs SymbiYosys tasks and mutants in parallel, while `--workers` is the number of parallel agent calls). A configuration with `"x_init": "random"` is tested like the others, but its coverage is not merged: its toggles before the first reset are not design activity and merge the results per check:
 
 ```json
 {"seeds": [1],
@@ -170,7 +170,7 @@ With `async` each clock starts after its own seeded random delay below one perio
 
 Each configuration starts from the design configuration and overrides only what it names: `params` (contract parameters; derived ones are refused), `defines` and `plusargs` (replaced), `clock_periods` (merged per clock), `seeds`. The first configuration with its first seed is the **primary run**: the reproduction kit `sim/` and mutation testing use it. Merging never weakens a result: a test fails if it failed in any run; an assertion's hits and fails are summed (NOT_HIT only if it was hit in no run); a check is `NOT_VERIFIABLE` only if **every** run declared it so, and PASS needs one run that verified it with no run failing it. Code coverage is the merged `coverage.dat` of all runs. The report gets a *Run set* table, each check says in which runs it was verified or failed, and a sign-off condition requires every run to build. Per-run results are in `work/runs/<config>.s<seed>.json` and logs in `work/sim/runs/`. `--single-run` ignores the file. The tests are not regenerated: they read the parameters, defines and plusargs of their run and decide themselves what they can check.
 
-**VI:** file `designs/<ip>/run_set.json` liệt kê các cấu hình mà spec yêu cầu. Khi có file này, `nnc sim`, `cover` và `inject` chạy hết mọi cấu hình: mỗi cấu hình build một lần, các seed chạy nối tiếp nhau, các cấu hình chạy song song theo `--workers`. Sau đó kết quả được gộp theo từng check.
+**VI:** file `designs/<ip>/run_set.json` liệt kê các cấu hình mà spec yêu cầu. Khi có file này, `nnc sim`, `cover` và `inject` chạy hết mọi cấu hình: mỗi cấu hình build một lần, các seed chạy nối tiếp nhau, các cấu hình chạy song song theo `--jobs` (mặc định là `NNC_JOBS`, nếu không có thì bằng số CPU; cùng thiết lập này dùng cho SymbiYosys và mutant, còn `--workers` là số lời gọi agent song song). Cấu hình có `"x_init": "random"` vẫn chạy test như các cấu hình khác, nhưng coverage của nó không được gộp, vì toggle trước reset đầu tiên không phải hoạt động của thiết kế. Sau đó kết quả được gộp theo từng check.
 - **Cách khai báo:** mỗi cấu hình kế thừa config của thiết kế và chỉ thay những gì nó ghi: `params` (không nhận tham số dẫn xuất), `defines`, `plusargs`, `clock_periods`, `seeds`.
 - **Lần chạy chính:** cấu hình đầu tiên với seed đầu tiên. Bộ tái lập `sim/` và mutation testing dùng lần chạy này.
 - **Gộp kết quả không bao giờ làm yếu kết luận:**
@@ -248,7 +248,7 @@ How A17 is kept honest:
 
 **Surviving mutants, checked by formal | Mutant sống sót, kiểm bằng formal.** `python -m nnc mutate-equiv my_ip` compares each surviving mutant with the RTL using the Yosys miter that `restyle` uses. It runs in every configuration in which the mutant survived, calls no agent, and adds the results to `work/mutation.json`.
 - **PROVEN:** no input sequence after reset changes an output. The mutant is equivalent, and the packet also shows the score without such mutants.
-- **CEX:** the first differing outputs are named, and the trace is kept in `work/mutation_equiv/`. This is a change of behaviour that no check noticed, unless the input sequence breaks an environment rule: in this check, inputs are free after reset.
+- **CEX:** the first differing outputs are named, and the trace is kept in `work/mutation_equiv/` (on your machine: waveforms are not committed). This is a change of behaviour that no check noticed, unless the input sequence breaks an environment rule: in this check, inputs are free after reset.
 - **SIM_ONLY:** the line is simulation-only code, so formal cannot judge it.
 - **BOUNDED:** nothing is concluded.
 
@@ -287,14 +287,30 @@ python -m nnc config my_ip coverage_preverified=prim_alert_sender,prim_onehot_ch
 
 `coverage_preverified` lists modules verified elsewhere (OpenTitan's cover.cfg lists its pre-verified
 primitives). The report then adds rows with the coverage without their subtrees, next to the coverage of
-the whole design. See docs/SIGNOFF_SCOPE.md.
+the whole design, and `nnc cover` takes its target and points from those rows. See docs/SIGNOFF_SCOPE.md.
+
+```bash
+python -m nnc sim my_ip --unr               # also prove uncovered toggle bits and branches unreachable
+python -m nnc config my_ip unr_cut=m_cell_sync   # modules Yosys cannot read (simulation-only models): outputs free
+```
+
+`--unr` asks SymbiYosys whether each uncovered toggle bit, and each IF branch or case item never executed, can
+change after the first reset, with every input free. Only a point PROVEN in every configuration of the run set
+leaves the metric; the results are in `work/unr.md`. A PROVEN point is dead in this RTL, not necessarily by
+design: code that a fault makes dead is left out too (ahb2axi_bridge's AXI burst path, EVALUATION §15). Check
+each one against the specification before sign-off.
 
 **VI:**
 - Coverage chỉ đếm phần có trong thiết kế đã elaborate. Hàm package không bao giờ được gọi và bit luôn bằng
   hằng số (do công cụ chứng minh) bị loại.
 - Báo cáo luôn ghi số điểm bị loại và con số tính trên mọi điểm. Không có loại trừ bằng tay.
 - `coverage_preverified` cho thêm con số phụ "không tính các module đã verify ở nơi khác". Con số này đứng
-  cạnh con số chính, không thay thế nó.
+  cạnh con số chính, không thay thế nó. `nnc cover` lấy mục tiêu và danh sách điểm từ con số phụ này.
+- `--unr`: SymbiYosys kiểm từng bit toggle và từng nhánh IF/case chưa chạy, xem nó có đổi được sau reset đầu
+  tiên không (mọi input tự do). Chỉ điểm PROVEN trong mọi cấu hình mới bị loại. Kết quả ở `work/unr.md`.
+- PROVEN nghĩa là chết trong RTL này, chưa chắc là do thiết kế: code chết vì lỗi cũng bị loại (ví dụ đường burst
+  AXI của ahb2axi_bridge). Hãy đối chiếu từng điểm với spec trước khi ký.
+- `unr_cut`: module Yosys không đọc được (model chỉ dùng trong mô phỏng); output của chúng thành tự do.
 
 ### Domain crossings | Kiểm tra cắt miền clock (CDC/RDC)
 
@@ -344,7 +360,7 @@ python -m nnc formal my_ip                               # SymbiYosys per assert
 
 The open-source Yosys frontends do not accept clocked concurrent SVA, so `nnc/formal.py` **translates** the subset the checker generator emits (`A |-> B`, `A |=> B`, `##N`, `disable iff`, `$past`, `$stable`) into immediate assertions with a shift register per attempt, by code; anything else is reported UNSUPPORTED, never approximated. A failure counter incremented in procedural checker code becomes an assertion at that point. Checkers that only make sense in simulation (event timing with `$time`, scoreboard queues) are left out and listed. Checker variables start at 0 as in simulation; DUT flops keep a free initial value. Each check runs alone: **bmc** (counterexample up to `formal_depth`, default 20), **prove** (k-induction), **cover** (its antecedent can happen under the assumptions: otherwise **VACUOUS**), each limited to `formal_timeout` seconds (default 600). Synchronous designs use one global clock; `clock_relation=async` uses free clocks (every ratio and phase).
 
-The environment: resets are asserted in the initial state (code), and `verif/formal/nnc_env.sv` holds the obligations the specification places on the blocks driving the inputs (A13 writes them from the specification only; they are part of G3 because an assumption the specification does not require hides bugs). A counterexample (CEX, trace in `work/formal/<CHK>.vcd`) goes to agent A14, which classifies it like triage plus **E: environment obligation missing**. The report gets a formal row and a sign-off condition; the reviewer packet lists every assumption.
+The environment: resets are asserted in the initial state (code), and `verif/formal/nnc_env.sv` holds the obligations the specification places on the blocks driving the inputs (A13 writes them from the specification only; they are part of G3 because an assumption the specification does not require hides bugs). A counterexample (CEX, trace in `work/formal/<CHK>.vcd`, written on your machine and not committed, like every waveform) goes to agent A14, which classifies it like triage plus **E: environment obligation missing**. The report gets a formal row and a sign-off condition; the reviewer packet lists every assumption.
 
 **VI:** bật bằng `formal=on`. Yosys mã nguồn mở không đọc được SVA đồng thời có clock, nên `nnc/formal.py` **dịch bằng code** tập con mà generator sinh ra sang assertion tức thời. Phần nằm ngoài tập con báo UNSUPPORTED, không đoán. Mỗi check chạy riêng ba việc:
 - **bmc:** tìm phản ví dụ trong N chu kỳ.

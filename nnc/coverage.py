@@ -66,8 +66,171 @@ def scope_from_tree(tree: dict, meta: dict) -> dict:
                 kept[f].update(range(min(ls), max(ls) + 1))
             continue
         stack.extend((v, in_pkg) for v in node.values() if isinstance(v, (dict, list)))
-    return {"packages": sorted(p for p in packages if p),
-            "kept": {f: line_ranges(v) for f, v in sorted(kept.items()) if f}}
+    out = {"packages": sorted(p for p in packages if p),
+           "kept": {f: line_ranges(v) for f, v in sorted(kept.items()) if f}}
+    fields = struct_fields(tree)
+    if fields:
+        out["fields"] = fields
+    return out
+
+
+# ------------------------------------------------------------------------------------ struct fields
+_INT_W = {"int": 32, "integer": 32, "byte": 8, "shortint": 16, "longint": 64, "time": 64}
+
+
+def struct_fields(tree: dict) -> dict[str, list]:
+    """Packed-struct field layout of every variable of the elaborated DUT, from `verilator --json-only`:
+    {"u_reg.tl_i.a_address": ["u_reg.tl_i", lsb, right index, descending (1/0)]}, paths relative to the DUT
+    top. Verilator names a toggle point per field ("tl_i.a_address[3]"); Yosys has one packed net
+    ("tl_i"), whose bit lsb + (3 - right) that is. Only fields of a basic type (an enum resolves to one), in
+    packed structs nested to any depth, are listed; a field of a packed array or a union is not, and stays
+    unmatched."""
+    nodes: dict[str, dict] = {}
+    stack: list = [tree]
+    while stack:
+        n = stack.pop()
+        if isinstance(n, dict):
+            if n.get("addr"):
+                nodes[n["addr"]] = n
+            stack.extend(v for v in n.values() if isinstance(v, (dict, list)))
+        elif isinstance(n, list):
+            stack.extend(n)
+
+    def resolve(a):
+        n, seen = nodes.get(a), 0
+        while n is not None and n.get("type") in ("REFDTYPE", "TYPEDEF", "ENUMDTYPE") and seen < 64:
+            nxt = n.get("refDTypep") or (n.get("dtypep") if n.get("type") == "TYPEDEF" else None)
+            if not nxt or nxt == n.get("addr"):
+                break
+            n, seen = nodes.get(nxt), seen + 1
+        return n
+
+    def packed_struct(n):
+        return n is not None and n.get("type") == "STRUCTDTYPE" and bool(n.get("packed"))
+
+    def leaves(st, prefix: str, base: int, out: dict, depth: int = 0) -> dict:
+        for m in st.get("membersp") or []:
+            mt = resolve(m.get("refDTypep") or m.get("dtypep"))
+            lsb, path = base + int(m.get("lsb", 0) or 0), f"{prefix}.{m.get('name', '')}"
+            if packed_struct(mt) and depth < 16:
+                leaves(mt, path, lsb, out, depth + 1)
+            elif mt is not None and mt.get("type") == "BASICDTYPE":
+                r = mt.get("range")
+                left, right = (int(x) for x in r.split(":")) if r else (0, 0)
+                out[path] = [lsb, right, int(left >= right)]
+        return out
+
+    modules = [m for m in tree.get("modulesp") or [] if m.get("type") == "MODULE"]
+    by_addr = {m.get("addr"): m for m in modules}
+    out: dict[str, list] = {}
+    todo = [(modules[0], "", 0)] if modules else []
+    while todo:
+        mod, path, depth = todo.pop()
+        walk: list = [(mod.get("stmtsp") or [], path)]
+        while walk:
+            n, prefix = walk.pop()
+            if isinstance(n, list):
+                walk.extend((v, prefix) for v in n)
+                continue
+            if not isinstance(n, dict):
+                continue
+            kind = n.get("type")
+            if kind == "VAR":
+                st = resolve(n.get("dtypep"))
+                if packed_struct(st):
+                    base = prefix + n.get("name", "")
+                    for f, v in leaves(st, base, 0, {}).items():
+                        out[f] = [base] + v
+                continue
+            if kind == "CELL":
+                child = by_addr.get(n.get("modp"))
+                if child is not None and depth < 64:
+                    todo.append((child, prefix + n.get("name", "") + ".", depth + 1))
+                continue
+            if kind in ("BEGIN", "GENBLOCK") and n.get("name"):
+                prefix = prefix + n["name"] + "."
+            walk.extend((v, prefix) for k, v in n.items() if isinstance(v, (dict, list)) and k != "dtypep")
+    stars: dict[str, list] = {}
+    bad: set[str] = set()
+    for k, v in out.items():
+        s = star_name(k)
+        if s != k:
+            sv = [star_name(v[0])] + v[1:]
+            if stars.setdefault(s, sv) != sv:
+                bad.add(s)
+    out.update({s: v for s, v in stars.items() if s not in bad and s not in out})
+    return out
+
+
+_INST = re.compile(r"\[\d+\](?=\.)")
+
+
+def star_name(name: str) -> str:
+    """Verilator's name of a point that it merges over the instances of a generate loop: every instance
+    index of the path becomes [*] ("gen_f[3].u.q" -> "gen_f[*].u.q"); a bit select at the end stays."""
+    return _INST.sub("[*]", name)
+
+
+def star_regex(name: str) -> re.Pattern:
+    """The nets that a name with * can stand for. Verilator merges the points of several instances into one
+    and writes * for the part of the path where their names differ ("u_*ata_in.qe", "gen_f[*].q"); every
+    merged instance matches, and so may other nets (which only makes a check over all matches stricter)."""
+    return re.compile("^" + ".*".join(re.escape(p) for p in name.split("*")) + "$")
+
+
+def star_members(names, nets: list[str]) -> dict[str, list[str]]:
+    """{name with *: the nets of `nets` it matches}, for the names that are not a net themselves."""
+    have = set(nets)
+    out: dict[str, list[str]] = {}
+    for s in sorted(set(names)):
+        if "*" in s and s not in have:
+            rx = star_regex(s)
+            members = [n for n in nets if rx.match(n)]
+            if members:
+                out[s] = members
+    return out
+
+
+def with_stars(bits: dict[str, set[int]], nets: list[str], names=()) -> dict[str, set[int]]:
+    """`bits` plus, for every merged name (the [*] names of `nets` that group several instances, and the
+    names with * of `names`), the bits that are in every net it matches (a merged point is constant only if
+    it is constant in each instance)."""
+    groups: dict[str, list[str]] = defaultdict(list)
+    for n in nets:
+        s = star_name(n)
+        if s != n:
+            groups[s].append(n)
+    for s, members in star_members(names, nets).items():
+        groups.setdefault(s, members)
+    out = dict(bits)
+    for s, members in groups.items():
+        common = set.intersection(*(set(bits.get(m, ())) for m in members))
+        if common and s not in out:
+            out[s] = common
+    return out
+
+
+def star_signals(path: Path, rtl: set[str], fields: dict | None = None) -> set[str]:
+    """The signal names with * of the toggle points of a coverage file."""
+    out: set[str] = set()
+    for kv, _name, metric, _line, _span, _count in _records(path, rtl):
+        if metric == "toggle":
+            bit = toggle_bit(kv, fields)
+            if bit and "*" in bit[0]:
+                out.add(bit[0])
+    return out
+
+
+def merge_fields(maps: list[dict | None]) -> dict:
+    """Fields of a run set: an entry is kept only when every configuration that has it agrees on it."""
+    out: dict[str, list] = {}
+    bad: set[str] = set()
+    for m in maps:
+        for k, v in (m or {}).items():
+            if k in out and out[k] != v:
+                bad.add(k)
+            out.setdefault(k, v)
+    return {k: v for k, v in sorted(out.items()) if k not in bad}
 
 
 def _locs(node, files: dict[str, str]):
@@ -129,6 +292,9 @@ def merge_scopes(scopes: list[dict | None]) -> dict | None:
         for f, text in (s.get("kept") or {}).items():
             kept[f] |= _expand(text)
     out = {"packages": sorted(packages), "kept": {f: line_ranges(v) for f, v in sorted(kept.items())}}
+    fields = merge_fields([s.get("fields") for s in scopes])
+    if fields:
+        out["fields"] = fields
     consts = [s.get("const") for s in scopes]
     if all(consts):
         bits: dict[str, set[int]] = {}
@@ -146,9 +312,26 @@ def merge_scopes(scopes: list[dict | None]) -> dict | None:
     return out
 
 
-def toggle_bit(kv: dict) -> tuple[str, int] | None:
+BRANCH_KINDS = ("if", "elsif", "else", "case")
+
+
+def block_key(kv: dict, name: str, line: int) -> tuple | None:
+    """(instance relative to the DUT top, file, line, column, kind) of a block point of the DUT that is an IF
+    branch or a case item (nnc/unrbranch.py), else None."""
+    h = kv.get("h", "")
+    if kv.get("o") not in BRANCH_KINDS or not (h == DUT_HIER or h.startswith(DUT_HIER + ".")):
+        return None
+    try:
+        col = int(kv.get("n", 0) or 0)
+    except ValueError:
+        col = 0
+    return (h[len(DUT_HIER):].lstrip("."), name, line, col, kv["o"])
+
+
+def toggle_bit(kv: dict, fields: dict | None = None) -> tuple[str, int] | None:
     """(signal relative to the DUT top as in the flattened netlist, bit index) of a toggle point, or None
-    (outside the DUT, or an unpacked array element)."""
+    (outside the DUT, or an unpacked array element). With `fields` (struct_fields), a struct field point
+    ("tl_i.a_address[3]") is the bit of the packed net that holds it ("tl_i", lsb + 3)."""
     h = kv.get("h", "")
     if not (h == DUT_HIER or h.startswith(DUT_HIER + ".")):
         return None
@@ -156,23 +339,29 @@ def toggle_bit(kv: dict) -> tuple[str, int] | None:
     if not m:
         return None
     rel = h[len(DUT_HIER):].lstrip(".")
-    return (f"{rel}.{m['sig']}" if rel else m["sig"]), int(m["idx"] or 0)
+    sig, idx = (f"{rel}.{m['sig']}" if rel else m["sig"]), int(m["idx"] or 0)
+    f = (fields or {}).get(sig)
+    if f:
+        base, lsb, right, desc = f
+        return base, lsb + (idx - right if desc else right - idx)
+    return sig, idx
 
 
-def _const_bit(kv: dict, const: dict[str, set[int]]) -> tuple[str, int] | None:
+def _const_bit(kv: dict, const: dict[str, set[int]], fields: dict | None = None) -> tuple[str, int] | None:
     """(signal, index) when this toggle point is a bit that the scope proves constant, else None."""
-    bit = toggle_bit(kv)
+    bit = toggle_bit(kv, fields)
     return bit if bit and bit[1] in const.get(bit[0], ()) else None
 
 
-def _proven_disagreeing(path: Path, rtl: set[str], proven: dict[str, set[int]]) -> set[str]:
+def _proven_disagreeing(path: Path, rtl: set[str], proven: dict[str, set[int]],
+                        fields: dict | None = None) -> set[str]:
     """Signals with a recorded 1->0 toggle on a bit that formal proves constant after the first reset. A
     0->1 is the start of a constant 1 (the simulator's variables start at 0); a 1->0 contradicts the proof
     (or comes from random initial values), so none of the signal's proven bits is left out."""
     bad: set[str] = set()
     for kv, _name, metric, _line, _span, count in _records(path, rtl):
         if metric == "toggle" and count > 0 and kv.get("o", "").endswith(":1->0"):
-            bit = _const_bit(kv, proven)
+            bit = _const_bit(kv, proven, fields)
             if bit:
                 bad.add(bit[0])
     return bad
@@ -183,14 +372,14 @@ def _init_rise(kv: dict, bit: tuple[str, int], ones: dict[str, set[int]]) -> boo
     return kv.get("o", "").endswith(":0->1") and bit[1] in ones.get(bit[0], ())
 
 
-def _disagreeing(path: Path, rtl: set[str], const: dict, ones: dict) -> set[str]:
+def _disagreeing(path: Path, rtl: set[str], const: dict, ones: dict, fields: dict | None = None) -> set[str]:
     """Signals for which the simulator recorded a toggle on a bit the scope proves constant (other than
     the start of a constant 1). The simulator and the netlist disagree on them, so none of their bits is
     left out."""
     bad: set[str] = set()
     for kv, _name, metric, _line, _span, count in _records(path, rtl):
         if metric == "toggle" and count > 0:
-            bit = _const_bit(kv, const)
+            bit = _const_bit(kv, const, fields)
             if bit and not _init_rise(kv, bit, ones):
                 bad.add(bit[0])
     return bad
@@ -229,15 +418,23 @@ def parse_dat(path: Path, rtl_names: list[str], scope: dict | None = None,
     kept = {f: _expand(t) for f, t in ((scope or {}).get("kept") or {}).items()}
     const = {n: _expand(t) for n, t in (((scope or {}).get("const") or {}).get("bits") or {}).items()}
     ones = {n: _expand(t) for n, t in (((scope or {}).get("const") or {}).get("ones") or {}).items()}
-    disagree = _disagreeing(path, rtl, const, ones) if const else set()
+    nets = ((scope or {}).get("const") or {}).get("nets") or []
+    fields = (scope or {}).get("fields") or {}
+    if const:
+        names = star_signals(path, rtl, fields)
+        const, ones = with_stars(const, nets, names), with_stars(ones, nets, names)
+    disagree = _disagreeing(path, rtl, const, ones, fields) if const else set()
     for n in disagree:
         const.pop(n, None)
     # Bits that formal proves constant after the first reset (nnc/unr.py, work/unr.json)
     proven = {n: _expand(t) for n, t in ((scope or {}).get("proven") or {}).items()}
-    proven_disagree = _proven_disagreeing(path, rtl, proven) if proven else set()
+    proven_disagree = _proven_disagreeing(path, rtl, proven, fields) if proven else set()
     for n in proven_disagree:
         proven.pop(n, None)
     proven_left = 0
+    # branches that formal proves are never executed after the first reset (nnc/unrbranch.py)
+    pblocks = {tuple(k) for k in (scope or {}).get("proven_blocks") or []}
+    blocks_left, blocks_hit = 0, 0
     left_out: dict[str, int] = defaultdict(int)
     dropped: dict[str, int] = defaultdict(int)
     conflicts = 0
@@ -253,8 +450,15 @@ def parse_dat(path: Path, rtl_names: list[str], scope: dict | None = None,
                 if metric == "block":
                     drop_lines.update((name, n) for n in span)
                 continue
-        bit = _const_bit(kv, const) if scope and metric == "toggle" and const else None
-        if not bit and proven and metric == "toggle" and _const_bit(kv, proven):
+        if pblocks and metric == "block" and block_key(kv, name, line) in pblocks:
+            if count == 0:
+                left_out[metric] += 1
+                blocks_left += 1
+                out_lines.update((name, n) for n in span)
+                continue
+            blocks_hit += 1           # executed although proven unreachable: counted, and reported
+        bit = _const_bit(kv, const, fields) if scope and metric == "toggle" and const else None
+        if not bit and proven and metric == "toggle" and _const_bit(kv, proven, fields):
             # never toggled, or the 0->1 start of a constant 1 (a 1->0 put the signal back above)
             if count == 0 or kv.get("o", "").endswith(":0->1"):
                 left_out[metric] += 1
@@ -291,6 +495,10 @@ def parse_dat(path: Path, rtl_names: list[str], scope: dict | None = None,
         if (scope or {}).get("proven") is not None:
             out["scope"]["proven_unreachable"] = {"rule": PROVEN_RULE, "left_out": proven_left,
                                                   "signals_kept_whole": sorted(proven_disagree)}
+        if pblocks:
+            out["scope"].setdefault("proven_unreachable", {"rule": PROVEN_RULE})
+            out["scope"]["proven_unreachable"]["branches_left_out"] = blocks_left
+            out["scope"]["proven_unreachable"]["branches_executed"] = blocks_hit
         out["out_of_scope_lines"] = out_lines - in_lines
     if drop_roots is not None:
         out["dropped"] = dict(sorted(dropped.items()))
@@ -321,7 +529,8 @@ def without_modules(path: Path, rtl_names: list[str], scope: dict | None, module
         return None
     r = parse_dat(path, rtl_names, scope, drop_roots=roots)
     return {"metrics": {m: {k: v[k] for k in ("hit", "total", "percent")} for m, v in r["metrics"].items()},
-            "dropped": r["dropped"], "drop_lines": r["drop_lines"], "instances": len(roots)}
+            "dropped": r["dropped"], "drop_lines": r["drop_lines"], "instances": len(roots),
+            "uncovered": r["uncovered"]}
 
 
 def _records(path: Path, rtl: set[str]):

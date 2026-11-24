@@ -1,6 +1,6 @@
 {
  "design": "c_uart",
- "date": "2026-11-24T03:38:20+00:00",
+ "date": "2026-11-24T08:31:14+00:00",
  "gates": [
   {
    "gate": "G1_rules",
@@ -39,67 +39,143 @@
   "detail": {
    "CHK-001": {
     "status": "FAIL",
-    "hits": 405,
-    "fails": 1,
-    "first_fail_time": 254585000
+    "hits": 810,
+    "fails": 2,
+    "runs": {
+     "base.s1": {
+      "hits": 405,
+      "fails": 1
+     },
+     "xrand.s1": {
+      "hits": 405,
+      "fails": 1
+     }
+    },
+    "first_fail_time": 254585000,
+    "first_fail_run": "base.s1"
    },
    "CHK-002": {
     "status": "PASS",
-    "hits": 1,
-    "fails": 0
+    "hits": 2,
+    "fails": 0,
+    "runs": {
+     "base.s1": {
+      "hits": 1,
+      "fails": 0
+     },
+     "xrand.s1": {
+      "hits": 1,
+      "fails": 0
+     }
+    }
    },
    "CHK-003": {
     "status": "PASS",
-    "hits": 1,
-    "fails": 0
+    "hits": 2,
+    "fails": 0,
+    "runs": {
+     "base.s1": {
+      "hits": 1,
+      "fails": 0
+     },
+     "xrand.s1": {
+      "hits": 1,
+      "fails": 0
+     }
+    }
    },
    "CHK-004": {
     "status": "PASS",
-    "hits": 12992,
-    "fails": 0
+    "hits": 25984,
+    "fails": 0,
+    "runs": {
+     "base.s1": {
+      "hits": 12992,
+      "fails": 0
+     },
+     "xrand.s1": {
+      "hits": 12992,
+      "fails": 0
+     }
+    }
    },
    "CHK-005": {
     "status": "FAIL",
     "tests": [
      "test_chk_005_rx_backpressure",
      "test_regression_random"
+    ],
+    "verified_in": [],
+    "failed_in": [
+     "base.s1",
+     "xrand.s1"
     ]
    },
    "CHK-006": {
     "status": "PASS",
     "tests": [
      "test_chk_006_rx_busy"
-    ]
+    ],
+    "verified_in": [
+     "base.s1",
+     "xrand.s1"
+    ],
+    "failed_in": []
    },
    "CHK-007": {
     "status": "FAIL",
     "tests": [
      "test_chk_007_rx_overrun"
+    ],
+    "verified_in": [],
+    "failed_in": [
+     "base.s1",
+     "xrand.s1"
     ]
    },
    "CHK-008": {
     "status": "FAIL",
     "tests": [
      "test_chk_008_rx_frame_error"
+    ],
+    "verified_in": [],
+    "failed_in": [
+     "base.s1",
+     "xrand.s1"
     ]
    },
    "CHK-009": {
     "status": "PASS",
     "tests": [
      "test_chk_009_tx_handshake_order"
-    ]
+    ],
+    "verified_in": [
+     "base.s1",
+     "xrand.s1"
+    ],
+    "failed_in": []
    },
    "CHK-010": {
     "status": "PASS",
     "tests": [
      "test_chk_010_prescale_rate"
-    ]
+    ],
+    "verified_in": [
+     "base.s1",
+     "xrand.s1"
+    ],
+    "failed_in": []
    },
    "CHK-011": {
     "status": "FAIL",
     "tests": [
      "test_chk_011_tx_busy",
      "test_regression_random"
+    ],
+    "verified_in": [],
+    "failed_in": [
+     "base.s1",
+     "xrand.s1"
     ]
    }
   }
@@ -165,16 +241,16 @@
     },
     "block": {
      "hit": 41,
-     "total": 44,
-     "percent": 93.2,
+     "total": 42,
+     "percent": 97.6,
      "files": {
       "uart_rx.v": {
        "hit": 25,
-       "total": 27
+       "total": 26
       },
       "uart_tx.v": {
        "hit": 16,
-       "total": 17
+       "total": 16
       }
      }
     },
@@ -229,26 +305,6 @@
      "metric": "block",
      "file": "uart_rx.v",
      "line": 109,
-     "what": "else",
-     "points": 1,
-     "detail": [
-      "else"
-     ]
-    },
-    {
-     "metric": "block",
-     "file": "uart_rx.v",
-     "line": 120,
-     "what": "else",
-     "points": 1,
-     "detail": [
-      "else"
-     ]
-    },
-    {
-     "metric": "block",
-     "file": "uart_tx.v",
-     "line": 106,
      "what": "else",
      "points": 1,
      "detail": [
@@ -416,6 +472,7 @@
    "design_scope": {
     "rule": "left out: never-executed points of package code that the elaborated design does not contain (Verilator instruments every function of an imported package, called or not), and toggles of signal bits that Yosys constant propagation proves constant with the run's parameters, except on signals where the simulator recorded a toggle of such a bit (then the signal counts whole)",
     "left_out": {
+     "block": 2,
      "line": 0
     },
     "scope_conflicts": 0,
@@ -423,7 +480,9 @@
     "proven_unreachable": {
      "rule": "left out: toggle points of signal bits that SymbiYosys proves constant after the first reset for every input sequence (nnc/unr.py, work/unr.json: PROVEN in every configuration of the run set), except on signals where the simulator recorded a 1->0 toggle of such a bit",
      "left_out": 0,
-     "signals_kept_whole": []
+     "signals_kept_whole": [],
+     "branches_left_out": 2,
+     "branches_executed": 0
     },
     "all_points": {
      "block": {
@@ -452,10 +511,80 @@
     "status": "applied",
     "record": "work/unr.json",
     "proven_bits": 0,
-    "signals": 0
-   }
+    "signals": 0,
+    "proven_branches": 2
+   },
+   "scope": "merged over 1 run(s) of the run set; not merged: xrand.s1 (x_init: toggles before the first reset are not design activity)"
   },
-  "run_set": null
+  "run_set": {
+   "primary": "base.s1",
+   "failed_runs": [],
+   "runs": [
+    {
+     "label": "base.s1",
+     "config": "base",
+     "seed": 1,
+     "note": "the design configuration",
+     "overrides": {},
+     "params": {
+      "DATA_WIDTH": 8
+     },
+     "opts": {
+      "defines": [],
+      "plusargs": ""
+     },
+     "clock_periods": {},
+     "status": "ran",
+     "tests": {
+      "fail": 3,
+      "pass": 5
+     },
+     "assertions_failing": [
+      "CHK-001"
+     ],
+     "not_verifiable": [],
+     "coverage_percent": {
+      "line": 97.6,
+      "block": 93.2,
+      "expression": 88.9,
+      "toggle": 67.6,
+      "functional": 90.0
+     }
+    },
+    {
+     "label": "xrand.s1",
+     "config": "xrand",
+     "seed": 1,
+     "note": "the design configuration with random initial values of every variable without a reset: a check that passes only because flops start at 0 fails here",
+     "overrides": {},
+     "params": {
+      "DATA_WIDTH": 8
+     },
+     "opts": {
+      "defines": [],
+      "plusargs": "",
+      "x_init": "random"
+     },
+     "clock_periods": {},
+     "status": "ran",
+     "tests": {
+      "fail": 3,
+      "pass": 5
+     },
+     "assertions_failing": [
+      "CHK-001"
+     ],
+     "not_verifiable": [],
+     "coverage_percent": {
+      "line": 97.6,
+      "block": 93.2,
+      "expression": 88.9,
+      "toggle": 77.3,
+      "functional": 90.0
+     }
+    }
+   ]
+  }
  },
  "mutation": {
   "count": 12,

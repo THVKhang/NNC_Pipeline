@@ -1,0 +1,560 @@
+{
+ "label": "base.s1",
+ "config": "base",
+ "seed": 1,
+ "note": "the design configuration",
+ "overrides": {},
+ "params": {
+  "PARA_SFIFO_DEPTH": 8,
+  "PARA_SFIFO_DATA_W": 32,
+  "PARA_SFIFO_PTR_RETIME": 0,
+  "PARA_SFIFO_MEM_USE_MACRO": 0
+ },
+ "opts": {
+  "defines": [],
+  "plusargs": ""
+ },
+ "clock_periods": {
+  "i_clk_wr": 10,
+  "i_clk_rd": 10
+ },
+ "status": "ran",
+ "tests": {
+  "fail": 1,
+  "pass": 24
+ },
+ "assertions_failing": [],
+ "not_verifiable": [],
+ "coverage_percent": {
+  "line": 97.3,
+  "block": 94.4,
+  "expression": 97.4,
+  "toggle": 99.7,
+  "functional": 100.0
+ },
+ "result": {
+  "tests": [
+   {
+    "name": "test_chk_012_strict_later_latency_3_2",
+    "status": "pass",
+    "sim_time_ns": "837.0"
+   },
+   {
+    "name": "test_chk_013_random_ratios/ratio=0",
+    "status": "pass",
+    "sim_time_ns": "9576.0"
+   },
+   {
+    "name": "test_chk_013_random_ratios/ratio=1",
+    "status": "pass",
+    "sim_time_ns": "11275.0"
+   },
+   {
+    "name": "test_chk_013_random_ratios/ratio=2",
+    "status": "pass",
+    "sim_time_ns": "11324.999999999996"
+   },
+   {
+    "name": "test_chk_013_random_ratios/ratio=3",
+    "status": "pass",
+    "sim_time_ns": "15245.0"
+   },
+   {
+    "name": "test_chk_013_random_ratios/ratio=4",
+    "status": "pass",
+    "sim_time_ns": "14905.0"
+   },
+   {
+    "name": "test_chk_013_random_ratios/ratio=5",
+    "status": "pass",
+    "sim_time_ns": "26598.999999999993"
+   },
+   {
+    "name": "test_chk_013_random_ratios/ratio=6",
+    "status": "pass",
+    "sim_time_ns": "26111.0"
+   },
+   {
+    "name": "test_chk_013_random_ratios/ratio=7",
+    "status": "pass",
+    "sim_time_ns": "33355.0"
+   },
+   {
+    "name": "test_chk_014_first_word_show_ahead",
+    "status": "pass",
+    "sim_time_ns": "236.0"
+   },
+   {
+    "name": "test_chk_015_full_empty_overflow_underflow",
+    "status": "pass",
+    "sim_time_ns": "426.0"
+   },
+   {
+    "name": "test_chk_016_no_bypass_simultaneous",
+    "status": "pass",
+    "sim_time_ns": "526.0"
+   },
+   {
+    "name": "test_chk_017_pointer_wrap/ratio=0",
+    "status": "pass",
+    "sim_time_ns": "11206.0"
+   },
+   {
+    "name": "test_chk_017_pointer_wrap/ratio=1",
+    "status": "pass",
+    "sim_time_ns": "10573.0"
+   },
+   {
+    "name": "test_chk_018_gap_free_equal",
+    "status": "pass",
+    "sim_time_ns": "2166.0"
+   },
+   {
+    "name": "test_chk_019_write_faster",
+    "status": "pass",
+    "sim_time_ns": "4021.0"
+   },
+   {
+    "name": "test_chk_020_read_faster",
+    "status": "pass",
+    "sim_time_ns": "3823.0"
+   },
+   {
+    "name": "test_chk_021_hw_reset",
+    "status": "pass",
+    "sim_time_ns": "446.0"
+   },
+   {
+    "name": "test_chk_022_sw_reset_sequence/ratio=0",
+    "status": "pass",
+    "sim_time_ns": "1136.0"
+   },
+   {
+    "name": "test_chk_022_sw_reset_sequence/ratio=1",
+    "status": "pass",
+    "sim_time_ns": "925.0"
+   },
+   {
+    "name": "test_chk_022_sw_reset_sequence/ratio=2",
+    "status": "pass",
+    "sim_time_ns": "1039.0"
+   },
+   {
+    "name": "test_chk_023_hw_reset_priority",
+    "status": "pass",
+    "sim_time_ns": "2856.0"
+   },
+   {
+    "name": "test_chk_024_sw_reset_full_and_rerequest",
+    "status": "fail",
+    "sim_time_ns": "610.0",
+    "message": "CHK-008: o_sw_rst_busy=0 expected after edge (i_rst_n_sw=1) got 1 at 189217.022 ns",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_b381420f/C01/test_sync_fifo.py\", line 191, in run\n                                                            self._step(prev, cur)\n                                                          File \"/root/nnc_runs/runset_b381420f/C01/test_sync_fifo.py\", line 218, in _step\n                                                            wr_acc = self._wr_edge(P, S, t, both, ra0)\n                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                                                          File \"/root/nnc_runs/runset_b381420f/C01/test_sync_fifo.py\", line 311, in _wr_edge\n                                                            assert S[\"busy\"] == exp_b, f\"CHK-008: o_sw_rst_busy={exp_b} expected after edge (i_rst_n_sw={sw}) got {S['busy']} at {t} ns\"\n                                                        AssertionError: CHK-008: o_sw_rst_busy=0 expected after edge (i_rst_n_sw=1) got 1 at 189217.022 ns\n                                                        assert 1 == 0\n189217.02ns WARNING  cocotb.regression                  test_sync_fifo.test_chk_024_sw_reset_full_and_rerequest failed",
+    "checks": [
+     "CHK-008",
+     "CHK-024"
+    ]
+   },
+   {
+    "name": "test_chk_025_thresholds",
+    "status": "pass",
+    "sim_time_ns": "4046.0"
+   },
+   {
+    "name": "test_regression_random",
+    "status": "pass",
+    "sim_time_ns": "41026.0"
+   }
+  ],
+  "assertions": {
+   "CHK-009": {
+    "hits": 2007,
+    "fails": 0
+   },
+   "CHK-010": {
+    "hits": 16543,
+    "fails": 0
+   },
+   "CHK-011": {
+    "hits": 18564,
+    "fails": 0
+   },
+   "CHK-008": {
+    "hits": 16782,
+    "fails": 0
+   },
+   "CHK-006": {
+    "hits": 11697,
+    "fails": 0
+   },
+   "CHK-007": {
+    "hits": 18550,
+    "fails": 0
+   },
+   "CHK-003": {
+    "hits": 2247,
+    "fails": 0
+   },
+   "CHK-004": {
+    "hits": 18701,
+    "fails": 0
+   },
+   "CHK-005": {
+    "hits": 5871,
+    "fails": 0
+   },
+   "CHK-002": {
+    "hits": 28006,
+    "fails": 0
+   },
+   "CHK-001": {
+    "hits": 18564,
+    "fails": 0
+   }
+  },
+  "not_verifiable": {},
+  "coverage": {
+   "status": "measured",
+   "metric": "line",
+   "hit": 218,
+   "total": 224,
+   "percent": 97.3,
+   "files": {
+    "m_vlsit_sfifo_mem.sv": {
+     "hit": 14,
+     "total": 14
+    },
+    "m_vlsit_sfifo_rd.sv": {
+     "hit": 71,
+     "total": 73
+    },
+    "m_vlsit_sfifo_top.sv": {
+     "hit": 27,
+     "total": 27
+    },
+    "m_vlsit_sfifo_wr.sv": {
+     "hit": 106,
+     "total": 110
+    }
+   },
+   "executed_lines": {
+    "m_vlsit_sfifo_mem.sv": "31-34,36-38,47,49,53-55,62-63",
+    "m_vlsit_sfifo_rd.sv": "33-34,36-41,43-46,48-49,68-69,74-86,123,127,133,138-143,151,166-176,185-190,193-194,196,198-199,210-216,225-226,235",
+    "m_vlsit_sfifo_top.sv": "39-48,50-57,63-71",
+    "m_vlsit_sfifo_wr.sv": "32-33,35-40,42-43,45-48,50-52,73-74,79-97,136,140,146,151-156,164,179-189,199-204,207-209,212-213,215-217,220,222-223,235,237-241,243-244,246-247,249-250,260-268,270,272-276,286-287,298"
+   },
+   "metrics": {
+    "line": {
+     "hit": 218,
+     "total": 224,
+     "percent": 97.3,
+     "files": {
+      "m_vlsit_sfifo_mem.sv": {
+       "hit": 14,
+       "total": 14
+      },
+      "m_vlsit_sfifo_rd.sv": {
+       "hit": 71,
+       "total": 73
+      },
+      "m_vlsit_sfifo_top.sv": {
+       "hit": 27,
+       "total": 27
+      },
+      "m_vlsit_sfifo_wr.sv": {
+       "hit": 106,
+       "total": 110
+      }
+     }
+    },
+    "block": {
+     "hit": 51,
+     "total": 54,
+     "percent": 94.4,
+     "files": {
+      "m_vlsit_sfifo_mem.sv": {
+       "hit": 4,
+       "total": 4
+      },
+      "m_vlsit_sfifo_rd.sv": {
+       "hit": 18,
+       "total": 19
+      },
+      "m_vlsit_sfifo_wr.sv": {
+       "hit": 29,
+       "total": 31
+      }
+     }
+    },
+    "expression": {
+     "hit": 75,
+     "total": 77,
+     "percent": 97.4,
+     "files": {
+      "m_vlsit_sfifo_rd.sv": {
+       "hit": 30,
+       "total": 30
+      },
+      "m_vlsit_sfifo_wr.sv": {
+       "hit": 45,
+       "total": 47
+      }
+     }
+    },
+    "toggle": {
+     "hit": 1566,
+     "total": 1570,
+     "percent": 99.7,
+     "files": {
+      "m_vlsit_sfifo_mem.sv": {
+       "hit": 722,
+       "total": 722
+      },
+      "m_vlsit_sfifo_rd.sv": {
+       "hit": 244,
+       "total": 246
+      },
+      "m_vlsit_sfifo_top.sv": {
+       "hit": 334,
+       "total": 334
+      },
+      "m_vlsit_sfifo_wr.sv": {
+       "hit": 266,
+       "total": 268
+      }
+     }
+    },
+    "functional": {
+     "hit": 40,
+     "total": 40,
+     "percent": 100.0,
+     "files": {
+      "nnc_cov.sv": {
+       "hit": 40,
+       "total": 40
+      }
+     }
+    }
+   },
+   "uncovered": [
+    {
+     "metric": "block",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 202,
+     "what": "case",
+     "points": 1,
+     "detail": [
+      "case"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 226,
+     "what": "case",
+     "points": 1,
+     "detail": [
+      "case"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 252,
+     "what": "case",
+     "points": 1,
+     "detail": [
+      "case"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 222,
+     "what": "((w_rd_ptr_view == 4'h0)==0) => 0",
+     "points": 1,
+     "detail": [
+      "((w_rd_ptr_view == 4'h0)==0) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 250,
+     "what": "(i_rst_n_sw==0) => 1",
+     "points": 1,
+     "detail": [
+      "(i_rst_n_sw==0) => 1"
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 202,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 203,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 226,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 227,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 252,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 253,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 79,
+     "what": "w_occ_nxt",
+     "points": 2,
+     "detail": [
+      "w_occ_nxt[4]:0->1",
+      "w_occ_nxt[4]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 84,
+     "what": "w_occ_nxt",
+     "points": 2,
+     "detail": [
+      "w_occ_nxt[4]:0->1",
+      "w_occ_nxt[4]:1->0"
+     ]
+    }
+   ],
+   "design_scope": {
+    "rule": "left out: never-executed points of package code that the elaborated design does not contain (Verilator instruments every function of an imported package, called or not), and toggles of signal bits that Yosys constant propagation proves constant with the run's parameters, except on signals where the simulator recorded a toggle of such a bit (then the signal counts whole)",
+    "left_out": {
+     "line": 0,
+     "toggle": 4
+    },
+    "scope_conflicts": 0,
+    "signals_kept_whole": [],
+    "all_points": {
+     "block": {
+      "hit": 51,
+      "total": 54,
+      "percent": 94.4
+     },
+     "expression": {
+      "hit": 75,
+      "total": 77,
+      "percent": 97.4
+     },
+     "line": {
+      "hit": 218,
+      "total": 224,
+      "percent": 97.3
+     },
+     "toggle": {
+      "hit": 1566,
+      "total": 1574,
+      "percent": 99.5
+     }
+    }
+   }
+  },
+  "functional": {
+   "COVP-001": 7118,
+   "COVP-002": 2347,
+   "COVP-003": 2346,
+   "COVP-004": 923,
+   "COVP-005": 1177,
+   "COVP-006": 225,
+   "COVP-007": 32,
+   "COVP-008": 148,
+   "COVP-009": 23,
+   "COVP-010": 217,
+   "COVP-011": 1113,
+   "COVP-012": 947,
+   "COVP-013": 48,
+   "COVP-014": 1009,
+   "COVP-015": 958,
+   "COVP-016": 3129,
+   "COVP-017": 945,
+   "COVP-018": 2291,
+   "COVP-019": 77,
+   "COVP-020": 1930,
+   "COVP-021": 1492,
+   "COVP-022": 464,
+   "COVP-023": 412,
+   "COVP-024": 372,
+   "COVP-025": 11,
+   "COVP-026": 1,
+   "COVP-027": 8,
+   "COVP-028": 6368,
+   "COVP-029": 4585,
+   "COVP-030": 4683,
+   "COVP-031": 1754,
+   "COVP-032": 1287,
+   "COVP-033": 1774,
+   "COVP-034": 1935,
+   "COVP-035": 1738,
+   "COVP-036": 6272,
+   "COVP-037": 5425,
+   "COVP-038": 3757,
+   "COVP-039": 369,
+   "COVP-040": 14
+  },
+  "make_rc": 2,
+  "built": true,
+  "build_errors": [],
+  "status": "ran",
+  "params": {
+   "PARA_SFIFO_DEPTH": 8,
+   "PARA_SFIFO_DATA_W": 32,
+   "PARA_SFIFO_PTR_RETIME": 0,
+   "PARA_SFIFO_MEM_USE_MACRO": 0
+  },
+  "seed": 1
+ }
+}

@@ -433,6 +433,57 @@ class CoverageClosureTest(unittest.TestCase):
         slang = sim.scope_command("m_top", [Path("m_top.sv")], {"W": 4}, None, "slang")
         self.assertIn("read_slang  -I rtl --top m_top -G W=4 rtl/m_top.sv; hierarchy -top m_top; proc", slang)
 
+    def test_struct_fields_map_to_the_packed_net(self):
+        from nnc.coverage import merge_fields, parse_dat, struct_fields, toggle_bit
+        # typedef struct packed { logic v; sub_t u; logic [7:4] a; } s_t;  sub_t = { logic [1:0] x; mode_e m; }
+        dt = [{"type": "BASICDTYPE", "addr": "(B1)", "keyword": "logic"},
+              {"type": "BASICDTYPE", "addr": "(B4)", "keyword": "logic", "range": "7:4"},
+              {"type": "BASICDTYPE", "addr": "(B2)", "keyword": "logic", "range": "1:0"},
+              {"type": "BASICDTYPE", "addr": "(B3)", "keyword": "logic", "range": "2:0"},
+              {"type": "ENUMDTYPE", "addr": "(E)", "refDTypep": "(B3)"},
+              {"type": "STRUCTDTYPE", "addr": "(SUB)", "packed": True, "membersp": [
+                  {"type": "MEMBERDTYPE", "name": "x", "lsb": "3", "refDTypep": "(B2)"},
+                  {"type": "MEMBERDTYPE", "name": "m", "refDTypep": "(E)"}]},
+              {"type": "STRUCTDTYPE", "addr": "(S)", "packed": True, "membersp": [
+                  {"type": "MEMBERDTYPE", "name": "v", "lsb": "9", "refDTypep": "(B1)"},
+                  {"type": "MEMBERDTYPE", "name": "u", "lsb": "4", "refDTypep": "(SUB)"},
+                  {"type": "MEMBERDTYPE", "name": "a", "refDTypep": "(B4)"}]},
+              {"type": "REFDTYPE", "addr": "(R)", "refDTypep": "(S)"}]
+        child = {"type": "MODULE", "name": "c", "addr": "(MC)", "stmtsp": [
+            {"type": "BEGIN", "name": "gen_a", "stmtsp": [{"type": "VAR", "name": "q", "dtypep": "(R)"}]}]}
+        top = {"type": "MODULE", "name": "t", "addr": "(MT)", "stmtsp": [
+            {"type": "VAR", "name": "s", "dtypep": "(R)"}, {"type": "VAR", "name": "w", "dtypep": "(B4)"},
+            {"type": "CELL", "name": "u_c", "modp": "(MC)"}]}
+        tree = {"type": "NETLIST", "typeTablep": "(T)", "modulesp": [top, child],
+                "miscsp": [{"type": "TYPETABLE", "typesp": dt}]}
+        f = struct_fields(tree)
+        self.assertEqual(f["s.v"], ["s", 9, 0, 1])
+        self.assertEqual(f["s.u.x"], ["s", 7, 0, 1])
+        self.assertEqual(f["s.u.m"], ["s", 4, 0, 1])
+        self.assertEqual(f["s.a"], ["s", 0, 4, 1])
+        self.assertIn("u_c.gen_a.q.u.x", f)
+        self.assertNotIn("w", f)
+        kv = lambda o, h="nnc_tb_top.u_dut": {"h": h, "o": o}
+        self.assertEqual(toggle_bit(kv("s.u.x[1]:0->1"), f), ("s", 8))
+        self.assertEqual(toggle_bit(kv("s.a[6]:0->1"), f), ("s", 2))
+        self.assertEqual(toggle_bit(kv("s.v:1->0"), f), ("s", 9))
+        self.assertEqual(toggle_bit(kv("q.u.m[2]:0->1", "nnc_tb_top.u_dut.u_c.gen_a"), f), ("u_c.gen_a.q", 6))
+        self.assertEqual(toggle_bit(kv("s.a[6]:0->1")), ("s.a", 6))           # without the layout
+        self.assertEqual(merge_fields([{"a": ["s", 1, 0, 1], "b": ["s", 0, 0, 1]},
+                                       {"a": ["s", 2, 0, 1]}, None]), {"b": ["s", 0, 0, 1]})
+        # constant bits of the packed net leave the field's toggle points out
+        rec = lambda o, n: f"C '\x01f\x02/x/m.sv\x01l\x023\x01page\x02v_toggle/m\x01o\x02{o}\x01h\x02nnc_tb_top.u_dut' {n}\n"
+        with tempfile.TemporaryDirectory() as d:
+            dat = Path(d) / "coverage.dat"
+            dat.write_text(rec("s.a[6]:0->1", 0) + rec("s.a[6]:1->0", 0) + rec("s.v:0->1", 1) + rec("s.v:1->0", 1),
+                           encoding="utf-8")
+            scope = {"packages": [], "kept": {}, "fields": f, "const": {"nets": ["s"], "bits": {"s": "2"}, "ones": {}}}
+            r = parse_dat(dat, ["m.sv"], scope)
+            plain = parse_dat(dat, ["m.sv"], {k: v for k, v in scope.items() if k != "fields"})
+        self.assertEqual((r["metrics"]["toggle"]["hit"], r["metrics"]["toggle"]["total"]), (2, 2))
+        self.assertEqual(r["scope"]["left_out"], {"toggle": 2})
+        self.assertEqual(plain["metrics"]["toggle"]["total"], 4)
+
     def test_preverified_modules_give_a_second_figure(self):
         from nnc import sim
         rec = lambda f, l, page, h, n: (f"C '\x01f\x02/x/{f}\x01l\x02{l}\x01page\x02{page}\x01o\x02x"
@@ -510,6 +561,27 @@ class CoverageClosureTest(unittest.TestCase):
         probs = closure.validate_module(bad, contract, [{"id": "COV-101"}, {"id": "COV-102"}])
         self.assertTrue(any("star-import" in p for p in probs) and any("COV-102" in p for p in probs)
                         and any("assert" in p for p in probs))
+
+    def test_closure_without_preverified_modules(self):
+        from nnc import closure
+        prim = {"metric": "expression", "file": "prim_x.sv", "line": 3, "what": "", "points": 9, "detail": []}
+        own = {"metric": "expression", "file": "reg_top.sv", "line": 7, "what": "", "points": 1, "detail": []}
+        fun = {"metric": "functional", "file": "nnc_cov.sv", "line": 0, "what": "COVP-002", "points": 1, "detail": []}
+        r = {"tests": [], "coverage": {
+            "metrics": {"expression": {"hit": 60, "total": 100, "percent": 60.0},
+                        "functional": {"hit": 1, "total": 2, "percent": 50.0}},
+            "uncovered": [prim, fun],
+            "without_preverified": {"modules": ["prim_x"], "metrics": {"expression": {"hit": 50, "total": 60,
+                                                                                      "percent": 83.3}},
+                                    "uncovered": [own]}}}
+        v = closure.without_preverified(r)
+        self.assertEqual(closure.baseline(v, "expression")["percent"], 83.3)
+        self.assertEqual(closure.baseline(v, "functional")["percent"], 50.0)
+        self.assertEqual(v["coverage"]["uncovered"], [own, fun])
+        self.assertEqual(r["coverage"]["uncovered"], [prim, fun])             # the results are not changed
+        # a run without that record (older results): unchanged
+        del r["coverage"]["without_preverified"]["uncovered"]
+        self.assertIs(closure.without_preverified(r), r)
 
 
 class SelectionAndSignoffTest(unittest.TestCase):

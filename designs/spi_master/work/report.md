@@ -1,6 +1,6 @@
 # Verification report — spi_master
 
-Generated 2026-11-24T02:03:16+00:00 by NNC Pipeline.
+Generated 2026-11-24T08:27:58+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -9,10 +9,10 @@ Generated 2026-11-24T02:03:16+00:00 by NNC Pipeline.
 | Rules | 206 — {'NOT_VERIFIED_BY_SIM': 32, 'VERIFIED': 174} |
 | Checks | 41 — {'PASS': 41} |
 | Tests | {'pass': 15} |
-| Run set | 5 runs in 3 configurations (base, min, max); primary base.s1 |
+| Run set | 6 runs in 4 configurations (base, min, max, xrand); primary base.s1 |
 | Integration | OK |
-| Code coverage (RTL), line | 94.8 % (438/462 lines) |
-| Code coverage (RTL), block | 93.8 % (135/144 statement blocks and branch arms) |
+| Code coverage (RTL), line | 98.6 % (438/444 lines); 18 points left out (package code the design does not contain), all points 94.8 % (438/462) |
+| Code coverage (RTL), block | 97.8 % (135/138 statement blocks and branch arms); 6 points left out (package code the design does not contain), all points 93.8 % (135/144) |
 | Code coverage (RTL), expression | 98.2 % (162/165 condition terms) |
 | Code coverage (RTL), toggle | 95.2 % (577/606 bit toggles 0->1 and 1->0) |
 | Code coverage (RTL), functional | 94.9 % (37/39 cover points of the specification) |
@@ -33,7 +33,7 @@ Generated 2026-11-24T02:03:16+00:00 by NNC Pipeline.
 | Every selected check PASS (no FAIL, NOT_HIT, NOT_RUN) | met |
 | Every planned check selected | met |
 | Every rule in a check or declared not verifiable | met |
-| Every run of the run set built and ran | met — 5 runs |
+| Every run of the run set built and ran | met — 6 runs |
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | met — 80 rules with attributed mutants |
 | Clock/reset domain crossings: no structural violation (RR-33) | met — clean: no crossing (work/cdc.md) |
@@ -50,6 +50,7 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 | min.s1 — CFG-MIN | PARA_SPI_CLK_DIV=1 | — | — | ran | {'pass': 15} | none | 0 |
 | min.s2 — CFG-MIN | PARA_SPI_CLK_DIV=1 | — | — | ran | {'pass': 15} | none | 0 |
 | max.s1 — CFG-MAX | PARA_SPI_CLK_DIV=255 | — | — | ran | {'pass': 15} | none | 0 |
+| xrand.s1 — the default configuration with random initial values of every variable without a reset (ROADMAP 23.4): a check that passes only because flops start at 0 fails here; its coverage is not merged | defaults | — | — | ran | {'pass': 15} | none | 0 |
 
 ## Gates
 
@@ -66,47 +67,47 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 
 | Check | Kind | Title | Status | Evidence |
 |---|---|---|---|---|
-| CHK-001 | assertion | o_cmd_ready changes only at clock edges or reset assertion | **PASS** | hits 25891, fails 0; hit in 5/5 runs; formal UNSUPPORTED |
-| CHK-002 | assertion | o_cmd_ready low while a response is shown | **PASS** | hits 232092, fails 0; hit in 5/5 runs; formal UNSUPPORTED |
-| CHK-003 | assertion | o_cmd_ready in Idle after o_cs_n rise (blocked D-1 cycles) | **PASS** | hits 178046, fails 0; hit in 5/5 runs; formal UNSUPPORTED |
-| CHK-004 | assertion | o_cmd_ready during a transfer and in its last cycle | **PASS** | hits 1433108, fails 0; hit in 5/5 runs; formal UNSUPPORTED |
-| CHK-005 | assertion | o_cmd_ready in Pause and Trail | **PASS** | hits 226446, fails 0; hit in 5/5 runs; formal UNSUPPORTED |
-| CHK-006 | assertion | o_cs_n falls exactly at a burst-start handshake | **PASS** | hits 186920, fails 0; hit in 5/5 runs; formal PROVEN |
-| CHK-007 | assertion | o_cs_n low for whole burst, rises at A_last+17D only | **PASS** | hits 1659554, fails 0; hit in 5/5 runs; formal BOUNDED |
-| CHK-008 | assertion | Minimum o_cs_n high gap between bursts | **PASS** | hits 2333, fails 0; hit in 5/5 runs; formal PROVEN |
-| CHK-009 | assertion | Lead time: first SCLK edge D cycles after o_cs_n falls | **PASS** | hits 51957, fails 0; hit in 5/5 runs; formal PROVEN |
-| CHK-010 | assertion | Pause entry and Pause outputs | **PASS** | hits 180122, fails 0; hit in 5/5 runs; formal PROVEN |
-| CHK-011 | assertion | MOSI shift timing, CPHA_b=0 | **PASS** | hits 915699, fails 0; hit in 5/5 runs; formal BOUNDED |
-| CHK-012 | assertion | MOSI shift timing, CPHA_b=1 | **PASS** | hits 921901, fails 0; hit in 5/5 runs; formal BOUNDED |
-| CHK-013 | assertion | o_mosi changes only at shift edges; holds in Idle/Pause/Trail | **PASS** | hits 47058, fails 0; hit in 5/5 runs; formal BOUNDED |
-| CHK-014 | assertion | o_mosi stable at every sampling edge | **PASS** | hits 75678, fails 0; hit in 5/5 runs; formal PROVEN |
-| CHK-015 | assertion | Outputs take reset values at once on i_rst_n assertion | **PASS** | hits 924, fails 0; hit in 5/5 runs; formal UNSUPPORTED |
-| CHK-016 | assertion | Output values held while in reset | **PASS** | hits 919, fails 0; hit in 5/5 runs; formal UNSUPPORTED |
-| CHK-017 | assertion | o_sclk follows i_cpol combinationally during reset | **PASS** | hits 924, fails 0; hit in 5/5 runs; formal UNSUPPORTED |
-| CHK-018 | assertion | Ready to accept at first edge after reset release | **PASS** | hits 8874, fails 0; hit in 5/5 runs; formal UNSUPPORTED |
-| CHK-019 | assertion | Response outputs change only at clock edges or reset | **PASS** | hits 1846474, fails 0; hit in 5/5 runs; formal UNSUPPORTED |
-| CHK-020 | assertion | Response reference model: data, order, timing, depth<=2 | **PASS** | hits 1846172, fails 0; hit in 5/5 runs; formal UNSUPPORTED |
-| CHK-021 | assertion | o_rsp_data hold and i_rsp_ready ignored while not valid | **PASS** | hits 1827478, fails 0; hit in 5/5 runs; formal UNSUPPORTED |
-| CHK-022 | assertion | No transfer starts while a byte is shown or held | **PASS** | hits 9546, fails 0; hit in 5/5 runs; formal UNSUPPORTED |
-| CHK-023 | assertion | SCLK edges at A+k*D with correct levels | **PASS** | hits 1433108, fails 0; hit in 5/5 runs; formal BOUNDED |
-| CHK-024 | assertion | No other o_sclk changes while o_cs_n=0 | **PASS** | hits 1508193, fails 0; hit in 5/5 runs; formal BOUNDED |
-| CHK-025 | assertion | SCLK at CPOL_b in lead, Pause and Trail | **PASS** | hits 316743, fails 0; hit in 5/5 runs; formal BOUNDED |
-| CHK-026 | assertion | o_sclk equals i_cpol while o_cs_n=1 | **PASS** | hits 187844, fails 0; hit in 5/5 runs; formal PROVEN |
-| CHK-027 | assertion | No-gap joint between back-to-back transfers | **PASS** | hits 3410, fails 0; hit in 5/5 runs; formal UNSUPPORTED |
-| CHK-028 | test | Commands without handshake have no effect | **PASS** | test_chk_028_no_handshake_no_effect; verified in base.s1, base.s2, min.s1, min.s2, max.s1 |
-| CHK-029 | test | No combinational input paths to registered outputs | **PASS** | test_chk_029_no_combinational_input_paths; verified in base.s1, base.s2, min.s1, min.s2, max.s1 |
-| CHK-030 | test | i_cmd_last=1 on first byte; o_cs_n rise independent of response stream | **PASS** | test_chk_030_single_byte_bursts; verified in base.s1, base.s2, min.s1, min.s2, max.s1 |
-| CHK-031 | test | Pause entry/exit, long pause and endless burst | **PASS** | test_chk_031_pause_and_endless_burst; verified in base.s1, base.s2, min.s1, min.s2, max.s1 |
-| CHK-032 | test | Mode captured at burst start (change just before acceptance) | **PASS** | test_chk_032_mode_change_before_burst_start; verified in base.s1, base.s2, min.s1, min.s2, max.s1 |
-| CHK-033 | test | Error test: mode inputs changed during a burst are ignored | **PASS** | test_chk_033_mode_change_during_burst_ignored; verified in base.s1, base.s2, min.s1, min.s2, max.s1 |
-| CHK-034 | test | i_cpol toggled in reset and Idle | **PASS** | test_chk_034_cpol_follow_in_reset_and_idle; verified in base.s1, base.s2, min.s1, min.s2, max.s1 |
-| CHK-035 | test | Reset in each phase: abort, discard, immediate restart | **PASS** | test_chk_035_reset_in_each_phase; verified in base.s1, base.s2, min.s1, min.s2, max.s1 |
-| CHK-036 | test | Back-pressure: held byte created and released; consumer never takes | **PASS** | test_chk_036_held_byte_backpressure; verified in base.s1, base.s2, min.s1, min.s2, max.s1 |
-| CHK-037 | test | Response handshake exactly at A+16D and random i_rsp_ready | **PASS** | test_chk_037_rsp_handshake_at_transfer_end_and_random_ready; verified in base.s1, base.s2, min.s1, min.s2, max.s1 |
-| CHK-038 | test | All four modes with random data, burst lengths and gaps | **PASS** | test_chk_038_random_traffic_all_modes, test_regression_random; verified in base.s1, base.s2, min.s1, min.s2, max.s1 |
-| CHK-039 | test | MISO sampling-edge precision | **PASS** | test_chk_039_miso_sampling_edge_precision; verified in base.s1, base.s2, min.s1, min.s2, max.s1 |
-| CHK-040 | test | Continuous bursts, joint timing and throughput | **PASS** | test_chk_040_continuous_bursts_timing; verified in base.s1, base.s2, min.s1, min.s2, max.s1 |
-| CHK-041 | test | Divider timing in the configuration (incl. D=1 and D=255) | **PASS** | test_chk_041_divider_timing; verified in base.s1, base.s2, min.s1, min.s2, max.s1 |
+| CHK-001 | assertion | o_cmd_ready changes only at clock edges or reset assertion | **PASS** | hits 29382, fails 0; hit in 6/6 runs; formal UNSUPPORTED |
+| CHK-002 | assertion | o_cmd_ready low while a response is shown | **PASS** | hits 242102, fails 0; hit in 6/6 runs; formal UNSUPPORTED |
+| CHK-003 | assertion | o_cmd_ready in Idle after o_cs_n rise (blocked D-1 cycles) | **PASS** | hits 184666, fails 0; hit in 6/6 runs; formal UNSUPPORTED |
+| CHK-004 | assertion | o_cmd_ready during a transfer and in its last cycle | **PASS** | hits 1517690, fails 0; hit in 6/6 runs; formal UNSUPPORTED |
+| CHK-005 | assertion | o_cmd_ready in Pause and Trail | **PASS** | hits 244287, fails 0; hit in 6/6 runs; formal UNSUPPORTED |
+| CHK-006 | assertion | o_cs_n falls exactly at a burst-start handshake | **PASS** | hits 193878, fails 0; hit in 6/6 runs; formal PROVEN |
+| CHK-007 | assertion | o_cs_n low for whole burst, rises at A_last+17D only | **PASS** | hits 1761977, fails 0; hit in 6/6 runs; formal BOUNDED |
+| CHK-008 | assertion | Minimum o_cs_n high gap between bursts | **PASS** | hits 2658, fails 0; hit in 6/6 runs; formal PROVEN |
+| CHK-009 | assertion | Lead time: first SCLK edge D cycles after o_cs_n falls | **PASS** | hits 53779, fails 0; hit in 6/6 runs; formal PROVEN |
+| CHK-010 | assertion | Pause entry and Pause outputs | **PASS** | hits 196597, fails 0; hit in 6/6 runs; formal PROVEN |
+| CHK-011 | assertion | MOSI shift timing, CPHA_b=0 | **PASS** | hits 969623, fails 0; hit in 6/6 runs; formal BOUNDED |
+| CHK-012 | assertion | MOSI shift timing, CPHA_b=1 | **PASS** | hits 977020, fails 0; hit in 6/6 runs; formal BOUNDED |
+| CHK-013 | assertion | o_mosi changes only at shift edges; holds in Idle/Pause/Trail | **PASS** | hits 52767, fails 0; hit in 6/6 runs; formal BOUNDED |
+| CHK-014 | assertion | o_mosi stable at every sampling edge | **PASS** | hits 86248, fails 0; hit in 6/6 runs; formal PROVEN |
+| CHK-015 | assertion | Outputs take reset values at once on i_rst_n assertion | **PASS** | hits 1057, fails 0; hit in 6/6 runs; formal UNSUPPORTED |
+| CHK-016 | assertion | Output values held while in reset | **PASS** | hits 1051, fails 0; hit in 6/6 runs; formal UNSUPPORTED |
+| CHK-017 | assertion | o_sclk follows i_cpol combinationally during reset | **PASS** | hits 1057, fails 0; hit in 6/6 runs; formal UNSUPPORTED |
+| CHK-018 | assertion | Ready to accept at first edge after reset release | **PASS** | hits 9212, fails 0; hit in 6/6 runs; formal UNSUPPORTED |
+| CHK-019 | assertion | Response outputs change only at clock edges or reset | **PASS** | hits 1955855, fails 0; hit in 6/6 runs; formal UNSUPPORTED |
+| CHK-020 | assertion | Response reference model: data, order, timing, depth<=2 | **PASS** | hits 1955511, fails 0; hit in 6/6 runs; formal UNSUPPORTED |
+| CHK-021 | assertion | o_rsp_data hold and i_rsp_ready ignored while not valid | **PASS** | hits 1934208, fails 0; hit in 6/6 runs; formal UNSUPPORTED |
+| CHK-022 | assertion | No transfer starts while a byte is shown or held | **PASS** | hits 10874, fails 0; hit in 6/6 runs; formal UNSUPPORTED |
+| CHK-023 | assertion | SCLK edges at A+k*D with correct levels | **PASS** | hits 1517690, fails 0; hit in 6/6 runs; formal BOUNDED |
+| CHK-024 | assertion | No other o_sclk changes while o_cs_n=0 | **PASS** | hits 1589476, fails 0; hit in 6/6 runs; formal BOUNDED |
+| CHK-025 | assertion | SCLK at CPOL_b in lead, Pause and Trail | **PASS** | hits 339890, fails 0; hit in 6/6 runs; formal BOUNDED |
+| CHK-026 | assertion | o_sclk equals i_cpol while o_cs_n=1 | **PASS** | hits 194934, fails 0; hit in 6/6 runs; formal PROVEN |
+| CHK-027 | assertion | No-gap joint between back-to-back transfers | **PASS** | hits 3939, fails 0; hit in 6/6 runs; formal UNSUPPORTED |
+| CHK-028 | test | Commands without handshake have no effect | **PASS** | test_chk_028_no_handshake_no_effect; verified in base.s1, base.s2, min.s1, min.s2, max.s1, xrand.s1 |
+| CHK-029 | test | No combinational input paths to registered outputs | **PASS** | test_chk_029_no_combinational_input_paths; verified in base.s1, base.s2, min.s1, min.s2, max.s1, xrand.s1 |
+| CHK-030 | test | i_cmd_last=1 on first byte; o_cs_n rise independent of response stream | **PASS** | test_chk_030_single_byte_bursts; verified in base.s1, base.s2, min.s1, min.s2, max.s1, xrand.s1 |
+| CHK-031 | test | Pause entry/exit, long pause and endless burst | **PASS** | test_chk_031_pause_and_endless_burst; verified in base.s1, base.s2, min.s1, min.s2, max.s1, xrand.s1 |
+| CHK-032 | test | Mode captured at burst start (change just before acceptance) | **PASS** | test_chk_032_mode_change_before_burst_start; verified in base.s1, base.s2, min.s1, min.s2, max.s1, xrand.s1 |
+| CHK-033 | test | Error test: mode inputs changed during a burst are ignored | **PASS** | test_chk_033_mode_change_during_burst_ignored; verified in base.s1, base.s2, min.s1, min.s2, max.s1, xrand.s1 |
+| CHK-034 | test | i_cpol toggled in reset and Idle | **PASS** | test_chk_034_cpol_follow_in_reset_and_idle; verified in base.s1, base.s2, min.s1, min.s2, max.s1, xrand.s1 |
+| CHK-035 | test | Reset in each phase: abort, discard, immediate restart | **PASS** | test_chk_035_reset_in_each_phase; verified in base.s1, base.s2, min.s1, min.s2, max.s1, xrand.s1 |
+| CHK-036 | test | Back-pressure: held byte created and released; consumer never takes | **PASS** | test_chk_036_held_byte_backpressure; verified in base.s1, base.s2, min.s1, min.s2, max.s1, xrand.s1 |
+| CHK-037 | test | Response handshake exactly at A+16D and random i_rsp_ready | **PASS** | test_chk_037_rsp_handshake_at_transfer_end_and_random_ready; verified in base.s1, base.s2, min.s1, min.s2, max.s1, xrand.s1 |
+| CHK-038 | test | All four modes with random data, burst lengths and gaps | **PASS** | test_chk_038_random_traffic_all_modes, test_regression_random; verified in base.s1, base.s2, min.s1, min.s2, max.s1, xrand.s1 |
+| CHK-039 | test | MISO sampling-edge precision | **PASS** | test_chk_039_miso_sampling_edge_precision; verified in base.s1, base.s2, min.s1, min.s2, max.s1, xrand.s1 |
+| CHK-040 | test | Continuous bursts, joint timing and throughput | **PASS** | test_chk_040_continuous_bursts_timing; verified in base.s1, base.s2, min.s1, min.s2, max.s1, xrand.s1 |
+| CHK-041 | test | Divider timing in the configuration (incl. D=1 and D=255) | **PASS** | test_chk_041_divider_timing; verified in base.s1, base.s2, min.s1, min.s2, max.s1, xrand.s1 |
 
 ## Requirement traceability (RTM)
 

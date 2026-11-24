@@ -17,7 +17,7 @@ from pathlib import Path
 
 from nnc import coverage as coverage_mod
 from nnc.agents.backend import AgentTask
-from nnc.sim import SIM_SCRIPT, build_inputs, checker_files, param_values, parse_results, rtl_files
+from nnc.sim import SIM_SCRIPT, build_inputs, checker_files, default_jobs, param_values, parse_results, rtl_files
 from nnc.simhost import SimHost
 
 OPERATORS = [
@@ -194,7 +194,7 @@ def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: 
             text[m.line - 1] = m.mutated
             files[f"{key}/rtl/{m.file}"] = "\n".join(text) + "\n"
             files[f"{key}/seed.txt"] = f"{r['seed']}\n"
-        one = SIM_SCRIPT.format(seed="$(cat seed.txt)", jobs=max(1, 12 // max(1, parallel))).replace("\n", "; ")
+        one = SIM_SCRIPT.format(seed="$(cat seed.txt)", jobs=max(1, default_jobs() // max(1, parallel))).replace("\n", "; ")
         script = f"ls -d M* | xargs -P {parallel} -I{{}} bash -c 'cd {{}} && {one}'\n"
         res = host.run(files, script, ["M*/sim.log", "M*/results.xml"], timeout_s=timeout_s, tag=tag)
         return {key: parse_results(res.out_dir / key, names) if (res.out_dir / key).is_dir()

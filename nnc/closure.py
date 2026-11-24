@@ -76,6 +76,21 @@ def baseline(results: dict, metric: str) -> dict | None:
     return ((results.get("coverage") or {}).get("metrics") or {}).get(metric)
 
 
+def without_preverified(results: dict) -> dict:
+    """The results as closure sees them when the designer declares modules verified elsewhere (config
+    coverage_preverified, as OpenTitan's cover.cfg leaves out its pre-verified primitives): the code metrics and
+    their uncovered points without those modules' subtrees; functional coverage unchanged. The results
+    themselves are unchanged when the run has no such coverage."""
+    cov = results.get("coverage") or {}
+    w = cov.get("without_preverified") or {}
+    if not w.get("metrics") or "uncovered" not in w:
+        return results
+    func = (cov.get("metrics") or {}).get("functional")
+    view = {**cov, "metrics": {**w["metrics"], **({"functional": func} if func else {})},
+            "uncovered": list(w["uncovered"]) + [u for u in cov.get("uncovered", []) if u["metric"] == "functional"]}
+    return {**results, "coverage": view}
+
+
 def functional_failures(results: dict) -> list[str]:
     bad = [t["name"] for t in results.get("tests", []) if t["status"] == "fail"]
     bad += [c for c, v in results.get("assertions", {}).items() if v["fails"] > 0]
@@ -221,6 +236,9 @@ def baseline_section(results: dict, points: dict | None = None) -> list[str]:
 def to_markdown(cov: dict, results: dict | None = None, points: dict | None = None) -> str:
     out = ["# Coverage closure", "", f"Metric **{cov['metric']}**, target {cov.get('target')} %, status "
            f"**{cov['status']}**.", ""]
+    if cov.get("preverified"):
+        out += [f"Target and points without the modules declared verified elsewhere ({', '.join(cov['preverified'])});"
+                " the coverage of the whole design is in the baseline below and in work/report.md.", ""]
     if results:
         out += baseline_section(results, points) + ["", "## Closure", ""]
     out += ["| Round | Coverage | Scenarios | Tests added | Note |", "|---|---|---|---|---|"]

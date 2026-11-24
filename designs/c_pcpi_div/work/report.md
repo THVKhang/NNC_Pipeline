@@ -1,6 +1,6 @@
 # Verification report — c_pcpi_div
 
-Generated 2026-11-23T10:20:00+00:00 by NNC Pipeline.
+Generated 2026-11-24T06:48:18+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -9,6 +9,7 @@ Generated 2026-11-23T10:20:00+00:00 by NNC Pipeline.
 | Rules | 23 — {'NOT_VERIFIED_BY_SIM': 16, 'VERIFIED': 7} |
 | Checks | 9 — {'PASS': 9} |
 | Tests | {'pass': 7} |
+| Run set | 2 runs in 2 configurations (base, xrand); primary base.s1 |
 | Integration | OK |
 | Code coverage (RTL), line | 100.0 % (58/58 lines) |
 | Code coverage (RTL), block | 100.0 % (16/16 statement blocks and branch arms) |
@@ -30,9 +31,19 @@ Generated 2026-11-23T10:20:00+00:00 by NNC Pipeline.
 | Every selected check PASS (no FAIL, NOT_HIT, NOT_RUN) | met |
 | Every planned check selected | met |
 | Every rule in a check or declared not verifiable | met |
+| Every run of the run set built and ran | met — 2 runs |
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | met — 7 rules with attributed mutants |
 | Clock/reset domain crossings: no structural violation (RR-33) | met — clean: no crossing (work/cdc.md) |
+
+## Run set
+
+Every check is merged over these runs: PASS when one run verified it and no run failed it; NOT_VERIFIABLE only when every run declared it so.
+
+| Run | Parameters changed | Defines | Plusargs | Status | Tests | Failing assertions | Not verifiable here |
+|---|---|---|---|---|---|---|---|
+| base.s1 — the design configuration | defaults | — | — | ran | {'pass': 7} | none | 0 |
+| xrand.s1 — the design configuration with random initial values of every variable without a reset: a check that passes only because flops start at 0 fails here | defaults | — | — | ran | {'pass': 7} | none | 0 |
 
 ## Gates
 
@@ -47,15 +58,15 @@ Generated 2026-11-23T10:20:00+00:00 by NNC Pipeline.
 
 | Check | Kind | Title | Status | Evidence |
 |---|---|---|---|---|
-| CHK-001 | assertion | pcpi_wait stays asserted until pcpi_ready | **PASS** | hits 275264, fails 0 |
-| CHK-002 | assertion | pcpi_wr only together with pcpi_ready | **PASS** | hits 8096, fails 0 |
-| CHK-003 | assertion | pcpi_ready only in response to an outstanding pcpi_valid | **PASS** | hits 8096, fails 0 |
-| CHK-004 | test | Directed DIV/DIVU/REM/REMU results incl. rounding toward zero and remainder sign | **PASS** | test_chk_004_directed_divide |
-| CHK-005 | test | Constrained-random division against reference model | **PASS** | test_chk_005_random_divide, test_regression_random |
-| CHK-006 | test | Division by zero | **PASS** | test_chk_006_divide_by_zero |
-| CHK-007 | test | Signed division overflow | **PASS** | test_chk_007_signed_overflow |
-| CHK-008 | test | PCPI handshake: early pcpi_wait, then pcpi_ready with pcpi_wr | **PASS** | test_chk_008_pcpi_handshake, test_regression_random |
-| CHK-009 | test | Idle after reset: no completion without an instruction | **PASS** | test_chk_009_idle_after_reset |
+| CHK-001 | assertion | pcpi_wait stays asserted until pcpi_ready | **PASS** | hits 550528, fails 0; hit in 2/2 runs |
+| CHK-002 | assertion | pcpi_wr only together with pcpi_ready | **PASS** | hits 16192, fails 0; hit in 2/2 runs |
+| CHK-003 | assertion | pcpi_ready only in response to an outstanding pcpi_valid | **PASS** | hits 16192, fails 0; hit in 2/2 runs |
+| CHK-004 | test | Directed DIV/DIVU/REM/REMU results incl. rounding toward zero and remainder sign | **PASS** | test_chk_004_directed_divide; verified in base.s1, xrand.s1 |
+| CHK-005 | test | Constrained-random division against reference model | **PASS** | test_chk_005_random_divide, test_regression_random; verified in base.s1, xrand.s1 |
+| CHK-006 | test | Division by zero | **PASS** | test_chk_006_divide_by_zero; verified in base.s1, xrand.s1 |
+| CHK-007 | test | Signed division overflow | **PASS** | test_chk_007_signed_overflow; verified in base.s1, xrand.s1 |
+| CHK-008 | test | PCPI handshake: early pcpi_wait, then pcpi_ready with pcpi_wr | **PASS** | test_chk_008_pcpi_handshake, test_regression_random; verified in base.s1, xrand.s1 |
+| CHK-009 | test | Idle after reset: no completion without an instruction | **PASS** | test_chk_009_idle_after_reset; verified in base.s1, xrand.s1 |
 
 ## Requirement traceability (RTM)
 
@@ -108,4 +119,4 @@ Generated 2026-11-23T10:20:00+00:00 by NNC Pipeline.
 - Domain crossings were checked structurally (synchronizer structure, `nnc cdc`); gray coding and handshake protocols are not proven by that check.
 - Sign-off STA, place and route and DFT are outside this flow (docs/SIGNOFF_SCOPE.md); `nnc rtl-check` gives a synthesis estimate of area and the longest combinational path.
 - Rules marked NOT_VERIFIED_BY_SIM carry the contract's reason (static, structural, not observable...).
-- Only the default parameter configuration was simulated (no run_set.json).
+- Only the configurations of the run set above were simulated; code coverage is merged over its runs, mutation testing used the primary run base.s1.

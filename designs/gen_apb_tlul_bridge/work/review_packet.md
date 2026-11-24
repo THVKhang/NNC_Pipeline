@@ -7,8 +7,8 @@ This packet is for the person who decides gate **G4 (sign-off)**: *is this desig
 - **Requirements (rules):** 232 — NOT_VERIFIED_BY_SIM 63, VERIFIED 169
 - **Checks:** 31 — PASS 31
 - **Tests:** {'pass': 17}
-- **Simulated configuration:** one (parameters {'PARA_ADDR_W': 32, 'PARA_SRC_W': 8, 'PARA_SRC_ID': 0, 'PARA_A_USER_W': 1, 'PARA_D_SINK_W': 1, 'PARA_D_USER_W': 1}, seed 1)
-- **Code coverage:** line 95.1 %, block 95.7 %, expression 100.0 %, toggle 100.0 %, functional 100.0 %
+- **Simulated configurations:** 2 runs in 2 configurations (base, xrand); see `run_set.json` and the *Run set* table of the report
+- **Code coverage:** line 97.0 %, block 100.0 %, expression 100.0 %, toggle 100.0 %, functional 100.0 %
 - **Mutation score:** 100.0 % (36 of 36 injected faults detected)
 
 ## 2. Decisions taken for you
@@ -55,16 +55,12 @@ Mutation testing changed one RTL line at a time (36 faults). A fault no check no
 
 Code or cover points never reached (first ones):
 
-- line m_apb_if.sv:134
-- line m_apb_if.sv:135
 - line m_apb_tlul_bridge.sv:62
 - line m_apb_tlul_bridge.sv:64
 - line m_apb_tlul_bridge.sv:68
 - line m_tlul_if.sv:49
 - line m_tlul_if.sv:51
 - line m_tlul_if.sv:55
-- line m_tlul_if.sv:169
-- line m_tlul_if.sv:170
 
 ### Formal check (SymbiYosys)
 
@@ -88,6 +84,8 @@ cd designs/gen_apb_tlul_bridge/sim
 make regression SEED=1 2>&1 | tee sim.log
 cd ../../.. && python -m nnc kit-check gen_apb_tlul_bridge    # same outcome as the recorded results?
 ```
+
+The kit reproduces the primary run base.s1; the other runs differ only by the settings in `run_set.json`.
 
 ## 8. Checklist before signing
 

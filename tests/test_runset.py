@@ -152,6 +152,17 @@ class MergeTest(unittest.TestCase):
         md = report.to_markdown(rep, CONTRACT, mutation)
         self.assertIn("score without the proven-equivalent mutants 66.7 %", md)
 
+    def test_x_init_runs_are_not_merged_into_coverage(self):
+        a = _run("base.s1", {"test_chk_002": "pass"})
+        x = _run("xrand.s1", {"test_chk_002": "fail"})
+        x["tests"][0]["message"] = "boom"
+        a["config"], x["config"] = "base", "xrand"
+        m = runset.merge([a, x], {"status": "measured"}, {}, {"xrand"})
+        self.assertEqual({t["name"]: t["status"] for t in m["tests"]}["test_chk_002"], "fail")   # tests still count
+        self.assertIn("merged over 1 run(s)", m["coverage"]["scope"])
+        self.assertIn("not merged: xrand.s1", m["coverage"]["scope"])
+        self.assertIn('[ -f "$c/nnc_nocov" ]', runset.MERGE)
+
     def test_all_runs_failed_to_build(self):
         m = runset.merge([_run("a.s1", {}, status="build_failed")], {"status": "not_measured"}, {})
         self.assertEqual(m["status"], "build_failed")

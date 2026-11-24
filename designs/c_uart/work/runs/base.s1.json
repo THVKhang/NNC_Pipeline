@@ -1,0 +1,490 @@
+{
+ "label": "base.s1",
+ "config": "base",
+ "seed": 1,
+ "note": "the design configuration",
+ "overrides": {},
+ "params": {
+  "DATA_WIDTH": 8
+ },
+ "opts": {
+  "defines": [],
+  "plusargs": ""
+ },
+ "clock_periods": {},
+ "status": "ran",
+ "tests": {
+  "fail": 3,
+  "pass": 5
+ },
+ "assertions_failing": [
+  "CHK-001"
+ ],
+ "not_verifiable": [],
+ "coverage_percent": {
+  "line": 97.6,
+  "block": 93.2,
+  "expression": 88.9,
+  "toggle": 67.6,
+  "functional": 90.0
+ },
+ "result": {
+  "tests": [
+   {
+    "name": "test_chk_005_rx_backpressure",
+    "status": "pass",
+    "sim_time_ns": "240085.0"
+   },
+   {
+    "name": "test_chk_006_rx_busy",
+    "status": "pass",
+    "sim_time_ns": "11285.0"
+   },
+   {
+    "name": "test_chk_007_rx_overrun",
+    "status": "fail",
+    "sim_time_ns": "3215.0",
+    "message": "CHK-001: m_axis stalled with tvalid=1 tdata=0x3c after tready=0 got tvalid=1 tdata=0xc3 at edge 322",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_dec4e7d9/C01/test_c_uart.py\", line 174, in _run\n                                                            assert v == 1 and d == prev_d, (\n                                                        AssertionError: CHK-001: m_axis stalled with tvalid=1 tdata=0x3c after tready=0 got tvalid=1 tdata=0xc3 at edge 322\n                                                        assert (1 == 1 and 195 == 60)\n254585.00ns WARNING  cocotb.regression                  test_c_uart.test_chk_007_rx_overrun failed",
+    "checks": [
+     "CHK-001",
+     "CHK-007"
+    ]
+   },
+   {
+    "name": "test_chk_008_rx_frame_error",
+    "status": "fail",
+    "sim_time_ns": "5925.0",
+    "message": "CHK-008: m_axis_tvalid=0 from bad frame until valid frame at every edge 9..513 got m_axis_tvalid=1 at edge 314 (1 violating edges)",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_dec4e7d9/C01/test_c_uart.py\", line 507, in test_chk_008_rx_frame_error\n                                                            env.trace.expect(\"CHK-008\", \"m_axis_tvalid\", tb, tg + (DW + 1) * bp, lambda v: v == 0,\n                                                          File \"/root/nnc_runs/runset_dec4e7d9/C01/test_c_uart.py\", line 141, in expect\n                                                            assert not bad, (f\"{chk}: {desc} at every edge {a}..{b} got {sig}={bad[0][1]} at edge \"\n                                                        AssertionError: CHK-008: m_axis_tvalid=0 from bad frame until valid frame at every edge 9..513 got m_axis_tvalid=1 at edge 314 (1 violating edges)\n                                                        assert not [(314, 1)]\n260510.00ns WARNING  cocotb.regression                  test_c_uart.test_chk_008_rx_frame_error failed",
+    "checks": [
+     "CHK-008"
+    ]
+   },
+   {
+    "name": "test_chk_009_tx_handshake_order",
+    "status": "pass",
+    "sim_time_ns": "235585.00000000003"
+   },
+   {
+    "name": "test_chk_010_prescale_rate",
+    "status": "pass",
+    "sim_time_ns": "94295.0"
+   },
+   {
+    "name": "test_chk_011_tx_busy",
+    "status": "pass",
+    "sim_time_ns": "11845.0"
+   },
+   {
+    "name": "test_regression_random",
+    "status": "fail",
+    "sim_time_ns": "5215.0",
+    "message": "CHK-001: m_axis stalled with tvalid=1 tdata=0x75 after tready=0 got tvalid=1 tdata=0x5b at edge 522",
+    "exception": "AssertionError",
+    "traceback": "      0.01     225549.25  **\n                                                        ** test_c_uart.test_chk_008_rx_frame_error       FAIL        5925.00           0.03     173699.95  **\n                                                        ** test_c_uart.test_chk_009_tx_handshake_order   PASS      235585.00           1.19     197939.84  **\n                                                        ** test_c_uart.test_chk_010_prescale_rate        PASS       94295.00           0.45     207755.30  **\n                                                        ** test_c_uart.test_chk_011_tx_busy              PASS       11845.00           0.05     231900.95  **\n                                                        ** test_c_uart.test_regression_random            FAIL        5215.00           0.03     188580.77  **\n                                                        *****************************************************************************************************\n                                                        ** TESTS=8 PASS=5 FAIL=3 SKIP=0                            607450.01           3.01     201837.43  **\n                                                        *****************************************************************************************************\nNNC_FAIL CHK-001 @254585000\n- (null):0: Verilog $finish\nNNC_COVER COVP-001 hits=83\nNNC_COVER COVP-002 hits=15103\nNNC_COVER COVP-003 hits=14875\nNNC_COVER COVP-004 hits=15178\nNNC_COVER COVP-005 hits=4\nNNC_COVER COVP-006 hits=3\nNNC_COVER COVP-007 hits=81\nNNC_COVER COVP-008 hits=405\nNNC_COVER COVP-009 hits=337\nNNC_COVER COVP-010 hits=402\nNNC_COVER COVP-011 hits=34\nNNC_COVER COVP-012 hits=47973\nNNC_COVER COVP-013 hits=4\nNNC_COVER COVP-014 hits=5\nNNC_COVER COVP-015 hits=1\nNNC_COVER COVP-016 hits=1\nNNC_COVER COVP-017 hits=1\nNNC_COVER COVP-018 hits=1\nNNC_COVER COVP-019 hits=1\nNNC_COVER COVP-020 hits=1\nNNC_COVER COVP-021 hits=0\nNNC_COVER COVP-022 hits=1\nNNC_COVER COVP-023 hits=8\nNNC_COVER COVP-024 hits=7\nNNC_COVER COVP-025 hits=12992\nNNC_COVER COVP-026 hits=13037\nNNC_COVER COVP-027 hits=34681\nNNC_COVER COVP-028 hits=85\nNNC_COVER COVP-029 hits=84\nNNC_COVER COVP-030 hits=85\nNNC_COVER COVP-031 hits=455\nNNC_COVER COVP-032 hits=10\nNNC_COVER COVP-033 hits=199\nNNC_COVER COVP-034 hits=10\nNNC_COVER COVP-035 hits=0\nNNC_COVER COVP-036 hits=81\nNNC_COVER COVP-037 hits=4\nNNC_COVER COVP-038 hits=0\nNNC_COVER COVP-039 hits=0\nNNC_COVER COVP-040 hits=1\nNNC_CHECK CHK-004 hits=12992 fails=0\nNNC_CHECK CHK-002 hits=1 fails=0\nNNC_CHECK CHK-003 hits=1 fails=0\nNNC_CHECK CHK-001 hits=405 fails=1\nmake[1]: *** [/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb_tools/makefiles/simulators/Makefile.verilator:70: results.xml] Error 3\nmake[1]: Leaving directory '/root/nnc_runs/runset_dec4e7d9/C01'\nmake: *** [/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb_tools/makefiles/Makefile.inc:17: sim] Error 2\nNNC_MAKE_RC=2\n",
+    "checks": [
+     "CHK-001"
+    ]
+   }
+  ],
+  "assertions": {
+   "CHK-004": {
+    "hits": 12992,
+    "fails": 0
+   },
+   "CHK-002": {
+    "hits": 1,
+    "fails": 0
+   },
+   "CHK-003": {
+    "hits": 1,
+    "fails": 0
+   },
+   "CHK-001": {
+    "hits": 405,
+    "fails": 1,
+    "first_fail_time": 254585000
+   }
+  },
+  "not_verifiable": {},
+  "coverage": {
+   "status": "measured",
+   "metric": "line",
+   "hit": 120,
+   "total": 123,
+   "percent": 97.6,
+   "files": {
+    "uart.v": {
+     "hit": 15,
+     "total": 15
+    },
+    "uart_rx.v": {
+     "hit": 61,
+     "total": 64
+    },
+    "uart_tx.v": {
+     "hit": 44,
+     "total": 44
+    }
+   },
+   "executed_lines": {
+    "uart.v": "37-38,43-45,50-52,57-58,63-66,71",
+    "uart_rx.v": "37-38,43-45,50,55-57,62,66-67,69,71-73,75-77,86-99,101-102,105-111,116-127,130-136",
+    "uart_tx.v": "37-38,43-45,50,55,60,63,65,67,69-71,78-91,93-99,101-109"
+   },
+   "metrics": {
+    "line": {
+     "hit": 120,
+     "total": 123,
+     "percent": 97.6,
+     "files": {
+      "uart.v": {
+       "hit": 15,
+       "total": 15
+      },
+      "uart_rx.v": {
+       "hit": 61,
+       "total": 64
+      },
+      "uart_tx.v": {
+       "hit": 44,
+       "total": 44
+      }
+     }
+    },
+    "block": {
+     "hit": 41,
+     "total": 44,
+     "percent": 93.2,
+     "files": {
+      "uart_rx.v": {
+       "hit": 25,
+       "total": 27
+      },
+      "uart_tx.v": {
+       "hit": 16,
+       "total": 17
+      }
+     }
+    },
+    "expression": {
+     "hit": 8,
+     "total": 9,
+     "percent": 88.9,
+     "files": {
+      "uart_rx.v": {
+       "hit": 6,
+       "total": 7
+      },
+      "uart_tx.v": {
+       "hit": 2,
+       "total": 2
+      }
+     }
+    },
+    "toggle": {
+     "hit": 250,
+     "total": 370,
+     "percent": 67.6,
+     "files": {
+      "uart.v": {
+       "hit": 64,
+       "total": 88
+      },
+      "uart_rx.v": {
+       "hit": 104,
+       "total": 152
+      },
+      "uart_tx.v": {
+       "hit": 82,
+       "total": 130
+      }
+     }
+    },
+    "functional": {
+     "hit": 36,
+     "total": 40,
+     "percent": 90.0,
+     "files": {
+      "nnc_cov.sv": {
+       "hit": 36,
+       "total": 40
+      }
+     }
+    }
+   },
+   "uncovered": [
+    {
+     "metric": "block",
+     "file": "uart_rx.v",
+     "line": 109,
+     "what": "else",
+     "points": 1,
+     "detail": [
+      "else"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "uart_rx.v",
+     "line": 120,
+     "what": "else",
+     "points": 1,
+     "detail": [
+      "else"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "uart_tx.v",
+     "line": 106,
+     "what": "else",
+     "points": 1,
+     "detail": [
+      "else"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "uart_rx.v",
+     "line": 109,
+     "what": "(rxd_reg==1) => 0",
+     "points": 1,
+     "detail": [
+      "(rxd_reg==1) => 0"
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "uart_rx.v",
+     "line": 112,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "uart_rx.v",
+     "line": 113,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "uart_rx.v",
+     "line": 114,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "uart.v",
+     "line": 71,
+     "what": "prescale",
+     "points": 24,
+     "detail": [
+      "prescale[10]:0->1",
+      "prescale[10]:1->0",
+      "prescale[11]:0->1",
+      "prescale[11]:1->0",
+      "prescale[12]:0->1",
+      "prescale[12]:1->0",
+      "prescale[13]:0->1",
+      "prescale[13]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "uart_rx.v",
+     "line": 62,
+     "what": "prescale",
+     "points": 24,
+     "detail": [
+      "prescale[10]:0->1",
+      "prescale[10]:1->0",
+      "prescale[11]:0->1",
+      "prescale[11]:1->0",
+      "prescale[12]:0->1",
+      "prescale[12]:1->0",
+      "prescale[13]:0->1",
+      "prescale[13]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "uart_rx.v",
+     "line": 76,
+     "what": "prescale_reg",
+     "points": 24,
+     "detail": [
+      "prescale_reg[10]:0->1",
+      "prescale_reg[10]:1->0",
+      "prescale_reg[11]:0->1",
+      "prescale_reg[11]:1->0",
+      "prescale_reg[12]:0->1",
+      "prescale_reg[12]:1->0",
+      "prescale_reg[13]:0->1",
+      "prescale_reg[13]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "uart_tx.v",
+     "line": 60,
+     "what": "prescale",
+     "points": 24,
+     "detail": [
+      "prescale[10]:0->1",
+      "prescale[10]:1->0",
+      "prescale[11]:0->1",
+      "prescale[11]:1->0",
+      "prescale[12]:0->1",
+      "prescale[12]:1->0",
+      "prescale[13]:0->1",
+      "prescale[13]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "uart_tx.v",
+     "line": 70,
+     "what": "prescale_reg",
+     "points": 24,
+     "detail": [
+      "prescale_reg[10]:0->1",
+      "prescale_reg[10]:1->0",
+      "prescale_reg[11]:0->1",
+      "prescale_reg[11]:1->0",
+      "prescale_reg[12]:0->1",
+      "prescale_reg[12]:1->0",
+      "prescale_reg[13]:0->1",
+      "prescale_reg[13]:1->0"
+     ]
+    },
+    {
+     "metric": "functional",
+     "file": "nnc_cov.sv",
+     "line": 0,
+     "what": "COVP-021",
+     "points": 1,
+     "detail": []
+    },
+    {
+     "metric": "functional",
+     "file": "nnc_cov.sv",
+     "line": 0,
+     "what": "COVP-035",
+     "points": 1,
+     "detail": []
+    },
+    {
+     "metric": "functional",
+     "file": "nnc_cov.sv",
+     "line": 0,
+     "what": "COVP-038",
+     "points": 1,
+     "detail": []
+    },
+    {
+     "metric": "functional",
+     "file": "nnc_cov.sv",
+     "line": 0,
+     "what": "COVP-039",
+     "points": 1,
+     "detail": []
+    }
+   ],
+   "design_scope": {
+    "rule": "left out: never-executed points of package code that the elaborated design does not contain (Verilator instruments every function of an imported package, called or not), and toggles of signal bits that Yosys constant propagation proves constant with the run's parameters, except on signals where the simulator recorded a toggle of such a bit (then the signal counts whole)",
+    "left_out": {
+     "line": 0
+    },
+    "scope_conflicts": 0,
+    "signals_kept_whole": [],
+    "all_points": {
+     "block": {
+      "hit": 41,
+      "total": 44,
+      "percent": 93.2
+     },
+     "expression": {
+      "hit": 8,
+      "total": 9,
+      "percent": 88.9
+     },
+     "line": {
+      "hit": 120,
+      "total": 123,
+      "percent": 97.6
+     },
+     "toggle": {
+      "hit": 250,
+      "total": 370,
+      "percent": 67.6
+     }
+    }
+   }
+  },
+  "functional": {
+   "COVP-001": 83,
+   "COVP-002": 15103,
+   "COVP-003": 14875,
+   "COVP-004": 15178,
+   "COVP-005": 4,
+   "COVP-006": 3,
+   "COVP-007": 81,
+   "COVP-008": 405,
+   "COVP-009": 337,
+   "COVP-010": 402,
+   "COVP-011": 34,
+   "COVP-012": 47973,
+   "COVP-013": 4,
+   "COVP-014": 5,
+   "COVP-015": 1,
+   "COVP-016": 1,
+   "COVP-017": 1,
+   "COVP-018": 1,
+   "COVP-019": 1,
+   "COVP-020": 1,
+   "COVP-021": 0,
+   "COVP-022": 1,
+   "COVP-023": 8,
+   "COVP-024": 7,
+   "COVP-025": 12992,
+   "COVP-026": 13037,
+   "COVP-027": 34681,
+   "COVP-028": 85,
+   "COVP-029": 84,
+   "COVP-030": 85,
+   "COVP-031": 455,
+   "COVP-032": 10,
+   "COVP-033": 199,
+   "COVP-034": 10,
+   "COVP-035": 0,
+   "COVP-036": 81,
+   "COVP-037": 4,
+   "COVP-038": 0,
+   "COVP-039": 0,
+   "COVP-040": 1
+  },
+  "make_rc": 2,
+  "built": true,
+  "build_errors": [],
+  "status": "ran",
+  "params": {
+   "DATA_WIDTH": 8
+  },
+  "seed": 1
+ }
+}

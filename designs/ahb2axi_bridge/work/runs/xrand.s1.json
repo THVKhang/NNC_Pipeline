@@ -1,0 +1,4502 @@
+{
+ "label": "xrand.s1",
+ "config": "xrand",
+ "seed": 1,
+ "note": "the default configuration with random initial values of every variable without a reset (ROADMAP 23.4): a check that passes only because flops start at 0 fails here; its coverage is not merged",
+ "overrides": {},
+ "params": {
+  "PARA_RD_ID_COUNT": 1,
+  "PARA_WR_ID_COUNT": 1
+ },
+ "opts": {
+  "defines": [],
+  "plusargs": "",
+  "x_init": "random"
+ },
+ "clock_periods": {},
+ "status": "ran",
+ "tests": {
+  "fail": 20,
+  "pass": 1
+ },
+ "assertions_failing": [
+  "CHK-002",
+  "CHK-012",
+  "CHK-015",
+  "CHK-016",
+  "CHK-017",
+  "CHK-020"
+ ],
+ "not_verifiable": [
+  "CHK-032"
+ ],
+ "coverage_percent": {
+  "line": 90.6,
+  "block": 80.0,
+  "expression": 78.0,
+  "toggle": 82.6,
+  "functional": 87.5
+ },
+ "result": {
+  "tests": [
+   {
+    "name": "test_chk_021_accept_qualifiers",
+    "status": "fail",
+    "sim_time_ns": "7465.0",
+    "message": "CHK-021: AR handshakes expected 42 got 26",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 704, in test_chk_021_accept_qualifiers\n                                                            assert len(m.ar) - nar == nrd, f\"CHK-021: AR handshakes expected {nrd} got {len(m.ar) - nar}\"\n                                                        AssertionError: CHK-021: AR handshakes expected 42 got 26\n                                                        assert (26 - 0) == 42\n                                                         +  where 26 = len([{'t': 101, 'v0': 101, 'id': 0, 'addr': 202812890, ...}, {'t': 113, 'v0': 113, 'id': 0, 'addr': 202812894, ...}, {'t':...712, ...}, {'t': 273, 'v0': 273, 'id': 0, 'addr': 394092352, ...}, {'t': 281, 'v0': 281, 'id': 0, 'addr': 4, ...}, ...])\n                                                         +    where [{'t': 101, 'v0': 101, 'id': 0, 'addr': 202812890, ...}, {'t': 113, 'v0': 113, 'id': 0, 'addr': 202812894, ...}, {'t':...712, ...}, {'t': 273, 'v0': 273, 'id': 0, 'addr': 394092352, ...}, {'t': 281, 'v0': 281, 'id': 0, 'addr': 4, ...}, ...] = <test_ahb2axi_bridge.Mon object at 0x70eeea9014d0>.ar\n  7465.00ns WARNING  cocotb.regression                  test_ahb2axi_bridge.test_chk_021_accept_qualifiers failed",
+    "checks": [
+     "CHK-021"
+    ]
+   },
+   {
+    "name": "test_chk_022_no_comb_ready_path",
+    "status": "fail",
+    "sim_time_ns": "1900095.0",
+    "message": "timeout after 190000 cycles waiting for AHB transfers to complete",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 756, in test_chk_022_no_comb_ready_path\n                                                            await e.run(rand_traffic(e.r, 400, busy=0.1))\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 520, in run\n                                                            await waitc(s.dut, s.drv.done, maxc or 400 + 400 * len(items), \"AHB transfers to complete\")\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 502, in waitc\n                                                            assert cond(), f\"timeout after {n} cycles waiting for {what}\"\n                                                        AssertionError: timeout after 190000 cycles waiting for AHB transfers to complete\n                                                        assert False\n                                                         +  where False = done()\n1907560.00ns WARNING  cocotb.regression                  test_ahb2axi_bridge.test_chk_022_no_comb_ready_path failed",
+    "checks": [
+     "CHK-022"
+    ]
+   },
+   {
+    "name": "test_chk_023_device_bursts_singles",
+    "status": "fail",
+    "sim_time_ns": "32715.0",
+    "message": "CHK-033/CHK-040 (CHK-023): expected 336 W beats got 168",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 773, in test_chk_023_device_bursts_singles\n                                                            check_all(e, 'CHK-023')\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 620, in check_all\n                                                            assert len(W) == len(wbs), f\"CHK-033/CHK-040 ({tag}): expected {len(wbs)} W beats got {len(W)}\"\n                                                        AssertionError: CHK-033/CHK-040 (CHK-023): expected 336 W beats got 168\n                                                        assert 168 == 336\n                                                         +  where 168 = len([{'t': 6, 'data': 1347308833, 'strb': 8, 'last': 1}, {'t': 15, 'data': 1272128235, 'strb': 0, 'last': 1}, {'t': 42, 'd...': 1}, {'t': 84, 'data': 1512924010, 'strb': 4, 'last': 1}, {'t': 108, 'data': 1322695306, 'strb': 15, 'last': 1}, ...])\n                                                         +  and   336 = len([{'acc': 2, 'addr': 1777862611, 'write': 1, 'size': 0, ...}, {'acc': 10, 'addr': 1777862608, 'write': 1, 'size': 0, ..... 38, 'addr': 4294967292, 'write': 1, 'size': 1, ...}, {'acc': 52, 'addr': 4294967294, 'write': 1, 'size': 1, ...}, ...])\n1940275.00ns WARNING  cocotb.regression                  test_ahb2axi_bridge.test_chk_023_device_bursts_singles failed",
+    "checks": [
+     "CHK-023",
+     "CHK-033",
+     "CHK-040"
+    ]
+   },
+   {
+    "name": "test_chk_024_wb_burst_aggregation",
+    "status": "fail",
+    "sim_time_ns": "684095.0",
+    "message": "timeout after 68400 cycles waiting for AHB transfers to complete",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 791, in test_chk_024_wb_burst_aggregation\n                                                            await e.run(items + idles(2))\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 520, in run\n                                                            await waitc(s.dut, s.drv.done, maxc or 400 + 400 * len(items), \"AHB transfers to complete\")\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 502, in waitc\n                                                            assert cond(), f\"timeout after {n} cycles waiting for {what}\"\n                                                        AssertionError: timeout after 68400 cycles waiting for AHB transfers to complete\n                                                        assert False\n                                                         +  where False = done()\n2624370.00ns WARNING  cocotb.regression                  test_ahb2axi_bridge.test_chk_024_wb_burst_aggregation failed",
+    "checks": [
+     "CHK-024"
+    ]
+   },
+   {
+    "name": "test_chk_025_varying_attrs_singles",
+    "status": "fail",
+    "sim_time_ns": "44295.0",
+    "message": "timeout after 4400 cycles waiting for AHB transfers to complete",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 827, in test_chk_025_varying_attrs_singles\n                                                            await e.run(es + idles(2))\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 520, in run\n                                                            await waitc(s.dut, s.drv.done, maxc or 400 + 400 * len(items), \"AHB transfers to complete\")\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 502, in waitc\n                                                            assert cond(), f\"timeout after {n} cycles waiting for {what}\"\n                                                        AssertionError: timeout after 4400 cycles waiting for AHB transfers to complete\n                                                        assert False\n                                                         +  where False = done()\n2668665.00ns WARNING  cocotb.regression                  test_ahb2axi_bridge.test_chk_025_varying_attrs_singles failed",
+    "checks": [
+     "CHK-025"
+    ]
+   },
+   {
+    "name": "test_chk_026_early_termination",
+    "status": "fail",
+    "sim_time_ns": "860095.0",
+    "message": "timeout after 86000 cycles waiting for AHB transfers to complete",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 850, in test_chk_026_early_termination\n                                                            await e.run(items)\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 520, in run\n                                                            await waitc(s.dut, s.drv.done, maxc or 400 + 400 * len(items), \"AHB transfers to complete\")\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 502, in waitc\n                                                            assert cond(), f\"timeout after {n} cycles waiting for {what}\"\n                                                        AssertionError: timeout after 86000 cycles waiting for AHB transfers to complete\n                                                        assert False\n                                                         +  where False = done()\n3528760.00ns WARNING  cocotb.regression                  test_ahb2axi_bridge.test_chk_026_early_termination failed",
+    "checks": [
+     "CHK-026"
+    ]
+   },
+   {
+    "name": "test_chk_027_4k_split",
+    "status": "fail",
+    "sim_time_ns": "80095.0",
+    "message": "timeout after 8000 cycles waiting for AHB transfers to complete",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 871, in test_chk_027_4k_split\n                                                            await e.run(es + idles(3))\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 520, in run\n                                                            await waitc(s.dut, s.drv.done, maxc or 400 + 400 * len(items), \"AHB transfers to complete\")\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 502, in waitc\n                                                            assert cond(), f\"timeout after {n} cycles waiting for {what}\"\n                                                        AssertionError: timeout after 8000 cycles waiting for AHB transfers to complete\n                                                        assert False\n                                                         +  where False = done()\n3608855.01ns WARNING  cocotb.regression                  test_ahb2axi_bridge.test_chk_027_4k_split failed",
+    "checks": [
+     "CHK-027"
+    ]
+   },
+   {
+    "name": "test_chk_028_bresp_errors",
+    "status": "fail",
+    "sim_time_ns": "275.0",
+    "message": "CHK-028(a): BRESP=2 expected hresp=1 got 0",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 893, in test_chk_028_bresp_errors\n                                                            assert m.x[nx]['hresp'] == int(not ctrl), f\"CHK-028(a): BRESP={resp} expected hresp={int(not ctrl)} got {m.x[nx]['hresp']}\"\n                                                        AssertionError: CHK-028(a): BRESP=2 expected hresp=1 got 0\n                                                        assert 0 == 1\n                                                         +  where 1 = int(not False)\n3609130.01ns WARNING  cocotb.regression                  test_ahb2axi_bridge.test_chk_028_bresp_errors failed",
+    "checks": [
+     "CHK-028"
+    ]
+   },
+   {
+    "name": "test_chk_029_rresp_errors",
+    "status": "fail",
+    "sim_time_ns": "415.0",
+    "message": "CHK-029: expected 2 AR and 2 R got 1/1",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 932, in test_chk_029_rresp_errors\n                                                            assert len(m.ar) - nar == 2 and len(m.r) - nr == 2, f\"CHK-029: expected 2 AR and 2 R got {len(m.ar) - nar}/{len(m.r) - nr}\"\n                                                        AssertionError: CHK-029: expected 2 AR and 2 R got 1/1\n                                                        assert ((1 - 0) == 2)\n                                                         +  where 1 = len([{'t': 5, 'v0': 5, 'id': 0, 'addr': 4190912508, ...}])\n                                                         +    where [{'t': 5, 'v0': 5, 'id': 0, 'addr': 4190912508, ...}] = <test_ahb2axi_bridge.Mon object at 0x70eee9eeae50>.ar\n3609545.01ns WARNING  cocotb.regression                  test_ahb2axi_bridge.test_chk_029_rresp_errors failed",
+    "checks": [
+     "CHK-029"
+    ]
+   },
+   {
+    "name": "test_chk_030_rejected_controls",
+    "status": "pass",
+    "sim_time_ns": "10485.0"
+   },
+   {
+    "name": "test_chk_031_reject_after_prefix",
+    "status": "fail",
+    "sim_time_ns": "285.0",
+    "message": "CHK-031: expected 3 AWLEN=0 got [0, 0]",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 976, in test_chk_031_reject_after_prefix\n                                                            assert len(aws) == 3 and all(a['len'] == 0 for a in aws), f\"CHK-031: expected 3 AWLEN=0 got {[a['len'] for a in aws]}\"\n                                                        AssertionError: CHK-031: expected 3 AWLEN=0 got [0, 0]\n                                                        assert (2 == 3)\n                                                         +  where 2 = len([{'t': 6, 'v0': 6, 'id': 0, 'addr': 2855965932, ...}, {'t': 17, 'v0': 17, 'id': 0, 'addr': 2855965940, ...}])\n3620315.01ns WARNING  cocotb.regression                  test_ahb2axi_bridge.test_chk_031_reject_after_prefix failed",
+    "checks": [
+     "CHK-031"
+    ]
+   },
+   {
+    "name": "test_chk_032_id_rotation",
+    "status": "fail",
+    "sim_time_ns": "1924095.0",
+    "message": "timeout after 192400 cycles waiting for AHB transfers to complete",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 998, in test_chk_032_id_rotation\n                                                            await e.run([x for b in blocks for x in b])\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 520, in run\n                                                            await waitc(s.dut, s.drv.done, maxc or 400 + 400 * len(items), \"AHB transfers to complete\")\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 502, in waitc\n                                                            assert cond(), f\"timeout after {n} cycles waiting for {what}\"\n                                                        AssertionError: timeout after 192400 cycles waiting for AHB transfers to complete\n                                                        assert False\n                                                         +  where False = done()\n5544410.01ns WARNING  cocotb.regression                  test_ahb2axi_bridge.test_chk_032_id_rotation failed",
+    "checks": [
+     "CHK-032"
+    ]
+   },
+   {
+    "name": "test_chk_033_mixed_ordering",
+    "status": "fail",
+    "sim_time_ns": "15248094.999999998",
+    "message": "timeout after 1524800 cycles waiting for AHB transfers to complete",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 1010, in test_chk_033_mixed_ordering\n                                                            await e.run(items)\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 520, in run\n                                                            await waitc(s.dut, s.drv.done, maxc or 400 + 400 * len(items), \"AHB transfers to complete\")\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 502, in waitc\n                                                            assert cond(), f\"timeout after {n} cycles waiting for {what}\"\n                                                        AssertionError: timeout after 1524800 cycles waiting for AHB transfers to complete\n                                                        assert False\n                                                         +  where False = done()\n20792505.01ns WARNING  cocotb.regression                  test_ahb2axi_bridge.test_chk_033_mixed_ordering failed",
+    "checks": [
+     "CHK-033"
+    ]
+   },
+   {
+    "name": "test_chk_034_issue_latency",
+    "status": "fail",
+    "sim_time_ns": "695.0",
+    "message": "CHK-034: Device-E expected 4 AWs got 2",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 1035, in test_chk_034_issue_latency\n                                                            assert len(aws) == len(xs), f\"CHK-034: Device-E expected {len(xs)} AWs got {len(aws)}\"\n                                                        AssertionError: CHK-034: Device-E expected 4 AWs got 2\n                                                        assert 2 == 4\n                                                         +  where 2 = len([{'t': 38, 'v0': 38, 'id': 0, 'addr': 3378642354, ...}, {'t': 47, 'v0': 47, 'id': 0, 'addr': 3965089212, ...}])\n                                                         +  and   4 = len([{'acc': 35, 'addr': 3965089204, 'write': 1, 'size': 2, ...}, {'acc': 43, 'addr': 3965089208, 'write': 1, 'size': 2, ....acc': 44, 'addr': 3965089212, 'write': 1, 'size': 2, ...}, {'acc': 52, 'addr': 3965089216, 'write': 1, 'size': 2, ...}])\n20793200.01ns WARNING  cocotb.regression                  test_ahb2axi_bridge.test_chk_034_issue_latency failed",
+    "checks": [
+     "CHK-034"
+    ]
+   },
+   {
+    "name": "test_chk_035_stalls_no_timeout",
+    "status": "fail",
+    "sim_time_ns": "5016095.0",
+    "message": "timeout after 501600 cycles waiting for AHB transfers to complete",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 1054, in test_chk_035_stalls_no_timeout\n                                                            await e.run(rand_traffic(r, 1000, busy=0.1))\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 520, in run\n                                                            await waitc(s.dut, s.drv.done, maxc or 400 + 400 * len(items), \"AHB transfers to complete\")\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 502, in waitc\n                                                            assert cond(), f\"timeout after {n} cycles waiting for {what}\"\n                                                        AssertionError: timeout after 501600 cycles waiting for AHB transfers to complete\n                                                        assert False\n                                                         +  where False = done()\n25809295.01ns WARNING  cocotb.regression                  test_ahb2axi_bridge.test_chk_035_stalls_no_timeout failed",
+    "checks": [
+     "CHK-035"
+    ]
+   },
+   {
+    "name": "test_chk_036_protocol_checkers",
+    "status": "fail",
+    "sim_time_ns": "488095.0",
+    "message": "timeout after 48800 cycles waiting for AHB transfers to complete",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 1089, in test_chk_036_protocol_checkers\n                                                            await e.run(rand_traffic(r, 100, busy=0.15))\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 520, in run\n                                                            await waitc(s.dut, s.drv.done, maxc or 400 + 400 * len(items), \"AHB transfers to complete\")\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 502, in waitc\n                                                            assert cond(), f\"timeout after {n} cycles waiting for {what}\"\n                                                        AssertionError: timeout after 48800 cycles waiting for AHB transfers to complete\n                                                        assert False\n                                                         +  where False = done()\n26297390.02ns WARNING  cocotb.regression                  test_ahb2axi_bridge.test_chk_036_protocol_checkers failed",
+    "checks": [
+     "CHK-036"
+    ]
+   },
+   {
+    "name": "test_chk_037_read_scoreboard",
+    "status": "fail",
+    "sim_time_ns": "180745.0",
+    "message": "CHK-037/CHK-033 (CHK-037): expected 2006 AR handshakes got 1118",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 1157, in test_chk_037_read_scoreboard\n                                                            check_all(e, 'CHK-037')\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 602, in check_all\n                                                            assert len(AR) == len(rds), f\"CHK-037/CHK-033 ({tag}): expected {len(rds)} AR handshakes got {len(AR)}\"\n                                                        AssertionError: CHK-037/CHK-033 (CHK-037): expected 2006 AR handshakes got 1118\n                                                        assert 1118 == 2006\n                                                         +  where 1118 = len([{'t': 9, 'v0': 5, 'id': 0, 'addr': 0, ...}, {'t': 23, 'v0': 23, 'id': 0, 'addr': 3852010372, ...}, {'t': 34, 'v0': 31.....}, {'t': 66, 'v0': 61, 'id': 0, 'addr': 3852010377, ...}, {'t': 83, 'v0': 81, 'id': 0, 'addr': 3852010379, ...}, ...])\n                                                         +  and   2006 = len([{'acc': 2, 'addr': 0, 'write': 0, 'size': 2, ...}, {'acc': 19, 'addr': 4294967292, 'write': 0, 'size': 2, ...}, {'acc... 45, 'addr': 3852010374, 'write': 0, 'size': 0, ...}, {'acc': 46, 'addr': 3852010375, 'write': 0, 'size': 0, ...}, ...])\n26478135.02ns WARNING  cocotb.regression                  test_ahb2axi_bridge.test_chk_037_read_scoreboard failed",
+    "checks": [
+     "CHK-033",
+     "CHK-037"
+    ]
+   },
+   {
+    "name": "test_chk_038_async_reset",
+    "status": "fail",
+    "sim_time_ns": "135.00200000032783",
+    "message": "CHK-038 (1 step after asynchronous reset assertion): o_axi_wdata expected reset value 0 got 3712105952",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 1175, in test_chk_038_async_reset\n                                                            chk_rst_now(dut, \"CHK-038 (1 step after asynchronous reset assertion)\")\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 566, in chk_rst_now\n                                                            assert v == RST_VAL[k], f\"{tag}: {p} expected reset value {RST_VAL[k]} got {v}\"\n                                                        AssertionError: CHK-038 (1 step after asynchronous reset assertion): o_axi_wdata expected reset value 0 got 3712105952\n                                                        assert 3712105952 == 0\n26478270.02ns WARNING  cocotb.regression                  test_ahb2axi_bridge.test_chk_038_async_reset failed",
+    "checks": [
+     "CHK-038"
+    ]
+   },
+   {
+    "name": "test_chk_039_reset_inflight",
+    "status": "fail",
+    "sim_time_ns": "30475.0",
+    "message": "timeout after 3000 cycles waiting for AXI responses to drain",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 1239, in test_chk_039_reset_inflight\n                                                            await post(\"CHK-039(a)\", A)\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 1227, in post\n                                                            await e.run([rd, wr] + idles(2))\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 521, in run\n                                                            await waitc(s.dut, s.quiet, 3000, \"AXI responses to drain\")\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 502, in waitc\n                                                            assert cond(), f\"timeout after {n} cycles waiting for {what}\"\n                                                        AssertionError: timeout after 3000 cycles waiting for AXI responses to drain\n                                                        assert False\n                                                         +  where False = quiet()\n26508745.02ns WARNING  cocotb.regression                  test_ahb2axi_bridge.test_chk_039_reset_inflight failed",
+    "checks": [
+     "CHK-039"
+    ]
+   },
+   {
+    "name": "test_chk_040_write_scoreboard",
+    "status": "fail",
+    "sim_time_ns": "222975.0",
+    "message": "CHK-033/CHK-040 (CHK-040): expected 2009 W beats got 1103",
+    "exception": "AssertionError",
+    "traceback": "Traceback (most recent call last):\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 1268, in test_chk_040_write_scoreboard\n                                                            check_all(e, 'CHK-040')\n                                                          File \"/root/nnc_runs/runset_274ebf42/C04/test_ahb2axi_bridge.py\", line 620, in check_all\n                                                            assert len(W) == len(wbs), f\"CHK-033/CHK-040 ({tag}): expected {len(wbs)} W beats got {len(W)}\"\n                                                        AssertionError: CHK-033/CHK-040 (CHK-040): expected 2009 W beats got 1103\n                                                        assert 1103 == 2009\n                                                         +  where 1103 = len([{'t': 16, 'data': 2722752089, 'strb': 4, 'last': 1}, {'t': 31, 'data': 397849796, 'strb': 0, 'last': 1}, {'t': 45, 'd...st': 1}, {'t': 85, 'data': 3746080721, 'strb': 0, 'last': 1}, {'t': 105, 'data': 891447903, 'strb': 1, 'last': 1}, ...])\n                                                         +  and   2009 = len([{'acc': 2, 'addr': 1696596390, 'write': 1, 'size': 0, ...}, {'acc': 25, 'addr': 1696596391, 'write': 1, 'size': 0, ..... 36, 'addr': 1696596394, 'write': 1, 'size': 0, ...}, {'acc': 51, 'addr': 1696596395, 'write': 1, 'size': 0, ...}, ...])\n26731720.02ns WARNING  cocotb.regression                  test_ahb2axi_bridge.test_chk_040_write_scoreboard failed",
+    "checks": [
+     "CHK-033",
+     "CHK-040"
+    ]
+   },
+   {
+    "name": "test_regression_random",
+    "status": "fail",
+    "sim_time_ns": "7816095.0",
+    "message": "timeout after 781600 cycles waiting for AHB transfers to complete",
+    "exception": "AssertionError",
+    "traceback": "65000\nNNC_FAIL CHK-016 @26729775000\nNNC_FAIL CHK-016 @26729945000\nNNC_FAIL CHK-016 @26729955000\nNNC_FAIL CHK-016 @26730145000\nNNC_FAIL CHK-016 @26730155000\nNNC_FAIL CHK-016 @26730415000\nNNC_FAIL CHK-016 @26730425000\nNNC_FAIL CHK-016 @26730625000\nNNC_FAIL CHK-016 @26730635000\nNNC_FAIL CHK-016 @26730805000\nNNC_FAIL CHK-016 @26730815000\nNNC_FAIL CHK-016 @26730965000\nNNC_FAIL CHK-016 @26730975000\nNNC_FAIL CHK-016 @26731095000\nNNC_FAIL CHK-016 @26731105000\nNNC_FAIL CHK-016 @26731305000\nNNC_FAIL CHK-016 @26731315000\nNNC_FAIL CHK-016 @26731535000\nNNC_FAIL CHK-016 @26731705000\nNNC_FAIL CHK-020 @26731740000\nNNC_FAIL CHK-020 @26731750000\nNNC_FAIL CHK-020 @26731760000\nNNC_FAIL CHK-020 @26731770000\nNNC_FAIL CHK-020 @26731780000\n- (null):0: Verilog $finish\nNNC_COVER COVP-001 hits=1220\nNNC_COVER COVP-002 hits=1\nNNC_COVER COVP-003 hits=2505\nNNC_COVER COVP-004 hits=0\nNNC_COVER COVP-005 hits=32\nNNC_COVER COVP-006 hits=32\nNNC_COVER COVP-007 hits=3\nNNC_COVER COVP-008 hits=2\nNNC_COVER COVP-009 hits=10\nNNC_COVER COVP-010 hits=10\nNNC_COVER COVP-011 hits=8\nNNC_COVER COVP-012 hits=0\nNNC_COVER COVP-013 hits=1\nNNC_COVER COVP-014 hits=3976\nNNC_COVER COVP-015 hits=563\nNNC_COVER COVP-016 hits=3\nNNC_COVER COVP-017 hits=3\nNNC_COVER COVP-018 hits=1202\nNNC_COVER COVP-019 hits=3436342\nNNC_COVER COVP-020 hits=26\nNNC_COVER COVP-021 hits=12\nNNC_COVER COVP-022 hits=14\nNNC_COVER COVP-023 hits=41\nNNC_COVER COVP-024 hits=40\nNNC_COVER COVP-025 hits=2057\nNNC_COVER COVP-026 hits=577\nNNC_COVER COVP-027 hits=180\nNNC_COVER COVP-028 hits=56\nNNC_COVER COVP-029 hits=3\nNNC_COVER COVP-030 hits=1703\nNNC_COVER COVP-031 hits=740\nNNC_COVER COVP-032 hits=568\nNNC_COVER COVP-033 hits=529\nNNC_COVER COVP-034 hits=556\nNNC_COVER COVP-035 hits=10\nNNC_COVER COVP-036 hits=1\nNNC_COVER COVP-037 hits=1346\nNNC_COVER COVP-038 hits=0\nNNC_COVER COVP-039 hits=0\nNNC_COVER COVP-040 hits=0\nNNC_CHECK CHK-018 hits=112 fails=0\nNNC_CHECK CHK-019 hits=112 fails=0\nNNC_CHECK CHK-020 hits=112 fails=111\nNNC_CHECK CHK-013 hits=4746 fails=0\nNNC_CHECK CHK-014 hits=0 fails=0\nNNC_CHECK CHK-015 hits=2166 fails=945\nNNC_CHECK CHK-016 hits=2446 fails=2436\nNNC_CHECK CHK-017 hits=1380 fails=1\nNNC_CHECK CHK-003 hits=3454792 fails=0\nNNC_CHECK CHK-004 hits=3454792 fails=0\nNNC_CHECK CHK-005 hits=3675 fails=0\nNNC_CHECK CHK-006 hits=3384 fails=0\nNNC_CHECK CHK-007 hits=3521 fails=0\nNNC_CHECK CHK-008 hits=22841 fails=0\nNNC_CHECK CHK-009 hits=9767 fails=0\nNNC_CHECK CHK-010 hits=1346 fails=0\nNNC_CHECK CHK-011 hits=5021 fails=0\nNNC_CHECK CHK-012 hits=9767 fails=10\nNNC_CHECK CHK-001 hits=67 fails=0\nNNC_CHECK CHK-002 hits=5098 fails=2\nmake[1]: *** [/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb_tools/makefiles/simulators/Makefile.verilator:70: results.xml] Error 20\nmake[1]: Leaving directory '/root/nnc_runs/runset_274ebf42/C04'\nmake: *** [/opt/oss-cad-suite/lib/python3.11/site-packages/cocotb-2.1.0.dev0+41564633-py3.11-linux-x64.egg/cocotb_tools/makefiles/Makefile.inc:17: sim] Error 2\nNNC_MAKE_RC=2\n",
+    "checks": []
+   }
+  ],
+  "assertions": {
+   "CHK-018": {
+    "hits": 112,
+    "fails": 0
+   },
+   "CHK-019": {
+    "hits": 112,
+    "fails": 0
+   },
+   "CHK-020": {
+    "hits": 112,
+    "fails": 111,
+    "first_fail_time": 20000
+   },
+   "CHK-013": {
+    "hits": 4746,
+    "fails": 0
+   },
+   "CHK-014": {
+    "hits": 0,
+    "fails": 0
+   },
+   "CHK-015": {
+    "hits": 2166,
+    "fails": 945,
+    "first_fail_time": 1050000
+   },
+   "CHK-016": {
+    "hits": 2446,
+    "fails": 2436,
+    "first_fail_time": 1270000
+   },
+   "CHK-017": {
+    "hits": 1380,
+    "fails": 1,
+    "first_fail_time": 3620270000
+   },
+   "CHK-003": {
+    "hits": 3454792,
+    "fails": 0
+   },
+   "CHK-004": {
+    "hits": 3454792,
+    "fails": 0
+   },
+   "CHK-005": {
+    "hits": 3675,
+    "fails": 0
+   },
+   "CHK-006": {
+    "hits": 3384,
+    "fails": 0
+   },
+   "CHK-007": {
+    "hits": 3521,
+    "fails": 0
+   },
+   "CHK-008": {
+    "hits": 22841,
+    "fails": 0
+   },
+   "CHK-009": {
+    "hits": 9767,
+    "fails": 0
+   },
+   "CHK-010": {
+    "hits": 1346,
+    "fails": 0
+   },
+   "CHK-011": {
+    "hits": 5021,
+    "fails": 0
+   },
+   "CHK-012": {
+    "hits": 9767,
+    "fails": 10,
+    "first_fail_time": 950000
+   },
+   "CHK-001": {
+    "hits": 67,
+    "fails": 0
+   },
+   "CHK-002": {
+    "hits": 5098,
+    "fails": 2,
+    "first_fail_time": 2668805000
+   }
+  },
+  "not_verifiable": {
+   "CHK-032": "configuration PARA_RD_ID_COUNT=5/PARA_WR_ID_COUNT=8 is not elaborated in this run (RD=1, WR=1); range and rotation checked with this run's counts"
+  },
+  "coverage": {
+   "status": "measured",
+   "metric": "line",
+   "hit": 959,
+   "total": 1059,
+   "percent": 90.6,
+   "files": {
+    "m_ahb2axi_ahb_if.sv": {
+     "hit": 83,
+     "total": 83
+    },
+    "m_ahb2axi_axi_if.sv": {
+     "hit": 68,
+     "total": 76
+    },
+    "m_ahb2axi_ctrl.sv": {
+     "hit": 539,
+     "total": 610
+    },
+    "m_ahb2axi_top.sv": {
+     "hit": 47,
+     "total": 52
+    },
+    "m_vlsit_sfifo_mem.sv": {
+     "hit": 14,
+     "total": 14
+    },
+    "m_vlsit_sfifo_rd.sv": {
+     "hit": 88,
+     "total": 91
+    },
+    "m_vlsit_sfifo_top.sv": {
+     "hit": 25,
+     "total": 27
+    },
+    "m_vlsit_sfifo_wr.sv": {
+     "hit": 95,
+     "total": 106
+    }
+   },
+   "executed_lines": {
+    "m_ahb2axi_ahb_if.sv": "14-15,18-32,35-44,47-50,53-56,60-63,78-84,86-89,91-100,104-105,110-118,120-121,123-127,130-134",
+    "m_ahb2axi_axi_if.sv": "14,17-18,20-21,23-26,29-33,36-39,43,45-46,48-51,54-59,62-65,67-70,73-77,80-83,86-87,89,91-94,97-102,114,120,131,137-138,141-142",
+    "m_ahb2axi_ctrl.sv": "34-35,38-52,55-56,58-59,61-64,67-71,74-77,81,83-84,86-89,92-97,115-116,118-121,124-129,131-133,136-140,142-144,146-150,152-179,181-191,193-198,200-205,207-212,214-217,219-233,235,237-246,248-273,275-284,287-291,296,300-305,310-315,320-324,330-336,341,348-350,354,364-369,373,377-378,382,386-394,396-399,401,404,409-410,415,421,429,434,436,439,441,444,449,456-457,459,466-467,470,473,476,479,482,485,488,513,520,524-529,532-533,544,548-560,564-571,574-579,585-591,593-598,600,603-605,607-609,611-613,615-617,620,623-624,630-632,647-650,657-677,679-680,682-698,702,718-721,725-727,729-730,734-738,745-747,749,753-791,793-796,798-800,803-805,807-810,812-815,818-839,843,859-861,864,871-876,879-883,885,895-897,900-905,907-910,912-915,930-932,935-937,940-943,946-947",
+    "m_ahb2axi_top.sv": "23-24,27-41,44-45,47-48,50-53,56-60,63-66,70,72-73,75-78,81-86",
+    "m_vlsit_sfifo_mem.sv": "33-36,39-41,47-48,51-53,59-60",
+    "m_vlsit_sfifo_rd.sv": "41-42,45,47-50,53-54,57-58,61-62,75-76,78-82,84-87,91-94,96,98-100,104-105,109,112,121-127,134-137,143-152,154-156,161-163,165,171-175,178-181,183,189-191,193,199-201,203,209-212,217-218",
+    "m_vlsit_sfifo_top.sv": "41-42,45-46,48-50,53-54,57-58,61,63-66,70-78",
+    "m_vlsit_sfifo_wr.sv": "39-40,43-44,46-48,51-54,57-58,61-63,79-80,82-87,89-92,96-99,101,103-105,109-110,114,117,126-128,130-132,139-142,147-156,158-160,165-167,169,175-179,191-193,195,201-203,205,211-219,224-227,232-233"
+   },
+   "metrics": {
+    "line": {
+     "hit": 959,
+     "total": 1059,
+     "percent": 90.6,
+     "files": {
+      "m_ahb2axi_ahb_if.sv": {
+       "hit": 83,
+       "total": 83
+      },
+      "m_ahb2axi_axi_if.sv": {
+       "hit": 68,
+       "total": 76
+      },
+      "m_ahb2axi_ctrl.sv": {
+       "hit": 539,
+       "total": 610
+      },
+      "m_ahb2axi_top.sv": {
+       "hit": 47,
+       "total": 52
+      },
+      "m_vlsit_sfifo_mem.sv": {
+       "hit": 14,
+       "total": 14
+      },
+      "m_vlsit_sfifo_rd.sv": {
+       "hit": 88,
+       "total": 91
+      },
+      "m_vlsit_sfifo_top.sv": {
+       "hit": 25,
+       "total": 27
+      },
+      "m_vlsit_sfifo_wr.sv": {
+       "hit": 95,
+       "total": 106
+      }
+     }
+    },
+    "block": {
+     "hit": 395,
+     "total": 494,
+     "percent": 80.0,
+     "files": {
+      "m_ahb2axi_ahb_if.sv": {
+       "hit": 22,
+       "total": 22
+      },
+      "m_ahb2axi_ctrl.sv": {
+       "hit": 142,
+       "total": 176
+      },
+      "m_vlsit_sfifo_mem.sv": {
+       "hit": 16,
+       "total": 16
+      },
+      "m_vlsit_sfifo_rd.sv": {
+       "hit": 108,
+       "total": 128
+      },
+      "m_vlsit_sfifo_wr.sv": {
+       "hit": 107,
+       "total": 152
+      }
+     }
+    },
+    "expression": {
+     "hit": 476,
+     "total": 610,
+     "percent": 78.0,
+     "files": {
+      "m_ahb2axi_ahb_if.sv": {
+       "hit": 36,
+       "total": 39
+      },
+      "m_ahb2axi_axi_if.sv": {
+       "hit": 21,
+       "total": 21
+      },
+      "m_ahb2axi_ctrl.sv": {
+       "hit": 218,
+       "total": 274
+      },
+      "m_vlsit_sfifo_rd.sv": {
+       "hit": 98,
+       "total": 128
+      },
+      "m_vlsit_sfifo_wr.sv": {
+       "hit": 103,
+       "total": 148
+      }
+     }
+    },
+    "toggle": {
+     "hit": 8177,
+     "total": 9902,
+     "percent": 82.6,
+     "files": {
+      "m_ahb2axi_ahb_if.sv": {
+       "hit": 506,
+       "total": 506
+      },
+      "m_ahb2axi_axi_if.sv": {
+       "hit": 684,
+       "total": 762
+      },
+      "m_ahb2axi_ctrl.sv": {
+       "hit": 2448,
+       "total": 2882
+      },
+      "m_ahb2axi_top.sv": {
+       "hit": 589,
+       "total": 628
+      },
+      "m_vlsit_sfifo_mem.sv": {
+       "hit": 1104,
+       "total": 1128
+      },
+      "m_vlsit_sfifo_rd.sv": {
+       "hit": 838,
+       "total": 1390
+      },
+      "m_vlsit_sfifo_top.sv": {
+       "hit": 1142,
+       "total": 1176
+      },
+      "m_vlsit_sfifo_wr.sv": {
+       "hit": 866,
+       "total": 1430
+      }
+     }
+    },
+    "functional": {
+     "hit": 35,
+     "total": 40,
+     "percent": 87.5,
+     "files": {
+      "nnc_cov.sv": {
+       "hit": 35,
+       "total": 40
+      }
+     }
+    }
+   },
+   "uncovered": [
+    {
+     "metric": "block",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 175,
+     "what": "if",
+     "points": 4,
+     "detail": [
+      "if"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 129,
+     "what": "case",
+     "points": 4,
+     "detail": [
+      "case"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 179,
+     "what": "if",
+     "points": 4,
+     "detail": [
+      "if"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 182,
+     "what": "case",
+     "points": 4,
+     "detail": [
+      "case"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 183,
+     "what": "else",
+     "points": 4,
+     "detail": [
+      "else"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 183,
+     "what": "if",
+     "points": 4,
+     "detail": [
+      "if"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 186,
+     "what": "case",
+     "points": 4,
+     "detail": [
+      "case"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 187,
+     "what": "case",
+     "points": 4,
+     "detail": [
+      "case"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 188,
+     "what": "else",
+     "points": 4,
+     "detail": [
+      "else"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 188,
+     "what": "if",
+     "points": 4,
+     "detail": [
+      "if"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 124,
+     "what": "case",
+     "points": 3,
+     "detail": [
+      "case"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 178,
+     "what": "case",
+     "points": 3,
+     "detail": [
+      "case"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 180,
+     "what": "else",
+     "points": 3,
+     "detail": [
+      "else"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 180,
+     "what": "if",
+     "points": 3,
+     "detail": [
+      "if"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 192,
+     "what": "if",
+     "points": 3,
+     "detail": [
+      "if"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 179,
+     "what": "case",
+     "points": 2,
+     "detail": [
+      "case"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 183,
+     "what": "case",
+     "points": 2,
+     "detail": [
+      "case"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 191,
+     "what": "case",
+     "points": 2,
+     "detail": [
+      "case"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 192,
+     "what": "else",
+     "points": 2,
+     "detail": [
+      "else"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 195,
+     "what": "case",
+     "points": 2,
+     "detail": [
+      "case"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 325,
+     "what": "case",
+     "points": 1,
+     "detail": [
+      "case"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 617,
+     "what": "if",
+     "points": 1,
+     "detail": [
+      "if"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 624,
+     "what": "elsif",
+     "points": 1,
+     "detail": [
+      "elsif"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 626,
+     "what": "else",
+     "points": 1,
+     "detail": [
+      "else"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 626,
+     "what": "if",
+     "points": 1,
+     "detail": [
+      "if"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 630,
+     "what": "else",
+     "points": 1,
+     "detail": [
+      "else"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 635,
+     "what": "case",
+     "points": 1,
+     "detail": [
+      "case"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 636,
+     "what": "else",
+     "points": 1,
+     "detail": [
+      "else"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 636,
+     "what": "if",
+     "points": 1,
+     "detail": [
+      "if"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 639,
+     "what": "case",
+     "points": 1,
+     "detail": [
+      "case"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 640,
+     "what": "else",
+     "points": 1,
+     "detail": [
+      "else"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 640,
+     "what": "if",
+     "points": 1,
+     "detail": [
+      "if"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 641,
+     "what": "else",
+     "points": 1,
+     "detail": [
+      "else"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 641,
+     "what": "if",
+     "points": 1,
+     "detail": [
+      "if"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 652,
+     "what": "case",
+     "points": 1,
+     "detail": [
+      "case"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 702,
+     "what": "if",
+     "points": 1,
+     "detail": [
+      "if"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 791,
+     "what": "if",
+     "points": 1,
+     "detail": [
+      "if"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 843,
+     "what": "if",
+     "points": 1,
+     "detail": [
+      "if"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 850,
+     "what": "else",
+     "points": 1,
+     "detail": [
+      "else"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 850,
+     "what": "if",
+     "points": 1,
+     "detail": [
+      "if"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 864,
+     "what": "if",
+     "points": 1,
+     "detail": [
+      "if"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 885,
+     "what": "if",
+     "points": 1,
+     "detail": [
+      "if"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 886,
+     "what": "else",
+     "points": 1,
+     "detail": [
+      "else"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 886,
+     "what": "if",
+     "points": 1,
+     "detail": [
+      "if"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 888,
+     "what": "else",
+     "points": 1,
+     "detail": [
+      "else"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 888,
+     "what": "if",
+     "points": 1,
+     "detail": [
+      "if"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 890,
+     "what": "else",
+     "points": 1,
+     "detail": [
+      "else"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 890,
+     "what": "if",
+     "points": 1,
+     "detail": [
+      "if"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 896,
+     "what": "else",
+     "points": 1,
+     "detail": [
+      "else"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 902,
+     "what": "else",
+     "points": 1,
+     "detail": [
+      "else"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 905,
+     "what": "if",
+     "points": 1,
+     "detail": [
+      "if"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 919,
+     "what": "else",
+     "points": 1,
+     "detail": [
+      "else"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 919,
+     "what": "if",
+     "points": 1,
+     "detail": [
+      "if"
+     ]
+    },
+    {
+     "metric": "block",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 931,
+     "what": "else",
+     "points": 1,
+     "detail": [
+      "else"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 104,
+     "what": "((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1",
+     "points": 4,
+     "detail": [
+      "((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 105,
+     "what": "((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1",
+     "points": 4,
+     "detail": [
+      "((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 154,
+     "what": "(i_rd_en==1 && w_rd_blk==0 && reg_empty==1) => 1",
+     "points": 4,
+     "detail": [
+      "(i_rd_en==1 && w_rd_blk==0 && reg_empty==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 180,
+     "what": "(w_req_v==1) => 0",
+     "points": 4,
+     "detail": [
+      "(w_req_v==1) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 109,
+     "what": "((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1",
+     "points": 4,
+     "detail": [
+      "((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 110,
+     "what": "((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1",
+     "points": 4,
+     "detail": [
+      "((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 114,
+     "what": "(i_rst_n_sw==0) => 1",
+     "points": 4,
+     "detail": [
+      "(i_rst_n_sw==0) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 158,
+     "what": "(i_wr_en==1 && w_wr_blk==0 && reg_full==1) => 1",
+     "points": 4,
+     "detail": [
+      "(i_wr_en==1 && w_wr_blk==0 && reg_full==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 179,
+     "what": "(i_rst_n_sw==0) => 1",
+     "points": 4,
+     "detail": [
+      "(i_rst_n_sw==0) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 218,
+     "what": "((w_fsm_srst_nxt_state == ENUM_ST_HOLD)==1) => 1",
+     "points": 4,
+     "detail": [
+      "((w_fsm_srst_nxt_state == ENUM_ST_HOLD)==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 218,
+     "what": "((w_fsm_srst_nxt_state == ENUM_ST_PTR)==1) => 1",
+     "points": 4,
+     "detail": [
+      "((w_fsm_srst_nxt_state == ENUM_ST_PTR)==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 218,
+     "what": "((w_fsm_srst_nxt_state == ENUM_ST_REQ)==1) => 1",
+     "points": 4,
+     "detail": [
+      "((w_fsm_srst_nxt_state == ENUM_ST_REQ)==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 109,
+     "what": "(w_req_v==1) => 1",
+     "points": 3,
+     "detail": [
+      "(w_req_v==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 180,
+     "what": "((w_wptr_v == 2'h0)==0) => 0",
+     "points": 2,
+     "detail": [
+      "((w_wptr_v == 2'h0)==0) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 180,
+     "what": "(w_req_v==0 && (w_wptr_v == 2'h0)==1) => 1",
+     "points": 2,
+     "detail": [
+      "(w_req_v==0 && (w_wptr_v == 2'h0)==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 192,
+     "what": "((w_rptr_v == 2'h0)==0) => 0",
+     "points": 2,
+     "detail": [
+      "((w_rptr_v == 2'h0)==0) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 192,
+     "what": "(w_ack_v==0 && (w_rptr_v == 2'h0)==1) => 1",
+     "points": 2,
+     "detail": [
+      "(w_ack_v==0 && (w_rptr_v == 2'h0)==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 192,
+     "what": "(w_ack_v==1) => 0",
+     "points": 2,
+     "detail": [
+      "(w_ack_v==1) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ahb_if.sv",
+     "line": 97,
+     "what": "(i_ahb_hready==1 && i_rsp_err==0 && i_ahb_hsel==0) => 1",
+     "points": 1,
+     "detail": [
+      "(i_ahb_hready==1 && i_rsp_err==0 && i_ahb_hsel==0) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ahb_if.sv",
+     "line": 97,
+     "what": "(i_ahb_hready==1 && reg_err_second==1 && i_ahb_hsel==0) => 1",
+     "points": 1,
+     "detail": [
+      "(i_ahb_hready==1 && reg_err_second==1 && i_ahb_hsel==0) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ahb_if.sv",
+     "line": 117,
+     "what": "(i_data_ready==0) => 0",
+     "points": 1,
+     "detail": [
+      "(i_data_ready==0) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 350,
+     "what": "(f_hburst_valid(burst)==0) => 1",
+     "points": 1,
+     "detail": [
+      "(f_hburst_valid(burst)==0) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 429,
+     "what": "((reg_fsm_ctrl_current_state == ENUM_ST_IDLE)==1 && w_wr_cmd_start==1 && w_idle_cmd_eligible==1 && i_ahb_hready==1 && i_ahb_htrans[1]==1 && w_input_err==1) => 1",
+     "points": 1,
+     "detail": [
+      "((reg_fsm_ctrl_current_state == ENUM_ST_IDLE)==1 && w_wr_cmd_start==1 && w_idle_cmd_eligible==1 && i_ahb_hready==1 && i_ahb_htrans[1]==1 && w_input_err==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 429,
+     "what": "((reg_fsm_ctrl_current_state == ENUM_ST_IDLE)==1 && w_wr_cmd_start==1 && w_idle_cmd_eligible==1 && i_ahb_hsel==0) => 1",
+     "points": 1,
+     "detail": [
+      "((reg_fsm_ctrl_current_state == ENUM_ST_IDLE)==1 && w_wr_cmd_start==1 && w_idle_cmd_eligible==1 && i_ahb_hsel==0) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 429,
+     "what": "((reg_fsm_ctrl_current_state == ENUM_ST_WR_CAPTURE)==1 && reg_in_burst_active==1 && i_ahb_hready==1 && i_ahb_htrans[1]==1 && w_input_err==1) => 1",
+     "points": 1,
+     "detail": [
+      "((reg_fsm_ctrl_current_state == ENUM_ST_WR_CAPTURE)==1 && reg_in_burst_active==1 && i_ahb_hready==1 && i_ahb_htrans[1]==1 && w_input_err==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 429,
+     "what": "((reg_fsm_ctrl_current_state == ENUM_ST_WR_CAPTURE)==1 && reg_in_burst_active==1 && i_ahb_hsel==0) => 1",
+     "points": 1,
+     "detail": [
+      "((reg_fsm_ctrl_current_state == ENUM_ST_WR_CAPTURE)==1 && reg_in_burst_active==1 && i_ahb_hsel==0) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 429,
+     "what": "(i_ahb_hsel==1 && (i_ahb_htrans != 2'h3)==0 && i_ahb_htrans[1]==0) => 0",
+     "points": 1,
+     "detail": [
+      "(i_ahb_hsel==1 && (i_ahb_htrans != 2'h3)==0 && i_ahb_htrans[1]==0) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 434,
+     "what": "(reg_data_store==1 && w_wr_data_full==1) => 0",
+     "points": 1,
+     "detail": [
+      "(reg_data_store==1 && w_wr_data_full==1) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 513,
+     "what": "(w_wr_cmd_empty==0 && w_cap_cmd_wr==0) => 1",
+     "points": 1,
+     "detail": [
+      "(w_wr_cmd_empty==0 && w_cap_cmd_wr==0) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 520,
+     "what": "((reg_fsm_ctrl_current_state == ENUM_ST_WR_CAPTURE)==1 && w_wr_cmd_empty==0 && (reg_burst_count < reg_burst_expected)==1 && (w_cap_cmd_htrans == 2'h3)==1 && w_cap_cmd_wr==1 && w_cap_cmd_err==0) => 1",
+     "points": 1,
+     "detail": [
+      "((reg_fsm_ctrl_current_state == ENUM_ST_WR_CAPTURE)==1 && w_wr_cmd_empty==0 && (reg_burst_count < reg_burst_expected)==1 && (w_cap_cmd_htrans == 2'h3)==1 && w_cap_cmd_wr==1 && w_cap_cmd_err==0) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 520,
+     "what": "(w_cap_cmd_wr==0) => 0",
+     "points": 1,
+     "detail": [
+      "(w_cap_cmd_wr==0) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 529,
+     "what": "((idx > reg_burst_start)==1 && (idx < reg_burst_count)==1 && (idx == (reg_burst_start + w_burst_sub_len))==1 && ((reg_burst_addr[idx[3:0]])[31:12] == (reg_burst_addr[reg_burst_start[3:0]])[31:12])==1) => 1",
+     "points": 1,
+     "detail": [
+      "((idx > reg_burst_start)==1 && (idx < reg_burst_count)==1 && (idx == (reg_burst_start + w_burst_sub_len))==1 && ((reg_burst_addr[idx[3:0]])[31:12] == (reg_burst_addr[reg_burst_start[3:0]])[31:12])==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 544,
+     "what": "(((reg_burst_type[4'h0]) == 3'h4)==1) => 1",
+     "points": 1,
+     "detail": [
+      "(((reg_burst_type[4'h0]) == 3'h4)==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 544,
+     "what": "(((reg_burst_type[4'h0]) == 3'h6)==1) => 1",
+     "points": 1,
+     "detail": [
+      "(((reg_burst_type[4'h0]) == 3'h6)==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 554,
+     "what": "(w_cap_pop==1) => 1",
+     "points": 1,
+     "detail": [
+      "(w_cap_pop==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 559,
+     "what": "((reg_fsm_ctrl_current_state == ENUM_ST_WR_BBURST)==1 && w_wr_rsp_empty==0) => 1",
+     "points": 1,
+     "detail": [
+      "((reg_fsm_ctrl_current_state == ENUM_ST_WR_BBURST)==1 && w_wr_rsp_empty==0) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 571,
+     "what": "(w_rd_cmd_full==1) => 0",
+     "points": 1,
+     "detail": [
+      "(w_rd_cmd_full==1) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 612,
+     "what": "(reg_aw_done==1 && reg_w_done==1) => 1",
+     "points": 1,
+     "detail": [
+      "(reg_aw_done==1 && reg_w_done==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 612,
+     "what": "(w_axi_aw_hs==1 && reg_w_done==1) => 1",
+     "points": 1,
+     "detail": [
+      "(w_axi_aw_hs==1 && reg_w_done==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 612,
+     "what": "(w_axi_aw_hs==1 && w_axi_w_hs==1) => 1",
+     "points": 1,
+     "detail": [
+      "(w_axi_aw_hs==1 && w_axi_w_hs==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 617,
+     "what": "(reg_burst_fallback==1 && w_more_fallback_beats==1) => 1",
+     "points": 1,
+     "detail": [
+      "(reg_burst_fallback==1 && w_more_fallback_beats==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 624,
+     "what": "((reg_burst_count >= reg_burst_expected)==1 && (reg_data_count >= reg_burst_expected)==1) => 1",
+     "points": 1,
+     "detail": [
+      "((reg_burst_count >= reg_burst_expected)==1 && (reg_data_count >= reg_burst_expected)==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 630,
+     "what": "((reg_data_count >= reg_burst_count)==0) => 0",
+     "points": 1,
+     "detail": [
+      "((reg_data_count >= reg_burst_count)==0) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 630,
+     "what": "(reg_burst_term_seen==0 && w_cap_stop==0) => 0",
+     "points": 1,
+     "detail": [
+      "(reg_burst_term_seen==0 && w_cap_stop==0) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 630,
+     "what": "(w_cap_pop==1) => 0",
+     "points": 1,
+     "detail": [
+      "(w_cap_pop==1) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 636,
+     "what": "(reg_aw_done==0 && w_axi_aw_hs==0) => 0",
+     "points": 1,
+     "detail": [
+      "(reg_aw_done==0 && w_axi_aw_hs==0) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 636,
+     "what": "(reg_aw_done==1 && reg_w_done==1) => 1",
+     "points": 1,
+     "detail": [
+      "(reg_aw_done==1 && reg_w_done==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 636,
+     "what": "(reg_aw_done==1 && w_axi_w_hs==1) => 1",
+     "points": 1,
+     "detail": [
+      "(reg_aw_done==1 && w_axi_w_hs==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 636,
+     "what": "(reg_w_done==0 && w_axi_w_hs==0) => 0",
+     "points": 1,
+     "detail": [
+      "(reg_w_done==0 && w_axi_w_hs==0) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 636,
+     "what": "(w_axi_aw_hs==1 && reg_w_done==1) => 1",
+     "points": 1,
+     "detail": [
+      "(w_axi_aw_hs==1 && reg_w_done==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 636,
+     "what": "(w_axi_aw_hs==1 && w_axi_w_hs==1) => 1",
+     "points": 1,
+     "detail": [
+      "(w_axi_aw_hs==1 && w_axi_w_hs==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 649,
+     "what": "(reg_rsp_valid==0) => 0",
+     "points": 1,
+     "detail": [
+      "(reg_rsp_valid==0) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 684,
+     "what": "(reg_w_done==1) => 0",
+     "points": 1,
+     "detail": [
+      "(reg_w_done==1) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 702,
+     "what": "((reg_fsm_ctrl_current_state == ENUM_ST_WR_BURST)==1 && w_wr_data_empty==0) => 1",
+     "points": 1,
+     "detail": [
+      "((reg_fsm_ctrl_current_state == ENUM_ST_WR_BURST)==1 && w_wr_data_empty==0) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 703,
+     "what": "(reg_aw_done==0) => 1",
+     "points": 1,
+     "detail": [
+      "(reg_aw_done==0) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 703,
+     "what": "(reg_aw_done==1) => 0",
+     "points": 1,
+     "detail": [
+      "(reg_aw_done==1) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 704,
+     "what": "(reg_aw_done==0) => 0",
+     "points": 1,
+     "detail": [
+      "(reg_aw_done==0) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 704,
+     "what": "(reg_aw_done==1 && reg_w_done==0) => 1",
+     "points": 1,
+     "detail": [
+      "(reg_aw_done==1 && reg_w_done==0) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 704,
+     "what": "(reg_w_done==1) => 0",
+     "points": 1,
+     "detail": [
+      "(reg_w_done==1) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 725,
+     "what": "((reg_fsm_ctrl_current_state == ENUM_ST_WR_BBURST)==1 && w_wr_rsp_full==0 && (w_axi_b_id == reg_wr_id)==1) => 1",
+     "points": 1,
+     "detail": [
+      "((reg_fsm_ctrl_current_state == ENUM_ST_WR_BBURST)==1 && w_wr_rsp_full==0 && (w_axi_b_id == reg_wr_id)==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 725,
+     "what": "((reg_fsm_ctrl_current_state == ENUM_ST_WR_BURST)==1 && w_wr_rsp_full==0 && (w_axi_b_id == reg_wr_id)==1) => 1",
+     "points": 1,
+     "detail": [
+      "((reg_fsm_ctrl_current_state == ENUM_ST_WR_BURST)==1 && w_wr_rsp_full==0 && (w_axi_b_id == reg_wr_id)==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 853,
+     "what": "((f_axi_cache(w_cap_cmd_prot[5:2]1'h1) != f_axi_cache((reg_burst_prot[4'h0])[5:2]1'h1))==1) => 1",
+     "points": 1,
+     "detail": [
+      "((f_axi_cache(w_cap_cmd_prot[5:2]1'h1) != f_axi_cache((reg_burst_prot[4'h0])[5:2]1'h1))==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 853,
+     "what": "((f_axi_prot(w_cap_cmd_prot[1:0]w_cap_cmd_nonsec) != f_axi_prot((reg_burst_prot[4'h0])[1:0](reg_burst_nonsec[4'h0])))==1) => 1",
+     "points": 1,
+     "detail": [
+      "((f_axi_prot(w_cap_cmd_prot[1:0]w_cap_cmd_nonsec) != f_axi_prot((reg_burst_prot[4'h0])[1:0](reg_burst_nonsec[4'h0])))==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 853,
+     "what": "((w_cap_cmd_burst != (reg_burst_type[4'h0]))==1) => 1",
+     "points": 1,
+     "detail": [
+      "((w_cap_cmd_burst != (reg_burst_type[4'h0]))==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 853,
+     "what": "((w_cap_cmd_size != (reg_burst_size[4'h0]))==0 && (w_cap_cmd_burst != (reg_burst_type[4'h0]))==0 && (f_axi_prot(w_cap_cmd_prot[1:0]w_cap_cmd_nonsec) != f_axi_prot((reg_burst_prot[4'h0])[1:0](reg_burst_nonsec[4'h0])))==0 && (f_axi_cache(w_cap_cmd_prot[5:2]1'h1) != f_axi_cache((reg_burst_prot[4'h0])[5:2]1'h1))==0) => 0",
+     "points": 1,
+     "detail": [
+      "((w_cap_cmd_size != (reg_burst_size[4'h0]))==0 && (w_cap_cmd_burst != (reg_burst_type[4'h0]))==0 && (f_axi_prot(w_cap_cmd_prot[1:0]w_cap_cmd_nonsec) != f_axi_prot((reg_burst_prot[4'h0])[1:0](reg_burst_nonsec[4'h0])))==0 && (f_axi_cache(w_cap_cmd_prot[5:2]1'h1) != f_axi_cache((reg_burst_prot[4'h0])[5:2]1'h1))==0) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 853,
+     "what": "((w_cap_cmd_size != (reg_burst_size[4'h0]))==1) => 1",
+     "points": 1,
+     "detail": [
+      "((w_cap_cmd_size != (reg_burst_size[4'h0]))==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 864,
+     "what": "((reg_fsm_ctrl_current_state == ENUM_ST_WR_CAPTURE)==1 && (w_fsm_ctrl_nxt_state == ENUM_ST_WR_BURST)==1) => 1",
+     "points": 1,
+     "detail": [
+      "((reg_fsm_ctrl_current_state == ENUM_ST_WR_CAPTURE)==1 && (w_fsm_ctrl_nxt_state == ENUM_ST_WR_BURST)==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 904,
+     "what": "(reg_burst_err==1) => 1",
+     "points": 1,
+     "detail": [
+      "(reg_burst_err==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 904,
+     "what": "(w_rsp_err_now==1) => 1",
+     "points": 1,
+     "detail": [
+      "(w_rsp_err_now==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 909,
+     "what": "(reg_burst_err==1) => 1",
+     "points": 1,
+     "detail": [
+      "(reg_burst_err==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 909,
+     "what": "(w_rsp_err_now==1) => 1",
+     "points": 1,
+     "detail": [
+      "(w_rsp_err_now==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 918,
+     "what": "(reg_burst_err==0 && w_rsp_err_now==0) => 0",
+     "points": 1,
+     "detail": [
+      "(reg_burst_err==0 && w_rsp_err_now==0) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 918,
+     "what": "(reg_burst_err==1) => 1",
+     "points": 1,
+     "detail": [
+      "(reg_burst_err==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 918,
+     "what": "(w_rsp_err_now==1) => 1",
+     "points": 1,
+     "detail": [
+      "(w_rsp_err_now==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 924,
+     "what": "(reg_burst_err==0 && w_rsp_err_now==0) => 0",
+     "points": 1,
+     "detail": [
+      "(reg_burst_err==0 && w_rsp_err_now==0) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 924,
+     "what": "(reg_burst_err==1) => 1",
+     "points": 1,
+     "detail": [
+      "(reg_burst_err==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 924,
+     "what": "(w_rsp_err_now==1) => 1",
+     "points": 1,
+     "detail": [
+      "(w_rsp_err_now==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 109,
+     "what": "((reg_fsm_srst_current_state != ENUM_ST_RUN)==1) => 1",
+     "points": 1,
+     "detail": [
+      "((reg_fsm_srst_current_state != ENUM_ST_RUN)==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 112,
+     "what": "(w_rd_blk==1) => 0",
+     "points": 1,
+     "detail": [
+      "(w_rd_blk==1) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 154,
+     "what": "(w_rd_blk==1) => 0",
+     "points": 1,
+     "detail": [
+      "(w_rd_blk==1) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 180,
+     "what": "((w_wptr_v == 5'h0)==0) => 0",
+     "points": 1,
+     "detail": [
+      "((w_wptr_v == 5'h0)==0) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 180,
+     "what": "(w_req_v==0 && (w_wptr_v == 5'h0)==1) => 1",
+     "points": 1,
+     "detail": [
+      "(w_req_v==0 && (w_wptr_v == 5'h0)==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 217,
+     "what": "(w_rd_blk==1) => 1",
+     "points": 1,
+     "detail": [
+      "(w_rd_blk==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 218,
+     "what": "(w_rd_blk==1) => 1",
+     "points": 1,
+     "detail": [
+      "(w_rd_blk==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 114,
+     "what": "(reg_sw_rst_busy==1) => 1",
+     "points": 1,
+     "detail": [
+      "(reg_sw_rst_busy==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 117,
+     "what": "(w_wr_blk==1) => 0",
+     "points": 1,
+     "detail": [
+      "(w_wr_blk==1) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 158,
+     "what": "(w_wr_blk==1) => 0",
+     "points": 1,
+     "detail": [
+      "(w_wr_blk==1) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 192,
+     "what": "((w_rptr_v == 5'h0)==0) => 0",
+     "points": 1,
+     "detail": [
+      "((w_rptr_v == 5'h0)==0) => 0"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 192,
+     "what": "(w_ack_v==0 && (w_rptr_v == 5'h0)==1) => 1",
+     "points": 1,
+     "detail": [
+      "(w_ack_v==0 && (w_rptr_v == 5'h0)==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 232,
+     "what": "(w_wr_blk==1) => 1",
+     "points": 1,
+     "detail": [
+      "(w_wr_blk==1) => 1"
+     ]
+    },
+    {
+     "metric": "expression",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 233,
+     "what": "(w_wr_blk==1) => 1",
+     "points": 1,
+     "detail": [
+      "(w_wr_blk==1) => 1"
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_axi_if.sv",
+     "line": 19,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_axi_if.sv",
+     "line": 22,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_axi_if.sv",
+     "line": 42,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_axi_if.sv",
+     "line": 44,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_axi_if.sv",
+     "line": 47,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_axi_if.sv",
+     "line": 66,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_axi_if.sv",
+     "line": 88,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_axi_if.sv",
+     "line": 90,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 57,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 60,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 80,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 82,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 85,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 130,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 134,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 145,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 218,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 234,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 236,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 274,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 325,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 618,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 625,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 626,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 627,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 629,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 635,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 636,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 637,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 639,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 640,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 641,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 642,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 644,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 652,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 703,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 704,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 705,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 706,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 707,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 708,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 709,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 710,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 711,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 712,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 713,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 792,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 844,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 845,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 846,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 847,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 848,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 849,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 850,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 853,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 856,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 865,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 866,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 867,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 868,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 869,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 886,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 887,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 888,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 889,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 890,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 891,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 899,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 906,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 917,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 918,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 919,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 920,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 921,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 922,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 923,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 924,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 925,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 934,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_top.sv",
+     "line": 46,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_top.sv",
+     "line": 49,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_top.sv",
+     "line": 69,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_top.sv",
+     "line": 71,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_ahb2axi_top.sv",
+     "line": 74,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 46,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 95,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 176,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_vlsit_sfifo_top.sv",
+     "line": 47,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_vlsit_sfifo_top.sv",
+     "line": 62,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 45,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 100,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 129,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 180,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 182,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 183,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 184,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 186,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 187,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 188,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "line",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 189,
+     "what": "",
+     "points": 1,
+     "detail": [
+      ""
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 96,
+     "what": "w_addr_ext",
+     "points": 242,
+     "detail": [
+      "w_addr_ext[10]:0->1",
+      "w_addr_ext[10]:1->0",
+      "w_addr_ext[11]:0->1",
+      "w_addr_ext[11]:1->0",
+      "w_addr_ext[12]:0->1",
+      "w_addr_ext[12]:1->0",
+      "w_addr_ext[13]:0->1",
+      "w_addr_ext[13]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 101,
+     "what": "w_addr_ext",
+     "points": 242,
+     "detail": [
+      "w_addr_ext[10]:0->1",
+      "w_addr_ext[10]:1->0",
+      "w_addr_ext[11]:0->1",
+      "w_addr_ext[11]:1->0",
+      "w_addr_ext[12]:0->1",
+      "w_addr_ext[12]:1->0",
+      "w_addr_ext[13]:0->1",
+      "w_addr_ext[13]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 94,
+     "what": "w_occ_nxt",
+     "points": 238,
+     "detail": [
+      "w_occ_nxt[10]:0->1",
+      "w_occ_nxt[10]:1->0",
+      "w_occ_nxt[11]:0->1",
+      "w_occ_nxt[11]:1->0",
+      "w_occ_nxt[12]:0->1",
+      "w_occ_nxt[12]:1->0",
+      "w_occ_nxt[13]:0->1",
+      "w_occ_nxt[13]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 99,
+     "what": "w_occ_nxt",
+     "points": 236,
+     "detail": [
+      "w_occ_nxt[10]:0->1",
+      "w_occ_nxt[10]:1->0",
+      "w_occ_nxt[11]:0->1",
+      "w_occ_nxt[11]:1->0",
+      "w_occ_nxt[12]:0->1",
+      "w_occ_nxt[12]:1->0",
+      "w_occ_nxt[13]:0->1",
+      "w_occ_nxt[13]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 126,
+     "what": "reg_burst_prot",
+     "points": 155,
+     "detail": [
+      "reg_burst_prot[0][2]:1->0",
+      "reg_burst_prot[0][3]:1->0",
+      "reg_burst_prot[0][4]:1->0",
+      "reg_burst_prot[0][6]:0->1",
+      "reg_burst_prot[0][6]:1->0",
+      "reg_burst_prot[10][0]:1->0",
+      "reg_burst_prot[10][1]:0->1",
+      "reg_burst_prot[10][1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 124,
+     "what": "reg_burst_size",
+     "points": 62,
+     "detail": [
+      "reg_burst_size[0][2]:0->1",
+      "reg_burst_size[0][2]:1->0",
+      "reg_burst_size[10][0]:1->0",
+      "reg_burst_size[10][1]:1->0",
+      "reg_burst_size[10][2]:0->1",
+      "reg_burst_size[10][2]:1->0",
+      "reg_burst_size[11][0]:1->0",
+      "reg_burst_size[11][1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 125,
+     "what": "reg_burst_type",
+     "points": 60,
+     "detail": [
+      "reg_burst_type[10][0]:1->0",
+      "reg_burst_type[10][1]:1->0",
+      "reg_burst_type[10][2]:0->1",
+      "reg_burst_type[10][2]:1->0",
+      "reg_burst_type[11][0]:1->0",
+      "reg_burst_type[11][1]:1->0",
+      "reg_burst_type[11][2]:0->1",
+      "reg_burst_type[11][2]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 80,
+     "what": "w_fsm_srst_nxt_state",
+     "points": 20,
+     "detail": [
+      "w_fsm_srst_nxt_state[0]:0->1",
+      "w_fsm_srst_nxt_state[0]:1->0",
+      "w_fsm_srst_nxt_state[1]:0->1",
+      "w_fsm_srst_nxt_state[1]:1->0",
+      "w_fsm_srst_nxt_state[2]:0->1",
+      "w_fsm_srst_nxt_state[2]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_axi_if.sv",
+     "line": 19,
+     "what": "o_axi_awlen",
+     "points": 16,
+     "detail": [
+      "o_axi_awlen[0]:0->1",
+      "o_axi_awlen[0]:1->0",
+      "o_axi_awlen[1]:0->1",
+      "o_axi_awlen[1]:1->0",
+      "o_axi_awlen[2]:0->1",
+      "o_axi_awlen[2]:1->0",
+      "o_axi_awlen[3]:0->1",
+      "o_axi_awlen[3]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_axi_if.sv",
+     "line": 66,
+     "what": "i_req_aw_len",
+     "points": 16,
+     "detail": [
+      "i_req_aw_len[0]:0->1",
+      "i_req_aw_len[0]:1->0",
+      "i_req_aw_len[1]:0->1",
+      "i_req_aw_len[1]:1->0",
+      "i_req_aw_len[2]:0->1",
+      "i_req_aw_len[2]:1->0",
+      "i_req_aw_len[3]:0->1",
+      "i_req_aw_len[3]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 57,
+     "what": "o_axi_awlen",
+     "points": 16,
+     "detail": [
+      "o_axi_awlen[0]:0->1",
+      "o_axi_awlen[0]:1->0",
+      "o_axi_awlen[1]:0->1",
+      "o_axi_awlen[1]:1->0",
+      "o_axi_awlen[2]:0->1",
+      "o_axi_awlen[2]:1->0",
+      "o_axi_awlen[3]:0->1",
+      "o_axi_awlen[3]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 218,
+     "what": "w_axi_aw_len",
+     "points": 16,
+     "detail": [
+      "w_axi_aw_len[0]:0->1",
+      "w_axi_aw_len[0]:1->0",
+      "w_axi_aw_len[1]:0->1",
+      "w_axi_aw_len[1]:1->0",
+      "w_axi_aw_len[2]:0->1",
+      "w_axi_aw_len[2]:1->0",
+      "w_axi_aw_len[3]:0->1",
+      "w_axi_aw_len[3]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_top.sv",
+     "line": 46,
+     "what": "o_axi_awlen",
+     "points": 16,
+     "detail": [
+      "o_axi_awlen[0]:0->1",
+      "o_axi_awlen[0]:1->0",
+      "o_axi_awlen[1]:0->1",
+      "o_axi_awlen[1]:1->0",
+      "o_axi_awlen[2]:0->1",
+      "o_axi_awlen[2]:1->0",
+      "o_axi_awlen[3]:0->1",
+      "o_axi_awlen[3]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 127,
+     "what": "reg_burst_nonsec",
+     "points": 15,
+     "detail": [
+      "reg_burst_nonsec[10]:1->0",
+      "reg_burst_nonsec[11]:1->0",
+      "reg_burst_nonsec[12]:1->0",
+      "reg_burst_nonsec[13]:1->0",
+      "reg_burst_nonsec[14]:1->0",
+      "reg_burst_nonsec[15]:1->0",
+      "reg_burst_nonsec[1]:1->0",
+      "reg_burst_nonsec[2]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 76,
+     "what": "w_fsm_srst_nxt_state",
+     "points": 14,
+     "detail": [
+      "w_fsm_srst_nxt_state[0]:0->1",
+      "w_fsm_srst_nxt_state[0]:1->0",
+      "w_fsm_srst_nxt_state[1]:0->1",
+      "w_fsm_srst_nxt_state[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_mem.sv",
+     "line": 47,
+     "what": "gen_array.reg_mem",
+     "points": 12,
+     "detail": [
+      "gen_array.reg_mem[0][0]:0->1",
+      "gen_array.reg_mem[0][0]:1->0",
+      "gen_array.reg_mem[0][17]:1->0",
+      "gen_array.reg_mem[1][0]:0->1",
+      "gen_array.reg_mem[1][0]:1->0",
+      "gen_array.reg_mem[1][17]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 130,
+     "what": "reg_burst_start",
+     "points": 10,
+     "detail": [
+      "reg_burst_start[0]:0->1",
+      "reg_burst_start[0]:1->0",
+      "reg_burst_start[1]:0->1",
+      "reg_burst_start[1]:1->0",
+      "reg_burst_start[2]:0->1",
+      "reg_burst_start[2]:1->0",
+      "reg_burst_start[3]:0->1",
+      "reg_burst_start[3]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 79,
+     "what": "reg_fsm_srst_current_state",
+     "points": 10,
+     "detail": [
+      "reg_fsm_srst_current_state[0]:0->1",
+      "reg_fsm_srst_current_state[0]:1->0",
+      "reg_fsm_srst_current_state[1]:0->1",
+      "reg_fsm_srst_current_state[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 253,
+     "what": "w_burst_sub_len",
+     "points": 7,
+     "detail": [
+      "w_burst_sub_len[0]:1->0",
+      "w_burst_sub_len[1]:0->1",
+      "w_burst_sub_len[1]:1->0",
+      "w_burst_sub_len[2]:0->1",
+      "w_burst_sub_len[2]:1->0",
+      "w_burst_sub_len[3]:0->1",
+      "w_burst_sub_len[3]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_axi_if.sv",
+     "line": 42,
+     "what": "o_axi_arid",
+     "points": 6,
+     "detail": [
+      "o_axi_arid[0]:0->1",
+      "o_axi_arid[0]:1->0",
+      "o_axi_arid[1]:0->1",
+      "o_axi_arid[1]:1->0",
+      "o_axi_arid[2]:0->1",
+      "o_axi_arid[2]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_axi_if.sv",
+     "line": 88,
+     "what": "i_req_ar_id",
+     "points": 6,
+     "detail": [
+      "i_req_ar_id[0]:0->1",
+      "i_req_ar_id[0]:1->0",
+      "i_req_ar_id[1]:0->1",
+      "i_req_ar_id[1]:1->0",
+      "i_req_ar_id[2]:0->1",
+      "i_req_ar_id[2]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 80,
+     "what": "o_axi_arid",
+     "points": 6,
+     "detail": [
+      "o_axi_arid[0]:0->1",
+      "o_axi_arid[0]:1->0",
+      "o_axi_arid[1]:0->1",
+      "o_axi_arid[1]:1->0",
+      "o_axi_arid[2]:0->1",
+      "o_axi_arid[2]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 131,
+     "what": "reg_burst_widx",
+     "points": 6,
+     "detail": [
+      "reg_burst_widx[2]:0->1",
+      "reg_burst_widx[2]:1->0",
+      "reg_burst_widx[3]:0->1",
+      "reg_burst_widx[3]:1->0",
+      "reg_burst_widx[4]:0->1",
+      "reg_burst_widx[4]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 137,
+     "what": "reg_in_burst_count",
+     "points": 6,
+     "detail": [
+      "reg_in_burst_count[2]:0->1",
+      "reg_in_burst_count[2]:1->0",
+      "reg_in_burst_count[3]:0->1",
+      "reg_in_burst_count[3]:1->0",
+      "reg_in_burst_count[4]:0->1",
+      "reg_in_burst_count[4]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 145,
+     "what": "reg_rd_id",
+     "points": 6,
+     "detail": [
+      "reg_rd_id[0]:0->1",
+      "reg_rd_id[0]:1->0",
+      "reg_rd_id[1]:0->1",
+      "reg_rd_id[1]:1->0",
+      "reg_rd_id[2]:0->1",
+      "reg_rd_id[2]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 234,
+     "what": "w_axi_ar_id",
+     "points": 6,
+     "detail": [
+      "w_axi_ar_id[0]:0->1",
+      "w_axi_ar_id[0]:1->0",
+      "w_axi_ar_id[1]:0->1",
+      "w_axi_ar_id[1]:1->0",
+      "w_axi_ar_id[2]:0->1",
+      "w_axi_ar_id[2]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_top.sv",
+     "line": 69,
+     "what": "o_axi_arid",
+     "points": 6,
+     "detail": [
+      "o_axi_arid[0]:0->1",
+      "o_axi_arid[0]:1->0",
+      "o_axi_arid[1]:0->1",
+      "o_axi_arid[1]:1->0",
+      "o_axi_arid[2]:0->1",
+      "o_axi_arid[2]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 53,
+     "what": "i_req_wr",
+     "points": 6,
+     "detail": [
+      "i_req_wr:0->1",
+      "i_req_wr:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 75,
+     "what": "reg_fsm_srst_current_state",
+     "points": 6,
+     "detail": [
+      "reg_fsm_srst_current_state[0]:0->1",
+      "reg_fsm_srst_current_state[0]:1->0",
+      "reg_fsm_srst_current_state[1]:0->1",
+      "reg_fsm_srst_current_state[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 91,
+     "what": "w_rptr_ext",
+     "points": 6,
+     "detail": [
+      "w_rptr_ext[2]:0->1",
+      "w_rptr_ext[2]:1->0",
+      "w_rptr_ext[3]:0->1",
+      "w_rptr_ext[3]:1->0",
+      "w_rptr_ext[4]:0->1",
+      "w_rptr_ext[4]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 92,
+     "what": "w_rptr_nxt_ext",
+     "points": 6,
+     "detail": [
+      "w_rptr_nxt_ext[2]:0->1",
+      "w_rptr_nxt_ext[2]:1->0",
+      "w_rptr_nxt_ext[3]:0->1",
+      "w_rptr_nxt_ext[3]:1->0",
+      "w_rptr_nxt_ext[4]:0->1",
+      "w_rptr_nxt_ext[4]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 93,
+     "what": "w_wptr_ext",
+     "points": 6,
+     "detail": [
+      "w_wptr_ext[2]:0->1",
+      "w_wptr_ext[2]:1->0",
+      "w_wptr_ext[3]:0->1",
+      "w_wptr_ext[3]:1->0",
+      "w_wptr_ext[4]:0->1",
+      "w_wptr_ext[4]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 98,
+     "what": "w_req_v",
+     "points": 6,
+     "detail": [
+      "w_req_v:0->1",
+      "w_req_v:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_top.sv",
+     "line": 50,
+     "what": "o_overflow",
+     "points": 6,
+     "detail": [
+      "o_overflow:0->1",
+      "o_overflow:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_top.sv",
+     "line": 72,
+     "what": "w_req_wr",
+     "points": 6,
+     "detail": [
+      "w_req_wr:0->1",
+      "w_req_wr:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 48,
+     "what": "o_overflow",
+     "points": 6,
+     "detail": [
+      "o_overflow:0->1",
+      "o_overflow:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 53,
+     "what": "o_req_wr",
+     "points": 6,
+     "detail": [
+      "o_req_wr:0->1",
+      "o_req_wr:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 83,
+     "what": "reg_req_wr",
+     "points": 6,
+     "detail": [
+      "reg_req_wr:0->1",
+      "reg_req_wr:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 84,
+     "what": "reg_overflow",
+     "points": 6,
+     "detail": [
+      "reg_overflow:0->1",
+      "reg_overflow:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 96,
+     "what": "w_wptr_ext",
+     "points": 6,
+     "detail": [
+      "w_wptr_ext[2]:0->1",
+      "w_wptr_ext[2]:1->0",
+      "w_wptr_ext[3]:0->1",
+      "w_wptr_ext[3]:1->0",
+      "w_wptr_ext[4]:0->1",
+      "w_wptr_ext[4]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 97,
+     "what": "w_wptr_nxt_ext",
+     "points": 6,
+     "detail": [
+      "w_wptr_nxt_ext[2]:0->1",
+      "w_wptr_nxt_ext[2]:1->0",
+      "w_wptr_nxt_ext[3]:0->1",
+      "w_wptr_nxt_ext[3]:1->0",
+      "w_wptr_nxt_ext[4]:0->1",
+      "w_wptr_nxt_ext[4]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 98,
+     "what": "w_rptr_ext",
+     "points": 6,
+     "detail": [
+      "w_rptr_ext[2]:0->1",
+      "w_rptr_ext[2]:1->0",
+      "w_rptr_ext[3]:0->1",
+      "w_rptr_ext[3]:1->0",
+      "w_rptr_ext[4]:0->1",
+      "w_rptr_ext[4]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_axi_if.sv",
+     "line": 36,
+     "what": "i_axi_bid",
+     "points": 4,
+     "detail": [
+      "i_axi_bid[0]:0->1",
+      "i_axi_bid[0]:1->0",
+      "i_axi_bid[2]:0->1",
+      "i_axi_bid[2]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_axi_if.sv",
+     "line": 54,
+     "what": "i_axi_rid",
+     "points": 4,
+     "detail": [
+      "i_axi_rid[1]:0->1",
+      "i_axi_rid[1]:1->0",
+      "i_axi_rid[2]:0->1",
+      "i_axi_rid[2]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_axi_if.sv",
+     "line": 82,
+     "what": "o_resp_b_id",
+     "points": 4,
+     "detail": [
+      "o_resp_b_id[0]:0->1",
+      "o_resp_b_id[0]:1->0",
+      "o_resp_b_id[2]:0->1",
+      "o_resp_b_id[2]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_axi_if.sv",
+     "line": 99,
+     "what": "o_resp_r_id",
+     "points": 4,
+     "detail": [
+      "o_resp_r_id[1]:0->1",
+      "o_resp_r_id[1]:1->0",
+      "o_resp_r_id[2]:0->1",
+      "o_resp_r_id[2]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 74,
+     "what": "i_axi_bid",
+     "points": 4,
+     "detail": [
+      "i_axi_bid[0]:0->1",
+      "i_axi_bid[0]:1->0",
+      "i_axi_bid[2]:0->1",
+      "i_axi_bid[2]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 92,
+     "what": "i_axi_rid",
+     "points": 4,
+     "detail": [
+      "i_axi_rid[1]:0->1",
+      "i_axi_rid[1]:1->0",
+      "i_axi_rid[2]:0->1",
+      "i_axi_rid[2]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 129,
+     "what": "reg_burst_expected",
+     "points": 4,
+     "detail": [
+      "reg_burst_expected[0]:0->1",
+      "reg_burst_expected[0]:1->0",
+      "reg_burst_expected[1]:0->1",
+      "reg_burst_expected[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 230,
+     "what": "w_axi_b_id",
+     "points": 4,
+     "detail": [
+      "w_axi_b_id[0]:0->1",
+      "w_axi_b_id[0]:1->0",
+      "w_axi_b_id[2]:0->1",
+      "w_axi_b_id[2]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 243,
+     "what": "w_axi_r_id",
+     "points": 4,
+     "detail": [
+      "w_axi_r_id[1]:0->1",
+      "w_axi_r_id[1]:1->0",
+      "w_axi_r_id[2]:0->1",
+      "w_axi_r_id[2]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_top.sv",
+     "line": 63,
+     "what": "i_axi_bid",
+     "points": 4,
+     "detail": [
+      "i_axi_bid[0]:0->1",
+      "i_axi_bid[0]:1->0",
+      "i_axi_bid[2]:0->1",
+      "i_axi_bid[2]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_top.sv",
+     "line": 81,
+     "what": "i_axi_rid",
+     "points": 4,
+     "detail": [
+      "i_axi_rid[1]:0->1",
+      "i_axi_rid[1]:1->0",
+      "i_axi_rid[2]:0->1",
+      "i_axi_rid[2]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_mem.sv",
+     "line": 36,
+     "what": "i_wr_data",
+     "points": 4,
+     "detail": [
+      "i_wr_data[0]:0->1",
+      "i_wr_data[0]:1->0",
+      "i_wr_data[1]:0->1",
+      "i_wr_data[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_mem.sv",
+     "line": 41,
+     "what": "o_rd_data",
+     "points": 4,
+     "detail": [
+      "o_rd_data[0]:0->1",
+      "o_rd_data[0]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_mem.sv",
+     "line": 48,
+     "what": "gen_array.reg_rd_data",
+     "points": 4,
+     "detail": [
+      "gen_array.reg_rd_data[0]:0->1",
+      "gen_array.reg_rd_data[0]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 47,
+     "what": "o_rd_data",
+     "points": 4,
+     "detail": [
+      "o_rd_data[0]:0->1",
+      "o_rd_data[0]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 50,
+     "what": "o_underflow",
+     "points": 4,
+     "detail": [
+      "o_underflow:0->1",
+      "o_underflow:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 62,
+     "what": "i_mem_rd_data",
+     "points": 4,
+     "detail": [
+      "i_mem_rd_data[0]:0->1",
+      "i_mem_rd_data[0]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 79,
+     "what": "reg_underflow",
+     "points": 4,
+     "detail": [
+      "reg_underflow:0->1",
+      "reg_underflow:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 82,
+     "what": "reg_req_s",
+     "points": 4,
+     "detail": [
+      "reg_req_s:0->1",
+      "reg_req_s:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_top.sv",
+     "line": 46,
+     "what": "i_wr_data",
+     "points": 4,
+     "detail": [
+      "i_wr_data[0]:0->1",
+      "i_wr_data[0]:1->0",
+      "i_wr_data[1]:0->1",
+      "i_wr_data[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_top.sv",
+     "line": 63,
+     "what": "o_rd_data",
+     "points": 4,
+     "detail": [
+      "o_rd_data[0]:0->1",
+      "o_rd_data[0]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_top.sv",
+     "line": 66,
+     "what": "o_underflow",
+     "points": 4,
+     "detail": [
+      "o_underflow:0->1",
+      "o_underflow:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_top.sv",
+     "line": 76,
+     "what": "w_mem_wr_data",
+     "points": 4,
+     "detail": [
+      "w_mem_wr_data[0]:0->1",
+      "w_mem_wr_data[0]:1->0",
+      "w_mem_wr_data[1]:0->1",
+      "w_mem_wr_data[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_top.sv",
+     "line": 78,
+     "what": "w_mem_rd_data",
+     "points": 4,
+     "detail": [
+      "w_mem_rd_data[0]:0->1",
+      "w_mem_rd_data[0]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 44,
+     "what": "i_wr_data",
+     "points": 4,
+     "detail": [
+      "i_wr_data[0]:0->1",
+      "i_wr_data[0]:1->0",
+      "i_wr_data[1]:0->1",
+      "i_wr_data[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 63,
+     "what": "o_mem_wr_data",
+     "points": 4,
+     "detail": [
+      "o_mem_wr_data[0]:0->1",
+      "o_mem_wr_data[0]:1->0",
+      "o_mem_wr_data[1]:0->1",
+      "o_mem_wr_data[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_axi_if.sv",
+     "line": 21,
+     "what": "o_axi_awburst",
+     "points": 3,
+     "detail": [
+      "o_axi_awburst[0]:1->0",
+      "o_axi_awburst[1]:0->1",
+      "o_axi_awburst[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_axi_if.sv",
+     "line": 68,
+     "what": "i_req_aw_burst",
+     "points": 3,
+     "detail": [
+      "i_req_aw_burst[0]:1->0",
+      "i_req_aw_burst[1]:0->1",
+      "i_req_aw_burst[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 59,
+     "what": "o_axi_awburst",
+     "points": 3,
+     "detail": [
+      "o_axi_awburst[0]:1->0",
+      "o_axi_awburst[1]:0->1",
+      "o_axi_awburst[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 220,
+     "what": "w_axi_aw_burst",
+     "points": 3,
+     "detail": [
+      "w_axi_aw_burst[0]:1->0",
+      "w_axi_aw_burst[1]:0->1",
+      "w_axi_aw_burst[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_top.sv",
+     "line": 48,
+     "what": "o_axi_awburst",
+     "points": 3,
+     "detail": [
+      "o_axi_awburst[0]:1->0",
+      "o_axi_awburst[1]:0->1",
+      "o_axi_awburst[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_axi_if.sv",
+     "line": 20,
+     "what": "o_axi_awsize",
+     "points": 2,
+     "detail": [
+      "o_axi_awsize[2]:0->1",
+      "o_axi_awsize[2]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_axi_if.sv",
+     "line": 37,
+     "what": "i_axi_bresp",
+     "points": 2,
+     "detail": [
+      "i_axi_bresp[1]:0->1",
+      "i_axi_bresp[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_axi_if.sv",
+     "line": 56,
+     "what": "i_axi_rresp",
+     "points": 2,
+     "detail": [
+      "i_axi_rresp[0]:0->1",
+      "i_axi_rresp[0]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_axi_if.sv",
+     "line": 67,
+     "what": "i_req_aw_size",
+     "points": 2,
+     "detail": [
+      "i_req_aw_size[2]:0->1",
+      "i_req_aw_size[2]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_axi_if.sv",
+     "line": 83,
+     "what": "o_resp_b_sts",
+     "points": 2,
+     "detail": [
+      "o_resp_b_sts[1]:0->1",
+      "o_resp_b_sts[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_axi_if.sv",
+     "line": 101,
+     "what": "o_resp_r_sts",
+     "points": 2,
+     "detail": [
+      "o_resp_r_sts[0]:0->1",
+      "o_resp_r_sts[0]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 58,
+     "what": "o_axi_awsize",
+     "points": 2,
+     "detail": [
+      "o_axi_awsize[2]:0->1",
+      "o_axi_awsize[2]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 75,
+     "what": "i_axi_bresp",
+     "points": 2,
+     "detail": [
+      "i_axi_bresp[1]:0->1",
+      "i_axi_bresp[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 94,
+     "what": "i_axi_rresp",
+     "points": 2,
+     "detail": [
+      "i_axi_rresp[0]:0->1",
+      "i_axi_rresp[0]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 128,
+     "what": "reg_burst_count",
+     "points": 2,
+     "detail": [
+      "reg_burst_count[1]:0->1",
+      "reg_burst_count[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 134,
+     "what": "reg_burst_err",
+     "points": 2,
+     "detail": [
+      "reg_burst_err:0->1",
+      "reg_burst_err:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 138,
+     "what": "reg_in_burst_expected",
+     "points": 2,
+     "detail": [
+      "reg_in_burst_expected[0]:0->1",
+      "reg_in_burst_expected[0]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 142,
+     "what": "reg_data_count",
+     "points": 2,
+     "detail": [
+      "reg_data_count[3]:0->1",
+      "reg_data_count[3]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 178,
+     "what": "w_input_burst_len",
+     "points": 2,
+     "detail": [
+      "w_input_burst_len[1]:0->1",
+      "w_input_burst_len[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 182,
+     "what": "w_wr_cmd_rd_data",
+     "points": 2,
+     "detail": [
+      "w_wr_cmd_rd_data[15]:1->0",
+      "w_wr_cmd_rd_data[17]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 200,
+     "what": "w_rd_rsp_wr_data",
+     "points": 2,
+     "detail": [
+      "w_rd_rsp_wr_data[0]:0->1",
+      "w_rd_rsp_wr_data[0]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 201,
+     "what": "w_rd_rsp_rd_data",
+     "points": 2,
+     "detail": [
+      "w_rd_rsp_rd_data[0]:0->1",
+      "w_rd_rsp_rd_data[0]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 207,
+     "what": "w_wr_rsp_wr_data",
+     "points": 2,
+     "detail": [
+      "w_wr_rsp_wr_data[1]:0->1",
+      "w_wr_rsp_wr_data[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 208,
+     "what": "w_wr_rsp_rd_data",
+     "points": 2,
+     "detail": [
+      "w_wr_rsp_rd_data[0]:0->1",
+      "w_wr_rsp_rd_data[0]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 219,
+     "what": "w_axi_aw_size",
+     "points": 2,
+     "detail": [
+      "w_axi_aw_size[2]:0->1",
+      "w_axi_aw_size[2]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 231,
+     "what": "w_axi_b_sts",
+     "points": 2,
+     "detail": [
+      "w_axi_b_sts[1]:0->1",
+      "w_axi_b_sts[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 245,
+     "what": "w_axi_r_sts",
+     "points": 2,
+     "detail": [
+      "w_axi_r_sts[0]:0->1",
+      "w_axi_r_sts[0]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 274,
+     "what": "w_cap_pop",
+     "points": 2,
+     "detail": [
+      "w_cap_pop:0->1",
+      "w_cap_pop:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_top.sv",
+     "line": 47,
+     "what": "o_axi_awsize",
+     "points": 2,
+     "detail": [
+      "o_axi_awsize[2]:0->1",
+      "o_axi_awsize[2]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_top.sv",
+     "line": 64,
+     "what": "i_axi_bresp",
+     "points": 2,
+     "detail": [
+      "i_axi_bresp[1]:0->1",
+      "i_axi_bresp[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_top.sv",
+     "line": 83,
+     "what": "i_axi_rresp",
+     "points": 2,
+     "detail": [
+      "i_axi_rresp[0]:0->1",
+      "i_axi_rresp[0]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_rd.sv",
+     "line": 99,
+     "what": "w_rd_blk",
+     "points": 2,
+     "detail": [
+      "w_rd_blk:0->1",
+      "w_rd_blk:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_top.sv",
+     "line": 54,
+     "what": "o_sw_rst_busy",
+     "points": 2,
+     "detail": [
+      "o_sw_rst_busy:0->1",
+      "o_sw_rst_busy:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 52,
+     "what": "o_sw_rst_busy",
+     "points": 2,
+     "detail": [
+      "o_sw_rst_busy:0->1",
+      "o_sw_rst_busy:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 82,
+     "what": "reg_sw_rst_busy",
+     "points": 2,
+     "detail": [
+      "reg_sw_rst_busy:0->1",
+      "reg_sw_rst_busy:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_vlsit_sfifo_wr.sv",
+     "line": 104,
+     "what": "w_wr_blk",
+     "points": 2,
+     "detail": [
+      "w_wr_blk:0->1",
+      "w_wr_blk:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 255,
+     "what": "w_idle_cmd_htrans",
+     "points": 1,
+     "detail": [
+      "w_idle_cmd_htrans[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 264,
+     "what": "w_cap_cmd_htrans",
+     "points": 1,
+     "detail": [
+      "w_cap_cmd_htrans[1]:1->0"
+     ]
+    },
+    {
+     "metric": "toggle",
+     "file": "m_ahb2axi_ctrl.sv",
+     "line": 266,
+     "what": "w_cap_cmd_wr",
+     "points": 1,
+     "detail": [
+      "w_cap_cmd_wr:1->0"
+     ]
+    },
+    {
+     "metric": "functional",
+     "file": "nnc_cov.sv",
+     "line": 0,
+     "what": "COVP-004",
+     "points": 1,
+     "detail": []
+    },
+    {
+     "metric": "functional",
+     "file": "nnc_cov.sv",
+     "line": 0,
+     "what": "COVP-012",
+     "points": 1,
+     "detail": []
+    },
+    {
+     "metric": "functional",
+     "file": "nnc_cov.sv",
+     "line": 0,
+     "what": "COVP-038",
+     "points": 1,
+     "detail": []
+    },
+    {
+     "metric": "functional",
+     "file": "nnc_cov.sv",
+     "line": 0,
+     "what": "COVP-039",
+     "points": 1,
+     "detail": []
+    },
+    {
+     "metric": "functional",
+     "file": "nnc_cov.sv",
+     "line": 0,
+     "what": "COVP-040",
+     "points": 1,
+     "detail": []
+    }
+   ],
+   "design_scope": {
+    "rule": "left out: never-executed points of package code that the elaborated design does not contain (Verilator instruments every function of an imported package, called or not), and toggles of signal bits that Yosys constant propagation proves constant with the run's parameters, except on signals where the simulator recorded a toggle of such a bit (then the signal counts whole)",
+    "left_out": {
+     "line": 0,
+     "toggle": 2096
+    },
+    "scope_conflicts": 0,
+    "signals_kept_whole": [],
+    "all_points": {
+     "block": {
+      "hit": 395,
+      "total": 494,
+      "percent": 80.0
+     },
+     "expression": {
+      "hit": 476,
+      "total": 610,
+      "percent": 78.0
+     },
+     "line": {
+      "hit": 959,
+      "total": 1059,
+      "percent": 90.6
+     },
+     "toggle": {
+      "hit": 8190,
+      "total": 11998,
+      "percent": 68.3
+     }
+    }
+   }
+  },
+  "functional": {
+   "COVP-001": 1220,
+   "COVP-002": 1,
+   "COVP-003": 2505,
+   "COVP-004": 0,
+   "COVP-005": 32,
+   "COVP-006": 32,
+   "COVP-007": 3,
+   "COVP-008": 2,
+   "COVP-009": 10,
+   "COVP-010": 10,
+   "COVP-011": 8,
+   "COVP-012": 0,
+   "COVP-013": 1,
+   "COVP-014": 3976,
+   "COVP-015": 563,
+   "COVP-016": 3,
+   "COVP-017": 3,
+   "COVP-018": 1202,
+   "COVP-019": 3436342,
+   "COVP-020": 26,
+   "COVP-021": 12,
+   "COVP-022": 14,
+   "COVP-023": 41,
+   "COVP-024": 40,
+   "COVP-025": 2057,
+   "COVP-026": 577,
+   "COVP-027": 180,
+   "COVP-028": 56,
+   "COVP-029": 3,
+   "COVP-030": 1703,
+   "COVP-031": 740,
+   "COVP-032": 568,
+   "COVP-033": 529,
+   "COVP-034": 556,
+   "COVP-035": 10,
+   "COVP-036": 1,
+   "COVP-037": 1346,
+   "COVP-038": 0,
+   "COVP-039": 0,
+   "COVP-040": 0
+  },
+  "make_rc": 2,
+  "built": true,
+  "build_errors": [],
+  "status": "ran",
+  "params": {
+   "PARA_RD_ID_COUNT": 1,
+   "PARA_WR_ID_COUNT": 1
+  },
+  "seed": 1
+ }
+}

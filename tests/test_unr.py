@@ -109,6 +109,10 @@ class Unr(unittest.TestCase):
         self.assertEqual(unr.parse_statuses(text + g + "nnc_unr_top.nnc_control PASS\n"), {})
         self.assertTrue(unr.vacuous(text + g + "nnc_unr_top.nnc_control PASS\n"))
         self.assertEqual(len(unr.parse_statuses(text + g + "nnc_unr_top.nnc_control FAIL\n")), 2)
+        # several controls: one that FAILs is enough (a bit of another configuration's runs may be constant here)
+        two = "nnc_unr_top.nnc_control PASS\nnnc_unr_top.nnc_control1 FAIL\n"
+        self.assertEqual(len(unr.parse_statuses(text + g + two)), 2)
+        self.assertTrue(unr.vacuous(text + g + "nnc_unr_top.nnc_control PASS\nnnc_unr_top.nnc_control1 PASS\n"))
 
     def test_control_bit(self):
         with tempfile.TemporaryDirectory() as d:
@@ -138,6 +142,82 @@ class Unr(unittest.TestCase):
             src.write_text("module m_top; endmodule\n", encoding="utf-8")
             sby = unr.build("m_top", IFACE, [src], {}, [], "verilog", info, groups, control=("u_rd.cnt", 4))["UNR_000.sby"]
         self.assertIn("rename \\u_rd.cnt nnc_pc\ncd ..\nexpose w:nnc_pc\n", sby)
+        # several controls, each of another signal
+        ctl = unr.pick_controls([("u_rd.cnt", 4), ("u_rd.cnt", 4), ("gen_c[0].u_c.q", 0), ("d", 0)], info, set())
+        self.assertEqual(ctl, [("u_rd.cnt", 4), ("gen_c[0].u_c.q", 0)])
+        w2 = unr.wrapper(info, IFACE, groups[0], True, ctl)
+        self.assertIn(".nnc_pc(nnc_sc)", w2)
+        self.assertIn(".nnc_pc1(nnc_sc1)", w2)
+        self.assertIn("nnc_control1: assert (nnc_sc1 == nnc_fc1);", w2)
+        with tempfile.TemporaryDirectory() as d:
+            src = Path(d) / "m.sv"
+            src.write_text("module m_top; endmodule\n", encoding="utf-8")
+            sby2 = unr.build("m_top", IFACE, [src], {}, [], "verilog", info, groups, control=ctl)["UNR_000.sby"]
+        self.assertIn("rename \\gen_c[0].u_c.q nnc_pc1\n", sby2)
+        self.assertIn("expose w:nnc_pc w:nnc_pc1\n", sby2)
+
+    def test_instances_merged_by_verilator(self):
+        from nnc.coverage import star_name, with_stars
+        self.assertEqual(star_name("u.gen_f[3].u_f.q"), "u.gen_f[*].u_f.q")
+        self.assertEqual(star_name("u.q[3]"), "u.q[3]")                               # a bit select stays
+        self.assertEqual(with_stars({"g[0].q": {1, 2}, "g[1].q": {2}}, ["g[0].q", "g[1].q", "w"])["g[*].q"], {2})
+        self.assertNotIn("g[*].q", with_stars({"g[0].q": {1}}, ["g[0].q", "g[1].q"]))   # not in every instance
+        info = {"wires": {"g[0].q": [4, 0, 0], "g[1].q": [4, 0, 0], "w": [1, 0, 0]}, "ports": {}}
+        cands = {"g[*].q": {1, 2, 3}, "w": {0}, "h[*].z": {0}}
+        flat, stars = unr.expand_instances(cands, info)
+        self.assertEqual(flat, {"g[0].q": {1, 2, 3}, "g[1].q": {1, 2, 3}, "w": {0}, "h[*].z": {0}})
+        self.assertEqual(stars, {"g[*].q": ["g[0].q", "g[1].q"]})
+        from collections import defaultdict
+        rec = {"proven": defaultdict(set, {"g[0].q": {1, 2}, "g[1].q": {1}, "w": {0}}),
+               "cex": defaultdict(set, {"g[1].q": {2}}), "open": defaultdict(set, {"g[0].q": {3}}), "inputs": []}
+        unr.collapse_instances(rec, stars, cands)
+        self.assertEqual(rec["proven"], {"g[*].q": {1}, "w": {0}})
+        self.assertEqual(rec["cex"], {"g[*].q": {2}})
+        self.assertEqual(rec["open"], {"g[*].q": {3}})
+
+    def test_names_merged_where_instance_names_differ(self):
+        # Verilator writes * where the merged instance names differ ("u_data_in", "u_xdata_in" -> "u_*ata_in")
+        from collections import defaultdict
+        from nnc.coverage import star_members, with_stars
+        nets = ["u_reg.u_data_in.qe", "u_reg.u_xdata_in.qe", "u_reg.u_ctrl.qe", "u_reg.u_ata_in.qe"]
+        self.assertEqual(star_members(["u_reg.u_*ata_in.qe", "u_reg.u_ctrl.qe", "nomatch.*"], nets),
+                         {"u_reg.u_*ata_in.qe": ["u_reg.u_data_in.qe", "u_reg.u_xdata_in.qe", "u_reg.u_ata_in.qe"]})
+        bits = {"u_reg.u_data_in.qe": {0}, "u_reg.u_xdata_in.qe": {0}, "u_reg.u_ata_in.qe": {0}}
+        self.assertEqual(with_stars(bits, nets, ["u_reg.u_*ata_in.qe"])["u_reg.u_*ata_in.qe"], {0})
+        bits.pop("u_reg.u_ata_in.qe")                       # one matching net is not constant: the point is not
+        self.assertNotIn("u_reg.u_*ata_in.qe", with_stars(bits, nets, ["u_reg.u_*ata_in.qe"]))
+        info = {"wires": {n: [1, 0, 0] for n in nets + ["i_x", "u_*_y"]}, "ports": {}}
+        # a member that is also a candidate keeps its own result; a name that is a wire is not a pattern
+        cands = {"u_reg.u_*ata_in.qe": {0}, "u_reg.u_data_in.qe": {0}, "u_*_y": {0}}
+        flat, stars = unr.expand_instances(cands, info)
+        self.assertEqual(set(flat), set(nets) - {"u_reg.u_ctrl.qe"} | {"u_*_y"})
+        rec = {"proven": defaultdict(set, {"u_reg.u_data_in.qe": {0}, "u_reg.u_ata_in.qe": {0}, "u_*_y": {0}}),
+               "cex": defaultdict(set, {"u_reg.u_xdata_in.qe": {0}}), "open": defaultdict(set), "inputs": []}
+        unr.collapse_instances(rec, stars, cands)
+        self.assertEqual(dict(rec["proven"]), {"u_reg.u_data_in.qe": {0}, "u_*_y": {0}})
+        self.assertEqual(dict(rec["cex"]), {"u_reg.u_*ata_in.qe": {0}})
+        rec = {"proven": defaultdict(set), "cex": defaultdict(set), "open": defaultdict(set),
+               "inputs": ["u_reg.u_ata_in.qe"]}
+        unr.collapse_instances(rec, stars, cands)            # a member is an input: the merged name is not tried
+        self.assertEqual(rec["inputs"], ["u_reg.u_*ata_in.qe"])
+
+    def test_cut_modules(self):
+        cmds = unr.read_commands("t", ["a.sv"], {"P": 2}, ["X"], "verilog", ["m_sync"])
+        self.assertEqual(cmds.splitlines(), ["read_verilog -sv -DX -I. a.sv", "blackbox m_sync",
+                                             "hierarchy -top t -chparam P 2", "cutpoint -blackbox"])
+        self.assertNotIn("cutpoint", unr.read_commands("t", ["a.sv"], {}, [], "verilog"))
+        with self.assertRaises(ValueError):
+            unr.read_commands("t", ["a.sv"], {}, [], "slang", ["m_sync"])
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d) / "m_sync.sv").write_text("module m_sync;\n`ifdef SYN\n  reg q;\n`else\n  int s;\n`endif\n"
+                                               "endmodule\n", encoding="utf-8")
+            (Path(d) / "t.sv").write_text("module t; m_sync u(); endmodule\n", encoding="utf-8")
+            self.assertIsNone(unr.cut_check(Path(d), {"modules": ["m_sync"], "defines": ["SYN"]}))
+            self.assertIn("not define", unr.cut_check(Path(d), {"modules": ["m_sync", "x"], "defines": ["SYN"]}))
+            (Path(d) / "t.sv").write_text("module t;\n`ifndef SYN\n wire w;\n`endif\n m_sync u(); endmodule\n",
+                                          encoding="utf-8")
+            # the macro changes code outside the cut: refused
+            self.assertIn("t.sv tests SYN", unr.cut_check(Path(d), {"modules": ["m_sync"], "defines": ["SYN"]}))
 
     def test_record(self):
         a = {"proven": {"x": "0-3", "y": "1"}, "cex": {}, "open": {"z": "0"}, "absent": [], "inputs": []}
@@ -178,6 +258,16 @@ class Unr(unittest.TestCase):
                                 scope, [{"name": "a", "params": {}, "defines": []}], "verilog")
         self.assertIs(s, scope)
         self.assertIsNone(info)
+
+    def test_markdown_shows_only_this_runs_configurations(self):
+        rec = {"rtl_sha256": "0" * 64, "configs": {
+            "k1": {"name": "base", "proven": {"q": "0-1"}, "tasks": 1},
+            "k2": {"name": "old", "error": "no netlist", "tasks": 0}}}
+        md = unr.to_markdown("d", rec, ["k1"])
+        self.assertIn("Configuration base", md)
+        self.assertNotIn("Configuration old", md)
+        self.assertIn("1 record(s) of configurations that are not part of this run", md)
+        self.assertIn("Configuration old", unr.to_markdown("d", rec))
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 # Verification report — axil_regfile
 
-Generated 2026-11-24T02:01:13+00:00 by NNC Pipeline.
+Generated 2026-11-24T08:31:59+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -9,12 +9,12 @@ Generated 2026-11-24T02:01:13+00:00 by NNC Pipeline.
 | Rules | 193 — {'NOT_VERIFIED_BY_SIM': 22, 'VERIFIED': 171} |
 | Checks | 37 — {'PASS': 37} |
 | Tests | {'pass': 21} |
-| Run set | 7 runs in 4 configurations (base, min, max, full_a7); primary base.s1 |
+| Run set | 8 runs in 5 configurations (base, min, max, full_a7, xrand); primary base.s1 |
 | Integration | OK |
 | Code coverage (RTL), line | 100.0 % (565/565 lines) |
 | Code coverage (RTL), block | 100.0 % (120/120 statement blocks and branch arms) |
 | Code coverage (RTL), expression | 95.7 % (358/374 condition terms) |
-| Code coverage (RTL), toggle | 97.2 % (6844/7040 bit toggles 0->1 and 1->0); 104 points left out (constant bits; 40 of them proven constant after reset by formal, work/unr.md), all points 95.8 % (6844/7144) |
+| Code coverage (RTL), toggle | 99.2 % (6844/6896 bit toggles 0->1 and 1->0); 248 points left out (constant bits; 40 of them proven constant after reset by formal, work/unr.md), all points 95.8 % (6844/7144) |
 | Code coverage (RTL), functional | 100.0 % (40/40 cover points of the specification) |
 | Mutation score | 93.1 % (27 killed / 2 survived / 0 not compiled) |
 | Surviving mutants, formal equivalence (`nnc mutate-equiv`) | {'PROVEN': 2}; score without the proven-equivalent mutants 100.0 % |
@@ -33,7 +33,7 @@ Generated 2026-11-24T02:01:13+00:00 by NNC Pipeline.
 | Every selected check PASS (no FAIL, NOT_HIT, NOT_RUN) | met |
 | Every planned check selected | met |
 | Every rule in a check or declared not verifiable | met |
-| Every run of the run set built and ran | met — 7 runs |
+| Every run of the run set built and ran | met — 8 runs |
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | met — 58 rules with attributed mutants |
 | Clock/reset domain crossings: no structural violation (RR-33) | met — clean: no crossing (work/cdc.md) |
@@ -52,6 +52,7 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 | max.s1 — CFG-MAX | PARA_NUM_REGS=16, PARA_ADDR_W=16 | — | — | ran | {'pass': 21} | none | 1 |
 | max.s2 — CFG-MAX | PARA_NUM_REGS=16, PARA_ADDR_W=16 | — | — | ran | {'pass': 21} | none | 1 |
 | full_a7.s1 — CFG-FULL-A7 | PARA_NUM_REGS=16, PARA_ADDR_W=7 | — | — | ran | {'pass': 21} | none | 2 |
+| xrand.s1 — the default configuration with random initial values of every variable without a reset (ROADMAP 23.4): a check that passes only because flops start at 0 fails here; its coverage is not merged | defaults | — | — | ran | {'pass': 21} | none | 3 |
 
 ## Gates
 
@@ -68,43 +69,43 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 
 | Check | Kind | Title | Status | Evidence |
 |---|---|---|---|---|
-| CHK-001 | assertion | o_s_axi_arready follows the held-read-address state | **PASS** | hits 93857, fails 0; hit in 7/7 runs; formal PROVEN |
-| CHK-002 | assertion | o_s_axi_rvalid is exactly predicted: 1 from Ear until Er, otherwise 0 | **PASS** | hits 93857, fails 0; hit in 7/7 runs; formal PROVEN |
-| CHK-003 | assertion | R response held stable under back-pressure | **PASS** | hits 6093, fails 0; hit in 7/7 runs; formal PROVEN |
-| CHK-004 | assertion | o_s_axi_rresp never EXOKAY or DECERR | **PASS** | hits 45271, fails 0; hit in 7/7 runs; formal PROVEN |
-| CHK-005 | assertion | Read data and response match the value sampled at Ear | **PASS** | hits 45271, fails 0; hit in 7/7 runs; formal BOUNDED |
-| CHK-006 | assertion | o_s_axi_awready follows the held-write-address state | **PASS** | hits 93857, fails 0; hit in 7/7 runs; formal PROVEN |
-| CHK-007 | assertion | o_s_axi_wready follows the held-write-data state | **PASS** | hits 93857, fails 0; hit in 7/7 runs; formal PROVEN |
-| CHK-008 | assertion | o_s_axi_bvalid is exactly predicted: 1 from Ec until Eb, otherwise 0 | **PASS** | hits 93857, fails 0; hit in 7/7 runs; formal PROVEN |
-| CHK-009 | assertion | B response held stable under back-pressure | **PASS** | hits 5643, fails 0; hit in 7/7 runs; formal PROVEN |
-| CHK-010 | assertion | o_s_axi_bresp never EXOKAY or DECERR | **PASS** | hits 12335, fails 0; hit in 7/7 runs; formal PROVEN |
-| CHK-011 | assertion | o_s_axi_bresp matches the decode of the address taken at Ea | **PASS** | hits 12335, fails 0; hit in 7/7 runs; formal PROVEN |
-| CHK-012 | assertion | o_regs equals the reference register model every cycle | **PASS** | hits 94088, fails 0; hit in 7/7 runs; formal PROVEN |
-| CHK-013 | assertion | Handshake outputs are 0 while reset is asserted; no transfer while i_rst_n=0 | **PASS** | hits 995, fails 0; hit in 7/7 runs; formal PROVEN |
-| CHK-014 | assertion | Data outputs and o_regs are 0 while reset is asserted | **PASS** | hits 995, fails 0; hit in 7/7 runs; formal PROVEN |
-| CHK-015 | assertion | No transfer at R1 | **PASS** | hits 231, fails 0; hit in 7/7 runs; formal PROVEN |
-| CHK-016 | assertion | Readies are 1 from R1 | **PASS** | hits 231, fails 0; hit in 7/7 runs; formal PROVEN |
-| CHK-017 | assertion | Outputs change only at a rising edge of i_clk or at reset assertion | **PASS** | hits 94088, fails 0; hit in 7/7 runs; formal UNSUPPORTED |
-| CHK-018 | test | R channel back-pressure and blocking of new AR | **PASS** | test_chk_018_r_backpressure; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1 |
-| CHK-019 | test | Write address/data ordering: AW first, W first, same edge | **PASS** | test_chk_019_write_ordering; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1 |
-| CHK-020 | test | B channel back-pressure and blocking of new AW/W | **PASS** | test_chk_020_b_backpressure; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1 |
+| CHK-001 | assertion | o_s_axi_arready follows the held-read-address state | **PASS** | hits 97443, fails 0; hit in 8/8 runs; formal PROVEN |
+| CHK-002 | assertion | o_s_axi_rvalid is exactly predicted: 1 from Ear until Er, otherwise 0 | **PASS** | hits 97443, fails 0; hit in 8/8 runs; formal PROVEN |
+| CHK-003 | assertion | R response held stable under back-pressure | **PASS** | hits 6901, fails 0; hit in 8/8 runs; formal PROVEN |
+| CHK-004 | assertion | o_s_axi_rresp never EXOKAY or DECERR | **PASS** | hits 46881, fails 0; hit in 8/8 runs; formal PROVEN |
+| CHK-005 | assertion | Read data and response match the value sampled at Ear | **PASS** | hits 46881, fails 0; hit in 8/8 runs; formal BOUNDED |
+| CHK-006 | assertion | o_s_axi_awready follows the held-write-address state | **PASS** | hits 97443, fails 0; hit in 8/8 runs; formal PROVEN |
+| CHK-007 | assertion | o_s_axi_wready follows the held-write-data state | **PASS** | hits 97443, fails 0; hit in 8/8 runs; formal PROVEN |
+| CHK-008 | assertion | o_s_axi_bvalid is exactly predicted: 1 from Ec until Eb, otherwise 0 | **PASS** | hits 97443, fails 0; hit in 8/8 runs; formal PROVEN |
+| CHK-009 | assertion | B response held stable under back-pressure | **PASS** | hits 6458, fails 0; hit in 8/8 runs; formal PROVEN |
+| CHK-010 | assertion | o_s_axi_bresp never EXOKAY or DECERR | **PASS** | hits 13985, fails 0; hit in 8/8 runs; formal PROVEN |
+| CHK-011 | assertion | o_s_axi_bresp matches the decode of the address taken at Ea | **PASS** | hits 13985, fails 0; hit in 8/8 runs; formal PROVEN |
+| CHK-012 | assertion | o_regs equals the reference register model every cycle | **PASS** | hits 97707, fails 0; hit in 8/8 runs; formal PROVEN |
+| CHK-013 | assertion | Handshake outputs are 0 while reset is asserted; no transfer while i_rst_n=0 | **PASS** | hits 1136, fails 0; hit in 8/8 runs; formal PROVEN |
+| CHK-014 | assertion | Data outputs and o_regs are 0 while reset is asserted | **PASS** | hits 1136, fails 0; hit in 8/8 runs; formal PROVEN |
+| CHK-015 | assertion | No transfer at R1 | **PASS** | hits 264, fails 0; hit in 8/8 runs; formal PROVEN |
+| CHK-016 | assertion | Readies are 1 from R1 | **PASS** | hits 264, fails 0; hit in 8/8 runs; formal PROVEN |
+| CHK-017 | assertion | Outputs change only at a rising edge of i_clk or at reset assertion | **PASS** | hits 97707, fails 0; hit in 8/8 runs; formal UNSUPPORTED |
+| CHK-018 | test | R channel back-pressure and blocking of new AR | **PASS** | test_chk_018_r_backpressure; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1, xrand.s1 |
+| CHK-019 | test | Write address/data ordering: AW first, W first, same edge | **PASS** | test_chk_019_write_ordering; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1, xrand.s1 |
+| CHK-020 | test | B channel back-pressure and blocking of new AW/W | **PASS** | test_chk_020_b_backpressure; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1, xrand.s1 |
 | CHK-021 | test | CFG-MIN map (PARA_NUM_REGS=1, PARA_ADDR_W=7) | **PASS** | test_chk_021_cfg_min_map; verified in min.s1, min.s2 |
 | CHK-022 | test | PARA_NUM_REGS=16 map (CFG-FULL-A7, also CFG-MAX) | **PASS** | test_chk_022_full_bank_map; verified in max.s1, max.s2, full_a7.s1 |
 | CHK-023 | test | PARA_ADDR_W=16 high-bit decode (CFG-MAX) | **PASS** | test_chk_023_high_bit_decode; verified in max.s1, max.s2 |
-| CHK-024 | test | Back-to-back throughput, writes and reads alone and together | **PASS** | test_chk_024_back_to_back; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1 |
-| CHK-025 | test | Concurrent read and write of the same register around Ec | **PASS** | test_chk_025_concurrent_same_register; verified in base.s1, base.s2, max.s1, max.s2, full_a7.s1 |
-| CHK-026 | test | Back-pressure on one direction does not stall the other | **PASS** | test_chk_026_backpressure_isolation; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1 |
-| CHK-027 | test | Register map and aliasing: unique values in every register, full address sweep | **PASS** | test_chk_027_map_and_aliasing; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1 |
-| CHK-028 | test | Status register: sampling at Ear, hold under back-pressure, writes ignored | **PASS** | test_chk_028_status_register; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1 |
-| CHK-029 | test | Unmapped addresses: SLVERR, rdata 0, no register change, normal timing | **PASS** | test_chk_029_unmapped_addresses; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1 |
-| CHK-030 | test | Unmapped access does not stall or disturb other channels or the next transaction | **PASS** | test_chk_030_unmapped_no_stall; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1 |
-| CHK-031 | test | Address bits [1:0] and AxPROT have no effect | **PASS** | test_chk_031_addr_lsb_and_prot_ignored; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1 |
-| CHK-032 | test | All 16 write-strobe values with byte-distinct data | **PASS** | test_chk_032_write_strobes; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1 |
-| CHK-033 | test | Power-on reset and post-reset idle state | **PASS** | test_chk_033_power_on_reset; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1 |
-| CHK-034 | test | Asynchronous reset assertion mid-cycle with transactions in progress | **PASS** | test_chk_034_async_reset_mid_cycle; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1 |
-| CHK-035 | test | Reset discards held write address, held write data and pending responses | **PASS** | test_chk_035_reset_discards_held_state; verified in base.s1, base.s2, max.s1, max.s2, full_a7.s1 |
-| CHK-036 | test | Valids held at 1 through reset become new requests after R1 | **PASS** | test_chk_036_valids_through_reset; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1 |
-| CHK-037 | test | No combinational input-to-output path; readies do not wait for valids | **PASS** | test_chk_037_no_combinational_path; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1 |
+| CHK-024 | test | Back-to-back throughput, writes and reads alone and together | **PASS** | test_chk_024_back_to_back; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1, xrand.s1 |
+| CHK-025 | test | Concurrent read and write of the same register around Ec | **PASS** | test_chk_025_concurrent_same_register; verified in base.s1, base.s2, max.s1, max.s2, full_a7.s1, xrand.s1 |
+| CHK-026 | test | Back-pressure on one direction does not stall the other | **PASS** | test_chk_026_backpressure_isolation; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1, xrand.s1 |
+| CHK-027 | test | Register map and aliasing: unique values in every register, full address sweep | **PASS** | test_chk_027_map_and_aliasing; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1, xrand.s1 |
+| CHK-028 | test | Status register: sampling at Ear, hold under back-pressure, writes ignored | **PASS** | test_chk_028_status_register; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1, xrand.s1 |
+| CHK-029 | test | Unmapped addresses: SLVERR, rdata 0, no register change, normal timing | **PASS** | test_chk_029_unmapped_addresses; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1, xrand.s1 |
+| CHK-030 | test | Unmapped access does not stall or disturb other channels or the next transaction | **PASS** | test_chk_030_unmapped_no_stall; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1, xrand.s1 |
+| CHK-031 | test | Address bits [1:0] and AxPROT have no effect | **PASS** | test_chk_031_addr_lsb_and_prot_ignored; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1, xrand.s1 |
+| CHK-032 | test | All 16 write-strobe values with byte-distinct data | **PASS** | test_chk_032_write_strobes; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1, xrand.s1 |
+| CHK-033 | test | Power-on reset and post-reset idle state | **PASS** | test_chk_033_power_on_reset; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1, xrand.s1 |
+| CHK-034 | test | Asynchronous reset assertion mid-cycle with transactions in progress | **PASS** | test_chk_034_async_reset_mid_cycle; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1, xrand.s1 |
+| CHK-035 | test | Reset discards held write address, held write data and pending responses | **PASS** | test_chk_035_reset_discards_held_state; verified in base.s1, base.s2, max.s1, max.s2, full_a7.s1, xrand.s1 |
+| CHK-036 | test | Valids held at 1 through reset become new requests after R1 | **PASS** | test_chk_036_valids_through_reset; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1, xrand.s1 |
+| CHK-037 | test | No combinational input-to-output path; readies do not wait for valids | **PASS** | test_chk_037_no_combinational_path; verified in base.s1, base.s2, min.s1, min.s2, max.s1, max.s2, full_a7.s1, xrand.s1 |
 
 ## Requirement traceability (RTM)
 

@@ -1,6 +1,6 @@
 {
  "design": "c_pcpi_div",
- "date": "2026-11-23T10:20:00+00:00",
+ "date": "2026-11-24T06:48:18+00:00",
  "gates": [
   {
    "gate": "G1_rules",
@@ -39,56 +39,116 @@
   "detail": {
    "CHK-001": {
     "status": "PASS",
-    "hits": 275264,
-    "fails": 0
+    "hits": 550528,
+    "fails": 0,
+    "runs": {
+     "base.s1": {
+      "hits": 275264,
+      "fails": 0
+     },
+     "xrand.s1": {
+      "hits": 275264,
+      "fails": 0
+     }
+    }
    },
    "CHK-002": {
     "status": "PASS",
-    "hits": 8096,
-    "fails": 0
+    "hits": 16192,
+    "fails": 0,
+    "runs": {
+     "base.s1": {
+      "hits": 8096,
+      "fails": 0
+     },
+     "xrand.s1": {
+      "hits": 8096,
+      "fails": 0
+     }
+    }
    },
    "CHK-003": {
     "status": "PASS",
-    "hits": 8096,
-    "fails": 0
+    "hits": 16192,
+    "fails": 0,
+    "runs": {
+     "base.s1": {
+      "hits": 8096,
+      "fails": 0
+     },
+     "xrand.s1": {
+      "hits": 8096,
+      "fails": 0
+     }
+    }
    },
    "CHK-004": {
     "status": "PASS",
     "tests": [
      "test_chk_004_directed_divide"
-    ]
+    ],
+    "verified_in": [
+     "base.s1",
+     "xrand.s1"
+    ],
+    "failed_in": []
    },
    "CHK-005": {
     "status": "PASS",
     "tests": [
      "test_chk_005_random_divide",
      "test_regression_random"
-    ]
+    ],
+    "verified_in": [
+     "base.s1",
+     "xrand.s1"
+    ],
+    "failed_in": []
    },
    "CHK-006": {
     "status": "PASS",
     "tests": [
      "test_chk_006_divide_by_zero"
-    ]
+    ],
+    "verified_in": [
+     "base.s1",
+     "xrand.s1"
+    ],
+    "failed_in": []
    },
    "CHK-007": {
     "status": "PASS",
     "tests": [
      "test_chk_007_signed_overflow"
-    ]
+    ],
+    "verified_in": [
+     "base.s1",
+     "xrand.s1"
+    ],
+    "failed_in": []
    },
    "CHK-008": {
     "status": "PASS",
     "tests": [
      "test_chk_008_pcpi_handshake",
      "test_regression_random"
-    ]
+    ],
+    "verified_in": [
+     "base.s1",
+     "xrand.s1"
+    ],
+    "failed_in": []
    },
    "CHK-009": {
     "status": "PASS",
     "tests": [
      "test_chk_009_idle_after_reset"
-    ]
+    ],
+    "verified_in": [
+     "base.s1",
+     "xrand.s1"
+    ],
+    "failed_in": []
    }
   }
  },
@@ -246,9 +306,68 @@
       "percent": 100.0
      }
     }
-   }
+   },
+   "scope": "merged over 1 run(s) of the run set; not merged: xrand.s1 (x_init: toggles before the first reset are not design activity)"
   },
-  "run_set": null
+  "run_set": {
+   "primary": "base.s1",
+   "failed_runs": [],
+   "runs": [
+    {
+     "label": "base.s1",
+     "config": "base",
+     "seed": 1,
+     "note": "the design configuration",
+     "overrides": {},
+     "params": {},
+     "opts": {
+      "defines": [],
+      "plusargs": ""
+     },
+     "clock_periods": {},
+     "status": "ran",
+     "tests": {
+      "pass": 7
+     },
+     "assertions_failing": [],
+     "not_verifiable": [],
+     "coverage_percent": {
+      "line": 100.0,
+      "block": 100.0,
+      "expression": 100.0,
+      "toggle": 100.0,
+      "functional": 85.7
+     }
+    },
+    {
+     "label": "xrand.s1",
+     "config": "xrand",
+     "seed": 1,
+     "note": "the design configuration with random initial values of every variable without a reset: a check that passes only because flops start at 0 fails here",
+     "overrides": {},
+     "params": {},
+     "opts": {
+      "defines": [],
+      "plusargs": "",
+      "x_init": "random"
+     },
+     "clock_periods": {},
+     "status": "ran",
+     "tests": {
+      "pass": 7
+     },
+     "assertions_failing": [],
+     "not_verifiable": [],
+     "coverage_percent": {
+      "line": 100.0,
+      "block": 100.0,
+      "expression": 100.0,
+      "toggle": 100.0,
+      "functional": 85.7
+     }
+    }
+   ]
+  }
  },
  "mutation": {
   "count": 12,

@@ -6,31 +6,43 @@ RTL SHA-256 `920ff6a96ce25dbf...`
 
 ## Configuration straps_off (`0241edb598abb35f`)
 
-Parameters {"GpioAsyncOn": "1", "GpioAsHwStrapsEn": "0"}; macros none; clocks free (multiclock on); 2 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`.
+Parameters {"GpioAsyncOn": "1", "GpioAsHwStrapsEn": "0"}; macros none; clocks free (multiclock on); 7 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
 
 | Result | Bits | Signals |
 |---|---|---|
-| PROVEN constant | 237 | 68 |
-| counterexample | 23 | 2 |
-| no result (time limit) | 0 | 0 |
-| not in this netlist | | 128 |
+| PROVEN constant | 297 | 89 |
+| counterexample | 430 | 19 |
+| no result (time limit) | 28 | 2 |
+| not in this netlist | | 0 |
 | input ports (free in the model) | | 2 |
 
 PROVEN constant after the first reset:
 
 - `o_d_intg_err` [0]
 - `o_d_opcode` [1-2]
+- `tl_d2h` [15,63-64]
+- `u_*_chk.u_chk.data_o` [43-56]
+- `u_*_chk.u_chk.err_o` [1]
+- `u_*_chk.u_chk.syndrome_o` [1-6]
+- `u_alert_receiver.alert_rx_o` [2-3]
 - `u_alert_receiver.ping_ok_o` [0]
 - `u_alert_receiver.ping_tog_dn` [0]
 - `u_alert_receiver.ping_tog_nq` [0]
 - `u_alert_receiver.ping_tog_pd` [0]
 - `u_alert_receiver.ping_tog_pq` [0]
+- `u_gpio.gen_alert_tx[0].u_prim_alert_sender.alert_rx_i` [2-3]
 - `u_gpio.gen_alert_tx[0].u_prim_alert_sender.ping_event` [0]
 - `u_gpio.gen_alert_tx[0].u_prim_alert_sender.ping_n` [0]
 - `u_gpio.gen_alert_tx[0].u_prim_alert_sender.ping_p` [0]
 - `u_gpio.gen_alert_tx[0].u_prim_alert_sender.ping_set_d` [0]
 - `u_gpio.gen_alert_tx[0].u_prim_alert_sender.ping_set_q` [0]
 - `u_gpio.gen_alert_tx[0].u_prim_alert_sender.ping_trigger` [0]
+- `u_gpio.racl_error_o` [36]
+- `u_gpio.tl_o` [15,63-64]
+- `u_gpio.u_reg.racl_error_o` [36]
+- `u_gpio.u_reg.tl_o` [15,63-64]
+- `u_gpio.u_reg.tl_o_pre` [63-64]
+- `u_gpio.u_reg.tl_reg_d2h` [63-64]
 - `u_gpio.u_reg.u_chk.data_err` [0]
 - `u_gpio.u_reg.u_chk.err` [1]
 - `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.data_err` [0-1]
@@ -46,9 +58,16 @@ PROVEN constant after the first reset:
 - `u_gpio.u_reg.u_prim_reg_we_check.u_prim_onehot_check.oh0_err` [0]
 - `u_gpio.u_reg.u_prim_reg_we_check.u_prim_onehot_check.oh_i` [4,16-17]
 - `u_gpio.u_reg.u_reg_if.rspop_q` [1-2]
+- `u_gpio.u_reg.u_reg_if.tl_o` [63-64]
+- `u_gpio.u_reg.u_reg_if.tl_o_pre` [63-64]
 - `u_gpio.u_reg.u_reg_if.u_err.instr_type_err` [0]
+- `u_gpio.u_reg.u_reg_if.u_rsp_intg_gen.tl_i` [63-64]
+- `u_gpio.u_reg.u_reg_if.u_rsp_intg_gen.tl_o` [63-64]
+- `u_gpio.u_reg.u_rsp_intg_gen.gen_rsp_intg.rsp` [4-5]
 - `u_gpio.u_reg.u_rsp_intg_gen.gen_rsp_intg.unused_payload` [4-5]
 - `u_gpio.u_reg.u_rsp_intg_gen.rsp_intg` [6]
+- `u_gpio.u_reg.u_rsp_intg_gen.tl_i` [63-64]
+- `u_gpio.u_reg.u_rsp_intg_gen.tl_o` [15,63-64]
 - `u_gpio.u_reg.unused_per_pin_io_0_flds_we` [0]
 - `u_gpio.u_reg.unused_per_pin_io_10_flds_we` [0]
 - `u_gpio.u_reg.unused_per_pin_io_11_flds_we` [0]
@@ -84,36 +103,50 @@ PROVEN constant after the first reset:
 - `u_gpio.u_reg.unused_policy_sel` [0]
 - `u_gpio.unused_per_pin_intr_ctrl_qe` [0-31]
 - `u_rsp_intg_chk.err_o` [0]
+- `u_rsp_intg_chk.rsp` [4-5]
 - `u_rsp_intg_chk.rsp_err` [0-1]
+- `u_rsp_intg_chk.tl_i` [15,63-64]
 - `u_rsp_intg_chk.unused_tl` [0]
 
 ## Configuration base (`0ad0b589fa1f8e2c`)
 
-Parameters {"GpioAsyncOn": "1", "GpioAsHwStrapsEn": "1"}; macros none; clocks free (multiclock on); 2 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`.
+Parameters {"GpioAsyncOn": "1", "GpioAsHwStrapsEn": "1"}; macros none; clocks free (multiclock on); 7 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
 
 | Result | Bits | Signals |
 |---|---|---|
-| PROVEN constant | 237 | 68 |
-| counterexample | 23 | 2 |
-| no result (time limit) | 0 | 0 |
-| not in this netlist | | 128 |
+| PROVEN constant | 297 | 89 |
+| counterexample | 430 | 19 |
+| no result (time limit) | 28 | 2 |
+| not in this netlist | | 0 |
 | input ports (free in the model) | | 2 |
 
 PROVEN constant after the first reset:
 
 - `o_d_intg_err` [0]
 - `o_d_opcode` [1-2]
+- `tl_d2h` [15,63-64]
+- `u_*_chk.u_chk.data_o` [43-56]
+- `u_*_chk.u_chk.err_o` [1]
+- `u_*_chk.u_chk.syndrome_o` [1-6]
+- `u_alert_receiver.alert_rx_o` [2-3]
 - `u_alert_receiver.ping_ok_o` [0]
 - `u_alert_receiver.ping_tog_dn` [0]
 - `u_alert_receiver.ping_tog_nq` [0]
 - `u_alert_receiver.ping_tog_pd` [0]
 - `u_alert_receiver.ping_tog_pq` [0]
+- `u_gpio.gen_alert_tx[0].u_prim_alert_sender.alert_rx_i` [2-3]
 - `u_gpio.gen_alert_tx[0].u_prim_alert_sender.ping_event` [0]
 - `u_gpio.gen_alert_tx[0].u_prim_alert_sender.ping_n` [0]
 - `u_gpio.gen_alert_tx[0].u_prim_alert_sender.ping_p` [0]
 - `u_gpio.gen_alert_tx[0].u_prim_alert_sender.ping_set_d` [0]
 - `u_gpio.gen_alert_tx[0].u_prim_alert_sender.ping_set_q` [0]
 - `u_gpio.gen_alert_tx[0].u_prim_alert_sender.ping_trigger` [0]
+- `u_gpio.racl_error_o` [36]
+- `u_gpio.tl_o` [15,63-64]
+- `u_gpio.u_reg.racl_error_o` [36]
+- `u_gpio.u_reg.tl_o` [15,63-64]
+- `u_gpio.u_reg.tl_o_pre` [63-64]
+- `u_gpio.u_reg.tl_reg_d2h` [63-64]
 - `u_gpio.u_reg.u_chk.data_err` [0]
 - `u_gpio.u_reg.u_chk.err` [1]
 - `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.data_err` [0-1]
@@ -129,9 +162,16 @@ PROVEN constant after the first reset:
 - `u_gpio.u_reg.u_prim_reg_we_check.u_prim_onehot_check.oh0_err` [0]
 - `u_gpio.u_reg.u_prim_reg_we_check.u_prim_onehot_check.oh_i` [4,16-17]
 - `u_gpio.u_reg.u_reg_if.rspop_q` [1-2]
+- `u_gpio.u_reg.u_reg_if.tl_o` [63-64]
+- `u_gpio.u_reg.u_reg_if.tl_o_pre` [63-64]
 - `u_gpio.u_reg.u_reg_if.u_err.instr_type_err` [0]
+- `u_gpio.u_reg.u_reg_if.u_rsp_intg_gen.tl_i` [63-64]
+- `u_gpio.u_reg.u_reg_if.u_rsp_intg_gen.tl_o` [63-64]
+- `u_gpio.u_reg.u_rsp_intg_gen.gen_rsp_intg.rsp` [4-5]
 - `u_gpio.u_reg.u_rsp_intg_gen.gen_rsp_intg.unused_payload` [4-5]
 - `u_gpio.u_reg.u_rsp_intg_gen.rsp_intg` [6]
+- `u_gpio.u_reg.u_rsp_intg_gen.tl_i` [63-64]
+- `u_gpio.u_reg.u_rsp_intg_gen.tl_o` [15,63-64]
 - `u_gpio.u_reg.unused_per_pin_io_0_flds_we` [0]
 - `u_gpio.u_reg.unused_per_pin_io_10_flds_we` [0]
 - `u_gpio.u_reg.unused_per_pin_io_11_flds_we` [0]
@@ -167,36 +207,50 @@ PROVEN constant after the first reset:
 - `u_gpio.u_reg.unused_policy_sel` [0]
 - `u_gpio.unused_per_pin_intr_ctrl_qe` [0-31]
 - `u_rsp_intg_chk.err_o` [0]
+- `u_rsp_intg_chk.rsp` [4-5]
 - `u_rsp_intg_chk.rsp_err` [0-1]
+- `u_rsp_intg_chk.tl_i` [15,63-64]
 - `u_rsp_intg_chk.unused_tl` [0]
 
 ## Configuration sync_off (`8a9923866b8bed40`)
 
-Parameters {"GpioAsyncOn": "0", "GpioAsHwStrapsEn": "1"}; macros none; clocks free (multiclock on); 2 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`.
+Parameters {"GpioAsyncOn": "0", "GpioAsHwStrapsEn": "1"}; macros none; clocks free (multiclock on); 7 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
 
 | Result | Bits | Signals |
 |---|---|---|
-| PROVEN constant | 237 | 68 |
-| counterexample | 23 | 2 |
-| no result (time limit) | 0 | 0 |
-| not in this netlist | | 128 |
+| PROVEN constant | 297 | 89 |
+| counterexample | 430 | 19 |
+| no result (time limit) | 28 | 2 |
+| not in this netlist | | 0 |
 | input ports (free in the model) | | 2 |
 
 PROVEN constant after the first reset:
 
 - `o_d_intg_err` [0]
 - `o_d_opcode` [1-2]
+- `tl_d2h` [15,63-64]
+- `u_*_chk.u_chk.data_o` [43-56]
+- `u_*_chk.u_chk.err_o` [1]
+- `u_*_chk.u_chk.syndrome_o` [1-6]
+- `u_alert_receiver.alert_rx_o` [2-3]
 - `u_alert_receiver.ping_ok_o` [0]
 - `u_alert_receiver.ping_tog_dn` [0]
 - `u_alert_receiver.ping_tog_nq` [0]
 - `u_alert_receiver.ping_tog_pd` [0]
 - `u_alert_receiver.ping_tog_pq` [0]
+- `u_gpio.gen_alert_tx[0].u_prim_alert_sender.alert_rx_i` [2-3]
 - `u_gpio.gen_alert_tx[0].u_prim_alert_sender.ping_event` [0]
 - `u_gpio.gen_alert_tx[0].u_prim_alert_sender.ping_n` [0]
 - `u_gpio.gen_alert_tx[0].u_prim_alert_sender.ping_p` [0]
 - `u_gpio.gen_alert_tx[0].u_prim_alert_sender.ping_set_d` [0]
 - `u_gpio.gen_alert_tx[0].u_prim_alert_sender.ping_set_q` [0]
 - `u_gpio.gen_alert_tx[0].u_prim_alert_sender.ping_trigger` [0]
+- `u_gpio.racl_error_o` [36]
+- `u_gpio.tl_o` [15,63-64]
+- `u_gpio.u_reg.racl_error_o` [36]
+- `u_gpio.u_reg.tl_o` [15,63-64]
+- `u_gpio.u_reg.tl_o_pre` [63-64]
+- `u_gpio.u_reg.tl_reg_d2h` [63-64]
 - `u_gpio.u_reg.u_chk.data_err` [0]
 - `u_gpio.u_reg.u_chk.err` [1]
 - `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.data_err` [0-1]
@@ -212,9 +266,16 @@ PROVEN constant after the first reset:
 - `u_gpio.u_reg.u_prim_reg_we_check.u_prim_onehot_check.oh0_err` [0]
 - `u_gpio.u_reg.u_prim_reg_we_check.u_prim_onehot_check.oh_i` [4,16-17]
 - `u_gpio.u_reg.u_reg_if.rspop_q` [1-2]
+- `u_gpio.u_reg.u_reg_if.tl_o` [63-64]
+- `u_gpio.u_reg.u_reg_if.tl_o_pre` [63-64]
 - `u_gpio.u_reg.u_reg_if.u_err.instr_type_err` [0]
+- `u_gpio.u_reg.u_reg_if.u_rsp_intg_gen.tl_i` [63-64]
+- `u_gpio.u_reg.u_reg_if.u_rsp_intg_gen.tl_o` [63-64]
+- `u_gpio.u_reg.u_rsp_intg_gen.gen_rsp_intg.rsp` [4-5]
 - `u_gpio.u_reg.u_rsp_intg_gen.gen_rsp_intg.unused_payload` [4-5]
 - `u_gpio.u_reg.u_rsp_intg_gen.rsp_intg` [6]
+- `u_gpio.u_reg.u_rsp_intg_gen.tl_i` [63-64]
+- `u_gpio.u_reg.u_rsp_intg_gen.tl_o` [15,63-64]
 - `u_gpio.u_reg.unused_per_pin_io_0_flds_we` [0]
 - `u_gpio.u_reg.unused_per_pin_io_10_flds_we` [0]
 - `u_gpio.u_reg.unused_per_pin_io_11_flds_we` [0]
@@ -250,36 +311,50 @@ PROVEN constant after the first reset:
 - `u_gpio.u_reg.unused_policy_sel` [0]
 - `u_gpio.unused_per_pin_intr_ctrl_qe` [0-31]
 - `u_rsp_intg_chk.err_o` [0]
+- `u_rsp_intg_chk.rsp` [4-5]
 - `u_rsp_intg_chk.rsp_err` [0-1]
+- `u_rsp_intg_chk.tl_i` [15,63-64]
 - `u_rsp_intg_chk.unused_tl` [0]
 
 ## Configuration min (`a80ebf80db4f0986`)
 
-Parameters {"GpioAsyncOn": "0", "GpioAsHwStrapsEn": "0"}; macros none; clocks free (multiclock on); 2 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`.
+Parameters {"GpioAsyncOn": "0", "GpioAsHwStrapsEn": "0"}; macros none; clocks free (multiclock on); 7 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
 
 | Result | Bits | Signals |
 |---|---|---|
-| PROVEN constant | 237 | 68 |
-| counterexample | 23 | 2 |
-| no result (time limit) | 0 | 0 |
-| not in this netlist | | 128 |
+| PROVEN constant | 297 | 89 |
+| counterexample | 430 | 19 |
+| no result (time limit) | 28 | 2 |
+| not in this netlist | | 0 |
 | input ports (free in the model) | | 2 |
 
 PROVEN constant after the first reset:
 
 - `o_d_intg_err` [0]
 - `o_d_opcode` [1-2]
+- `tl_d2h` [15,63-64]
+- `u_*_chk.u_chk.data_o` [43-56]
+- `u_*_chk.u_chk.err_o` [1]
+- `u_*_chk.u_chk.syndrome_o` [1-6]
+- `u_alert_receiver.alert_rx_o` [2-3]
 - `u_alert_receiver.ping_ok_o` [0]
 - `u_alert_receiver.ping_tog_dn` [0]
 - `u_alert_receiver.ping_tog_nq` [0]
 - `u_alert_receiver.ping_tog_pd` [0]
 - `u_alert_receiver.ping_tog_pq` [0]
+- `u_gpio.gen_alert_tx[0].u_prim_alert_sender.alert_rx_i` [2-3]
 - `u_gpio.gen_alert_tx[0].u_prim_alert_sender.ping_event` [0]
 - `u_gpio.gen_alert_tx[0].u_prim_alert_sender.ping_n` [0]
 - `u_gpio.gen_alert_tx[0].u_prim_alert_sender.ping_p` [0]
 - `u_gpio.gen_alert_tx[0].u_prim_alert_sender.ping_set_d` [0]
 - `u_gpio.gen_alert_tx[0].u_prim_alert_sender.ping_set_q` [0]
 - `u_gpio.gen_alert_tx[0].u_prim_alert_sender.ping_trigger` [0]
+- `u_gpio.racl_error_o` [36]
+- `u_gpio.tl_o` [15,63-64]
+- `u_gpio.u_reg.racl_error_o` [36]
+- `u_gpio.u_reg.tl_o` [15,63-64]
+- `u_gpio.u_reg.tl_o_pre` [63-64]
+- `u_gpio.u_reg.tl_reg_d2h` [63-64]
 - `u_gpio.u_reg.u_chk.data_err` [0]
 - `u_gpio.u_reg.u_chk.err` [1]
 - `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.data_err` [0-1]
@@ -295,9 +370,16 @@ PROVEN constant after the first reset:
 - `u_gpio.u_reg.u_prim_reg_we_check.u_prim_onehot_check.oh0_err` [0]
 - `u_gpio.u_reg.u_prim_reg_we_check.u_prim_onehot_check.oh_i` [4,16-17]
 - `u_gpio.u_reg.u_reg_if.rspop_q` [1-2]
+- `u_gpio.u_reg.u_reg_if.tl_o` [63-64]
+- `u_gpio.u_reg.u_reg_if.tl_o_pre` [63-64]
 - `u_gpio.u_reg.u_reg_if.u_err.instr_type_err` [0]
+- `u_gpio.u_reg.u_reg_if.u_rsp_intg_gen.tl_i` [63-64]
+- `u_gpio.u_reg.u_reg_if.u_rsp_intg_gen.tl_o` [63-64]
+- `u_gpio.u_reg.u_rsp_intg_gen.gen_rsp_intg.rsp` [4-5]
 - `u_gpio.u_reg.u_rsp_intg_gen.gen_rsp_intg.unused_payload` [4-5]
 - `u_gpio.u_reg.u_rsp_intg_gen.rsp_intg` [6]
+- `u_gpio.u_reg.u_rsp_intg_gen.tl_i` [63-64]
+- `u_gpio.u_reg.u_rsp_intg_gen.tl_o` [15,63-64]
 - `u_gpio.u_reg.unused_per_pin_io_0_flds_we` [0]
 - `u_gpio.u_reg.unused_per_pin_io_10_flds_we` [0]
 - `u_gpio.u_reg.unused_per_pin_io_11_flds_we` [0]
@@ -333,6 +415,132 @@ PROVEN constant after the first reset:
 - `u_gpio.u_reg.unused_policy_sel` [0]
 - `u_gpio.unused_per_pin_intr_ctrl_qe` [0-31]
 - `u_rsp_intg_chk.err_o` [0]
+- `u_rsp_intg_chk.rsp` [4-5]
 - `u_rsp_intg_chk.rsp_err` [0-1]
+- `u_rsp_intg_chk.tl_i` [15,63-64]
 - `u_rsp_intg_chk.unused_tl` [0]
+
+# Branches never executed after the first reset (nnc/unrbranch.py)
+
+Each IF branch or case item below had no hit. A marker in an instrumented copy of the RTL (a flop that toggles when the branch runs, or in a combinational block a signal set to 1 there) was checked the same way; a copy is used only when Verilator shows every marker as the first statement of its branch. A branch PROVEN in every configuration leaves the block coverage with the lines that no other point covers. Key: instance, file, line, column, kind.
+
+## Configuration straps_off (`0241edb598abb35f`)
+
+1 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
+
+| Result | Branches |
+|---|---|
+| PROVEN never executed | 17 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+
+PROVEN never executed after the first reset:
+
+- `prim_alert_receiver.sv:178` if (column 11) in `u_alert_receiver`
+- `prim_alert_receiver.sv:207` elsif (column 9) in `u_alert_receiver`
+- `prim_alert_receiver.sv:229` case (column 7) in `u_alert_receiver`
+- `prim_alert_receiver.sv:236` elsif (column 7) in `u_alert_receiver`
+- `prim_alert_sender.sv:229` case (column 19) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:230` if (column 9) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:230` else (column 10) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:238` case (column 19) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:239` if (column 9) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:239` else (column 10) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:253` case (column 7) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `gpio_reg_top.sv:6161` if (column 5) in `u_gpio.u_reg`
+- `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_*ata_in`
+- `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_alert_test_regwen`
+- `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_hw_straps_data_in_valid`
+- `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_intr_enable`
+- `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_intr_state`
+
+## Configuration base (`0ad0b589fa1f8e2c`)
+
+1 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
+
+| Result | Branches |
+|---|---|
+| PROVEN never executed | 17 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+
+PROVEN never executed after the first reset:
+
+- `prim_alert_receiver.sv:178` if (column 11) in `u_alert_receiver`
+- `prim_alert_receiver.sv:207` elsif (column 9) in `u_alert_receiver`
+- `prim_alert_receiver.sv:229` case (column 7) in `u_alert_receiver`
+- `prim_alert_receiver.sv:236` elsif (column 7) in `u_alert_receiver`
+- `prim_alert_sender.sv:229` case (column 19) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:230` if (column 9) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:230` else (column 10) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:238` case (column 19) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:239` if (column 9) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:239` else (column 10) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:253` case (column 7) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `gpio_reg_top.sv:6161` if (column 5) in `u_gpio.u_reg`
+- `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_*ata_in`
+- `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_alert_test_regwen`
+- `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_hw_straps_data_in_valid`
+- `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_intr_enable`
+- `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_intr_state`
+
+## Configuration sync_off (`8a9923866b8bed40`)
+
+1 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
+
+| Result | Branches |
+|---|---|
+| PROVEN never executed | 17 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+
+PROVEN never executed after the first reset:
+
+- `prim_alert_receiver.sv:178` if (column 11) in `u_alert_receiver`
+- `prim_alert_receiver.sv:207` elsif (column 9) in `u_alert_receiver`
+- `prim_alert_receiver.sv:229` case (column 7) in `u_alert_receiver`
+- `prim_alert_receiver.sv:236` elsif (column 7) in `u_alert_receiver`
+- `prim_alert_sender.sv:229` case (column 19) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:230` if (column 9) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:230` else (column 10) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:238` case (column 19) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:239` if (column 9) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:239` else (column 10) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:253` case (column 7) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `gpio_reg_top.sv:6161` if (column 5) in `u_gpio.u_reg`
+- `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_*ata_in`
+- `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_alert_test_regwen`
+- `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_hw_straps_data_in_valid`
+- `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_intr_enable`
+- `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_intr_state`
+
+## Configuration min (`a80ebf80db4f0986`)
+
+1 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
+
+| Result | Branches |
+|---|---|
+| PROVEN never executed | 17 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+
+PROVEN never executed after the first reset:
+
+- `prim_alert_receiver.sv:178` if (column 11) in `u_alert_receiver`
+- `prim_alert_receiver.sv:207` elsif (column 9) in `u_alert_receiver`
+- `prim_alert_receiver.sv:229` case (column 7) in `u_alert_receiver`
+- `prim_alert_receiver.sv:236` elsif (column 7) in `u_alert_receiver`
+- `prim_alert_sender.sv:229` case (column 19) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:230` if (column 9) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:230` else (column 10) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:238` case (column 19) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:239` if (column 9) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:239` else (column 10) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:253` case (column 7) in `u_gpio.gen_alert_tx[0].u_prim_alert_sender`
+- `gpio_reg_top.sv:6161` if (column 5) in `u_gpio.u_reg`
+- `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_*ata_in`
+- `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_alert_test_regwen`
+- `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_hw_straps_data_in_valid`
+- `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_intr_enable`
+- `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_intr_state`
 

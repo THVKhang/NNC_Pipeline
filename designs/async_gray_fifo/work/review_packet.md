@@ -7,8 +7,8 @@ This packet is for the person who decides gate **G4 (sign-off)**: *is this desig
 - **Requirements (rules):** 416 — FAILED 88, NOT_VERIFIED_BY_SIM 142, VERIFIED 186
 - **Checks:** 32 — FAIL 9, PASS 23
 - **Tests:** {'fail': 8, 'pass': 12}
-- **Simulated configurations:** 14 runs in 10 configurations (base, model_off, syn, cell1, cell3, cell4, macro, small, wr_slow, rd_slow); see `run_set.json` and the *Run set* table of the report
-- **Code coverage:** line 99.1 %, block 95.7 %, expression 98.0 %, toggle 99.5 %, functional 100.0 %
+- **Simulated configurations:** 15 runs in 11 configurations (base, model_off, syn, cell1, cell3, cell4, macro, small, wr_slow, rd_slow, xrand); see `run_set.json` and the *Run set* table of the report
+- **Code coverage:** line 99.8 %, block 97.8 %, expression 98.0 %, toggle 99.9 %, functional 100.0 %
 - **Mutation score:** 100.0 % (12 of 12 injected faults detected)
 
 ## 2. Decisions taken for you
@@ -130,8 +130,6 @@ Mutation testing changed one RTL line at a time (12 faults; each in the run that
 
 Code or cover points never reached (first ones):
 
-- line m_vlsit_afifo_rd.sv:172
-- line m_vlsit_afifo_wr.sv:188
 - line VLSIT_CELL_SRAM_1W1R.sv:41
 - line VLSIT_CELL_SRAM_1W1R.sv:45
 - line m_vlsit_afifo_cell_sync.sv:106

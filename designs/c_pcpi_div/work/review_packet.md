@@ -7,7 +7,7 @@ This packet is for the person who decides gate **G4 (sign-off)**: *is this desig
 - **Requirements (rules):** 23 — NOT_VERIFIED_BY_SIM 16, VERIFIED 7
 - **Checks:** 9 — PASS 9
 - **Tests:** {'pass': 7}
-- **Simulated configuration:** one (parameters {}, seed 1)
+- **Simulated configurations:** 2 runs in 2 configurations (base, xrand); see `run_set.json` and the *Run set* table of the report
 - **Code coverage:** line 100.0 %, block 100.0 %, expression 100.0 %, toggle 100.0 %, functional 85.7 %
 - **Mutation score:** 100.0 % (12 of 12 injected faults detected)
 
@@ -74,6 +74,8 @@ cd designs/c_pcpi_div/sim
 make regression SEED=1 2>&1 | tee sim.log
 cd ../../.. && python -m nnc kit-check c_pcpi_div    # same outcome as the recorded results?
 ```
+
+The kit reproduces the primary run base.s1; the other runs differ only by the settings in `run_set.json`.
 
 ## 8. Checklist before signing
 

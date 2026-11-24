@@ -7,8 +7,8 @@ This packet is for the person who decides gate **G4 (sign-off)**: *is this desig
 - **Requirements (rules):** 272 — FAILED 4, NOT_VERIFIED_BY_SIM 98, VERIFIED 170
 - **Checks:** 25 — FAIL 1, PASS 24
 - **Tests:** {'fail': 1, 'pass': 24}
-- **Simulated configuration:** one (parameters {'PARA_SFIFO_DEPTH': 8, 'PARA_SFIFO_DATA_W': 32, 'PARA_SFIFO_PTR_RETIME': 0, 'PARA_SFIFO_MEM_USE_MACRO': 0}, seed 1)
-- **Code coverage:** line 97.3 %, block 94.4 %, expression 97.4 %, toggle 100.0 %, functional 100.0 %
+- **Simulated configurations:** 2 runs in 2 configurations (base, xrand); see `run_set.json` and the *Run set* table of the report
+- **Code coverage:** line 100.0 %, block 100.0 %, expression 97.4 %, toggle 100.0 %, functional 100.0 %
 - **Mutation score:** 100.0 % (36 of 36 injected faults detected)
 
 ## 2. Decisions taken for you
@@ -66,15 +66,6 @@ Outside this flow in every case: formal proof, CDC/RDC analysis, static timing, 
 Mutation testing changed one RTL line at a time (36 faults). A fault no check notices is a gap, unless it changes nothing visible (an *equivalent* mutant, claimed below by an agent).
 
 
-Code or cover points never reached (first ones):
-
-- line m_vlsit_sfifo_rd.sv:202
-- line m_vlsit_sfifo_rd.sv:203
-- line m_vlsit_sfifo_wr.sv:226
-- line m_vlsit_sfifo_wr.sv:227
-- line m_vlsit_sfifo_wr.sv:252
-- line m_vlsit_sfifo_wr.sv:253
-
 ### Formal check (SymbiYosys)
 
 Every input sequence of up to 20 cycles was searched (one global clock); result {'BOUNDED': 2, 'CEX': 1, 'PROVEN': 6, 'TIMEOUT': 1, 'UNSUPPORTED': 1}. PROVEN holds for every cycle; BOUNDED found no counterexample within the depth. Details: `work/formal.md`.
@@ -98,6 +89,8 @@ make regression SEED=1 2>&1 | tee sim.log
 cd ../../.. && python -m nnc kit-check gen_sync_fifo    # same outcome as the recorded results?
 ```
 
+The kit reproduces the primary run base.s1; the other runs differ only by the settings in `run_set.json`.
+
 ## 8. Checklist before signing
 
 Answer every item. Sign only if each one is true, or record why not in the approval note:
@@ -109,7 +102,6 @@ Answer every item. Sign only if each one is true, or record why not in the appro
 - [ ] The specification question behind “test_chk_024_sw_reset_full_and_rerequest: CHK-008 'o_sw_rst_busy=0 expected after edge (i…” is decided by the specification owner, and the spec, contract or checker is updated.
 - [ ] The specification question behind “Assertion CHK-010 (nnc_chk_wr.sv a_CHK_010), 1 fail out of 16543 hits, first fail at 1892…” is decided by the specification owner, and the spec, contract or checker is updated.
 - [ ] The requirements that simulation cannot check are assigned to another verification method.
-- [ ] The unreached code and cover points are unreachable by design or accepted.
 - [ ] Each formal environment assumption (verif/formal/nnc_env.sv) is an obligation the specification really places on the environment.
 - [ ] Each formal counterexample or vacuous check is resolved (RTL, checker or environment) or accepted.
 - [ ] I reproduced the regression (or CI did) and the outcome matches the report.

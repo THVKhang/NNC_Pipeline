@@ -47,7 +47,8 @@ class Options:
     triage_model: str = "opus"
     rtl_model: str = "opus"
     rtl_rounds: int = 3
-    workers: int = 4
+    workers: int = 4              # parallel agent calls
+    jobs: int = field(default_factory=sim.default_jobs)   # parallel tool jobs (simulation, SymbiYosys)
     seed: int = 1
     mutants: int = 12
     repair_rounds: int = 2
@@ -411,8 +412,19 @@ def _regression(d: Design, o: Options, contract: dict, rtl_dir: Path, verif: Pat
                        frontend=_scope_frontend(d), preverified=_preverified(d), unr=hook, **_simkw(d))
     o.say(f"[sim] run set: {len(runs)} run(s) in {len({r['config'] for r in runs})} configuration(s): "
           + ", ".join(r["label"] for r in runs))
-    return runset.run(default_host(), contract, rtl_dir, sva, test_files(d, verif), runs, parallel=o.workers,
+    return runset.run(default_host(), contract, rtl_dir, sva, test_files(d, verif), runs, parallel=o.jobs,
                       frontend=_scope_frontend(d), preverified=_preverified(d), unr=hook)
+
+
+def _unr_cut(d: Design) -> dict | None:
+    """Config unr_cut: modules (comma-separated) that Yosys reads only with the formal macros
+    (formal_defines), such as a simulation-only synchronizer model; the proofs free their outputs."""
+    cfg = d.config()
+    mods = [m.strip() for m in str(cfg.get("unr_cut") or "").replace(";", ",").split(",") if m.strip()]
+    if not mods:
+        return None
+    defs = _formal_defines(cfg)
+    return {"modules": mods, "defines": defs}
 
 
 def _unr_hook(d: Design, o: Options, contract: dict, rtl_dir: Path):
@@ -425,7 +437,7 @@ def _unr_hook(d: Design, o: Options, contract: dict, rtl_dir: Path):
     def hook(dat: Path, names: list[str], scope: dict | None, confs: list[dict]):
         try:
             return unr.apply(d.work, default_host() if o.unr else None, contract, rtl_dir, dat, names, scope, confs,
-                             _scope_frontend(d), prove=o.unr, parallel=o.workers, say=o.say)
+                             _scope_frontend(d), prove=o.unr, parallel=o.jobs, say=o.say, cut=_unr_cut(d))
         except Exception as e:          # noqa: BLE001 - the proofs never change a test result
             o.say(f"[unr] not applied: {type(e).__name__}: {e}")
             return scope, {"status": f"error: {type(e).__name__}: {e}"[:300]}
@@ -453,9 +465,16 @@ def stage_cover(d: Design, o: Options) -> None:
     target = cfg.get("coverage_target")
     metric = cfg.get("coverage_metric", "line")
     rounds = int(cfg.get("coverage_rounds", 5))
+    pre = _preverified(d)
+    # with modules verified elsewhere, the target and the points are those of the rest of the design
+    view = (lambda r: closure.without_preverified(r)) if pre and metric != "functional" else (lambda r: r)
+    results_all = results
+    results = view(results)
     cov = {"metric": metric, "target": float(target) if target not in (None, "") else None,
            "baseline": closure.baseline(results, metric), "rounds": [], "unreachable": [], "dropped": [],
            "prompt_version": closure.PROMPT_VERSION}
+    if results is not results_all:
+        cov["preverified"] = pre
     prev_path = d.work / "coverage.json"
     if prev_path.is_file():
         prev = _read(prev_path)
@@ -476,7 +495,7 @@ def stage_cover(d: Design, o: Options) -> None:
         _write(prev_path, cov)
         points = ({p["id"]: p for p in _read(d.work / "gen_cov.json")["points"]}
                   if (d.work / "gen_cov.json").is_file() else {})
-        (d.work / "coverage.md").write_text(closure.to_markdown(cov, _read(d.work / "results.json"), points),
+        (d.work / "coverage.md").write_text(closure.to_markdown(cov, view(_read(d.work / "results.json")), points),
                                             encoding="utf-8")
         o.say(f"[cover] {status}{': ' + note if note else ''} -> work/coverage.md")
 
@@ -546,9 +565,9 @@ def stage_cover(d: Design, o: Options) -> None:
         entry["tests"] = sorted(n for n in gen_tests.test_check_map(code))
         res = _regression(d, o, contract, d.root / "rtl")
         o.say(f"[cover] round {rnd}: {len(keep)} scenarios, {len(entry['tests'])} tests -> {_summ_sim(res)}")
-        new = closure.baseline(res, metric) if res.get("status") == "ran" else None
+        new = closure.baseline(view(res), metric) if res.get("status") == "ran" else None
         entry.update({k: (new or {}).get(k) for k in ("percent", "hit", "total")})
-        results = res if res.get("status") == "ran" else results
+        results = view(res) if res.get("status") == "ran" else results
         _save_sim(d, dict(res))
         if res.get("status") != "ran" or closure.functional_failures(res):
             entry["note"] = "functional failure: verification finding, see triage"
@@ -626,7 +645,7 @@ def _formal_runs(d: Design, o: Options, contract: dict, tdir: Path | None,
     per: dict[str, dict] = {}
     for conf in confs:
         r = formal.run(default_host(), contract, d.root / "rtl", d.root / "verif" / "sva", env_file(d),
-                       depth=depth, defines=defines, parallel=o.workers, params=conf["params"],
+                       depth=depth, defines=defines, parallel=o.jobs, params=conf["params"],
                        max_depth=int(cfg.get("formal_max_depth", 0) or 0),
                        task_timeout_s=int(cfg.get("formal_timeout", formal.DEFAULT_TIMEOUT_S)),
                        frontend=_formal_frontend(cfg))
@@ -830,7 +849,7 @@ def stage_mutate(d: Design, o: Options) -> None:
         kw = {"runs": runs}
         o.say(f"[mutate] run set: {len(runs)} runs; each mutant runs where its line is executed (primary first)")
     res = mutate.run(default_host(), _read(d.work / "contract.json"), d.root / "rtl", d.root / "verif" / "sva",
-                     test_files(d), count=o.mutants, seed=o.seed, **kw)
+                     test_files(d), count=o.mutants, seed=o.seed, parallel=o.jobs, **kw)
     if res["count"] and res["not_compiled"] == res["count"]:
         # a one-operator change rarely breaks the build; all of them failing means the simulator host failed
         # (e.g. WSL stopped), and a score of "None" with every mutant "not compiled" would mislead the reader

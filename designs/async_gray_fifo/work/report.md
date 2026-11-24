@@ -1,6 +1,6 @@
 # Verification report — async_gray_fifo
 
-Generated 2026-11-24T02:05:29+00:00 by NNC Pipeline.
+Generated 2026-11-24T08:37:11+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -9,12 +9,12 @@ Generated 2026-11-24T02:05:29+00:00 by NNC Pipeline.
 | Rules | 416 — {'FAILED': 88, 'NOT_VERIFIED_BY_SIM': 142, 'VERIFIED': 186} |
 | Checks | 32 — {'FAIL': 9, 'PASS': 23} |
 | Tests | {'fail': 8, 'pass': 12} |
-| Run set | 14 runs in 10 configurations (base, model_off, syn, cell1, cell3, cell4, macro, small, wr_slow, rd_slow); primary base.s1 |
+| Run set | 15 runs in 11 configurations (base, model_off, syn, cell1, cell3, cell4, macro, small, wr_slow, rd_slow, xrand); primary base.s1 |
 | Integration | OK |
-| Code coverage (RTL), line | 99.1 % (2632/2657 lines) |
-| Code coverage (RTL), block | 95.7 % (858/897 statement blocks and branch arms) |
+| Code coverage (RTL), line | 99.8 % (2632/2637 lines); 20 points left out (package code the design does not contain), all points 99.1 % (2632/2657) |
+| Code coverage (RTL), block | 97.8 % (858/877 statement blocks and branch arms); 20 points left out (package code the design does not contain), all points 95.7 % (858/897) |
 | Code coverage (RTL), expression | 98.0 % (980/1000 condition terms) |
-| Code coverage (RTL), toggle | 99.5 % (15804/15884 bit toggles 0->1 and 1->0) |
+| Code coverage (RTL), toggle | 99.9 % (15804/15814 bit toggles 0->1 and 1->0); 70 points left out (proven constant after reset by formal, work/unr.md), all points 99.5 % (15804/15884) |
 | Code coverage (RTL), functional | 100.0 % (40/40 cover points of the specification) |
 | Mutation score | 100.0 % (12 killed / 0 survived / 0 not compiled) |
 | Coverage target | not requested (`nnc cover <design> --target <n> --metric <m>`) |
@@ -32,7 +32,7 @@ Generated 2026-11-24T02:05:29+00:00 by NNC Pipeline.
 | Every selected check PASS (no FAIL, NOT_HIT, NOT_RUN) | **not met** — FAIL 9 |
 | Every planned check selected | met |
 | Every rule in a check or declared not verifiable | met |
-| Every run of the run set built and ran | met — 14 runs |
+| Every run of the run set built and ran | met — 15 runs |
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | met — 41 rules with attributed mutants |
 | Clock/reset domain crossings: no structural violation (RR-33) | met — review: QUALIFIED 161, SYNC 12, SYNC_MULTIBIT 44 (work/cdc.md) |
@@ -58,6 +58,7 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 | small.s1 — depth 2, data width 1 | PARA_AFIFO_DEPTH=2, PARA_AFIFO_DATA_W=1 | — | +AFIFO_MSYNC_SEED={seed} +AFIFO_MSYNC_EN=1 | ran | {'fail': 6, 'pass': 14} | CHK-003, CHK-013 | 8 |
 | wr_slow.s1 — write 22 ns, read 6 ns (11:3) | defaults | — | +AFIFO_MSYNC_SEED={seed} +AFIFO_MSYNC_EN=1 | ran | {'fail': 5, 'pass': 15} | CHK-003, CHK-013 | 3 |
 | rd_slow.s1 — write 6 ns, read 22 ns (3:11) | defaults | — | +AFIFO_MSYNC_SEED={seed} +AFIFO_MSYNC_EN=1 | ran | {'fail': 6, 'pass': 14} | CHK-003, CHK-013 | 3 |
+| xrand.s1 — the default configuration with random initial values of every variable without a reset (ROADMAP 23.4): a check that passes only because flops start at 0 fails here; its coverage is not merged | defaults | — | +AFIFO_MSYNC_SEED={seed} +AFIFO_MSYNC_EN=1 | ran | {'fail': 7, 'pass': 13} | CHK-003, CHK-013 | 3 |
 
 ## Gates
 
@@ -72,38 +73,38 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 
 | Check | Kind | Title | Status | Evidence |
 |---|---|---|---|---|
-| CHK-001 | assertion | Read-domain hardware reset values | **PASS** | hits 3154, fails 0; hit in 14/14 runs; formal UNSUPPORTED |
-| CHK-002 | assertion | o_underflow is the registered one-cycle pulse of a non-blocked read while empty | **PASS** | hits 40395, fails 0; hit in 14/14 runs; formal UNSUPPORTED |
-| CHK-003 | assertion | o_empty_thr consistency for every 4-bit i_empty_thr | **FAIL** | hits 201444, fails 18; fails in base.s1, base.s2, base.s3, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1; formal UNSUPPORTED |
-| CHK-004 | assertion | Read-domain outputs change only at i_clk_rd edges | **PASS** | hits 198741, fails 0; hit in 14/14 runs; formal UNSUPPORTED |
-| CHK-005 | assertion | Scoreboard: show-ahead data, write order, exactly-once, software-reset discard | **PASS** | hits 114441, fails 0; hit in 14/14 runs; formal UNSUPPORTED |
-| CHK-006 | assertion | Flags are never optimistic; occupancy is within 0..PARA_AFIFO_DEPTH | **PASS** | hits 283847, fails 0; hit in 14/14 runs; formal UNSUPPORTED |
-| CHK-007 | assertion | Write-domain hardware reset values | **PASS** | hits 3823, fails 0; hit in 14/14 runs; formal PROVEN |
-| CHK-008 | assertion | o_overflow is the registered one-cycle pulse of a non-blocked write while full | **PASS** | hits 223849, fails 0; hit in 14/14 runs; formal PROVEN |
-| CHK-009 | assertion | Write block forces o_full=1 and the empty-FIFO o_full_thr with zero latency | **PASS** | hits 17567, fails 0; hit in 14/14 runs; formal PROVEN |
-| CHK-010 | assertion | o_sw_rst_busy rises exactly at the first edge sampling i_rst_n_sw=0 | **PASS** | hits 206894, fails 0; hit in 14/14 runs; formal PROVEN |
-| CHK-011 | assertion | o_sw_rst_busy falls only after i_rst_n_sw=1 plus a crossing round trip; write side is clean at the release | **PASS** | hits 16594, fails 0; hit in 14/14 runs; formal BOUNDED |
-| CHK-012 | assertion | Write-domain outputs change only at i_clk_wr edges | **PASS** | hits 223849, fails 0; hit in 14/14 runs; formal PROVEN |
-| CHK-013 | assertion | o_full_thr consistency for every 4-bit i_full_thr | **FAIL** | hits 223849, fails 54; fails in base.s1, base.s2, base.s3, base.s4, base.s5, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1; formal BOUNDED |
-| CHK-014 | test | Nominal crossing latency is exactly S=2 destination edges | **FAIL** | test_chk_014_nominal_latency; failed in base.s1, base.s2, base.s3, base.s4, base.s5, cell1.s1, cell3.s1, cell4.s1, macro.s1, wr_slow.s1, rd_slow.s1 |
-| CHK-015 | test | Crossing latency S..S+2 with the metastability model | **PASS** | test_chk_015_model_latency_window; verified in base.s1, base.s2, base.s3, base.s4, base.s5, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1 |
-| CHK-016 | test | Random traffic, random clock ratios, pointer wrap-around | **FAIL** | test_chk_016_random_traffic_ratios; failed in base.s1, base.s2, base.s4, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1 |
-| CHK-017 | test | Regression in the build with VLSIT_SYNTHESIS defined | **FAIL** | test_chk_017_synthesis_branch_regression; failed in base.s1, base.s2, base.s3, base.s4, base.s5, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1 |
-| CHK-018 | test | Write N words then read N words, show-ahead head check | **FAIL** | test_chk_018_write_n_read_n_show_ahead, test_chk_030_after_srst_like_hw_reset; failed in base.s1, base.s2, base.s3, base.s5, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1 |
+| CHK-001 | assertion | Read-domain hardware reset values | **PASS** | hits 3374, fails 0; hit in 15/15 runs; formal UNSUPPORTED |
+| CHK-002 | assertion | o_underflow is the registered one-cycle pulse of a non-blocked read while empty | **PASS** | hits 41148, fails 0; hit in 15/15 runs; formal UNSUPPORTED |
+| CHK-003 | assertion | o_empty_thr consistency for every 4-bit i_empty_thr | **FAIL** | hits 210557, fails 20; fails in base.s1, base.s2, base.s3, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1, xrand.s1; formal UNSUPPORTED |
+| CHK-004 | assertion | Read-domain outputs change only at i_clk_rd edges | **PASS** | hits 207666, fails 0; hit in 15/15 runs; formal UNSUPPORTED |
+| CHK-005 | assertion | Scoreboard: show-ahead data, write order, exactly-once, software-reset discard | **PASS** | hits 120229, fails 0; hit in 15/15 runs; formal UNSUPPORTED |
+| CHK-006 | assertion | Flags are never optimistic; occupancy is within 0..PARA_AFIFO_DEPTH | **PASS** | hits 298968, fails 0; hit in 15/15 runs; formal UNSUPPORTED |
+| CHK-007 | assertion | Write-domain hardware reset values | **PASS** | hits 4098, fails 0; hit in 15/15 runs; formal PROVEN |
+| CHK-008 | assertion | o_overflow is the registered one-cycle pulse of a non-blocked write while full | **PASS** | hits 236638, fails 0; hit in 15/15 runs; formal PROVEN |
+| CHK-009 | assertion | Write block forces o_full=1 and the empty-FIFO o_full_thr with zero latency | **PASS** | hits 18754, fails 0; hit in 15/15 runs; formal PROVEN |
+| CHK-010 | assertion | o_sw_rst_busy rises exactly at the first edge sampling i_rst_n_sw=0 | **PASS** | hits 218531, fails 0; hit in 15/15 runs; formal PROVEN |
+| CHK-011 | assertion | o_sw_rst_busy falls only after i_rst_n_sw=1 plus a crossing round trip; write side is clean at the release | **PASS** | hits 17719, fails 0; hit in 15/15 runs; formal BOUNDED |
+| CHK-012 | assertion | Write-domain outputs change only at i_clk_wr edges | **PASS** | hits 236638, fails 0; hit in 15/15 runs; formal PROVEN |
+| CHK-013 | assertion | o_full_thr consistency for every 4-bit i_full_thr | **FAIL** | hits 236638, fails 58; fails in base.s1, base.s2, base.s3, base.s4, base.s5, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1, xrand.s1; formal BOUNDED |
+| CHK-014 | test | Nominal crossing latency is exactly S=2 destination edges | **FAIL** | test_chk_014_nominal_latency; failed in base.s1, base.s2, base.s3, base.s4, base.s5, cell1.s1, cell3.s1, cell4.s1, macro.s1, wr_slow.s1, rd_slow.s1, xrand.s1 |
+| CHK-015 | test | Crossing latency S..S+2 with the metastability model | **PASS** | test_chk_015_model_latency_window; verified in base.s1, base.s2, base.s3, base.s4, base.s5, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1, xrand.s1 |
+| CHK-016 | test | Random traffic, random clock ratios, pointer wrap-around | **FAIL** | test_chk_016_random_traffic_ratios; failed in base.s1, base.s2, base.s4, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1, xrand.s1 |
+| CHK-017 | test | Regression in the build with VLSIT_SYNTHESIS defined | **FAIL** | test_chk_017_synthesis_branch_regression; failed in base.s1, base.s2, base.s3, base.s4, base.s5, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, xrand.s1 |
+| CHK-018 | test | Write N words then read N words, show-ahead head check | **FAIL** | test_chk_018_write_n_read_n_show_ahead, test_chk_030_after_srst_like_hw_reset; failed in base.s1, base.s2, base.s3, base.s5, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1, xrand.s1 |
 | CHK-019 | test | Back-to-back burst with equal clocks | **PASS** | test_chk_019_back_to_back_equal_clocks; verified in model_off.s1, syn.s1 |
 | CHK-020 | test | Overflow: writes while full are dropped; o_full falls late after a read | **FAIL** | test_chk_020_overflow; failed in rd_slow.s1 |
-| CHK-021 | test | Underflow: read pointer unchanged; show-ahead of the storage while empty | **PASS** | test_chk_021_underflow; verified in base.s1, base.s2, base.s3, base.s4, base.s5, model_off.s1, syn.s1, cell1.s1, cell3.s1, cell4.s1, macro.s1, wr_slow.s1, rd_slow.s1 |
-| CHK-022 | test | Hardware reset of both domains, independent assertion and release | **PASS** | test_chk_022_hw_reset_independent; verified in base.s1, base.s2, base.s3, base.s4, base.s5, model_off.s1, syn.s1, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1 |
-| CHK-023 | test | Hardware reset during a software reset (both domains, then one domain) | **PASS** | test_chk_023_hw_reset_during_sw_reset; verified in base.s1, base.s2, base.s3, base.s4, base.s5, model_off.s1, syn.s1, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1 |
-| CHK-024 | test | Hardware reset of both domains in the middle of traffic | **FAIL** | test_chk_024_hw_reset_mid_traffic; failed in base.s1, base.s2, base.s3, base.s4, base.s5, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1 |
-| CHK-025 | test | Software reset of a partly filled FIFO, i_rst_n_sw held low (four-phase sequence) | **PASS** | test_chk_025_srst_partly_filled_held; verified in base.s1, base.s2, base.s3, base.s4, base.s5, model_off.s1, syn.s1, cell1.s1, cell3.s1, cell4.s1, macro.s1, wr_slow.s1, rd_slow.s1 |
-| CHK-026 | test | One-cycle i_rst_n_sw pulse on a full FIFO in overflow | **PASS** | test_chk_026_srst_one_cycle_pulse_full; verified in base.s1, base.s2, base.s3, base.s4, base.s5, model_off.s1, syn.s1, cell1.s1, cell3.s1, cell4.s1, macro.s1, wr_slow.s1, rd_slow.s1 |
-| CHK-027 | test | Read side released before write side (empty FIFO, reads pending) | **PASS** | test_chk_027_read_released_first; verified in base.s1, base.s2, base.s3, base.s4, base.s5, model_off.s1, syn.s1, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1 |
-| CHK-028 | test | i_rst_n_sw asserted again while the write FSM is in REL | **PASS** | test_chk_028_srst_reasserted_in_rel; verified in base.s1, base.s2, base.s3, base.s4, base.s5, model_off.s1, syn.s1, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1 |
-| CHK-029 | test | Software reset under random traffic, with and without the metastability model | **FAIL** | test_chk_029_srst_random_traffic; failed in base.s1, base.s4, cell1.s1, cell4.s1, macro.s1, small.s1 |
-| CHK-030 | test | FIFO behaves after a software reset as after a hardware reset | **PASS** | test_chk_030_after_srst_like_hw_reset; verified in base.s1, base.s2, base.s3, base.s4, base.s5, model_off.s1, syn.s1, cell1.s1, cell3.s1, cell4.s1, macro.s1, wr_slow.s1, rd_slow.s1 |
-| CHK-031 | test | A clock stops during the software reset | **PASS** | test_chk_031_clock_stop_during_srst; verified in base.s1, base.s2, base.s3, base.s4, base.s5, model_off.s1, syn.s1, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1 |
-| CHK-032 | test | Threshold flags while filling and draining across the thresholds | **PASS** | test_chk_032_threshold_flags; verified in base.s1, base.s2, base.s3, base.s4, base.s5, model_off.s1, syn.s1, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1 |
+| CHK-021 | test | Underflow: read pointer unchanged; show-ahead of the storage while empty | **PASS** | test_chk_021_underflow; verified in base.s1, base.s2, base.s3, base.s4, base.s5, model_off.s1, syn.s1, cell1.s1, cell3.s1, cell4.s1, macro.s1, wr_slow.s1, rd_slow.s1, xrand.s1 |
+| CHK-022 | test | Hardware reset of both domains, independent assertion and release | **PASS** | test_chk_022_hw_reset_independent; verified in base.s1, base.s2, base.s3, base.s4, base.s5, model_off.s1, syn.s1, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1, xrand.s1 |
+| CHK-023 | test | Hardware reset during a software reset (both domains, then one domain) | **PASS** | test_chk_023_hw_reset_during_sw_reset; verified in base.s1, base.s2, base.s3, base.s4, base.s5, model_off.s1, syn.s1, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1, xrand.s1 |
+| CHK-024 | test | Hardware reset of both domains in the middle of traffic | **FAIL** | test_chk_024_hw_reset_mid_traffic; failed in base.s1, base.s2, base.s3, base.s4, base.s5, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1, xrand.s1 |
+| CHK-025 | test | Software reset of a partly filled FIFO, i_rst_n_sw held low (four-phase sequence) | **PASS** | test_chk_025_srst_partly_filled_held; verified in base.s1, base.s2, base.s3, base.s4, base.s5, model_off.s1, syn.s1, cell1.s1, cell3.s1, cell4.s1, macro.s1, wr_slow.s1, rd_slow.s1, xrand.s1 |
+| CHK-026 | test | One-cycle i_rst_n_sw pulse on a full FIFO in overflow | **PASS** | test_chk_026_srst_one_cycle_pulse_full; verified in base.s1, base.s2, base.s3, base.s4, base.s5, model_off.s1, syn.s1, cell1.s1, cell3.s1, cell4.s1, macro.s1, wr_slow.s1, rd_slow.s1, xrand.s1 |
+| CHK-027 | test | Read side released before write side (empty FIFO, reads pending) | **PASS** | test_chk_027_read_released_first; verified in base.s1, base.s2, base.s3, base.s4, base.s5, model_off.s1, syn.s1, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1, xrand.s1 |
+| CHK-028 | test | i_rst_n_sw asserted again while the write FSM is in REL | **PASS** | test_chk_028_srst_reasserted_in_rel; verified in base.s1, base.s2, base.s3, base.s4, base.s5, model_off.s1, syn.s1, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1, xrand.s1 |
+| CHK-029 | test | Software reset under random traffic, with and without the metastability model | **FAIL** | test_chk_029_srst_random_traffic; failed in base.s1, base.s4, cell1.s1, cell4.s1, macro.s1, small.s1, xrand.s1 |
+| CHK-030 | test | FIFO behaves after a software reset as after a hardware reset | **PASS** | test_chk_030_after_srst_like_hw_reset; verified in base.s1, base.s2, base.s3, base.s4, base.s5, model_off.s1, syn.s1, cell1.s1, cell3.s1, cell4.s1, macro.s1, wr_slow.s1, rd_slow.s1, xrand.s1 |
+| CHK-031 | test | A clock stops during the software reset | **PASS** | test_chk_031_clock_stop_during_srst; verified in base.s1, base.s2, base.s3, base.s4, base.s5, model_off.s1, syn.s1, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1, xrand.s1 |
+| CHK-032 | test | Threshold flags while filling and draining across the thresholds | **PASS** | test_chk_032_threshold_flags; verified in base.s1, base.s2, base.s3, base.s4, base.s5, model_off.s1, syn.s1, cell1.s1, cell3.s1, cell4.s1, macro.s1, small.s1, wr_slow.s1, rd_slow.s1, xrand.s1 |
 
 ## Requirement traceability (RTM)
 

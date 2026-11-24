@@ -1,6 +1,6 @@
 # Verification report — c_uart
 
-Generated 2026-11-24T03:38:20+00:00 by NNC Pipeline.
+Generated 2026-11-24T08:31:14+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -9,9 +9,10 @@ Generated 2026-11-24T03:38:20+00:00 by NNC Pipeline.
 | Rules | 6 — {'FAILED': 6} |
 | Checks | 11 — {'FAIL': 5, 'PASS': 6} |
 | Tests | {'fail': 3, 'pass': 5} |
+| Run set | 2 runs in 2 configurations (base, xrand); primary base.s1 |
 | Integration | OK |
 | Code coverage (RTL), line | 97.6 % (120/123 lines) |
-| Code coverage (RTL), block | 93.2 % (41/44 statement blocks and branch arms) |
+| Code coverage (RTL), block | 97.6 % (41/42 statement blocks and branch arms); 2 points left out (package code the design does not contain), all points 93.2 % (41/44) |
 | Code coverage (RTL), expression | 88.9 % (8/9 condition terms) |
 | Code coverage (RTL), toggle | 67.6 % (250/370 bit toggles 0->1 and 1->0) |
 | Code coverage (RTL), functional | 90.0 % (36/40 cover points of the specification) |
@@ -30,9 +31,19 @@ Generated 2026-11-24T03:38:20+00:00 by NNC Pipeline.
 | Every selected check PASS (no FAIL, NOT_HIT, NOT_RUN) | **not met** — FAIL 5 |
 | Every planned check selected | met |
 | Every rule in a check or declared not verifiable | met |
+| Every run of the run set built and ran | met — 2 runs |
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | met — 6 rules with attributed mutants |
 | Clock/reset domain crossings: no structural violation (RR-33) | met — clean: no crossing (work/cdc.md) |
+
+## Run set
+
+Every check is merged over these runs: PASS when one run verified it and no run failed it; NOT_VERIFIABLE only when every run declared it so.
+
+| Run | Parameters changed | Defines | Plusargs | Status | Tests | Failing assertions | Not verifiable here |
+|---|---|---|---|---|---|---|---|
+| base.s1 — the design configuration | defaults | — | — | ran | {'fail': 3, 'pass': 5} | CHK-001 | 0 |
+| xrand.s1 — the design configuration with random initial values of every variable without a reset: a check that passes only because flops start at 0 fails here | defaults | — | — | ran | {'fail': 3, 'pass': 5} | CHK-001 | 0 |
 
 ## Gates
 
@@ -47,17 +58,17 @@ Generated 2026-11-24T03:38:20+00:00 by NNC Pipeline.
 
 | Check | Kind | Title | Status | Evidence |
 |---|---|---|---|---|
-| CHK-001 | assertion | m_axis output stalls (holds valid and data) while m_axis_tready is low | **FAIL** | hits 405, fails 1 |
-| CHK-002 | assertion | rx_overrun_error is a single-cycle pulse | **PASS** | hits 1, fails 0 |
-| CHK-003 | assertion | rx_frame_error is a single-cycle pulse | **PASS** | hits 1, fails 0 |
-| CHK-004 | assertion | tx_busy is high whenever txd is driving a low (frame) level | **PASS** | hits 12992, fails 0 |
-| CHK-005 | test | RX path: each received frame gives exactly one m_axis transfer under backpressure | **FAIL** | test_chk_005_rx_backpressure, test_regression_random |
-| CHK-006 | test | rx_busy is high while a reception is in progress and low when idle | **PASS** | test_chk_006_rx_busy |
-| CHK-007 | test | Overrun: one-cycle rx_overrun_error pulse and the new word is discarded | **FAIL** | test_chk_007_rx_overrun |
-| CHK-008 | test | Frame error: one-cycle rx_frame_error pulse and the received word is discarded | **FAIL** | test_chk_008_rx_frame_error |
-| CHK-009 | test | TX path: words are accepted only on s_axis handshakes and sent once each, in order | **PASS** | test_chk_009_tx_handshake_order |
-| CHK-010 | test | Prescale sets the data rate: bit period is 8*prescale clock cycles | **PASS** | test_chk_010_prescale_rate |
-| CHK-011 | test | tx_busy is high while a transmission is in progress and low when idle | **FAIL** | test_chk_011_tx_busy, test_regression_random |
+| CHK-001 | assertion | m_axis output stalls (holds valid and data) while m_axis_tready is low | **FAIL** | hits 810, fails 2; fails in base.s1, xrand.s1 |
+| CHK-002 | assertion | rx_overrun_error is a single-cycle pulse | **PASS** | hits 2, fails 0; hit in 2/2 runs |
+| CHK-003 | assertion | rx_frame_error is a single-cycle pulse | **PASS** | hits 2, fails 0; hit in 2/2 runs |
+| CHK-004 | assertion | tx_busy is high whenever txd is driving a low (frame) level | **PASS** | hits 25984, fails 0; hit in 2/2 runs |
+| CHK-005 | test | RX path: each received frame gives exactly one m_axis transfer under backpressure | **FAIL** | test_chk_005_rx_backpressure, test_regression_random; failed in base.s1, xrand.s1 |
+| CHK-006 | test | rx_busy is high while a reception is in progress and low when idle | **PASS** | test_chk_006_rx_busy; verified in base.s1, xrand.s1 |
+| CHK-007 | test | Overrun: one-cycle rx_overrun_error pulse and the new word is discarded | **FAIL** | test_chk_007_rx_overrun; failed in base.s1, xrand.s1 |
+| CHK-008 | test | Frame error: one-cycle rx_frame_error pulse and the received word is discarded | **FAIL** | test_chk_008_rx_frame_error; failed in base.s1, xrand.s1 |
+| CHK-009 | test | TX path: words are accepted only on s_axis handshakes and sent once each, in order | **PASS** | test_chk_009_tx_handshake_order; verified in base.s1, xrand.s1 |
+| CHK-010 | test | Prescale sets the data rate: bit period is 8*prescale clock cycles | **PASS** | test_chk_010_prescale_rate; verified in base.s1, xrand.s1 |
+| CHK-011 | test | tx_busy is high while a transmission is in progress and low when idle | **FAIL** | test_chk_011_tx_busy, test_regression_random; failed in base.s1, xrand.s1 |
 
 ## Requirement traceability (RTM)
 
@@ -93,4 +104,4 @@ Generated 2026-11-24T03:38:20+00:00 by NNC Pipeline.
 - Domain crossings were checked structurally (synchronizer structure, `nnc cdc`); gray coding and handshake protocols are not proven by that check.
 - Sign-off STA, place and route and DFT are outside this flow (docs/SIGNOFF_SCOPE.md); `nnc rtl-check` gives a synthesis estimate of area and the longest combinational path.
 - Rules marked NOT_VERIFIED_BY_SIM carry the contract's reason (static, structural, not observable...).
-- Only the default parameter configuration was simulated (no run_set.json).
+- Only the configurations of the run set above were simulated; code coverage is merged over its runs, mutation testing used the primary run base.s1.

@@ -1,6 +1,6 @@
 # Verification report — gen_apb_tlul_bridge
 
-Generated 2026-11-24T02:00:25+00:00 by NNC Pipeline.
+Generated 2026-11-24T08:30:53+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -9,9 +9,10 @@ Generated 2026-11-24T02:00:25+00:00 by NNC Pipeline.
 | Rules | 232 — {'NOT_VERIFIED_BY_SIM': 63, 'VERIFIED': 169} |
 | Checks | 31 — {'PASS': 31} |
 | Tests | {'pass': 17} |
+| Run set | 2 runs in 2 configurations (base, xrand); primary base.s1 |
 | Integration | OK |
-| Code coverage (RTL), line | 95.1 % (195/205 lines) |
-| Code coverage (RTL), block | 95.7 % (44/46 statement blocks and branch arms) |
+| Code coverage (RTL), line | 97.0 % (195/201 lines); 4 points left out (package code the design does not contain), all points 95.1 % (195/205) |
+| Code coverage (RTL), block | 100.0 % (44/44 statement blocks and branch arms); 2 points left out (package code the design does not contain), all points 95.7 % (44/46) |
 | Code coverage (RTL), expression | 100.0 % (51/51 condition terms) |
 | Code coverage (RTL), toggle | 100.0 % (1782/1782 bit toggles 0->1 and 1->0); 92 points left out (constant bits; 4 of them proven constant after reset by formal, work/unr.md), all points 95.6 % (1792/1874) |
 | Code coverage (RTL), functional | 100.0 % (40/40 cover points of the specification) |
@@ -31,10 +32,20 @@ Generated 2026-11-24T02:00:25+00:00 by NNC Pipeline.
 | Every selected check PASS (no FAIL, NOT_HIT, NOT_RUN) | met |
 | Every planned check selected | met |
 | Every rule in a check or declared not verifiable | met |
+| Every run of the run set built and ran | met — 2 runs |
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | met — 69 rules with attributed mutants |
 | Clock/reset domain crossings: no structural violation (RR-33) | met — clean: no crossing (work/cdc.md) |
 | Formal: no counterexample, no vacuous or failed proof | met — {'PROVEN': 17} (work/formal.md) |
+
+## Run set
+
+Every check is merged over these runs: PASS when one run verified it and no run failed it; NOT_VERIFIABLE only when every run declared it so.
+
+| Run | Parameters changed | Defines | Plusargs | Status | Tests | Failing assertions | Not verifiable here |
+|---|---|---|---|---|---|---|---|
+| base.s1 — the design configuration | defaults | — | — | ran | {'pass': 17} | none | 0 |
+| xrand.s1 — the design configuration with random initial values of every variable without a reset: a check that passes only because flops start at 0 fails here | defaults | — | — | ran | {'pass': 17} | none | 0 |
 
 ## Gates
 
@@ -51,37 +62,37 @@ Generated 2026-11-24T02:00:25+00:00 by NNC Pipeline.
 
 | Check | Kind | Title | Status | Evidence |
 |---|---|---|---|---|
-| CHK-001 | assertion | PREADY only in an APB Access cycle | **PASS** | hits 13715, fails 0; formal PROVEN |
-| CHK-002 | assertion | PREADY is a one-cycle pulse | **PASS** | hits 13715, fails 0; formal PROVEN |
-| CHK-003 | assertion | PSLVERR only with PREADY | **PASS** | hits 5019, fails 0; formal PROVEN |
-| CHK-004 | assertion | PRDATA holds its value outside PREADY | **PASS** | hits 95936, fails 0; formal PROVEN |
-| CHK-005 | assertion | PRDATA is zero on write and error completions | **PASS** | hits 8852, fails 0; formal PROVEN |
-| CHK-006 | assertion | Legal Setup launches the request from flops in the first Access cycle | **PASS** | hits 9845, fails 0; formal PROVEN |
-| CHK-007 | assertion | Illegal Setup completes locally in the first Access cycle with no request | **PASS** | hits 3880, fails 0; formal PROVEN |
-| CHK-008 | assertion | One request at a time, none before the APB completion | **PASS** | hits 34101, fails 0; formal PROVEN |
-| CHK-009 | assertion | a_valid only inside an APB Access phase before PREADY | **PASS** | hits 34101, fails 0; formal PROVEN |
-| CHK-010 | assertion | Accepted TL-UL response is checked and mapped to the APB completion one cycle later | **PASS** | hits 9838, fails 0; formal PROVEN |
-| CHK-011 | assertion | PREADY only caused by an illegal Setup or a counted response (orphans have no APB effect) | **PASS** | hits 13715, fails 0; formal PROVEN |
-| CHK-012 | assertion | Output values while reset is asserted | **PASS** | hits 196, fails 0; formal PROVEN |
-| CHK-013 | assertion | d_ready constant 1 after the first edge following reset release | **PASS** | hits 109651, fails 0; formal PROVEN |
-| CHK-014 | assertion | A request starts only after a legal Setup | **PASS** | hits 9842, fails 0; formal PROVEN |
-| CHK-015 | assertion | Channel A held and stable until accepted | **PASS** | hits 24260, fails 0; formal PROVEN |
-| CHK-016 | assertion | a_valid drops after the handshake (accepted once) | **PASS** | hits 9841, fails 0; formal PROVEN |
-| CHK-017 | assertion | Constant A-channel fields and legal opcode, size, mask and address | **PASS** | hits 109884, fails 0; formal PROVEN |
-| CHK-018 | test | Local error for unsupported PSTRB and misaligned address | **PASS** | test_chk_018_local_error |
-| CHK-019 | test | Device error response (d_error) on read and write | **PASS** | test_chk_019_device_error |
-| CHK-020 | test | Wrong d_opcode and wrong d_source responses | **PASS** | test_chk_020_wrong_opcode_source |
-| CHK-021 | test | Orphan responses are discarded | **PASS** | test_chk_021_orphan_responses |
-| CHK-022 | test | Device never responds: no timeout, requester waits | **PASS** | test_chk_022_no_response_no_timeout |
-| CHK-023 | test | Aligned full-strobe write to a prompt device | **PASS** | test_chk_023_prompt_write |
-| CHK-024 | test | Aligned read to a prompt device, PSTRB ignored | **PASS** | test_chk_024_prompt_read |
-| CHK-025 | test | Ignored inputs PPROT, d_param, d_size, d_sink, d_user | **PASS** | test_chk_025_ignored_inputs |
-| CHK-026 | test | Channel A back pressure and response delay | **PASS** | test_chk_026_backpressure_delay |
-| CHK-027 | test | Response in the acceptance cycle | **PASS** | test_chk_027_same_cycle_response |
-| CHK-028 | test | Back-to-back transfers with PSEL held high and with gaps | **PASS** | test_chk_028_back_to_back |
-| CHK-029 | test | Constrained-random regression with scoreboard and coverage | **PASS** | test_chk_029_random_scoreboard |
-| CHK-030 | test | Power-on reset, synchronous release and asynchronous assertion | **PASS** | test_chk_030_reset |
-| CHK-031 | test | Reset during a transfer abandons it | **PASS** | test_chk_031_reset_abandons_transfer |
+| CHK-001 | assertion | PREADY only in an APB Access cycle | **PASS** | hits 27430, fails 0; hit in 2/2 runs; formal PROVEN |
+| CHK-002 | assertion | PREADY is a one-cycle pulse | **PASS** | hits 27430, fails 0; hit in 2/2 runs; formal PROVEN |
+| CHK-003 | assertion | PSLVERR only with PREADY | **PASS** | hits 10039, fails 0; hit in 2/2 runs; formal PROVEN |
+| CHK-004 | assertion | PRDATA holds its value outside PREADY | **PASS** | hits 191872, fails 0; hit in 2/2 runs; formal PROVEN |
+| CHK-005 | assertion | PRDATA is zero on write and error completions | **PASS** | hits 17704, fails 0; hit in 2/2 runs; formal PROVEN |
+| CHK-006 | assertion | Legal Setup launches the request from flops in the first Access cycle | **PASS** | hits 19690, fails 0; hit in 2/2 runs; formal PROVEN |
+| CHK-007 | assertion | Illegal Setup completes locally in the first Access cycle with no request | **PASS** | hits 7760, fails 0; hit in 2/2 runs; formal PROVEN |
+| CHK-008 | assertion | One request at a time, none before the APB completion | **PASS** | hits 68202, fails 0; hit in 2/2 runs; formal PROVEN |
+| CHK-009 | assertion | a_valid only inside an APB Access phase before PREADY | **PASS** | hits 68202, fails 0; hit in 2/2 runs; formal PROVEN |
+| CHK-010 | assertion | Accepted TL-UL response is checked and mapped to the APB completion one cycle later | **PASS** | hits 19676, fails 0; hit in 2/2 runs; formal PROVEN |
+| CHK-011 | assertion | PREADY only caused by an illegal Setup or a counted response (orphans have no APB effect) | **PASS** | hits 27430, fails 0; hit in 2/2 runs; formal PROVEN |
+| CHK-012 | assertion | Output values while reset is asserted | **PASS** | hits 392, fails 0; hit in 2/2 runs; formal PROVEN |
+| CHK-013 | assertion | d_ready constant 1 after the first edge following reset release | **PASS** | hits 219302, fails 0; hit in 2/2 runs; formal PROVEN |
+| CHK-014 | assertion | A request starts only after a legal Setup | **PASS** | hits 19684, fails 0; hit in 2/2 runs; formal PROVEN |
+| CHK-015 | assertion | Channel A held and stable until accepted | **PASS** | hits 48520, fails 0; hit in 2/2 runs; formal PROVEN |
+| CHK-016 | assertion | a_valid drops after the handshake (accepted once) | **PASS** | hits 19682, fails 0; hit in 2/2 runs; formal PROVEN |
+| CHK-017 | assertion | Constant A-channel fields and legal opcode, size, mask and address | **PASS** | hits 219768, fails 0; hit in 2/2 runs; formal PROVEN |
+| CHK-018 | test | Local error for unsupported PSTRB and misaligned address | **PASS** | test_chk_018_local_error; verified in base.s1, xrand.s1 |
+| CHK-019 | test | Device error response (d_error) on read and write | **PASS** | test_chk_019_device_error; verified in base.s1, xrand.s1 |
+| CHK-020 | test | Wrong d_opcode and wrong d_source responses | **PASS** | test_chk_020_wrong_opcode_source; verified in base.s1, xrand.s1 |
+| CHK-021 | test | Orphan responses are discarded | **PASS** | test_chk_021_orphan_responses; verified in base.s1, xrand.s1 |
+| CHK-022 | test | Device never responds: no timeout, requester waits | **PASS** | test_chk_022_no_response_no_timeout; verified in base.s1, xrand.s1 |
+| CHK-023 | test | Aligned full-strobe write to a prompt device | **PASS** | test_chk_023_prompt_write; verified in base.s1, xrand.s1 |
+| CHK-024 | test | Aligned read to a prompt device, PSTRB ignored | **PASS** | test_chk_024_prompt_read; verified in base.s1, xrand.s1 |
+| CHK-025 | test | Ignored inputs PPROT, d_param, d_size, d_sink, d_user | **PASS** | test_chk_025_ignored_inputs; verified in base.s1, xrand.s1 |
+| CHK-026 | test | Channel A back pressure and response delay | **PASS** | test_chk_026_backpressure_delay; verified in base.s1, xrand.s1 |
+| CHK-027 | test | Response in the acceptance cycle | **PASS** | test_chk_027_same_cycle_response; verified in base.s1, xrand.s1 |
+| CHK-028 | test | Back-to-back transfers with PSEL held high and with gaps | **PASS** | test_chk_028_back_to_back; verified in base.s1, xrand.s1 |
+| CHK-029 | test | Constrained-random regression with scoreboard and coverage | **PASS** | test_chk_029_random_scoreboard; verified in base.s1, xrand.s1 |
+| CHK-030 | test | Power-on reset, synchronous release and asynchronous assertion | **PASS** | test_chk_030_reset; verified in base.s1, xrand.s1 |
+| CHK-031 | test | Reset during a transfer abandons it | **PASS** | test_chk_031_reset_abandons_transfer; verified in base.s1, xrand.s1 |
 
 ## Requirement traceability (RTM)
 
@@ -367,4 +378,4 @@ Generated 2026-11-24T02:00:25+00:00 by NNC Pipeline.
 - Domain crossings were checked structurally (synchronizer structure, `nnc cdc`); gray coding and handshake protocols are not proven by that check.
 - Sign-off STA, place and route and DFT are outside this flow (docs/SIGNOFF_SCOPE.md); `nnc rtl-check` gives a synthesis estimate of area and the longest combinational path.
 - Rules marked NOT_VERIFIED_BY_SIM carry the contract's reason (static, structural, not observable...).
-- Only the default parameter configuration was simulated (no run_set.json).
+- Only the configurations of the run set above were simulated; code coverage is merged over its runs, mutation testing used the primary run base.s1.

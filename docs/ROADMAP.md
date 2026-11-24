@@ -201,6 +201,13 @@ code lạ trong sandbox, và người dùng thật của công cụ quen dòng l
 
 **Thứ tự đề xuất.** 23.1 → 23.2 → 23.4 → 23.3. 23.5 và 23.6 chờ người dùng đồng ý chi phí. G4 vẫn chờ người có chuyên môn.
 
+**Trạng thái (2026-11-24).** Kết quả ở EVALUATION §15.
+- 23.1, 23.2, 23.4, 23.3: xong.
+  - Block coverage: ahb2axi 77,1 → 97,1 %, rv_timer 87,8 → 99,3 %, gpio 93,6 → 99,5 %.
+  - Không nhánh PROVEN nào từng chạy trong mô phỏng. Test và check không đổi.
+- 23.5 và 23.6: người dùng đã đồng ý chi phí ("ok, xong thì làm tiếp 23.5 và 23.6").
+- Lưu ý: đường burst AXI của ahb2axi bị loại vì chết do lỗi RTL đã ghi, không phải do thiết kế. Người duyệt G4 cần xét.
+
 ## Việc còn mở, chờ người có chuyên môn (G4)
 
 Xem [G4_REVIEW_REQUEST.md](G4_REVIEW_REQUEST.md). Riêng ot_rv_timer còn hai việc:

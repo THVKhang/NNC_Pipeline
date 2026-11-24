@@ -6,6 +6,67 @@ Measurements for every phase are in [docs/EVALUATION.md](docs/EVALUATION.md). Th
 No release contains a G4 sign-off. G1–G3 were approved by an AI assistant on the owner's delegation, and each
 approval is recorded as delegated. See [docs/G4_REVIEW_REQUEST.md](docs/G4_REVIEW_REQUEST.md).
 
+## Unreleased
+
+### Waveforms are no longer committed
+- The 50 `.vcd` traces (formal counterexamples, non-equivalent mutants) left git: 1.34 million of the repository's
+  lines, 16 of them gpio mutant traces of about 150 000 lines each. Other hardware projects (OpenTitan, cocotb, CVA6,
+  VeeR) ignore waveforms too. `nnc formal` and `nnc mutate-equiv` write them again, and `nnc review-kit` copies
+  those present on the machine. They stay in the history of earlier commits.
+
+### Parallel tool jobs
+- `NNC_JOBS` (default: the CPU count) sets the parallel tool jobs: run-set configurations, SymbiYosys tasks
+  (formal, UNR), mutants, and the compiler jobs of each build. `--jobs` on the stage commands; `formal-check` and
+  `demo` take `--jobs` (`--workers` stays as an alias). Agent calls keep `--workers` (default 4).
+
+### Phase 23.1: names that differ between Verilator and Yosys
+- Packed struct fields: Verilator names a toggle point per field (`tl_i.a_address[3]`), Yosys has one packed net
+  (`tl_i`). `coverage.struct_fields` reads the layout of every struct variable from `verilator --json-only` (nested
+  structs, enums), and each field point is matched to its bit of the net, for constant bits and for UNR.
+- Instances that Verilator merges over a generate loop (`gen_filter[*].u_filter`): a merged point is constant, or
+  PROVEN, only if it is in every instance of the netlist.
+- Checked on gpio: 2 280 more constant toggle points are matched, and no simulated toggle contradicts any of them
+  (no new signal kept whole, no scope conflict).
+- UNR records: signals that were not in the netlist are tried again, and names that are no longer candidates
+  leave the record.
+
+### Phase 23.2: UNR for designs with a simulation-only model
+- Config `unr_cut` (modules): the proofs read the RTL with `formal_defines` and make every output of these
+  modules free (Yosys `blackbox` + `cutpoint -blackbox`). This allows more behaviours than any model of those
+  modules, the simulated one included, so a PROVEN bit holds in simulation. `unr.cut_check` refuses the cut
+  when a file that tests one of those macros defines a module that is not cut.
+
+### Phase 23.3: branches never executed (EVALUATION §15)
+- `nnc sim --unr` also proves branches (nnc/unrbranch.py). Each IF branch or case item with no hit gets a
+  marker in an instrumented copy of the RTL. In a clocked block the marker is a flop that toggles when the branch
+  runs. In a combinational block it is a signal set to 1 there. The copy is used only when Verilator shows every
+  marker as the first statement of its branch.
+- A branch PROVEN constant after the first reset in every configuration leaves the block metric, and its lines
+  leave the line metric when no other point covers them. `branches_executed` counts any PROVEN branch that a
+  simulation runs; it is 0 on all 13 designs. Block coverage: ahb2axi_bridge 77.1 → 97.1 %, ot_rv_timer
+  87.8 → 99.3 %, ot_gpio 93.6 → 99.5 %. Tests and checks unchanged.
+- A PROVEN branch is dead in the RTL as delivered, not necessarily by design. ahb2axi_bridge's AXI burst path
+  (WR_BURST, WR_BBURST, `o_axi_awlen`) is proven dead. The cause is its recorded fault 2:
+  `reg_burst_fallback` is always set. The G4 reviewer judges each exclusion against the specification
+  (`work/unr.md`, review packet checklist).
+- UNR tasks have up to 4 control assertions on flops of different signals, and conclude when the guard and one
+  control fail. spi_master's `min` configuration had a constant control, so all its tasks were vacuous.
+- Instances merged by Verilator over a generate loop are written `u_top_*` in `work/unr.md`. Records of
+  configurations that are not in the run set are kept in `unr.json` but not shown.
+
+### Phase 23.4: x_init in every run set
+- 14 more run sets have a configuration `xrand` (`"x_init": "random"`, seed 1): all 15 designs now have one. Designs
+  that had no run set get one (`base` + `xrand`). The old configurations give the
+  same results. The only new failure is ahb2axi_bridge CHK-012, already reported in 0.8.0 (step 23.6).
+- A configuration with `"x_init": "random"` is tested as before, but its coverage is not merged: its toggles
+  before the first reset are not activity of the design, and they would cover points and undo the constant-bit
+  and UNR exclusions.
+
+### Closure without pre-verified modules
+- When a design declares `coverage_preverified`, `nnc cover` (code metrics) takes its target and the uncovered
+  points given to the analyst from the coverage without those modules. This matches OpenTitan's `cover.cfg`.
+  `nnc sim` now stores those uncovered points (`coverage.without_preverified.uncovered`).
+
 ## 0.8.0 (2026-11-24)
 
 ### Phase 19.4: random initial values in run sets (EVALUATION §12)

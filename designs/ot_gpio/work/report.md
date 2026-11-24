@@ -1,6 +1,6 @@
 # Verification report — ot_gpio
 
-Generated 2026-11-24T02:09:16+00:00 by NNC Pipeline.
+Generated 2026-11-24T08:42:08+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -9,18 +9,18 @@ Generated 2026-11-24T02:09:16+00:00 by NNC Pipeline.
 | Rules | 268 — {'NOT_VERIFIED_BY_SIM': 80, 'VERIFIED': 188} |
 | Checks | 38 — {'PASS': 38} |
 | Tests | {'pass': 28} |
-| Run set | 5 runs in 4 configurations (base, sync_off, straps_off, min); primary base.s1 |
+| Run set | 6 runs in 5 configurations (base, sync_off, straps_off, min, xrand); primary base.s1 |
 | Integration | OK |
-| Code coverage (RTL), line | 96.5 % (11212/11616 lines); 9736 points left out (package code the design does not contain), all points 52.5 % (11212/21352) |
-| Code coverage (RTL), block | 93.6 % (1090/1164 statement blocks and branch arms); 1288 points left out (package code the design does not contain), all points 44.5 % (1090/2452) |
+| Code coverage (RTL), line | 97.3 % (11212/11520 lines); 9832 points left out (package code the design does not contain), all points 52.5 % (11212/21352) |
+| Code coverage (RTL), block | 99.5 % (1090/1096 statement blocks and branch arms); 1356 points left out (package code the design does not contain), all points 44.5 % (1090/2452) |
 | Code coverage (RTL), expression | 64.9 % (6600/10174 condition terms); 21732 points left out (package code the design does not contain), all points 20.7 % (6600/31906) |
-| Code coverage (RTL), toggle | 89.6 % (69842/77960 bit toggles 0->1 and 1->0); 5224 points left out (constant bits; 1896 of them proven constant after reset by formal, work/unr.md), all points 84.0 % (69898/83184) |
+| Code coverage (RTL), toggle | 93.9 % (69704/74244 bit toggles 0->1 and 1->0); 8940 points left out (constant bits; 2376 of them proven constant after reset by formal, work/unr.md), all points 84.0 % (69898/83184) |
 | Code coverage (RTL), functional | 95.0 % (38/40 cover points of the specification) |
 | Code coverage without the modules the designer declares pre-verified | prim_alert_receiver, prim_alert_sender, prim_count, prim_esc_receiver, prim_esc_sender, prim_lfsr, prim_onehot_check, prim_prince, prim_secded_inv_39_32_dec, prim_secded_inv_39_32_enc, prim_secded_inv_64_57_dec, prim_secded_inv_64_57_enc (7 instances; config `coverage_preverified`) |
-| ... without pre-verified modules, block | 96.8 % (914/944) |
+| ... without pre-verified modules, block | 99.3 % (914/920) |
 | ... without pre-verified modules, expression | 69.4 % (5724/8250) |
-| ... without pre-verified modules, line | 97.0 % (10336/10652) |
-| ... without pre-verified modules, toggle | 90.1 % (62418/69288) |
+| ... without pre-verified modules, line | 97.1 % (10336/10644) |
+| ... without pre-verified modules, toggle | 94.5 % (62288/65884) |
 | Mutation score | 58.3 % (21 killed / 15 survived / 0 not compiled) |
 | Surviving mutants, formal equivalence (`nnc mutate-equiv`) | {'CEX': 4, 'ERROR': 2, 'PROVEN': 9}; score without the proven-equivalent mutants 77.8 % |
 | Coverage target | toggle 90.0 %: **target_unmet** (baseline 87.5 % -> 87.5 %, work/coverage.md) |
@@ -39,7 +39,7 @@ Generated 2026-11-24T02:09:16+00:00 by NNC Pipeline.
 | Every selected check PASS (no FAIL, NOT_HIT, NOT_RUN) | met |
 | Every planned check selected | met |
 | Every rule in a check or declared not verifiable | met |
-| Every run of the run set built and ran | met — 5 runs |
+| Every run of the run set built and ran | met — 6 runs |
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | **not met** — 13 rule(s) below: AH-T1.3.2-01, AH-T1.3.2-03, GP-10-07, GP-10-08, GP-10-19, GP-3-01, GP-4.1-01, GP-4.1-03, GP-5-02, GP-5-05 |
 | Coverage target toggle 90.0 % | **not met** — target_unmet |
@@ -57,6 +57,7 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 | sync_off.s1 — no input synchronizer | GpioAsyncOn=0 | — | — | ran | {'pass': 28} | none | 1 |
 | straps_off.s1 — no strap sampling | GpioAsHwStrapsEn=0 | — | — | ran | {'pass': 28} | none | 1 |
 | min.s1 — both off | GpioAsyncOn=0, GpioAsHwStrapsEn=0 | — | — | ran | {'pass': 28} | none | 1 |
+| xrand.s1 — the default configuration with random initial values of every variable without a reset (ROADMAP 23.4): a check that passes only because flops start at 0 fails here; its coverage is not merged | defaults | — | — | ran | {'pass': 28} | none | 1 |
 
 ## Gates
 
@@ -71,44 +72,44 @@ Every check is merged over these runs: PASS when one run verified it and no run 
 
 | Check | Kind | Title | Status | Evidence |
 |---|---|---|---|---|
-| CHK-001 | assertion | Alert signal integrity never fails | **PASS** | hits 206219, fails 0; hit in 5/5 runs; formal PROVEN |
-| CHK-002 | assertion | o_alert is a single-cycle pulse | **PASS** | hits 862, fails 0; hit in 5/5 runs; formal PROVEN |
-| CHK-003 | assertion | No alert without an alert cause | **PASS** | hits 862, fails 0; hit in 5/5 runs; formal PROVEN |
-| CHK-004 | assertion | o_gpio / o_gpio_en follow the DATA_OUT / DATA_OE shadow model | **PASS** | hits 172193, fails 0; hit in 5/5 runs; formal PROVEN |
-| CHK-005 | assertion | D-channel response integrity never fails | **PASS** | hits 206219, fails 0; hit in 5/5 runs; formal PROVEN |
-| CHK-006 | assertion | Disabled interrupts never assert o_intr_gpio | **PASS** | hits 193384, fails 0; hit in 5/5 runs; formal PROVEN |
-| CHK-007 | assertion | Interrupt level is held until software acknowledges it | **PASS** | hits 52865, fails 0; hit in 5/5 runs; formal PROVEN |
-| CHK-008 | assertion | Outputs held at zero during reset | **PASS** | hits 1712, fails 0; hit in 5/5 runs; formal PROVEN |
-| CHK-009 | assertion | Strap outputs: invalid before the trigger, frozen after sampling | **PASS** | hits 122479, fails 0; hit in 3/5 runs; formal PROVEN |
-| CHK-010 | assertion | Outputs change only at rising clock edges | **PASS** | hits 206046, fails 0; hit in 5/5 runs; formal UNSUPPORTED |
-| CHK-011 | assertion | Test-bench stimulus legality monitor (host rules and plan constraints) | **PASS** | hits 206219, fails 0; hit in 5/5 runs; formal UNSUPPORTED |
-| CHK-012 | assertion | D channel held stable under back-pressure | **PASS** | hits 18826, fails 0; hit in 5/5 runs; formal PROVEN |
-| CHK-013 | assertion | Response matches an outstanding request (source/size/opcode echo, no orphans) | **PASS** | hits 49587, fails 0; hit in 5/5 runs; formal TIMEOUT |
-| CHK-014 | test | ALERT_TEST.fatal_fault triggers exactly one o_alert pulse | **PASS** | test_chk_014_alert_test_pulse, test_regression_random; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
-| CHK-015 | test | ALERT_TEST.regwen rw0c locks alert testing until reset | **PASS** | test_chk_015_alert_regwen_lock; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
-| CHK-016 | test | Command integrity error raises the fatal alert, repeated until reset | **PASS** | test_chk_016_intg_error_fatal_alert, test_regression_random; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
-| CHK-017 | test | Input noise filter on DATA_IN and interrupt detection | **PASS** | test_chk_017_input_filter; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
-| CHK-018 | test | Direct write of DATA_OUT through DIRECT_OUT | **PASS** | test_chk_018_direct_out; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
-| CHK-019 | test | Masked writes of DATA_OUT through MASKED_OUT_LOWER / MASKED_OUT_UPPER | **PASS** | test_chk_019_masked_out; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
-| CHK-020 | test | DATA_OE: direct and masked writes, reads and o_gpio_en | **PASS** | test_chk_020_data_oe; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
-| CHK-021 | test | DATA_IN with filter off follows i_gpio only (both GpioAsyncOn values) | **PASS** | test_chk_021_data_in_follows_input; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
-| CHK-022 | test | Edge interrupts: rising, falling, both; latching, W1C, raw INTR_STATE | **PASS** | test_chk_022_edge_interrupts, test_regression_random; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
-| CHK-023 | test | Level interrupts: high, low, and W1C while the level holds | **PASS** | test_chk_023_level_interrupts; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
-| CHK-024 | test | INTR_TEST forcing and INTR_ENABLE masking per bit | **PASS** | test_chk_024_intr_test_and_enable; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
-| CHK-025 | test | PER_PIN_IO_i aliases DATA_OUT[i] / DATA_IN[i] and affects only GPIO i | **PASS** | test_chk_025_per_pin_io; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
-| CHK-026 | test | PER_PIN_OE_i / PER_PIN_INTR_CTRL_i alias their bit and affect only GPIO i | **PASS** | test_chk_026_per_pin_cfg; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
-| CHK-027 | test | Interrupt registers have no per-pin view | **PASS** | test_chk_027_no_per_pin_intr; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
-| CHK-028 | test | Reset values of every register | **PASS** | test_chk_028_reset_values; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
-| CHK-029 | test | Field access types: rw, wo, ro, rw0c, reserved bits; RACL off | **PASS** | test_chk_029_field_access_types; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
-| CHK-030 | test | Asynchronous reset assertion, short reset and discarding of a pending response | **PASS** | test_chk_030_async_short_reset; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
-| CHK-031 | test | Strap sampling with GpioAsHwStrapsEn=1 (once per reset, regardless of OE) | **PASS** | test_chk_031_strap_sampling, test_regression_random; verified in base.s1, base.s2, sync_off.s1 |
+| CHK-001 | assertion | Alert signal integrity never fails | **PASS** | hits 244448, fails 0; hit in 6/6 runs; formal PROVEN |
+| CHK-002 | assertion | o_alert is a single-cycle pulse | **PASS** | hits 1035, fails 0; hit in 6/6 runs; formal PROVEN |
+| CHK-003 | assertion | No alert without an alert cause | **PASS** | hits 1035, fails 0; hit in 6/6 runs; formal PROVEN |
+| CHK-004 | assertion | o_gpio / o_gpio_en follow the DATA_OUT / DATA_OE shadow model | **PASS** | hits 203682, fails 0; hit in 6/6 runs; formal PROVEN |
+| CHK-005 | assertion | D-channel response integrity never fails | **PASS** | hits 244448, fails 0; hit in 6/6 runs; formal PROVEN |
+| CHK-006 | assertion | Disabled interrupts never assert o_intr_gpio | **PASS** | hits 229229, fails 0; hit in 6/6 runs; formal PROVEN |
+| CHK-007 | assertion | Interrupt level is held until software acknowledges it | **PASS** | hits 63080, fails 0; hit in 6/6 runs; formal PROVEN |
+| CHK-008 | assertion | Outputs held at zero during reset | **PASS** | hits 2059, fails 0; hit in 6/6 runs; formal PROVEN |
+| CHK-009 | assertion | Strap outputs: invalid before the trigger, frozen after sampling | **PASS** | hits 160702, fails 0; hit in 4/6 runs; formal PROVEN |
+| CHK-010 | assertion | Outputs change only at rising clock edges | **PASS** | hits 244240, fails 0; hit in 6/6 runs; formal UNSUPPORTED |
+| CHK-011 | assertion | Test-bench stimulus legality monitor (host rules and plan constraints) | **PASS** | hits 244448, fails 0; hit in 6/6 runs; formal UNSUPPORTED |
+| CHK-012 | assertion | D channel held stable under back-pressure | **PASS** | hits 22579, fails 0; hit in 6/6 runs; formal PROVEN |
+| CHK-013 | assertion | Response matches an outstanding request (source/size/opcode echo, no orphans) | **PASS** | hits 59536, fails 0; hit in 6/6 runs; formal TIMEOUT |
+| CHK-014 | test | ALERT_TEST.fatal_fault triggers exactly one o_alert pulse | **PASS** | test_chk_014_alert_test_pulse, test_regression_random; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1, xrand.s1 |
+| CHK-015 | test | ALERT_TEST.regwen rw0c locks alert testing until reset | **PASS** | test_chk_015_alert_regwen_lock; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1, xrand.s1 |
+| CHK-016 | test | Command integrity error raises the fatal alert, repeated until reset | **PASS** | test_chk_016_intg_error_fatal_alert, test_regression_random; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1, xrand.s1 |
+| CHK-017 | test | Input noise filter on DATA_IN and interrupt detection | **PASS** | test_chk_017_input_filter; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1, xrand.s1 |
+| CHK-018 | test | Direct write of DATA_OUT through DIRECT_OUT | **PASS** | test_chk_018_direct_out; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1, xrand.s1 |
+| CHK-019 | test | Masked writes of DATA_OUT through MASKED_OUT_LOWER / MASKED_OUT_UPPER | **PASS** | test_chk_019_masked_out; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1, xrand.s1 |
+| CHK-020 | test | DATA_OE: direct and masked writes, reads and o_gpio_en | **PASS** | test_chk_020_data_oe; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1, xrand.s1 |
+| CHK-021 | test | DATA_IN with filter off follows i_gpio only (both GpioAsyncOn values) | **PASS** | test_chk_021_data_in_follows_input; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1, xrand.s1 |
+| CHK-022 | test | Edge interrupts: rising, falling, both; latching, W1C, raw INTR_STATE | **PASS** | test_chk_022_edge_interrupts, test_regression_random; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1, xrand.s1 |
+| CHK-023 | test | Level interrupts: high, low, and W1C while the level holds | **PASS** | test_chk_023_level_interrupts; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1, xrand.s1 |
+| CHK-024 | test | INTR_TEST forcing and INTR_ENABLE masking per bit | **PASS** | test_chk_024_intr_test_and_enable; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1, xrand.s1 |
+| CHK-025 | test | PER_PIN_IO_i aliases DATA_OUT[i] / DATA_IN[i] and affects only GPIO i | **PASS** | test_chk_025_per_pin_io; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1, xrand.s1 |
+| CHK-026 | test | PER_PIN_OE_i / PER_PIN_INTR_CTRL_i alias their bit and affect only GPIO i | **PASS** | test_chk_026_per_pin_cfg; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1, xrand.s1 |
+| CHK-027 | test | Interrupt registers have no per-pin view | **PASS** | test_chk_027_no_per_pin_intr; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1, xrand.s1 |
+| CHK-028 | test | Reset values of every register | **PASS** | test_chk_028_reset_values; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1, xrand.s1 |
+| CHK-029 | test | Field access types: rw, wo, ro, rw0c, reserved bits; RACL off | **PASS** | test_chk_029_field_access_types; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1, xrand.s1 |
+| CHK-030 | test | Asynchronous reset assertion, short reset and discarding of a pending response | **PASS** | test_chk_030_async_short_reset; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1, xrand.s1 |
+| CHK-031 | test | Strap sampling with GpioAsHwStrapsEn=1 (once per reset, regardless of OE) | **PASS** | test_chk_031_strap_sampling, test_regression_random; verified in base.s1, base.s2, sync_off.s1, xrand.s1 |
 | CHK-032 | test | HW_STRAPS_DATA_IN reads zero when GpioAsHwStrapsEn=0 | **PASS** | test_chk_032_straps_disabled; verified in straps_off.s1, min.s1 |
-| CHK-033 | test | Aligned byte writes: rejected on wide registers, accepted on PER_PIN_OE / PER_PIN_INTR_CTRL | **PASS** | test_chk_033_byte_writes; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
-| CHK-034 | test | Sub-word reads return the full register | **PASS** | test_chk_034_subword_reads; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
-| CHK-035 | test | TL-UL protocol error cases answered with d_error=1 | **PASS** | test_chk_035_protocol_errors, test_cov_102_mask_size_combinations; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
-| CHK-036 | test | Unmapped offsets return d_error=1 and change nothing | **PASS** | test_chk_036_unmapped; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
-| CHK-037 | test | Instruction-fetch reads complete without side effects | **PASS** | test_chk_037_instr_fetch; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
-| CHK-038 | test | Outstanding requests and back-pressure | **PASS** | test_chk_038_outstanding_backpressure, test_regression_random; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1 |
+| CHK-033 | test | Aligned byte writes: rejected on wide registers, accepted on PER_PIN_OE / PER_PIN_INTR_CTRL | **PASS** | test_chk_033_byte_writes; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1, xrand.s1 |
+| CHK-034 | test | Sub-word reads return the full register | **PASS** | test_chk_034_subword_reads; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1, xrand.s1 |
+| CHK-035 | test | TL-UL protocol error cases answered with d_error=1 | **PASS** | test_chk_035_protocol_errors, test_cov_102_mask_size_combinations; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1, xrand.s1 |
+| CHK-036 | test | Unmapped offsets return d_error=1 and change nothing | **PASS** | test_chk_036_unmapped; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1, xrand.s1 |
+| CHK-037 | test | Instruction-fetch reads complete without side effects | **PASS** | test_chk_037_instr_fetch; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1, xrand.s1 |
+| CHK-038 | test | Outstanding requests and back-pressure | **PASS** | test_chk_038_outstanding_backpressure, test_regression_random; verified in base.s1, base.s2, sync_off.s1, straps_off.s1, min.s1, xrand.s1 |
 
 ## Requirement traceability (RTM)
 

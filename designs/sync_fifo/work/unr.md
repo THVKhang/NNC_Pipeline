@@ -23,3 +23,22 @@ PROVEN constant after the first reset:
 - `u_vlsit_sfifo_wr.w_addr_ext` [3-31]
 - `u_vlsit_sfifo_wr.w_occ_nxt` [4-31]
 
+# Branches never executed after the first reset (nnc/unrbranch.py)
+
+Each IF branch or case item below had no hit. A marker in an instrumented copy of the RTL (a flop that toggles when the branch runs, or in a combinational block a signal set to 1 there) was checked the same way; a copy is used only when Verilator shows every marker as the first statement of its branch. A branch PROVEN in every configuration leaves the block coverage with the lines that no other point covers. Key: instance, file, line, column, kind.
+
+## Configuration base (`fda7cc3e39102401`)
+
+1 SymbiYosys task(s); control `u_vlsit_sfifo_rd.i_wr_ptr[0]`, `u_vlsit_sfifo_rd.w_wptr_ext[0]`, `u_vlsit_sfifo_rd.w_wptr_v[0]`, `u_vlsit_sfifo_wr.o_wr_ptr[0]` (one must change).
+
+| Result | Branches |
+|---|---|
+| PROVEN never executed | 2 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+
+PROVEN never executed after the first reset:
+
+- `m_vlsit_sfifo_rd.sv:183` case (column 7) in `u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_wr.sv:195` case (column 7) in `u_vlsit_sfifo_wr`
+

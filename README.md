@@ -95,7 +95,7 @@ Measurements and history: [EVALUATION.md](docs/EVALUATION.md), [CHANGELOG.md](CH
 <!-- nnc-summary:start (nnc summary --readme README.md) -->
 | Design | Tests passing | Checks PASS | Formal | Mutation | G4 |
 |---|---|---|---|---|---|
-| [ahb2axi_bridge](designs/ahb2axi_bridge) | 1/21 | 14/40 | 8 proven / 2 bounded / 1 vacuous / 9 **counterexample** | not run | pending (not signed) |
+| [ahb2axi_bridge](designs/ahb2axi_bridge) | 1/21 | 13/40 | 8 proven / 2 bounded / 1 vacuous / 9 **counterexample** | not run | pending (not signed) |
 | [apb_tlul_bridge](designs/apb_tlul_bridge) | 17/17 | 31/31 | 17 proven | 100.0 % (33/33) | pending (not signed) |
 | [async_apb_bridge](designs/async_apb_bridge) | 28/28 | 35/35 | 15 proven / 3 simulation-only | 91.7 % (11/12) | pending (not signed) |
 | [async_gray_fifo](designs/async_gray_fifo) | 12/20 | 23/32 | 5 proven / 2 bounded / 6 simulation-only | 100.0 % (12/12) | pending (not signed) |

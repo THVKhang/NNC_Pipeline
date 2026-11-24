@@ -873,7 +873,7 @@ Limits:
   on one bit per task;
 - only toggle points. Branches (line/block) under a constant condition are not done yet.
 
-**Still open.** These are phase 23 of the ROADMAP.
+**Still open.** These are phase 23 of the ROADMAP, done in §15.
 - Struct fields: both constant bits and UNR.
 - UNR for the two asynchronous designs, and for line/block points.
 - x_init in the run sets of the other designs.
@@ -964,3 +964,96 @@ Faults of the flow found while preparing and running them, fixed before the runs
 The corpus was run again after the `opt_dff` change: the same verdicts and smoke results for all 238 modules.
 
 Total agent cost of the three runs: US$5.40.
+
+## 15. The rest of the coverage work: struct fields, cut models, branches, x_init everywhere (phase 23, 2026-11-24)
+
+Phase 19.5 left four things open (end of §12). Steps 23.1 to 23.4 close them. No point was left out by hand: a
+point leaves a metric only when SymbiYosys PROVES it unreachable in every configuration of the run set.
+
+**23.1, struct fields.** Verilator names a toggle point per field of a packed struct (`tl_i.a_address[3]`),
+Yosys has one net (`tl_i`). `coverage.struct_fields` reads the layout of every struct variable from
+`verilator --json-only`, so each field point is matched to its bit of the net, for constant bits and for UNR.
+Instances that Verilator merges over a generate loop (`gen_filter[*].u_filter`) count as constant, or PROVEN, only
+if every instance in the netlist is. On gpio 2 280 more constant points are matched, and no simulated toggle
+contradicts any of them.
+
+**23.2, designs with a simulation-only model.** The synchronizer model of async_gray_fifo and async_apb_bridge
+cannot be read by Yosys. Config `unr_cut` names those modules: the proofs read the RTL with the synthesis macros
+and make every output of the cut modules free (`cutpoint -blackbox`). A free output allows every behaviour of
+every model, the simulated one included, so a PROVEN bit also holds in simulation. `unr.cut_check` refuses a cut
+when a file that tests one of these macros defines a module that is not cut. Result: async_gray_fifo 35 bits
+PROVEN in all 10 configurations (toggle 99.5 → 99.9 %). async_apb_bridge has no candidate left: its only uncovered
+signal is in the cut model.
+
+**23.4, x_init in every run set.** The 14 other designs now have a configuration `xrand` (`"x_init": "random"`, seed 1), so all 15 run sets have
+one (uart_lite's, from §12, runs seeds 1 and 2).
+Its tests and assertions count; its coverage is not merged, because its toggles before the first reset are not
+activity of the design and would cover the points that 19.1 and 19.5 leave out. Checked against the record:
+- the old configurations give the same tests, assertions and checks;
+- the `xrand` runs add no failing test;
+- one assertion fails only under `xrand`: ahb2axi_bridge CHK-012, already reported in §12 (step 23.6).
+
+**23.3, branches never executed.** Each IF branch or case item with no hit gets a marker in an instrumented copy of
+the RTL (`nnc/unrbranch.py`):
+- in a clocked block, a flop that toggles when the branch runs;
+- in a combinational block, a signal set to 1 there.
+
+The copy is used only when Verilator shows every marker as the first statement of its branch. Each marker is then
+proved constant after the first reset, as a toggle bit is. A branch PROVEN in every configuration leaves the block
+metric, and its lines leave the line metric when no other point covers them. If a simulation ever executes a
+PROVEN branch, the result counts it (`branches_executed`); it is 0 on every design.
+
+**Controls on more than one signal.** In spi_master's `min` configuration the control flop of the first version
+was constant, so every task was vacuous. A task now has up to 4 control assertions on flops of different
+signals, and it concludes only if the guard and at least one control FAIL.
+
+**Closure without the pre-verified modules.** When a design declares `coverage_preverified` (rv_timer: the `prim_*`
+modules, as OpenTitan's `cover.cfg` does), `nnc cover` takes its target and its uncovered points from the
+coverage without those modules. Before this, the list given to the analyst (capped at 200 groups) held only
+`prim_*` expression points.
+
+Results with `nnc sim --unr`, all configurations, 12 parallel jobs. Before = release 0.8.0.
+
+| Design | Toggle bits PROVEN | Branches PROVEN | Toggle % | Block % | Line % |
+|---|---|---|---|---|---|
+| ahb2axi_bridge | 656 | 102 | 84.1 → **91.5** | 77.1 → **97.1** | 86.0 → **91.3** |
+| apb_tlul_bridge | 2 | 2 | 100.0 | 95.6 → **100.0** | 96.0 → **97.0** |
+| async_apb_bridge | 0 | 0 | 98.6 | 88.8 | 91.9 |
+| async_gray_fifo | 35 | 2 | 99.5 → **99.9** | 95.7 → **97.8** | 99.1 → **99.8** |
+| axi2apb_bridge | 359 | 6 | 100.0 | 95.9 → **98.6** | 98.9 → **100.0** |
+| axil_regfile | 5 | 0 | 97.2 → **99.2** | 100.0 | 100.0 |
+| c_uart | 0 | 2 | 67.6 | 93.2 → **97.6** | 97.6 |
+| gen_apb_tlul_bridge | 2 | 2 | 100.0 | 95.7 → **100.0** | 95.1 → **97.0** |
+| gen_sync_fifo | 2 | 3 | 100.0 | 94.4 → **100.0** | 97.3 → **100.0** |
+| ot_gpio | 297 | 17 | 89.6 → **93.9** | 93.6 → **99.5** | 96.5 → **97.3** |
+| ot_rv_timer | 116 | 19 | 83.9 → **90.0** | 87.8 → **99.3** | 92.3 → **94.9** |
+| spi_master | 0 | 2 | 95.2 | 93.8 → **97.8** | 94.8 → **98.6** |
+| sync_fifo | 114 | 2 | 100.0 | 97.3 → **100.0** | 99.2 → **100.0** |
+
+Source: `work/results.json` (`coverage.unr`, `coverage.design_scope.proven_unreachable`) and `work/unr.md`. The
+tests, failing tests, assertions and checks of every design are those of 0.8.0.
+
+What was proven is mostly what one expects:
+- branches under a parameter or a tie-off: `if (EnableRacl)` of the gpio and rv_timer register tops,
+  `else if (reinit_i)` of `prim_subreg` (tied to 0), the ping handshake of the alert sender and receiver;
+- the `default` item of complete FSM case statements (spi_master, sync_fifo, axi2apb_bridge);
+- the software-reset FSM of the FIFOs inside ahb2axi_bridge.
+
+**A PROVEN branch is dead in the RTL as delivered, not dead by design.** ahb2axi_bridge shows the difference.
+Of its 102 branches, 22 are in `m_ahb2axi_ctrl.sv`: the states WR_BURST and WR_BBURST, the non-fallback exit of
+WR_CAPTURE (line 626), and with them `o_axi_awlen` and `o_axi_awburst`, which are proven constant. So this RTL
+never issues an AXI burst; every AHB burst is sent as single transfers. The cause is fault 2 of §3:
+- the first beat of a burst is NONSEQ;
+- it is still at the head of the command queue when the FSM enters WR_CAPTURE;
+- so `w_cap_stop` (`htrans != SEQ`) fires at once and sets `reg_burst_fallback`.
+
+The specification asks for burst aggregation, so this code is dead because of a fault. The proof is right, and the
+block metric (77.1 → 97.1 %) is the coverage of the RTL as delivered. The reviewer has to judge each exclusion against the
+specification: the review packet's checklist has "The unreached code and cover points are unreachable by design or
+accepted", and `work/unr.md` lists every PROVEN branch with its file and line. The 20 failing tests of ahb2axi
+already show the fault. No PROVEN branch of the other designs is in code that the specification requires.
+
+Limits:
+- a branch inside a module with no clocked block at module level (`cell_sync`) is not tried;
+- the cut modules of 23.2 are free, so their own branches are not proved;
+- a counterexample or a time limit leaves the branch counted (ahb2axi: 7 counterexamples, 2 time limits).

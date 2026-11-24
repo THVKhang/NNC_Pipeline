@@ -7,8 +7,8 @@ This packet is for the person who decides gate **G4 (sign-off)**: *is this desig
 - **Requirements (rules):** 151 — NOT_VERIFIED_BY_SIM 37, VERIFIED 114
 - **Checks:** 31 — PASS 31
 - **Tests:** {'pass': 21}
-- **Simulated configuration:** one (parameters {'PARA_AXI_ID_W': 4}, seed 1)
-- **Code coverage:** line 98.9 %, block 95.9 %, expression 96.2 %, toggle 100.0 %, functional 97.5 %
+- **Simulated configurations:** 2 runs in 2 configurations (base, xrand); see `run_set.json` and the *Run set* table of the report
+- **Code coverage:** line 100.0 %, block 98.6 %, expression 96.2 %, toggle 100.0 %, functional 97.5 %
 - **Mutation score:** 88.9 % (32 of 36 injected faults detected); 2 survivor(s) proven equivalent by formal, 94.1 % without them; formal on the survivors: {'CEX': 2, 'PROVEN': 2}
 
 ## 2. Decisions taken for you
@@ -64,14 +64,6 @@ Mutation testing changed one RTL line at a time (36 faults). A fault no check no
 
 Code or cover points never reached (first ones):
 
-- line m_axi2apb_apb_ctrl.sv:126
-- line m_axi2apb_apb_ctrl.sv:127
-- line m_axi2apb_apb_ctrl.sv:147
-- line m_axi2apb_apb_ctrl.sv:148
-- line m_axi2apb_rd_seq.sv:297
-- line m_axi2apb_rd_seq.sv:298
-- line m_axi2apb_wr_seq.sv:280
-- line m_axi2apb_wr_seq.sv:281
 - functional nnc_cov.sv:0 COVP-024
 
 ### Formal check (SymbiYosys)
@@ -96,6 +88,8 @@ cd designs/axi2apb_bridge/sim
 make regression SEED=1 2>&1 | tee sim.log
 cd ../../.. && python -m nnc kit-check axi2apb_bridge    # same outcome as the recorded results?
 ```
+
+The kit reproduces the primary run base.s1; the other runs differ only by the settings in `run_set.json`.
 
 ## 8. Checklist before signing
 

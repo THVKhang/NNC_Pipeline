@@ -1,6 +1,6 @@
 # Verification report — uart_lite
 
-Generated 2026-11-23T21:49:29+00:00 by NNC Pipeline.
+Generated 2026-11-24T06:47:56+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -11,10 +11,10 @@ Generated 2026-11-23T21:49:29+00:00 by NNC Pipeline.
 | Tests | {'pass': 20} |
 | Run set | 9 runs in 5 configurations (base, min, odd, wide, xrand); primary base.s1 |
 | Integration | OK |
-| Code coverage (RTL), line | 98.7 % (735/745 lines) |
-| Code coverage (RTL), block | 97.3 % (180/185 statement blocks and branch arms) |
-| Code coverage (RTL), expression | 100.0 % (190/190 condition terms) |
-| Code coverage (RTL), toggle | 100.0 % (1168/1168 bit toggles 0->1 and 1->0) |
+| Code coverage (RTL), line | 98.7 % (588/596 lines) |
+| Code coverage (RTL), block | 97.3 % (144/148 statement blocks and branch arms) |
+| Code coverage (RTL), expression | 100.0 % (152/152 condition terms) |
+| Code coverage (RTL), toggle | 100.0 % (938/938 bit toggles 0->1 and 1->0) |
 | Code coverage (RTL), functional | 97.5 % (39/40 cover points of the specification) |
 | Mutation score | 97.2 % (35 killed / 1 survived / 0 not compiled) |
 | Surviving mutants, formal equivalence (`nnc mutate-equiv`) | {'BOUNDED': 1}; score without the proven-equivalent mutants 97.2 % |
