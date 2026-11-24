@@ -134,6 +134,7 @@ Triage judged it a missing environment assumption (E). The formal-environment ag
   [coverage_functional.md](../designs/ot_gpio/work/coverage_functional.md)); 18 toggle groups
   ([coverage.md](../designs/ot_gpio/work/coverage.md)), of which address bits >= 10 rest only on decision D-012
   (tests stay below offset 0x400). Do you accept these, and should accesses above 0x400 be tested?
+- **rv_timer expression closure.** The target (90 % without the pre-verified `prim_*` modules) is met: 91.3 %, because formal proves 27 points never reached after reset (phase 24, [EVALUATION §16](EVALUATION.md)). No test was added for this. The closure report ([coverage.md](../designs/ot_rv_timer/work/coverage.md)) says, for each point the analyst claimed unreachable, whether it is still counted. Is leaving PROVEN points out of the metric acceptable to you?
 - **Domain crossings for review** ([async_gray_fifo cdc.md](../designs/async_gray_fifo/work/cdc.md),
   [async_apb_bridge cdc.md](../designs/async_apb_bridge/work/cdc.md)): gray pointers synchronized bit by bit, and
   payloads captured under a synchronized request/acknowledge. The structural check cannot prove gray coding or

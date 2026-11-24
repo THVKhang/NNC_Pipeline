@@ -41,3 +41,17 @@ PROVEN never executed after the first reset:
 - `m_vlsit_sfifo_wr.sv:226` case (column 7) in `u_wr`
 - `m_vlsit_sfifo_wr.sv:252` case (column 7) in `u_wr`
 
+# Expression points never hit after the first reset (nnc/unrexpr.py)
+
+Each term combination below had no hit. A marker declared at module level in an instrumented copy of the RTL (a wire that is 1 exactly when the combination holds) was checked the same way: PROVEN means the combination never holds after the first reset, so the point can never be hit. A combination is tried only when its terms read module-level signals with the same meaning as at the expression. A point PROVEN in every configuration leaves the expression coverage. Key: instance, file, line, column, combination.
+
+## Configuration base (`fda7cc3e39102401`)
+
+1 SymbiYosys task(s); control `u_rd.i_wr_ptr[0]`, `u_rd.w_wr_ptr_view[0]`, `u_wr.o_wr_ptr[0]`, `u_wr.reg_wr_ptr[0]` (one must change).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 0 |
+| counterexample | 2 |
+| no result (time limit) | 0 |
+

@@ -247,10 +247,31 @@ def to_markdown(cov: dict, results: dict | None = None, points: dict | None = No
     for r in cov.get("rounds", []):
         out.append(f"| {r['round']} | {r.get('percent')} % ({r.get('hit')}/{r.get('total')}) | {len(r.get('scenarios', []))} | "
                    f"{', '.join(r.get('tests', []))} | {r.get('note', '')} |")
+    f = cov.get("final") or {}
+    last = next((r for r in reversed(cov.get("rounds", [])) if r.get("total")), b)
+    if f.get("total") and (f.get("total"), f.get("hit")) != (last.get("total"), last.get("hit")):
+        note = ("fewer points: the points that formal proves never reached after reset leave the metric "
+                "(nnc sim --unr, work/unr.md)" if f["total"] < (last.get("total") or 0) else "measured again")
+        out.append(f"| final | {f.get('percent')} % ({f.get('hit')}/{f.get('total')}) | | | {note} |")
     if cov.get("unreachable"):
-        out += ["", "## Points claimed unreachable by legal stimulus (designer review; still counted)", "",
-                "| Points | Rules | Reason |", "|---|---|---|"]
-        out += [f"| {', '.join(u['where'])} | {', '.join(u['rules'])} | {u['reason']} |" for u in cov["unreachable"]]
+        left = {(u["file"], u["line"], w) for u in ((results or {}).get("coverage") or {}).get("uncovered", [])
+                if u.get("metric") == cov["metric"] for w in (u.get("detail") or [u.get("what")])}
+
+        def counted(wheres: list[str]) -> str:
+            n: dict[tuple[str, str], int] = {}
+            for where in wheres:
+                loc, _, what = where.partition(" ")
+                fn, _, ln = loc.rpartition(":")
+                st = "yes" if (fn, int(ln) if ln.isdigit() else ln, what) in left else "no"
+                n[(loc, st)] = n.get((loc, st), 0) + 1
+            return "; ".join(f"{loc} {st}" + (f" ({k})" if k > 1 else "") for (loc, st), k in n.items())
+        out += ["", "## Points claimed unreachable by legal stimulus (designer review)", "",
+                "A claim leaves nothing out by itself. The last column says which points are still counted: a "
+                "point is not counted when formal proves it never reached after reset (work/unr.md) or when it "
+                "lies in a module declared verified elsewhere.", "",
+                "| Points | Rules | Reason | Still counted |", "|---|---|---|---|"]
+        out += [f"| {', '.join(u['where'])} | {', '.join(u['rules'])} | {u['reason']} | "
+                + (counted(u["where"]) if results else "yes") + " |" for u in cov["unreachable"]]
     if cov.get("dropped"):
         out += ["", "## Scenarios dropped (they named RTL-internal identifiers)", ""]
         out += [f"- {d['id']}: {', '.join(d['leaks'])}" for d in cov["dropped"]]

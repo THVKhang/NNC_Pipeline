@@ -583,6 +583,23 @@ class CoverageClosureTest(unittest.TestCase):
         del r["coverage"]["without_preverified"]["uncovered"]
         self.assertIs(closure.without_preverified(r), r)
 
+    def test_closure_report_says_which_claimed_points_are_still_counted(self):
+        from nnc import closure
+        left = {"metric": "expression", "file": "a.sv", "line": 3, "what": "(x==1) => 1", "points": 1,
+                "detail": ["(x==1) => 1"]}
+        res = {"coverage": {"metrics": {"expression": {"hit": 9, "total": 10, "percent": 90.0}},
+                            "uncovered": [left]}}
+        cov = {"metric": "expression", "target": 90.0, "status": "target_met",
+               "baseline": {"percent": 80.0, "hit": 9, "total": 12},
+               "rounds": [{"round": 1, "scenarios": [], "tests": [], "percent": 75.0, "hit": 9, "total": 12}],
+               "final": {"percent": 90.0, "hit": 9, "total": 10},
+               "unreachable": [{"round": 1, "rules": ["R-1"], "reason": "tied off",
+                                "where": ["a.sv:3 (x==1) => 1", "a.sv:5 (y==1) => 1", "a.sv:5 (y==0) => 0"]}]}
+        md = closure.to_markdown(cov, res)
+        # the last round counted 12 points, the final count 10: the proven points left the metric
+        self.assertIn("| final | 90.0 % (9/10) | | | fewer points: the points that formal proves never reached", md)
+        self.assertIn("| a.sv:3 yes; a.sv:5 no (2) |", md)
+
 
 class SelectionAndSignoffTest(unittest.TestCase):
     def test_not_selected_checks_never_pass(self):

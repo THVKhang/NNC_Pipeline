@@ -1,6 +1,6 @@
 # Verification report — c_uart
 
-Generated 2026-11-24T08:31:14+00:00 by NNC Pipeline.
+Generated 2026-11-24T21:07:30+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -12,7 +12,7 @@ Generated 2026-11-24T08:31:14+00:00 by NNC Pipeline.
 | Run set | 2 runs in 2 configurations (base, xrand); primary base.s1 |
 | Integration | OK |
 | Code coverage (RTL), line | 97.6 % (120/123 lines) |
-| Code coverage (RTL), block | 97.6 % (41/42 statement blocks and branch arms); 2 points left out (package code the design does not contain), all points 93.2 % (41/44) |
+| Code coverage (RTL), block | 97.6 % (41/42 statement blocks and branch arms); 2 points left out (package code the design does not contain; 2 of them proven never reached after reset by formal, work/unr.md), all points 93.2 % (41/44) |
 | Code coverage (RTL), expression | 88.9 % (8/9 condition terms) |
 | Code coverage (RTL), toggle | 67.6 % (250/370 bit toggles 0->1 and 1->0) |
 | Code coverage (RTL), functional | 90.0 % (36/40 cover points of the specification) |

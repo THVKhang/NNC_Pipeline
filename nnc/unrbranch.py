@@ -749,6 +749,8 @@ def merge(conf: dict | None, new: dict) -> dict:
     for f in ("error", "control", "vacuous_tasks", "multiclock", "name", "params", "defines"):
         if f in new:
             out[f] = new[f]
+    if "error" not in new:              # the error of an earlier run does not describe this one
+        out.pop("error", None)
     out["tasks"] = int(conf.get("tasks", 0)) + int(new.get("tasks", 0))
     return out
 

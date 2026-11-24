@@ -39,3 +39,17 @@ PROVEN never executed after the first reset:
 - `m_apb_if.sv:100` case (column 7) in `u_apb_if`
 - `m_tlul_if.sv:145` case (column 7) in `u_tlul_if`
 
+# Expression points never hit after the first reset (nnc/unrexpr.py)
+
+Each term combination below had no hit. A marker declared at module level in an instrumented copy of the RTL (a wire that is 1 exactly when the combination holds) was checked the same way: PROVEN means the combination never holds after the first reset, so the point can never be hit. A combination is tried only when its terms read module-level signals with the same meaning as at the expression. A point PROVEN in every configuration leaves the expression coverage. Key: instance, file, line, column, combination.
+
+## Configuration base (`14cfffaf0bd8f09f`)
+
+0 SymbiYosys task(s).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 0 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+

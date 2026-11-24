@@ -1,6 +1,6 @@
 # Verification report — apb_tlul_bridge
 
-Generated 2026-11-24T08:30:20+00:00 by NNC Pipeline.
+Generated 2026-11-24T21:07:30+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -12,7 +12,7 @@ Generated 2026-11-24T08:30:20+00:00 by NNC Pipeline.
 | Run set | 2 runs in 2 configurations (base, xrand); primary base.s1 |
 | Integration | OK |
 | Code coverage (RTL), line | 97.0 % (192/198 lines); 2 points left out (package code the design does not contain), all points 96.0 % (192/200) |
-| Code coverage (RTL), block | 100.0 % (43/43 statement blocks and branch arms); 2 points left out (package code the design does not contain), all points 95.6 % (43/45) |
+| Code coverage (RTL), block | 100.0 % (43/43 statement blocks and branch arms); 2 points left out (package code the design does not contain; 2 of them proven never reached after reset by formal, work/unr.md), all points 95.6 % (43/45) |
 | Code coverage (RTL), expression | 100.0 % (47/47 condition terms) |
 | Code coverage (RTL), toggle | 100.0 % (1910/1910 bit toggles 0->1 and 1->0); 92 points left out (constant bits; 4 of them proven constant after reset by formal, work/unr.md), all points 95.9 % (1920/2002) |
 | Code coverage (RTL), functional | 100.0 % (40/40 cover points of the specification) |

@@ -79,6 +79,28 @@ approval is recorded as delegated. See [docs/G4_REVIEW_REQUEST.md](docs/G4_REVIE
   points given to the analyst from the coverage without those modules. This matches OpenTitan's `cover.cfg`.
   `nnc sim` now stores those uncovered points (`coverage.without_preverified.uncovered`).
 
+### Phase 24: expression points never hit (EVALUATION §16)
+- `nnc sim --unr` also proves expression points (`nnc/unrexpr.py`). Each term combination that no run hit becomes
+  a marker wire at module level in an instrumented copy of the RTL. The wire is 1 exactly when the combination
+  holds, and is inserted before `endmodule` on the same line, so no line moves. Verilator checks the copy, and
+  SymbiYosys proves the marker 0 after the first reset (guard and control as for toggle bits). A point PROVEN in
+  every configuration leaves the expression metric. A simulation that hits a PROVEN point is counted
+  (`expressions_executed`); it is 0 on every design.
+- A combination is tried only when its terms read at module level mean the same as in the expression: no
+  function, loop variable, local name, struct member or blocking write by the same block. A bit select is
+  allowed only on a packed vector `[H:0]`, because Verilator prints selects of other types in another numbering.
+- Chained constant selects that Verilator prints for struct members (`reg2hw[321:312][3:2][0]`) become one
+  select (`reg2hw[314]`), which Yosys reads.
+- Markers go in batches of at most 20 000 tokens per `endmodule` line (Verilator stops above 40 000; gpio has 616
+  markers in one module).
+- Results: ot_rv_timer 27 points PROVEN, expression without `prim_*` 87.4 → 91.3 %, so `nnc cover` reports
+  `target_met` with no new test. ahb2axi_bridge 71.9 → 82.9 %, sync_fifo 92.8 → 98.5 %, axil_regfile
+  95.7 → 100.0 %, ot_gpio 64.9 → 85.0 %. Tests and assertions unchanged.
+- The closure report has a `final` row when formal changed the result after the last round, and says for each
+  point claimed unreachable whether it is still counted. The G3 reminder is printed only when closure added rounds.
+- Limit: only points that no run of any configuration hit are tried; a point hit in one configuration and missed
+  in another stays counted.
+
 ## 0.8.0 (2026-11-24)
 
 ### Phase 19.4: random initial values in run sets (EVALUATION §12)

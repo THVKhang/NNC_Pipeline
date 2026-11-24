@@ -6,7 +6,7 @@ RTL SHA-256 `4704629a580137f8...`
 
 ## Configuration base (`6226750a4c487076`)
 
-Parameters {}; macros none; clocks free (multiclock on); 8 SymbiYosys task(s); control `u_rv_timer.gen_harts[0].u_core.tick_count[0]`, `u_rv_timer.u_reg.u_reg_if.outstanding_q[0]`, `u_rv_timer.u_reg.u_reg_if.reqid_q[0]`, `u_rv_timer.u_reg.u_reg_if.rspop_q[0]` (one must change).
+Parameters {}; macros none; clocks free (multiclock on); 10 SymbiYosys task(s); control `u_rv_timer.gen_harts[0].u_core.tick_count[0]`, `u_rv_timer.u_reg.u_reg_if.outstanding_q[0]`, `u_rv_timer.u_reg.u_reg_if.reqid_q[0]`, `u_alert_receiver.state_q[0]` (one must change).
 
 | Result | Bits | Signals |
 |---|---|---|
@@ -106,4 +106,53 @@ PROVEN never executed after the first reset:
 - `prim_subreg.sv:61` elsif (column 14) in `u_rv_timer.u_reg.u_compare_*er0_0`
 - `prim_subreg.sv:61` elsif (column 14) in `u_rv_timer.u_reg.u_intr_state0`
 - `prim_subreg.sv:61` elsif (column 14) in `u_rv_timer.u_reg.u_timer_v_*er0`
+
+# Expression points never hit after the first reset (nnc/unrexpr.py)
+
+Each term combination below had no hit. A marker declared at module level in an instrumented copy of the RTL (a wire that is 1 exactly when the combination holds) was checked the same way: PROVEN means the combination never holds after the first reset, so the point can never be hit. A combination is tried only when its terms read module-level signals with the same meaning as at the expression. A point PROVEN in every configuration leaves the expression coverage. Key: instance, file, line, column, combination.
+
+## Configuration base (`6226750a4c487076`)
+
+1 SymbiYosys task(s); control `u_rv_timer.gen_harts[0].u_core.tick_count[0]`, `u_rv_timer.u_reg.u_reg_if.outstanding_q[0]`, `u_rv_timer.u_reg.u_reg_if.reqid_q[0]`, `u_alert_receiver.state_q[0]` (one must change).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 27 |
+| counterexample | 3 |
+| no result (time limit) | 0 |
+| not tried: a term calls a function | 1 |
+| not tried: a term reads a name that is not declared at module level | 19 |
+| not tried: a term reads a signal that its block writes with a blocking assignment | 207 |
+| not tried: a term selects bits of a signal that is not a packed vector [H:0] | 16 |
+| not tried: expression not found in the tree | 1 |
+
+PROVEN never hit after the first reset:
+
+- `prim_xnor2.sv:13` `(in0_i==1 && in1_i==1) => 1` (column 18) in `u_*.gen_no_async.u_xnor2_sigint`
+- `prim_alert_receiver.sv:109` `(ping_req_d==1 && ping_req_q==0) => 1` (column 35) in `u_alert_receiver`
+- `prim_alert_receiver.sv:109` `(ping_req_q==1) => 0` (column 35) in `u_alert_receiver`
+- `prim_alert_receiver.sv:115` `(ping_tog_pd==1) => 0` (column 24) in `u_alert_receiver`
+- `prim_alert_receiver.sv:147` `(ping_ok_o==0 && ping_req_i==1 && ping_pending_q==1) => 1` (column 37) in `u_alert_receiver`
+- `prim_alert_receiver.sv:147` `(ping_rise==0 && ping_ok_o==1) => 0` (column 37) in `u_alert_receiver`
+- `prim_alert_receiver.sv:147` `(ping_rise==1) => 1` (column 37) in `u_alert_receiver`
+- `prim_alert_receiver.sv:226` `(ping_pending_q==1) => 1` (column 33) in `u_alert_receiver`
+- `prim_alert_receiver.sv:226` `(ping_rise==1) => 1` (column 33) in `u_alert_receiver`
+- `tlul_rsp_intg_chk.sv:47` `(tl_i[65]==1 && rsp_data_err==1) => 1` (column 31) in `u_rsp_intg_chk`
+- `tlul_rsp_intg_chk.sv:47` `(tl_i[65]==1 && rsp_err[0]==1) => 1` (column 31) in `u_rsp_intg_chk`
+- `tlul_rsp_intg_chk.sv:47` `(tl_i[65]==1 && rsp_err[1]==1) => 1` (column 31) in `u_rsp_intg_chk`
+- `prim_alert_sender.sv:181` `(ping_event==1) => 1` (column 36) in `u_rv_timer.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:181` `(ping_set_q==1) => 1` (column 36) in `u_rv_timer.gen_alert_tx[0].u_prim_alert_sender`
+- `prim_alert_sender.sv:206` `(ping_trigger==1) => 1` (column 27) in `u_rv_timer.gen_alert_tx[0].u_prim_alert_sender`
+- `rv_timer_reg_top.sv:80` `(reg_we_err==1) => 1` (column 27) in `u_rv_timer.u_reg`
+- `prim_subreg_arb.sv:113` `(de==1) => 1` (column 25) in `u_rv_timer.u_reg.u_alert_test_regwen.wr_en_data_arb`
+- `prim_subreg_arb.sv:33` `(de==1) => 1` (column 25) in `u_rv_timer.u_reg.u_cfg0_prescale.wr_en_data_arb`
+- `prim_subreg_arb.sv:33` `(de==1) => 1` (column 25) in `u_rv_timer.u_reg.u_cfg0_step.wr_en_data_arb`
+- `tlul_cmd_intg_chk.sv:44` `(tl_i[108]==1 && err[1]==1) => 1` (column 31) in `u_rv_timer.u_reg.u_chk`
+- `tlul_data_integ_dec.sv:25` `(data_err[0]==1) => 1` (column 23) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec`
+- `tlul_data_integ_dec.sv:25` `(data_err[1]==1) => 1` (column 23) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec`
+- `prim_onehot_check.sv:108` `(addr_err==1) => 1` (column 40) in `u_rv_timer.u_reg.u_prim_reg_we_check.u_prim_onehot_check`
+- `prim_onehot_check.sv:108` `(oh0_err==1) => 1` (column 40) in `u_rv_timer.u_reg.u_prim_reg_we_check.u_prim_onehot_check`
+- `tlul_adapter_reg.sv:231` `(busy_i==1) => 0` (column 15) in `u_rv_timer.u_reg.u_reg_if`
+- `tlul_adapter_reg.sv:281` `(intg_error==1) => 1` (column 63) in `u_rv_timer.u_reg.u_reg_if`
+- `tlul_err.sv:39` `(instr_type_err==1) => 1` (column 70) in `u_rv_timer.u_reg.u_reg_if.u_err`
 

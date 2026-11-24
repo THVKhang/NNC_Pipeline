@@ -850,8 +850,9 @@ def build_parser() -> argparse.ArgumentParser:
                        help="parallel tool jobs: simulations, SymbiYosys tasks (default: NNC_JOBS, else the CPU count)")
         if name == "sim":
             s.add_argument("--unr", action="store_true",
-                           help="prove with SymbiYosys that uncovered toggle bits cannot change after reset; proven "
-                                "bits leave the toggle coverage (work/unr.json, work/unr.md; ROADMAP 19.5)")
+                           help="prove with SymbiYosys that uncovered toggle bits cannot change after reset, and "
+                                "that uncovered branches and expression points cannot be reached; proven points "
+                                "leave the coverage (work/unr.json, work/unr.md; ROADMAP 19.5, 23.3, 24)")
         _agent_args(s)
         s.set_defaults(func=_stage(name))
 

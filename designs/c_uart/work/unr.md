@@ -35,3 +35,17 @@ PROVEN never executed after the first reset:
 - `uart_rx.v:120` else (column 23) in `uart_rx_inst`
 - `uart_tx.v:106` else (column 23) in `uart_tx_inst`
 
+# Expression points never hit after the first reset (nnc/unrexpr.py)
+
+Each term combination below had no hit. A marker declared at module level in an instrumented copy of the RTL (a wire that is 1 exactly when the combination holds) was checked the same way: PROVEN means the combination never holds after the first reset, so the point can never be hit. A combination is tried only when its terms read module-level signals with the same meaning as at the expression. A point PROVEN in every configuration leaves the expression coverage. Key: instance, file, line, column, combination.
+
+## Configuration base (`a9bab7bb20761b1e`)
+
+1 SymbiYosys task(s); control `uart_tx_inst.prescale_reg[0]`, `uart_rx_inst.prescale_reg[0]`, `uart_rx_inst.bit_cnt[0]`, `uart_tx_inst.bit_cnt[0]` (one must change).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 0 |
+| counterexample | 1 |
+| no result (time limit) | 0 |
+

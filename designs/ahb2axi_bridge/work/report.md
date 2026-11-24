@@ -1,6 +1,6 @@
 # Verification report — ahb2axi_bridge
 
-Generated 2026-11-24T11:11:11+00:00 by NNC Pipeline.
+Generated 2026-11-24T21:07:34+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -12,8 +12,8 @@ Generated 2026-11-24T11:11:11+00:00 by NNC Pipeline.
 | Run set | 5 runs in 4 configurations (base, ids8, ids35, xrand); primary base.s1 |
 | Integration | OK |
 | Code coverage (RTL), line | 91.3 % (2733/2994 lines); 183 points left out (package code the design does not contain), all points 86.0 % (2733/3177) |
-| Code coverage (RTL), block | 97.1 % (1142/1176 statement blocks and branch arms); 306 points left out (package code the design does not contain), all points 77.1 % (1142/1482) |
-| Code coverage (RTL), expression | 71.9 % (1316/1830 condition terms) |
+| Code coverage (RTL), block | 97.1 % (1142/1176 statement blocks and branch arms); 306 points left out (package code the design does not contain; 306 of them proven never reached after reset by formal, work/unr.md), all points 77.1 % (1142/1482) |
+| Code coverage (RTL), expression | 82.9 % (1316/1587 condition terms); 243 points left out (package code the design does not contain; 243 of them proven never reached after reset by formal, work/unr.md), all points 71.9 % (1316/1830) |
 | Code coverage (RTL), toggle | 91.5 % (23591/25770 bit toggles 0->1 and 1->0); 10224 points left out (constant bits; 3936 of them proven constant after reset by formal, work/unr.md), all points 65.7 % (23645/35994) |
 | Code coverage (RTL), functional | 90.0 % (36/40 cover points of the specification) |
 | Mutation score | not run |
@@ -21,7 +21,7 @@ Generated 2026-11-24T11:11:11+00:00 by NNC Pipeline.
 | Clock/reset domain crossings (structural, `nnc cdc`) | clean: no crossing over 3 configuration(s), work/cdc.md |
 | Formal (SymbiYosys, depth 20) | {'BOUNDED': 2, 'CEX': 9, 'PROVEN': 8, 'VACUOUS': 1} — reset assumptions + verif/formal/nnc_env.sv, work/formal.md |
 | Triage | 26 failure(s), 12 analysed: work/triage.md |
-| Agent cost | US$21.1069 in 70 calls (A1 0.871, A13 0.4926, A14 2.8678, A2 0.807, A3 0.3803, A4 1.9029, A5 0.7498, A6 0.3123, A7 8.7386, A9 3.9846); of which US$3.3148 in 5 failed calls (usage limit, timeout, invalid answer) |
+| Agent cost | US$22.2961 in 71 calls (A1 0.871, A13 0.4926, A14 2.8678, A2 0.807, A3 0.3803, A4 1.9029, A5 0.7498, A6 0.3123, A7 8.7386, A9 5.1738); of which US$3.3148 in 5 failed calls (usage limit, timeout, invalid answer) |
 
 ## Sign-off conditions
 

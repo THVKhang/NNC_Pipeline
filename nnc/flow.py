@@ -514,6 +514,7 @@ def stage_cover(d: Design, o: Options) -> None:
     public += json.dumps(contract) + json.dumps(rules_doc)
     private = closure.rtl_private_names(rtl, public)
     backend, usage, no_gain = _backend(d, o), closure.Usage(), 0
+    rounds_before = len(cov["rounds"])
     start = len(test_files(d))                      # closure modules already present + 1
     for rnd in range(start, start + rounds):
         cur = closure.baseline(results, metric)
@@ -583,7 +584,8 @@ def stage_cover(d: Design, o: Options) -> None:
     met = fin and fin["percent"] is not None and fin["percent"] >= cov["target"]
     finish("target_met" if met else "target_unmet",
            f"{metric} {fin and fin['percent']} % for target {cov['target']} %; new modules change verif/: "
-           f"approve G3_verif_sources again" if cov["rounds"] else "")
+           f"approve G3_verif_sources again" if len(cov["rounds"]) > rounds_before else
+           f"{metric} {fin and fin['percent']} % for target {cov['target']} %")
 
 
 def formal_enabled(d: Design) -> bool:

@@ -128,3 +128,75 @@ Each IF branch or case item below had no hit. A marker in an instrumented copy o
 | counterexample | 0 |
 | no result (time limit) | 0 |
 
+# Expression points never hit after the first reset (nnc/unrexpr.py)
+
+Each term combination below had no hit. A marker declared at module level in an instrumented copy of the RTL (a wire that is 1 exactly when the combination holds) was checked the same way: PROVEN means the combination never holds after the first reset, so the point can never be hit. A combination is tried only when its terms read module-level signals with the same meaning as at the expression. A point PROVEN in every configuration leaves the expression coverage. Key: instance, file, line, column, combination.
+
+## Configuration min (`2c718e3379d9f30e`)
+
+1 SymbiYosys task(s); control `o_s_axi_arready[0]`, `r_arready[0]`, `o_s_axi_rvalid[0]`, `r_rvalid[0]` (one must change).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 4 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+
+PROVEN never hit after the first reset:
+
+- `m_axil_regfile.sv:199` `(aw_hs==1 && r_w_held==1 && w_hs==1) => 1` (column 62) in `top`
+- `m_axil_regfile.sv:199` `(r_aw_held==1 && r_w_held==1 && aw_hs==1) => 1` (column 62) in `top`
+- `m_axil_regfile.sv:199` `(r_aw_held==1 && r_w_held==1 && w_hs==1) => 1` (column 62) in `top`
+- `m_axil_regfile.sv:199` `(r_aw_held==1 && w_hs==1 && aw_hs==1) => 1` (column 62) in `top`
+
+## Configuration full_a7 (`3d2eb24b5cb0b05c`)
+
+1 SymbiYosys task(s); control `o_s_axi_arready[0]`, `r_arready[0]`, `o_s_axi_rvalid[0]`, `r_rvalid[0]` (one must change).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 4 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+
+PROVEN never hit after the first reset:
+
+- `m_axil_regfile.sv:199` `(aw_hs==1 && r_w_held==1 && w_hs==1) => 1` (column 62) in `top`
+- `m_axil_regfile.sv:199` `(r_aw_held==1 && r_w_held==1 && aw_hs==1) => 1` (column 62) in `top`
+- `m_axil_regfile.sv:199` `(r_aw_held==1 && r_w_held==1 && w_hs==1) => 1` (column 62) in `top`
+- `m_axil_regfile.sv:199` `(r_aw_held==1 && w_hs==1 && aw_hs==1) => 1` (column 62) in `top`
+
+## Configuration base (`437ef579663039d9`)
+
+1 SymbiYosys task(s); control `o_s_axi_arready[0]`, `r_arready[0]`, `o_s_axi_rvalid[0]`, `r_rvalid[0]` (one must change).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 4 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+
+PROVEN never hit after the first reset:
+
+- `m_axil_regfile.sv:199` `(aw_hs==1 && r_w_held==1 && w_hs==1) => 1` (column 62) in `top`
+- `m_axil_regfile.sv:199` `(r_aw_held==1 && r_w_held==1 && aw_hs==1) => 1` (column 62) in `top`
+- `m_axil_regfile.sv:199` `(r_aw_held==1 && r_w_held==1 && w_hs==1) => 1` (column 62) in `top`
+- `m_axil_regfile.sv:199` `(r_aw_held==1 && w_hs==1 && aw_hs==1) => 1` (column 62) in `top`
+
+## Configuration max (`6beb3b64bdbb2907`)
+
+1 SymbiYosys task(s); control `o_s_axi_arready[0]`, `r_arready[0]`, `o_s_axi_rvalid[0]`, `r_rvalid[0]` (one must change).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 4 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+
+PROVEN never hit after the first reset:
+
+- `m_axil_regfile.sv:199` `(aw_hs==1 && r_w_held==1 && w_hs==1) => 1` (column 62) in `top`
+- `m_axil_regfile.sv:199` `(r_aw_held==1 && r_w_held==1 && aw_hs==1) => 1` (column 62) in `top`
+- `m_axil_regfile.sv:199` `(r_aw_held==1 && r_w_held==1 && w_hs==1) => 1` (column 62) in `top`
+- `m_axil_regfile.sv:199` `(r_aw_held==1 && w_hs==1 && aw_hs==1) => 1` (column 62) in `top`
+

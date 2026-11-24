@@ -869,6 +869,21 @@ Phân tích từng mảng, có so với quy trình ký duyệt của OpenTitan, 
   - Giá trị đầu ngẫu nhiên: CHK-012 fail.
   - Không phải lỗi mới (`work/triage_xrand_chk012.md`).
 
+**Giai đoạn 24 (2026-11-25, EVALUATION §16): chứng minh điểm expression không tới được (nnc/unrexpr.py).**
+- **Vì sao.** 23.5 dừng ở 87,4 % expression của rv_timer (không tính `prim_*`), dưới mục tiêu 90 %. Agent cho là 10 nhóm điểm không tới được, nhưng chưa có công cụ nào chứng minh.
+- **Cách làm.** Mỗi tổ hợp term chưa chạy (`(de==1) => 1`) thành một wire đánh dấu ở mức module, chèn trước `endmodule` trên cùng một dòng (không dòng nào bị dời). Wire bằng 1 đúng khi tổ hợp đúng. Verilator đọc lại bản sao để kiểm: marker ở mức module trong mọi bản elaborate, chỉ đọc tên mức module, IF/case không đổi. SymbiYosys chứng minh wire luôn bằng 0 sau reset đầu tiên, vẫn có guard và control.
+- **Vì sao đúng.** Wire mạnh hơn điểm coverage: nó bằng 1 mỗi khi tổ hợp đúng, kể cả lúc biểu thức không được tính. Wire luôn 0 thì điểm không bao giờ chạm được. Phản ví dụ thì không kết luận gì, điểm vẫn được tính.
+- **Chỉ thử khi term đọc ở mức module có cùng nghĩa.** Không thử khi: nằm trong function/task/initial; gọi hàm; đọc biến vòng lặp hay tên cục bộ của generate/function/khối; khối đó gán blocking cho tín hiệu của term; chọn trường struct; chọn bit của tín hiệu không phải vector `[H:0]`.
+- **Phát hiện về Verilator.** Chỉ số bit Verilator in ra không thống nhất: vector dùng cách đánh số khai báo (`x[1]` là bit thấp nhất của `[8:1]`), mảng packed dùng cách đánh số đã làm phẳng (`p[6+:2][0]`). Chỉ với `[H:0]` hai cách mới trùng nhau, nên chỉ ở đó marker mới chép được phép chọn bit.
+- **Dòng quá dài.** gpio có 616 marker trong một module; dồn trên một dòng thì vượt giới hạn 40 000 token của Verilator. Marker được chia đợt, mỗi đợt tối đa 20 000 token trên một dòng `endmodule`, mỗi đợt một bản sao và một lần chứng minh.
+- **Phép chọn bit nối tiếp.** Verilator in trường struct thành `reg2hw[321:312][3:2][0]`; Yosys không đọc được dạng này. Mỗi lần chọn đánh số từ 0 trong giá trị của lần chọn trước, nên cộng các vị trí lại thành một phép chọn: `reg2hw[314]`. Thí nghiệm nhỏ với struct lồng nhau xác nhận điều này.
+- **Kết quả.**
+  - rv_timer: 27 điểm PROVEN, expression không tính `prim_*` 87,4 → 91,3 %, `nnc cover` báo `target_met`, không thêm test.
+  - ahb2axi: 71,9 → 82,9 %. gpio: 64,9 → 85,0 % (448 điểm là phép XOR của các cờ `qe` cùng thanh ghi, luôn ghi cùng lúc). sync_fifo: 92,8 → 98,5 %. axil_regfile: 95,7 → 100 %.
+  - Trên mọi thiết kế `expressions_executed` = 0, test và assertion không đổi.
+- **Báo cáo closure.** Bảng các điểm agent cho là không tới được có thêm cột "Still counted": điểm nào đã được formal loại, điểm nào vẫn tính. Nếu kết quả cuối khác vòng cuối (vì formal loại điểm) thì có thêm dòng `final`.
+- **Giới hạn.** Chỉ thử điểm mà không lần chạy nào (ở mọi cấu hình) chạm tới. Coverage tính mỗi điểm một lần cho mỗi cấu hình, nên điểm chạm ở cấu hình này mà không chạm ở cấu hình kia vẫn được tính (async_apb_bridge: 223 điểm như vậy). Chứng minh theo từng cấu hình chưa làm.
+
 ## 27. Đầu vào bất kỳ: intake, adapt, corpus (GĐ21, 2026-11-23)
 
 Người dùng hỏi: hệ thống có chạy tốt với mọi spec và mọi code đầu vào không. Câu trả lời trung thực là không công cụ nào hứa được "mọi". Vì vậy mục tiêu thiết kế là: **không input nào cho ra kết quả sai mà không ai biết**. Chi tiết và số đo nằm trong [INPUT_SUPPORT.md](INPUT_SUPPORT.md).

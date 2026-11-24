@@ -70,3 +70,17 @@ PROVEN never executed after the first reset:
 - `m_axi2apb_wr_seq.sv:261` else (column 10) in `u_axi2apb_wr_seq`
 - `m_axi2apb_wr_seq.sv:280` case (column 7) in `u_axi2apb_wr_seq`
 
+# Expression points never hit after the first reset (nnc/unrexpr.py)
+
+Each term combination below had no hit. A marker declared at module level in an instrumented copy of the RTL (a wire that is 1 exactly when the combination holds) was checked the same way: PROVEN means the combination never holds after the first reset, so the point can never be hit. A combination is tried only when its terms read module-level signals with the same meaning as at the expression. A point PROVEN in every configuration leaves the expression coverage. Key: instance, file, line, column, combination.
+
+## Configuration base (`4aea0b36d6c7bc4c`)
+
+1 SymbiYosys task(s); control `u_axi2apb_apb_ctrl.reg_fsm_apb_current_state[0]`, `u_axi2apb_rd_seq.reg_fsm_rd_current_state[0]`, `u_axi2apb_wr_seq.reg_fsm_wr_current_state[0]`, `u_axi2apb_apb_ctrl.o_rd_rsp_valid[0]` (one must change).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 0 |
+| counterexample | 4 |
+| no result (time limit) | 0 |
+

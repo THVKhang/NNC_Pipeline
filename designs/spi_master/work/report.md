@@ -1,6 +1,6 @@
 # Verification report — spi_master
 
-Generated 2026-11-24T08:27:58+00:00 by NNC Pipeline.
+Generated 2026-11-24T21:07:29+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -12,7 +12,7 @@ Generated 2026-11-24T08:27:58+00:00 by NNC Pipeline.
 | Run set | 6 runs in 4 configurations (base, min, max, xrand); primary base.s1 |
 | Integration | OK |
 | Code coverage (RTL), line | 98.6 % (438/444 lines); 18 points left out (package code the design does not contain), all points 94.8 % (438/462) |
-| Code coverage (RTL), block | 97.8 % (135/138 statement blocks and branch arms); 6 points left out (package code the design does not contain), all points 93.8 % (135/144) |
+| Code coverage (RTL), block | 97.8 % (135/138 statement blocks and branch arms); 6 points left out (package code the design does not contain; 6 of them proven never reached after reset by formal, work/unr.md), all points 93.8 % (135/144) |
 | Code coverage (RTL), expression | 98.2 % (162/165 condition terms) |
 | Code coverage (RTL), toggle | 95.2 % (577/606 bit toggles 0->1 and 1->0) |
 | Code coverage (RTL), functional | 94.9 % (37/39 cover points of the specification) |

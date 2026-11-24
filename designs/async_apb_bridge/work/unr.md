@@ -171,3 +171,77 @@ Each IF branch or case item below had no hit. A marker in an instrumented copy o
 | no result (time limit) | 0 |
 | not tried: not in an always block at module level | 2 |
 
+# Expression points never hit after the first reset (nnc/unrexpr.py)
+
+Each term combination below had no hit. A marker declared at module level in an instrumented copy of the RTL (a wire that is 1 exactly when the combination holds) was checked the same way: PROVEN means the combination never holds after the first reset, so the point can never be hit. A combination is tried only when its terms read module-level signals with the same meaning as at the expression. A point PROVEN in every configuration leaves the expression coverage. Key: instance, file, line, column, combination.
+
+## Configuration sync4 (`03d074635cc5b753`)
+
+0 SymbiYosys task(s).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 0 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+
+## Configuration 4ph (`12ad074041883cb9`)
+
+0 SymbiYosys task(s).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 0 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+
+## Configuration apb5 (`32cc278804ebee83`)
+
+0 SymbiYosys task(s).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 0 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+
+## Configuration sync3 (`5979460fa76ce344`)
+
+0 SymbiYosys task(s).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 0 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+
+## Configuration apb4 (`c3a0c82c9b48b4a6`)
+
+0 SymbiYosys task(s).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 0 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+
+## Configuration user (`d3881f9c36cc6a8d`)
+
+0 SymbiYosys task(s).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 0 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+
+## Configuration min (`e2589aa24d947f4a`)
+
+0 SymbiYosys task(s).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 0 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+

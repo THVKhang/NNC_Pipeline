@@ -1,6 +1,6 @@
 # Verification report — ot_rv_timer
 
-Generated 2026-11-24T11:30:48+00:00 by NNC Pipeline.
+Generated 2026-11-24T21:07:19+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -12,18 +12,18 @@ Generated 2026-11-24T11:30:48+00:00 by NNC Pipeline.
 | Run set | 3 runs in 2 configurations (base, xrand); primary base.s1 |
 | Integration | OK |
 | Code coverage (RTL), line | 95.1 % (802/843 lines); 2458 points left out (package code the design does not contain), all points 24.3 % (802/3301) |
-| Code coverage (RTL), block | 99.3 % (144/145 statement blocks and branch arms); 341 points left out (package code the design does not contain), all points 29.6 % (144/486) |
-| Code coverage (RTL), expression | 65.4 % (520/795 condition terms); 5433 points left out (package code the design does not contain), all points 8.3 % (520/6228) |
+| Code coverage (RTL), block | 99.3 % (144/145 statement blocks and branch arms); 341 points left out (package code the design does not contain; 19 of them proven never reached after reset by formal, work/unr.md), all points 29.6 % (144/486) |
+| Code coverage (RTL), expression | 67.7 % (520/768 condition terms); 5460 points left out (package code the design does not contain; 27 of them proven never reached after reset by formal, work/unr.md), all points 8.3 % (520/6228) |
 | Code coverage (RTL), toggle | 98.4 % (10294/10458 bit toggles 0->1 and 1->0); 1318 points left out (constant bits; 232 of them proven constant after reset by formal, work/unr.md), all points 87.7 % (10333/11776) |
 | Code coverage (RTL), functional | 97.4 % (38/39 cover points of the specification) |
 | Code coverage without the modules the designer declares pre-verified | prim_alert_receiver, prim_alert_sender, prim_count, prim_esc_receiver, prim_esc_sender, prim_lfsr, prim_onehot_check, prim_prince, prim_secded_inv_39_32_dec, prim_secded_inv_39_32_enc, prim_secded_inv_64_57_dec, prim_secded_inv_64_57_enc (7 instances; config `coverage_preverified`) |
 | ... without pre-verified modules, block | 99.0 % (100/101) |
-| ... without pre-verified modules, expression | 87.4 % (285/326) |
+| ... without pre-verified modules, expression | 91.3 % (285/312) |
 | ... without pre-verified modules, line | 93.4 % (583/624) |
 | ... without pre-verified modules, toggle | 98.9 % (9390/9498) |
 | Mutation score | 58.3 % (21 killed / 15 survived / 0 not compiled) |
 | Surviving mutants, formal equivalence (`nnc mutate-equiv`) | {'CEX': 3, 'ERROR': 1, 'PROVEN': 11}; score without the proven-equivalent mutants 84.0 % |
-| Coverage target | expression 90.0 %: **target_unmet** (baseline 83.7 % -> 87.4 %, work/coverage.md) |
+| Coverage target | expression 90.0 %: **target_met** (baseline 83.7 % -> 91.3 %, work/coverage.md) |
 | Clock/reset domain crossings (structural, `nnc cdc`) | clean: no crossing over 1 configuration(s), work/cdc.md |
 | Formal (SymbiYosys, depth 32) | {'BOUNDED': 2, 'CEX': 1, 'PROVEN': 7, 'TIMEOUT': 1, 'UNSUPPORTED': 2} — reset assumptions + verif/formal/nnc_env.sv, work/formal.md |
 | Triage | 4 failure(s), 4 analysed: work/triage.md |
@@ -41,7 +41,7 @@ Generated 2026-11-24T11:30:48+00:00 by NNC Pipeline.
 | Every run of the run set built and ran | met — 3 runs |
 | Mutation run | met |
 | Per-requirement mutation score >= 85 % | **not met** — 9 rule(s) below: AH-T1.3.2-01, AH-T1.3.2-02, AH-T1.3.2-03, CP-T1.9.1-04, RT-4.2-03, RT-5-02, RT-5-05, RT-8-16, RT-T6.3-01 |
-| Coverage target expression 90.0 % | **not met** — target_unmet |
+| Coverage target expression 90.0 % | met — target_met |
 | Clock/reset domain crossings: no structural violation (RR-33) | met — clean: no crossing (work/cdc.md) |
 | Formal: no counterexample, no vacuous or failed proof | **not met** — CEX 1 |
 

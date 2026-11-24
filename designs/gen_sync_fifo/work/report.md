@@ -1,6 +1,6 @@
 # Verification report — gen_sync_fifo
 
-Generated 2026-11-24T08:29:48+00:00 by NNC Pipeline.
+Generated 2026-11-24T21:07:28+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -12,7 +12,7 @@ Generated 2026-11-24T08:29:48+00:00 by NNC Pipeline.
 | Run set | 2 runs in 2 configurations (base, xrand); primary base.s1 |
 | Integration | OK |
 | Code coverage (RTL), line | 100.0 % (218/218 lines); 6 points left out (package code the design does not contain), all points 97.3 % (218/224) |
-| Code coverage (RTL), block | 100.0 % (51/51 statement blocks and branch arms); 3 points left out (package code the design does not contain), all points 94.4 % (51/54) |
+| Code coverage (RTL), block | 100.0 % (51/51 statement blocks and branch arms); 3 points left out (package code the design does not contain; 3 of them proven never reached after reset by formal, work/unr.md), all points 94.4 % (51/54) |
 | Code coverage (RTL), expression | 97.4 % (75/77 condition terms) |
 | Code coverage (RTL), toggle | 100.0 % (1566/1566 bit toggles 0->1 and 1->0); 8 points left out (constant bits; 4 of them proven constant after reset by formal, work/unr.md), all points 99.5 % (1566/1574) |
 | Code coverage (RTL), functional | 100.0 % (40/40 cover points of the specification) |

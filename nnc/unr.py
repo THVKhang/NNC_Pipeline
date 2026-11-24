@@ -34,7 +34,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from nnc import coverage as cov
-from nnc import unrbranch
+from nnc import unrbranch, unrexpr
 from nnc.formal import _resets, clock_names
 from nnc.sim import rtl_files
 from nnc.simhost import SimHost
@@ -687,6 +687,34 @@ def to_markdown(name: str, rec: dict, keys: list[str] | None = None) -> str:
                 L += ["PROVEN never executed after the first reset:", ""]
                 L += [f"- `{k[1]}:{k[2]}` {k[4]} (column {k[3]}) in `{k[0] or 'top'}`" for k in conf["proven"]]
                 L.append("")
+    exprs = {k: c for k, c in (rec.get("expressions") or {}).items() if keys is None or k in keys}
+    if exprs:
+        L += ["# Expression points never hit after the first reset (nnc/unrexpr.py)", "",
+              "Each term combination below had no hit. A marker declared at module level in an instrumented copy "
+              "of the RTL (a wire that is 1 exactly when the combination holds) was checked the same way: PROVEN "
+              "means the combination never holds after the first reset, so the point can never be hit. A "
+              "combination is tried only when its terms read module-level signals with the same meaning as at "
+              "the expression. A point PROVEN in every configuration leaves the expression coverage. Key: "
+              "instance, file, line, column, combination.", ""]
+        for key, conf in sorted(exprs.items()):
+            L += [f"## Configuration {conf.get('name', key)} (`{key}`)", "",
+                  f"{conf.get('tasks') or 0} SymbiYosys task(s)"
+                  + (f"; control {_ctl_md(conf['control'])}" if conf.get("control") else "") + ".", ""]
+            if conf.get("error"):
+                L += [f"Error: {conf['error']}", ""]
+            L += ["| Result | Points |", "|---|---|"]
+            for k2, label in (("proven", "PROVEN never hit"), ("cex", "counterexample"),
+                              ("open", "no result (time limit)")):
+                L.append(f"| {label} | {len(conf.get(k2) or [])} |")
+            for reason, ks in sorted((conf.get("skipped") or {}).items()):
+                L.append(f"| not tried: {reason} | {len(ks)} |")
+            if conf.get("vacuous_tasks"):
+                L.append(f"| tasks whose guard or control did not fail (nothing concluded) | {conf['vacuous_tasks']} tasks |")
+            L.append("")
+            if conf.get("proven"):
+                L += ["PROVEN never hit after the first reset:", ""]
+                L += [f"- `{k[1]}:{k[2]}` `{k[4]}` (column {k[3]}) in `{k[0] or 'top'}`" for k in conf["proven"]]
+                L.append("")
     return "\n".join(L) + "\n"
 
 
@@ -732,16 +760,20 @@ def apply(work: Path, host: SimHost | None, contract: dict, rtl_dir: Path, dat_p
                 f"no result {_count(new['open'])}" + (f"; {new['error']}" if new.get("error") else ""))
         _prove_branches(rec, keys, configs, host, contract, rtl_dir, dat_path, rtl_names, frontend, parallel,
                         ctl, mods, say)
+        _prove_exprs(rec, keys, configs, host, contract, rtl_dir, dat_path, rtl_names, frontend, parallel,
+                     ctl, mods, say)
         # a record of another configuration that only holds an error has nothing to reuse
         rec["configs"] = {k: v for k, v in rec["configs"].items()
                           if k in keys or not v.get("error") or _count(v.get("proven")) + _count(v.get("cex"))}
-        rec["branches"] = {k: v for k, v in (rec.get("branches") or {}).items()
-                           if k in keys or not v.get("error") or v.get("proven") or v.get("cex")}
+        for part in ("branches", "expressions"):
+            rec[part] = {k: v for k, v in (rec.get(part) or {}).items()
+                         if k in keys or not v.get("error") or v.get("proven") or v.get("cex")}
         path.write_text(json.dumps(rec, indent=1) + "\n", encoding="utf-8")
         (work / "unr.md").write_text(to_markdown(work.parent.name, rec, keys), encoding="utf-8")
     bits = proven_bits(rec, keys)
     blocks = unrbranch.proven_blocks(rec.get("branches") or {}, keys)
-    if bits is None and not blocks:
+    exprs = unrbranch.proven_blocks(rec.get("expressions") or {}, keys)
+    if bits is None and not blocks and not exprs:
         return scope, ({"status": "no record for every configuration", "record": "work/unr.json"} if rec["configs"] else None)
     new_scope = dict(scope or {"packages": [], "kept": {}})
     info: dict = {"status": "applied", "record": "work/unr.json"}
@@ -751,6 +783,9 @@ def apply(work: Path, host: SimHost | None, contract: dict, rtl_dir: Path, dat_p
     if blocks:
         new_scope["proven_blocks"] = blocks
         info["proven_branches"] = len(blocks)
+    if exprs:
+        new_scope["proven_exprs"] = exprs
+        info["proven_expressions"] = len(exprs)
     return new_scope, info
 
 
@@ -773,4 +808,27 @@ def _prove_branches(rec: dict, keys: list[str], configs: list[dict], host: SimHo
         br[key] = unrbranch.merge(br.get(key), new)
         skipped = sum(len(v) for v in (new.get("skipped") or {}).values())
         say(f"[unr] {c['name']} branches: proven {len(new['proven'])}, counterexample {len(new['cex'])}, "
+            f"no result {len(new['open'])}, not tried {skipped}" + (f"; {new['error']}" if new.get("error") else ""))
+
+
+def _prove_exprs(rec: dict, keys: list[str], configs: list[dict], host: SimHost, contract: dict, rtl_dir: Path,
+                 dat_path: Path, rtl_names: list[str], frontend: str, parallel: int, ctl: list, mods: list[str],
+                 say) -> None:
+    """Prove, per configuration, the expression points that no run hit (nnc/unrexpr.py) into
+    rec["expressions"]."""
+    import tempfile
+    todo_all = unrexpr.targets(dat_path, rtl_names)
+    say(f"[unr] {len(todo_all)} expression point(s) never hit")
+    ex = rec.setdefault("expressions", {})
+    for c, key in zip(configs, keys):
+        todo = list(unrbranch.undecided(ex.get(key), {k: [] for k in todo_all}))
+        if not todo and key in ex:
+            continue
+        with tempfile.TemporaryDirectory(prefix="nnc_unre_") as tmp:
+            new = unrexpr.prove_config(host, contract, rtl_dir, c["params"], c["defines"], frontend, todo,
+                                       Path(tmp) / "rtl", parallel=parallel, control_bits=ctl, cut=mods)
+        new.update(name=c["name"], params={k: str(v) for k, v in c["params"].items()}, defines=c["defines"])
+        ex[key] = unrbranch.merge(ex.get(key), new)
+        skipped = sum(len(v) for v in (new.get("skipped") or {}).values())
+        say(f"[unr] {c['name']} expressions: proven {len(new['proven'])}, counterexample {len(new['cex'])}, "
             f"no result {len(new['open'])}, not tried {skipped}" + (f"; {new['error']}" if new.get("error") else ""))

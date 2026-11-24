@@ -290,12 +290,13 @@ primitives). The report then adds rows with the coverage without their subtrees,
 the whole design, and `nnc cover` takes its target and points from those rows. See docs/SIGNOFF_SCOPE.md.
 
 ```bash
-python -m nnc sim my_ip --unr               # also prove uncovered toggle bits and branches unreachable
+python -m nnc sim my_ip --unr               # also prove uncovered toggle bits, branches and expression points unreachable
 python -m nnc config my_ip unr_cut=m_cell_sync   # modules Yosys cannot read (simulation-only models): outputs free
 ```
 
-`--unr` asks SymbiYosys whether each uncovered toggle bit, and each IF branch or case item never executed, can
-change after the first reset, with every input free. Only a point PROVEN in every configuration of the run set
+`--unr` asks SymbiYosys whether each uncovered toggle bit, each IF branch or case item never executed, and each
+expression term combination never hit can change or occur after the first reset, with every input free. An
+expression point is tried only when its terms read module-level signals (no loop variable, no function call). Only a point PROVEN in every configuration of the run set
 leaves the metric; the results are in `work/unr.md`. A PROVEN point is dead in this RTL, not necessarily by
 design: code that a fault makes dead is left out too (ahb2axi_bridge's AXI burst path, EVALUATION §15). Check
 each one against the specification before sign-off.
@@ -306,8 +307,8 @@ each one against the specification before sign-off.
 - Báo cáo luôn ghi số điểm bị loại và con số tính trên mọi điểm. Không có loại trừ bằng tay.
 - `coverage_preverified` cho thêm con số phụ "không tính các module đã verify ở nơi khác". Con số này đứng
   cạnh con số chính, không thay thế nó. `nnc cover` lấy mục tiêu và danh sách điểm từ con số phụ này.
-- `--unr`: SymbiYosys kiểm từng bit toggle và từng nhánh IF/case chưa chạy, xem nó có đổi được sau reset đầu
-  tiên không (mọi input tự do). Chỉ điểm PROVEN trong mọi cấu hình mới bị loại. Kết quả ở `work/unr.md`.
+- `--unr`: SymbiYosys kiểm từng bit toggle, từng nhánh IF/case chưa chạy và từng tổ hợp term expression chưa
+  gặp, xem nó có xảy ra được sau reset đầu tiên không (mọi input tự do). Chỉ điểm PROVEN trong mọi cấu hình mới bị loại. Kết quả ở `work/unr.md`.
 - PROVEN nghĩa là chết trong RTL này, chưa chắc là do thiết kế: code chết vì lỗi cũng bị loại (ví dụ đường burst
   AXI của ahb2axi_bridge). Hãy đối chiếu từng điểm với spec trước khi ký.
 - `unr_cut`: module Yosys không đọc được (model chỉ dùng trong mô phỏng); output của chúng thành tự do.

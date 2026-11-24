@@ -6,7 +6,7 @@ RTL SHA-256 `cd2acc1bf5a2db06...`
 
 ## Configuration ids35 (`2e0c03acd0c20b83`)
 
-Parameters {"PARA_RD_ID_COUNT": "3", "PARA_WR_ID_COUNT": "5"}; macros none; clocks one global clock; 10 SymbiYosys task(s); control `u_ahb2axi_ctrl.reg_fsm_ctrl_current_state[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_valid[0]`, `u_ahb2axi_ctrl.reg_rsp_valid[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_wr[0]` (one must change).
+Parameters {"PARA_RD_ID_COUNT": "3", "PARA_WR_ID_COUNT": "5"}; macros none; clocks one global clock; 11 SymbiYosys task(s); control `u_ahb2axi_ctrl.reg_fsm_ctrl_current_state[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_valid[0]`, `u_ahb2axi_ctrl.reg_rsp_valid[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_wr[0]` (one must change).
 
 | Result | Bits | Signals |
 |---|---|---|
@@ -160,7 +160,7 @@ PROVEN constant after the first reset:
 
 ## Configuration ids8 (`3706e436ffd396d7`)
 
-Parameters {"PARA_RD_ID_COUNT": "8", "PARA_WR_ID_COUNT": "8"}; macros none; clocks one global clock; 10 SymbiYosys task(s); control `u_ahb2axi_ctrl.reg_fsm_ctrl_current_state[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_valid[0]`, `u_ahb2axi_ctrl.reg_rsp_valid[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_wr[0]` (one must change).
+Parameters {"PARA_RD_ID_COUNT": "8", "PARA_WR_ID_COUNT": "8"}; macros none; clocks one global clock; 11 SymbiYosys task(s); control `u_ahb2axi_ctrl.reg_fsm_ctrl_current_state[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_valid[0]`, `u_ahb2axi_ctrl.reg_rsp_valid[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_wr[0]` (one must change).
 
 | Result | Bits | Signals |
 |---|---|---|
@@ -313,7 +313,7 @@ PROVEN constant after the first reset:
 
 ## Configuration base (`fd1f5c8af67f9072`)
 
-Parameters {"PARA_RD_ID_COUNT": "1", "PARA_WR_ID_COUNT": "1"}; macros none; clocks one global clock; 10 SymbiYosys task(s); control `u_ahb2axi_ctrl.reg_fsm_ctrl_current_state[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_valid[0]`, `u_ahb2axi_ctrl.reg_rsp_valid[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_wr[0]` (one must change).
+Parameters {"PARA_RD_ID_COUNT": "1", "PARA_WR_ID_COUNT": "1"}; macros none; clocks one global clock; 11 SymbiYosys task(s); control `u_ahb2axi_ctrl.reg_fsm_ctrl_current_state[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_valid[0]`, `u_ahb2axi_ctrl.reg_rsp_valid[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_wr[0]` (one must change).
 
 | Result | Bits | Signals |
 |---|---|---|
@@ -471,7 +471,7 @@ Each IF branch or case item below had no hit. A marker in an instrumented copy o
 
 ## Configuration ids35 (`2e0c03acd0c20b83`)
 
-1 SymbiYosys task(s); control `u_ahb2axi_ctrl.reg_fsm_ctrl_current_state[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_valid[0]`, `u_ahb2axi_ctrl.reg_rsp_valid[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_wr[0]` (one must change).
+2 SymbiYosys task(s); control `u_ahb2axi_ctrl.reg_fsm_ctrl_current_state[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_valid[0]`, `u_ahb2axi_ctrl.reg_rsp_valid[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_wr[0]` (one must change).
 
 | Result | Branches |
 |---|---|
@@ -587,7 +587,7 @@ PROVEN never executed after the first reset:
 
 ## Configuration ids8 (`3706e436ffd396d7`)
 
-1 SymbiYosys task(s); control `u_ahb2axi_ctrl.reg_fsm_ctrl_current_state[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_valid[0]`, `u_ahb2axi_ctrl.reg_rsp_valid[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_wr[0]` (one must change).
+2 SymbiYosys task(s); control `u_ahb2axi_ctrl.reg_fsm_ctrl_current_state[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_valid[0]`, `u_ahb2axi_ctrl.reg_rsp_valid[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_wr[0]` (one must change).
 
 | Result | Branches |
 |---|---|
@@ -703,7 +703,7 @@ PROVEN never executed after the first reset:
 
 ## Configuration base (`fd1f5c8af67f9072`)
 
-1 SymbiYosys task(s); control `u_ahb2axi_ctrl.reg_fsm_ctrl_current_state[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_valid[0]`, `u_ahb2axi_ctrl.reg_rsp_valid[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_wr[0]` (one must change).
+2 SymbiYosys task(s); control `u_ahb2axi_ctrl.reg_fsm_ctrl_current_state[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_valid[0]`, `u_ahb2axi_ctrl.reg_rsp_valid[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_wr[0]` (one must change).
 
 | Result | Branches |
 |---|---|
@@ -816,4 +816,305 @@ PROVEN never executed after the first reset:
 - `m_vlsit_sfifo_wr.sv:192` if (column 9) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
 - `m_vlsit_sfifo_wr.sv:192` else (column 10) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
 - `m_vlsit_sfifo_wr.sv:195` case (column 7) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+
+# Expression points never hit after the first reset (nnc/unrexpr.py)
+
+Each term combination below had no hit. A marker declared at module level in an instrumented copy of the RTL (a wire that is 1 exactly when the combination holds) was checked the same way: PROVEN means the combination never holds after the first reset, so the point can never be hit. A combination is tried only when its terms read module-level signals with the same meaning as at the expression. A point PROVEN in every configuration leaves the expression coverage. Key: instance, file, line, column, combination.
+
+## Configuration ids35 (`2e0c03acd0c20b83`)
+
+1 SymbiYosys task(s); control `u_ahb2axi_ctrl.reg_fsm_ctrl_current_state[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_valid[0]`, `u_ahb2axi_ctrl.reg_rsp_valid[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_wr[0]` (one must change).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 81 |
+| counterexample | 48 |
+| no result (time limit) | 3 |
+| not tried: a term calls a function | 3 |
+| not tried: a term reads a name that is not declared at module level | 27 |
+| not tried: a term selects bits of a signal that is not a packed vector [H:0] | 3 |
+| not tried: expression not found in the tree | 4 |
+| not tried: in a function, task or initial block | 1 |
+
+PROVEN never hit after the first reset:
+
+- `m_ahb2axi_ctrl.sv:429` `(i_ahb_hsel==1 && (i_ahb_htrans != 2'h3)==0 && i_ahb_htrans[1]==0) => 0` (column 66) in `u_ahb2axi_ctrl`
+- `m_ahb2axi_ctrl.sv:612` `(w_axi_aw_hs==1 && reg_w_done==1) => 1` (column 41) in `u_ahb2axi_ctrl`
+- `m_ahb2axi_ctrl.sv:612` `(w_axi_aw_hs==1 && w_axi_w_hs==1) => 1` (column 41) in `u_ahb2axi_ctrl`
+- `m_ahb2axi_ctrl.sv:636` `(w_axi_aw_hs==1 && reg_w_done==1) => 1` (column 41) in `u_ahb2axi_ctrl`
+- `m_ahb2axi_ctrl.sv:636` `(w_axi_aw_hs==1 && w_axi_w_hs==1) => 1` (column 41) in `u_ahb2axi_ctrl`
+- `m_vlsit_sfifo_rd.sv:104` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:105` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:109` `(w_req_v==1) => 1` (column 29) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:112` `(w_rd_blk==1) => 0` (column 41) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:154` `(i_rd_en==1 && w_rd_blk==0 && reg_empty==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:154` `(w_rd_blk==1) => 0` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:180` `(w_req_v==1) => 0` (column 22) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:217` `(w_rd_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:218` `(w_rd_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_wr.sv:109` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:110` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:114` `(i_rst_n_sw==0) => 1` (column 37) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:114` `(reg_sw_rst_busy==1) => 1` (column 37) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:117` `(w_wr_blk==1) => 0` (column 41) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:158` `(i_wr_en==1 && w_wr_blk==0 && reg_full==1) => 1` (column 43) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:158` `(w_wr_blk==1) => 0` (column 43) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:179` `(i_rst_n_sw==0) => 1` (column 13) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:192` `(w_ack_v==1) => 0` (column 22) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:232` `(w_wr_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_rd.sv:104` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:105` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:109` `(w_req_v==1) => 1` (column 29) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:112` `(w_rd_blk==1) => 0` (column 41) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:154` `(i_rd_en==1 && w_rd_blk==0 && reg_empty==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:154` `(w_rd_blk==1) => 0` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:180` `(w_req_v==1) => 0` (column 22) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:217` `(w_rd_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:218` `(w_rd_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_wr.sv:109` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:110` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:114` `(i_rst_n_sw==0) => 1` (column 37) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:114` `(reg_sw_rst_busy==1) => 1` (column 37) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:117` `(w_wr_blk==1) => 0` (column 41) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:158` `(i_wr_en==1 && w_wr_blk==0 && reg_full==1) => 1` (column 43) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:158` `(w_wr_blk==1) => 0` (column 43) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:179` `(i_rst_n_sw==0) => 1` (column 13) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:192` `(w_ack_v==1) => 0` (column 22) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:232` `(w_wr_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_rd.sv:104` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:105` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:109` `(w_req_v==1) => 1` (column 29) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:112` `(w_rd_blk==1) => 0` (column 41) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:154` `(i_rd_en==1 && w_rd_blk==0 && reg_empty==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:154` `(w_rd_blk==1) => 0` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:180` `(w_req_v==1) => 0` (column 22) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:217` `(w_rd_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:218` `(w_rd_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_wr.sv:109` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:110` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:114` `(i_rst_n_sw==0) => 1` (column 37) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:114` `(reg_sw_rst_busy==1) => 1` (column 37) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:117` `(w_wr_blk==1) => 0` (column 41) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:158` `(i_wr_en==1 && w_wr_blk==0 && reg_full==1) => 1` (column 43) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:158` `(w_wr_blk==1) => 0` (column 43) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:179` `(i_rst_n_sw==0) => 1` (column 13) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:192` `(w_ack_v==1) => 0` (column 22) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:232` `(w_wr_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_rd.sv:104` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:105` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:109` `(w_req_v==1) => 1` (column 29) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:112` `(w_rd_blk==1) => 0` (column 41) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:154` `(i_rd_en==1 && w_rd_blk==0 && reg_empty==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:154` `(w_rd_blk==1) => 0` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:180` `(w_req_v==1) => 0` (column 22) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:217` `(w_rd_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:218` `(w_rd_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_wr.sv:109` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:110` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:114` `(i_rst_n_sw==0) => 1` (column 37) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:114` `(reg_sw_rst_busy==1) => 1` (column 37) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:117` `(w_wr_blk==1) => 0` (column 41) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:158` `(i_wr_en==1 && w_wr_blk==0 && reg_full==1) => 1` (column 43) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:158` `(w_wr_blk==1) => 0` (column 43) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:179` `(i_rst_n_sw==0) => 1` (column 13) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:192` `(w_ack_v==1) => 0` (column 22) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:232` `(w_wr_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+
+## Configuration ids8 (`3706e436ffd396d7`)
+
+1 SymbiYosys task(s); control `u_ahb2axi_ctrl.reg_fsm_ctrl_current_state[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_valid[0]`, `u_ahb2axi_ctrl.reg_rsp_valid[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_wr[0]` (one must change).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 81 |
+| counterexample | 48 |
+| no result (time limit) | 3 |
+| not tried: a term calls a function | 3 |
+| not tried: a term reads a name that is not declared at module level | 27 |
+| not tried: a term selects bits of a signal that is not a packed vector [H:0] | 3 |
+| not tried: expression not found in the tree | 4 |
+| not tried: in a function, task or initial block | 1 |
+
+PROVEN never hit after the first reset:
+
+- `m_ahb2axi_ctrl.sv:429` `(i_ahb_hsel==1 && (i_ahb_htrans != 2'h3)==0 && i_ahb_htrans[1]==0) => 0` (column 66) in `u_ahb2axi_ctrl`
+- `m_ahb2axi_ctrl.sv:612` `(w_axi_aw_hs==1 && reg_w_done==1) => 1` (column 41) in `u_ahb2axi_ctrl`
+- `m_ahb2axi_ctrl.sv:612` `(w_axi_aw_hs==1 && w_axi_w_hs==1) => 1` (column 41) in `u_ahb2axi_ctrl`
+- `m_ahb2axi_ctrl.sv:636` `(w_axi_aw_hs==1 && reg_w_done==1) => 1` (column 41) in `u_ahb2axi_ctrl`
+- `m_ahb2axi_ctrl.sv:636` `(w_axi_aw_hs==1 && w_axi_w_hs==1) => 1` (column 41) in `u_ahb2axi_ctrl`
+- `m_vlsit_sfifo_rd.sv:104` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:105` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:109` `(w_req_v==1) => 1` (column 29) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:112` `(w_rd_blk==1) => 0` (column 41) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:154` `(i_rd_en==1 && w_rd_blk==0 && reg_empty==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:154` `(w_rd_blk==1) => 0` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:180` `(w_req_v==1) => 0` (column 22) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:217` `(w_rd_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:218` `(w_rd_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_wr.sv:109` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:110` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:114` `(i_rst_n_sw==0) => 1` (column 37) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:114` `(reg_sw_rst_busy==1) => 1` (column 37) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:117` `(w_wr_blk==1) => 0` (column 41) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:158` `(i_wr_en==1 && w_wr_blk==0 && reg_full==1) => 1` (column 43) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:158` `(w_wr_blk==1) => 0` (column 43) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:179` `(i_rst_n_sw==0) => 1` (column 13) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:192` `(w_ack_v==1) => 0` (column 22) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:232` `(w_wr_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_rd.sv:104` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:105` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:109` `(w_req_v==1) => 1` (column 29) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:112` `(w_rd_blk==1) => 0` (column 41) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:154` `(i_rd_en==1 && w_rd_blk==0 && reg_empty==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:154` `(w_rd_blk==1) => 0` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:180` `(w_req_v==1) => 0` (column 22) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:217` `(w_rd_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:218` `(w_rd_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_wr.sv:109` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:110` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:114` `(i_rst_n_sw==0) => 1` (column 37) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:114` `(reg_sw_rst_busy==1) => 1` (column 37) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:117` `(w_wr_blk==1) => 0` (column 41) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:158` `(i_wr_en==1 && w_wr_blk==0 && reg_full==1) => 1` (column 43) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:158` `(w_wr_blk==1) => 0` (column 43) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:179` `(i_rst_n_sw==0) => 1` (column 13) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:192` `(w_ack_v==1) => 0` (column 22) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:232` `(w_wr_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_rd.sv:104` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:105` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:109` `(w_req_v==1) => 1` (column 29) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:112` `(w_rd_blk==1) => 0` (column 41) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:154` `(i_rd_en==1 && w_rd_blk==0 && reg_empty==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:154` `(w_rd_blk==1) => 0` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:180` `(w_req_v==1) => 0` (column 22) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:217` `(w_rd_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:218` `(w_rd_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_wr.sv:109` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:110` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:114` `(i_rst_n_sw==0) => 1` (column 37) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:114` `(reg_sw_rst_busy==1) => 1` (column 37) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:117` `(w_wr_blk==1) => 0` (column 41) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:158` `(i_wr_en==1 && w_wr_blk==0 && reg_full==1) => 1` (column 43) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:158` `(w_wr_blk==1) => 0` (column 43) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:179` `(i_rst_n_sw==0) => 1` (column 13) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:192` `(w_ack_v==1) => 0` (column 22) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:232` `(w_wr_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_rd.sv:104` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:105` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:109` `(w_req_v==1) => 1` (column 29) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:112` `(w_rd_blk==1) => 0` (column 41) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:154` `(i_rd_en==1 && w_rd_blk==0 && reg_empty==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:154` `(w_rd_blk==1) => 0` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:180` `(w_req_v==1) => 0` (column 22) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:217` `(w_rd_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:218` `(w_rd_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_wr.sv:109` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:110` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:114` `(i_rst_n_sw==0) => 1` (column 37) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:114` `(reg_sw_rst_busy==1) => 1` (column 37) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:117` `(w_wr_blk==1) => 0` (column 41) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:158` `(i_wr_en==1 && w_wr_blk==0 && reg_full==1) => 1` (column 43) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:158` `(w_wr_blk==1) => 0` (column 43) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:179` `(i_rst_n_sw==0) => 1` (column 13) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:192` `(w_ack_v==1) => 0` (column 22) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:232` `(w_wr_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+
+## Configuration base (`fd1f5c8af67f9072`)
+
+1 SymbiYosys task(s); control `u_ahb2axi_ctrl.reg_fsm_ctrl_current_state[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_valid[0]`, `u_ahb2axi_ctrl.reg_rsp_valid[0]`, `u_ahb2axi_ctrl.u_ahb2axi_ahb_if.reg_data_phase_wr[0]` (one must change).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 81 |
+| counterexample | 48 |
+| no result (time limit) | 3 |
+| not tried: a term calls a function | 3 |
+| not tried: a term reads a name that is not declared at module level | 27 |
+| not tried: a term selects bits of a signal that is not a packed vector [H:0] | 3 |
+| not tried: expression not found in the tree | 4 |
+| not tried: in a function, task or initial block | 1 |
+
+PROVEN never hit after the first reset:
+
+- `m_ahb2axi_ctrl.sv:429` `(i_ahb_hsel==1 && (i_ahb_htrans != 2'h3)==0 && i_ahb_htrans[1]==0) => 0` (column 66) in `u_ahb2axi_ctrl`
+- `m_ahb2axi_ctrl.sv:612` `(w_axi_aw_hs==1 && reg_w_done==1) => 1` (column 41) in `u_ahb2axi_ctrl`
+- `m_ahb2axi_ctrl.sv:612` `(w_axi_aw_hs==1 && w_axi_w_hs==1) => 1` (column 41) in `u_ahb2axi_ctrl`
+- `m_ahb2axi_ctrl.sv:636` `(w_axi_aw_hs==1 && reg_w_done==1) => 1` (column 41) in `u_ahb2axi_ctrl`
+- `m_ahb2axi_ctrl.sv:636` `(w_axi_aw_hs==1 && w_axi_w_hs==1) => 1` (column 41) in `u_ahb2axi_ctrl`
+- `m_vlsit_sfifo_rd.sv:104` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:105` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:109` `(w_req_v==1) => 1` (column 29) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:112` `(w_rd_blk==1) => 0` (column 41) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:154` `(i_rd_en==1 && w_rd_blk==0 && reg_empty==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:154` `(w_rd_blk==1) => 0` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:180` `(w_req_v==1) => 0` (column 22) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:217` `(w_rd_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:218` `(w_rd_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_wr.sv:109` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:110` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:114` `(i_rst_n_sw==0) => 1` (column 37) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:114` `(reg_sw_rst_busy==1) => 1` (column 37) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:117` `(w_wr_blk==1) => 0` (column 41) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:158` `(i_wr_en==1 && w_wr_blk==0 && reg_full==1) => 1` (column 43) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:158` `(w_wr_blk==1) => 0` (column 43) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:179` `(i_rst_n_sw==0) => 1` (column 13) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:192` `(w_ack_v==1) => 0` (column 22) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:232` `(w_wr_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_*.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_rd.sv:104` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:105` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:109` `(w_req_v==1) => 1` (column 29) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:112` `(w_rd_blk==1) => 0` (column 41) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:154` `(i_rd_en==1 && w_rd_blk==0 && reg_empty==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:154` `(w_rd_blk==1) => 0` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:180` `(w_req_v==1) => 0` (column 22) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:217` `(w_rd_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:218` `(w_rd_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_wr.sv:109` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:110` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:114` `(i_rst_n_sw==0) => 1` (column 37) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:114` `(reg_sw_rst_busy==1) => 1` (column 37) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:117` `(w_wr_blk==1) => 0` (column 41) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:158` `(i_wr_en==1 && w_wr_blk==0 && reg_full==1) => 1` (column 43) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:158` `(w_wr_blk==1) => 0` (column 43) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:179` `(i_rst_n_sw==0) => 1` (column 13) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:192` `(w_ack_v==1) => 0` (column 22) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:232` `(w_wr_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_1.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_rd.sv:104` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:105` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:109` `(w_req_v==1) => 1` (column 29) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:112` `(w_rd_blk==1) => 0` (column 41) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:154` `(i_rd_en==1 && w_rd_blk==0 && reg_empty==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:154` `(w_rd_blk==1) => 0` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:180` `(w_req_v==1) => 0` (column 22) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:217` `(w_rd_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:218` `(w_rd_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_wr.sv:109` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:110` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:114` `(i_rst_n_sw==0) => 1` (column 37) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:114` `(reg_sw_rst_busy==1) => 1` (column 37) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:117` `(w_wr_blk==1) => 0` (column 41) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:158` `(i_wr_en==1 && w_wr_blk==0 && reg_full==1) => 1` (column 43) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:158` `(w_wr_blk==1) => 0` (column 43) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:179` `(i_rst_n_sw==0) => 1` (column 13) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:192` `(w_ack_v==1) => 0` (column 22) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:232` `(w_wr_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_3.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_rd.sv:104` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:105` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:109` `(w_req_v==1) => 1` (column 29) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:112` `(w_rd_blk==1) => 0` (column 41) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:154` `(i_rd_en==1 && w_rd_blk==0 && reg_empty==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:154` `(w_rd_blk==1) => 0` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:180` `(w_req_v==1) => 0` (column 22) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:217` `(w_rd_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_rd.sv:218` `(w_rd_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_rd`
+- `m_vlsit_sfifo_wr.sv:109` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:110` `((PARA_SFIFO_PTR_RETIME != 32'h0)==1) => 1` (column 44) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:114` `(i_rst_n_sw==0) => 1` (column 37) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:114` `(reg_sw_rst_busy==1) => 1` (column 37) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:117` `(w_wr_blk==1) => 0` (column 41) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:158` `(i_wr_en==1 && w_wr_blk==0 && reg_full==1) => 1` (column 43) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:158` `(w_wr_blk==1) => 0` (column 43) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:179` `(i_rst_n_sw==0) => 1` (column 13) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:192` `(w_ack_v==1) => 0` (column 22) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
+- `m_vlsit_sfifo_wr.sv:232` `(w_wr_blk==1) => 1` (column 35) in `u_ahb2axi_ctrl.u_vlsit_sfifo_top_4.u_vlsit_sfifo_wr`
 

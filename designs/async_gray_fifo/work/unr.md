@@ -186,3 +186,76 @@ PROVEN never executed after the first reset:
 - `m_vlsit_afifo_rd.sv:172` case (column 7) in `u_vlsit_afifo_rd`
 - `m_vlsit_afifo_wr.sv:188` case (column 7) in `u_vlsit_afifo_wr`
 
+# Expression points never hit after the first reset (nnc/unrexpr.py)
+
+Each term combination below had no hit. A marker declared at module level in an instrumented copy of the RTL (a wire that is 1 exactly when the combination holds) was checked the same way: PROVEN means the combination never holds after the first reset, so the point can never be hit. A combination is tried only when its terms read module-level signals with the same meaning as at the expression. A point PROVEN in every configuration leaves the expression coverage. Key: instance, file, line, column, combination.
+
+## Configuration small (`011eea1471ae5310`)
+
+1 SymbiYosys task(s); control `u_vlsit_afifo_mem.i_wr_addr[0]`, `u_vlsit_afifo_wr.o_mem_wr_addr[0]`, `u_vlsit_afifo_wr.reg_wbin[0]`, `w_mem_wr_addr[0]` (one must change).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 0 |
+| counterexample | 2 |
+| no result (time limit) | 0 |
+| not tried: expression not found in the tree | 1 |
+
+## Configuration cell3 (`2cb1e8bbf0140962`)
+
+1 SymbiYosys task(s); control `u_vlsit_afifo_mem.i_wr_addr[0]`, `u_vlsit_afifo_wr.o_mem_wr_addr[0]`, `u_vlsit_afifo_wr.reg_wbin[0]`, `w_mem_wr_addr[0]` (one must change).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 0 |
+| counterexample | 2 |
+| no result (time limit) | 0 |
+| not tried: expression not found in the tree | 1 |
+
+## Configuration cell1 (`8ab8c6781982cdee`)
+
+1 SymbiYosys task(s); control `u_vlsit_afifo_mem.i_wr_addr[0]`, `u_vlsit_afifo_wr.o_mem_wr_addr[0]`, `u_vlsit_afifo_wr.reg_wbin[0]`, `w_mem_wr_addr[0]` (one must change).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 0 |
+| counterexample | 2 |
+| no result (time limit) | 0 |
+| not tried: expression not found in the tree | 1 |
+
+## Configuration cell4 (`8efc04a606539b5f`)
+
+1 SymbiYosys task(s); control `u_vlsit_afifo_mem.i_wr_addr[0]`, `u_vlsit_afifo_wr.o_mem_wr_addr[0]`, `u_vlsit_afifo_wr.reg_wbin[0]`, `w_mem_wr_addr[0]` (one must change).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 0 |
+| counterexample | 2 |
+| no result (time limit) | 0 |
+| not tried: expression not found in the tree | 1 |
+
+## Configuration macro (`e28097f399ef430a`)
+
+1 SymbiYosys task(s); control `u_vlsit_afifo_mem.i_wr_addr[0]`, `u_vlsit_afifo_wr.o_mem_wr_addr[0]`, `u_vlsit_afifo_wr.reg_wbin[0]`, `w_mem_wr_addr[0]` (one must change).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 1 |
+| counterexample | 2 |
+| no result (time limit) | 0 |
+
+PROVEN never hit after the first reset:
+
+- `VLSIT_CELL_SRAM_1W1R.sv:65` `(REB==1) => 0` (column 9) in `u_vlsit_afifo_mem.gen_macro.u_vlsit_afifo_ram_macro.u_dont_touch_sram`
+
+## Configuration rd_slow (`e2f4f53ec28596c8`)
+
+1 SymbiYosys task(s); control `u_vlsit_afifo_mem.i_wr_addr[0]`, `u_vlsit_afifo_wr.o_mem_wr_addr[0]`, `u_vlsit_afifo_wr.reg_wbin[0]`, `w_mem_wr_addr[0]` (one must change).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 0 |
+| counterexample | 2 |
+| no result (time limit) | 0 |
+| not tried: expression not found in the tree | 1 |
+

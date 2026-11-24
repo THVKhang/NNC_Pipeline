@@ -328,6 +328,19 @@ def block_key(kv: dict, name: str, line: int) -> tuple | None:
     return (h[len(DUT_HIER):].lstrip("."), name, line, col, kv["o"])
 
 
+def expr_key(kv: dict, name: str, line: int) -> tuple | None:
+    """(instance relative to the DUT top, file, line, column, term combination) of an expression point of the
+    DUT (nnc/unrexpr.py), else None."""
+    h = kv.get("h", "")
+    if not kv.get("o") or not (h == DUT_HIER or h.startswith(DUT_HIER + ".")):
+        return None
+    try:
+        col = int(kv.get("n", 0) or 0)
+    except ValueError:
+        col = 0
+    return (h[len(DUT_HIER):].lstrip("."), name, line, col, kv["o"])
+
+
 def toggle_bit(kv: dict, fields: dict | None = None) -> tuple[str, int] | None:
     """(signal relative to the DUT top as in the flattened netlist, bit index) of a toggle point, or None
     (outside the DUT, or an unpacked array element). With `fields` (struct_fields), a struct field point
@@ -435,6 +448,9 @@ def parse_dat(path: Path, rtl_names: list[str], scope: dict | None = None,
     # branches that formal proves are never executed after the first reset (nnc/unrbranch.py)
     pblocks = {tuple(k) for k in (scope or {}).get("proven_blocks") or []}
     blocks_left, blocks_hit = 0, 0
+    # term combinations that formal proves never hold after the first reset (nnc/unrexpr.py)
+    pexprs = {tuple(k) for k in (scope or {}).get("proven_exprs") or []}
+    exprs_left, exprs_hit = 0, 0
     left_out: dict[str, int] = defaultdict(int)
     dropped: dict[str, int] = defaultdict(int)
     conflicts = 0
@@ -457,7 +473,13 @@ def parse_dat(path: Path, rtl_names: list[str], scope: dict | None = None,
                 out_lines.update((name, n) for n in span)
                 continue
             blocks_hit += 1           # executed although proven unreachable: counted, and reported
-        bit = _const_bit(kv, const, fields) if scope and metric == "toggle" and const else None
+        if pexprs and metric == "expression" and expr_key(kv, name, line) in pexprs:
+            if count == 0:
+                left_out[metric] += 1
+                exprs_left += 1
+                continue
+            exprs_hit += 1
+        bit =_const_bit(kv, const, fields) if scope and metric == "toggle" and const else None
         if not bit and proven and metric == "toggle" and _const_bit(kv, proven, fields):
             # never toggled, or the 0->1 start of a constant 1 (a 1->0 put the signal back above)
             if count == 0 or kv.get("o", "").endswith(":0->1"):
@@ -499,6 +521,10 @@ def parse_dat(path: Path, rtl_names: list[str], scope: dict | None = None,
             out["scope"].setdefault("proven_unreachable", {"rule": PROVEN_RULE})
             out["scope"]["proven_unreachable"]["branches_left_out"] = blocks_left
             out["scope"]["proven_unreachable"]["branches_executed"] = blocks_hit
+        if pexprs:
+            out["scope"].setdefault("proven_unreachable", {"rule": PROVEN_RULE})
+            out["scope"]["proven_unreachable"]["expressions_left_out"] = exprs_left
+            out["scope"]["proven_unreachable"]["expressions_executed"] = exprs_hit
         out["out_of_scope_lines"] = out_lines - in_lines
     if drop_roots is not None:
         out["dropped"] = dict(sorted(dropped.items()))

@@ -216,6 +216,27 @@ code lạ trong sandbox, và người dùng thật của công cụ quen dòng l
   - Không phải lỗi mới. Kết quả ở `work/triage_xrand_chk012.md`.
 - Lưu ý: đường burst AXI của ahb2axi bị loại vì chết do lỗi RTL đã ghi, không phải do thiết kế. Người duyệt G4 cần xét.
 
+## Giai đoạn 24: chứng minh điểm expression không tới được
+
+**Mục tiêu.** 23.5 để lại các điểm expression mà agent cho là "không tới được từ port", nhưng chưa có công cụ nào chứng minh. Giai đoạn này chứng minh chúng bằng formal, giống cách 23.3 làm cho nhánh. Không tốn tiền agent. Không loại điểm nào bằng tay.
+
+| # | Bước | Điều kiện xong |
+|---|---|---|
+| 24.1 | `nnc/unrexpr.py`: mỗi tổ hợp term chưa chạy (`(de==1) => 1`) thành một wire đánh dấu ở mức module, trong một bản sao của RTL (chèn trước `endmodule`, không thêm dòng). Wire bằng 1 đúng khi tổ hợp đúng. SymbiYosys chứng minh wire luôn bằng 0 sau reset đầu tiên, vẫn có guard và control. Chỉ thử khi term đọc ở mức module có cùng nghĩa: không biến vòng lặp, không tên cục bộ của generate/function, không gọi hàm, không tín hiệu bị chính khối đó gán blocking. | Unit test. Điểm chỉ bị loại khi PROVEN ở mọi cấu hình. |
+| 24.2 | Chạy trên ot_rv_timer. Xem từng nhóm điểm mà 23.5 cho là không tới được: nhóm nào được chứng minh, nhóm nào không. | `work/unr.md` có phần expression. Test và assertion không đổi. Không điểm PROVEN nào từng chạy trong mô phỏng (`expressions_executed` = 0). |
+| 24.3 | Chạy trên mọi thiết kế có `work/unr.json`. | Như 24.2, trên mỗi thiết kế. |
+| 24.4 | EVALUATION, ARCHITECTURE, GUIDE, CHANGELOG. Push lên `main`. | CI xanh. |
+
+**Trạng thái (2026-11-25).** 24.1–24.4 xong, kết quả ở EVALUATION §16. Không tốn tiền agent.
+- rv_timer: 27 điểm PROVEN. Expression (không tính `prim_*`) 87,4 → 91,3 %, `nnc cover` báo `target_met` mà không thêm test. Phần lớn nhóm điểm agent cho là không tới được ở 23.5 nay đã được chứng minh. Nhóm `de` của `prim_subreg_arb.sv:33` có phản ví dụ (các instance gộp chung một điểm), RACL và các hàm `mubi4_*` chưa thử được: vẫn được tính.
+- ahb2axi 71,9 → 82,9 %, sync_fifo 92,8 → 98,5 %, axil_regfile 95,7 → 100 %, gpio 64,9 → 85,0 %.
+- Mọi thiết kế: `expressions_executed` = 0, test và assertion không đổi.
+- Sửa trong lúc chạy: gpio có 616 marker trên một dòng, vượt giới hạn 40 000 token của Verilator. Marker giờ được chia đợt. Yosys không đọc phép chọn bit nối tiếp mà Verilator in cho trường struct (`reg2hw[321:312][3:2][0]`), nên marker gộp lại thành một phép chọn (`reg2hw[314]`).
+
+| # | Việc còn mở | Điều kiện xong |
+|---|---|---|
+| 24.5 | Chứng minh theo từng cấu hình. Coverage tính mỗi điểm một lần cho mỗi cấu hình. Điểm chạm ở cấu hình này mà không chạm ở cấu hình kia hiện không được thử (async_apb_bridge: 223 điểm). Cần chứng minh điểm đó trong đúng cấu hình nó không chạm, rồi chỉ loại bản ghi của cấu hình đó. Áp dụng cho cả nhánh (23.3). | Unit test. `expressions_executed` = 0. |
+
 ## Việc còn mở, chờ người có chuyên môn (G4)
 
 Xem [G4_REVIEW_REQUEST.md](G4_REVIEW_REQUEST.md). Riêng ot_rv_timer còn hai việc:

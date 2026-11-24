@@ -89,3 +89,37 @@ PROVEN never executed after the first reset:
 - `m_spi_master.sv:167` case (column 7) in `top`
 - `m_spi_master.sv:262` case (column 9) in `top`
 
+# Expression points never hit after the first reset (nnc/unrexpr.py)
+
+Each term combination below had no hit. A marker declared at module level in an instrumented copy of the RTL (a wire that is 1 exactly when the combination holds) was checked the same way: PROVEN means the combination never holds after the first reset, so the point can never be hit. A combination is tried only when its terms read module-level signals with the same meaning as at the expression. A point PROVEN in every configuration leaves the expression coverage. Key: instance, file, line, column, combination.
+
+## Configuration base (`6a3c69e19c842448`)
+
+0 SymbiYosys task(s).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 0 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+
+## Configuration max (`ae76ee08ce7c2d84`)
+
+0 SymbiYosys task(s).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 0 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+
+## Configuration min (`d7317bb2ec6f997a`)
+
+0 SymbiYosys task(s).
+
+| Result | Points |
+|---|---|
+| PROVEN never hit | 0 |
+| counterexample | 0 |
+| no result (time limit) | 0 |
+

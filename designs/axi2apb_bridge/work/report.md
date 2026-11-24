@@ -1,6 +1,6 @@
 # Verification report — axi2apb_bridge
 
-Generated 2026-11-24T08:33:50+00:00 by NNC Pipeline.
+Generated 2026-11-24T21:07:31+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -12,7 +12,7 @@ Generated 2026-11-24T08:33:50+00:00 by NNC Pipeline.
 | Run set | 2 runs in 2 configurations (base, xrand); primary base.s1 |
 | Integration | OK |
 | Code coverage (RTL), line | 100.0 % (738/738 lines); 8 points left out (package code the design does not contain), all points 98.9 % (738/746) |
-| Code coverage (RTL), block | 98.6 % (209/212 statement blocks and branch arms); 6 points left out (package code the design does not contain), all points 95.9 % (209/218) |
+| Code coverage (RTL), block | 98.6 % (209/212 statement blocks and branch arms); 6 points left out (package code the design does not contain; 6 of them proven never reached after reset by formal, work/unr.md), all points 95.9 % (209/218) |
 | Code coverage (RTL), expression | 96.2 % (102/106 condition terms) |
 | Code coverage (RTL), toggle | 100.0 % (3948/3948 bit toggles 0->1 and 1->0); 742 points left out (constant bits; 718 of them proven constant after reset by formal, work/unr.md), all points 86.0 % (4032/4690) |
 | Code coverage (RTL), functional | 97.5 % (39/40 cover points of the specification) |

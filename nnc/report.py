@@ -198,6 +198,10 @@ def _coverage_rows(cov: dict) -> list[str]:
             if m == "toggle" and pu:
                 what = (f"constant bits; {pu} of them proven constant after reset by formal, work/unr.md"
                         if pu < left[m] else "proven constant after reset by formal, work/unr.md")
+            pk = {"block": "branches_left_out", "expression": "expressions_left_out"}.get(m)
+            pn = (scope.get("proven_unreachable") or {}).get(pk) or 0 if pk else 0
+            if pn:
+                what += f"; {pn} of them proven never reached after reset by formal, work/unr.md"
             note = (f"; {left[m]} points left out ({what}), "
                     f"all points {a.get('percent')} % ({a.get('hit')}/{a.get('total')})")
         rows.append(f"| Code coverage (RTL), {m} | {v['percent']} % ({v['hit']}/{v['total']} "

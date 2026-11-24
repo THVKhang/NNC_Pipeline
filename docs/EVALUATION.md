@@ -1094,3 +1094,115 @@ Limits:
 - a branch inside a module with no clocked block at module level (`cell_sync`) is not tried;
 - the cut modules of 23.2 are free, so their own branches are not proved;
 - a counterexample or a time limit leaves the branch counted (ahb2axi: 7 counterexamples, 2 time limits).
+
+## 16. Formal proof of expression points (phase 24, 2026-11-25)
+
+Step 23.5 left ot_rv_timer at 87.4 % expression coverage (without the pre-verified `prim_*` modules), below its
+target of 90 %. The analyst claimed 10 groups of points unreachable through the ports, and no tool had proved them.
+Phase 24 proves expression points the way 23.3 proves branches, with no agent and no cost. No point was left out by
+hand: a point leaves the metric only when SymbiYosys PROVES it unreachable in every configuration of the run set.
+
+**Method (`nnc/unrexpr.py`).** Verilator's `--coverage-expr` has one point per combination of the terms of a
+condition, such as `(we==0 && de==1) => 0` at the column of the operator.
+1. Targets: the expression points of the merged coverage that no run hit.
+2. `verilator --json-only` of each configuration gives the module and the context of each target.
+3. A copy of the RTL gets one marker per combination, just before `endmodule` and on the same line, so no line
+   number moves: `(* keep *) wire m = ((|(t1)) == 1'b0) && ((|(t2)) == 1'b1);`.
+4. Self-check: Verilator reads the copy. Every marker must be at module level in every elaboration of its module,
+   driven by one continuous assignment that reads only module-level names. The copy must have the same IF and case
+   items on the same lines as the original. A marker that fails is left out, and its point stays counted.
+5. Each marker is proved 0 after the first reset, with the guard and control assertions of the toggle proofs.
+
+The marker is stronger than the point: it holds whenever the combination holds, also at times when the expression
+is not evaluated. So a PROVEN marker means the point cannot be hit. A counterexample does not show that the point
+is reachable, and the point stays counted.
+
+**When a combination is tried.** The terms read at module level must have the same meaning as inside the
+expression. A combination is not tried when:
+- it is in a function, task or initial block, or a term calls a function;
+- a term reads a loop variable or a name of a generate block, function or local block;
+- in procedural code, the same block writes a term's signal with a blocking assignment (the value at the
+  expression can differ from the value at module level);
+- a term selects a struct member, or selects bits of a signal that is not a packed vector `[H:0]` (or a packed
+  struct, union or enum over one).
+
+The last rule comes from an experiment. Verilator prints a bit select in the source numbering for a vector
+(`x[1]` is the lowest bit of `logic [8:1] x`), but in the flattened numbering for a packed array
+(`p[6+:2][0]` for `logic [3:0][1:0] p`). Only for `[H:0]` do both numberings agree with the source, so only there
+can the marker copy the select as printed.
+
+**Long lines.** gpio has 616 markers in one module. On one line they pass Verilator's limit of 40 000
+preprocessor tokens, and the copy does not elaborate. The markers now go in batches of at most 20 000 tokens per
+`endmodule` line, with one copy and one proof per batch.
+
+**Chained selects.** Verilator prints a member of a packed struct as chained constant selects:
+`reg2hw[321:312][3:2][0]`. Verilator reads this form back, but Yosys refuses it ("cannot chain select
+expressions after a range select"). In the first gpio run, this left out every marker of `gpio.sv` and
+`tlul_adapter_reg.sv` (457 points). Each select of a chain is numbered from 0 inside the value of the one before,
+so the offsets add up and the marker uses one select: `reg2hw[314]`. A small experiment checks this:
+`s.b.x[0]` of a nested struct is printed `s[3:0][3:2][0]`, which is bit 2 of `s`, as the struct layout gives.
+A chain that selects outside the value before it is kept as it is, and Yosys leaves it out.
+
+Results with `nnc sim --unr`, all configurations, 12 parallel jobs. The counts are those of the first
+configuration; a point leaves the metric only when it is PROVEN in all of them.
+
+| Design | Points never hit | PROVEN | Counterexample | No result | Not tried | Expression % |
+|---|---|---|---|---|---|---|
+| ahb2axi_bridge | 170 | 81 | 48 | 3 | 38 | 71.9 → **82.9** |
+| apb_tlul_bridge | 0 | | | | | 100.0 |
+| async_apb_bridge | 0 | | | | | 74.8 |
+| async_gray_fifo | 3 | 0 | 2 | 0 | 1 | 98.0 |
+| axi2apb_bridge | 4 | 0 | 4 | 0 | 0 | 96.2 |
+| axil_regfile | 4 | 4 | 0 | 0 | 0 | 95.7 → **100.0** |
+| c_uart | 1 | 0 | 1 | 0 | 0 | 88.9 |
+| gen_apb_tlul_bridge | 0 | | | | | 100.0 |
+| gen_sync_fifo | 2 | 0 | 2 | 0 | 0 | 97.4 |
+| ot_gpio | 892 | 451 | 6 | 0 | 274 | 64.9 → **85.0** |
+| ot_rv_timer | 274 | 27 | 3 | 0 | 244 | 65.4 → **67.7**; without `prim_*` 87.4 → **91.3** |
+| spi_master | 0 | | | | | 98.2 |
+| sync_fifo | 5 | 4 | 1 | 0 | 0 | 92.8 → **98.5** |
+
+Source: `work/results.json` (`coverage.metrics.expression`, `proven_unreachable`) and `work/unr.md`.
+- On every design, `expressions_executed` is 0: no simulation ever hit a PROVEN point.
+- The tests, their result in each run, the assertions and the checks are those of phase 23.
+- async_gray_fifo: one point is PROVEN in the `macro` configuration only, so it stays counted.
+
+**ot_rv_timer meets its target.** Without the pre-verified modules, expression coverage is 91.3 % (285/312) and
+`nnc cover ot_rv_timer --backend replay` (no agent) gives status `target_met`. No test was added. The closure
+report (`work/coverage.md`) now says, for each point the analyst claimed unreachable, whether it is still counted.
+Against the claims of 23.5:
+- PROVEN, no longer counted: the hardware `de` of ALERT_TEST.regwen (`prim_subreg_arb.sv:113`), `busy_i`, the
+  adapter's own `intg_error`, `reg_we_err`, `instr_type_err`, the data-integrity decoder, the double command
+  error `err[1]`, the three response-integrity terms, and the alert receiver's `prim_xnor2` detector.
+- Counterexample, still counted: `prim_subreg_arb.sv:33 (de==1)`. Verilator merges the instances of this
+  module under one point (`u_*`), and some of them are hardware-updated registers, whose `de` can be 1. Also two
+  `ack_level` points of `prim_alert_sender`.
+- Not tried, still counted: the RACL terms (lines 571, 574, 732 of `rv_timer_reg_top.sv`: computed or array
+  selects), the `mubi4_*` functions (`prim_mubi_pkg.sv:32`, `tlul_adapter_reg.sv:278`), and `data_err[0]` of
+  `tlul_cmd_intg_chk.sv:44` (a scalar with a select).
+
+**ahb2axi_bridge.** Of the 81 PROVEN combinations, 76 are in the FIFOs (`m_vlsit_sfifo_rd/wr.sv`): the
+software-reset blocking and the overflow and underflow flags, the same logic as the PROVEN branches of 23.3. Five are in the controller:
+- `m_ahb2axi_ctrl.sv:612` and `:636`: the AW and W handshakes never complete in the same cycle, and the AW handshake
+  never comes after the W one;
+- `:429`: one combination of `w_burst_term`.
+
+Line 636 is in WR_BURST, which is dead because of fault 2 (§15). As in §15, a PROVEN point is dead in the RTL
+as delivered, not dead by design; the reviewer judges each one against the specification (`work/unr.md`).
+
+**ot_gpio.** 448 of the 451 PROVEN combinations are on 32 lines of `gpio.sv` of the form
+`unused_per_pin_intr_ctrl_qe[i] = ^{...qe...}`: the XOR of the write-enable flags (`qe`) of the fields of one
+register, which only consumes the unused flags. The fields of one register are written together, so only 2 of the
+16 combinations of the four flags can occur. The other PROVEN
+points are in the register top, the alert sender and receiver, and the TL-UL integrity checks, as for rv_timer.
+The closure target of gpio is on the toggle metric, so its status (`target_unmet`) does not change.
+
+Limits:
+- Only points that no run of any configuration hit are tried. When a design has several configurations, the
+  metric counts a point once per configuration, so a point hit in one configuration and not in another stays
+  counted. async_apb_bridge has 223 such points and no target. A proof per configuration would close this; it is
+  not done.
+- 244 of rv_timer's 274 points are not tried, 207 of them because a blocking assignment of the same block writes a
+  term (mostly the pre-verified `prim_secded_*` decoders).
+- ot_gpio: 274 of the 892 points are not tried, 229 of them because a blocking assignment of the same block writes a term.
+- A counterexample or a time limit leaves the point counted.
