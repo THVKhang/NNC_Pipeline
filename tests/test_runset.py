@@ -3,6 +3,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from nnc import report, runset
 
@@ -169,9 +170,13 @@ class MergeTest(unittest.TestCase):
         self.assertEqual(report.check_status(m, CONTRACT)["CHK-002"]["status"], "NOT_RUN")
 
     def test_script(self):
-        s = runset.script(3)
+        # the compiler jobs of each build share the machine's jobs: 12 // 3 (not the CPU count of the test host)
+        with mock.patch.object(runset.sim, "default_jobs", return_value=12):
+            s = runset.script(3)
         self.assertIn("xargs -P 3", s)
         self.assertIn("NNC_JOBS=4", s)
+        with mock.patch.object(runset.sim, "default_jobs", return_value=2):
+            self.assertIn("NNC_JOBS=1", runset.script(3))
         self.assertIn("verilator_coverage --write merged.dat", s)
 
 

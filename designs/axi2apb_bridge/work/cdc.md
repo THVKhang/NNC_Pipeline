@@ -4,7 +4,7 @@ Structural check of RR-33 on the flattened Yosys netlist (nnc/cdc.py). SYNC is a
 
 Verdict: **clean**
 
-## Configuration default
+## Configuration base
 
 Domains: SYNC; 34 flops. Counts: 
 
