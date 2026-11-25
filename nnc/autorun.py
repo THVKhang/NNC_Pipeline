@@ -29,7 +29,8 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-from nnc import flow
+from nnc import costmodel, flow
+from nnc.agents.runtime import Budget
 from nnc.project import Design, ProjectError
 
 SPEC_EXT = (".md", ".markdown", ".txt", ".pdf", ".docx", ".html", ".htm", ".adoc", ".asciidoc")
@@ -37,7 +38,8 @@ RTL_EXT = (".sv", ".v", ".svh", ".vh", ".vhd", ".vhdl", ".f", ".svp", ".vp")
 NAME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_-]{0,63}$")
 RUN_FILE = "run.json"
 LOG_FILE = "run.log"
-STATES = ("running", "done", "stopped_at_gate", "needs_input", "failed")
+HISTORY_DIR = "run_history"
+STATES = ("running", "done", "stopped_at_gate", "stopped_budget", "needs_input", "failed")
 
 
 def _now() -> str:
@@ -125,6 +127,35 @@ class Record:
         assert state in STATES
         self.data.update({"state": state, "message": message, "finished": _now()})
         self.save()
+        if self.path.parent.name == "work":   # history: every run kept (ROADMAP 26.3)
+            base = stamp(self.data["started"])
+            hist = self.path.parent / HISTORY_DIR / f"{base}.json"
+            hist.parent.mkdir(exist_ok=True)
+            n = 1
+            while hist.is_file():   # two runs started within the same second
+                n += 1
+                hist = hist.with_name(f"{base}-{n}.json")
+            hist.write_text(json.dumps(self.data, indent=1) + "\n", encoding="utf-8")
+
+
+def stamp(iso: str) -> str:
+    """A run's start time as a file name: 2026-11-25T14:04:50Z -> 20261125T140450Z."""
+    return re.sub(r"[^0-9TZ]", "", str(iso))
+
+
+def history(design_root: Path) -> list[dict]:
+    """Every finished run of a workspace, newest first."""
+    folder = Path(design_root) / "work" / HISTORY_DIR
+    out = []
+    def order(p: Path):  # start time, then the -2, -3 of runs started within the same second
+        base, _, n = p.stem.partition("-")
+        return base, int(n or 1)
+    for p in sorted(folder.glob("*.json"), key=order, reverse=True) if folder.is_dir() else []:
+        try:
+            out.append(json.loads(p.read_text(encoding="utf-8")))
+        except ValueError:
+            continue
+    return out
 
 
 def read_record(design_root: Path) -> dict | None:
@@ -247,7 +278,8 @@ def resume_stage(prev: dict | None, now: dict[str, str]) -> tuple[str | None, st
     if prev["inputs"].get("documents") != now["documents"]:
         return "ingest", "the documents changed"
     stopped = next((s["name"] for s in prev.get("steps") or []
-                    if s["name"] in flow.STAGES and s.get("state") in ("waiting", "failed", "running")), None)
+                    if s["name"] in flow.STAGES and s.get("state") in ("waiting", "failed", "running", "budget")),
+                   None)
     if prev.get("state") in ("needs_input",) or (prev.get("state") != "done" and stopped is None):
         stopped = "ingest"
     if prev["inputs"].get("rtl") != now["rtl"]:
@@ -258,15 +290,31 @@ def resume_stage(prev: dict | None, now: dict[str, str]) -> tuple[str | None, st
     return stopped, f"going on from '{stopped}', where the last run stopped"
 
 
+def estimate_cost(d: Design, start: str | None) -> dict | None:
+    """The agent cost of the stages from `start` on (nnc/costmodel.py), from the tokens of the design's rule
+    documents; None when nothing will run or a document cannot be read."""
+    if start is None:
+        return None
+    try:
+        tokens = costmodel.document_tokens([d.root / doc["file"] for doc in d.rule_documents()])
+    except Exception:  # an unreadable document is reported by the ingest stage, not here
+        return None
+    stages = [s for s in flow.STAGES[flow.STAGES.index(start):]]
+    return costmodel.estimate(tokens, stages)
+
+
 def run(folder: Path, design_root: Path, options: flow.Options, gated: bool = False,
-        prepare_only: bool = False, start: str | None = None) -> dict:
+        prepare_only: bool = False, start: str | None = None, max_cost: float | None = None) -> dict:
     """The whole run; returns work/run.json. Never raises for a failure of a step: the failure is recorded.
-    `start`: the first stage of the flow (default: from where the last run stopped, see resume_stage)."""
+    `start`: the first stage of the flow (default: from where the last run stopped, see resume_stage).
+    `max_cost`: cap in USD on the model calls of this run (cached answers cost nothing); the run stops with
+    state stopped_budget before a call that would start above it, and the next run goes on from that stage."""
     design_root = Path(design_root)
     check_name(design_root.name)
     if start is not None and start not in flow.STAGES:
         raise ProjectError(f"unknown stage {start}: one of {', '.join(flow.STAGES)}")
     options.unreviewed = not gated
+    options.budget = budget = Budget(max_cost)
     mode = "gated" if gated else "unreviewed"
     prev = read_record(design_root)
     inputs = input_hashes(folder)
@@ -280,7 +328,7 @@ def run(folder: Path, design_root: Path, options: flow.Options, gated: bool = Fa
             why += f" (the last run was {prev.get('mode')})"
     else:
         why = "asked for"
-    rec.data["start"], rec.data["start_reason"] = start, why
+    rec.data.update(start=start, start_reason=why, max_cost_usd=max_cost, cost_usd=0.0)
     rec.save()
 
     def stage(name, fn):
@@ -290,8 +338,17 @@ def run(folder: Path, design_root: Path, options: flow.Options, gated: bool = Fa
             note = fn()
             note = note if isinstance(note, str) else ""   # a stage runner may return its data
         except Exception as e:  # recorded, then the run stops
+            rec.data["cost_usd"] = round(budget.spent, 4)
+            if budget.exceeded:
+                rec.step(name, "budget", f"cost cap reached: {e}", time.monotonic() - t)
+                raise _Budget() from e
             rec.step(name, "failed", f"{type(e).__name__}: {e}", time.monotonic() - t)
             raise
+        rec.data["cost_usd"] = round(budget.spent, 4)
+        if budget.exceeded:  # a stage may go on past refused calls; its outputs are then incomplete
+            rec.step(name, "budget", "cost cap reached during this stage; it runs again next time",
+                     time.monotonic() - t)
+            raise _Budget()
         rec.step(name, "done", note, time.monotonic() - t)
         return note
 
@@ -328,14 +385,19 @@ def run(folder: Path, design_root: Path, options: flow.Options, gated: bool = Fa
         if rep.get("verdict") != "ready":
             rec.finish("needs_input", "the intake says " + _intake_note(rep) + "; read work/intake.md")
             return rec.data
+        rec.data["estimate"] = est = estimate_cost(d, start)
         if prepare_only:
             # an inputs record would make the next run skip ahead; a prepare is not a run of the flow
             rec.data["inputs"] = {}
-            rec.finish("done", "inputs ready; no agent was called (prepare only)")
+            rec.finish("done", "inputs ready; no agent was called (prepare only)"
+                       + (f"; {costmodel.text(est)}" if est else ""))
             return rec.data
         if start is None:
             rec.finish("done", why + "; nothing run (to run again: --from <stage>)")
             return rec.data
+        if est and options.backend == "claude":
+            options.say(f"[run] from '{start}': {costmodel.text(est)}"
+                        + (f"; cap {max_cost:.2f} USD" if max_cost is not None else "; no cost cap (--max-cost)"))
 
         for name in flow.STAGES[flow.STAGES.index(start):]:
             if name in flow.DESIGN_STAGES and not d.rtl_generated():
@@ -350,6 +412,13 @@ def run(folder: Path, design_root: Path, options: flow.Options, gated: bool = Fa
         rep_md = d.work / "report.md"
         rec.finish("done", ("report: work/report.md" if rep_md.is_file() else "finished")
                    + (" (UNREVIEWED: gates were not reviewed)" if not gated else ""))
+    except _Budget:
+        rec.finish("stopped_budget", f"the cost cap of {max_cost:.2f} USD was reached ({budget.spent:.2f} USD "
+                   "spent); the answers paid for are cached: raise the cap (--max-cost) and run again to go on")
     except Exception as e:
         rec.finish("failed", f"{type(e).__name__}: {e}")
     return rec.data
+
+
+class _Budget(Exception):
+    """Internal: the cost cap stopped the run."""

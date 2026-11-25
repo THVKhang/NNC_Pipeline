@@ -55,6 +55,7 @@ class Options:
     single: bool = False          # ignore run_set.json: one run of the design configuration
     unr: bool = False             # nnc sim --unr: prove uncovered toggle bits unreachable (nnc/unr.py)
     timeout_s: int = 1800
+    budget: object = None         # agents.runtime.Budget: cost of the model calls, optional cap (nnc run)
     log: list[str] = field(default_factory=list)
 
     def say(self, msg: str) -> None:
@@ -78,7 +79,7 @@ def index_path(d: Design, doc: dict) -> Path:
 
 
 def _backend(d: Design, o: Options):
-    return make_backend(d.work, o.backend, o.timeout_s)
+    return make_backend(d.work, o.backend, o.timeout_s, o.budget)
 
 
 def _logs(d: Design) -> Path:

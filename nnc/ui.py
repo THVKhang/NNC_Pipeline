@@ -18,6 +18,7 @@ import email.parser
 import email.policy
 import html
 import json
+import math
 import os
 import posixpath
 import re
@@ -25,12 +26,13 @@ import shutil
 import subprocess
 import sys
 import threading
+import time
 import urllib.parse
 import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from nnc import __version__, autorun
+from nnc import __version__, autorun, costmodel, flow
 from nnc.project import Design, ProjectError
 from nnc.tools import find_claude
 
@@ -43,7 +45,8 @@ REPORTS = (("report.md", "Report"), ("review_packet.md", "Review packet"), ("rul
            ("formal.md", "Formal"), ("unr.md", "Unreachable points"), ("cdc.md", "Clock domain crossings"),
            ("intake.md", "Intake"), ("mutation.md", "Mutation"), ("rtl_gen.md", "Generated RTL"))
 STATE_LABEL = {"running": "running", "done": "done", "stopped_at_gate": "waiting for a review",
-               "needs_input": "needs input", "failed": "failed", "interrupted": "interrupted"}
+               "stopped_budget": "stopped: cost cap", "budget": "cost cap", "needs_input": "needs input",
+               "failed": "failed", "interrupted": "interrupted", "queued": "queued", "waiting": "waiting"}
 
 
 # ------------------------------------------------------------------------------------------ Markdown
@@ -221,11 +224,13 @@ def numbers(root: Path) -> dict:
 
 # ------------------------------------------------------------------------------------------ server state
 class Dashboard:
-    def __init__(self, root: Path, inbox: Path, cwd: Path | None = None):
+    def __init__(self, root: Path, inbox: Path, cwd: Path | None = None, parallel: int = 1):
         self.root, self.inbox = Path(root), Path(inbox)
         self.cwd = Path(cwd or os.getcwd())
         self.procs: dict[str, subprocess.Popen] = {}
-        self.lock = threading.Lock()
+        self.queue: list[dict] = []          # runs waiting for a slot (ROADMAP 26.4), in order
+        self.parallel = max(1, int(parallel))
+        self.lock = threading.RLock()
 
     def designs(self) -> list[str]:
         if not self.root.is_dir():
@@ -253,29 +258,90 @@ class Dashboard:
         lines = p.read_text(encoding="utf-8", errors="replace").splitlines()
         return "\n".join(lines[-LOG_TAIL:])
 
-    def start(self, name: str, backend: str, gated: bool, jobs: int | None = None) -> None:
-        autorun.check_name(name)
-        if backend not in ("claude", "replay", "manual"):
-            raise ProjectError(f"unknown backend {backend}")
+    def queued(self, name: str) -> int | None:
+        """Place in the queue (1 = next), or None."""
+        with self.lock:
+            return next((i + 1 for i, q in enumerate(self.queue) if q["name"] == name), None)
+
+    def estimate(self, name: str) -> dict | None:
+        """Where a run of an inbox folder would start, and the estimated agent cost of the stages from there
+        (nnc/costmodel.py). Cached in inbox/<name>/.estimate.json for the same inputs and start."""
         folder = self.inbox / name
         box = autorun.read_inbox(folder)
         if box["problems"]:
+            return None
+        inputs = autorun.input_hashes(folder)
+        start, why = autorun.resume_stage(autorun.read_record(self.root / name), inputs)
+        cache = folder / ".estimate.json"
+        old = _read(cache)
+        if old and old.get("inputs") == inputs and old.get("start") == start:
+            return old
+        est = None
+        if start is not None:
+            try:
+                tokens = costmodel.document_tokens([box["spec"]] + box["standards"])
+                est = costmodel.estimate(tokens, flow.STAGES[flow.STAGES.index(start):])
+            except Exception:  # an unreadable document: the run's ingest says why
+                est = None
+        out = {"inputs": inputs, "start": start, "why": why, "estimate": est}
+        try:
+            cache.write_text(json.dumps(out, indent=1) + "\n", encoding="utf-8")
+        except OSError:
+            pass
+        return out
+
+    def start(self, name: str, backend: str, gated: bool, max_cost: float | None = None,
+              jobs: int | None = None) -> str:
+        """Run `nnc run <name>` now, or queue it when every slot is taken. Returns "started" or "queued"."""
+        autorun.check_name(name)
+        if backend not in ("claude", "replay", "manual"):
+            raise ProjectError(f"unknown backend {backend}")
+        if max_cost is not None and max_cost < 0:
+            raise ProjectError("the cost cap must be 0 or more")
+        box = autorun.read_inbox(self.inbox / name)
+        if box["problems"]:
             raise ProjectError("; ".join(box["problems"]))
+        job = {"name": name, "backend": backend, "gated": gated, "max_cost": max_cost, "jobs": jobs}
         with self.lock:
-            if self.running(name):
-                raise ProjectError(f"{name} is already running")
-            argv = [sys.executable, "-m", "nnc", "--root", str(self.root.resolve()), "run", name,
-                    "--inbox", str(self.inbox.resolve()), "--backend", backend] + (["--gated"] if gated else []) \
-                + (["--jobs", str(jobs)] if jobs else [])
-            log = open(folder / autorun.LOG_FILE, "w", encoding="utf-8")
-            env = dict(os.environ, PYTHONIOENCODING="utf-8", PYTHONUNBUFFERED="1")
-            flags = subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0
-            self.procs[name] = subprocess.Popen(argv, cwd=self.cwd, stdout=log, stderr=subprocess.STDOUT,
-                                                stdin=subprocess.DEVNULL, env=env, creationflags=flags,
-                                                start_new_session=os.name != "nt")
-            log.close()
+            if self.running(name) or any(q["name"] == name for q in self.queue):
+                raise ProjectError(f"{name} is already running or queued")
+            self.queue.append(job)
+            self.pump()
+            return "queued" if self.queued(name) else "started"
+
+    def pump(self) -> None:
+        """Start queued runs while there are free slots (called on each request and by a timer)."""
+        with self.lock:
+            while self.queue and sum(self.running(n) for n in list(self.procs)) < self.parallel:
+                self._launch(self.queue.pop(0))
+
+    def _launch(self, job: dict) -> None:
+        name = job["name"]
+        folder = self.inbox / name
+        argv = ([sys.executable, "-m", "nnc", "--root", str(self.root.resolve()), "run", name,
+                 "--inbox", str(self.inbox.resolve()), "--backend", job["backend"]]
+                + (["--gated"] if job["gated"] else [])
+                + (["--max-cost", f"{job['max_cost']:g}"] if job["max_cost"] is not None else [])
+                + (["--jobs", str(job["jobs"])] if job["jobs"] else []))
+        log_p = folder / autorun.LOG_FILE
+        if log_p.is_file():  # keep the log of the previous run next to its record in the history
+            prev = autorun.read_record(self.root / name) or {}
+            old = folder / "logs" / f"{autorun.stamp(prev.get('started') or '') or 'earlier'}.log"
+            old.parent.mkdir(exist_ok=True)
+            log_p.replace(old)
+        log = open(log_p, "w", encoding="utf-8")
+        env = dict(os.environ, PYTHONIOENCODING="utf-8", PYTHONUNBUFFERED="1")
+        flags = subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0
+        self.procs[name] = subprocess.Popen(argv, cwd=self.cwd, stdout=log, stderr=subprocess.STDOUT,
+                                            stdin=subprocess.DEVNULL, env=env, creationflags=flags,
+                                            start_new_session=os.name != "nt")
+        log.close()
 
     def stop(self, name: str) -> None:
+        with self.lock:
+            if any(q["name"] == name for q in self.queue):   # not started yet: leave the queue
+                self.queue = [q for q in self.queue if q["name"] != name]
+                return
         p = self.procs.get(name)
         if p is None or p.poll() is not None:
             return
@@ -394,8 +460,8 @@ def _page(title: str, body: str, refresh: int | None = None) -> bytes:
 def _state_chip(state: str | None) -> str:
     if not state:
         return '<span class="chip mute">not run</span>'
-    cls = {"done": "ok", "running": "warn", "stopped_at_gate": "warn", "needs_input": "bad", "failed": "bad",
-           "interrupted": "bad"}.get(state, "")
+    cls = {"done": "ok", "running": "warn", "stopped_at_gate": "warn", "stopped_budget": "warn", "budget": "warn",
+           "queued": "warn", "needs_input": "bad", "failed": "bad", "interrupted": "bad"}.get(state, "")
     return f'<span class="chip {cls}">{_esc(STATE_LABEL.get(state, state))}</span>'
 
 
@@ -435,7 +501,7 @@ def home(db: Dashboard, msg: str = "") -> bytes:
                     f'<td class="r">{f"{t[0]}/{t[1]}" if t else "–"}</td><td class="r">{f"{c[0]}/{c[1]}" if c else "–"}</td>'
                     f'<td>{cov_t or "–"}</td><td>{_formal_text(num.get("formal"))}</td>'
                     f'<td class="r">{_pct(m[0]) if m else "–"}</td><td>{_gates_text(num.get("gates"))}</td>'
-                    f'<td>{_state_chip(rec and rec.get("state"))}</td></tr>')
+                    f'<td>{_state_chip("queued" if db.queued(n) else rec and rec.get("state"))}</td></tr>')
     claude = find_claude()      # as the agent backend finds it (NNC_CLAUDE_BIN, PATH, VS Code extension)
     body = (f'{f"<p class=note>{_esc(msg)}</p>" if msg else ""}'
             '<section><h1>Add a design</h1><p class="mute">Give the specification of the block and its RTL. The '
@@ -460,6 +526,8 @@ def home(db: Dashboard, msg: str = "") -> bytes:
                'NNC_CLAUDE_BIN, VS Code extension): install it to run the agents</div>') + '</div>'
             '<div><label>Gates</label><select name="gated"><option value="">run to the report (UNREVIEWED)</option>'
             '<option value="1">stop at each gate for review</option></select></div>'
+            '<div><label>Cost cap, USD (empty: the high end of the estimate)</label><input type="text" '
+            'name="max_cost" inputmode="decimal" placeholder="estimate"></div>'
             '<div class="row" style="align-self:end"><button name="go" value="run">Upload and run</button>'
             '<button class="alt" name="go" value="save">Upload only</button></div></form></section>'
             '<section><h2>Designs</h2><div class="tw"><table><thead><tr><th>Design</th><th>From</th>'
@@ -497,19 +565,37 @@ def design_page(db: Dashboard, name: str, msg: str = "") -> bytes:
     buttons = ""
     if in_box:
         box = autorun.read_inbox(db.inbox / name)
+        place = db.queued(name)
+        plan = ""
         if db.running(name):
             buttons = (f'<form method="post" action="/stop/{name}"><button class="stop">Stop</button></form>')
+        elif place:
+            buttons = (f'<form method="post" action="/stop/{name}" class="row"><span class="chip warn">queued, '
+                       f'#{place}</span><button class="stop">Leave the queue</button></form>')
         elif not box["problems"]:
-            buttons = (f'<form method="post" action="/run/{name}" class="row"><select name="backend">'
-                       '<option value="claude">Claude Code (agent cost)</option>'
-                       '<option value="replay">replay (no cost)</option></select><select name="gated">'
-                       '<option value="">to the report (UNREVIEWED)</option><option value="1">stop at gates</option>'
-                       '</select><button>Run</button></form>')
+            est = db.estimate(name) or {}
+            e = est.get("estimate")
+            if est.get("start") is None:
+                plan = (f'<p class="mute">{_esc(est.get("why", ""))}: a run would do nothing. To run stages again: '
+                        f'<code>nnc run {_esc(name)} --from &lt;stage&gt;</code>.</p>')
+            else:
+                plan = (f'<p>The next run starts at <b>{_esc(est["start"])}</b> ({_esc(est.get("why", ""))}).'
+                        + (f' Estimated agent cost of these stages: <b>{e["low"]:.2f}–{e["high"]:.2f} USD</b> '
+                           f'(middle {e["mid"]:.2f}), for {e["tokens"]} document tokens. The range held for '
+                           f'{_esc(e["holdout"])} committed designs; a design that needs much repair can cost '
+                           'more, which the cost cap stops.' if e else "") + "</p>")
+                cap = f"{math.ceil(e['high'])}" if e else ""
+                buttons = (f'<form method="post" action="/run/{name}" class="row"><select name="backend">'
+                           '<option value="claude">Claude Code (agent cost)</option>'
+                           '<option value="replay">replay (no cost)</option></select><select name="gated">'
+                           '<option value="">to the report (UNREVIEWED)</option><option value="1">stop at gates'
+                           '</option></select><label style="margin:0">cap USD <input type="text" name="max_cost" '
+                           f'inputmode="decimal" value="{cap}" style="width:70px"></label><button>Run</button></form>')
         files = ", ".join(_esc(p.name) for p in ([box["spec"]] if box["spec"] else []) + box["standards"])
         probs = "".join(f"<li class=bad>{_esc(p)}</li>" for p in box["problems"])
         parts.append(f'<section><div class="row" style="justify-content:space-between"><div><h1>{_esc(name)}</h1>'
                      f'<span class="mute">inbox/{_esc(name)}: specification {files or "–"}; {len(box["rtl"])} RTL '
-                     f'file(s)</span></div>{buttons}</div>{f"<ul>{probs}</ul>" if probs else ""}</section>')
+                     f'file(s)</span></div>{buttons}</div>{plan}{f"<ul>{probs}</ul>" if probs else ""}</section>')
     else:
         parts.append(f'<section><h1>{_esc(name)}</h1><span class="mute">designs/{_esc(name)} (shown here, not '
                      'run from here)</span></section>')
@@ -519,11 +605,29 @@ def design_page(db: Dashboard, name: str, msg: str = "") -> bytes:
                         for s in rec.get("steps") or [])
         fin = f', finished {_esc(rec["finished"])}' if rec.get("finished") else ""
         message = f'<p>{_esc(rec["message"])}</p>' if rec.get("message") else ""
+        if rec.get("cost_usd") is not None or rec.get("max_cost_usd") is not None:
+            cap = rec.get("max_cost_usd")
+            message += (f'<p class="mute">agent cost of this run: {rec.get("cost_usd") or 0:.2f} USD'
+                        + (f' (cap {cap:.2f} USD)' if cap is not None else " (no cap)") + "</p>")
         parts.append(f'<section><h2>Run {_state_chip(rec.get("state"))}</h2><p class="mute">started '
                      f'{_esc(str(rec.get("started")))}, mode {_esc(str(rec.get("mode")))}, agents '
                      f'{_esc(str(rec.get("backend")))}{fin}</p>{message}'
                      f'<div class="tw"><table><thead><tr><th>Step</th><th>State</th><th class="r">Seconds</th>'
                      f'<th>Note</th></tr></thead><tbody>{steps}</tbody></table></div></section>')
+    hist = autorun.history(root) if is_ws else []
+    if len(hist) > 1 or (hist and not rec):
+        rows = []
+        for h in hist:
+            st = autorun.stamp(h.get("started") or "")
+            has_log = (db.inbox / name / "logs" / f"{st}.log").is_file()
+            rows.append(f'<tr><td>{_esc(h.get("started"))}</td><td>{_esc(h.get("mode"))}</td>'
+                        f'<td>{_esc(h.get("backend"))}</td><td>{_state_chip(h.get("state"))}</td>'
+                        f'<td>{_esc(h.get("start") or "–")}</td><td class="r">{(h.get("cost_usd") or 0):.2f}</td>'
+                        f'<td class="r">{_duration(h)}</td><td>'
+                        + (f'<a href="/d/{name}/log/{st}">log</a>' if has_log else "") + "</td></tr>")
+        parts.append('<section><h2>Earlier runs</h2><div class="tw"><table><thead><tr><th>Started</th><th>Mode</th>'
+                     '<th>Agents</th><th>State</th><th>From</th><th class="r">USD</th><th class="r">Minutes</th>'
+                     '<th></th></tr></thead><tbody>' + "".join(rows) + "</tbody></table></div></section>")
     log = db.log(name) if in_box else ""
     if log:
         parts.append(f'<section><h2>Log (last {LOG_TAIL} lines{", refreshed every 4 s" if running else ""})</h2>'
@@ -567,6 +671,25 @@ def design_page(db: Dashboard, name: str, msg: str = "") -> bytes:
             parts.append('<section class="md">' + md_to_html(rep.read_text(encoding="utf-8", errors="replace"),
                                                              _link_for(name, "work/report.md")) + "</section>")
     return _page(f"{name} · NNC", "".join(parts), refresh=4 if running else None)
+
+
+def _duration(rec: dict) -> str:
+    try:
+        from datetime import datetime
+        a, b = (datetime.strptime(rec[k], "%Y-%m-%dT%H:%M:%SZ") for k in ("started", "finished"))
+        return f"{(b - a).total_seconds() / 60:.1f}"
+    except (KeyError, TypeError, ValueError):
+        return "–"
+
+
+def log_page(db: Dashboard, name: str, st: str) -> bytes:
+    if not re.match(r"^[0-9TZ]+$", st):
+        raise FileNotFoundError(st)
+    p = db.inbox / name / "logs" / f"{st}.log"
+    if not p.is_file():
+        raise FileNotFoundError(st)
+    return _page(f"log {st} · {name}", f'<p><a href="/d/{name}">← {_esc(name)}</a> · run {_esc(st)}</p>'
+                 f'<section><pre>{_esc(p.read_text(encoding="utf-8", errors="replace"))}</pre></section>')
 
 
 def file_page(db: Dashboard, name: str, rel: str) -> bytes:
@@ -653,6 +776,9 @@ class Handler(BaseHTTPRequestHandler):
             m = re.match(r"^/d/([A-Za-z][A-Za-z0-9_-]*)/f/(.+)$", path)
             if m:
                 return self._send(200, file_page(self.db, m.group(1), m.group(2)))
+            m = re.match(r"^/d/([A-Za-z][A-Za-z0-9_-]*)/log/([0-9TZ]+)$", path)
+            if m:
+                return self._send(200, log_page(self.db, m.group(1), m.group(2)))
             if path == "/api/designs":
                 data = {n: {"numbers": numbers(self.db.root / n), "run": self.db.record(n)} for n in self.db.designs()}
                 return self._send(200, json.dumps(data, default=str).encode(), "application/json")
@@ -675,17 +801,19 @@ class Handler(BaseHTTPRequestHandler):
         def first(k: str) -> str:
             return next((v for v in fields.get(k) or [] if isinstance(v, str)), "")
         path = urllib.parse.unquote(urllib.parse.urlsplit(self.path).path)
+        def go(name: str) -> str:
+            how = self.db.start(name, first("backend") or "claude", bool(first("gated")),
+                                _cap(self.db, name, first("max_cost")))
+            return self._redirect(f"/d/{name}?msg=" + urllib.parse.quote(how))
         try:
             if path == "/upload":
                 name = self.db.save_upload(fields)
                 if first("go") == "run":
-                    self.db.start(name, first("backend") or "claude", bool(first("gated")))
-                    return self._redirect(f"/d/{name}?msg=" + urllib.parse.quote("started"))
+                    return go(name)
                 return self._redirect(f"/d/{name}?msg=" + urllib.parse.quote("files saved in inbox/" + name))
             m = re.match(r"^/(run|stop)/([A-Za-z][A-Za-z0-9_-]*)$", path)
             if m and m.group(1) == "run":
-                self.db.start(m.group(2), first("backend") or "claude", bool(first("gated")))
-                return self._redirect(f"/d/{m.group(2)}?msg=" + urllib.parse.quote("started"))
+                return go(m.group(2))
             if m:
                 self.db.stop(m.group(2))
                 return self._redirect(f"/d/{m.group(2)}?msg=" + urllib.parse.quote("stopped"))
@@ -695,6 +823,22 @@ class Handler(BaseHTTPRequestHandler):
         self._error(404, "not found")
 
 
+def _cap(db: Dashboard, name: str, text: str) -> float | None:
+    """The cost cap of a run started from a page: the number given, else the high end of the estimate
+    (rounded up); None only when there is no estimate."""
+    text = (text or "").strip().replace(",", ".")
+    if text:
+        try:
+            v = float(text)
+        except ValueError:
+            raise ProjectError(f"cost cap '{text}' is not a number") from None
+        if v < 0 or v != v:
+            raise ProjectError("the cost cap must be 0 or more")
+        return v
+    e = (db.estimate(name) or {}).get("estimate")
+    return float(math.ceil(e["high"])) if e else None
+
+
 def make_server(db: Dashboard, host: str = "127.0.0.1", port: int = 8765) -> ThreadingHTTPServer:
     handler = type("BoundHandler", (Handler,), {"db": db})
     srv = ThreadingHTTPServer((host, port), handler)
@@ -702,8 +846,17 @@ def make_server(db: Dashboard, host: str = "127.0.0.1", port: int = 8765) -> Thr
     return srv
 
 
-def serve(root: Path, inbox: Path, port: int = 8765, open_browser: bool = True) -> None:
-    db = Dashboard(root, inbox)
+def serve(root: Path, inbox: Path, port: int = 8765, open_browser: bool = True, parallel: int = 1) -> None:
+    db = Dashboard(root, inbox, parallel=parallel)
+
+    def pump_forever():  # a queued run starts when a slot frees, even if nobody looks at a page
+        while True:
+            time.sleep(2)
+            try:
+                db.pump()
+            except Exception as e:  # keep the timer alive; the page shows the run's state
+                print(f"[ui] queue: {e}", file=sys.stderr)
+    threading.Thread(target=pump_forever, daemon=True).start()
     srv = make_server(db, "127.0.0.1", port)
     url = f"http://127.0.0.1:{srv.server_address[1]}/"
     print(f"NNC dashboard: {url}  (designs {Path(root).resolve()}, inbox {Path(inbox).resolve()}); Ctrl+C stops it")

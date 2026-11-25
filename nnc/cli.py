@@ -542,18 +542,25 @@ def cmd_run(args) -> int:
                            f"{folder}/rtl/ (see inbox/README.md)")
     o = _options(args)
     rec = autorun.run(folder, Path(args.root) / args.name, o, gated=args.gated, prepare_only=args.prepare_only,
-                      start=args.from_stage)
+                      start=args.from_stage, max_cost=args.max_cost)
     if rec.get("start"):
         print(f"[run] started from '{rec['start']}': {rec.get('start_reason')}")
+    if rec.get("estimate"):
+        from nnc import costmodel
+        print(f"[run] {costmodel.text(rec['estimate'])}")
+    if rec.get("cost_usd"):
+        print(f"[run] spent {rec['cost_usd']:.2f} USD on agent calls"
+              + (f" (cap {rec['max_cost_usd']:.2f})" if rec.get("max_cost_usd") is not None else ""))
     print(f"[run] {args.name}: {rec['state']}" + (f" - {rec['message']}" if rec.get("message") else ""))
     for s in rec["steps"]:
         print(f"  {s['name']:<10} {s['state']:<8} {s.get('seconds', ''):>7}  {s.get('note', '')}"[:220])
-    return {"done": 0, "stopped_at_gate": 0, "needs_input": 1}.get(rec["state"], 2)
+    return {"done": 0, "stopped_at_gate": 0, "stopped_budget": 0, "needs_input": 1}.get(rec["state"], 2)
 
 
 def cmd_ui(args) -> int:
     from nnc import ui
-    ui.serve(Path(args.root), Path(args.inbox), port=args.port, open_browser=not args.no_browser)
+    ui.serve(Path(args.root), Path(args.inbox), port=args.port, open_browser=not args.no_browser,
+             parallel=args.parallel)
     return 0
 
 
@@ -1039,7 +1046,11 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--gated", action="store_true",
                    help="stop before the first gate that is not approved (default: run on, results UNREVIEWED)")
     s.add_argument("--prepare-only", action="store_true",
-                   help="workspace, intake and adaptation only: checks the inputs, calls no agent")
+                   help="workspace, intake and adaptation only: checks the inputs and estimates the agent "
+                        "cost, calls no agent")
+    s.add_argument("--max-cost", type=float, default=None, metavar="USD",
+                   help="cap on what this run's agent calls cost; the run stops before a call above it and the "
+                        "next run goes on from that stage (default: no cap; the estimate is printed)")
     s.add_argument("--from", dest="from_stage", choices=flow.STAGES,
                    help="first stage (default: where the last run stopped; 'ingest' when the documents changed, "
                         "'sim' at the latest when the RTL changed)")
@@ -1054,6 +1065,8 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--inbox", default="inbox", help="folder of the inbox folders (default inbox/)")
     s.add_argument("--port", type=int, default=8765)
     s.add_argument("--no-browser", action="store_true", help="do not open the browser")
+    s.add_argument("--parallel", type=int, default=1,
+                   help="runs at the same time; the others wait in a queue (default 1: each run uses every CPU)")
     s.set_defaults(func=cmd_ui)
 
     s = sub.add_parser("site", help="the project page (GitHub Pages) from the committed results: one HTML file")

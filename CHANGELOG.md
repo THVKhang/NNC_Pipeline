@@ -8,6 +8,28 @@ approval is recorded as delegated. See [docs/G4_REVIEW_REQUEST.md](docs/G4_REVIE
 
 ## Unreleased
 
+### Phase 26: cost estimate, cost cap, run history, queue
+- Cost estimate before a run, with no agent: `nnc/costmodel.py` fits cost = c * tokens^k on the recorded agent cost
+  of the 13 committed designs with their own verification (`work/logs/agents`, every call, re-runs and repairs
+  included; derived designs are left out), against the tokens of their documents. Each stage gets its median share,
+  so a run that starts at `sim` is estimated for `sim`, `triage` and `mutate` only. The range shown is 0.5x to 2x
+  the middle. Leave-one-out, the range held for 10 of the 13 designs (EVALUATION §18). The fit is committed as
+  `nnc/data/cost_model.json`; a unit test fails when it no longer matches the designs. `nnc run --prepare-only`
+  prints the estimate, and the dashboard shows it above the Run button.
+- Cost cap: `nnc run --max-cost USD`, and a field on the pages (empty: the high end of the estimate, rounded up).
+  The agent runtime adds up the cost of every call, failed ones included; before a call that the cache cannot
+  answer, it refuses when the cap is reached. The run ends `stopped_budget` and the stage is marked `budget`; the
+  answers paid for stay in the cache, so the next run (with a higher cap) goes on from that stage at no cost for
+  what was done. Checked on a copy of sync_fifo with `--max-cost 0`: ingest ran, extract was refused before any
+  agent call, the run ended `stopped_budget`.
+- Run history: every finished run is kept in `work/run_history/<time>.json`; the dashboard keeps the log of each
+  run in `inbox/<name>/logs/`. The design page lists the runs with their mode, state, first stage, cost and minutes.
+- Queue: `nnc ui --parallel N` (default 1) runs at most N designs at a time; the others wait in order, show
+  "queued" and can leave the queue with Stop.
+- Corrected: the docs of phase 25 said a run costs "about 2 USD for a small block". The recorded costs are 2.4 to
+  2.8 USD for the two smallest modules and 10 to 29 USD for the others (77 USD for async_gray_fifo, which needed much
+  repair).
+
 ### Phase 25: drop-in runs and a local dashboard
 - `nnc run <name>`: from `inbox/<name>/` (`spec/` with one specification, `standards/`, `rtl/`, optional
   `inbox.json`) to `work/report.md` in one command: the workspace, the documents, the intake, the adaptation when

@@ -278,21 +278,28 @@ class ClaudeCliBackend:
                 log = _write_log(log_dir, task, record)
                 wait = limit_reset_wait(str(reply.get("result") or ""))
                 if wait is not None:
-                    raise UsageLimitReached(f"{task.name}: usage limit reached ({str(reply.get('result'))[:120]}); "
-                                            f"see {log}", wait)
+                    raise _costed(UsageLimitReached(f"{task.name}: usage limit reached "
+                                                    f"({str(reply.get('result'))[:120]}); see {log}", wait), reply)
                 hint = str(reply.get("result") or "").strip().splitlines()
-                raise AgentError(f"{task.name}: agent failed ({reply.get('subtype')}"
-                                 f"{': ' + hint[-1][:200] if hint else ''}); see {log}")
+                raise _costed(AgentError(f"{task.name}: agent failed ({reply.get('subtype')}"
+                                         f"{': ' + hint[-1][:200] if hint else ''}); see {log}"), reply)
             errors = validate(output, task.schema)
             if errors:
                 record["schema_errors"] = errors
                 log = _write_log(log_dir, task, record)
-                raise AgentError(f"{task.name}: answer violates the schema ({len(errors)} errors); see {log}")
+                raise _costed(AgentError(f"{task.name}: answer violates the schema ({len(errors)} errors); "
+                                         f"see {log}"), reply)
             log = _write_log(log_dir, task, record)
             return AgentResult(output, self.name, log, reply.get("total_cost_usd"), record["usage"], denials)
         finally:
             if sandbox is not None and not self.keep_sandbox:
                 shutil.rmtree(sandbox, ignore_errors=True)
+
+
+def _costed(err: Exception, reply: dict) -> Exception:
+    """A failed call still costs what the model used: the cost cap of a run counts it (runtime.Budget)."""
+    err.cost_usd = reply.get("total_cost_usd")
+    return err
 
 
 class ManualBackend:

@@ -39,11 +39,12 @@ python -m nnc ui                           # dashboard: http://127.0.0.1:8765
 
 **EN:** A run again goes on from where the last one stopped (a gate, a failure), so the answers and approvals
 recorded in between are kept. Changed documents start again from `ingest`; a changed RTL from `sim`. The agents
-run through the Claude Code CLI and cost money (about 2 USD for a small block); `--backend replay` never calls a
-model. Results of a run that did not stop at the gates are marked UNREVIEWED: only a hardware designer can review
+run through the Claude Code CLI and cost money (2.4 to 29 USD per committed design so far: see the estimate with
+`--prepare-only` and set a cap with `--max-cost`); `--backend replay` never calls a model. Results of a run that did not stop at the gates are marked UNREVIEWED: only a hardware designer can review
 the gates and sign off (G4).
 
 **VI:** Chạy lại thì đi tiếp từ chỗ lần trước dừng (một gate, một lỗi), nên các câu trả lời và phê duyệt ghi ở
 giữa được giữ. Spec đổi thì chạy lại từ `ingest`; RTL đổi thì từ `sim`. Agent chạy qua Claude Code CLI và tốn tiền
-(khoảng 2 USD cho một khối nhỏ); `--backend replay` không bao giờ gọi model. Kết quả của lần chạy không dừng ở gate
+(2,4–29 USD mỗi thiết kế đã commit: xem ước tính bằng `--prepare-only`, đặt trần bằng `--max-cost`); `--backend
+replay` không bao giờ gọi model. Kết quả của lần chạy không dừng ở gate
 bị đánh dấu UNREVIEWED: chỉ người thiết kế phần cứng mới duyệt gate và ký G4 được.

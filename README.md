@@ -76,8 +76,9 @@ a form that uploads a specification (Markdown, Word, PDF, HTML, AsciiDoc), the s
 and a page per design with the run's steps and log while it goes on, the gates, and the reports rendered. `nnc run`
 does what the page's **Run** button does: the workspace `designs/<name>/`, the intake, the adaptation if needed,
 then every stage of the flow. Running it again goes on from where the last run stopped, so the answers and gate
-approvals recorded in between are kept. The agents cost money (Claude Code CLI); a run that did not stop at the
-gates is marked UNREVIEWED, and G4 stays for a hardware designer. Layout of the folder:
+approvals recorded in between are kept. The agents cost money (Claude Code CLI): 2.4 to 29 USD per committed
+design so far. The page shows an estimate before the run, and a cost cap (`--max-cost`) stops the run before it goes
+past it (EVALUATION §18). A run that did not stop at the gates is marked UNREVIEWED, and G4 stays for a hardware designer. Layout of the folder:
 [inbox/README.md](inbox/README.md).
 
 **VI:** `nnc ui` là trang theo dõi chạy trên máy. Trang chính có mọi thiết kế kèm số test, check, coverage, formal
@@ -85,7 +86,8 @@ và mutation, cùng một form để tải lên spec (Markdown, Word, PDF, HTML,
 RTL. Mỗi thiết kế có một trang riêng: các bước và log khi đang chạy, các gate, và các báo cáo hiển thị sẵn. `nnc run`
 làm đúng việc của nút **Run**: tạo workspace `designs/<tên>/`, chạy intake, adapt nếu cần, rồi mọi bước của flow.
 Chạy lại thì đi tiếp từ chỗ lần trước dừng, nên câu trả lời và phê duyệt gate ghi ở giữa được giữ. Agent tốn tiền
-(Claude Code CLI); lần chạy không dừng ở gate bị đánh dấu UNREVIEWED, và G4 vẫn chờ người thiết kế phần cứng. Cách
+(Claude Code CLI): 2,4–29 USD mỗi thiết kế đã commit. Trang hiện ước tính trước khi chạy, và trần chi phí
+(`--max-cost`) dừng lần chạy trước khi vượt trần (EVALUATION §18). Lần chạy không dừng ở gate bị đánh dấu UNREVIEWED, và G4 vẫn chờ người thiết kế phần cứng. Cách
 xếp thư mục: [inbox/README.md](inbox/README.md).
 
 ## Quick start | Bắt đầu nhanh

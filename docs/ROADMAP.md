@@ -256,8 +256,9 @@ và hiển thị kết quả.
 | 25.3 | `nnc ui`: trang web trên máy (127.0.0.1), bảng mọi thiết kế, form tải lên, trang từng thiết kế (các bước, log, gate, báo cáo), nút Run và Stop. | Unit test (trang, tải lên, chặn request từ nơi khác, chặn đường dẫn ra ngoài). |
 | 25.4 | README, GUIDE, `inbox/README.md`, CHANGELOG. Push lên `main`. | CI xanh. |
 
-**Trạng thái (2026-11-25).** 25.1–25.4 xong. Chạy với agent thật trên một thiết kế mới tốn tiền (khoảng 2 USD một
-khối nhỏ, theo 21.6), nên chưa chạy: người dùng tự bấm Run khi muốn.
+**Trạng thái (2026-11-25).** 25.1–25.4 xong. Chạy với agent thật trên một thiết kế mới tốn tiền nên chưa chạy:
+người dùng tự bấm Run khi muốn. (Sửa ngày 2026-11-26: trước đây ghi "khoảng 2 USD một khối nhỏ" là sai. Chi phí
+thật đã ghi: 2,4–2,8 USD cho hai module nhỏ nhất, 10–29 USD cho các thiết kế khác, xem EVALUATION §18.)
 
 ## Kế hoạch tiếp theo (từ 2026-11-25): giai đoạn 26–30
 
@@ -274,6 +275,15 @@ tiền agent. 30 tốn tiền, phải hỏi người dùng trước.
 | 26.2 | Trần chi phí: `nnc run --max-cost <USD>` (và ô nhập trên trang). Runtime của agent cộng dồn chi phí; trước mỗi lệnh gọi mới, nếu đã vượt trần thì dừng, ghi `stopped_budget` vào `work/run.json`. Lần chạy sau đi tiếp từ đó (cache giữ các câu trả lời đã trả tiền). | Unit test với backend giả có chi phí. |
 | 26.3 | Lịch sử chạy: giữ mọi lần chạy (`work/runs/<thời điểm>.json` và log), không ghi đè. Trang thiết kế có danh sách lần chạy, chi phí và thời gian từng lần. | Unit test. |
 | 26.4 | Hàng đợi: nhiều thiết kế bấm Run cùng lúc thì chạy lần lượt (hoặc tối đa N song song, theo số CPU), để máy không quá tải. | Unit test của hàng đợi. |
+
+**Trạng thái (2026-11-26).** 26.1–26.4 xong.
+- 26.1: công thức chi phí ≈ c·token^k khớp trên 13 thiết kế; ước tính chéo (bỏ từng thiết kế ra) nằm trong khoảng
+  0,5–2 lần cho 10/13 thiết kế. Ba thiết kế lệch: async_gray_fifo (thật 77 USD, ước 23 USD, sửa nhiều lần),
+  c_pcpi_div và ot_gpio (ước cao hơn thật). Xem EVALUATION §18.
+- 26.2: `--max-cost`; chạy thử với trần 0 USD trên bản sao sync_fifo: dừng ở extract, không gọi agent nào.
+- 26.3: lịch sử nằm ở `work/run_history/` (không phải `work/runs/` như kế hoạch, vì `work/runs/` đã dùng cho mô
+  phỏng).
+- 26.4: `nnc ui --parallel N`, mặc định 1.
 
 ### Giai đoạn 27: duyệt gate ngay trên trình duyệt
 
@@ -309,7 +319,7 @@ người thật, Claude không ký thay, G4 chỉ do người có chuyên môn k
 
 | Bước | Việc | Kiểm |
 |---|---|---|
-| 30.1 | Chọn 3–5 module trong corpus mà flow chưa chạy (có spec rõ, đủ nhỏ). Chạy qua inbox và dashboard, không sửa tay. Ghi mọi lần phải can thiệp. Ước tính 2–3 USD mỗi module, tổng khoảng 10–15 USD. | `work/blind_run.md` từng module, EVALUATION mục mới. |
+| 30.1 | Chọn 3–5 module trong corpus mà flow chưa chạy (có spec rõ, đủ nhỏ). Chạy qua inbox và dashboard, không sửa tay. Ghi mọi lần phải can thiệp. Ước tính theo 26.1: khoảng 3 USD cho module rất nhỏ, 10–30 USD cho module cỡ sync_fifo; tổng có thể 30–100 USD. Đặt trần `--max-cost` cho từng module. | `work/blind_run.md` từng module, EVALUATION mục mới. |
 | 30.2 | Với mỗi module, cài 3–5 lỗi (`nnc inject`) và đo flow bắt được bao nhiêu. | Bảng tỉ lệ bắt lỗi. |
 | 30.3 | Sửa các lỗi flow mà 30.1 và 30.2 tìm ra, rồi chạy lại bằng replay. | Unit test cho mỗi lỗi đã sửa. |
 

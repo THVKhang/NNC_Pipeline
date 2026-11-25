@@ -1301,3 +1301,44 @@ Limits:
   (the RACL policy arrays), or is in a clocked block that writes it with a blocking assignment.
 - A counterexample or a time limit leaves the point counted.
 - As before, PROVEN means dead in the RTL as delivered with the wrapper of the test bench, not dead by design.
+
+## 18. Agent cost: what a run costs, and the estimate before it (phase 26, 2026-11-26)
+
+The cost of every agent call is in `work/logs/agents/*.json` (`total_cost_usd`), failed calls and repairs included.
+Summed per stage, for the 13 committed designs with their own verification (designs derived from another one reuse
+its verification and are left out). Tokens are those of the design's rule documents (`nnc ingest` index).
+
+| Design | Doc tokens | Recorded USD | Estimate USD (left out of the fit) | In 0.5x–2x |
+|---|---:|---:|---:|:-:|
+| c_uart | 650 | 2.81 | 1.67 | yes |
+| c_pcpi_div | 2,599 | 2.41 | 6.24 | no |
+| uart_lite | 7,497 | 13.59 | 8.86 | yes |
+| axil_regfile | 9,857 | 9.74 | 10.95 | yes |
+| spi_master | 10,188 | 14.06 | 10.81 | yes |
+| axi2apb_bridge | 17,913 | 14.79 | 15.38 | yes |
+| ahb2axi_bridge | 24,559 | 22.30 | 18.08 | yes |
+| sync_fifo | 31,389 | 18.16 | 21.61 | yes |
+| apb_tlul_bridge | 32,320 | 20.37 | 21.74 | yes |
+| async_apb_bridge | 34,419 | 29.17 | 21.69 | yes |
+| async_gray_fifo | 47,706 | 77.06 | 22.83 | no |
+| ot_rv_timer | 49,827 | 16.77 | 30.23 | yes |
+| ot_gpio | 56,997 | 14.05 | 34.72 | no |
+
+Fit on all 13: cost ≈ 0.0523 · tokens^0.580 USD. Median share per stage: gen-tests 45 %, triage 21 %, contract 10 %,
+review 6 %, mutate 6 %, gen-sva 6 %, extract 4 %, gen-env 2 % (sim's own agent, A14, has a median of 0).
+
+What it shows:
+- The cost is mostly writing the tests (A7) and repairing them after the first simulation (A9). Reading the
+  specification (extract, review) is under a tenth.
+- The size of the documents explains the order of magnitude, not the details. The three misses are designs where
+  something else dominated: async_gray_fifo needed many repair rounds (triage 31.6 USD, gen-tests 30.3 USD);
+  ot_gpio has long documents (OpenTitan's register descriptions) but simple checks, so it cost less than its size
+  says (ot_rv_timer, from the same source, is near the low edge for the same reason); c_pcpi_div is a tiny
+  module whose fixed costs (contract, test environment) are not proportional to its size.
+- Earlier docs said "about 2 USD for a small block" (from the blind runs of §14). That was true only for the two
+  smallest modules; corrected in README, `inbox/README.md` and ROADMAP.
+- The estimate is a guide, not a promise. The cost cap (`--max-cost`) is what keeps a run within a budget: checked
+  before each uncached call, so the total passes the cap by at most the calls already running.
+
+Rebuild the model after new runs: `python -c "from pathlib import Path; from nnc import costmodel;
+costmodel.write(Path('designs'))"` (a unit test fails when the committed model is out of date).

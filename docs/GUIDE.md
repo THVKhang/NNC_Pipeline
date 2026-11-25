@@ -515,7 +515,9 @@ python -m nnc ui                                  # http://127.0.0.1:8765 (127.0
 python -m nnc run my_ip                           # inbox/my_ip -> designs/my_ip -> work/report.md
 python -m nnc run my_ip --gated                   # stop at the first gate that is not approved
 python -m nnc run my_ip --from sim                # choose the first stage
-python -m nnc run my_ip --prepare-only            # workspace and intake only, no agent
+python -m nnc run my_ip --prepare-only            # workspace and intake only, no agent; prints the cost estimate
+python -m nnc run my_ip --max-cost 15             # stop before the agent call that would go past 15 USD
+python -m nnc ui --parallel 2                     # at most 2 runs at a time, the others wait in a queue
 ```
 
 **EN:** `inbox/<name>/` holds `spec/` (one file, the IP specification), `standards/` (optional), `rtl/` and an
@@ -536,6 +538,16 @@ separate process (choose the Claude Code CLI or `replay`, and whether to stop at
 child processes. The server answers only requests addressed to 127.0.0.1 or localhost, and only forms of its own
 pages; it never runs a committed design again, it only shows it. `GET /api/designs` gives the same numbers as JSON.
 
+**Cost.** Before a run, `nnc run` and the design page give an estimate of the agent cost of the stages it will run,
+from the size of the documents (EVALUATION §18): a range from half to twice the middle value, which held for 10 of
+the 13 committed designs. A design that needs much repair costs more. `--max-cost` (the field next to **Run**,
+filled with the high end of the estimate) is a hard cap: before each agent call that the cache cannot answer, the
+runtime checks the cost spent so far, and stops the run (`stopped_budget`) when the cap is reached. Calls already
+started are finished, so the total can pass the cap by the cost of those calls. Run again with a higher cap: the answers
+already paid for come from the cache, and the run goes on from the stage that stopped. Every finished run is kept in
+`work/run_history/`, listed on the design page with its cost and time. With `nnc ui --parallel N`, at most N runs go
+at once; the others wait in a queue.
+
 **VI:** `inbox/<tên>/` gồm `spec/` (một file, spec của IP), `standards/` (tùy chọn), `rtl/` và `inbox.json` (tùy
 chọn: top, tag của luật, thư mục thư viện, macro, cấu hình workspace), xem [inbox/README.md](../inbox/README.md).
 `nnc run` chép file vào `designs/<tên>/`, đăng ký tài liệu, chạy `nnc intake` (và `nnc adapt` nếu kết quả là
@@ -553,6 +565,15 @@ gate và các báo cáo trong `work/` hiển thị từ Markdown. Form tải lê
 **Stop** dừng nó cùng các tiến trình con. Server chỉ trả lời request gửi tới 127.0.0.1 hoặc localhost, và chỉ nhận
 form từ chính trang của nó; nó không chạy lại thiết kế đã commit, chỉ hiển thị. `GET /api/designs` trả cùng các con
 số dưới dạng JSON.
+
+**Chi phí.** Trước khi chạy, `nnc run` và trang thiết kế cho một ước tính chi phí agent của các bước sẽ chạy, dựa
+trên độ dài tài liệu (EVALUATION §18): một khoảng từ nửa tới gấp đôi giá trị giữa, đúng cho 10/13 thiết kế đã
+commit. Thiết kế phải sửa nhiều sẽ tốn hơn. `--max-cost` (ô cạnh nút **Run**, điền sẵn mức cao của ước tính) là trần
+cứng: trước mỗi lần gọi agent mà cache không trả lời được, runtime xem đã tiêu bao nhiêu, và dừng lần chạy
+(`stopped_budget`) khi chạm trần. Các lần gọi đang chạy vẫn chạy xong, nên tổng có thể vượt trần bằng chi phí của chúng. Chạy lại với
+trần cao hơn: câu trả lời đã trả tiền lấy từ cache, và lần chạy đi tiếp từ bước bị dừng. Mọi lần chạy xong được giữ ở
+`work/run_history/`, liệt kê trên trang thiết kế kèm chi phí và thời gian. Với `nnc ui --parallel N`, chỉ N lần chạy
+cùng lúc; các lần khác chờ trong hàng đợi.
 
 ## Exploratory run | Chạy thăm dò
 

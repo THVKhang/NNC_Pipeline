@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import threading
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -12,19 +13,64 @@ from nnc.tools import find_claude
 USAGE_KEYS = ("input_tokens", "output_tokens", "cache_creation_input_tokens", "cache_read_input_tokens")
 
 
+class BudgetExceeded(RuntimeError):
+    """The cost cap of a run (`nnc run --max-cost`) is reached: no new model call starts."""
+
+
+class Budget:
+    """What the model calls of one run cost, and an optional cap (ROADMAP 26.2). Checked before each call that
+    is not answered from the cache: once the spending reaches the cap, no new call starts. Calls already
+    running finish (with --workers 4, up to four), so a run can end a little above the cap."""
+
+    def __init__(self, limit_usd: float | None = None):
+        if limit_usd is not None and limit_usd < 0:
+            raise ValueError("the cost cap must be 0 or more")
+        self.limit = limit_usd
+        self.spent = 0.0
+        self.calls = 0
+        self.refused = 0
+        self._lock = threading.Lock()
+
+    @property
+    def exceeded(self) -> bool:
+        return self.refused > 0
+
+    def before_call(self, name: str) -> None:
+        with self._lock:
+            if self.limit is not None and self.spent >= self.limit:
+                self.refused += 1
+                raise BudgetExceeded(f"{name}: the cost cap of {self.limit:.2f} USD is reached "
+                                     f"({self.spent:.2f} USD spent); no new agent call")
+
+    def add(self, cost_usd: float | None) -> None:
+        with self._lock:
+            self.spent += cost_usd or 0.0
+            self.calls += 1
+
+
 class CachedBackend:
     """Reuse an earlier answer to the identical task (same content, prompt, schema and model)."""
 
-    def __init__(self, backend, cache_dir: Path):
+    def __init__(self, backend, cache_dir: Path, budget: Budget | None = None):
         self.backend = backend
         self.cache_dir = Path(cache_dir)
         self.name = f"cached-{backend.name}"
+        self.budget = budget
 
     def run(self, task: AgentTask, log_dir: Path) -> AgentResult:
         path = self.cache_dir / f"{task.fingerprint()}.json"
         if path.is_file():
             return AgentResult(json.loads(path.read_text(encoding="utf-8")), "cache", None, 0.0, {})
-        res = self.backend.run(task, log_dir)
+        if self.budget is not None:
+            self.budget.before_call(task.name)
+        try:
+            res = self.backend.run(task, log_dir)
+        except Exception as e:  # a failed call may still have cost (usage limit mid-answer, invalid answer)
+            if self.budget is not None:
+                self.budget.add(getattr(e, "cost_usd", None))
+            raise
+        if self.budget is not None:
+            self.budget.add(res.cost_usd)
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(res.output, ensure_ascii=False) + "\n", encoding="utf-8")
         return res
@@ -45,9 +91,9 @@ class ReplayBackend:
                          "a replay never calls a model. Its inputs or prompt differ from the recorded run.")
 
 
-def make_backend(work: Path, kind: str = "claude", timeout_s: int = 900):
+def make_backend(work: Path, kind: str = "claude", timeout_s: int = 900, budget: Budget | None = None):
     """The backend of a design: Claude Code CLI, manual, or replay (cache only), always behind the answer
-    cache."""
+    cache; `budget` counts (and may cap) what the calls cost."""
     if kind == "manual":
         inner = ManualBackend(work / "manual")
     elif kind == "replay":
@@ -57,7 +103,7 @@ def make_backend(work: Path, kind: str = "claude", timeout_s: int = 900):
         if not claude:
             raise RuntimeError("Claude Code CLI not found; use --backend manual or set NNC_CLAUDE_BIN")
         inner = ClaudeCliBackend([claude], timeout_s=timeout_s)
-    return CachedBackend(inner, work / "cache" / "agents")
+    return CachedBackend(inner, work / "cache" / "agents", budget)
 
 
 @dataclass
