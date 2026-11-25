@@ -244,6 +244,21 @@ code lạ trong sandbox, và người dùng thật của công cụ quen dòng l
 - Mọi thiết kế: `expressions_executed` = `branches_executed` = 0, test và assertion không đổi.
 - Còn chưa thử: term gọi hàm (`mubi4_*`), đọc biến vòng lặp hoặc hằng cục bộ của generate, chọn bit của mảng không phải `[H:0]` (RACL).
 
+## Giai đoạn 25: bỏ file vào, chạy một lệnh, xem kết quả trên trình duyệt
+
+Mục tiêu: người dùng không cần biết các lệnh của từng bước. Họ đưa spec và RTL vào, hệ thống tự chạy tới báo cáo
+và hiển thị kết quả.
+
+| Bước | Việc | Kiểm |
+|---|---|---|
+| 25.1 | Thư mục `inbox/<tên>/` (`spec/` một file, `standards/`, `rtl/`, `inbox.json` tùy chọn). Lệnh `nnc run <tên>`: tạo workspace, đăng ký tài liệu, intake, adapt nếu cần, rồi từng bước của flow. Ghi `work/run.json`. | Unit test. |
+| 25.2 | Chạy tiếp từ chỗ dừng: gate đang chờ, bước lỗi; tài liệu đổi thì từ `ingest`, RTL đổi thì muộn nhất từ `sim`. Giữ câu trả lời và phê duyệt làm giữa hai lần chạy. | Unit test. Chạy thật (replay, không tốn tiền) trên bản sao spec và RTL của sync_fifo: lần 2 đi tiếp từ `contract`. |
+| 25.3 | `nnc ui`: trang web trên máy (127.0.0.1), bảng mọi thiết kế, form tải lên, trang từng thiết kế (các bước, log, gate, báo cáo), nút Run và Stop. | Unit test (trang, tải lên, chặn request từ nơi khác, chặn đường dẫn ra ngoài). |
+| 25.4 | README, GUIDE, `inbox/README.md`, CHANGELOG. Push lên `main`. | CI xanh. |
+
+**Trạng thái (2026-11-25).** 25.1–25.4 xong. Chạy với agent thật trên một thiết kế mới tốn tiền (khoảng 2 USD một
+khối nhỏ, theo 21.6), nên chưa chạy: người dùng tự bấm Run khi muốn.
+
 ## Việc còn mở, chờ người có chuyên môn (G4)
 
 Xem [G4_REVIEW_REQUEST.md](G4_REVIEW_REQUEST.md). Riêng ot_rv_timer còn hai việc:

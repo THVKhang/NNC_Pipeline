@@ -8,6 +8,27 @@ approval is recorded as delegated. See [docs/G4_REVIEW_REQUEST.md](docs/G4_REVIE
 
 ## Unreleased
 
+### Phase 25: drop-in runs and a local dashboard
+- `nnc run <name>`: from `inbox/<name>/` (`spec/` with one specification, `standards/`, `rtl/`, optional
+  `inbox.json`) to `work/report.md` in one command: the workspace, the documents, the intake, the adaptation when
+  the intake asks for it, then each stage of the flow. Without `--gated` the gates are bypassed as with
+  `nnc flow --unreviewed`; with it the run stops at the first gate to review. `--prepare-only` checks the inputs
+  with no agent. The steps are recorded in `work/run.json`.
+- A run goes on from where the last one stopped (the gate it waited for, a failed or interrupted stage), from
+  `ingest` when a document changed and from `sim` at the latest when the RTL changed, so answers to open
+  questions, check selections and approvals made between runs are kept. Found while testing: starting each run from
+  `ingest` rewrote `rules.json` and dropped the designer's answers.
+- `nnc ui`: a local dashboard (standard library only, 127.0.0.1): every design with its numbers, an upload form,
+  a page per design with the run's steps and log while it runs, the gates and the reports rendered from Markdown, and
+  Run / Stop buttons for the inbox folders. It refuses requests addressed by another host name and forms of other
+  sites, and serves only text files inside a workspace.
+- Checked without agent cost (`--backend replay`) on a copy of sync_fifo's specification and RTL in a scratch
+  inbox: the first run found the top, ran the intake and the specification stages from the answer cache and stopped
+  where the cache ended (the contract of the committed design was made after the designer's answers); with those
+  answers in `rules.json` the next run went on from `contract`. With the committed verification sources, `--from
+  sim` and `--from formal` ran simulation (25/25 tests), formal, CDC and the report, stamped UNREVIEWED. Through the
+  dashboard: upload, Run, the page following the steps, Stop (the process tree ends, the run shows interrupted).
+
 ### Waveforms are no longer committed
 - The 50 `.vcd` traces (formal counterexamples, non-equivalent mutants) left git: 1.34 million of the repository's
   lines, 16 of them gpio mutant traces of about 150 000 lines each. Other hardware projects (OpenTitan, cocotb, CVA6,

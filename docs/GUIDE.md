@@ -508,6 +508,52 @@ python -m nnc export my_ip --what spec,rules,contract,rtl,report,packet --format
 
 Pandoc (`pip install -e .[docs]`, or `pandoc` on PATH) writes DOCX and HTML; a headless Edge/Chrome/Chromium prints the PDF (`NNC_BROWSER` to choose). Standards are never exported. — **VI:** xuất spec và các báo cáo ra DOCX/HTML/PDF. Tài liệu chuẩn có bản quyền không bao giờ được xuất.
 
+## Drop-in run and dashboard | Chạy từ thư mục inbox và xem trên trình duyệt
+
+```bash
+python -m nnc ui                                  # http://127.0.0.1:8765 (127.0.0.1 only), opens the browser
+python -m nnc run my_ip                           # inbox/my_ip -> designs/my_ip -> work/report.md
+python -m nnc run my_ip --gated                   # stop at the first gate that is not approved
+python -m nnc run my_ip --from sim                # choose the first stage
+python -m nnc run my_ip --prepare-only            # workspace and intake only, no agent
+```
+
+**EN:** `inbox/<name>/` holds `spec/` (one file, the IP specification), `standards/` (optional), `rtl/` and an
+optional `inbox.json` (top, rule tag, library folders, macros, workspace settings): see
+[inbox/README.md](../inbox/README.md). `nnc run` copies the files into `designs/<name>/`, registers the documents,
+runs `nnc intake` (and `nnc adapt` when the verdict is *adapt*; it stops on *needs_input* or *unsupported* with the
+reasons), then the stages of `nnc flow` one by one. The steps, their times and the outcome are written to
+`work/run.json` while it runs. A new run starts where the last one stopped: at the gate it waited for, the stage that
+failed or was interrupted; from `ingest` when a document changed; from `sim` at the latest when the RTL changed
+(nothing on the specification side reads the RTL); nothing when nothing changed. So an answer to an open question
+(`nnc answer`), a selection of checks (`nnc plan`) or a gate approval made between two runs is kept, not overwritten
+by a new review. Without `--gated` the gates are bypassed as with `nnc flow --unreviewed`.
+
+`nnc ui` shows the designs of `designs/` and the folders of `inbox/`. A design page has the run (steps, state,
+the end of `inbox/<name>/run.log`, refreshed every 4 seconds while it runs), the numbers, the gates and the reports
+of `work/` rendered from Markdown. The upload form writes into `inbox/<name>/`; **Run** starts `nnc run <name>` as a
+separate process (choose the Claude Code CLI or `replay`, and whether to stop at gates); **Stop** ends it with its
+child processes. The server answers only requests addressed to 127.0.0.1 or localhost, and only forms of its own
+pages; it never runs a committed design again, it only shows it. `GET /api/designs` gives the same numbers as JSON.
+
+**VI:** `inbox/<tên>/` gồm `spec/` (một file, spec của IP), `standards/` (tùy chọn), `rtl/` và `inbox.json` (tùy
+chọn: top, tag của luật, thư mục thư viện, macro, cấu hình workspace), xem [inbox/README.md](../inbox/README.md).
+`nnc run` chép file vào `designs/<tên>/`, đăng ký tài liệu, chạy `nnc intake` (và `nnc adapt` nếu kết quả là
+*adapt*; dừng kèm lý do nếu là *needs_input* hoặc *unsupported*), rồi chạy từng bước của `nnc flow`. Các bước, thời
+gian và kết quả được ghi vào `work/run.json` trong lúc chạy. Lần chạy mới bắt đầu ở chỗ lần trước dừng: gate đang chờ,
+bước bị lỗi hoặc bị ngắt; từ `ingest` nếu một tài liệu đổi; muộn nhất từ `sim` nếu RTL đổi (phía spec không đọc RTL);
+không chạy gì nếu không có gì đổi. Vì vậy câu trả lời cho câu hỏi mở (`nnc answer`), lựa chọn check (`nnc plan`)
+hay phê duyệt gate làm giữa hai lần chạy được giữ, không bị một lần review mới ghi đè. Không có `--gated` thì bỏ qua
+gate giống `nnc flow --unreviewed`.
+
+`nnc ui` hiển thị các thiết kế trong `designs/` và các thư mục trong `inbox/`. Trang của một thiết kế có lần chạy
+(các bước, trạng thái, phần cuối của `inbox/<tên>/run.log`, tự làm mới mỗi 4 giây khi đang chạy), các con số, các
+gate và các báo cáo trong `work/` hiển thị từ Markdown. Form tải lên ghi vào `inbox/<tên>/`; **Run** chạy
+`nnc run <tên>` thành một tiến trình riêng (chọn Claude Code CLI hoặc `replay`, và có dừng ở gate hay không);
+**Stop** dừng nó cùng các tiến trình con. Server chỉ trả lời request gửi tới 127.0.0.1 hoặc localhost, và chỉ nhận
+form từ chính trang của nó; nó không chạy lại thiết kế đã commit, chỉ hiển thị. `GET /api/designs` trả cùng các con
+số dưới dạng JSON.
+
 ## Exploratory run | Chạy thăm dò
 
 ```bash

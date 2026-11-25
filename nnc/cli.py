@@ -533,6 +533,30 @@ def cmd_stability(args) -> int:
     return 0
 
 
+def cmd_run(args) -> int:
+    from nnc import autorun
+    autorun.check_name(args.name)
+    folder = Path(args.inbox) / args.name
+    if not folder.is_dir():
+        raise ProjectError(f"no folder {folder}: put the specification in {folder}/spec/ and the RTL in "
+                           f"{folder}/rtl/ (see inbox/README.md)")
+    o = _options(args)
+    rec = autorun.run(folder, Path(args.root) / args.name, o, gated=args.gated, prepare_only=args.prepare_only,
+                      start=args.from_stage)
+    if rec.get("start"):
+        print(f"[run] started from '{rec['start']}': {rec.get('start_reason')}")
+    print(f"[run] {args.name}: {rec['state']}" + (f" - {rec['message']}" if rec.get("message") else ""))
+    for s in rec["steps"]:
+        print(f"  {s['name']:<10} {s['state']:<8} {s.get('seconds', ''):>7}  {s.get('note', '')}"[:220])
+    return {"done": 0, "stopped_at_gate": 0, "needs_input": 1}.get(rec["state"], 2)
+
+
+def cmd_ui(args) -> int:
+    from nnc import ui
+    ui.serve(Path(args.root), Path(args.inbox), port=args.port, open_browser=not args.no_browser)
+    return 0
+
+
 def cmd_site(args) -> int:
     from nnc import site
     page = site.write(Path(args.root).resolve().parent, Path(args.out))
@@ -1007,6 +1031,30 @@ def build_parser() -> argparse.ArgumentParser:
                                        "committed results; --readme rewrites the table block in README.md")
     s.add_argument("--readme", help="README.md to update in place (between the nnc-summary markers)")
     s.set_defaults(func=cmd_summary)
+
+    s = sub.add_parser("run", help="one command from an inbox folder (inbox/<name>/spec, rtl) to the report: "
+                                   "workspace, intake, adaptation, every stage of the flow (nnc/autorun.py)")
+    s.add_argument("name", help="the folder inbox/<name>; the workspace is designs/<name>")
+    s.add_argument("--inbox", default="inbox", help="folder that holds the inbox folders (default inbox/)")
+    s.add_argument("--gated", action="store_true",
+                   help="stop before the first gate that is not approved (default: run on, results UNREVIEWED)")
+    s.add_argument("--prepare-only", action="store_true",
+                   help="workspace, intake and adaptation only: checks the inputs, calls no agent")
+    s.add_argument("--from", dest="from_stage", choices=flow.STAGES,
+                   help="first stage (default: where the last run stopped; 'ingest' when the documents changed, "
+                        "'sim' at the latest when the RTL changed)")
+    s.add_argument("--seed", type=int, default=1)
+    s.add_argument("--mutants", type=int, default=12)
+    s.add_argument("--jobs", type=int, default=None, help="parallel tool jobs (default: NNC_JOBS, else the CPU count)")
+    _agent_args(s)
+    s.set_defaults(func=cmd_run)
+
+    s = sub.add_parser("ui", help="local dashboard: upload a specification and an RTL, run, read the results "
+                                  "(http://127.0.0.1:8765)")
+    s.add_argument("--inbox", default="inbox", help="folder of the inbox folders (default inbox/)")
+    s.add_argument("--port", type=int, default=8765)
+    s.add_argument("--no-browser", action="store_true", help="do not open the browser")
+    s.set_defaults(func=cmd_ui)
 
     s = sub.add_parser("site", help="the project page (GitHub Pages) from the committed results: one HTML file")
     s.add_argument("--out", default="site", help="output folder (default site/)")

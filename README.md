@@ -58,6 +58,36 @@ tái lập (25 test cocotb và 11 assertion SystemVerilog trên Verilator) và k
 đã ghi. `nnc demo ot_gpio --replay` còn phát lại các bước đọc spec từ cache đã commit, không gọi model. Hoặc mở
 repo trong GitHub Codespaces: `.devcontainer/` có sẵn cùng bộ công cụ.
 
+## Your own design: drop it in, read the results | Thiết kế của bạn: bỏ file vào, xem kết quả
+
+```bash
+python -m nnc ui          # http://127.0.0.1:8765: upload the specification and the RTL, press Run
+```
+
+```bash
+# or without the browser: inbox/my_ip/spec/<one spec file>, inbox/my_ip/rtl/*.sv, then
+python -m nnc run my_ip --prepare-only    # checks the inputs (intake), no agent, no cost
+python -m nnc run my_ip                   # every stage to work/report.md, results marked UNREVIEWED
+python -m nnc run my_ip --gated           # stops at each gate for a person to review
+```
+
+**EN:** `nnc ui` is a local dashboard: every design with its tests, checks, coverage, formal and mutation numbers,
+a form that uploads a specification (Markdown, Word, PDF, HTML, AsciiDoc), the standards it refers to and the RTL,
+and a page per design with the run's steps and log while it goes on, the gates, and the reports rendered. `nnc run`
+does what the page's **Run** button does: the workspace `designs/<name>/`, the intake, the adaptation if needed,
+then every stage of the flow. Running it again goes on from where the last run stopped, so the answers and gate
+approvals recorded in between are kept. The agents cost money (Claude Code CLI); a run that did not stop at the
+gates is marked UNREVIEWED, and G4 stays for a hardware designer. Layout of the folder:
+[inbox/README.md](inbox/README.md).
+
+**VI:** `nnc ui` là trang theo dõi chạy trên máy. Trang chính có mọi thiết kế kèm số test, check, coverage, formal
+và mutation, cùng một form để tải lên spec (Markdown, Word, PDF, HTML, AsciiDoc), các chuẩn mà spec nhắc tới, và
+RTL. Mỗi thiết kế có một trang riêng: các bước và log khi đang chạy, các gate, và các báo cáo hiển thị sẵn. `nnc run`
+làm đúng việc của nút **Run**: tạo workspace `designs/<tên>/`, chạy intake, adapt nếu cần, rồi mọi bước của flow.
+Chạy lại thì đi tiếp từ chỗ lần trước dừng, nên câu trả lời và phê duyệt gate ghi ở giữa được giữ. Agent tốn tiền
+(Claude Code CLI); lần chạy không dừng ở gate bị đánh dấu UNREVIEWED, và G4 vẫn chờ người thiết kế phần cứng. Cách
+xếp thư mục: [inbox/README.md](inbox/README.md).
+
 ## Quick start | Bắt đầu nhanh
 
 Install (Python 3.11+; Verilator, Yosys and SymbiYosys from the OSS CAD Suite; `nnc doctor` lists what is missing):
