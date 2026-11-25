@@ -259,6 +259,65 @@ và hiển thị kết quả.
 **Trạng thái (2026-11-25).** 25.1–25.4 xong. Chạy với agent thật trên một thiết kế mới tốn tiền (khoảng 2 USD một
 khối nhỏ, theo 21.6), nên chưa chạy: người dùng tự bấm Run khi muốn.
 
+## Kế hoạch tiếp theo (từ 2026-11-25): giai đoạn 26–30
+
+Sau giai đoạn 25, người dùng đã bỏ spec và RTL vào rồi bấm Run được. Các giai đoạn sau làm cho việc đó an toàn hơn
+(không tốn tiền ngoài ý muốn), làm được trọn trên trình duyệt (kể cả duyệt gate), dễ đọc kết quả hơn, chạy được ở
+máy khác, và cuối cùng đo bằng thiết kế mới với agent thật. Thứ tự đề xuất: 26 → 27 → 28 → 29 → 30. 26–29 không tốn
+tiền agent. 30 tốn tiền, phải hỏi người dùng trước.
+
+### Giai đoạn 26: bấm Run mà không sợ tốn tiền ngoài ý muốn
+
+| Bước | Việc | Kiểm |
+|---|---|---|
+| 26.1 | Ước tính chi phí trước khi chạy, không gọi agent: số batch và token của extract (đã có `extract --dry-run`), cộng ước tính các bước sau theo số luật, lấy hệ số từ chi phí thật đã ghi của 13 thiết kế (`work/*.json`, mục usage). In ra ở `nnc run --prepare-only` và hiện trên trang trước nút Run. | Unit test. Trên các thiết kế đã chạy, ước tính nằm trong khoảng 0,5–2 lần chi phí thật đã ghi. |
+| 26.2 | Trần chi phí: `nnc run --max-cost <USD>` (và ô nhập trên trang). Runtime của agent cộng dồn chi phí; trước mỗi lệnh gọi mới, nếu đã vượt trần thì dừng, ghi `stopped_budget` vào `work/run.json`. Lần chạy sau đi tiếp từ đó (cache giữ các câu trả lời đã trả tiền). | Unit test với backend giả có chi phí. |
+| 26.3 | Lịch sử chạy: giữ mọi lần chạy (`work/runs/<thời điểm>.json` và log), không ghi đè. Trang thiết kế có danh sách lần chạy, chi phí và thời gian từng lần. | Unit test. |
+| 26.4 | Hàng đợi: nhiều thiết kế bấm Run cùng lúc thì chạy lần lượt (hoặc tối đa N song song, theo số CPU), để máy không quá tải. | Unit test của hàng đợi. |
+
+### Giai đoạn 27: duyệt gate ngay trên trình duyệt
+
+Hiện duyệt gate phải gõ lệnh. Mục tiêu: người duyệt làm hết trên trang, mà vẫn giữ quy tắc: phê duyệt luôn ghi tên
+người thật, Claude không ký thay, G4 chỉ do người có chuyên môn ký.
+
+| Bước | Việc | Kiểm |
+|---|---|---|
+| 27.1 | G1: trang luật có danh sách câu hỏi mở, mỗi câu một ô trả lời (như `nnc answer`). | Unit test: câu trả lời ghi vào `rules.json` giống hệt lệnh. |
+| 27.2 | G2: trang contract có ô chọn và bỏ check kèm lý do (như `nnc plan --select/--exclude`). | Unit test như trên. |
+| 27.3 | Nút Approve cho G1–G3: bắt buộc nhập tên và ghi chú; hiện các file đã đổi nếu gate STALE. Nút G4 chỉ hiện khi đủ điều kiện sign-off, có cảnh báo rằng đây là chữ ký của người có chuyên môn. Ghi rõ trên trang: phê duyệt qua web được ghi là của người nhập tên. | Unit test: gate APPROVED với đúng tên và ghi chú; không có tên thì từ chối. |
+| 27.4 | Sau khi duyệt, bấm "Run tiếp" là chạy tiếp từ gate đó (đã có ở 25.2). | Chạy thử bằng replay trên bản sao sync_fifo, đi hết G1 → G3 trên trang. |
+
+### Giai đoạn 28: kết quả dễ hiểu cho người không chuyên vi mạch
+
+| Bước | Việc | Kiểm |
+|---|---|---|
+| 28.1 | Kiểm spec trước khi chạy (không agent): kết quả `nnc spec-check` hiện ngay sau khi tải lên (thiếu bảng port, thiếu mục, tên port không khớp RTL). | Unit test. |
+| 28.2 | Trang lỗi: mỗi test hoặc check FAIL một dòng, kèm loại lỗi của triage (lỗi RTL / lỗi testbench / spec mơ hồ), luật bị vi phạm và câu spec gốc. | Unit test trên ahb2axi_bridge (20 lỗi đã biết). |
+| 28.3 | Trang coverage: danh sách dòng và nhánh chưa chạy, mở được đoạn RTL quanh nó; đánh dấu điểm đã chứng minh không tới được (UNR). | Unit test. |
+| 28.4 | Tóm tắt bằng lời cho mỗi thiết kế, sinh bằng code từ các con số (không agent): "25/25 test qua, 6 tính chất được chứng minh, còn 1 hết giờ...", tiếng Anh và tiếng Việt. | Unit test: câu khớp số trong `report.json`. |
+| 28.5 | Xem dạng sóng của phản ví dụ formal (VCD) ngay trên trang, vẽ bằng SVG, không cần cài GTKWave. | Unit test với một VCD nhỏ. |
+
+### Giai đoạn 29: chạy ở máy khác
+
+| Bước | Việc | Kiểm |
+|---|---|---|
+| 29.1 | Docker: `docker run -p 8765:8765 <image> nnc ui` mở được dashboard từ máy chủ. Cần tùy chọn `--host` và một mã truy cập (token in ra khi khởi động) khi không nghe ở 127.0.0.1. | Unit test: không có token thì 403. Job CI `docker` mở trang chính. |
+| 29.2 | Codespaces: `.devcontainer` tự chuyển tiếp cổng 8765. | Kiểm trên CI bằng `devcontainers/ci`. |
+| 29.3 | Đẩy image mới lên GHCR. Đây là việc công khai ra ngoài, nên **hỏi người dùng trước**. | `docker pull` rồi mở dashboard trên một máy khác. |
+
+### Giai đoạn 30: đo bằng thiết kế mới, agent thật (tốn tiền, hỏi trước)
+
+| Bước | Việc | Kiểm |
+|---|---|---|
+| 30.1 | Chọn 3–5 module trong corpus mà flow chưa chạy (có spec rõ, đủ nhỏ). Chạy qua inbox và dashboard, không sửa tay. Ghi mọi lần phải can thiệp. Ước tính 2–3 USD mỗi module, tổng khoảng 10–15 USD. | `work/blind_run.md` từng module, EVALUATION mục mới. |
+| 30.2 | Với mỗi module, cài 3–5 lỗi (`nnc inject`) và đo flow bắt được bao nhiêu. | Bảng tỉ lệ bắt lỗi. |
+| 30.3 | Sửa các lỗi flow mà 30.1 và 30.2 tìm ra, rồi chạy lại bằng replay. | Unit test cho mỗi lỗi đã sửa. |
+
+### Việc nhỏ, làm khi rảnh (không tốn tiền)
+
+- Coverage expression còn lại (sau 24.6): term gọi hàm (`mubi4_*`), biến vòng lặp, mảng RACL.
+- rv_timer CHK-011 (formal hết giờ): thử tăng thời gian hoặc chia nhỏ tính chất.
+
 ## Việc còn mở, chờ người có chuyên môn (G4)
 
 Xem [G4_REVIEW_REQUEST.md](G4_REVIEW_REQUEST.md). Riêng ot_rv_timer còn hai việc:
