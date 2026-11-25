@@ -1,6 +1,6 @@
 # Verification report — async_gray_fifo
 
-Generated 2026-11-24T21:07:32+00:00 by NNC Pipeline.
+Generated 2026-11-25T09:42:11+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -12,8 +12,8 @@ Generated 2026-11-24T21:07:32+00:00 by NNC Pipeline.
 | Run set | 15 runs in 11 configurations (base, model_off, syn, cell1, cell3, cell4, macro, small, wr_slow, rd_slow, xrand); primary base.s1 |
 | Integration | OK |
 | Code coverage (RTL), line | 99.8 % (2632/2637 lines); 20 points left out (package code the design does not contain), all points 99.1 % (2632/2657) |
-| Code coverage (RTL), block | 97.8 % (858/877 statement blocks and branch arms); 20 points left out (package code the design does not contain; 20 of them proven never reached after reset by formal, work/unr.md), all points 95.7 % (858/897) |
-| Code coverage (RTL), expression | 98.0 % (980/1000 condition terms) |
+| Code coverage (RTL), block | 97.9 % (858/876 statement blocks and branch arms); 21 points left out (package code the design does not contain; 21 of them proven never reached after reset by formal, work/unr.md), all points 95.7 % (858/897) |
+| Code coverage (RTL), expression | 98.1 % (980/999 condition terms); 1 points left out (package code the design does not contain; 1 of them proven never reached after reset by formal, work/unr.md), all points 98.0 % (980/1000) |
 | Code coverage (RTL), toggle | 99.9 % (15804/15814 bit toggles 0->1 and 1->0); 70 points left out (proven constant after reset by formal, work/unr.md), all points 99.5 % (15804/15884) |
 | Code coverage (RTL), functional | 100.0 % (40/40 cover points of the specification) |
 | Mutation score | 100.0 % (12 killed / 0 survived / 0 not compiled) |

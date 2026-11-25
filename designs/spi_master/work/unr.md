@@ -42,7 +42,7 @@ Parameters {"PARA_SPI_CLK_DIV": "1"}; macros none; clocks one global clock; 0 Sy
 
 # Branches never executed after the first reset (nnc/unrbranch.py)
 
-Each IF branch or case item below had no hit. A marker in an instrumented copy of the RTL (a flop that toggles when the branch runs, or in a combinational block a signal set to 1 there) was checked the same way; a copy is used only when Verilator shows every marker as the first statement of its branch. A branch PROVEN in every configuration leaves the block coverage with the lines that no other point covers. Key: instance, file, line, column, kind.
+Each IF branch or case item below had no hit. A marker in an instrumented copy of the RTL (a flop that toggles when the branch runs, or in a combinational block a signal set to 1 there) was checked the same way; a copy is used only when Verilator shows every marker as the first statement of its branch. Each configuration is given the branches that none of its own runs executed. A branch PROVEN in a configuration leaves that configuration's record of the block coverage, with the lines that no other point of it covers. Key: instance, file, line, column, kind.
 
 ## Configuration base (`6a3c69e19c842448`)
 
@@ -76,22 +76,25 @@ PROVEN never executed after the first reset:
 
 ## Configuration min (`d7317bb2ec6f997a`)
 
-2 SymbiYosys task(s); control `r_div_cnt[0]`, `r_sclk[0]`, `r_edge_cnt[0]`, `r_tx_shift[7]` (one must change).
+3 SymbiYosys task(s); control `r_div_cnt[0]`, `r_sclk[0]`, `r_edge_cnt[0]`, `r_tx_shift[7]` (one must change).
 
 | Result | Branches |
 |---|---|
-| PROVEN never executed | 2 |
+| PROVEN never executed | 5 |
 | counterexample | 0 |
 | no result (time limit) | 0 |
 
 PROVEN never executed after the first reset:
 
 - `m_spi_master.sv:167` case (column 7) in `top`
+- `m_spi_master.sv:202` if (column 20) in `top`
+- `m_spi_master.sv:210` else (column 12) in `top`
+- `m_spi_master.sv:253` else (column 12) in `top`
 - `m_spi_master.sv:262` case (column 9) in `top`
 
 # Expression points never hit after the first reset (nnc/unrexpr.py)
 
-Each term combination below had no hit. A marker declared at module level in an instrumented copy of the RTL (a wire that is 1 exactly when the combination holds) was checked the same way: PROVEN means the combination never holds after the first reset, so the point can never be hit. A combination is tried only when its terms read module-level signals with the same meaning as at the expression. A point PROVEN in every configuration leaves the expression coverage. Key: instance, file, line, column, combination.
+Each term combination below had no hit. A marker declared at module level in an instrumented copy of the RTL (a wire that is 1 exactly when the combination holds) was checked the same way: PROVEN means the combination never holds after the first reset, so the point can never be hit. A combination is tried only when its terms read module-level signals with the same meaning as at the expression. Each configuration is given the points that none of its own runs hit. A point PROVEN in a configuration leaves that configuration's record of the expression coverage. Key: instance, file, line, column, combination.
 
 ## Configuration base (`6a3c69e19c842448`)
 
@@ -115,11 +118,17 @@ Each term combination below had no hit. A marker declared at module level in an 
 
 ## Configuration min (`d7317bb2ec6f997a`)
 
-0 SymbiYosys task(s).
+1 SymbiYosys task(s); control `r_div_cnt[0]`, `r_sclk[0]`, `r_edge_cnt[0]`, `r_tx_shift[7]` (one must change).
 
 | Result | Points |
 |---|---|
-| PROVEN never hit | 0 |
+| PROVEN never hit | 3 |
 | counterexample | 0 |
 | no result (time limit) | 0 |
+
+PROVEN never hit after the first reset:
+
+- `m_spi_master.sv:117` `(div_tick==0) => 0` (column 49) in `top`
+- `m_spi_master.sv:162` `(div_tick==0) => 0` (column 38) in `top`
+- `m_spi_master.sv:202` `(div_tick==0) => 1` (column 24) in `top`
 

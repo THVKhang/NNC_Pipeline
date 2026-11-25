@@ -666,8 +666,10 @@ def to_markdown(name: str, rec: dict, keys: list[str] | None = None) -> str:
               "Each IF branch or case item below had no hit. A marker in an instrumented copy of the RTL (a flop "
               "that toggles when the branch runs, or in a combinational block a signal set to 1 there) was "
               "checked the same way; a copy is used only when Verilator shows every marker as the first "
-              "statement of its branch. A branch PROVEN in every configuration leaves the block coverage with "
-              "the lines that no other point covers. Key: instance, file, line, column, kind.", ""]
+              "statement of its branch. Each configuration is given the branches that none of its own runs "
+              "executed. A branch PROVEN in a configuration leaves that configuration's record of the block "
+              "coverage, with the lines that no other point of it covers. Key: instance, file, line, column, "
+              "kind.", ""]
         for key, conf in sorted(branches.items()):
             L += [f"## Configuration {conf.get('name', key)} (`{key}`)", "",
                   f"{conf.get('tasks') or 0} SymbiYosys task(s)"
@@ -694,7 +696,8 @@ def to_markdown(name: str, rec: dict, keys: list[str] | None = None) -> str:
               "of the RTL (a wire that is 1 exactly when the combination holds) was checked the same way: PROVEN "
               "means the combination never holds after the first reset, so the point can never be hit. A "
               "combination is tried only when its terms read module-level signals with the same meaning as at "
-              "the expression. A point PROVEN in every configuration leaves the expression coverage. Key: "
+              "the expression. Each configuration is given the points that none of its own runs hit. A point "
+              "PROVEN in a configuration leaves that configuration's record of the expression coverage. Key: "
               "instance, file, line, column, combination.", ""]
         for key, conf in sorted(exprs.items()):
             L += [f"## Configuration {conf.get('name', key)} (`{key}`)", "",
@@ -773,7 +776,10 @@ def apply(work: Path, host: SimHost | None, contract: dict, rtl_dir: Path, dat_p
     bits = proven_bits(rec, keys)
     blocks = unrbranch.proven_blocks(rec.get("branches") or {}, keys)
     exprs = unrbranch.proven_blocks(rec.get("expressions") or {}, keys)
-    if bits is None and not blocks and not exprs:
+    folders = [c.get("folder") for c in configs]
+    blocks_in = unrbranch.proven_by_config(rec.get("branches") or {}, keys, folders)
+    exprs_in = unrbranch.proven_by_config(rec.get("expressions") or {}, keys, folders)
+    if bits is None and not blocks and not exprs and not blocks_in and not exprs_in:
         return scope, ({"status": "no record for every configuration", "record": "work/unr.json"} if rec["configs"] else None)
     new_scope = dict(scope or {"packages": [], "kept": {}})
     info: dict = {"status": "applied", "record": "work/unr.json"}
@@ -786,6 +792,13 @@ def apply(work: Path, host: SimHost | None, contract: dict, rtl_dir: Path, dat_p
     if exprs:
         new_scope["proven_exprs"] = exprs
         info["proven_expressions"] = len(exprs)
+    # a point proven in some configurations only leaves the records of those configurations (ROADMAP 24.5)
+    if blocks_in:
+        new_scope["proven_blocks_by_config"] = blocks_in
+        info["proven_branches_by_config"] = {f: len(v) for f, v in sorted(blocks_in.items())}
+    if exprs_in:
+        new_scope["proven_exprs_by_config"] = exprs_in
+        info["proven_expressions_by_config"] = {f: len(v) for f, v in sorted(exprs_in.items())}
     return new_scope, info
 
 
@@ -798,7 +811,11 @@ def _prove_branches(rec: dict, keys: list[str], configs: list[dict], host: SimHo
     say(f"[unr] {len(todo_all)} branch(es) never executed")
     br = rec.setdefault("branches", {})
     for c, key in zip(configs, keys):
-        todo = unrbranch.undecided(br.get(key), todo_all)
+        # a run set keeps one record per configuration: the branches this configuration never executed
+        mine = unrbranch.targets(dat_path, rtl_names, c["folder"]) if c.get("folder") else todo_all
+        if len(mine) != len(todo_all):
+            say(f"[unr] {c['name']}: {len(mine)} branch(es) never executed in this configuration")
+        todo = unrbranch.undecided(br.get(key), mine)
         if not todo and key in br:
             continue
         with tempfile.TemporaryDirectory(prefix="nnc_unrb_") as tmp:
@@ -821,7 +838,10 @@ def _prove_exprs(rec: dict, keys: list[str], configs: list[dict], host: SimHost,
     say(f"[unr] {len(todo_all)} expression point(s) never hit")
     ex = rec.setdefault("expressions", {})
     for c, key in zip(configs, keys):
-        todo = list(unrbranch.undecided(ex.get(key), {k: [] for k in todo_all}))
+        mine = unrexpr.targets(dat_path, rtl_names, c["folder"]) if c.get("folder") else todo_all
+        if len(mine) != len(todo_all):
+            say(f"[unr] {c['name']}: {len(mine)} expression point(s) never hit in this configuration")
+        todo = list(unrbranch.undecided(ex.get(key), {k: [] for k in mine}))
         if not todo and key in ex:
             continue
         with tempfile.TemporaryDirectory(prefix="nnc_unre_") as tmp:

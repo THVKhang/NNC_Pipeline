@@ -1198,11 +1198,106 @@ points are in the register top, the alert sender and receiver, and the TL-UL int
 The closure target of gpio is on the toggle metric, so its status (`target_unmet`) does not change.
 
 Limits:
-- Only points that no run of any configuration hit are tried. When a design has several configurations, the
-  metric counts a point once per configuration, so a point hit in one configuration and not in another stays
-  counted. async_apb_bridge has 223 such points and no target. A proof per configuration would close this; it is
-  not done.
+- Only points that no run of any configuration hit were tried. When a design has several configurations, the
+  metric counts a point once per configuration, so a point hit in one configuration and not in another stayed
+  counted (async_apb_bridge: 223 such points). Closed in §17 (24.5).
 - 244 of rv_timer's 274 points are not tried, 207 of them because a blocking assignment of the same block writes a
   term (mostly the pre-verified `prim_secded_*` decoders).
 - ot_gpio: 274 of the 892 points are not tried, 229 of them because a blocking assignment of the same block writes a term.
 - A counterexample or a time limit leaves the point counted.
+
+## 17. Proofs per configuration, and more points tried (phase 24.5 and 24.6, 2026-11-25)
+
+Section 16 left two limits. Both are closed here, with no agent and no cost, and still no point is left out by hand.
+
+**24.5: one proof per configuration.** `merged.dat` of a run set keeps one record of each point per
+configuration: the source paths of the records hold the configuration folder (`C01/rtl/m.sv`, `C02/rtl/m.sv`).
+Phase 24 tried only the points that no run of any configuration hit, and left a point out only when it was PROVEN
+in every configuration. So a point hit in one configuration and never hit in another stayed counted in the
+second one, although that is a separate point of the metric. Now:
+- each configuration is given the branches and expression points that none of its own runs reached;
+- a point PROVEN in a configuration leaves that configuration's record only (the scope keys
+  `proven_blocks_by_config` and `proven_exprs_by_config`, by folder);
+- a line leaves the line metric of a configuration when every block point of that configuration over it is
+  left out (before, a line was kept when any configuration had a kept point over it);
+- configurations with the same parameters and macros share one proof record (they differ only in clock periods
+  or test options, and a proof holds for every input sequence).
+
+Toggle bits keep the old rule (PROVEN in every configuration that has the signal).
+
+**24.6: terms written earlier in a combinational block.** Phase 24 did not try a combination when its block
+writes a term's signal with a blocking assignment, because the value at the expression could differ from the
+value at module level. In a combinational block that is too strict: the block settles, and at module level a
+variable holds its last value of the block. When no blocking assignment can write the bits a term reads after
+the expression, the expression reads that last value, the same as the marker. `written_after` walks from the
+always block down to the expression and collects the writes that can follow it: the later statements of each
+list on the way, the branches of an IF or the items of a case whose condition holds the expression, the left side
+of the assignment around it, and the whole of a loop around it. It does not count the other branch of an IF or
+the other items of a case, which do not run after it. A constant select on a packed vector `[H:0]` is compared
+bit by bit (`err_o[1] = |syndrome_o & ~err_o[0]` reads `err_o[0]` and writes only `err_o[1]`). In a clocked block,
+or a block that calls a task, every blocking write still counts. This is the shape of OpenTitan's SECDED decoders:
+the syndrome is computed first in `always_comb`, then read by every corrected bit.
+
+Also, the items of an enum type declared at module level (`ENUM_ST_IDLE`) are now module-level names: they are
+constants that the marker before `endmodule` reads with the same meaning.
+
+Results with `nnc sim --unr`, all configurations, the 12 threads of the machine shared by two chains of designs.
+"PROVEN records" counts the records left out over all configurations (`expressions_left_out` and
+`branches_left_out` of `results.json`), before and after.
+
+| Design | Expression % | Block % | Line % | Expression records left out | Branch records left out |
+|---|---|---|---|---|---|
+| ahb2axi_bridge | 82.9 → **86.4** | 97.1 → **97.3** | 91.3 | 243 → 306 | 306 → 308 |
+| apb_tlul_bridge | 100.0 | 100.0 | 97.0 | 0 → 0 | 2 → 2 |
+| async_apb_bridge | 74.8 → **92.9** | 88.8 → **97.3** | 91.9 → **94.2** | 0 → 172 | 0 → 80 |
+| async_gray_fifo | 98.0 → **98.1** | 97.8 → **97.9** | 99.8 | 0 → 1 | 20 → 21 |
+| axi2apb_bridge | 96.2 | 98.6 | 100.0 | 0 → 0 | 6 → 6 |
+| axil_regfile | 100.0 | 100.0 | 100.0 | 16 → 16 | 0 → 0 |
+| c_uart | 88.9 | 97.6 | 97.6 | 0 → 0 | 2 → 2 |
+| gen_apb_tlul_bridge | 100.0 | 100.0 | 97.0 | 0 → 0 | 2 → 2 |
+| gen_sync_fifo | 97.4 | 100.0 | 100.0 | 0 → 0 | 3 → 3 |
+| ot_gpio | 85.0 → **95.1** | 99.5 → **99.6** | 97.3 | 2408 → 3236 | 68 → 70 |
+| ot_rv_timer | 67.7 → **92.7** | 99.3 | 95.1 | 27 → 234 | 19 → 19 |
+| spi_master | 98.2 → **100.0** | 97.8 → **100.0** | 98.6 → **99.8** | 0 → 3 | 6 → 9 |
+| sync_fifo | 98.5 | 100.0 | 100.0 | 4 → 4 | 2 → 2 |
+
+- On every design, `expressions_executed` and `branches_executed` are 0, and the tests, their results and the
+  assertions are those of phase 24 (gen_sync_fifo's one known failure and async_gray_fifo's 8 included).
+- The other designs had nothing new to prove: one configuration with coverage, or no point that one
+  configuration misses and another hits (axil_regfile is already at 100 %).
+
+**async_apb_bridge (24.5).** 74.8 → 92.9 % expression, 88.8 → 97.3 % block. Its 13 configurations choose the
+handshake (two-phase `HS_TYPE = 0` or four-phase), APB4 or APB5, and the synchronizer cell. A configuration runs
+only one of these choices, so the code of the others is never hit there, while another configuration hits it.
+Formal now proves, per configuration:
+- in the two-phase configurations, the four-phase code of the master and slave FSMs (`ENUM_ST_CLOSE`, `REQ0`,
+  `w_clr_req`), 8 branches and up to 15 combinations;
+- in the APB4 configurations, the APB5 wake-up terms (`(PARA_APBCDC_APB5 != 0) & i_apb_pwakeup`).
+Four combinations of the CLOSE state (`w_ack_s` alone, `m_vlsit_apbcdc_mst.sv:170`, `slv.sv:168`) get a
+counterexample: the marker holds whenever `w_ack_s` has that value, in any state. They stay counted.
+
+**spi_master (24.5).** In the `min` configuration (`PARA_SPI_CLK_DIV = 1`) the divider branches and three
+combinations are dead; block and expression reach 100 %.
+
+**ot_rv_timer and ot_gpio (24.6).** 207 more combinations are PROVEN in each, all in the SECDED decoders: the
+data-integrity check of the register top (`prim_secded_inv_39_32_dec`) and the command and response checks
+(`prim_secded_inv_64_57_dec`). The test wrapper computes the integrity of every command with OpenTitan's own
+`tlul_cmd_intg_gen`, so the data syndrome is always 0, and the combinations where it is not are never reached.
+(The wrapper's `i_a_intg_flip` inverts one command integrity bit; the syndromes it causes are not those of a
+data bit, so these combinations stay unreachable.) rv_timer: 67.7 → 92.7 % expression over the whole design; the
+target metric without the pre-verified `prim_*` modules is unchanged (91.3 %, `target_met`), because the decoders
+are `prim_*`. gpio: 85.0 → 95.1 %; its closure target is on toggle.
+
+**ahb2axi_bridge (24.6).** 82.9 → 86.4 % expression. The enum items made 14 combinations tryable, and 21 are PROVEN in each configuration: the
+software-reset FSM of the FIFOs never leaves RUN (`m_vlsit_sfifo_wr.sv:218`, `m_vlsit_sfifo_rd.sv:109`, the same
+logic as the PROVEN FIFO branches of 23.3), and the controller's WR_BURST and WR_BBURST states are never entered
+with data or responses waiting (`m_ahb2axi_ctrl.sv:559`, `:702`, `:725`, `:864`). These states are dead because of
+fault 2 (§15): a PROVEN point is dead in the RTL as delivered, and the reviewer judges each one against the
+specification. Per configuration (24.5), two more branches are PROVEN in `base`.
+
+Limits:
+- Still not tried: a term that calls a function (`mubi4_*`, `f_axi_cache`), reads a loop variable or a
+  generate-local constant (`prim_onehot_check`), selects bits of a signal that is not a packed vector `[H:0]`
+  (the RACL policy arrays), or is in a clocked block that writes it with a blocking assignment.
+- A counterexample or a time limit leaves the point counted.
+- As before, PROVEN means dead in the RTL as delivered with the wrapper of the test bench, not dead by design.

@@ -79,6 +79,21 @@ approval is recorded as delegated. See [docs/G4_REVIEW_REQUEST.md](docs/G4_REVIE
   points given to the analyst from the coverage without those modules. This matches OpenTitan's `cover.cfg`.
   `nnc sim` now stores those uncovered points (`coverage.without_preverified.uncovered`).
 
+### Phase 24.5 and 24.6: proofs per configuration, terms written earlier in a combinational block (EVALUATION §17)
+- Branches and expression points are proved per run-set configuration: each configuration tries the points none
+  of its own runs reached, and a point PROVEN in a configuration leaves that configuration's record of the merged
+  coverage (records are told apart by the configuration folder in their source path). Lines are counted per
+  configuration in the same way. Configurations with the same parameters and macros share one proof record.
+  Toggle bits keep the rule "PROVEN in every configuration".
+- In a combinational block, a term that the block writes before the expression (and not after it) is tried: the
+  block settles, so the expression reads the variable's last value, which is its value at module level. Writes
+  after the expression are collected by `written_after` (later statements, the branches of an IF or case whose
+  condition holds it, the assignment around it, a loop around it), bit by bit on packed vectors `[H:0]`.
+- Items of enum types declared at module level count as module-level names.
+- Results: async_apb_bridge expression 74.8 → 92.9 %, block 88.8 → 97.3 %; spi_master block and expression
+  100 %; ot_rv_timer expression (whole design) 67.7 → 92.7 %; ot_gpio 85.0 → 95.1 %; ahb2axi_bridge 82.9 → 86.4 %. No simulation hit a
+  PROVEN point; tests and assertions unchanged.
+
 ### Phase 24: expression points never hit (EVALUATION §16)
 - `nnc sim --unr` also proves expression points (`nnc/unrexpr.py`). Each term combination that no run hit becomes
   a marker wire at module level in an instrumented copy of the RTL. The wire is 1 exactly when the combination

@@ -5,17 +5,22 @@ Verilator's expression coverage (--coverage-expr) has one point per combination 
 off in the configuration, two signals that never hold at once. This module proves such points with the
 machinery of nnc/unr.py, on an instrumented copy of the RTL, as nnc/unrbranch.py does for branches:
 
-1. targets: the expression points of the merged coverage.dat with no hit, keyed by instance, file, line,
-   column and the combination text.
+1. targets: the expression points with no hit, keyed by instance, file, line, column and the combination
+   text. merged.dat of a run set keeps one record per configuration (the source paths hold the folder C01,
+   C02, ...), so each configuration is given the points that none of its own runs hit (ROADMAP 24.5).
 2. `verilator --json-only` of the configuration gives the module of each target and the context of the
    expression at that position. A target is tried only when its terms can be read at module level with the
    same meaning: every name in a term is a signal or parameter declared at module level in every elaboration
-   of the module (no loop variable, no name of a generate block, function or local block that would hide it),
-   no term calls a function or selects a struct member, a bit select is only on a packed vector `[H:0]` (or a
-   packed struct, union or enum over one: there Verilator's printed index and the source's agree; see
-   plain_vector), the expression is in an always block or a continuous assignment (not in a
-   function, task or initial block) and, in procedural code, no blocking assignment of that block writes a
-   term's signal (the value at the expression would differ from the value at module level).
+   of the module, or an item of an enum type declared there (no loop variable, no name of a generate block,
+   function or local block that would hide it), no term calls a function or selects a struct member, a bit
+   select is only on a packed vector `[H:0]` (or a packed struct, union or enum over one: there Verilator's
+   printed index and the source's agree; see plain_vector), the expression is in an always block or a
+   continuous assignment (not in a function, task or initial block) and no blocking assignment of that block
+   can write the bits a term reads after the expression (written_after): the value at the expression would
+   differ from the value at module level. In a combinational block (always_comb, always @*, no task call) a
+   variable holds at module level its last value of the block, so only the writes after the expression count
+   (ROADMAP 24.6: the syndrome of OpenTitan's SECDED decoders, computed first in the block); in a clocked
+   block every blocking write counts.
 3. A copy of the RTL gets, just before `endmodule` (on the same line, so no line number moves), one marker
    per combination: `(* keep *) wire m = ((|(t1)) == 1'b0) && ((|(t2)) == 1'b1);`. The point can be hit
    only at a time when the combination holds, so it is never hit after the first reset when the marker stays 0.
@@ -28,7 +33,8 @@ machinery of nnc/unr.py, on an instrumented copy of the RTL, as nnc/unrbranch.py
 
 The marker is stronger than the point (it holds whenever the combination holds, also when the expression is
 not evaluated), so a PROVEN marker is sound; a counterexample does not show that the point is reachable, and
-the point stays counted. A PROVEN point (in every configuration of the run set) leaves the expression coverage.
+the point stays counted. A point PROVEN in a configuration leaves that configuration's record of the expression
+coverage (unrbranch.proven_by_config), also when another configuration hits it.
 Like the other proofs, a proof is about the design after the first reset, with every input free.
 """
 from __future__ import annotations
@@ -52,13 +58,14 @@ _KEYWORDS = {"inside", "with", "or", "and", "not"}
 
 
 # ------------------------------------------------------------------------------------ targets
-def targets(dat_path: Path, rtl_names: list[str]) -> list[Key]:
-    """Keys of the DUT's expression points that no run hit."""
+def targets(dat_path: Path, rtl_names: list[str], folder: str | None = None) -> list[Key]:
+    """Keys of the DUT's expression points that no run hit; with `folder`, no run of that run-set
+    configuration (its records are the ones whose path holds the folder)."""
     hits: dict[Key, int] = defaultdict(int)
     if not dat_path.is_file():
         return []
     for kv, name, metric, line, _span, count in cov._records(dat_path, set(rtl_names)):
-        if metric != "expression":
+        if metric != "expression" or (folder is not None and cov.config_folder(kv.get("f", "")) != folder):
             continue
         key = cov.expr_key(kv, name, line)
         if key is not None:
@@ -238,6 +245,158 @@ def _written_blocking(n, out: set) -> set:
     return out
 
 
+Bits = dict   # {name: set of bit indices, or None for the whole signal}
+
+
+def _add(out: Bits, name: str, bits: set | None) -> None:
+    if name in out and (out[name] is None or bits is None):
+        out[name] = None
+    else:
+        out[name] = (out.get(name) or set()) | bits if bits is not None else None
+
+
+def _const(n) -> int | None:
+    """Value of a CONST node ("1'h1", "32'sh5", "4"), else None."""
+    if not (isinstance(n, dict) and n.get("type") == "CONST"):
+        return None
+    m = re.fullmatch(r"(?:\d*'s?([bodh]))?([0-9a-fA-F_]+)", str(n.get("name") or "").lower())
+    if not m:
+        return None
+    try:
+        return int(m[2].replace("_", ""), {"b": 2, "o": 8, "d": 10, "h": 16}.get(m[1] or "d", 10))
+    except ValueError:
+        return None
+
+
+def _lhs_bits(lhs, out: Bits) -> Bits:
+    """The bits an assignment's left side writes: a constant select `x[c]` or `x[h:l]` of a variable writes those
+    bits (in Verilator's 0-based numbering of the value), anything else the whole of every name in it."""
+    for x in lhs if isinstance(lhs, list) else [lhs]:
+        if not isinstance(x, dict):
+            continue
+        frm, lsb = x.get("fromp") or [], x.get("lsbp") or []
+        lo = _const(lsb[0]) if len(lsb) == 1 else None
+        w = x.get("widthConst")
+        if (x.get("type") == "SEL" and len(frm) == 1 and isinstance(frm[0], dict) and frm[0].get("type") == "VARREF"
+                and lo is not None and isinstance(w, int) and w > 0):
+            _add(out, frm[0].get("name"), set(range(lo, lo + w)))
+        else:
+            for name in ub._names(x, set()):
+                _add(out, name, None)
+    return out
+
+
+def _writes(n, out: Bits) -> Bits:
+    """The bits written by blocking assignments under n."""
+    if isinstance(n, list):
+        for x in n:
+            _writes(x, out)
+    elif isinstance(n, dict):
+        if n.get("type") == "ASSIGN":
+            _lhs_bits(n.get("lhsp"), out)
+        for k, v in n.items():
+            if isinstance(v, (dict, list)) and k not in ("dtypep", "sentreep"):
+                _writes(v, out)
+    return out
+
+
+_LOOPS = {"WHILE", "DOWHILE", "REPEAT", "FOREVER", "FOREACH", "LOOP"}
+_STMT_LISTS = {"stmtsp", "thensp", "elsesp", "itemsp"}
+
+
+def written_after(path: list) -> Bits:
+    """The bits that blocking assignments of the always block on `path` (module ... ALWAYS ... node) may write
+    after the node is evaluated: later statements of each list on the way down, the other parts of a statement
+    whose condition or right side holds the node (the branches of an IF, the items of a case, the left side of
+    an assignment), and the whole of a loop around it. The other branch of an IF and the other items of a case
+    are not run after it."""
+    out: Bits = {}
+    start = next((i for i, x in enumerate(path) if x.get("type") == "ALWAYS"), len(path))
+    for j in range(start, len(path) - 1):
+        par, ch = path[j], path[j + 1]
+        if par.get("type") in _LOOPS:
+            _writes(par, out)
+            continue
+        if par.get("type") == "ASSIGN":
+            _lhs_bits(par.get("lhsp"), out)
+        for k, v in par.items():
+            if k in ("dtypep", "sentreep") or not isinstance(v, (list, dict)):
+                continue
+            items = v if isinstance(v, list) else [v]
+            at = next((i for i, x in enumerate(items) if x is ch), None)
+            if at is None:
+                continue
+            if k in _STMT_LISTS:
+                if not (par.get("type") == "CASE" and k == "itemsp"):
+                    _writes(items[at + 1:], out)
+            else:
+                for k2, v2 in par.items():
+                    if k2 != k and isinstance(v2, (list, dict)) and k2 not in ("dtypep", "sentreep"):
+                        _writes(v2, out)
+    return out
+
+
+def _has(n, kind: str) -> bool:
+    if isinstance(n, list):
+        return any(_has(x, kind) for x in n)
+    if isinstance(n, dict):
+        return n.get("type") == kind or any(_has(v, kind) for k, v in n.items()
+                                            if isinstance(v, (list, dict)) and k != "dtypep")
+    return False
+
+
+def term_bits(term: str, name: str) -> set | None:
+    """The bits of `name` that a term reads: the union of its constant selects (`x[3]`, `x[7:4]`), or None when
+    one use is not a constant select."""
+    t = flat_selects(_PKG.sub(" ", _SYSTEM.sub(" ", term)))
+    out: set = set()
+    for m in re.finditer(r"(?<![A-Za-z0-9_$.'])" + re.escape(name) + r"(?![A-Za-z0-9_$])", t):
+        s = re.match(r"\s*\[(\d+)(?::(\d+))?\](?!\s*\[)", t[m.end():])
+        if not s:
+            return None
+        hi, lo = int(s[1]), int(s[2] if s[2] is not None else s[1])
+        if hi < lo:
+            return None
+        out |= set(range(lo, hi + 1))
+    return out
+
+
+def _overlap(wbits: set | None, ts: list[str], name: str, types: dict, dtypes: list[dict]) -> bool:
+    """Whether bits written after the expression can be bits that the terms read. Bit numbers are compared only
+    on a packed vector [H:0] (where Verilator's select and the term text number bits alike)."""
+    if wbits is None or any(not plain_vector(types, d.get(name)) for d in dtypes):
+        return True
+    for t in ts:
+        tb = term_bits(t, name)
+        if tb is None or tb & wbits:
+            return True
+    return False
+
+
+def enum_names(module: dict, types: dict[str, dict]) -> set[str]:
+    """Names of the enum items of the types declared at module level (a typedef, or the type of a variable):
+    constants that a marker before `endmodule` reads with the same meaning."""
+    out: set[str] = set()
+    for s in module.get("stmtsp") or []:
+        if not isinstance(s, dict) or s.get("type") not in ("TYPEDEF", "VAR"):
+            continue
+        addr, seen = s.get("dtypep"), 0
+        while addr and seen < 20:
+            seen += 1
+            n = types.get(addr)
+            if n is None:
+                break
+            if n.get("type") == "ENUMDTYPE":
+                out |= {i.get("name") for i in n.get("itemsp") or [] if isinstance(i, dict) and i.get("name")}
+                break
+            if n.get("type") != "REFDTYPE":
+                break
+            addr = n.get("refDTypep") or n.get("dtypep")
+            if addr == n.get("addr"):
+                break
+    return out
+
+
 def _find(n, f_id: str, line: int, col: int, path: list, out: list) -> None:
     """Paths (list of nodes from the module down) of the nodes whose location starts at (line, col)."""
     if isinstance(n, list):
@@ -302,10 +461,10 @@ def locate(tree: dict, meta: dict, wanted: dict[tuple[str, int, int], list[str]]
             continue
         mkey = next(iter(texts))
         clones = mods[mkey]
-        common = set.intersection(*[_vars(m) for m in clones])
+        common = set.intersection(*[_vars(m) | enum_names(m, types) for m in clones])
         dtypes = [{s.get("name"): s.get("dtypep") for s in m.get("stmtsp") or []
                    if isinstance(s, dict) and s.get("type") == "VAR"} for m in clones]
-        bad_ctx, inner, written = None, set(), set()
+        bad_ctx, inner, written = None, set(), {}
         for p in found:
             kinds = [x.get("type") for x in p]
             if any(k in ("FUNC", "TASK", "INITIAL", "INITIALSTATIC", "FINAL") for k in kinds):
@@ -318,8 +477,17 @@ def locate(tree: dict, meta: dict, wanted: dict[tuple[str, int, int], list[str]]
             for x in p[1:]:
                 if x.get("type") in ("GENBLOCK", "BEGIN", "ALWAYS"):
                     inner |= _vars(x)
-            if alw[0].get("keyword") != "cont_assign":
-                written |= _written_blocking(alw[0].get("stmtsp") or [], set())
+            if alw[0].get("keyword") == "cont_assign":
+                continue
+            # A combinational block settles: a variable it writes holds, at module level, its last value of the
+            # block, which the expression reads too when no blocking assignment can write those bits after the
+            # expression. Elsewhere (a clocked block, a task call) every signal the block writes is excluded.
+            if ub._always_kind(alw[0]) == "comb" and not _has(alw[0].get("stmtsp") or [], "TASKREF"):
+                for name, bits in written_after(p).items():
+                    _add(written, name, bits)
+            else:
+                for name in _written_blocking(alw[0].get("stmtsp") or [], set()):
+                    _add(written, name, None)
         if bad_ctx:
             no(bad_ctx)
             continue
@@ -346,7 +514,7 @@ def locate(tree: dict, meta: dict, wanted: dict[tuple[str, int, int], list[str]]
                 why[(f, line, col, c)] = "a term reads a name that is not declared at module level"
             elif used & inner:
                 why[(f, line, col, c)] = "a term reads a name of a local block"
-            elif used & written:
+            elif any(_overlap(written[n], [t for t, _v in ts], n, types, dtypes) for n in used & set(written)):
                 why[(f, line, col, c)] = "a term reads a signal that its block writes with a blocking assignment"
             elif any(not plain_vector(types, d.get(n)) for n in sel for d in dtypes):
                 why[(f, line, col, c)] = "a term selects bits of a signal that is not a packed vector [H:0]"

@@ -29,8 +29,9 @@ module proves such branches with the machinery of nnc/unr.py, on an instrumented
    left out (its branch stays counted).
 5. unr.prove_config proves the markers, with the guard and control assertions of toggle points.
 
-A PROVEN branch (in every configuration of the run set) leaves the block coverage, and so do its lines unless
-another point that is kept covers them. A counterexample, no result, or a branch that is not tried stays
+A branch PROVEN in a configuration leaves that configuration's record of the block coverage (merged.dat of a
+run set keeps one record per configuration, ROADMAP 24.5), and so do its lines unless another point of that
+configuration that is kept covers them; each configuration is given the branches none of its own runs executed. A counterexample, no result, or a branch that is not tried stays
 counted. The markers are registers that nothing reads; they change nothing else in the design. Like the
 toggle proofs, a proof is about the design after the first reset, with every input free.
 """
@@ -67,16 +68,17 @@ Key = tuple  # (instance relative to the DUT top, file, line, column, kind)
 point_key = cov.block_key
 
 
-def targets(dat_path: Path, rtl_names: list[str]) -> dict[Key, list[int]]:
+def targets(dat_path: Path, rtl_names: list[str], folder: str | None = None) -> dict[Key, list[int]]:
     """{(instance, file, line, column, kind): lines of the block} of the DUT's IF branches and case items that
-    no run executed ("" is the DUT top; Verilator's merged instance names keep their *)."""
+    no run executed ("" is the DUT top; Verilator's merged instance names keep their *); with `folder`, that no
+    run of that run-set configuration executed."""
     hits: dict[Key, int] = defaultdict(int)
     spans: dict[Key, set[int]] = defaultdict(set)
     if not dat_path.is_file():
         return {}
     for kv, name, metric, line, span, count in cov._records(dat_path, set(rtl_names)):
         key = point_key(kv, name, line) if metric == "block" else None
-        if key is None:
+        if key is None or (folder is not None and cov.config_folder(kv.get("f", "")) != folder):
             continue
         hits[key] += count
         spans[key].update(span)
@@ -762,3 +764,17 @@ def proven_blocks(branches: dict, keys: list[str]) -> list[list] | None:
         return None
     sets = [{tuple(k) for k in c.get("proven") or []} for c in confs]
     return [list(k) for k in sorted(set.intersection(*sets))]
+
+
+def proven_by_config(part: dict, keys: list[str], folders: list[str | None]) -> dict[str, list[list]]:
+    """{run-set folder: the points PROVEN in that folder's configuration} (ROADMAP 24.5): coverage keeps one
+    record per configuration, so a point proven in one configuration leaves that configuration's record, also
+    when another configuration hits it. Empty unless every configuration has its folder."""
+    if not keys or any(not f for f in folders):
+        return {}
+    out = {}
+    for k, f in zip(keys, folders):
+        proven = sorted({tuple(x) for x in (part.get(k) or {}).get("proven") or []})
+        if proven:
+            out[f] = [list(x) for x in proven]
+    return out

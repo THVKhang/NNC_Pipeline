@@ -87,7 +87,7 @@ Parameters {"PARA_AFIFO_DEPTH": "8", "PARA_AFIFO_DATA_W": "32", "PARA_AFIFO_CELL
 
 # Branches never executed after the first reset (nnc/unrbranch.py)
 
-Each IF branch or case item below had no hit. A marker in an instrumented copy of the RTL (a flop that toggles when the branch runs, or in a combinational block a signal set to 1 there) was checked the same way; a copy is used only when Verilator shows every marker as the first statement of its branch. A branch PROVEN in every configuration leaves the block coverage with the lines that no other point covers. Key: instance, file, line, column, kind.
+Each IF branch or case item below had no hit. A marker in an instrumented copy of the RTL (a flop that toggles when the branch runs, or in a combinational block a signal set to 1 there) was checked the same way; a copy is used only when Verilator shows every marker as the first statement of its branch. Each configuration is given the branches that none of its own runs executed. A branch PROVEN in a configuration leaves that configuration's record of the block coverage, with the lines that no other point of it covers. Key: instance, file, line, column, kind.
 
 ## Configuration small (`011eea1471ae5310`)
 
@@ -188,7 +188,7 @@ PROVEN never executed after the first reset:
 
 # Expression points never hit after the first reset (nnc/unrexpr.py)
 
-Each term combination below had no hit. A marker declared at module level in an instrumented copy of the RTL (a wire that is 1 exactly when the combination holds) was checked the same way: PROVEN means the combination never holds after the first reset, so the point can never be hit. A combination is tried only when its terms read module-level signals with the same meaning as at the expression. A point PROVEN in every configuration leaves the expression coverage. Key: instance, file, line, column, combination.
+Each term combination below had no hit. A marker declared at module level in an instrumented copy of the RTL (a wire that is 1 exactly when the combination holds) was checked the same way: PROVEN means the combination never holds after the first reset, so the point can never be hit. A combination is tried only when its terms read module-level signals with the same meaning as at the expression. Each configuration is given the points that none of its own runs hit. A point PROVEN in a configuration leaves that configuration's record of the expression coverage. Key: instance, file, line, column, combination.
 
 ## Configuration small (`011eea1471ae5310`)
 
@@ -199,7 +199,7 @@ Each term combination below had no hit. A marker declared at module level in an 
 | PROVEN never hit | 0 |
 | counterexample | 2 |
 | no result (time limit) | 0 |
-| not tried: expression not found in the tree | 1 |
+| not tried: expression not found in the tree | 2 |
 
 ## Configuration cell3 (`2cb1e8bbf0140962`)
 
@@ -210,7 +210,7 @@ Each term combination below had no hit. A marker declared at module level in an 
 | PROVEN never hit | 0 |
 | counterexample | 2 |
 | no result (time limit) | 0 |
-| not tried: expression not found in the tree | 1 |
+| not tried: expression not found in the tree | 2 |
 
 ## Configuration cell1 (`8ab8c6781982cdee`)
 
@@ -221,7 +221,7 @@ Each term combination below had no hit. A marker declared at module level in an 
 | PROVEN never hit | 0 |
 | counterexample | 2 |
 | no result (time limit) | 0 |
-| not tried: expression not found in the tree | 1 |
+| not tried: expression not found in the tree | 2 |
 
 ## Configuration cell4 (`8efc04a606539b5f`)
 
@@ -232,7 +232,7 @@ Each term combination below had no hit. A marker declared at module level in an 
 | PROVEN never hit | 0 |
 | counterexample | 2 |
 | no result (time limit) | 0 |
-| not tried: expression not found in the tree | 1 |
+| not tried: expression not found in the tree | 2 |
 
 ## Configuration macro (`e28097f399ef430a`)
 
@@ -243,6 +243,7 @@ Each term combination below had no hit. A marker declared at module level in an 
 | PROVEN never hit | 1 |
 | counterexample | 2 |
 | no result (time limit) | 0 |
+| not tried: expression not found in the tree | 1 |
 
 PROVEN never hit after the first reset:
 
@@ -257,5 +258,5 @@ PROVEN never hit after the first reset:
 | PROVEN never hit | 0 |
 | counterexample | 2 |
 | no result (time limit) | 0 |
-| not tried: expression not found in the tree | 1 |
+| not tried: expression not found in the tree | 3 |
 

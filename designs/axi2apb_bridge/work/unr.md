@@ -49,7 +49,7 @@ PROVEN constant after the first reset:
 
 # Branches never executed after the first reset (nnc/unrbranch.py)
 
-Each IF branch or case item below had no hit. A marker in an instrumented copy of the RTL (a flop that toggles when the branch runs, or in a combinational block a signal set to 1 there) was checked the same way; a copy is used only when Verilator shows every marker as the first statement of its branch. A branch PROVEN in every configuration leaves the block coverage with the lines that no other point covers. Key: instance, file, line, column, kind.
+Each IF branch or case item below had no hit. A marker in an instrumented copy of the RTL (a flop that toggles when the branch runs, or in a combinational block a signal set to 1 there) was checked the same way; a copy is used only when Verilator shows every marker as the first statement of its branch. Each configuration is given the branches that none of its own runs executed. A branch PROVEN in a configuration leaves that configuration's record of the block coverage, with the lines that no other point of it covers. Key: instance, file, line, column, kind.
 
 ## Configuration base (`4aea0b36d6c7bc4c`)
 
@@ -72,7 +72,7 @@ PROVEN never executed after the first reset:
 
 # Expression points never hit after the first reset (nnc/unrexpr.py)
 
-Each term combination below had no hit. A marker declared at module level in an instrumented copy of the RTL (a wire that is 1 exactly when the combination holds) was checked the same way: PROVEN means the combination never holds after the first reset, so the point can never be hit. A combination is tried only when its terms read module-level signals with the same meaning as at the expression. A point PROVEN in every configuration leaves the expression coverage. Key: instance, file, line, column, combination.
+Each term combination below had no hit. A marker declared at module level in an instrumented copy of the RTL (a wire that is 1 exactly when the combination holds) was checked the same way: PROVEN means the combination never holds after the first reset, so the point can never be hit. A combination is tried only when its terms read module-level signals with the same meaning as at the expression. Each configuration is given the points that none of its own runs hit. A point PROVEN in a configuration leaves that configuration's record of the expression coverage. Key: instance, file, line, column, combination.
 
 ## Configuration base (`4aea0b36d6c7bc4c`)
 

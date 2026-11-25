@@ -16,7 +16,7 @@ Target and points without the modules declared verified elsewhere (prim_alert_se
 
 Design scope: left out: never-executed points of package code that the elaborated design does not contain (Verilator instruments every function of an imported package, called or not), and toggles of signal bits that Yosys constant propagation proves constant with the run's parameters, except on signals where the simulator recorded a toggle of such a bit (then the signal counts whole). Left out:
 - block: 341 points (over all points 144/486, 29.6 %)
-- expression: 5460 points (over all points 520/6228, 8.3 %)
+- expression: 5667 points (over all points 520/6228, 8.3 %)
 - line: 2458 points (over all points 802/3301, 24.3 %)
 - toggle: 1318 points (over all points 10333/11776, 87.7 %)
 

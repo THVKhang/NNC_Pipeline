@@ -236,6 +236,13 @@ code lạ trong sandbox, và người dùng thật của công cụ quen dòng l
 | # | Việc còn mở | Điều kiện xong |
 |---|---|---|
 | 24.5 | Chứng minh theo từng cấu hình. Coverage tính mỗi điểm một lần cho mỗi cấu hình. Điểm chạm ở cấu hình này mà không chạm ở cấu hình kia hiện không được thử (async_apb_bridge: 223 điểm). Cần chứng minh điểm đó trong đúng cấu hình nó không chạm, rồi chỉ loại bản ghi của cấu hình đó. Áp dụng cho cả nhánh (23.3). | Unit test. `expressions_executed` = 0. |
+| 24.6 | Thử thêm điểm mà 24 bỏ qua: term do khối tổ hợp gán blocking trước biểu thức (không gán lại sau nó), và tên mục enum khai báo ở mức module. | Unit test. `expressions_executed` = 0. |
+
+**Trạng thái (2026-11-25).** 24.5 và 24.6 xong, kết quả ở EVALUATION §17. Không tốn tiền agent.
+- async_apb_bridge expression 74,8 → 92,9 %, block 88,8 → 97,3 %. spi_master block và expression 100 %.
+- rv_timer (cả thiết kế) 67,7 → 92,7 %, gpio 85,0 → 95,1 %. ahb2axi 82,9 → 86,4 % (FSM soft-reset của FIFO và trạng thái burst chết vì lỗi RTL số 2; người duyệt G4 cần xét).
+- Mọi thiết kế: `expressions_executed` = `branches_executed` = 0, test và assertion không đổi.
+- Còn chưa thử: term gọi hàm (`mubi4_*`), đọc biến vòng lặp hoặc hằng cục bộ của generate, chọn bit của mảng không phải `[H:0]` (RACL).
 
 ## Việc còn mở, chờ người có chuyên môn (G4)
 

@@ -8,7 +8,7 @@ This packet is for the person who decides gate **G4 (sign-off)**: *is this desig
 - **Checks:** 41 — PASS 41
 - **Tests:** {'pass': 15}
 - **Simulated configurations:** 6 runs in 4 configurations (base, min, max, xrand); see `run_set.json` and the *Run set* table of the report
-- **Code coverage:** line 98.6 %, block 97.8 %, expression 98.2 %, toggle 95.2 %, functional 94.9 %
+- **Code coverage:** line 99.8 %, block 100.0 %, expression 100.0 %, toggle 95.2 %, functional 94.9 %
 - **Mutation score:** 91.7 % (33 of 36 injected faults detected); 3 survivor(s) proven equivalent by formal, 100.0 % without them; formal on the survivors: {'PROVEN': 3}
 
 ## 2. Decisions taken for you
@@ -69,11 +69,6 @@ Mutation testing changed one RTL line at a time (36 faults; each in the run that
 Code or cover points never reached (first ones):
 
 - line m_spi_master.sv:84
-- line m_spi_master.sv:205
-- line m_spi_master.sv:232
-- line m_spi_master.sv:233
-- line m_spi_master.sv:257
-- line m_spi_master.sv:258
 - functional nnc_cov.sv:0 COVP-013
 - functional nnc_cov.sv:0 COVP-014
 

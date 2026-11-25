@@ -882,7 +882,14 @@ Phân tích từng mảng, có so với quy trình ký duyệt của OpenTitan, 
   - ahb2axi: 71,9 → 82,9 %. gpio: 64,9 → 85,0 % (448 điểm là phép XOR của các cờ `qe` cùng thanh ghi, luôn ghi cùng lúc). sync_fifo: 92,8 → 98,5 %. axil_regfile: 95,7 → 100 %.
   - Trên mọi thiết kế `expressions_executed` = 0, test và assertion không đổi.
 - **Báo cáo closure.** Bảng các điểm agent cho là không tới được có thêm cột "Still counted": điểm nào đã được formal loại, điểm nào vẫn tính. Nếu kết quả cuối khác vòng cuối (vì formal loại điểm) thì có thêm dòng `final`.
-- **Giới hạn.** Chỉ thử điểm mà không lần chạy nào (ở mọi cấu hình) chạm tới. Coverage tính mỗi điểm một lần cho mỗi cấu hình, nên điểm chạm ở cấu hình này mà không chạm ở cấu hình kia vẫn được tính (async_apb_bridge: 223 điểm như vậy). Chứng minh theo từng cấu hình chưa làm.
+- **Giới hạn (đã xử lý ở 24.5).** Chỉ thử điểm mà không lần chạy nào (ở mọi cấu hình) chạm tới, nên điểm chạm ở cấu hình này mà không chạm ở cấu hình kia vẫn được tính (async_apb_bridge: 223 điểm như vậy).
+
+**Giai đoạn 24.5 và 24.6 (2026-11-25, EVALUATION §17): chứng minh theo từng cấu hình, thử được nhiều điểm hơn.**
+- **24.5, theo từng cấu hình.** `merged.dat` của run set giữ mỗi điểm một bản ghi cho mỗi cấu hình (đường dẫn nguồn có thư mục `C01`, `C02`, ...). Giờ mỗi cấu hình thử những nhánh và điểm expression mà chính các lần chạy của nó chưa chạm. Điểm PROVEN ở cấu hình nào thì chỉ bản ghi của cấu hình đó bị loại (`proven_blocks_by_config`, `proven_exprs_by_config`). Dòng cũng tính theo từng cấu hình: dòng bị loại khi mọi điểm block của cấu hình đó trên dòng đều bị loại. Các cấu hình cùng tham số và macro dùng chung một bản ghi chứng minh. Bit toggle giữ quy tắc cũ (PROVEN ở mọi cấu hình).
+- **24.6, khối tổ hợp.** Trước đây, khối có gán blocking cho tín hiệu của term thì không thử. Trong khối tổ hợp, biến ở mức module giữ giá trị cuối của khối. Nếu sau biểu thức không còn lệnh gán blocking nào ghi vào các bit mà term đọc, thì biểu thức đọc đúng giá trị cuối đó, giống marker. `written_after` gom các lệnh ghi có thể chạy sau biểu thức: lệnh sau trong cùng danh sách, các nhánh của IF/case mà điều kiện chứa biểu thức, vế trái của phép gán chứa nó, cả vòng lặp bao quanh. Nhánh kia của IF và các mục khác của case thì không tính. Phép chọn bit hằng trên vector `[H:0]` được so từng bit. Khối có clock hoặc gọi task vẫn theo quy tắc cũ.
+- **Tên enum.** Các mục của kiểu enum khai báo ở mức module (`ENUM_ST_IDLE`) được coi là tên mức module.
+- **Kết quả.** async_apb_bridge expression 74,8 → 92,9 %, block 88,8 → 97,3 % (code bắt tay 4 pha chết ở cấu hình 2 pha, wakeup APB5 chết ở cấu hình APB4). spi_master block và expression 100 %. rv_timer cả thiết kế 67,7 → 92,7 %, gpio 85,0 → 95,1 % (bộ giải mã SECDED: wrapper sinh mã integrity đúng nên syndrome luôn 0). ahb2axi 82,9 → 86,4 % (FSM soft-reset của FIFO và trạng thái burst chết vì lỗi RTL số 2; người duyệt G4 cần xét).
+- Trên mọi thiết kế `expressions_executed` = `branches_executed` = 0, test và assertion không đổi.
 
 ## 27. Đầu vào bất kỳ: intake, adapt, corpus (GĐ21, 2026-11-23)
 

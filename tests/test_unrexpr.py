@@ -64,15 +64,17 @@ class UnrExpr(unittest.TestCase):
 
     def test_locate_keeps_only_terms_with_the_same_meaning_at_module_level(self):
         self.assertEqual(sorted(self.sites), [("m_ex.sv", 20, 17), ("m_ex.sv", 23, 18), ("m_ex.sv", 29, 11),
-                                              ("m_ex.sv", 38, 30), ("m_ex.sv", 44, 20), ("m_ex.sv", 47, 20)])
+                                              ("m_ex.sv", 30, 12), ("m_ex.sv", 38, 30), ("m_ex.sv", 44, 20),
+                                              ("m_ex.sv", 47, 20)])
         self.assertEqual(self.sites[("m_ex.sv", 38, 30)].combos, ["(q==0) => 1", "(q==1) => 0"])  # NBA: kept
         self.assertEqual(self.sites[("m_ex.sv", 23, 18)].mod_line, 2)            # in a generate block: ports
+        # `t = a ^ b; y3 = t & b;` in always_comb: t is written before the expression only, so the expression
+        # reads its last value, which is t at module level
+        self.assertEqual(self.sites[("m_ex.sv", 30, 12)].combos, ["(t==1 && b==1) => 1"])
         w = {k[1:]: v for k, v in self.why.items()}
         self.assertEqual(w[(18, 14, "(a==0) => 0")], "in a function, task or initial block")
         self.assertEqual(w[(24, 19, "(g==1 && b==1) => 1")],
                          "a term reads a name that is not declared at module level")      # generate-local
-        self.assertEqual(w[(30, 12, "(t==1 && b==1) => 1")],
-                         "a term reads a signal that its block writes with a blocking assignment")
         self.assertEqual(w[(34, 41, "(v[i[1:0]+:1]==1 && b==1) => 1")],
                          "a term reads a name that is not declared at module level")      # loop variable
         self.assertEqual(w[(38, 16, "(a==1 && f(b)==1) => 1")], "a term calls a function")
@@ -125,6 +127,10 @@ class UnrExpr(unittest.TestCase):
 
     def test_the_copy_is_checked(self):
         t1, m1 = load("m_ex_copy")
+        # the copy was written with the markers of phase 24, before line 30 could be tried
+        self.assertEqual(ue.verify(self.t0, self.m0, t1, m1, self.sites),
+                         {"nnc_ex0_30_12_0": "marker not declared at module level in the copy"})
+        self.sites.pop(("m_ex.sv", 30, 12))
         self.assertEqual(ue.verify(self.t0, self.m0, t1, m1, self.sites), {})
         # a marker that reads a name the module does not declare
         t2 = copy.deepcopy(t1)
@@ -147,6 +153,98 @@ class UnrExpr(unittest.TestCase):
         t4["modulesp"][0]["stmtsp"].append({"type": "ALWAYS", "loc": "e,30:3,30:9", "keyword": "always_comb",
                                             "stmtsp": [{"type": "IF", "loc": "e,30:20,30:22"}]})
         self.assertEqual(len(ue.verify(self.t0, self.m0, t4, m1, self.sites)), 8)        # every marker
+
+    def test_writes_after_the_expression_in_a_combinational_block(self):
+        # always_comb begin s = a ^ b; y = (s == 1) & b; e[0] = ^s; e[1] = |s & ~e[0];
+        #   if (y) begin x = 1; end else begin z = 0; end  for (...) begin w = w | s; end  end
+        ref = lambda n: {"type": "VARREF", "name": n}
+        sel = lambda n, i: {"type": "SEL", "fromp": [ref(n)], "lsbp": [{"type": "CONST", "name": f"1'h{i}"}],
+                            "widthConst": 1}
+        expr, not_e0, cond, in_loop = {"type": "EQ"}, {"type": "NOT", "lhsp": [sel("e", 0)]}, ref("y"), {"type": "OR"}
+        a1 = {"type": "ASSIGN", "rhsp": [ref("a")], "lhsp": [ref("s")]}
+        a2 = {"type": "ASSIGN", "rhsp": [expr], "lhsp": [ref("y")]}
+        a3 = {"type": "ASSIGN", "rhsp": [ref("s")], "lhsp": [sel("e", 0)]}
+        a4 = {"type": "ASSIGN", "rhsp": [not_e0], "lhsp": [sel("e", 1)]}
+        in_then = {"type": "AND"}
+        then = {"type": "ASSIGN", "rhsp": [in_then], "lhsp": [ref("x")]}
+        els = {"type": "ASSIGN", "rhsp": [], "lhsp": [ref("z")]}
+        if_ = {"type": "IF", "condp": [cond], "thensp": [then], "elsesp": [els]}
+        lw = {"type": "ASSIGN", "rhsp": [in_loop], "lhsp": [ref("w")]}
+        loop = {"type": "WHILE", "condp": [], "stmtsp": [lw]}
+        blk = {"type": "BEGIN", "stmtsp": [a1, a2, a3, a4, if_, loop]}
+        alw = {"type": "ALWAYS", "keyword": "always_comb", "stmtsp": [blk]}
+        base = [{"type": "MODULE"}, alw, blk]
+        self.assertEqual(ue.written_after(base + [a2, expr]), {"y": None, "e": {0, 1}, "x": None, "z": None, "w": None})
+        self.assertEqual(ue.written_after(base + [a4, not_e0]), {"e": {1}, "x": None, "z": None, "w": None})
+        self.assertEqual(ue.written_after(base + [if_, cond]), {"x": None, "z": None, "w": None})   # both branches
+        self.assertEqual(ue.written_after(base + [if_, then, in_then]), {"x": None, "w": None})              # not the else
+        self.assertEqual(ue.written_after(base + [loop, lw, in_loop]), {"w": None})                 # the loop again
+        # bits: a select of a packed vector [H:0] is compared bit by bit, anything else is the whole signal
+        types = {"(A)": {"type": "BASICDTYPE", "range": "1:0"}, "(B)": {"type": "BASICDTYPE", "range": "2:1"}}
+        self.assertFalse(ue._overlap({1}, ["e[0]", "s"], "e", types, [{"e": "(A)"}]))      # e[1] = ..e[0]..
+        self.assertTrue(ue._overlap({0, 1}, ["e[0]"], "e", types, [{"e": "(A)"}]))
+        self.assertTrue(ue._overlap({1}, ["e[0]"], "e", types, [{"e": "(B)"}]))             # [2:1]: not compared
+        self.assertTrue(ue._overlap(None, ["e[0]"], "e", types, [{"e": "(A)"}]))
+        self.assertEqual(ue.term_bits("e[0] | ee[1] | x.e", "e"), {0})
+        self.assertIsNone(ue.term_bits("e[0] & e", "e"))
+        self.assertEqual(ue.term_bits("(r[9:0][3:2][1] == 1'b0)", "r"), {3})
+        self.assertEqual([ue._const({"type": "CONST", "name": n}) for n in ("1'h1", "32'sh5", "4'b1010", "7", "1'hx")],
+                         [1, 5, 10, 7, None])
+
+    def test_enum_items_of_module_types_are_module_names(self):
+        types = {"(T)": {"type": "ENUMDTYPE", "addr": "(T)", "dtypep": "(T)",
+                         "itemsp": [{"type": "ENUMITEM", "name": "ST_IDLE"}, {"type": "ENUMITEM", "name": "ST_RUN"}]},
+                 "(R)": {"type": "REFDTYPE", "addr": "(R)", "refDTypep": "(U)"},
+                 "(U)": {"type": "ENUMDTYPE", "addr": "(U)", "itemsp": [{"type": "ENUMITEM", "name": "B_ON"}]},
+                 "(L)": {"type": "BASICDTYPE", "addr": "(L)", "range": "3:0"}}
+        mod = {"type": "MODULE", "stmtsp": [{"type": "TYPEDEF", "name": "st_t", "dtypep": "(T)"},
+                                            {"type": "VAR", "name": "b", "dtypep": "(R)"},
+                                            {"type": "VAR", "name": "c", "dtypep": "(L)"}]}
+        self.assertEqual(ue.enum_names(mod, types), {"ST_IDLE", "ST_RUN", "B_ON"})
+
+    def test_points_of_one_configuration(self):
+        # ROADMAP 24.5: merged.dat keeps one record per run-set configuration (C01, C02 in the source path)
+        line = [x for x in (DATA / "coverage.dat").read_text(encoding="utf-8").splitlines()
+                if "(a==1 && b==1) => 1" in x and "l\x0220\x01" in x][0]
+        f = line.split("\x01")[1].split("\x02")[1]
+        rec = line[:line.rindex("'") + 1]
+        key = ("", "m_ex.sv", 20, 17, "(a==1 && b==1) => 1")
+        self.assertEqual(cov.config_folder("/root/nnc_runs/runset_ab12/C02/rtl/m_ex.sv"), "C02")
+        self.assertEqual(cov.config_folder("/root/nnc_runs/sim_ab12/rtl/m_ex.sv"), "")
+        with tempfile.TemporaryDirectory() as d:
+            dat = Path(d) / "coverage.dat"
+            dat.write_text(rec.replace(f, "/r/runset_1/C01/rtl/m_ex.sv") + " 0\n"
+                           + rec.replace(f, "/r/runset_1/C02/rtl/m_ex.sv") + " 3\n", encoding="utf-8")
+            self.assertEqual(ue.targets(dat, ["m_ex.sv"]), [])                 # hit in the run set
+            self.assertEqual(ue.targets(dat, ["m_ex.sv"], "C01"), [key])       # never hit in C01
+            self.assertEqual(ue.targets(dat, ["m_ex.sv"], "C02"), [])
+            base = cov.parse_dat(dat, ["m_ex.sv"], {"packages": [], "kept": {}})["metrics"]["expression"]
+            self.assertEqual((base["hit"], base["total"]), (1, 2))
+            r = cov.parse_dat(dat, ["m_ex.sv"], {"packages": [], "kept": {}, "proven_exprs_by_config": {"C01": [list(key)]}})
+            self.assertEqual((r["metrics"]["expression"]["hit"], r["metrics"]["expression"]["total"]), (1, 1))
+            pu = r["scope"]["proven_unreachable"]
+            self.assertEqual((pu["expressions_left_out"], pu["expressions_executed"]), (1, 0))
+            r = cov.parse_dat(dat, ["m_ex.sv"], {"packages": [], "kept": {}, "proven_exprs_by_config": {"C02": [list(key)]}})
+            pu = r["scope"]["proven_unreachable"]                               # hit in C02: counted, reported
+            self.assertEqual((pu["expressions_left_out"], pu["expressions_executed"]), (0, 1))
+        from nnc import unrbranch as ub
+        part = {"A": {"proven": [list(key)]}, "B": {"proven": []}}
+        self.assertEqual(ub.proven_by_config(part, ["A", "B"], ["C01", "C02"]), {"C01": [list(key)]})
+        self.assertEqual(ub.proven_by_config(part, ["A", "A"], ["C01", "C02"]),          # same proof, two folders
+                         {"C01": [list(key)], "C02": [list(key)]})
+        self.assertEqual(ub.proven_by_config(part, ["A"], [None]), {})                    # one run, no folder
+        self.assertEqual(ub.proven_blocks(part, ["A", "B"]), [])
+
+    def test_lines_of_one_configuration(self):
+        from nnc import sim
+        with tempfile.TemporaryDirectory() as d:
+            info = Path(d) / "merged.info"
+            info.write_text("SF:/r/runset_1/C01/rtl/m.sv\nDA:5,0\nDA:6,1\nend_of_record\n"
+                            "SF:/r/runset_1/C02/rtl/m.sv\nDA:5,2\nDA:6,0\nend_of_record\n", encoding="utf-8")
+            r = sim._line_coverage(info, ["m.sv"], {("C01", "m.sv", 5)})
+            self.assertEqual((r["hit"], r["total"], r["left_out_lines"]), (2, 3, 1))
+            r = sim._line_coverage(info, ["m.sv"], {("m.sv", 5)})              # a key without folder: no run set
+            self.assertEqual((r["hit"], r["total"], r["left_out_lines"]), (2, 4, 0))
 
     def test_proven_points_leave_the_expression_coverage(self):
         dat = DATA / "coverage.dat"

@@ -1,6 +1,6 @@
 # Verification report — async_apb_bridge
 
-Generated 2026-11-24T21:07:33+00:00 by NNC Pipeline.
+Generated 2026-11-25T09:42:10+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -11,9 +11,9 @@ Generated 2026-11-24T21:07:33+00:00 by NNC Pipeline.
 | Tests | {'pass': 28} |
 | Run set | 15 runs in 13 configurations (apb4, model_off, syn, 4ph, 4ph_off, apb5, user, sync3, sync4, min, slv_fast, slv_slow, xrand); primary apb4.s1 |
 | Integration | OK |
-| Code coverage (RTL), line | 91.9 % (2948/3208 lines) |
-| Code coverage (RTL), block | 88.8 % (807/909 statement blocks and branch arms) |
-| Code coverage (RTL), expression | 74.8 % (663/886 condition terms) |
+| Code coverage (RTL), line | 94.2 % (2948/3128 lines); 80 points left out (package code the design does not contain), all points 91.9 % (2948/3208) |
+| Code coverage (RTL), block | 97.3 % (807/829 statement blocks and branch arms); 80 points left out (package code the design does not contain; 80 of them proven never reached after reset by formal, work/unr.md), all points 88.8 % (807/909) |
+| Code coverage (RTL), expression | 92.9 % (663/714 condition terms); 172 points left out (package code the design does not contain; 172 of them proven never reached after reset by formal, work/unr.md), all points 74.8 % (663/886) |
 | Code coverage (RTL), toggle | 98.6 % (26577/26946 bit toggles 0->1 and 1->0) |
 | Code coverage (RTL), functional | 97.5 % (39/40 cover points of the specification) |
 | Mutation score | 91.7 % (11 killed / 1 survived / 0 not compiled) |

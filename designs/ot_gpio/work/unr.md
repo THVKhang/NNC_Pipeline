@@ -6,7 +6,7 @@ RTL SHA-256 `920ff6a96ce25dbf...`
 
 ## Configuration straps_off (`0241edb598abb35f`)
 
-Parameters {"GpioAsyncOn": "1", "GpioAsHwStrapsEn": "0"}; macros none; clocks free (multiclock on); 10 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
+Parameters {"GpioAsyncOn": "1", "GpioAsHwStrapsEn": "0"}; macros none; clocks free (multiclock on); 11 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
 
 | Result | Bits | Signals |
 |---|---|---|
@@ -110,7 +110,7 @@ PROVEN constant after the first reset:
 
 ## Configuration base (`0ad0b589fa1f8e2c`)
 
-Parameters {"GpioAsyncOn": "1", "GpioAsHwStrapsEn": "1"}; macros none; clocks free (multiclock on); 10 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
+Parameters {"GpioAsyncOn": "1", "GpioAsHwStrapsEn": "1"}; macros none; clocks free (multiclock on); 11 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
 
 | Result | Bits | Signals |
 |---|---|---|
@@ -214,7 +214,7 @@ PROVEN constant after the first reset:
 
 ## Configuration sync_off (`8a9923866b8bed40`)
 
-Parameters {"GpioAsyncOn": "0", "GpioAsHwStrapsEn": "1"}; macros none; clocks free (multiclock on); 10 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
+Parameters {"GpioAsyncOn": "0", "GpioAsHwStrapsEn": "1"}; macros none; clocks free (multiclock on); 11 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
 
 | Result | Bits | Signals |
 |---|---|---|
@@ -318,7 +318,7 @@ PROVEN constant after the first reset:
 
 ## Configuration min (`a80ebf80db4f0986`)
 
-Parameters {"GpioAsyncOn": "0", "GpioAsHwStrapsEn": "0"}; macros none; clocks free (multiclock on); 10 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
+Parameters {"GpioAsyncOn": "0", "GpioAsHwStrapsEn": "0"}; macros none; clocks free (multiclock on); 11 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
 
 | Result | Bits | Signals |
 |---|---|---|
@@ -422,15 +422,15 @@ PROVEN constant after the first reset:
 
 # Branches never executed after the first reset (nnc/unrbranch.py)
 
-Each IF branch or case item below had no hit. A marker in an instrumented copy of the RTL (a flop that toggles when the branch runs, or in a combinational block a signal set to 1 there) was checked the same way; a copy is used only when Verilator shows every marker as the first statement of its branch. A branch PROVEN in every configuration leaves the block coverage with the lines that no other point covers. Key: instance, file, line, column, kind.
+Each IF branch or case item below had no hit. A marker in an instrumented copy of the RTL (a flop that toggles when the branch runs, or in a combinational block a signal set to 1 there) was checked the same way; a copy is used only when Verilator shows every marker as the first statement of its branch. Each configuration is given the branches that none of its own runs executed. A branch PROVEN in a configuration leaves that configuration's record of the block coverage, with the lines that no other point of it covers. Key: instance, file, line, column, kind.
 
 ## Configuration straps_off (`0241edb598abb35f`)
 
-1 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
+2 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
 
 | Result | Branches |
 |---|---|
-| PROVEN never executed | 17 |
+| PROVEN never executed | 18 |
 | counterexample | 0 |
 | no result (time limit) | 0 |
 
@@ -451,6 +451,7 @@ PROVEN never executed after the first reset:
 - `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_*ata_in`
 - `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_alert_test_regwen`
 - `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_hw_straps_data_in_valid`
+- `prim_subreg.sv:63` if (column 14) in `u_gpio.u_reg.u_hw_straps_data_in_valid`
 - `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_intr_enable`
 - `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_intr_state`
 
@@ -516,11 +517,11 @@ PROVEN never executed after the first reset:
 
 ## Configuration min (`a80ebf80db4f0986`)
 
-1 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
+2 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
 
 | Result | Branches |
 |---|---|
-| PROVEN never executed | 17 |
+| PROVEN never executed | 18 |
 | counterexample | 0 |
 | no result (time limit) | 0 |
 
@@ -541,31 +542,166 @@ PROVEN never executed after the first reset:
 - `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_*ata_in`
 - `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_alert_test_regwen`
 - `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_hw_straps_data_in_valid`
+- `prim_subreg.sv:63` if (column 14) in `u_gpio.u_reg.u_hw_straps_data_in_valid`
 - `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_intr_enable`
 - `prim_subreg.sv:61` elsif (column 14) in `u_gpio.u_reg.u_intr_state`
 
 # Expression points never hit after the first reset (nnc/unrexpr.py)
 
-Each term combination below had no hit. A marker declared at module level in an instrumented copy of the RTL (a wire that is 1 exactly when the combination holds) was checked the same way: PROVEN means the combination never holds after the first reset, so the point can never be hit. A combination is tried only when its terms read module-level signals with the same meaning as at the expression. A point PROVEN in every configuration leaves the expression coverage. Key: instance, file, line, column, combination.
+Each term combination below had no hit. A marker declared at module level in an instrumented copy of the RTL (a wire that is 1 exactly when the combination holds) was checked the same way: PROVEN means the combination never holds after the first reset, so the point can never be hit. A combination is tried only when its terms read module-level signals with the same meaning as at the expression. Each configuration is given the points that none of its own runs hit. A point PROVEN in a configuration leaves that configuration's record of the expression coverage. Key: instance, file, line, column, combination.
 
 ## Configuration straps_off (`0241edb598abb35f`)
 
-7 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
+9 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
 
 | Result | Points |
 |---|---|
-| PROVEN never hit | 602 |
-| counterexample | 16 |
+| PROVEN never hit | 809 |
+| counterexample | 38 |
 | no result (time limit) | 0 |
 | not tried: a term calls a function | 3 |
 | not tried: a term reads a name that is not declared at module level | 25 |
-| not tried: a term reads a signal that its block writes with a blocking assignment | 229 |
 | not tried: a term selects bits of a signal that is not a packed vector [H:0] | 16 |
-| not tried: expression not found in the tree | 1 |
+| not tried: expression not found in the tree | 2 |
 
 PROVEN never hit after the first reset:
 
 - `prim_xnor2.sv:13` `(in0_i==1 && in1_i==1) => 1` (column 18) in `u_*.gen_no_async.u_xnor2_sigint`
+- `prim_secded_inv_64_57_dec.sv:25` `((syndrome_o == 7'h7)==1 && data_i[0]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:25` `((syndrome_o == 7'h7)==1 && data_i[0]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:26` `((syndrome_o == 7'hb)==1 && data_i[1]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:26` `((syndrome_o == 7'hb)==1 && data_i[1]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:27` `((syndrome_o == 7'h13)==1 && data_i[2]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:27` `((syndrome_o == 7'h13)==1 && data_i[2]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:28` `((syndrome_o == 7'h23)==1 && data_i[3]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:28` `((syndrome_o == 7'h23)==1 && data_i[3]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:29` `((syndrome_o == 7'h43)==1 && data_i[4]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:29` `((syndrome_o == 7'h43)==1 && data_i[4]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:30` `((syndrome_o == 7'hd)==1 && data_i[5]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:30` `((syndrome_o == 7'hd)==1 && data_i[5]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:31` `((syndrome_o == 7'h15)==1 && data_i[6]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:31` `((syndrome_o == 7'h15)==1 && data_i[6]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:32` `((syndrome_o == 7'h25)==1 && data_i[7]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:32` `((syndrome_o == 7'h25)==1 && data_i[7]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:33` `((syndrome_o == 7'h45)==1 && data_i[8]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:33` `((syndrome_o == 7'h45)==1 && data_i[8]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:34` `((syndrome_o == 7'h19)==1 && data_i[9]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:34` `((syndrome_o == 7'h19)==1 && data_i[9]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:35` `((syndrome_o == 7'h29)==1 && data_i[10]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:35` `((syndrome_o == 7'h29)==1 && data_i[10]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:36` `((syndrome_o == 7'h49)==1 && data_i[11]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:36` `((syndrome_o == 7'h49)==1 && data_i[11]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:37` `((syndrome_o == 7'h31)==1 && data_i[12]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:37` `((syndrome_o == 7'h31)==1 && data_i[12]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:38` `((syndrome_o == 7'h51)==1 && data_i[13]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:38` `((syndrome_o == 7'h51)==1 && data_i[13]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:39` `((syndrome_o == 7'h61)==1 && data_i[14]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:39` `((syndrome_o == 7'h61)==1 && data_i[14]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:40` `((syndrome_o == 7'he)==1 && data_i[15]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:40` `((syndrome_o == 7'he)==1 && data_i[15]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:41` `((syndrome_o == 7'h16)==1 && data_i[16]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:41` `((syndrome_o == 7'h16)==1 && data_i[16]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:42` `((syndrome_o == 7'h26)==1 && data_i[17]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:42` `((syndrome_o == 7'h26)==1 && data_i[17]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:43` `((syndrome_o == 7'h46)==1 && data_i[18]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:43` `((syndrome_o == 7'h46)==1 && data_i[18]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:44` `((syndrome_o == 7'h1a)==1 && data_i[19]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:44` `((syndrome_o == 7'h1a)==1 && data_i[19]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:45` `((syndrome_o == 7'h2a)==1 && data_i[20]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:45` `((syndrome_o == 7'h2a)==1 && data_i[20]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:46` `((syndrome_o == 7'h4a)==1 && data_i[21]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:46` `((syndrome_o == 7'h4a)==1 && data_i[21]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:47` `((syndrome_o == 7'h32)==1 && data_i[22]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:47` `((syndrome_o == 7'h32)==1 && data_i[22]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:48` `((syndrome_o == 7'h52)==1 && data_i[23]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:48` `((syndrome_o == 7'h52)==1 && data_i[23]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:49` `((syndrome_o == 7'h62)==1 && data_i[24]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:49` `((syndrome_o == 7'h62)==1 && data_i[24]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:50` `((syndrome_o == 7'h1c)==1 && data_i[25]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:50` `((syndrome_o == 7'h1c)==1 && data_i[25]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:51` `((syndrome_o == 7'h2c)==1 && data_i[26]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:51` `((syndrome_o == 7'h2c)==1 && data_i[26]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:52` `((syndrome_o == 7'h4c)==1 && data_i[27]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:52` `((syndrome_o == 7'h4c)==1 && data_i[27]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:53` `((syndrome_o == 7'h34)==1 && data_i[28]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:53` `((syndrome_o == 7'h34)==1 && data_i[28]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:54` `((syndrome_o == 7'h54)==1 && data_i[29]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:54` `((syndrome_o == 7'h54)==1 && data_i[29]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:55` `((syndrome_o == 7'h64)==1 && data_i[30]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:55` `((syndrome_o == 7'h64)==1 && data_i[30]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:56` `((syndrome_o == 7'h38)==1 && data_i[31]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:56` `((syndrome_o == 7'h38)==1 && data_i[31]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:57` `((syndrome_o == 7'h58)==1 && data_i[32]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:57` `((syndrome_o == 7'h58)==1 && data_i[32]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:58` `((syndrome_o == 7'h68)==1 && data_i[33]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:58` `((syndrome_o == 7'h68)==1 && data_i[33]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:59` `((syndrome_o == 7'h70)==1 && data_i[34]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:59` `((syndrome_o == 7'h70)==1 && data_i[34]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:60` `((syndrome_o == 7'h1f)==1 && data_i[35]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:60` `((syndrome_o == 7'h1f)==1 && data_i[35]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:61` `((syndrome_o == 7'h2f)==1 && data_i[36]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:61` `((syndrome_o == 7'h2f)==1 && data_i[36]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:62` `((syndrome_o == 7'h4f)==1 && data_i[37]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:62` `((syndrome_o == 7'h4f)==1 && data_i[37]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:63` `((syndrome_o == 7'h37)==1 && data_i[38]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:63` `((syndrome_o == 7'h37)==1 && data_i[38]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:64` `((syndrome_o == 7'h57)==1 && data_i[39]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:64` `((syndrome_o == 7'h57)==1 && data_i[39]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:65` `((syndrome_o == 7'h67)==1 && data_i[40]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:65` `((syndrome_o == 7'h67)==1 && data_i[40]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:66` `((syndrome_o == 7'h3b)==1 && data_i[41]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:66` `((syndrome_o == 7'h3b)==1 && data_i[41]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:67` `((syndrome_o == 7'h5b)==1 && data_i[42]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:67` `((syndrome_o == 7'h5b)==1 && data_i[42]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:68` `((syndrome_o == 7'h6b)==0 && data_i[43]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:68` `((syndrome_o == 7'h6b)==1 && data_i[43]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:68` `((syndrome_o == 7'h6b)==1 && data_i[43]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:69` `((syndrome_o == 7'h73)==0 && data_i[44]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:69` `((syndrome_o == 7'h73)==1 && data_i[44]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:69` `((syndrome_o == 7'h73)==1 && data_i[44]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:70` `((syndrome_o == 7'h3d)==0 && data_i[45]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:70` `((syndrome_o == 7'h3d)==1 && data_i[45]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:70` `((syndrome_o == 7'h3d)==1 && data_i[45]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:71` `((syndrome_o == 7'h5d)==0 && data_i[46]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:71` `((syndrome_o == 7'h5d)==1 && data_i[46]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:71` `((syndrome_o == 7'h5d)==1 && data_i[46]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:72` `((syndrome_o == 7'h6d)==0 && data_i[47]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:72` `((syndrome_o == 7'h6d)==1 && data_i[47]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:72` `((syndrome_o == 7'h6d)==1 && data_i[47]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:73` `((syndrome_o == 7'h75)==0 && data_i[48]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:73` `((syndrome_o == 7'h75)==1 && data_i[48]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:73` `((syndrome_o == 7'h75)==1 && data_i[48]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:74` `((syndrome_o == 7'h79)==0 && data_i[49]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:74` `((syndrome_o == 7'h79)==1 && data_i[49]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:74` `((syndrome_o == 7'h79)==1 && data_i[49]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:75` `((syndrome_o == 7'h3e)==0 && data_i[50]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:75` `((syndrome_o == 7'h3e)==1 && data_i[50]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:75` `((syndrome_o == 7'h3e)==1 && data_i[50]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:76` `((syndrome_o == 7'h5e)==0 && data_i[51]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:76` `((syndrome_o == 7'h5e)==1 && data_i[51]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:76` `((syndrome_o == 7'h5e)==1 && data_i[51]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:77` `((syndrome_o == 7'h6e)==0 && data_i[52]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:77` `((syndrome_o == 7'h6e)==1 && data_i[52]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:77` `((syndrome_o == 7'h6e)==1 && data_i[52]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:78` `((syndrome_o == 7'h76)==0 && data_i[53]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:78` `((syndrome_o == 7'h76)==1 && data_i[53]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:78` `((syndrome_o == 7'h76)==1 && data_i[53]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:79` `((syndrome_o == 7'h7a)==0 && data_i[54]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:79` `((syndrome_o == 7'h7a)==1 && data_i[54]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:79` `((syndrome_o == 7'h7a)==1 && data_i[54]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:80` `((syndrome_o == 7'h7c)==0 && data_i[55]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:80` `((syndrome_o == 7'h7c)==1 && data_i[55]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:80` `((syndrome_o == 7'h7c)==1 && data_i[55]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:81` `((syndrome_o == 7'h7f)==0 && data_i[56]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:81` `((syndrome_o == 7'h7f)==1 && data_i[56]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:81` `((syndrome_o == 7'h7f)==1 && data_i[56]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[0]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[1]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[2]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[3]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[4]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[5]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[6]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
 - `prim_alert_receiver.sv:109` `(ping_req_d==1 && ping_req_q==0) => 1` (column 35) in `u_alert_receiver`
 - `prim_alert_receiver.sv:109` `(ping_req_q==1) => 0` (column 35) in `u_alert_receiver`
 - `prim_alert_receiver.sv:115` `(ping_tog_pd==1) => 0` (column 24) in `u_alert_receiver`
@@ -1158,6 +1294,78 @@ PROVEN never hit after the first reset:
 - `tlul_cmd_intg_chk.sv:44` `(tl_i[108]==1 && err[1]==1) => 1` (column 31) in `u_gpio.u_reg.u_chk`
 - `tlul_data_integ_dec.sv:25` `(data_err[0]==1) => 1` (column 23) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec`
 - `tlul_data_integ_dec.sv:25` `(data_err[1]==1) => 1` (column 23) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec`
+- `prim_secded_inv_39_32_dec.sv:25` `((syndrome_o == 7'h19)==1 && data_i[0]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:25` `((syndrome_o == 7'h19)==1 && data_i[0]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:26` `((syndrome_o == 7'h54)==1 && data_i[1]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:26` `((syndrome_o == 7'h54)==1 && data_i[1]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:27` `((syndrome_o == 7'h61)==1 && data_i[2]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:27` `((syndrome_o == 7'h61)==1 && data_i[2]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:28` `((syndrome_o == 7'h34)==1 && data_i[3]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:28` `((syndrome_o == 7'h34)==1 && data_i[3]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:29` `((syndrome_o == 7'h1a)==1 && data_i[4]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:29` `((syndrome_o == 7'h1a)==1 && data_i[4]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:30` `((syndrome_o == 7'h15)==1 && data_i[5]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:30` `((syndrome_o == 7'h15)==1 && data_i[5]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:31` `((syndrome_o == 7'h2a)==1 && data_i[6]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:31` `((syndrome_o == 7'h2a)==1 && data_i[6]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:32` `((syndrome_o == 7'h4c)==1 && data_i[7]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:32` `((syndrome_o == 7'h4c)==1 && data_i[7]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:33` `((syndrome_o == 7'h45)==1 && data_i[8]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:33` `((syndrome_o == 7'h45)==1 && data_i[8]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:34` `((syndrome_o == 7'h38)==1 && data_i[9]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:34` `((syndrome_o == 7'h38)==1 && data_i[9]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:35` `((syndrome_o == 7'h49)==1 && data_i[10]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:35` `((syndrome_o == 7'h49)==1 && data_i[10]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:36` `((syndrome_o == 7'hd)==1 && data_i[11]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:36` `((syndrome_o == 7'hd)==1 && data_i[11]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:37` `((syndrome_o == 7'h51)==1 && data_i[12]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:37` `((syndrome_o == 7'h51)==1 && data_i[12]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:38` `((syndrome_o == 7'h31)==1 && data_i[13]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:38` `((syndrome_o == 7'h31)==1 && data_i[13]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:39` `((syndrome_o == 7'h68)==1 && data_i[14]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:39` `((syndrome_o == 7'h68)==1 && data_i[14]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:40` `((syndrome_o == 7'h7)==1 && data_i[15]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:40` `((syndrome_o == 7'h7)==1 && data_i[15]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:41` `((syndrome_o == 7'h1c)==1 && data_i[16]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:41` `((syndrome_o == 7'h1c)==1 && data_i[16]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:42` `((syndrome_o == 7'hb)==1 && data_i[17]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:42` `((syndrome_o == 7'hb)==1 && data_i[17]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:43` `((syndrome_o == 7'h25)==1 && data_i[18]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:43` `((syndrome_o == 7'h25)==1 && data_i[18]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:44` `((syndrome_o == 7'h26)==1 && data_i[19]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:44` `((syndrome_o == 7'h26)==1 && data_i[19]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:45` `((syndrome_o == 7'h46)==1 && data_i[20]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:45` `((syndrome_o == 7'h46)==1 && data_i[20]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:46` `((syndrome_o == 7'he)==1 && data_i[21]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:46` `((syndrome_o == 7'he)==1 && data_i[21]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:47` `((syndrome_o == 7'h70)==1 && data_i[22]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:47` `((syndrome_o == 7'h70)==1 && data_i[22]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:48` `((syndrome_o == 7'h32)==1 && data_i[23]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:48` `((syndrome_o == 7'h32)==1 && data_i[23]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:49` `((syndrome_o == 7'h2c)==1 && data_i[24]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:49` `((syndrome_o == 7'h2c)==1 && data_i[24]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:50` `((syndrome_o == 7'h13)==1 && data_i[25]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:50` `((syndrome_o == 7'h13)==1 && data_i[25]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:51` `((syndrome_o == 7'h23)==1 && data_i[26]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:51` `((syndrome_o == 7'h23)==1 && data_i[26]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:52` `((syndrome_o == 7'h62)==1 && data_i[27]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:52` `((syndrome_o == 7'h62)==1 && data_i[27]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:53` `((syndrome_o == 7'h4a)==1 && data_i[28]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:53` `((syndrome_o == 7'h4a)==1 && data_i[28]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:54` `((syndrome_o == 7'h29)==1 && data_i[29]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:54` `((syndrome_o == 7'h29)==1 && data_i[29]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:55` `((syndrome_o == 7'h16)==1 && data_i[30]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:55` `((syndrome_o == 7'h16)==1 && data_i[30]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:56` `((syndrome_o == 7'h52)==1 && data_i[31]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:56` `((syndrome_o == 7'h52)==1 && data_i[31]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(err_o[0]==1) => 0` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[0]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[1]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[2]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[3]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[4]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[5]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[6]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
 - `prim_subreg_arb.sv:33` `(de==1) => 1` (column 25) in `u_gpio.u_reg.u_intr_enable.wr_en_data_arb`
 - `prim_onehot_check.sv:108` `(addr_err==1) => 1` (column 40) in `u_gpio.u_reg.u_prim_reg_we_check.u_prim_onehot_check`
 - `prim_onehot_check.sv:108` `(oh0_err==1) => 1` (column 40) in `u_gpio.u_reg.u_prim_reg_we_check.u_prim_onehot_check`
@@ -1170,22 +1378,156 @@ PROVEN never hit after the first reset:
 
 ## Configuration base (`0ad0b589fa1f8e2c`)
 
-7 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
+9 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
 
 | Result | Points |
 |---|---|
-| PROVEN never hit | 602 |
-| counterexample | 16 |
+| PROVEN never hit | 809 |
+| counterexample | 38 |
 | no result (time limit) | 0 |
 | not tried: a term calls a function | 3 |
 | not tried: a term reads a name that is not declared at module level | 25 |
-| not tried: a term reads a signal that its block writes with a blocking assignment | 229 |
 | not tried: a term selects bits of a signal that is not a packed vector [H:0] | 16 |
 | not tried: expression not found in the tree | 1 |
 
 PROVEN never hit after the first reset:
 
 - `prim_xnor2.sv:13` `(in0_i==1 && in1_i==1) => 1` (column 18) in `u_*.gen_no_async.u_xnor2_sigint`
+- `prim_secded_inv_64_57_dec.sv:25` `((syndrome_o == 7'h7)==1 && data_i[0]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:25` `((syndrome_o == 7'h7)==1 && data_i[0]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:26` `((syndrome_o == 7'hb)==1 && data_i[1]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:26` `((syndrome_o == 7'hb)==1 && data_i[1]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:27` `((syndrome_o == 7'h13)==1 && data_i[2]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:27` `((syndrome_o == 7'h13)==1 && data_i[2]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:28` `((syndrome_o == 7'h23)==1 && data_i[3]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:28` `((syndrome_o == 7'h23)==1 && data_i[3]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:29` `((syndrome_o == 7'h43)==1 && data_i[4]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:29` `((syndrome_o == 7'h43)==1 && data_i[4]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:30` `((syndrome_o == 7'hd)==1 && data_i[5]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:30` `((syndrome_o == 7'hd)==1 && data_i[5]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:31` `((syndrome_o == 7'h15)==1 && data_i[6]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:31` `((syndrome_o == 7'h15)==1 && data_i[6]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:32` `((syndrome_o == 7'h25)==1 && data_i[7]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:32` `((syndrome_o == 7'h25)==1 && data_i[7]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:33` `((syndrome_o == 7'h45)==1 && data_i[8]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:33` `((syndrome_o == 7'h45)==1 && data_i[8]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:34` `((syndrome_o == 7'h19)==1 && data_i[9]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:34` `((syndrome_o == 7'h19)==1 && data_i[9]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:35` `((syndrome_o == 7'h29)==1 && data_i[10]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:35` `((syndrome_o == 7'h29)==1 && data_i[10]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:36` `((syndrome_o == 7'h49)==1 && data_i[11]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:36` `((syndrome_o == 7'h49)==1 && data_i[11]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:37` `((syndrome_o == 7'h31)==1 && data_i[12]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:37` `((syndrome_o == 7'h31)==1 && data_i[12]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:38` `((syndrome_o == 7'h51)==1 && data_i[13]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:38` `((syndrome_o == 7'h51)==1 && data_i[13]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:39` `((syndrome_o == 7'h61)==1 && data_i[14]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:39` `((syndrome_o == 7'h61)==1 && data_i[14]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:40` `((syndrome_o == 7'he)==1 && data_i[15]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:40` `((syndrome_o == 7'he)==1 && data_i[15]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:41` `((syndrome_o == 7'h16)==1 && data_i[16]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:41` `((syndrome_o == 7'h16)==1 && data_i[16]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:42` `((syndrome_o == 7'h26)==1 && data_i[17]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:42` `((syndrome_o == 7'h26)==1 && data_i[17]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:43` `((syndrome_o == 7'h46)==1 && data_i[18]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:43` `((syndrome_o == 7'h46)==1 && data_i[18]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:44` `((syndrome_o == 7'h1a)==1 && data_i[19]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:44` `((syndrome_o == 7'h1a)==1 && data_i[19]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:45` `((syndrome_o == 7'h2a)==1 && data_i[20]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:45` `((syndrome_o == 7'h2a)==1 && data_i[20]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:46` `((syndrome_o == 7'h4a)==1 && data_i[21]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:46` `((syndrome_o == 7'h4a)==1 && data_i[21]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:47` `((syndrome_o == 7'h32)==1 && data_i[22]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:47` `((syndrome_o == 7'h32)==1 && data_i[22]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:48` `((syndrome_o == 7'h52)==1 && data_i[23]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:48` `((syndrome_o == 7'h52)==1 && data_i[23]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:49` `((syndrome_o == 7'h62)==1 && data_i[24]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:49` `((syndrome_o == 7'h62)==1 && data_i[24]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:50` `((syndrome_o == 7'h1c)==1 && data_i[25]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:50` `((syndrome_o == 7'h1c)==1 && data_i[25]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:51` `((syndrome_o == 7'h2c)==1 && data_i[26]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:51` `((syndrome_o == 7'h2c)==1 && data_i[26]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:52` `((syndrome_o == 7'h4c)==1 && data_i[27]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:52` `((syndrome_o == 7'h4c)==1 && data_i[27]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:53` `((syndrome_o == 7'h34)==1 && data_i[28]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:53` `((syndrome_o == 7'h34)==1 && data_i[28]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:54` `((syndrome_o == 7'h54)==1 && data_i[29]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:54` `((syndrome_o == 7'h54)==1 && data_i[29]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:55` `((syndrome_o == 7'h64)==1 && data_i[30]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:55` `((syndrome_o == 7'h64)==1 && data_i[30]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:56` `((syndrome_o == 7'h38)==1 && data_i[31]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:56` `((syndrome_o == 7'h38)==1 && data_i[31]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:57` `((syndrome_o == 7'h58)==1 && data_i[32]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:57` `((syndrome_o == 7'h58)==1 && data_i[32]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:58` `((syndrome_o == 7'h68)==1 && data_i[33]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:58` `((syndrome_o == 7'h68)==1 && data_i[33]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:59` `((syndrome_o == 7'h70)==1 && data_i[34]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:59` `((syndrome_o == 7'h70)==1 && data_i[34]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:60` `((syndrome_o == 7'h1f)==1 && data_i[35]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:60` `((syndrome_o == 7'h1f)==1 && data_i[35]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:61` `((syndrome_o == 7'h2f)==1 && data_i[36]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:61` `((syndrome_o == 7'h2f)==1 && data_i[36]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:62` `((syndrome_o == 7'h4f)==1 && data_i[37]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:62` `((syndrome_o == 7'h4f)==1 && data_i[37]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:63` `((syndrome_o == 7'h37)==1 && data_i[38]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:63` `((syndrome_o == 7'h37)==1 && data_i[38]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:64` `((syndrome_o == 7'h57)==1 && data_i[39]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:64` `((syndrome_o == 7'h57)==1 && data_i[39]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:65` `((syndrome_o == 7'h67)==1 && data_i[40]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:65` `((syndrome_o == 7'h67)==1 && data_i[40]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:66` `((syndrome_o == 7'h3b)==1 && data_i[41]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:66` `((syndrome_o == 7'h3b)==1 && data_i[41]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:67` `((syndrome_o == 7'h5b)==1 && data_i[42]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:67` `((syndrome_o == 7'h5b)==1 && data_i[42]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:68` `((syndrome_o == 7'h6b)==0 && data_i[43]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:68` `((syndrome_o == 7'h6b)==1 && data_i[43]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:68` `((syndrome_o == 7'h6b)==1 && data_i[43]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:69` `((syndrome_o == 7'h73)==0 && data_i[44]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:69` `((syndrome_o == 7'h73)==1 && data_i[44]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:69` `((syndrome_o == 7'h73)==1 && data_i[44]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:70` `((syndrome_o == 7'h3d)==0 && data_i[45]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:70` `((syndrome_o == 7'h3d)==1 && data_i[45]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:70` `((syndrome_o == 7'h3d)==1 && data_i[45]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:71` `((syndrome_o == 7'h5d)==0 && data_i[46]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:71` `((syndrome_o == 7'h5d)==1 && data_i[46]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:71` `((syndrome_o == 7'h5d)==1 && data_i[46]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:72` `((syndrome_o == 7'h6d)==0 && data_i[47]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:72` `((syndrome_o == 7'h6d)==1 && data_i[47]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:72` `((syndrome_o == 7'h6d)==1 && data_i[47]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:73` `((syndrome_o == 7'h75)==0 && data_i[48]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:73` `((syndrome_o == 7'h75)==1 && data_i[48]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:73` `((syndrome_o == 7'h75)==1 && data_i[48]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:74` `((syndrome_o == 7'h79)==0 && data_i[49]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:74` `((syndrome_o == 7'h79)==1 && data_i[49]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:74` `((syndrome_o == 7'h79)==1 && data_i[49]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:75` `((syndrome_o == 7'h3e)==0 && data_i[50]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:75` `((syndrome_o == 7'h3e)==1 && data_i[50]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:75` `((syndrome_o == 7'h3e)==1 && data_i[50]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:76` `((syndrome_o == 7'h5e)==0 && data_i[51]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:76` `((syndrome_o == 7'h5e)==1 && data_i[51]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:76` `((syndrome_o == 7'h5e)==1 && data_i[51]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:77` `((syndrome_o == 7'h6e)==0 && data_i[52]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:77` `((syndrome_o == 7'h6e)==1 && data_i[52]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:77` `((syndrome_o == 7'h6e)==1 && data_i[52]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:78` `((syndrome_o == 7'h76)==0 && data_i[53]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:78` `((syndrome_o == 7'h76)==1 && data_i[53]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:78` `((syndrome_o == 7'h76)==1 && data_i[53]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:79` `((syndrome_o == 7'h7a)==0 && data_i[54]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:79` `((syndrome_o == 7'h7a)==1 && data_i[54]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:79` `((syndrome_o == 7'h7a)==1 && data_i[54]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:80` `((syndrome_o == 7'h7c)==0 && data_i[55]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:80` `((syndrome_o == 7'h7c)==1 && data_i[55]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:80` `((syndrome_o == 7'h7c)==1 && data_i[55]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:81` `((syndrome_o == 7'h7f)==0 && data_i[56]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:81` `((syndrome_o == 7'h7f)==1 && data_i[56]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:81` `((syndrome_o == 7'h7f)==1 && data_i[56]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[0]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[1]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[2]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[3]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[4]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[5]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[6]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
 - `prim_alert_receiver.sv:109` `(ping_req_d==1 && ping_req_q==0) => 1` (column 35) in `u_alert_receiver`
 - `prim_alert_receiver.sv:109` `(ping_req_q==1) => 0` (column 35) in `u_alert_receiver`
 - `prim_alert_receiver.sv:115` `(ping_tog_pd==1) => 0` (column 24) in `u_alert_receiver`
@@ -1778,6 +2120,78 @@ PROVEN never hit after the first reset:
 - `tlul_cmd_intg_chk.sv:44` `(tl_i[108]==1 && err[1]==1) => 1` (column 31) in `u_gpio.u_reg.u_chk`
 - `tlul_data_integ_dec.sv:25` `(data_err[0]==1) => 1` (column 23) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec`
 - `tlul_data_integ_dec.sv:25` `(data_err[1]==1) => 1` (column 23) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec`
+- `prim_secded_inv_39_32_dec.sv:25` `((syndrome_o == 7'h19)==1 && data_i[0]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:25` `((syndrome_o == 7'h19)==1 && data_i[0]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:26` `((syndrome_o == 7'h54)==1 && data_i[1]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:26` `((syndrome_o == 7'h54)==1 && data_i[1]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:27` `((syndrome_o == 7'h61)==1 && data_i[2]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:27` `((syndrome_o == 7'h61)==1 && data_i[2]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:28` `((syndrome_o == 7'h34)==1 && data_i[3]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:28` `((syndrome_o == 7'h34)==1 && data_i[3]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:29` `((syndrome_o == 7'h1a)==1 && data_i[4]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:29` `((syndrome_o == 7'h1a)==1 && data_i[4]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:30` `((syndrome_o == 7'h15)==1 && data_i[5]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:30` `((syndrome_o == 7'h15)==1 && data_i[5]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:31` `((syndrome_o == 7'h2a)==1 && data_i[6]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:31` `((syndrome_o == 7'h2a)==1 && data_i[6]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:32` `((syndrome_o == 7'h4c)==1 && data_i[7]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:32` `((syndrome_o == 7'h4c)==1 && data_i[7]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:33` `((syndrome_o == 7'h45)==1 && data_i[8]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:33` `((syndrome_o == 7'h45)==1 && data_i[8]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:34` `((syndrome_o == 7'h38)==1 && data_i[9]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:34` `((syndrome_o == 7'h38)==1 && data_i[9]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:35` `((syndrome_o == 7'h49)==1 && data_i[10]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:35` `((syndrome_o == 7'h49)==1 && data_i[10]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:36` `((syndrome_o == 7'hd)==1 && data_i[11]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:36` `((syndrome_o == 7'hd)==1 && data_i[11]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:37` `((syndrome_o == 7'h51)==1 && data_i[12]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:37` `((syndrome_o == 7'h51)==1 && data_i[12]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:38` `((syndrome_o == 7'h31)==1 && data_i[13]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:38` `((syndrome_o == 7'h31)==1 && data_i[13]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:39` `((syndrome_o == 7'h68)==1 && data_i[14]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:39` `((syndrome_o == 7'h68)==1 && data_i[14]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:40` `((syndrome_o == 7'h7)==1 && data_i[15]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:40` `((syndrome_o == 7'h7)==1 && data_i[15]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:41` `((syndrome_o == 7'h1c)==1 && data_i[16]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:41` `((syndrome_o == 7'h1c)==1 && data_i[16]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:42` `((syndrome_o == 7'hb)==1 && data_i[17]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:42` `((syndrome_o == 7'hb)==1 && data_i[17]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:43` `((syndrome_o == 7'h25)==1 && data_i[18]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:43` `((syndrome_o == 7'h25)==1 && data_i[18]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:44` `((syndrome_o == 7'h26)==1 && data_i[19]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:44` `((syndrome_o == 7'h26)==1 && data_i[19]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:45` `((syndrome_o == 7'h46)==1 && data_i[20]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:45` `((syndrome_o == 7'h46)==1 && data_i[20]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:46` `((syndrome_o == 7'he)==1 && data_i[21]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:46` `((syndrome_o == 7'he)==1 && data_i[21]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:47` `((syndrome_o == 7'h70)==1 && data_i[22]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:47` `((syndrome_o == 7'h70)==1 && data_i[22]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:48` `((syndrome_o == 7'h32)==1 && data_i[23]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:48` `((syndrome_o == 7'h32)==1 && data_i[23]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:49` `((syndrome_o == 7'h2c)==1 && data_i[24]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:49` `((syndrome_o == 7'h2c)==1 && data_i[24]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:50` `((syndrome_o == 7'h13)==1 && data_i[25]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:50` `((syndrome_o == 7'h13)==1 && data_i[25]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:51` `((syndrome_o == 7'h23)==1 && data_i[26]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:51` `((syndrome_o == 7'h23)==1 && data_i[26]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:52` `((syndrome_o == 7'h62)==1 && data_i[27]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:52` `((syndrome_o == 7'h62)==1 && data_i[27]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:53` `((syndrome_o == 7'h4a)==1 && data_i[28]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:53` `((syndrome_o == 7'h4a)==1 && data_i[28]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:54` `((syndrome_o == 7'h29)==1 && data_i[29]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:54` `((syndrome_o == 7'h29)==1 && data_i[29]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:55` `((syndrome_o == 7'h16)==1 && data_i[30]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:55` `((syndrome_o == 7'h16)==1 && data_i[30]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:56` `((syndrome_o == 7'h52)==1 && data_i[31]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:56` `((syndrome_o == 7'h52)==1 && data_i[31]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(err_o[0]==1) => 0` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[0]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[1]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[2]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[3]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[4]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[5]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[6]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
 - `prim_subreg_arb.sv:33` `(de==1) => 1` (column 25) in `u_gpio.u_reg.u_intr_enable.wr_en_data_arb`
 - `prim_onehot_check.sv:108` `(addr_err==1) => 1` (column 40) in `u_gpio.u_reg.u_prim_reg_we_check.u_prim_onehot_check`
 - `prim_onehot_check.sv:108` `(oh0_err==1) => 1` (column 40) in `u_gpio.u_reg.u_prim_reg_we_check.u_prim_onehot_check`
@@ -1790,22 +2204,156 @@ PROVEN never hit after the first reset:
 
 ## Configuration sync_off (`8a9923866b8bed40`)
 
-7 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
+9 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
 
 | Result | Points |
 |---|---|
-| PROVEN never hit | 602 |
-| counterexample | 16 |
+| PROVEN never hit | 809 |
+| counterexample | 38 |
 | no result (time limit) | 0 |
 | not tried: a term calls a function | 3 |
 | not tried: a term reads a name that is not declared at module level | 25 |
-| not tried: a term reads a signal that its block writes with a blocking assignment | 229 |
 | not tried: a term selects bits of a signal that is not a packed vector [H:0] | 16 |
 | not tried: expression not found in the tree | 1 |
 
 PROVEN never hit after the first reset:
 
 - `prim_xnor2.sv:13` `(in0_i==1 && in1_i==1) => 1` (column 18) in `u_*.gen_no_async.u_xnor2_sigint`
+- `prim_secded_inv_64_57_dec.sv:25` `((syndrome_o == 7'h7)==1 && data_i[0]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:25` `((syndrome_o == 7'h7)==1 && data_i[0]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:26` `((syndrome_o == 7'hb)==1 && data_i[1]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:26` `((syndrome_o == 7'hb)==1 && data_i[1]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:27` `((syndrome_o == 7'h13)==1 && data_i[2]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:27` `((syndrome_o == 7'h13)==1 && data_i[2]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:28` `((syndrome_o == 7'h23)==1 && data_i[3]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:28` `((syndrome_o == 7'h23)==1 && data_i[3]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:29` `((syndrome_o == 7'h43)==1 && data_i[4]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:29` `((syndrome_o == 7'h43)==1 && data_i[4]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:30` `((syndrome_o == 7'hd)==1 && data_i[5]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:30` `((syndrome_o == 7'hd)==1 && data_i[5]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:31` `((syndrome_o == 7'h15)==1 && data_i[6]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:31` `((syndrome_o == 7'h15)==1 && data_i[6]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:32` `((syndrome_o == 7'h25)==1 && data_i[7]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:32` `((syndrome_o == 7'h25)==1 && data_i[7]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:33` `((syndrome_o == 7'h45)==1 && data_i[8]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:33` `((syndrome_o == 7'h45)==1 && data_i[8]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:34` `((syndrome_o == 7'h19)==1 && data_i[9]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:34` `((syndrome_o == 7'h19)==1 && data_i[9]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:35` `((syndrome_o == 7'h29)==1 && data_i[10]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:35` `((syndrome_o == 7'h29)==1 && data_i[10]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:36` `((syndrome_o == 7'h49)==1 && data_i[11]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:36` `((syndrome_o == 7'h49)==1 && data_i[11]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:37` `((syndrome_o == 7'h31)==1 && data_i[12]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:37` `((syndrome_o == 7'h31)==1 && data_i[12]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:38` `((syndrome_o == 7'h51)==1 && data_i[13]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:38` `((syndrome_o == 7'h51)==1 && data_i[13]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:39` `((syndrome_o == 7'h61)==1 && data_i[14]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:39` `((syndrome_o == 7'h61)==1 && data_i[14]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:40` `((syndrome_o == 7'he)==1 && data_i[15]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:40` `((syndrome_o == 7'he)==1 && data_i[15]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:41` `((syndrome_o == 7'h16)==1 && data_i[16]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:41` `((syndrome_o == 7'h16)==1 && data_i[16]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:42` `((syndrome_o == 7'h26)==1 && data_i[17]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:42` `((syndrome_o == 7'h26)==1 && data_i[17]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:43` `((syndrome_o == 7'h46)==1 && data_i[18]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:43` `((syndrome_o == 7'h46)==1 && data_i[18]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:44` `((syndrome_o == 7'h1a)==1 && data_i[19]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:44` `((syndrome_o == 7'h1a)==1 && data_i[19]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:45` `((syndrome_o == 7'h2a)==1 && data_i[20]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:45` `((syndrome_o == 7'h2a)==1 && data_i[20]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:46` `((syndrome_o == 7'h4a)==1 && data_i[21]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:46` `((syndrome_o == 7'h4a)==1 && data_i[21]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:47` `((syndrome_o == 7'h32)==1 && data_i[22]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:47` `((syndrome_o == 7'h32)==1 && data_i[22]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:48` `((syndrome_o == 7'h52)==1 && data_i[23]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:48` `((syndrome_o == 7'h52)==1 && data_i[23]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:49` `((syndrome_o == 7'h62)==1 && data_i[24]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:49` `((syndrome_o == 7'h62)==1 && data_i[24]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:50` `((syndrome_o == 7'h1c)==1 && data_i[25]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:50` `((syndrome_o == 7'h1c)==1 && data_i[25]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:51` `((syndrome_o == 7'h2c)==1 && data_i[26]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:51` `((syndrome_o == 7'h2c)==1 && data_i[26]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:52` `((syndrome_o == 7'h4c)==1 && data_i[27]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:52` `((syndrome_o == 7'h4c)==1 && data_i[27]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:53` `((syndrome_o == 7'h34)==1 && data_i[28]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:53` `((syndrome_o == 7'h34)==1 && data_i[28]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:54` `((syndrome_o == 7'h54)==1 && data_i[29]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:54` `((syndrome_o == 7'h54)==1 && data_i[29]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:55` `((syndrome_o == 7'h64)==1 && data_i[30]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:55` `((syndrome_o == 7'h64)==1 && data_i[30]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:56` `((syndrome_o == 7'h38)==1 && data_i[31]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:56` `((syndrome_o == 7'h38)==1 && data_i[31]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:57` `((syndrome_o == 7'h58)==1 && data_i[32]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:57` `((syndrome_o == 7'h58)==1 && data_i[32]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:58` `((syndrome_o == 7'h68)==1 && data_i[33]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:58` `((syndrome_o == 7'h68)==1 && data_i[33]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:59` `((syndrome_o == 7'h70)==1 && data_i[34]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:59` `((syndrome_o == 7'h70)==1 && data_i[34]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:60` `((syndrome_o == 7'h1f)==1 && data_i[35]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:60` `((syndrome_o == 7'h1f)==1 && data_i[35]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:61` `((syndrome_o == 7'h2f)==1 && data_i[36]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:61` `((syndrome_o == 7'h2f)==1 && data_i[36]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:62` `((syndrome_o == 7'h4f)==1 && data_i[37]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:62` `((syndrome_o == 7'h4f)==1 && data_i[37]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:63` `((syndrome_o == 7'h37)==1 && data_i[38]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:63` `((syndrome_o == 7'h37)==1 && data_i[38]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:64` `((syndrome_o == 7'h57)==1 && data_i[39]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:64` `((syndrome_o == 7'h57)==1 && data_i[39]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:65` `((syndrome_o == 7'h67)==1 && data_i[40]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:65` `((syndrome_o == 7'h67)==1 && data_i[40]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:66` `((syndrome_o == 7'h3b)==1 && data_i[41]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:66` `((syndrome_o == 7'h3b)==1 && data_i[41]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:67` `((syndrome_o == 7'h5b)==1 && data_i[42]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:67` `((syndrome_o == 7'h5b)==1 && data_i[42]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:68` `((syndrome_o == 7'h6b)==0 && data_i[43]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:68` `((syndrome_o == 7'h6b)==1 && data_i[43]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:68` `((syndrome_o == 7'h6b)==1 && data_i[43]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:69` `((syndrome_o == 7'h73)==0 && data_i[44]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:69` `((syndrome_o == 7'h73)==1 && data_i[44]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:69` `((syndrome_o == 7'h73)==1 && data_i[44]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:70` `((syndrome_o == 7'h3d)==0 && data_i[45]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:70` `((syndrome_o == 7'h3d)==1 && data_i[45]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:70` `((syndrome_o == 7'h3d)==1 && data_i[45]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:71` `((syndrome_o == 7'h5d)==0 && data_i[46]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:71` `((syndrome_o == 7'h5d)==1 && data_i[46]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:71` `((syndrome_o == 7'h5d)==1 && data_i[46]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:72` `((syndrome_o == 7'h6d)==0 && data_i[47]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:72` `((syndrome_o == 7'h6d)==1 && data_i[47]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:72` `((syndrome_o == 7'h6d)==1 && data_i[47]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:73` `((syndrome_o == 7'h75)==0 && data_i[48]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:73` `((syndrome_o == 7'h75)==1 && data_i[48]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:73` `((syndrome_o == 7'h75)==1 && data_i[48]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:74` `((syndrome_o == 7'h79)==0 && data_i[49]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:74` `((syndrome_o == 7'h79)==1 && data_i[49]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:74` `((syndrome_o == 7'h79)==1 && data_i[49]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:75` `((syndrome_o == 7'h3e)==0 && data_i[50]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:75` `((syndrome_o == 7'h3e)==1 && data_i[50]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:75` `((syndrome_o == 7'h3e)==1 && data_i[50]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:76` `((syndrome_o == 7'h5e)==0 && data_i[51]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:76` `((syndrome_o == 7'h5e)==1 && data_i[51]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:76` `((syndrome_o == 7'h5e)==1 && data_i[51]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:77` `((syndrome_o == 7'h6e)==0 && data_i[52]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:77` `((syndrome_o == 7'h6e)==1 && data_i[52]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:77` `((syndrome_o == 7'h6e)==1 && data_i[52]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:78` `((syndrome_o == 7'h76)==0 && data_i[53]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:78` `((syndrome_o == 7'h76)==1 && data_i[53]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:78` `((syndrome_o == 7'h76)==1 && data_i[53]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:79` `((syndrome_o == 7'h7a)==0 && data_i[54]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:79` `((syndrome_o == 7'h7a)==1 && data_i[54]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:79` `((syndrome_o == 7'h7a)==1 && data_i[54]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:80` `((syndrome_o == 7'h7c)==0 && data_i[55]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:80` `((syndrome_o == 7'h7c)==1 && data_i[55]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:80` `((syndrome_o == 7'h7c)==1 && data_i[55]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:81` `((syndrome_o == 7'h7f)==0 && data_i[56]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:81` `((syndrome_o == 7'h7f)==1 && data_i[56]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:81` `((syndrome_o == 7'h7f)==1 && data_i[56]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[0]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[1]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[2]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[3]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[4]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[5]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[6]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
 - `prim_alert_receiver.sv:109` `(ping_req_d==1 && ping_req_q==0) => 1` (column 35) in `u_alert_receiver`
 - `prim_alert_receiver.sv:109` `(ping_req_q==1) => 0` (column 35) in `u_alert_receiver`
 - `prim_alert_receiver.sv:115` `(ping_tog_pd==1) => 0` (column 24) in `u_alert_receiver`
@@ -2398,6 +2946,78 @@ PROVEN never hit after the first reset:
 - `tlul_cmd_intg_chk.sv:44` `(tl_i[108]==1 && err[1]==1) => 1` (column 31) in `u_gpio.u_reg.u_chk`
 - `tlul_data_integ_dec.sv:25` `(data_err[0]==1) => 1` (column 23) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec`
 - `tlul_data_integ_dec.sv:25` `(data_err[1]==1) => 1` (column 23) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec`
+- `prim_secded_inv_39_32_dec.sv:25` `((syndrome_o == 7'h19)==1 && data_i[0]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:25` `((syndrome_o == 7'h19)==1 && data_i[0]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:26` `((syndrome_o == 7'h54)==1 && data_i[1]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:26` `((syndrome_o == 7'h54)==1 && data_i[1]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:27` `((syndrome_o == 7'h61)==1 && data_i[2]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:27` `((syndrome_o == 7'h61)==1 && data_i[2]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:28` `((syndrome_o == 7'h34)==1 && data_i[3]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:28` `((syndrome_o == 7'h34)==1 && data_i[3]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:29` `((syndrome_o == 7'h1a)==1 && data_i[4]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:29` `((syndrome_o == 7'h1a)==1 && data_i[4]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:30` `((syndrome_o == 7'h15)==1 && data_i[5]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:30` `((syndrome_o == 7'h15)==1 && data_i[5]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:31` `((syndrome_o == 7'h2a)==1 && data_i[6]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:31` `((syndrome_o == 7'h2a)==1 && data_i[6]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:32` `((syndrome_o == 7'h4c)==1 && data_i[7]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:32` `((syndrome_o == 7'h4c)==1 && data_i[7]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:33` `((syndrome_o == 7'h45)==1 && data_i[8]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:33` `((syndrome_o == 7'h45)==1 && data_i[8]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:34` `((syndrome_o == 7'h38)==1 && data_i[9]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:34` `((syndrome_o == 7'h38)==1 && data_i[9]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:35` `((syndrome_o == 7'h49)==1 && data_i[10]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:35` `((syndrome_o == 7'h49)==1 && data_i[10]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:36` `((syndrome_o == 7'hd)==1 && data_i[11]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:36` `((syndrome_o == 7'hd)==1 && data_i[11]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:37` `((syndrome_o == 7'h51)==1 && data_i[12]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:37` `((syndrome_o == 7'h51)==1 && data_i[12]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:38` `((syndrome_o == 7'h31)==1 && data_i[13]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:38` `((syndrome_o == 7'h31)==1 && data_i[13]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:39` `((syndrome_o == 7'h68)==1 && data_i[14]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:39` `((syndrome_o == 7'h68)==1 && data_i[14]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:40` `((syndrome_o == 7'h7)==1 && data_i[15]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:40` `((syndrome_o == 7'h7)==1 && data_i[15]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:41` `((syndrome_o == 7'h1c)==1 && data_i[16]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:41` `((syndrome_o == 7'h1c)==1 && data_i[16]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:42` `((syndrome_o == 7'hb)==1 && data_i[17]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:42` `((syndrome_o == 7'hb)==1 && data_i[17]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:43` `((syndrome_o == 7'h25)==1 && data_i[18]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:43` `((syndrome_o == 7'h25)==1 && data_i[18]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:44` `((syndrome_o == 7'h26)==1 && data_i[19]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:44` `((syndrome_o == 7'h26)==1 && data_i[19]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:45` `((syndrome_o == 7'h46)==1 && data_i[20]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:45` `((syndrome_o == 7'h46)==1 && data_i[20]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:46` `((syndrome_o == 7'he)==1 && data_i[21]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:46` `((syndrome_o == 7'he)==1 && data_i[21]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:47` `((syndrome_o == 7'h70)==1 && data_i[22]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:47` `((syndrome_o == 7'h70)==1 && data_i[22]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:48` `((syndrome_o == 7'h32)==1 && data_i[23]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:48` `((syndrome_o == 7'h32)==1 && data_i[23]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:49` `((syndrome_o == 7'h2c)==1 && data_i[24]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:49` `((syndrome_o == 7'h2c)==1 && data_i[24]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:50` `((syndrome_o == 7'h13)==1 && data_i[25]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:50` `((syndrome_o == 7'h13)==1 && data_i[25]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:51` `((syndrome_o == 7'h23)==1 && data_i[26]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:51` `((syndrome_o == 7'h23)==1 && data_i[26]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:52` `((syndrome_o == 7'h62)==1 && data_i[27]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:52` `((syndrome_o == 7'h62)==1 && data_i[27]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:53` `((syndrome_o == 7'h4a)==1 && data_i[28]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:53` `((syndrome_o == 7'h4a)==1 && data_i[28]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:54` `((syndrome_o == 7'h29)==1 && data_i[29]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:54` `((syndrome_o == 7'h29)==1 && data_i[29]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:55` `((syndrome_o == 7'h16)==1 && data_i[30]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:55` `((syndrome_o == 7'h16)==1 && data_i[30]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:56` `((syndrome_o == 7'h52)==1 && data_i[31]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:56` `((syndrome_o == 7'h52)==1 && data_i[31]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(err_o[0]==1) => 0` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[0]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[1]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[2]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[3]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[4]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[5]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[6]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
 - `prim_subreg_arb.sv:33` `(de==1) => 1` (column 25) in `u_gpio.u_reg.u_intr_enable.wr_en_data_arb`
 - `prim_onehot_check.sv:108` `(addr_err==1) => 1` (column 40) in `u_gpio.u_reg.u_prim_reg_we_check.u_prim_onehot_check`
 - `prim_onehot_check.sv:108` `(oh0_err==1) => 1` (column 40) in `u_gpio.u_reg.u_prim_reg_we_check.u_prim_onehot_check`
@@ -2410,22 +3030,156 @@ PROVEN never hit after the first reset:
 
 ## Configuration min (`a80ebf80db4f0986`)
 
-7 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
+9 SymbiYosys task(s); control `u_gpio.u_reg.u_reg_if.outstanding_q[0]`, `u_gpio.u_reg.u_reg_if.reqid_q[4]` (one must change).
 
 | Result | Points |
 |---|---|
-| PROVEN never hit | 602 |
-| counterexample | 16 |
+| PROVEN never hit | 809 |
+| counterexample | 38 |
 | no result (time limit) | 0 |
 | not tried: a term calls a function | 3 |
 | not tried: a term reads a name that is not declared at module level | 25 |
-| not tried: a term reads a signal that its block writes with a blocking assignment | 229 |
 | not tried: a term selects bits of a signal that is not a packed vector [H:0] | 16 |
-| not tried: expression not found in the tree | 1 |
+| not tried: expression not found in the tree | 2 |
 
 PROVEN never hit after the first reset:
 
 - `prim_xnor2.sv:13` `(in0_i==1 && in1_i==1) => 1` (column 18) in `u_*.gen_no_async.u_xnor2_sigint`
+- `prim_secded_inv_64_57_dec.sv:25` `((syndrome_o == 7'h7)==1 && data_i[0]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:25` `((syndrome_o == 7'h7)==1 && data_i[0]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:26` `((syndrome_o == 7'hb)==1 && data_i[1]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:26` `((syndrome_o == 7'hb)==1 && data_i[1]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:27` `((syndrome_o == 7'h13)==1 && data_i[2]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:27` `((syndrome_o == 7'h13)==1 && data_i[2]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:28` `((syndrome_o == 7'h23)==1 && data_i[3]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:28` `((syndrome_o == 7'h23)==1 && data_i[3]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:29` `((syndrome_o == 7'h43)==1 && data_i[4]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:29` `((syndrome_o == 7'h43)==1 && data_i[4]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:30` `((syndrome_o == 7'hd)==1 && data_i[5]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:30` `((syndrome_o == 7'hd)==1 && data_i[5]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:31` `((syndrome_o == 7'h15)==1 && data_i[6]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:31` `((syndrome_o == 7'h15)==1 && data_i[6]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:32` `((syndrome_o == 7'h25)==1 && data_i[7]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:32` `((syndrome_o == 7'h25)==1 && data_i[7]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:33` `((syndrome_o == 7'h45)==1 && data_i[8]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:33` `((syndrome_o == 7'h45)==1 && data_i[8]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:34` `((syndrome_o == 7'h19)==1 && data_i[9]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:34` `((syndrome_o == 7'h19)==1 && data_i[9]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:35` `((syndrome_o == 7'h29)==1 && data_i[10]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:35` `((syndrome_o == 7'h29)==1 && data_i[10]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:36` `((syndrome_o == 7'h49)==1 && data_i[11]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:36` `((syndrome_o == 7'h49)==1 && data_i[11]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:37` `((syndrome_o == 7'h31)==1 && data_i[12]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:37` `((syndrome_o == 7'h31)==1 && data_i[12]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:38` `((syndrome_o == 7'h51)==1 && data_i[13]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:38` `((syndrome_o == 7'h51)==1 && data_i[13]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:39` `((syndrome_o == 7'h61)==1 && data_i[14]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:39` `((syndrome_o == 7'h61)==1 && data_i[14]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:40` `((syndrome_o == 7'he)==1 && data_i[15]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:40` `((syndrome_o == 7'he)==1 && data_i[15]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:41` `((syndrome_o == 7'h16)==1 && data_i[16]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:41` `((syndrome_o == 7'h16)==1 && data_i[16]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:42` `((syndrome_o == 7'h26)==1 && data_i[17]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:42` `((syndrome_o == 7'h26)==1 && data_i[17]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:43` `((syndrome_o == 7'h46)==1 && data_i[18]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:43` `((syndrome_o == 7'h46)==1 && data_i[18]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:44` `((syndrome_o == 7'h1a)==1 && data_i[19]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:44` `((syndrome_o == 7'h1a)==1 && data_i[19]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:45` `((syndrome_o == 7'h2a)==1 && data_i[20]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:45` `((syndrome_o == 7'h2a)==1 && data_i[20]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:46` `((syndrome_o == 7'h4a)==1 && data_i[21]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:46` `((syndrome_o == 7'h4a)==1 && data_i[21]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:47` `((syndrome_o == 7'h32)==1 && data_i[22]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:47` `((syndrome_o == 7'h32)==1 && data_i[22]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:48` `((syndrome_o == 7'h52)==1 && data_i[23]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:48` `((syndrome_o == 7'h52)==1 && data_i[23]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:49` `((syndrome_o == 7'h62)==1 && data_i[24]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:49` `((syndrome_o == 7'h62)==1 && data_i[24]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:50` `((syndrome_o == 7'h1c)==1 && data_i[25]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:50` `((syndrome_o == 7'h1c)==1 && data_i[25]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:51` `((syndrome_o == 7'h2c)==1 && data_i[26]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:51` `((syndrome_o == 7'h2c)==1 && data_i[26]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:52` `((syndrome_o == 7'h4c)==1 && data_i[27]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:52` `((syndrome_o == 7'h4c)==1 && data_i[27]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:53` `((syndrome_o == 7'h34)==1 && data_i[28]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:53` `((syndrome_o == 7'h34)==1 && data_i[28]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:54` `((syndrome_o == 7'h54)==1 && data_i[29]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:54` `((syndrome_o == 7'h54)==1 && data_i[29]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:55` `((syndrome_o == 7'h64)==1 && data_i[30]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:55` `((syndrome_o == 7'h64)==1 && data_i[30]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:56` `((syndrome_o == 7'h38)==1 && data_i[31]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:56` `((syndrome_o == 7'h38)==1 && data_i[31]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:57` `((syndrome_o == 7'h58)==1 && data_i[32]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:57` `((syndrome_o == 7'h58)==1 && data_i[32]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:58` `((syndrome_o == 7'h68)==1 && data_i[33]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:58` `((syndrome_o == 7'h68)==1 && data_i[33]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:59` `((syndrome_o == 7'h70)==1 && data_i[34]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:59` `((syndrome_o == 7'h70)==1 && data_i[34]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:60` `((syndrome_o == 7'h1f)==1 && data_i[35]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:60` `((syndrome_o == 7'h1f)==1 && data_i[35]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:61` `((syndrome_o == 7'h2f)==1 && data_i[36]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:61` `((syndrome_o == 7'h2f)==1 && data_i[36]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:62` `((syndrome_o == 7'h4f)==1 && data_i[37]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:62` `((syndrome_o == 7'h4f)==1 && data_i[37]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:63` `((syndrome_o == 7'h37)==1 && data_i[38]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:63` `((syndrome_o == 7'h37)==1 && data_i[38]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:64` `((syndrome_o == 7'h57)==1 && data_i[39]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:64` `((syndrome_o == 7'h57)==1 && data_i[39]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:65` `((syndrome_o == 7'h67)==1 && data_i[40]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:65` `((syndrome_o == 7'h67)==1 && data_i[40]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:66` `((syndrome_o == 7'h3b)==1 && data_i[41]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:66` `((syndrome_o == 7'h3b)==1 && data_i[41]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:67` `((syndrome_o == 7'h5b)==1 && data_i[42]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:67` `((syndrome_o == 7'h5b)==1 && data_i[42]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:68` `((syndrome_o == 7'h6b)==0 && data_i[43]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:68` `((syndrome_o == 7'h6b)==1 && data_i[43]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:68` `((syndrome_o == 7'h6b)==1 && data_i[43]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:69` `((syndrome_o == 7'h73)==0 && data_i[44]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:69` `((syndrome_o == 7'h73)==1 && data_i[44]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:69` `((syndrome_o == 7'h73)==1 && data_i[44]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:70` `((syndrome_o == 7'h3d)==0 && data_i[45]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:70` `((syndrome_o == 7'h3d)==1 && data_i[45]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:70` `((syndrome_o == 7'h3d)==1 && data_i[45]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:71` `((syndrome_o == 7'h5d)==0 && data_i[46]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:71` `((syndrome_o == 7'h5d)==1 && data_i[46]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:71` `((syndrome_o == 7'h5d)==1 && data_i[46]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:72` `((syndrome_o == 7'h6d)==0 && data_i[47]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:72` `((syndrome_o == 7'h6d)==1 && data_i[47]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:72` `((syndrome_o == 7'h6d)==1 && data_i[47]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:73` `((syndrome_o == 7'h75)==0 && data_i[48]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:73` `((syndrome_o == 7'h75)==1 && data_i[48]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:73` `((syndrome_o == 7'h75)==1 && data_i[48]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:74` `((syndrome_o == 7'h79)==0 && data_i[49]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:74` `((syndrome_o == 7'h79)==1 && data_i[49]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:74` `((syndrome_o == 7'h79)==1 && data_i[49]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:75` `((syndrome_o == 7'h3e)==0 && data_i[50]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:75` `((syndrome_o == 7'h3e)==1 && data_i[50]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:75` `((syndrome_o == 7'h3e)==1 && data_i[50]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:76` `((syndrome_o == 7'h5e)==0 && data_i[51]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:76` `((syndrome_o == 7'h5e)==1 && data_i[51]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:76` `((syndrome_o == 7'h5e)==1 && data_i[51]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:77` `((syndrome_o == 7'h6e)==0 && data_i[52]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:77` `((syndrome_o == 7'h6e)==1 && data_i[52]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:77` `((syndrome_o == 7'h6e)==1 && data_i[52]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:78` `((syndrome_o == 7'h76)==0 && data_i[53]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:78` `((syndrome_o == 7'h76)==1 && data_i[53]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:78` `((syndrome_o == 7'h76)==1 && data_i[53]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:79` `((syndrome_o == 7'h7a)==0 && data_i[54]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:79` `((syndrome_o == 7'h7a)==1 && data_i[54]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:79` `((syndrome_o == 7'h7a)==1 && data_i[54]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:80` `((syndrome_o == 7'h7c)==0 && data_i[55]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:80` `((syndrome_o == 7'h7c)==1 && data_i[55]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:80` `((syndrome_o == 7'h7c)==1 && data_i[55]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:81` `((syndrome_o == 7'h7f)==0 && data_i[56]==1) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:81` `((syndrome_o == 7'h7f)==1 && data_i[56]==0) => 1` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:81` `((syndrome_o == 7'h7f)==1 && data_i[56]==1) => 0` (column 40) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[0]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[1]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[2]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[3]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[4]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[5]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[6]==1 && err_o[0]==0) => 1` (column 30) in `u_*_chk.u_chk`
 - `prim_alert_receiver.sv:109` `(ping_req_d==1 && ping_req_q==0) => 1` (column 35) in `u_alert_receiver`
 - `prim_alert_receiver.sv:109` `(ping_req_q==1) => 0` (column 35) in `u_alert_receiver`
 - `prim_alert_receiver.sv:115` `(ping_tog_pd==1) => 0` (column 24) in `u_alert_receiver`
@@ -3018,6 +3772,78 @@ PROVEN never hit after the first reset:
 - `tlul_cmd_intg_chk.sv:44` `(tl_i[108]==1 && err[1]==1) => 1` (column 31) in `u_gpio.u_reg.u_chk`
 - `tlul_data_integ_dec.sv:25` `(data_err[0]==1) => 1` (column 23) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec`
 - `tlul_data_integ_dec.sv:25` `(data_err[1]==1) => 1` (column 23) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec`
+- `prim_secded_inv_39_32_dec.sv:25` `((syndrome_o == 7'h19)==1 && data_i[0]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:25` `((syndrome_o == 7'h19)==1 && data_i[0]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:26` `((syndrome_o == 7'h54)==1 && data_i[1]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:26` `((syndrome_o == 7'h54)==1 && data_i[1]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:27` `((syndrome_o == 7'h61)==1 && data_i[2]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:27` `((syndrome_o == 7'h61)==1 && data_i[2]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:28` `((syndrome_o == 7'h34)==1 && data_i[3]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:28` `((syndrome_o == 7'h34)==1 && data_i[3]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:29` `((syndrome_o == 7'h1a)==1 && data_i[4]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:29` `((syndrome_o == 7'h1a)==1 && data_i[4]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:30` `((syndrome_o == 7'h15)==1 && data_i[5]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:30` `((syndrome_o == 7'h15)==1 && data_i[5]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:31` `((syndrome_o == 7'h2a)==1 && data_i[6]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:31` `((syndrome_o == 7'h2a)==1 && data_i[6]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:32` `((syndrome_o == 7'h4c)==1 && data_i[7]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:32` `((syndrome_o == 7'h4c)==1 && data_i[7]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:33` `((syndrome_o == 7'h45)==1 && data_i[8]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:33` `((syndrome_o == 7'h45)==1 && data_i[8]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:34` `((syndrome_o == 7'h38)==1 && data_i[9]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:34` `((syndrome_o == 7'h38)==1 && data_i[9]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:35` `((syndrome_o == 7'h49)==1 && data_i[10]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:35` `((syndrome_o == 7'h49)==1 && data_i[10]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:36` `((syndrome_o == 7'hd)==1 && data_i[11]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:36` `((syndrome_o == 7'hd)==1 && data_i[11]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:37` `((syndrome_o == 7'h51)==1 && data_i[12]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:37` `((syndrome_o == 7'h51)==1 && data_i[12]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:38` `((syndrome_o == 7'h31)==1 && data_i[13]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:38` `((syndrome_o == 7'h31)==1 && data_i[13]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:39` `((syndrome_o == 7'h68)==1 && data_i[14]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:39` `((syndrome_o == 7'h68)==1 && data_i[14]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:40` `((syndrome_o == 7'h7)==1 && data_i[15]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:40` `((syndrome_o == 7'h7)==1 && data_i[15]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:41` `((syndrome_o == 7'h1c)==1 && data_i[16]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:41` `((syndrome_o == 7'h1c)==1 && data_i[16]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:42` `((syndrome_o == 7'hb)==1 && data_i[17]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:42` `((syndrome_o == 7'hb)==1 && data_i[17]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:43` `((syndrome_o == 7'h25)==1 && data_i[18]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:43` `((syndrome_o == 7'h25)==1 && data_i[18]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:44` `((syndrome_o == 7'h26)==1 && data_i[19]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:44` `((syndrome_o == 7'h26)==1 && data_i[19]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:45` `((syndrome_o == 7'h46)==1 && data_i[20]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:45` `((syndrome_o == 7'h46)==1 && data_i[20]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:46` `((syndrome_o == 7'he)==1 && data_i[21]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:46` `((syndrome_o == 7'he)==1 && data_i[21]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:47` `((syndrome_o == 7'h70)==1 && data_i[22]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:47` `((syndrome_o == 7'h70)==1 && data_i[22]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:48` `((syndrome_o == 7'h32)==1 && data_i[23]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:48` `((syndrome_o == 7'h32)==1 && data_i[23]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:49` `((syndrome_o == 7'h2c)==1 && data_i[24]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:49` `((syndrome_o == 7'h2c)==1 && data_i[24]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:50` `((syndrome_o == 7'h13)==1 && data_i[25]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:50` `((syndrome_o == 7'h13)==1 && data_i[25]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:51` `((syndrome_o == 7'h23)==1 && data_i[26]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:51` `((syndrome_o == 7'h23)==1 && data_i[26]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:52` `((syndrome_o == 7'h62)==1 && data_i[27]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:52` `((syndrome_o == 7'h62)==1 && data_i[27]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:53` `((syndrome_o == 7'h4a)==1 && data_i[28]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:53` `((syndrome_o == 7'h4a)==1 && data_i[28]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:54` `((syndrome_o == 7'h29)==1 && data_i[29]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:54` `((syndrome_o == 7'h29)==1 && data_i[29]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:55` `((syndrome_o == 7'h16)==1 && data_i[30]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:55` `((syndrome_o == 7'h16)==1 && data_i[30]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:56` `((syndrome_o == 7'h52)==1 && data_i[31]==0) => 1` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:56` `((syndrome_o == 7'h52)==1 && data_i[31]==1) => 0` (column 40) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(err_o[0]==1) => 0` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[0]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[1]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[2]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[3]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[4]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[5]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[6]==1 && err_o[0]==0) => 1` (column 30) in `u_gpio.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
 - `prim_subreg_arb.sv:33` `(de==1) => 1` (column 25) in `u_gpio.u_reg.u_intr_enable.wr_en_data_arb`
 - `prim_onehot_check.sv:108` `(addr_err==1) => 1` (column 40) in `u_gpio.u_reg.u_prim_reg_we_check.u_prim_onehot_check`
 - `prim_onehot_check.sv:108` `(oh0_err==1) => 1` (column 40) in `u_gpio.u_reg.u_prim_reg_we_check.u_prim_onehot_check`

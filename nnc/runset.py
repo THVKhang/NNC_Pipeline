@@ -211,8 +211,8 @@ def run(host: SimHost, contract: dict, rtl_dir: Path, sva_dir: Path, test_file: 
     unr_info = None
     if unr is not None:      # bits proven unreachable (nnc/unr.py): recorded, or proven now with --unr
         confs = [{"name": name, "params": sim.param_values(contract, c["run"]["params"]),
-                  "defines": list(c["run"]["opts"].get("defines") or [])} for name, c in configs.items()
-                 if name not in nocov]
+                  "defines": list(c["run"]["opts"].get("defines") or []), "folder": folder[name]}
+                 for name, c in configs.items() if name not in nocov]
         scope, unr_info = unr(res.out_dir / "merged.dat", names, scope, confs)
     cov = sim.coverage_of(res.out_dir / "merged.info", res.out_dir / "merged.dat", names, functional, scope,
                           preverified)

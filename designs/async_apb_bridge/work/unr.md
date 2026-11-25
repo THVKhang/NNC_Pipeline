@@ -92,18 +92,29 @@ Parameters {"PARA_APBCDC_ADDR_W": "1", "PARA_APBCDC_DATA_W": "8", "PARA_APBCDC_A
 
 # Branches never executed after the first reset (nnc/unrbranch.py)
 
-Each IF branch or case item below had no hit. A marker in an instrumented copy of the RTL (a flop that toggles when the branch runs, or in a combinational block a signal set to 1 there) was checked the same way; a copy is used only when Verilator shows every marker as the first statement of its branch. A branch PROVEN in every configuration leaves the block coverage with the lines that no other point covers. Key: instance, file, line, column, kind.
+Each IF branch or case item below had no hit. A marker in an instrumented copy of the RTL (a flop that toggles when the branch runs, or in a combinational block a signal set to 1 there) was checked the same way; a copy is used only when Verilator shows every marker as the first statement of its branch. Each configuration is given the branches that none of its own runs executed. A branch PROVEN in a configuration leaves that configuration's record of the block coverage, with the lines that no other point of it covers. Key: instance, file, line, column, kind.
 
 ## Configuration sync4 (`03d074635cc5b753`)
 
-0 SymbiYosys task(s).
+1 SymbiYosys task(s); control `u_vlsit_apbcdc_mst.reg_fsm_hs_current_state[0]`, `u_vlsit_apbcdc_slv.reg_fsm_hs_current_state[0]`, `o_apb_psel[0]`, `u_vlsit_apbcdc_slv.o_apb_psel[0]` (one must change).
 
 | Result | Branches |
 |---|---|
-| PROVEN never executed | 0 |
+| PROVEN never executed | 8 |
 | counterexample | 0 |
 | no result (time limit) | 0 |
 | not tried: not in an always block at module level | 2 |
+
+PROVEN never executed after the first reset:
+
+- `m_vlsit_apbcdc_mst.sv:169` case (column 20) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:170` if (column 9) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:170` else (column 10) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:193` if (column 10) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_slv.sv:167` case (column 7) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:168` if (column 9) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:168` else (column 10) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:180` if (column 10) in `u_vlsit_apbcdc_slv`
 
 ## Configuration 4ph_off (`12ad074041883cb9`)
 
@@ -118,130 +129,312 @@ Each IF branch or case item below had no hit. A marker in an instrumented copy o
 
 ## Configuration apb5 (`32cc278804ebee83`)
 
-0 SymbiYosys task(s).
+1 SymbiYosys task(s); control `u_vlsit_apbcdc_mst.reg_fsm_hs_current_state[0]`, `u_vlsit_apbcdc_slv.reg_fsm_hs_current_state[0]`, `o_apb_psel[0]`, `u_vlsit_apbcdc_slv.o_apb_psel[0]` (one must change).
 
 | Result | Branches |
 |---|---|
-| PROVEN never executed | 0 |
+| PROVEN never executed | 8 |
 | counterexample | 0 |
 | no result (time limit) | 0 |
 | not tried: not in an always block at module level | 2 |
+
+PROVEN never executed after the first reset:
+
+- `m_vlsit_apbcdc_mst.sv:169` case (column 20) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:170` if (column 9) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:170` else (column 10) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:193` if (column 10) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_slv.sv:167` case (column 7) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:168` if (column 9) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:168` else (column 10) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:180` if (column 10) in `u_vlsit_apbcdc_slv`
 
 ## Configuration sync3 (`5979460fa76ce344`)
 
-0 SymbiYosys task(s).
+1 SymbiYosys task(s); control `u_vlsit_apbcdc_mst.reg_fsm_hs_current_state[0]`, `u_vlsit_apbcdc_slv.reg_fsm_hs_current_state[0]`, `o_apb_psel[0]`, `u_vlsit_apbcdc_slv.o_apb_psel[0]` (one must change).
 
 | Result | Branches |
 |---|---|
-| PROVEN never executed | 0 |
+| PROVEN never executed | 8 |
 | counterexample | 0 |
 | no result (time limit) | 0 |
 | not tried: not in an always block at module level | 2 |
+
+PROVEN never executed after the first reset:
+
+- `m_vlsit_apbcdc_mst.sv:169` case (column 20) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:170` if (column 9) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:170` else (column 10) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:193` if (column 10) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_slv.sv:167` case (column 7) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:168` if (column 9) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:168` else (column 10) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:180` if (column 10) in `u_vlsit_apbcdc_slv`
 
 ## Configuration slv_slow (`c3a0c82c9b48b4a6`)
 
-0 SymbiYosys task(s).
+1 SymbiYosys task(s); control `u_vlsit_apbcdc_mst.reg_fsm_hs_current_state[0]`, `u_vlsit_apbcdc_slv.reg_fsm_hs_current_state[0]`, `o_apb_psel[0]`, `u_vlsit_apbcdc_slv.o_apb_psel[0]` (one must change).
 
 | Result | Branches |
 |---|---|
-| PROVEN never executed | 0 |
+| PROVEN never executed | 8 |
 | counterexample | 0 |
 | no result (time limit) | 0 |
 | not tried: not in an always block at module level | 2 |
+
+PROVEN never executed after the first reset:
+
+- `m_vlsit_apbcdc_mst.sv:169` case (column 20) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:170` if (column 9) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:170` else (column 10) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:193` if (column 10) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_slv.sv:167` case (column 7) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:168` if (column 9) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:168` else (column 10) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:180` if (column 10) in `u_vlsit_apbcdc_slv`
 
 ## Configuration user (`d3881f9c36cc6a8d`)
 
-0 SymbiYosys task(s).
+1 SymbiYosys task(s); control `u_vlsit_apbcdc_mst.reg_fsm_hs_current_state[0]`, `u_vlsit_apbcdc_slv.reg_fsm_hs_current_state[0]`, `o_apb_psel[0]`, `u_vlsit_apbcdc_slv.o_apb_psel[0]` (one must change).
 
 | Result | Branches |
 |---|---|
-| PROVEN never executed | 0 |
+| PROVEN never executed | 8 |
 | counterexample | 0 |
 | no result (time limit) | 0 |
 | not tried: not in an always block at module level | 2 |
+
+PROVEN never executed after the first reset:
+
+- `m_vlsit_apbcdc_mst.sv:169` case (column 20) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:170` if (column 9) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:170` else (column 10) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:193` if (column 10) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_slv.sv:167` case (column 7) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:168` if (column 9) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:168` else (column 10) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:180` if (column 10) in `u_vlsit_apbcdc_slv`
 
 ## Configuration min (`e2589aa24d947f4a`)
 
-0 SymbiYosys task(s).
+1 SymbiYosys task(s); control `u_vlsit_apbcdc_mst.reg_fsm_hs_current_state[0]`, `u_vlsit_apbcdc_slv.reg_fsm_hs_current_state[0]`, `o_apb_psel[0]`, `u_vlsit_apbcdc_slv.o_apb_psel[0]` (one must change).
 
 | Result | Branches |
 |---|---|
-| PROVEN never executed | 0 |
+| PROVEN never executed | 8 |
 | counterexample | 0 |
 | no result (time limit) | 0 |
 | not tried: not in an always block at module level | 2 |
+
+PROVEN never executed after the first reset:
+
+- `m_vlsit_apbcdc_mst.sv:169` case (column 20) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:170` if (column 9) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:170` else (column 10) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:193` if (column 10) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_slv.sv:167` case (column 7) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:168` if (column 9) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:168` else (column 10) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:180` if (column 10) in `u_vlsit_apbcdc_slv`
 
 # Expression points never hit after the first reset (nnc/unrexpr.py)
 
-Each term combination below had no hit. A marker declared at module level in an instrumented copy of the RTL (a wire that is 1 exactly when the combination holds) was checked the same way: PROVEN means the combination never holds after the first reset, so the point can never be hit. A combination is tried only when its terms read module-level signals with the same meaning as at the expression. A point PROVEN in every configuration leaves the expression coverage. Key: instance, file, line, column, combination.
+Each term combination below had no hit. A marker declared at module level in an instrumented copy of the RTL (a wire that is 1 exactly when the combination holds) was checked the same way: PROVEN means the combination never holds after the first reset, so the point can never be hit. A combination is tried only when its terms read module-level signals with the same meaning as at the expression. Each configuration is given the points that none of its own runs hit. A point PROVEN in a configuration leaves that configuration's record of the expression coverage. Key: instance, file, line, column, combination.
 
 ## Configuration sync4 (`03d074635cc5b753`)
 
-0 SymbiYosys task(s).
+1 SymbiYosys task(s); control `u_vlsit_apbcdc_mst.reg_fsm_hs_current_state[0]`, `u_vlsit_apbcdc_slv.reg_fsm_hs_current_state[0]`, `o_apb_psel[0]`, `u_vlsit_apbcdc_slv.o_apb_psel[0]` (one must change).
 
 | Result | Points |
 |---|---|
-| PROVEN never hit | 0 |
-| counterexample | 0 |
+| PROVEN never hit | 15 |
+| counterexample | 4 |
 | no result (time limit) | 0 |
+| not tried: expression not found in the tree | 1 |
 
-## Configuration 4ph (`12ad074041883cb9`)
+PROVEN never hit after the first reset:
 
-0 SymbiYosys task(s).
+- `m_vlsit_apbcdc_mst.sv:137` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 45) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:167` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 53) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:181` `((reg_fsm_hs_current_state == ENUM_ST_WAIT)==1 && w_ack_event==1 && (PARA_APBCDC_HS_TYPE != 32'h0)==1) => 1` (column 81) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:185` `((PARA_APBCDC_HS_TYPE == 32'h0)==0 && (reg_fsm_hs_current_state == ENUM_ST_CLOSE)==0) => 0` (column 57) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:185` `((PARA_APBCDC_HS_TYPE == 32'h0)==0 && w_ack_s==1) => 0` (column 57) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:185` `((reg_fsm_hs_current_state == ENUM_ST_CLOSE)==1 && w_ack_s==0) => 1` (column 57) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:192` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 40) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:214` `((PARA_APBCDC_APB5 != 32'h0)==1 && i_apb_pwakeup==1) => 1` (column 49) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_slv.sv:134` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 45) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:165` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 53) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:179` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 40) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:180` `((reg_fsm_hs_current_state == ENUM_ST_REQ0)==1 && w_req_s==0) => 1` (column 57) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:207` `((PARA_APBCDC_APB5 != 32'h0)==1 && (reg_fsm_hs_current_state != ENUM_ST_IDLE)==1) => 1` (column 54) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:207` `((PARA_APBCDC_APB5 != 32'h0)==1 && w_load_req==1) => 1` (column 54) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:207` `((PARA_APBCDC_APB5 != 32'h0)==1 && w_wk_s==1) => 1` (column 54) in `u_vlsit_apbcdc_slv`
+
+## Configuration 4ph_off (`12ad074041883cb9`)
+
+1 SymbiYosys task(s); control `u_vlsit_apbcdc_mst.reg_fsm_hs_current_state[0]`, `u_vlsit_apbcdc_slv.reg_fsm_hs_current_state[0]`, `o_apb_psel[0]`, `u_vlsit_apbcdc_slv.o_apb_psel[0]` (one must change).
 
 | Result | Points |
 |---|---|
-| PROVEN never hit | 0 |
+| PROVEN never hit | 13 |
 | counterexample | 0 |
 | no result (time limit) | 0 |
+| not tried: expression not found in the tree | 2 |
+
+PROVEN never hit after the first reset:
+
+- `m_vlsit_apbcdc_mst.sv:137` `((PARA_APBCDC_HS_TYPE == 32'h0)==1) => 1` (column 45) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:167` `((PARA_APBCDC_HS_TYPE == 32'h0)==1) => 1` (column 53) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:181` `((PARA_APBCDC_HS_TYPE != 32'h0)==0) => 0` (column 81) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:185` `((reg_fsm_hs_current_state == ENUM_ST_WAIT)==1 && w_ack_event==1 && (PARA_APBCDC_HS_TYPE == 32'h0)==1) => 1` (column 57) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:185` `(w_ack_event==0 && w_ack_s==1) => 0` (column 57) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:192` `((PARA_APBCDC_HS_TYPE == 32'h0)==1) => 1` (column 40) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:214` `((PARA_APBCDC_APB5 != 32'h0)==1 && i_apb_pwakeup==1) => 1` (column 49) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_slv.sv:134` `((PARA_APBCDC_HS_TYPE == 32'h0)==1) => 1` (column 45) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:165` `((PARA_APBCDC_HS_TYPE == 32'h0)==1) => 1` (column 53) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:179` `((PARA_APBCDC_HS_TYPE == 32'h0)==1) => 1` (column 40) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:207` `((PARA_APBCDC_APB5 != 32'h0)==1 && (reg_fsm_hs_current_state != ENUM_ST_IDLE)==1) => 1` (column 54) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:207` `((PARA_APBCDC_APB5 != 32'h0)==1 && w_load_req==1) => 1` (column 54) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:207` `((PARA_APBCDC_APB5 != 32'h0)==1 && w_wk_s==1) => 1` (column 54) in `u_vlsit_apbcdc_slv`
 
 ## Configuration apb5 (`32cc278804ebee83`)
 
-0 SymbiYosys task(s).
+1 SymbiYosys task(s); control `u_vlsit_apbcdc_mst.reg_fsm_hs_current_state[0]`, `u_vlsit_apbcdc_slv.reg_fsm_hs_current_state[0]`, `o_apb_psel[0]`, `u_vlsit_apbcdc_slv.o_apb_psel[0]` (one must change).
 
 | Result | Points |
 |---|---|
-| PROVEN never hit | 0 |
-| counterexample | 0 |
+| PROVEN never hit | 13 |
+| counterexample | 4 |
 | no result (time limit) | 0 |
+| not tried: expression not found in the tree | 1 |
+
+PROVEN never hit after the first reset:
+
+- `m_vlsit_apbcdc_mst.sv:137` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 45) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:167` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 53) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:181` `((reg_fsm_hs_current_state == ENUM_ST_WAIT)==1 && w_ack_event==1 && (PARA_APBCDC_HS_TYPE != 32'h0)==1) => 1` (column 81) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:185` `((PARA_APBCDC_HS_TYPE == 32'h0)==0 && (reg_fsm_hs_current_state == ENUM_ST_CLOSE)==0) => 0` (column 57) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:185` `((PARA_APBCDC_HS_TYPE == 32'h0)==0 && w_ack_s==1) => 0` (column 57) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:185` `((reg_fsm_hs_current_state == ENUM_ST_CLOSE)==1 && w_ack_s==0) => 1` (column 57) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:192` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 40) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:214` `((PARA_APBCDC_APB5 != 32'h0)==0) => 0` (column 49) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_slv.sv:134` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 45) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:165` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 53) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:179` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 40) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:180` `((reg_fsm_hs_current_state == ENUM_ST_REQ0)==1 && w_req_s==0) => 1` (column 57) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:207` `((PARA_APBCDC_APB5 != 32'h0)==0) => 0` (column 54) in `u_vlsit_apbcdc_slv`
 
 ## Configuration sync3 (`5979460fa76ce344`)
 
-0 SymbiYosys task(s).
+1 SymbiYosys task(s); control `u_vlsit_apbcdc_mst.reg_fsm_hs_current_state[0]`, `u_vlsit_apbcdc_slv.reg_fsm_hs_current_state[0]`, `o_apb_psel[0]`, `u_vlsit_apbcdc_slv.o_apb_psel[0]` (one must change).
 
 | Result | Points |
 |---|---|
-| PROVEN never hit | 0 |
-| counterexample | 0 |
+| PROVEN never hit | 15 |
+| counterexample | 4 |
 | no result (time limit) | 0 |
+| not tried: expression not found in the tree | 1 |
 
-## Configuration apb4 (`c3a0c82c9b48b4a6`)
+PROVEN never hit after the first reset:
 
-0 SymbiYosys task(s).
+- `m_vlsit_apbcdc_mst.sv:137` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 45) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:167` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 53) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:181` `((reg_fsm_hs_current_state == ENUM_ST_WAIT)==1 && w_ack_event==1 && (PARA_APBCDC_HS_TYPE != 32'h0)==1) => 1` (column 81) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:185` `((PARA_APBCDC_HS_TYPE == 32'h0)==0 && (reg_fsm_hs_current_state == ENUM_ST_CLOSE)==0) => 0` (column 57) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:185` `((PARA_APBCDC_HS_TYPE == 32'h0)==0 && w_ack_s==1) => 0` (column 57) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:185` `((reg_fsm_hs_current_state == ENUM_ST_CLOSE)==1 && w_ack_s==0) => 1` (column 57) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:192` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 40) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:214` `((PARA_APBCDC_APB5 != 32'h0)==1 && i_apb_pwakeup==1) => 1` (column 49) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_slv.sv:134` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 45) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:165` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 53) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:179` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 40) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:180` `((reg_fsm_hs_current_state == ENUM_ST_REQ0)==1 && w_req_s==0) => 1` (column 57) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:207` `((PARA_APBCDC_APB5 != 32'h0)==1 && (reg_fsm_hs_current_state != ENUM_ST_IDLE)==1) => 1` (column 54) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:207` `((PARA_APBCDC_APB5 != 32'h0)==1 && w_load_req==1) => 1` (column 54) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:207` `((PARA_APBCDC_APB5 != 32'h0)==1 && w_wk_s==1) => 1` (column 54) in `u_vlsit_apbcdc_slv`
+
+## Configuration slv_slow (`c3a0c82c9b48b4a6`)
+
+1 SymbiYosys task(s); control `u_vlsit_apbcdc_mst.reg_fsm_hs_current_state[0]`, `u_vlsit_apbcdc_slv.reg_fsm_hs_current_state[0]`, `o_apb_psel[0]`, `u_vlsit_apbcdc_slv.o_apb_psel[0]` (one must change).
 
 | Result | Points |
 |---|---|
-| PROVEN never hit | 0 |
-| counterexample | 0 |
+| PROVEN never hit | 15 |
+| counterexample | 4 |
 | no result (time limit) | 0 |
+| not tried: expression not found in the tree | 2 |
+
+PROVEN never hit after the first reset:
+
+- `m_vlsit_apbcdc_mst.sv:137` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 45) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:167` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 53) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:181` `((reg_fsm_hs_current_state == ENUM_ST_WAIT)==1 && w_ack_event==1 && (PARA_APBCDC_HS_TYPE != 32'h0)==1) => 1` (column 81) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:185` `((PARA_APBCDC_HS_TYPE == 32'h0)==0 && (reg_fsm_hs_current_state == ENUM_ST_CLOSE)==0) => 0` (column 57) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:185` `((PARA_APBCDC_HS_TYPE == 32'h0)==0 && w_ack_s==1) => 0` (column 57) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:185` `((reg_fsm_hs_current_state == ENUM_ST_CLOSE)==1 && w_ack_s==0) => 1` (column 57) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:192` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 40) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:214` `((PARA_APBCDC_APB5 != 32'h0)==1 && i_apb_pwakeup==1) => 1` (column 49) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_slv.sv:134` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 45) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:165` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 53) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:179` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 40) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:180` `((reg_fsm_hs_current_state == ENUM_ST_REQ0)==1 && w_req_s==0) => 1` (column 57) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:207` `((PARA_APBCDC_APB5 != 32'h0)==1 && (reg_fsm_hs_current_state != ENUM_ST_IDLE)==1) => 1` (column 54) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:207` `((PARA_APBCDC_APB5 != 32'h0)==1 && w_load_req==1) => 1` (column 54) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:207` `((PARA_APBCDC_APB5 != 32'h0)==1 && w_wk_s==1) => 1` (column 54) in `u_vlsit_apbcdc_slv`
 
 ## Configuration user (`d3881f9c36cc6a8d`)
 
-0 SymbiYosys task(s).
+1 SymbiYosys task(s); control `u_vlsit_apbcdc_mst.reg_fsm_hs_current_state[0]`, `u_vlsit_apbcdc_slv.reg_fsm_hs_current_state[0]`, `o_apb_psel[0]`, `u_vlsit_apbcdc_slv.o_apb_psel[0]` (one must change).
 
 | Result | Points |
 |---|---|
-| PROVEN never hit | 0 |
-| counterexample | 0 |
+| PROVEN never hit | 13 |
+| counterexample | 4 |
 | no result (time limit) | 0 |
+| not tried: expression not found in the tree | 1 |
+
+PROVEN never hit after the first reset:
+
+- `m_vlsit_apbcdc_mst.sv:137` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 45) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:167` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 53) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:181` `((reg_fsm_hs_current_state == ENUM_ST_WAIT)==1 && w_ack_event==1 && (PARA_APBCDC_HS_TYPE != 32'h0)==1) => 1` (column 81) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:185` `((PARA_APBCDC_HS_TYPE == 32'h0)==0 && (reg_fsm_hs_current_state == ENUM_ST_CLOSE)==0) => 0` (column 57) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:185` `((PARA_APBCDC_HS_TYPE == 32'h0)==0 && w_ack_s==1) => 0` (column 57) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:185` `((reg_fsm_hs_current_state == ENUM_ST_CLOSE)==1 && w_ack_s==0) => 1` (column 57) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:192` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 40) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:214` `((PARA_APBCDC_APB5 != 32'h0)==0) => 0` (column 49) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_slv.sv:134` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 45) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:165` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 53) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:179` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 40) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:180` `((reg_fsm_hs_current_state == ENUM_ST_REQ0)==1 && w_req_s==0) => 1` (column 57) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:207` `((PARA_APBCDC_APB5 != 32'h0)==0) => 0` (column 54) in `u_vlsit_apbcdc_slv`
 
 ## Configuration min (`e2589aa24d947f4a`)
 
-0 SymbiYosys task(s).
+1 SymbiYosys task(s); control `u_vlsit_apbcdc_mst.reg_fsm_hs_current_state[0]`, `u_vlsit_apbcdc_slv.reg_fsm_hs_current_state[0]`, `o_apb_psel[0]`, `u_vlsit_apbcdc_slv.o_apb_psel[0]` (one must change).
 
 | Result | Points |
 |---|---|
-| PROVEN never hit | 0 |
-| counterexample | 0 |
+| PROVEN never hit | 15 |
+| counterexample | 4 |
 | no result (time limit) | 0 |
+| not tried: expression not found in the tree | 1 |
+
+PROVEN never hit after the first reset:
+
+- `m_vlsit_apbcdc_mst.sv:137` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 45) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:167` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 53) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:181` `((reg_fsm_hs_current_state == ENUM_ST_WAIT)==1 && w_ack_event==1 && (PARA_APBCDC_HS_TYPE != 32'h0)==1) => 1` (column 81) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:185` `((PARA_APBCDC_HS_TYPE == 32'h0)==0 && (reg_fsm_hs_current_state == ENUM_ST_CLOSE)==0) => 0` (column 57) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:185` `((PARA_APBCDC_HS_TYPE == 32'h0)==0 && w_ack_s==1) => 0` (column 57) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:185` `((reg_fsm_hs_current_state == ENUM_ST_CLOSE)==1 && w_ack_s==0) => 1` (column 57) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:192` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 40) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_mst.sv:214` `((PARA_APBCDC_APB5 != 32'h0)==1 && i_apb_pwakeup==1) => 1` (column 49) in `u_vlsit_apbcdc_mst`
+- `m_vlsit_apbcdc_slv.sv:134` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 45) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:165` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 53) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:179` `((PARA_APBCDC_HS_TYPE == 32'h0)==0) => 0` (column 40) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:180` `((reg_fsm_hs_current_state == ENUM_ST_REQ0)==1 && w_req_s==0) => 1` (column 57) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:207` `((PARA_APBCDC_APB5 != 32'h0)==1 && (reg_fsm_hs_current_state != ENUM_ST_IDLE)==1) => 1` (column 54) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:207` `((PARA_APBCDC_APB5 != 32'h0)==1 && w_load_req==1) => 1` (column 54) in `u_vlsit_apbcdc_slv`
+- `m_vlsit_apbcdc_slv.sv:207` `((PARA_APBCDC_APB5 != 32'h0)==1 && w_wk_s==1) => 1` (column 54) in `u_vlsit_apbcdc_slv`
 

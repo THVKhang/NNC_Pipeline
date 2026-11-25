@@ -6,7 +6,7 @@ RTL SHA-256 `4704629a580137f8...`
 
 ## Configuration base (`6226750a4c487076`)
 
-Parameters {}; macros none; clocks free (multiclock on); 10 SymbiYosys task(s); control `u_rv_timer.gen_harts[0].u_core.tick_count[0]`, `u_rv_timer.u_reg.u_reg_if.outstanding_q[0]`, `u_rv_timer.u_reg.u_reg_if.reqid_q[0]`, `u_alert_receiver.state_q[0]` (one must change).
+Parameters {}; macros none; clocks free (multiclock on); 11 SymbiYosys task(s); control `u_rv_timer.gen_harts[0].u_core.tick_count[0]`, `u_rv_timer.u_reg.u_reg_if.outstanding_q[0]`, `u_rv_timer.u_reg.u_reg_if.reqid_q[0]`, `u_alert_receiver.state_q[0]` (one must change).
 
 | Result | Bits | Signals |
 |---|---|---|
@@ -73,7 +73,7 @@ PROVEN constant after the first reset:
 
 # Branches never executed after the first reset (nnc/unrbranch.py)
 
-Each IF branch or case item below had no hit. A marker in an instrumented copy of the RTL (a flop that toggles when the branch runs, or in a combinational block a signal set to 1 there) was checked the same way; a copy is used only when Verilator shows every marker as the first statement of its branch. A branch PROVEN in every configuration leaves the block coverage with the lines that no other point covers. Key: instance, file, line, column, kind.
+Each IF branch or case item below had no hit. A marker in an instrumented copy of the RTL (a flop that toggles when the branch runs, or in a combinational block a signal set to 1 there) was checked the same way; a copy is used only when Verilator shows every marker as the first statement of its branch. Each configuration is given the branches that none of its own runs executed. A branch PROVEN in a configuration leaves that configuration's record of the block coverage, with the lines that no other point of it covers. Key: instance, file, line, column, kind.
 
 ## Configuration base (`6226750a4c487076`)
 
@@ -109,20 +109,19 @@ PROVEN never executed after the first reset:
 
 # Expression points never hit after the first reset (nnc/unrexpr.py)
 
-Each term combination below had no hit. A marker declared at module level in an instrumented copy of the RTL (a wire that is 1 exactly when the combination holds) was checked the same way: PROVEN means the combination never holds after the first reset, so the point can never be hit. A combination is tried only when its terms read module-level signals with the same meaning as at the expression. A point PROVEN in every configuration leaves the expression coverage. Key: instance, file, line, column, combination.
+Each term combination below had no hit. A marker declared at module level in an instrumented copy of the RTL (a wire that is 1 exactly when the combination holds) was checked the same way: PROVEN means the combination never holds after the first reset, so the point can never be hit. A combination is tried only when its terms read module-level signals with the same meaning as at the expression. Each configuration is given the points that none of its own runs hit. A point PROVEN in a configuration leaves that configuration's record of the expression coverage. Key: instance, file, line, column, combination.
 
 ## Configuration base (`6226750a4c487076`)
 
-1 SymbiYosys task(s); control `u_rv_timer.gen_harts[0].u_core.tick_count[0]`, `u_rv_timer.u_reg.u_reg_if.outstanding_q[0]`, `u_rv_timer.u_reg.u_reg_if.reqid_q[0]`, `u_alert_receiver.state_q[0]` (one must change).
+3 SymbiYosys task(s); control `u_rv_timer.gen_harts[0].u_core.tick_count[0]`, `u_rv_timer.u_reg.u_reg_if.outstanding_q[0]`, `u_rv_timer.u_reg.u_reg_if.reqid_q[0]`, `u_alert_receiver.state_q[0]` (one must change).
 
 | Result | Points |
 |---|---|
-| PROVEN never hit | 27 |
+| PROVEN never hit | 234 |
 | counterexample | 3 |
 | no result (time limit) | 0 |
 | not tried: a term calls a function | 1 |
 | not tried: a term reads a name that is not declared at module level | 19 |
-| not tried: a term reads a signal that its block writes with a blocking assignment | 207 |
 | not tried: a term selects bits of a signal that is not a packed vector [H:0] | 16 |
 | not tried: expression not found in the tree | 1 |
 
@@ -137,6 +136,141 @@ PROVEN never hit after the first reset:
 - `prim_alert_receiver.sv:147` `(ping_rise==1) => 1` (column 37) in `u_alert_receiver`
 - `prim_alert_receiver.sv:226` `(ping_pending_q==1) => 1` (column 33) in `u_alert_receiver`
 - `prim_alert_receiver.sv:226` `(ping_rise==1) => 1` (column 33) in `u_alert_receiver`
+- `prim_secded_inv_64_57_dec.sv:25` `((syndrome_o == 7'h7)==1 && data_i[0]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:25` `((syndrome_o == 7'h7)==1 && data_i[0]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:26` `((syndrome_o == 7'hb)==1 && data_i[1]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:26` `((syndrome_o == 7'hb)==1 && data_i[1]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:27` `((syndrome_o == 7'h13)==1 && data_i[2]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:27` `((syndrome_o == 7'h13)==1 && data_i[2]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:28` `((syndrome_o == 7'h23)==1 && data_i[3]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:28` `((syndrome_o == 7'h23)==1 && data_i[3]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:29` `((syndrome_o == 7'h43)==1 && data_i[4]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:29` `((syndrome_o == 7'h43)==1 && data_i[4]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:30` `((syndrome_o == 7'hd)==1 && data_i[5]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:30` `((syndrome_o == 7'hd)==1 && data_i[5]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:31` `((syndrome_o == 7'h15)==1 && data_i[6]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:31` `((syndrome_o == 7'h15)==1 && data_i[6]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:32` `((syndrome_o == 7'h25)==1 && data_i[7]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:32` `((syndrome_o == 7'h25)==1 && data_i[7]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:33` `((syndrome_o == 7'h45)==1 && data_i[8]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:33` `((syndrome_o == 7'h45)==1 && data_i[8]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:34` `((syndrome_o == 7'h19)==1 && data_i[9]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:34` `((syndrome_o == 7'h19)==1 && data_i[9]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:35` `((syndrome_o == 7'h29)==1 && data_i[10]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:35` `((syndrome_o == 7'h29)==1 && data_i[10]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:36` `((syndrome_o == 7'h49)==1 && data_i[11]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:36` `((syndrome_o == 7'h49)==1 && data_i[11]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:37` `((syndrome_o == 7'h31)==1 && data_i[12]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:37` `((syndrome_o == 7'h31)==1 && data_i[12]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:38` `((syndrome_o == 7'h51)==1 && data_i[13]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:38` `((syndrome_o == 7'h51)==1 && data_i[13]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:39` `((syndrome_o == 7'h61)==1 && data_i[14]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:39` `((syndrome_o == 7'h61)==1 && data_i[14]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:40` `((syndrome_o == 7'he)==1 && data_i[15]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:40` `((syndrome_o == 7'he)==1 && data_i[15]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:41` `((syndrome_o == 7'h16)==1 && data_i[16]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:41` `((syndrome_o == 7'h16)==1 && data_i[16]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:42` `((syndrome_o == 7'h26)==1 && data_i[17]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:42` `((syndrome_o == 7'h26)==1 && data_i[17]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:43` `((syndrome_o == 7'h46)==1 && data_i[18]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:43` `((syndrome_o == 7'h46)==1 && data_i[18]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:44` `((syndrome_o == 7'h1a)==1 && data_i[19]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:44` `((syndrome_o == 7'h1a)==1 && data_i[19]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:45` `((syndrome_o == 7'h2a)==1 && data_i[20]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:45` `((syndrome_o == 7'h2a)==1 && data_i[20]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:46` `((syndrome_o == 7'h4a)==1 && data_i[21]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:46` `((syndrome_o == 7'h4a)==1 && data_i[21]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:47` `((syndrome_o == 7'h32)==1 && data_i[22]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:47` `((syndrome_o == 7'h32)==1 && data_i[22]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:48` `((syndrome_o == 7'h52)==1 && data_i[23]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:48` `((syndrome_o == 7'h52)==1 && data_i[23]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:49` `((syndrome_o == 7'h62)==1 && data_i[24]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:49` `((syndrome_o == 7'h62)==1 && data_i[24]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:50` `((syndrome_o == 7'h1c)==1 && data_i[25]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:50` `((syndrome_o == 7'h1c)==1 && data_i[25]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:51` `((syndrome_o == 7'h2c)==1 && data_i[26]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:51` `((syndrome_o == 7'h2c)==1 && data_i[26]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:52` `((syndrome_o == 7'h4c)==1 && data_i[27]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:52` `((syndrome_o == 7'h4c)==1 && data_i[27]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:53` `((syndrome_o == 7'h34)==1 && data_i[28]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:53` `((syndrome_o == 7'h34)==1 && data_i[28]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:54` `((syndrome_o == 7'h54)==1 && data_i[29]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:54` `((syndrome_o == 7'h54)==1 && data_i[29]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:55` `((syndrome_o == 7'h64)==1 && data_i[30]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:55` `((syndrome_o == 7'h64)==1 && data_i[30]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:56` `((syndrome_o == 7'h38)==1 && data_i[31]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:56` `((syndrome_o == 7'h38)==1 && data_i[31]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:57` `((syndrome_o == 7'h58)==1 && data_i[32]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:57` `((syndrome_o == 7'h58)==1 && data_i[32]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:58` `((syndrome_o == 7'h68)==1 && data_i[33]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:58` `((syndrome_o == 7'h68)==1 && data_i[33]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:59` `((syndrome_o == 7'h70)==1 && data_i[34]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:59` `((syndrome_o == 7'h70)==1 && data_i[34]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:60` `((syndrome_o == 7'h1f)==1 && data_i[35]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:60` `((syndrome_o == 7'h1f)==1 && data_i[35]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:61` `((syndrome_o == 7'h2f)==1 && data_i[36]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:61` `((syndrome_o == 7'h2f)==1 && data_i[36]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:62` `((syndrome_o == 7'h4f)==1 && data_i[37]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:62` `((syndrome_o == 7'h4f)==1 && data_i[37]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:63` `((syndrome_o == 7'h37)==1 && data_i[38]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:63` `((syndrome_o == 7'h37)==1 && data_i[38]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:64` `((syndrome_o == 7'h57)==1 && data_i[39]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:64` `((syndrome_o == 7'h57)==1 && data_i[39]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:65` `((syndrome_o == 7'h67)==1 && data_i[40]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:65` `((syndrome_o == 7'h67)==1 && data_i[40]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:66` `((syndrome_o == 7'h3b)==1 && data_i[41]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:66` `((syndrome_o == 7'h3b)==1 && data_i[41]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:67` `((syndrome_o == 7'h5b)==1 && data_i[42]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:67` `((syndrome_o == 7'h5b)==1 && data_i[42]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:68` `((syndrome_o == 7'h6b)==0 && data_i[43]==1) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:68` `((syndrome_o == 7'h6b)==1 && data_i[43]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:68` `((syndrome_o == 7'h6b)==1 && data_i[43]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:69` `((syndrome_o == 7'h73)==0 && data_i[44]==1) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:69` `((syndrome_o == 7'h73)==1 && data_i[44]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:69` `((syndrome_o == 7'h73)==1 && data_i[44]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:70` `((syndrome_o == 7'h3d)==0 && data_i[45]==1) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:70` `((syndrome_o == 7'h3d)==1 && data_i[45]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:70` `((syndrome_o == 7'h3d)==1 && data_i[45]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:71` `((syndrome_o == 7'h5d)==0 && data_i[46]==1) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:71` `((syndrome_o == 7'h5d)==1 && data_i[46]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:71` `((syndrome_o == 7'h5d)==1 && data_i[46]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:72` `((syndrome_o == 7'h6d)==0 && data_i[47]==1) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:72` `((syndrome_o == 7'h6d)==1 && data_i[47]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:72` `((syndrome_o == 7'h6d)==1 && data_i[47]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:73` `((syndrome_o == 7'h75)==0 && data_i[48]==1) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:73` `((syndrome_o == 7'h75)==1 && data_i[48]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:73` `((syndrome_o == 7'h75)==1 && data_i[48]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:74` `((syndrome_o == 7'h79)==0 && data_i[49]==1) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:74` `((syndrome_o == 7'h79)==1 && data_i[49]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:74` `((syndrome_o == 7'h79)==1 && data_i[49]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:75` `((syndrome_o == 7'h3e)==0 && data_i[50]==1) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:75` `((syndrome_o == 7'h3e)==1 && data_i[50]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:75` `((syndrome_o == 7'h3e)==1 && data_i[50]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:76` `((syndrome_o == 7'h5e)==0 && data_i[51]==1) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:76` `((syndrome_o == 7'h5e)==1 && data_i[51]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:76` `((syndrome_o == 7'h5e)==1 && data_i[51]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:77` `((syndrome_o == 7'h6e)==0 && data_i[52]==1) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:77` `((syndrome_o == 7'h6e)==1 && data_i[52]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:77` `((syndrome_o == 7'h6e)==1 && data_i[52]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:78` `((syndrome_o == 7'h76)==0 && data_i[53]==1) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:78` `((syndrome_o == 7'h76)==1 && data_i[53]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:78` `((syndrome_o == 7'h76)==1 && data_i[53]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:79` `((syndrome_o == 7'h7a)==0 && data_i[54]==1) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:79` `((syndrome_o == 7'h7a)==1 && data_i[54]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:79` `((syndrome_o == 7'h7a)==1 && data_i[54]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:80` `((syndrome_o == 7'h7c)==0 && data_i[55]==1) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:80` `((syndrome_o == 7'h7c)==1 && data_i[55]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:80` `((syndrome_o == 7'h7c)==1 && data_i[55]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:81` `((syndrome_o == 7'h7f)==0 && data_i[56]==1) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:81` `((syndrome_o == 7'h7f)==1 && data_i[56]==0) => 1` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:81` `((syndrome_o == 7'h7f)==1 && data_i[56]==1) => 0` (column 40) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[0]==1 && err_o[0]==0) => 1` (column 30) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[1]==1 && err_o[0]==0) => 1` (column 30) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[2]==1 && err_o[0]==0) => 1` (column 30) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[3]==1 && err_o[0]==0) => 1` (column 30) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[4]==1 && err_o[0]==0) => 1` (column 30) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[5]==1 && err_o[0]==0) => 1` (column 30) in `u_r*_chk.u_chk`
+- `prim_secded_inv_64_57_dec.sv:85` `(syndrome_o[6]==1 && err_o[0]==0) => 1` (column 30) in `u_r*_chk.u_chk`
 - `tlul_rsp_intg_chk.sv:47` `(tl_i[65]==1 && rsp_data_err==1) => 1` (column 31) in `u_rsp_intg_chk`
 - `tlul_rsp_intg_chk.sv:47` `(tl_i[65]==1 && rsp_err[0]==1) => 1` (column 31) in `u_rsp_intg_chk`
 - `tlul_rsp_intg_chk.sv:47` `(tl_i[65]==1 && rsp_err[1]==1) => 1` (column 31) in `u_rsp_intg_chk`
@@ -150,6 +284,78 @@ PROVEN never hit after the first reset:
 - `tlul_cmd_intg_chk.sv:44` `(tl_i[108]==1 && err[1]==1) => 1` (column 31) in `u_rv_timer.u_reg.u_chk`
 - `tlul_data_integ_dec.sv:25` `(data_err[0]==1) => 1` (column 23) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec`
 - `tlul_data_integ_dec.sv:25` `(data_err[1]==1) => 1` (column 23) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec`
+- `prim_secded_inv_39_32_dec.sv:25` `((syndrome_o == 7'h19)==1 && data_i[0]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:25` `((syndrome_o == 7'h19)==1 && data_i[0]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:26` `((syndrome_o == 7'h54)==1 && data_i[1]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:26` `((syndrome_o == 7'h54)==1 && data_i[1]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:27` `((syndrome_o == 7'h61)==1 && data_i[2]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:27` `((syndrome_o == 7'h61)==1 && data_i[2]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:28` `((syndrome_o == 7'h34)==1 && data_i[3]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:28` `((syndrome_o == 7'h34)==1 && data_i[3]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:29` `((syndrome_o == 7'h1a)==1 && data_i[4]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:29` `((syndrome_o == 7'h1a)==1 && data_i[4]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:30` `((syndrome_o == 7'h15)==1 && data_i[5]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:30` `((syndrome_o == 7'h15)==1 && data_i[5]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:31` `((syndrome_o == 7'h2a)==1 && data_i[6]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:31` `((syndrome_o == 7'h2a)==1 && data_i[6]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:32` `((syndrome_o == 7'h4c)==1 && data_i[7]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:32` `((syndrome_o == 7'h4c)==1 && data_i[7]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:33` `((syndrome_o == 7'h45)==1 && data_i[8]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:33` `((syndrome_o == 7'h45)==1 && data_i[8]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:34` `((syndrome_o == 7'h38)==1 && data_i[9]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:34` `((syndrome_o == 7'h38)==1 && data_i[9]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:35` `((syndrome_o == 7'h49)==1 && data_i[10]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:35` `((syndrome_o == 7'h49)==1 && data_i[10]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:36` `((syndrome_o == 7'hd)==1 && data_i[11]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:36` `((syndrome_o == 7'hd)==1 && data_i[11]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:37` `((syndrome_o == 7'h51)==1 && data_i[12]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:37` `((syndrome_o == 7'h51)==1 && data_i[12]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:38` `((syndrome_o == 7'h31)==1 && data_i[13]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:38` `((syndrome_o == 7'h31)==1 && data_i[13]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:39` `((syndrome_o == 7'h68)==1 && data_i[14]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:39` `((syndrome_o == 7'h68)==1 && data_i[14]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:40` `((syndrome_o == 7'h7)==1 && data_i[15]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:40` `((syndrome_o == 7'h7)==1 && data_i[15]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:41` `((syndrome_o == 7'h1c)==1 && data_i[16]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:41` `((syndrome_o == 7'h1c)==1 && data_i[16]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:42` `((syndrome_o == 7'hb)==1 && data_i[17]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:42` `((syndrome_o == 7'hb)==1 && data_i[17]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:43` `((syndrome_o == 7'h25)==1 && data_i[18]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:43` `((syndrome_o == 7'h25)==1 && data_i[18]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:44` `((syndrome_o == 7'h26)==1 && data_i[19]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:44` `((syndrome_o == 7'h26)==1 && data_i[19]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:45` `((syndrome_o == 7'h46)==1 && data_i[20]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:45` `((syndrome_o == 7'h46)==1 && data_i[20]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:46` `((syndrome_o == 7'he)==1 && data_i[21]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:46` `((syndrome_o == 7'he)==1 && data_i[21]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:47` `((syndrome_o == 7'h70)==1 && data_i[22]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:47` `((syndrome_o == 7'h70)==1 && data_i[22]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:48` `((syndrome_o == 7'h32)==1 && data_i[23]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:48` `((syndrome_o == 7'h32)==1 && data_i[23]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:49` `((syndrome_o == 7'h2c)==1 && data_i[24]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:49` `((syndrome_o == 7'h2c)==1 && data_i[24]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:50` `((syndrome_o == 7'h13)==1 && data_i[25]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:50` `((syndrome_o == 7'h13)==1 && data_i[25]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:51` `((syndrome_o == 7'h23)==1 && data_i[26]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:51` `((syndrome_o == 7'h23)==1 && data_i[26]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:52` `((syndrome_o == 7'h62)==1 && data_i[27]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:52` `((syndrome_o == 7'h62)==1 && data_i[27]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:53` `((syndrome_o == 7'h4a)==1 && data_i[28]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:53` `((syndrome_o == 7'h4a)==1 && data_i[28]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:54` `((syndrome_o == 7'h29)==1 && data_i[29]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:54` `((syndrome_o == 7'h29)==1 && data_i[29]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:55` `((syndrome_o == 7'h16)==1 && data_i[30]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:55` `((syndrome_o == 7'h16)==1 && data_i[30]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:56` `((syndrome_o == 7'h52)==1 && data_i[31]==0) => 1` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:56` `((syndrome_o == 7'h52)==1 && data_i[31]==1) => 0` (column 40) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(err_o[0]==1) => 0` (column 30) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[0]==1 && err_o[0]==0) => 1` (column 30) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[1]==1 && err_o[0]==0) => 1` (column 30) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[2]==1 && err_o[0]==0) => 1` (column 30) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[3]==1 && err_o[0]==0) => 1` (column 30) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[4]==1 && err_o[0]==0) => 1` (column 30) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[5]==1 && err_o[0]==0) => 1` (column 30) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
+- `prim_secded_inv_39_32_dec.sv:60` `(syndrome_o[6]==1 && err_o[0]==0) => 1` (column 30) in `u_rv_timer.u_reg.u_chk.u_tlul_data_integ_dec.u_data_chk`
 - `prim_onehot_check.sv:108` `(addr_err==1) => 1` (column 40) in `u_rv_timer.u_reg.u_prim_reg_we_check.u_prim_onehot_check`
 - `prim_onehot_check.sv:108` `(oh0_err==1) => 1` (column 40) in `u_rv_timer.u_reg.u_prim_reg_we_check.u_prim_onehot_check`
 - `tlul_adapter_reg.sv:231` `(busy_i==1) => 0` (column 15) in `u_rv_timer.u_reg.u_reg_if`

@@ -1,6 +1,6 @@
 # Verification report — ahb2axi_bridge
 
-Generated 2026-11-24T21:07:34+00:00 by NNC Pipeline.
+Generated 2026-11-25T12:45:27+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -11,9 +11,9 @@ Generated 2026-11-24T21:07:34+00:00 by NNC Pipeline.
 | Tests | {'fail': 20, 'pass': 1} |
 | Run set | 5 runs in 4 configurations (base, ids8, ids35, xrand); primary base.s1 |
 | Integration | OK |
-| Code coverage (RTL), line | 91.3 % (2733/2994 lines); 183 points left out (package code the design does not contain), all points 86.0 % (2733/3177) |
-| Code coverage (RTL), block | 97.1 % (1142/1176 statement blocks and branch arms); 306 points left out (package code the design does not contain; 306 of them proven never reached after reset by formal, work/unr.md), all points 77.1 % (1142/1482) |
-| Code coverage (RTL), expression | 82.9 % (1316/1587 condition terms); 243 points left out (package code the design does not contain; 243 of them proven never reached after reset by formal, work/unr.md), all points 71.9 % (1316/1830) |
+| Code coverage (RTL), line | 91.3 % (2733/2992 lines); 185 points left out (package code the design does not contain), all points 86.0 % (2733/3177) |
+| Code coverage (RTL), block | 97.3 % (1142/1174 statement blocks and branch arms); 308 points left out (package code the design does not contain; 308 of them proven never reached after reset by formal, work/unr.md), all points 77.1 % (1142/1482) |
+| Code coverage (RTL), expression | 86.4 % (1316/1524 condition terms); 306 points left out (package code the design does not contain; 306 of them proven never reached after reset by formal, work/unr.md), all points 71.9 % (1316/1830) |
 | Code coverage (RTL), toggle | 91.5 % (23591/25770 bit toggles 0->1 and 1->0); 10224 points left out (constant bits; 3936 of them proven constant after reset by formal, work/unr.md), all points 65.7 % (23645/35994) |
 | Code coverage (RTL), functional | 90.0 % (36/40 cover points of the specification) |
 | Mutation score | not run |

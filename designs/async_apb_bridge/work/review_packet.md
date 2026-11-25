@@ -8,7 +8,7 @@ This packet is for the person who decides gate **G4 (sign-off)**: *is this desig
 - **Checks:** 35 — PASS 35
 - **Tests:** {'pass': 28}
 - **Simulated configurations:** 15 runs in 13 configurations (apb4, model_off, syn, 4ph, 4ph_off, apb5, user, sync3, sync4, min, slv_fast, slv_slow, xrand); see `run_set.json` and the *Run set* table of the report
-- **Code coverage:** line 91.9 %, block 88.8 %, expression 74.8 %, toggle 98.6 %, functional 97.5 %
+- **Code coverage:** line 94.2 %, block 97.3 %, expression 92.9 %, toggle 98.6 %, functional 97.5 %
 - **Mutation score:** 91.7 % (11 of 12 injected faults detected); 0 survivor(s) proven equivalent by formal, 91.7 % without them; formal on the survivors: {'SIM_ONLY': 1}
 
 ## 2. Decisions taken for you

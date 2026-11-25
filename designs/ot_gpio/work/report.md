@@ -1,6 +1,6 @@
 # Verification report — ot_gpio
 
-Generated 2026-11-24T21:07:34+00:00 by NNC Pipeline.
+Generated 2026-11-25T09:42:14+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -12,12 +12,12 @@ Generated 2026-11-24T21:07:34+00:00 by NNC Pipeline.
 | Run set | 6 runs in 5 configurations (base, sync_off, straps_off, min, xrand); primary base.s1 |
 | Integration | OK |
 | Code coverage (RTL), line | 97.3 % (11212/11520 lines); 9832 points left out (package code the design does not contain), all points 52.5 % (11212/21352) |
-| Code coverage (RTL), block | 99.5 % (1090/1096 statement blocks and branch arms); 1356 points left out (package code the design does not contain; 68 of them proven never reached after reset by formal, work/unr.md), all points 44.5 % (1090/2452) |
-| Code coverage (RTL), expression | 85.0 % (6600/7766 condition terms); 24140 points left out (package code the design does not contain; 2408 of them proven never reached after reset by formal, work/unr.md), all points 20.7 % (6600/31906) |
+| Code coverage (RTL), block | 99.6 % (1090/1094 statement blocks and branch arms); 1358 points left out (package code the design does not contain; 70 of them proven never reached after reset by formal, work/unr.md), all points 44.5 % (1090/2452) |
+| Code coverage (RTL), expression | 95.1 % (6600/6938 condition terms); 24968 points left out (package code the design does not contain; 3236 of them proven never reached after reset by formal, work/unr.md), all points 20.7 % (6600/31906) |
 | Code coverage (RTL), toggle | 93.9 % (69704/74244 bit toggles 0->1 and 1->0); 8940 points left out (constant bits; 2376 of them proven constant after reset by formal, work/unr.md), all points 84.0 % (69898/83184) |
 | Code coverage (RTL), functional | 95.0 % (38/40 cover points of the specification) |
 | Code coverage without the modules the designer declares pre-verified | prim_alert_receiver, prim_alert_sender, prim_count, prim_esc_receiver, prim_esc_sender, prim_lfsr, prim_onehot_check, prim_prince, prim_secded_inv_39_32_dec, prim_secded_inv_39_32_enc, prim_secded_inv_64_57_dec, prim_secded_inv_64_57_enc (7 instances; config `coverage_preverified`) |
-| ... without pre-verified modules, block | 99.3 % (914/920) |
+| ... without pre-verified modules, block | 99.6 % (914/918) |
 | ... without pre-verified modules, expression | 97.1 % (5724/5894) |
 | ... without pre-verified modules, line | 97.1 % (10336/10644) |
 | ... without pre-verified modules, toggle | 94.5 % (62288/65884) |

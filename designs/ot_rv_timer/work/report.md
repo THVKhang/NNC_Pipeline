@@ -1,6 +1,6 @@
 # Verification report — ot_rv_timer
 
-Generated 2026-11-24T21:07:19+00:00 by NNC Pipeline.
+Generated 2026-11-25T09:42:54+00:00 by NNC Pipeline.
 
 ## Summary
 
@@ -13,7 +13,7 @@ Generated 2026-11-24T21:07:19+00:00 by NNC Pipeline.
 | Integration | OK |
 | Code coverage (RTL), line | 95.1 % (802/843 lines); 2458 points left out (package code the design does not contain), all points 24.3 % (802/3301) |
 | Code coverage (RTL), block | 99.3 % (144/145 statement blocks and branch arms); 341 points left out (package code the design does not contain; 19 of them proven never reached after reset by formal, work/unr.md), all points 29.6 % (144/486) |
-| Code coverage (RTL), expression | 67.7 % (520/768 condition terms); 5460 points left out (package code the design does not contain; 27 of them proven never reached after reset by formal, work/unr.md), all points 8.3 % (520/6228) |
+| Code coverage (RTL), expression | 92.7 % (520/561 condition terms); 5667 points left out (package code the design does not contain; 234 of them proven never reached after reset by formal, work/unr.md), all points 8.3 % (520/6228) |
 | Code coverage (RTL), toggle | 98.4 % (10294/10458 bit toggles 0->1 and 1->0); 1318 points left out (constant bits; 232 of them proven constant after reset by formal, work/unr.md), all points 87.7 % (10333/11776) |
 | Code coverage (RTL), functional | 97.4 % (38/39 cover points of the specification) |
 | Code coverage without the modules the designer declares pre-verified | prim_alert_receiver, prim_alert_sender, prim_count, prim_esc_receiver, prim_esc_sender, prim_lfsr, prim_onehot_check, prim_prince, prim_secded_inv_39_32_dec, prim_secded_inv_39_32_enc, prim_secded_inv_64_57_dec, prim_secded_inv_64_57_enc (7 instances; config `coverage_preverified`) |

@@ -33,6 +33,20 @@ PROVEN_RULE = ("left out: toggle points of signal bits that SymbiYosys proves co
                "every input sequence (nnc/unr.py, work/unr.json: PROVEN in every configuration of the run set), "
                "except on signals where the simulator recorded a 1->0 toggle of such a bit")
 DUT_HIER = "nnc_tb_top.u_dut"
+# the configuration folder of a run set (nnc/runset.py: C01, C02, ...) in the source path of a coverage record;
+# merged.dat keeps one record per configuration because the paths differ
+_FOLDER = re.compile(r"(?:^|/)(C\d{2,})/")
+
+
+def config_folder(path: str) -> str:
+    """The run-set configuration folder of a source path ("" outside a run set)."""
+    m = _FOLDER.findall(path.replace("\\", "/"))
+    return m[-1] if m else ""
+
+
+def line_key(folder: str, name: str, line: int) -> tuple:
+    """Key of a line of one configuration's coverage: (file, line), with the folder in front in a run set."""
+    return (folder, name, line) if folder else (name, line)
 _TOGGLE = re.compile(r"^(?P<sig>[A-Za-z_][\w$.]*?)(?:\[(?P<idx>\d+)\])?:[01]->[01]$")
 
 
@@ -418,8 +432,9 @@ def parse_dat(path: Path, rtl_names: list[str], scope: dict | None = None,
               drop_roots: set[str] | None = None) -> dict:
     """{'metrics': {metric: {hit, total, percent, files}}, 'uncovered': [{metric, file, line, what}]}.
     With a `scope` (scope_from_tree), points outside the elaborated design are left out of every count:
-    'scope' then gives, per metric, the points left out, and 'out_of_scope_lines' the (file, line) pairs
-    whose every block point was left out (for the lcov line metric). A left-out point that was executed
+    'scope' then gives, per metric, the points left out, and 'out_of_scope_lines' the lines (line_key: (file,
+    line), with the configuration folder in front in a run set) whose every block point was left out (for the
+    lcov line metric). A left-out point that was executed
     would contradict the scope: it is counted, and 'scope_conflicts' says how many. `drop_roots`: instance
     paths whose subtrees are left out as well ('dropped' counts them, 'drop_lines' are their lines)."""
     rtl = set(rtl_names)
@@ -445,12 +460,16 @@ def parse_dat(path: Path, rtl_names: list[str], scope: dict | None = None,
     for n in proven_disagree:
         proven.pop(n, None)
     proven_left = 0
-    # branches that formal proves are never executed after the first reset (nnc/unrbranch.py)
+    # branches that formal proves are never executed after the first reset (nnc/unrbranch.py): in every
+    # configuration, or (by_config) in the configuration of a run-set folder, which leaves that folder's record
     pblocks = {tuple(k) for k in (scope or {}).get("proven_blocks") or []}
+    pblocks_in = {f: {tuple(k) for k in ks} for f, ks in ((scope or {}).get("proven_blocks_by_config") or {}).items()}
     blocks_left, blocks_hit = 0, 0
     # term combinations that formal proves never hold after the first reset (nnc/unrexpr.py)
     pexprs = {tuple(k) for k in (scope or {}).get("proven_exprs") or []}
+    pexprs_in = {f: {tuple(k) for k in ks} for f, ks in ((scope or {}).get("proven_exprs_by_config") or {}).items()}
     exprs_left, exprs_hit = 0, 0
+    in_plain: set[tuple[str, int]] = set()
     left_out: dict[str, int] = defaultdict(int)
     dropped: dict[str, int] = defaultdict(int)
     conflicts = 0
@@ -459,6 +478,7 @@ def parse_dat(path: Path, rtl_names: list[str], scope: dict | None = None,
     drop_lines: set[tuple[str, int]] = set()
     roots = drop_roots or set()
     for kv, name, metric, line, span, count in _records(path, rtl):
+        folder = config_folder(kv.get("f", ""))
         if roots:
             h = kv.get("h", "")
             if h in roots or any(h.startswith(r + ".") for r in roots):
@@ -466,14 +486,16 @@ def parse_dat(path: Path, rtl_names: list[str], scope: dict | None = None,
                 if metric == "block":
                     drop_lines.update((name, n) for n in span)
                 continue
-        if pblocks and metric == "block" and block_key(kv, name, line) in pblocks:
+        if (pblocks or pblocks_in) and metric == "block" and (
+                (k := block_key(kv, name, line)) in pblocks or k in pblocks_in.get(folder, ())):
             if count == 0:
                 left_out[metric] += 1
                 blocks_left += 1
-                out_lines.update((name, n) for n in span)
+                out_lines.update(line_key(folder, name, n) for n in span)
                 continue
             blocks_hit += 1           # executed although proven unreachable: counted, and reported
-        if pexprs and metric == "expression" and expr_key(kv, name, line) in pexprs:
+        if (pexprs or pexprs_in) and metric == "expression" and (
+                (k := expr_key(kv, name, line)) in pexprs or k in pexprs_in.get(folder, ())):
             if count == 0:
                 left_out[metric] += 1
                 exprs_left += 1
@@ -491,11 +513,12 @@ def parse_dat(path: Path, rtl_names: list[str], scope: dict | None = None,
             if count == 0 or (bit and _init_rise(kv, bit, ones)):
                 left_out[metric] += 1
                 if metric == "block":
-                    out_lines.update((name, n) for n in span)
+                    out_lines.update(line_key(folder, name, n) for n in span)
                 continue
             conflicts += 1
         if metric == "block":
-            in_lines.update((name, n) for n in span)
+            in_lines.update(line_key(folder, name, n) for n in span)
+            in_plain.update((name, n) for n in span)
         m = stats.setdefault(metric, {"hit": 0, "total": 0, "files": defaultdict(lambda: [0, 0])})
         m["total"] += 1
         m["files"][name][1] += 1
@@ -517,18 +540,18 @@ def parse_dat(path: Path, rtl_names: list[str], scope: dict | None = None,
         if (scope or {}).get("proven") is not None:
             out["scope"]["proven_unreachable"] = {"rule": PROVEN_RULE, "left_out": proven_left,
                                                   "signals_kept_whole": sorted(proven_disagree)}
-        if pblocks:
+        if pblocks or pblocks_in:
             out["scope"].setdefault("proven_unreachable", {"rule": PROVEN_RULE})
             out["scope"]["proven_unreachable"]["branches_left_out"] = blocks_left
             out["scope"]["proven_unreachable"]["branches_executed"] = blocks_hit
-        if pexprs:
+        if pexprs or pexprs_in:
             out["scope"].setdefault("proven_unreachable", {"rule": PROVEN_RULE})
             out["scope"]["proven_unreachable"]["expressions_left_out"] = exprs_left
             out["scope"]["proven_unreachable"]["expressions_executed"] = exprs_hit
         out["out_of_scope_lines"] = out_lines - in_lines
     if drop_roots is not None:
         out["dropped"] = dict(sorted(dropped.items()))
-        out["drop_lines"] = drop_lines - in_lines
+        out["drop_lines"] = drop_lines - in_plain
     return out
 
 

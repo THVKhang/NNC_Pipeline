@@ -739,17 +739,18 @@ def _line_coverage(info: Path, rtl_names: list[str], out_of_scope: set | None = 
     per_file: dict[str, list[int]] = {}
     missed = []
     executed: dict[str, list[int]] = {}
-    current = None
+    current, folder = None, ""
     for line in info.read_text(encoding="utf-8", errors="replace").splitlines():
         if line.startswith("SF:"):
             name = Path(line[3:]).name
             current = name if name in rtl_names else None
+            folder = coverage_mod.config_folder(line[3:])
         elif line.startswith("DA:") and current:
             no, cnt = line[3:].split(",")[:2]
             if drop and (current, int(no)) in drop:
                 dropped += 1
                 continue
-            if out_of_scope and int(cnt) == 0 and (current, int(no)) in out_of_scope:
+            if out_of_scope and int(cnt) == 0 and coverage_mod.line_key(folder, current, int(no)) in out_of_scope:
                 left += 1
                 continue
             total += 1
