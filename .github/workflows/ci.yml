@@ -309,7 +309,7 @@ jobs:
       id-token: write
     environment:
       name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
+      url: ${{ steps.deploy.outputs.page_url || steps.deploy_again.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -320,5 +320,14 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
+      # The deployment fails now and then on GitHub's side ("Fetching artifact metadata failed", "No artifacts
+      # named github-pages"; 6 of 12 runs on 2026-11-24/25). One more try a minute later; a re-run of the job
+      # cannot help, it finds the first attempt's artifact too ("Multiple artifacts").
       - id: deploy
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+      - if: steps.deploy.outcome == 'failure'
+        run: sleep 60
+      - id: deploy_again
+        if: steps.deploy.outcome == 'failure'
         uses: actions/deploy-pages@v4
